@@ -106,6 +106,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         super().tearDown()
 
     def test_register_user(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
 
         selenium.get(self.live_server_url + "/register/")
@@ -159,6 +160,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_edit_user(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         selenium.get(self.live_server_url + reverse("course_flow:user-update"))
@@ -208,6 +210,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_liveproject(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -228,6 +231,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         assert LiveProject.objects.filter(project=project).count() == 1
 
     def test_my_classrooms_teacher(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -261,6 +265,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_my_classrooms_student(self):
+        print("\nIn method", self._testMethodName, ': ')
         self.user.groups.remove(self.user.groups.first())
         author = get_author()
         selenium = self.selenium
@@ -313,6 +318,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_settings(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -340,6 +346,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.default_all_workflows_visible, True)
 
     def test_add_roles(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -425,6 +432,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_add_workflows(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -508,6 +516,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_student_workflows(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -553,6 +562,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -614,6 +624,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(UserAssignment.objects.first().completed, True)
 
     def test_student_assignment(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -755,6 +766,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment_from_workflow(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -793,6 +805,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_student_complete_assignment_from_workflow(self):
+        print("\nIn method", self._testMethodName, ': ')
         user2 = get_author()
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -893,9 +906,9 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_home(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         selenium.get(self.live_server_url + "/course-flow/home/")
-        time.sleep(100)
         assert (
             "Projets récents"
             in selenium.find_elements_by_css_selector(".home-item-title")[
@@ -926,6 +939,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_project_and_workflows(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         selenium.get(self.live_server_url + "/course-flow/home/")
@@ -1071,6 +1085,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_edit_project_details(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1111,6 +1126,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.disciplines.first(), discipline)
 
     def test_import_favourite(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1254,6 +1270,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_workflow_read_only(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1290,6 +1307,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_workflow_editing(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1445,6 +1463,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_workflow_duplication(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1543,6 +1562,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_outcome_editing(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1708,6 +1728,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_edit_menu(self):
+        print("\nIn method", self._testMethodName, ': ')
         # Note that we don't test ALL parts of the edit menu, and we test only for nodes. This will catch the vast majority of potential issues. Linked workflows are tested in a different test
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -1789,6 +1810,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 )
 
     def test_project_return(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1818,6 +1840,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_strategy_convert(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1889,6 +1912,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             Workflow.objects.get(is_strategy=True).delete()
 
     def test_outcome_view(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2141,261 +2165,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert_image(outcome2_total_img, "/check")
             assert_image(outcome2_grandtotal_img, "/check")
 
-    #    def test_horizontal_outcome_view(self):
-    #        selenium = self.selenium
-    #        wait = WebDriverWait(selenium, timeout=10)
-    #        project = Project.objects.create(
-    #            author=self.user, title="project title"
-    #        )
-    #        course = Course.objects.create(author=self.user)
-    #        program = Program.objects.create(author=self.user)
-    #        WorkflowProject.objects.create(workflow=course, project=project)
-    #        WorkflowProject.objects.create(workflow=program, project=project)
-    #        base_outcome = Outcome.objects.create(author=self.user)
-    #        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
-    #        OutcomeOutcome.objects.create(
-    #            parent=base_outcome,
-    #            child=Outcome.objects.create(author=self.user),
-    #        )
-    #        OutcomeOutcome.objects.create(
-    #            parent=base_outcome,
-    #            child=Outcome.objects.create(author=self.user),
-    #        )
-    #        course.outcomes.create(author=self.user)
-    #        course.outcomes.create(author=self.user)
-    #        node = program.weeks.first().nodes.create(
-    #            author=self.user,
-    #            linked_workflow=course,
-    #            column=program.columns.first(),
-    #        )
-    #        response = self.client.post(
-    #            reverse("course_flow:update-outcomenode-degree"),
-    #            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
-    #        )
-    #
-    #        selenium.get(
-    #            self.live_server_url
-    #            + reverse("course_flow:workflow-update", args=[program.pk])
-    #        )
-    #        time.sleep(2)
-    #        selenium.find_element_by_css_selector(
-    #            "#sidebar .window-close-button"
-    #        ).click()
-    #        time.sleep(0.5)
-    #        selenium.find_element_by_css_selector(".other-views").click()
-    #        selenium.find_element_by_css_selector(
-    #            "#button_horizontaloutcometable"
-    #        ).click()
-    #        time.sleep(5)
-    #        base_outcome_row_select = (
-    #            ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
-    #        )
-    #        outcome1_row_select = (
-    #            ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
-    #        )
-    #        outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
-    #        base_cell = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell"
-    #        )
-    #        base_cell2 = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-    #        )
-    #        base_input = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
-    #        )
-    #        base_input2 = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-    #        )
-    #        base_img = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
-    #        )
-    #        base_img2 = (
-    #            base_outcome_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-    #        )
-    #        base_total_img = (
-    #            base_outcome_row_select
-    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
-    #        )
-    #        base_grandtotal_img = (
-    #            base_outcome_row_select + " .table-cell.grand-total-cell img"
-    #        )
-    #        base_toggle = action_hover_click(
-    #            selenium,
-    #            selenium.find_element_by_css_selector(base_cell),
-    #            selenium.find_element_by_css_selector(base_input),
-    #        )
-    #        outcome1_cell = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell"
-    #        )
-    #        outcome1_cell2 = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-    #        )
-    #        outcome1_input = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
-    #        )
-    #        outcome1_input2 = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-    #        )
-    #        outcome1_img = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
-    #        )
-    #        outcome1_img2 = (
-    #            outcome1_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-    #        )
-    #        outcome1_total_img = (
-    #            outcome1_row_select
-    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
-    #        )
-    #        outcome1_grandtotal_img = (
-    #            outcome1_row_select + " .table-cell.grand-total-cell img"
-    #        )
-    #        outcome1_toggle = action_hover_click(
-    #            selenium,
-    #            selenium.find_element_by_css_selector(outcome1_cell),
-    #            selenium.find_element_by_css_selector(outcome1_input),
-    #        )
-    #        outcome2_cell = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell"
-    #        )
-    #        outcome2_cell2 = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-    #        )
-    #        outcome2_input = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
-    #        )
-    #        outcome2_input2 = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-    #        )
-    #        outcome2_img = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
-    #        )
-    #        outcome2_img2 = (
-    #            outcome2_row_select
-    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-    #        )
-    #        outcome2_total_img = (
-    #            outcome2_row_select
-    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
-    #        )
-    #        outcome2_grandtotal_img = (
-    #            outcome2_row_select + " .table-cell.grand-total-cell img"
-    #        )
-    #        outcome2_toggle = action_hover_click(
-    #            selenium,
-    #            selenium.find_element_by_css_selector(outcome2_cell),
-    #            selenium.find_element_by_css_selector(outcome2_input),
-    #        )
-    #
-    #        def assert_image(element_string, string):
-    #            assert string in selenium.find_element_by_css_selector(
-    #                element_string
-    #            ).get_attribute("src")
-    #
-    #        def assert_no_image(element_string):
-    #            self.assertEqual(
-    #                len(selenium.find_elements_by_css_selector(element_string)), 0,
-    #            )
-    #
-    #        # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
-    #        base_toggle.perform()
-    #        time.sleep(4)
-    #        assert_image(base_img, "solid_check")
-    #        assert_image(base_total_img, "/check")
-    #        assert_image(base_grandtotal_img, "/check")
-    #        assert_image(outcome1_img, "/solid_check")
-    #        assert_image(outcome1_total_img, "/check")
-    #        assert_image(outcome1_grandtotal_img, "/check")
-    #        assert_image(outcome2_img, "/solid_check")
-    #        assert_image(outcome2_total_img, "/check")
-    #        assert_image(outcome2_grandtotal_img, "/check")
-    #
-    #        # Toggle one of the children. We expect to lose the top outcome to partial completion
-    #        outcome1_toggle.perform()
-    #        time.sleep(3)
-    #        assert_image(base_img, "/nocheck")
-    #        assert_image(base_total_img, "/nocheck")
-    #        assert_image(base_grandtotal_img, "/nocheck")
-    #        assert_no_image(outcome1_img)
-    #        assert_no_image(outcome1_total_img)
-    #        assert_no_image(outcome1_grandtotal_img)
-    #        assert_image(outcome2_img, "/solid_check")
-    #        assert_image(outcome2_total_img, "/check")
-    #        assert_image(outcome2_grandtotal_img, "/check")
-    #        # check that re-toggling outcome 1 adds the parent
-    #        outcome1_toggle.perform()
-    #        time.sleep(3)
-    #        assert_image(base_img, "solid_check")
-    #        assert_image(base_total_img, "/check")
-    #        assert_image(base_grandtotal_img, "/check")
-    #        assert_image(outcome1_img, "/solid_check")
-    #        assert_image(outcome1_total_img, "/check")
-    #        assert_image(outcome1_grandtotal_img, "/check")
-    #        assert_image(outcome2_img, "/solid_check")
-    #        assert_image(outcome2_total_img, "/check")
-    #        assert_image(outcome2_grandtotal_img, "/check")
-    #        # check that removing the base outcome clears all
-    #        base_toggle.perform()
-    #        time.sleep(4)
-    #        assert_no_image(base_img)
-    #        assert_no_image(base_total_img)
-    #        assert_no_image(base_grandtotal_img)
-    #        assert_no_image(outcome1_img)
-    #        assert_no_image(outcome1_total_img)
-    #        assert_no_image(outcome1_grandtotal_img)
-    #        assert_no_image(outcome2_img)
-    #        assert_no_image(outcome2_total_img)
-    #        assert_no_image(outcome2_grandtotal_img)
-    #        # check completion when not all children are toggled
-    #        outcome1_toggle.perform()
-    #        time.sleep(3)
-    #        assert_image(base_img, "/nocheck")
-    #        assert_image(base_total_img, "/nocheck")
-    #        assert_image(base_grandtotal_img, "/nocheck")
-    #        assert_image(outcome1_img, "solid_check")
-    #        assert_image(outcome1_total_img, "/check")
-    #        assert_image(outcome1_grandtotal_img, "/check")
-    #        assert_no_image(outcome2_img)
-    #        assert_no_image(outcome2_total_img)
-    #        assert_no_image(outcome2_grandtotal_img)
-    #        # check completion when children are toggled but in different nodes
-    #        action_hover_click(
-    #            selenium,
-    #            selenium.find_element_by_css_selector(outcome2_cell2),
-    #            selenium.find_element_by_css_selector(outcome2_input2),
-    #        ).perform()
-    #        time.sleep(3)
-    #
-    #        assert_image(base_img, "/nocheck")
-    #        assert_image(base_img2, "/nocheck")
-    #        assert_image(base_total_img, "/check")
-    #        assert_image(base_grandtotal_img, "/check")
-    #        assert_image(outcome1_img, "solid_check")
-    #        assert_no_image(outcome1_img2)
-    #        assert_image(outcome1_total_img, "/check")
-    #        assert_image(outcome1_grandtotal_img, "/check")
-    #        assert_no_image(outcome2_img)
-    #        assert_image(outcome2_img2, "solid_check")
-    #        assert_image(outcome2_total_img, "/check")
-    #        assert_image(outcome2_grandtotal_img, "/check")
-
     def test_outcome_analytics(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2477,6 +2248,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_outcome_matrix_view(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2535,6 +2307,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_grid_view(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2560,6 +2333,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_linked_workflow(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2655,6 +2429,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def create_many_items(self, author, published, disciplines):
+        print("\nIn method", self._testMethodName, ': ')
         for object_type in [
             "activity",
             "course",
@@ -2687,6 +2462,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     )
 
     def test_explore(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2788,6 +2564,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_no_publish(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2805,6 +2582,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_disciplines(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2873,6 +2651,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_share_edit_view(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -3004,6 +2783,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def create_many_items(self, author, published, disciplines):
+        print("\nIn method", self._testMethodName, ': ')
         for object_type in [
             "activity",
             "course",
@@ -3036,6 +2816,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                     )
 
     def test_delete_restore_column(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3138,6 +2919,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_node(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3237,6 +3019,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_outcome(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3448,6 +3231,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_workflow(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3580,7 +3364,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_deleted(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
+
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
@@ -3650,6 +3436,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_sets(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3683,6 +3470,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.object_sets.count(), 0)
 
     def test_view_sets(self):
+        print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3844,8 +3632,6 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
 
         username.send_keys("testuser1")
         password.send_keys("testpass1")
-        print('int h home')
-        print(selenium.current_url)
         selenium.find_element_by_css_selector("button[type=Submit]").click()
 
     def tearDown(self):
@@ -3853,9 +3639,8 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_comparison_views(self):
+        print("In method", self._testMethodName, ': ')
         selenium = self.selenium
-        print('test comparison view selenium.current_url')
-        print(selenium.current_url)
         wait = WebDriverWait(selenium, timeout=10)
 
         project = Project.objects.create(author=self.user)
@@ -3863,27 +3648,13 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         workflow2 = Course.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=workflow, project=project)
         WorkflowProject.objects.create(workflow=workflow2, project=project)
-        node1 = workflow.weeks.first().nodes.create(
-            author=self.user, column=workflow.columns.first()
-        )
-        node2 = workflow2.weeks.first().nodes.create(
-            author=self.user, column=workflow2.columns.first()
-        )
-        outcome1 = workflow.outcomes.create(author=self.user)
-        outcome2 = workflow2.outcomes.create(author=self.user)
-
-        print('course_flow:project-update')
-        print(self.live_server_url            + reverse("course_flow:project-update", args=[project.pk]))
+        print(reverse("course_flow:project-update", args=[project.pk]))
 
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
         time.sleep(3)
-        print('selenium.current_url()')
-        print(selenium.current_url)
-        time.sleep(50)
-
         selenium.find_element_by_id("overflow-options").click()
         selenium.find_element_by_id("comparison-view").click()
         time.sleep(3)
@@ -3909,6 +3680,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.find_element_by_id("button_outcomeedit").click()
         time.sleep(5)
+
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".outcome")), 2
         )
@@ -3936,6 +3708,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_permissions_connect_to_workflow_update_consumer(self):
+        print("In method", self._testMethodName, "\n")
         author = get_author()
         user = self.user
         workflow_owned = Course.objects.create(author=user)
@@ -4020,6 +3793,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         assert not connected
 
     def test_connection_bar(self):
+        print("In method", self._testMethodName, "\n")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
