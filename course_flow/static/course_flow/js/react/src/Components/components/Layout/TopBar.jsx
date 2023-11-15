@@ -13,6 +13,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
+import useApi from '../../../hooks/useApi'
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
@@ -31,6 +32,12 @@ const TopBar = () => {
 
   const [addMenuAnchorEl, setAddMenuAnchorEl] = useState(null)
   const isAddMenuOpen = Boolean(addMenuAnchorEl)
+
+  const [apiData, loading, error] = useApi(config.json_api_paths.get_top_bar)
+
+  if (loading || error) {
+    return null
+  }
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -63,7 +70,7 @@ const TopBar = () => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={config.create_path.project}>
+      <MenuItem component="a" href={apiData.menus.add.projectUrl}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
       <MenuItem onClick={closeAllMenus}>
@@ -94,18 +101,18 @@ const TopBar = () => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.profile_url}>
+      <MenuItem component="a" href={apiData.menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.reset_password_url}>
+      <MenuItem component="a" href={apiData.menus.account.resetPasswordUrl}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
-      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.profile_url}>
+      <MenuItem component="a" href={apiData.menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.dalite_url}>
-        Go to {COURSEFLOW_APP_TOPBAR.dalite_text}
+      <MenuItem component="a" href={apiData.menus.account.daliteUrl}>
+        Go to {apiData.menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
         <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
@@ -132,10 +139,10 @@ const TopBar = () => {
               </IconButton>
               <IconButton
                 size="large"
-                aria-label={`show ${COURSEFLOW_APP_TOPBAR.notifications.unread} new notifications`}
+                aria-label={`show ${apiData.notifications.unread} new notifications`}
               >
                 <Badge
-                  badgeContent={COURSEFLOW_APP_TOPBAR.notifications.unread}
+                  badgeContent={apiData.notifications.unread}
                   color="primary"
                 >
                   <NotificationsIcon />

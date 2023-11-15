@@ -118,7 +118,12 @@
     registration_path:
       "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
     logout_path: "{% url 'course_flow:logout' %}",
-    icon_path: "{% static 'course_flow/img/images_svg/' %}"
+    icon_path: "{% static 'course_flow/img/images_svg/' %}",
+
+    // JSON API paths that
+    json_api_paths: {
+      get_top_bar: "{% url 'course_flow:json_api_get_top_bar' %}",
+    },
   }
 
 
