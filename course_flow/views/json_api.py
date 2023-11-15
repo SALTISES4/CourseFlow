@@ -15,7 +15,7 @@ from course_flow.templatetags.course_flow_templatetags import (
 )
 
 @login_required
-def json_api_get_top_bar(request: HttpRequest) -> HttpResponse:
+def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
     user = request.user
 
     # get total count of unread notifications
