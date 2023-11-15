@@ -14,6 +14,10 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver import Firefox
+from selenium.webdriver import FirefoxOptions
+from selenium.webdriver import Chrome
+from selenium.webdriver import ChromeOptions
 
 from course_flow.models import (
     Activity,
@@ -51,20 +55,42 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
+        self.executable_path: str = ''
 
-    def init_selenium(self, options: dict = None):
+    @staticmethod
+    def create_ff_browser():
+        options = FirefoxOptions()
+        options.add_argument('--headless')
+        options.add_argument('--disable-extensions')
+        options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument('--allow-running-insecure-content')
+        options.set_capability("acceptInsecureCerts", True)
+        browser = Firefox(options=options)
+        return browser
 
+    @staticmethod
+    def create_chrome_browser(self, options):
         if options is None:
             options = webdriver.chrome.options.Options()
 
-        options.add_argument("--headless")
+        options.add_argument('--headless')
+        options.add_argument('--disable-extensions')
+        options.add_argument("--no-sandbox")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument('--disable-gpu')
+        options.add_argument('--allow-running-insecure-content')
+        options.set_capability("acceptInsecureCerts", True)
+        browser = Chrome(self.executable_path, options=options)
+        return browser
+
+    def init_selenium(self, options: dict = None):
 
         if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(executable_path=settings.CHROMEDRIVER_PATH, options=options)
-        else:
-            self.selenium = webdriver.Chrome(options=options)
+            self.executable_path = settings.CHROMEDRIVER_PATH
 
-        return self.selenium
+        # return self.create_ff_browser(options)
+        return self.create_ff_browser()
 
 
 @tag("selenium")
@@ -842,11 +868,13 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
         chrome_options.add_experimental_option(
-            "prefs", {"intl.accept_languages": "fr"}
+            "prefs", {
+                "intl.accept_languages": "fr"
+            }
         )
         chrome_options.add_argument("--lang=fr")
-        selbase = SeleniumBase()
-        self.selenium = selbase.init_selenium(chrome_options)
+        selbase = SeleniumBase(chrome_options)
+        self.selenium = selbase.init_selenium()
 
         super().setUp()
         selenium = self.selenium
