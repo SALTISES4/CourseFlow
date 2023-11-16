@@ -1,8 +1,8 @@
 import 'core-js'
 import 'regenerator-runtime'
 import autoprefixer from 'autoprefixer'
-import { babel } from '@rollup/plugin-babel'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
+import {babel} from '@rollup/plugin-babel'
+import {nodeResolve} from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 import postcss from 'rollup-plugin-postcss'
@@ -47,6 +47,14 @@ const plugins = {
   terser: terser()
 }
 
+const bundlePlugins = [
+  plugins.postcss,
+  plugins.nodeResolve,
+  plugins.babel,
+  plugins.commonjs
+  // plugins.terser
+]
+
 export default [
   {
     input: `${bundleEntry}scripts-redesign.js`,
@@ -63,5 +71,15 @@ export default [
       plugins.commonjs,
       plugins.terser
     ]
-  }
+  },
+  {
+    input: `${bundleEntry}scripts-wf-redux.js`,
+    output: {
+      file: `${bundleRoot}scripts-wf-redux.min.js`,
+      name: 'renderers',
+      format: 'iife',
+      sourceMap: 'inline'
+    },
+    plugins: bundlePlugins
+  },
 ]

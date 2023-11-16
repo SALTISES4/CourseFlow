@@ -49,3 +49,4 @@ local_settings.py
 
 #Local Scripts:
 *_local.sh
+/.env

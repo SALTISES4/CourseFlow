@@ -18,7 +18,7 @@ def make_object(model_key, author=None):
 
 
 def login(test_case):
-    # @todo this doesn't seem to  work
+    # @todo this doesn't seem to work
     user = User.objects.create_user(username="testuser1")
     user.set_password("testpass1")
     user.save()
@@ -26,7 +26,8 @@ def login(test_case):
     teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
     user.groups.add(teacher_group)
     logged_in = test_case.client.login(
-        username="testuser1", password="testpass1"
+        username="testuser1",
+        password="testpass1"
     )
     test_case.assertTrue(logged_in)
     return user

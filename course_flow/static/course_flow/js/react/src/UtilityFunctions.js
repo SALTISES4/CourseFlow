@@ -18,25 +18,43 @@ export function getUserTag(user_type) {
   )
 }
 
-// Create a loader that fills an element and prevents clicks to it
+/**
+ *  this has been refactored to remove jquery
+ */
 export class Loader {
   constructor(identifier) {
-    var loadScreen = document.createElement('div')
+    // Create a new div element
+    this.load_screen = document.createElement('div')
+    this.load_screen.className = 'load-screen'
 
-    var parentElement = document.querySelector(identifier) // Assuming identifier is a valid selector
-    if (parentElement) {
-      parentElement.appendChild(loadScreen)
-    }
-
-    loadScreen.classList.add('load-screen')
-    loadScreen.addEventListener('click', function (evt) {
+    // Prevent default click behavior
+    this.load_screen.addEventListener('click', (evt) => {
       evt.preventDefault()
     })
-    this.load_screen = loadScreen
+
+    let parentElement
+    if (identifier instanceof jQuery) {
+      // Use the first element in the jQuery object
+      parentElement = identifier.get(0)
+      console.log('parentElement')
+      console.log(parentElement)
+    } else {
+      // Use querySelector to find the element
+      parentElement = document.querySelector(identifier)
+    }
+
+    if (parentElement) {
+      parentElement.appendChild(this.load_screen)
+    } else {
+      console.error(`Element with identifier "${identifier}" not found.`)
+    }
   }
 
   endLoad() {
-    this.load_screen.remove()
+    // Remove the load screen from its parent
+    if (this.load_screen && this.load_screen.parentNode) {
+      this.load_screen.parentNode.removeChild(this.load_screen)
+    }
   }
 }
 

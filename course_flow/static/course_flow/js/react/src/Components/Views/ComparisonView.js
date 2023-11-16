@@ -130,7 +130,9 @@ export class ComparisonView extends React.Component {
     return (
       <div id="workflow-wrapper" className="workflow-wrapper">
         {this.getHeader()}
-        <div className="workflow-view-select hide-print">{view_buttons_sorted}</div>
+        <div className="workflow-view-select hide-print">
+          {view_buttons_sorted}
+        </div>
         <div className="workflow-container comparison-view">
           {reactDom.createPortal(share, $('#visible-icons')[0])}
           <div className="workflow-array">{workflow_content}</div>
@@ -162,7 +164,9 @@ export class ComparisonView extends React.Component {
             id="project-return"
             href={config.update_path['project'].replace(0, data.id)}
           >
-            <span className="green material-symbols-rounded">arrow_back_ios</span>
+            <span className="green material-symbols-rounded">
+              arrow_back_ios
+            </span>
             <div>{gettext('Return to project')}</div>
           </a>,
           $('.titlebar .title')[0]
@@ -235,6 +239,7 @@ export class ComparisonView extends React.Component {
       }
     )
   }
+
   removeWorkflow(workflow_id) {
     let workflows = this.state.workflows.slice()
     workflows.splice(workflows.indexOf(workflow_id), 1)
@@ -264,9 +269,15 @@ class WorkflowComparisonRendererComponent extends Component {
 
   render() {
     return (
-      <div className="workflow-wrapper" id={'workflow-' + this.props.workflowID}>
-        <div className="workflow-inner-wrapper" ref={this.maindiv}></div>
-        <div className="window-close-button" onClick={this.props.removeFunction}>
+      <div
+        className="workflow-wrapper"
+        id={'workflow-' + this.props.workflowID}
+      >
+        <div id="workflow-inner-wrapper" ref={this.maindiv}></div>
+        <div
+          className="window-close-button"
+          onClick={this.props.removeFunction}
+        >
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>
@@ -283,6 +294,9 @@ class WorkflowComparisonRendererComponent extends Component {
       .map((workflow_id) => parseInt(workflow_id))
     if (workflows_added.indexOf(this.props.workflowID) < 0) {
       url_params.append('workflows', this.props.workflowID)
+
+
+      // @todo
       if (history.pushState) {
         let newurl =
           window.location.protocol +
@@ -296,11 +310,12 @@ class WorkflowComparisonRendererComponent extends Component {
     }
 
     getWorkflowContext(this.props.workflowID, (context_response_data) => {
+
       let context_data = context_response_data.data_package
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,
         JSON.parse(context_data.data_package),
-        $(this.maindiv.current),
+        '#workflow-inner-wrapper',
         this.props.selection_manager,
         this.props.tiny_loader,
         this.props.view_type,
@@ -417,6 +432,7 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent {
     $('.comparison-view .workflow-header').css({ height: max_height + 'px' })
   }
 }
+
 const mapWorkflowStateToProps = (state) => ({
   data: state.workflow,
   object_sets: state.objectset
@@ -500,6 +516,7 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting {
     }
   }
 }
+
 export const WorkflowComparisonView = connect(
   mapWorkflowStateToProps,
   null
@@ -554,6 +571,7 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected {
     }
   }
 }
+
 const mapOutcomeComparisonStateToProps = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
@@ -587,7 +605,7 @@ class ViewBar extends React.Component {
                 checked={!set.hidden}
                 onChange={this.toggleHidden.bind(this, set.id)}
               />
-              <label for={'set' + set.id}>{set.title}</label>
+              <label htmlFor={'set' + set.id}>{set.title}</label>
             </div>
           ))}
       </div>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
@@ -20,142 +20,17 @@ import {
   getPublicWorkflowChildData,
   updateValue
 } from '../PostFunctions.js'
-import { ExploreMenu } from '../Library.js'
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
+import { TinyLoader, WorkflowLoader } from '../redux/helpers.js'
 
 export { fail_function } from '../PostFunctions.js'
 
-//Manages the current selection, ensuring we only have one at a time
-export class SelectionManager {
-  constructor(read_only) {
-    this.currentSelection
-    this.mouse_isclick = false
-    this.read_only = read_only
-    var selector = this
-
-    $(document).on('mousedown', () => {
-      selector.mouse_isclick = true
-      setTimeout(() => {
-        selector.mouse_isclick = false
-      }, 500)
-    })
-
-    $(document).on('mousemove', () => {
-      selector.mouse_isclick = false
-    })
-
-    $(document).on('mouseup', (evt, newSelection) => {
-      if (selector.mouse_isclick) {
-        selector.changeSelection(evt, null)
-      }
-    })
-
-    this.last_sidebar_tab = $('#sidebar').tabs('option', 'active')
-  }
-
-  changeSelection(evt, newSelection) {
-    if (evt) {
-      evt.stopPropagation()
-    }
-
-    if (
-      !this.read_only &&
-      newSelection &&
-      newSelection.props.data &&
-      newSelection.props.data.lock
-    ) {
-      return
-    }
-
-    if (this.currentSelection) {
-      this.currentSelection.setState({ selected: false })
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type:
-              Constants.object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1000,
-          false
-        )
-      }
-    }
-
-    this.currentSelection = newSelection
-
-    if (this.currentSelection) {
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type:
-              Constants.object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1000,
-          true
-        )
-      }
-
-      if ($('#sidebar').tabs('option', 'active') !== 0) {
-        this.last_sidebar_tab = $('#sidebar').tabs('option', 'active')
-      }
-
-      $('#sidebar').tabs('enable', 0)
-      $('#sidebar').tabs('option', 'active', 0)
-      this.currentSelection.setState({ selected: true })
-    } else {
-      if ($('#sidebar').tabs('option', 'active') === 0) {
-        $('#sidebar').tabs('option', 'active', this.last_sidebar_tab)
-      }
-      $('#sidebar').tabs('disable', 0)
-    }
-  }
-
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null, null)
-    }
-  }
-}
-
-// TODO: Explore if this is used anywhere anymore
-// export function renderExploreMenu(data_package, disciplines) {
-//   reactDom.render(
-//     <ExploreMenu
-//       data_package={data_package}
-//       disciplines={disciplines}
-//       pages={pages}
-//     />,
-//     $('#container')[0]
-//   )
-// }
-
-export class TinyLoader {
-  constructor(identifier) {
-    this.identifier = identifier
-    this.loadings = 0
-  }
-
-  startLoad() {
-    $(this.identifier).addClass('waiting')
-    this.loadings++
-  }
-
-  endLoad() {
-    if (this.loadings > 0) {
-      this.loadings--
-    }
-
-    if (this.loadings <= 0) {
-      $(this.identifier).removeClass('waiting')
-    }
-  }
-}
-
+/****************************************
+ *
+ * ****************************************/
 export class WorkflowGridRenderer {
   constructor(data_package) {
     this.initial_data = data_package
@@ -174,6 +49,9 @@ export class WorkflowGridRenderer {
   }
 }
 
+/****************************************
+ *
+ * ****************************************/
 export class WorkflowRenderer {
   constructor(workflowID, data_package) {
     this.workflowID = workflowID
@@ -190,7 +68,6 @@ export class WorkflowRenderer {
       data_package.strategy_classification_choices
     this.is_strategy = data_package.is_strategy
     this.project = data_package.project
-    this.column_colours = {}
     this.user_permission = user_permission
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
@@ -209,27 +86,27 @@ export class WorkflowRenderer {
       this.always_static = true
     }
 
-    if (this.user_permission == Constants.permission_keys['none']) {
+    if (this.user_permission === Constants.permission_keys['none']) {
       this.always_static = true
-    } else if (this.user_permission == Constants.permission_keys['view']) {
+    } else if (this.user_permission === Constants.permission_keys['view']) {
       this.can_view = true
-    } else if (this.user_permission == Constants.permission_keys['comment']) {
+    } else if (this.user_permission === Constants.permission_keys['comment']) {
       this.view_comments = true
       this.add_comments = true
       this.can_view = true
-    } else if (this.user_permission == Constants.permission_keys['edit']) {
+    } else if (this.user_permission === Constants.permission_keys['edit']) {
       this.read_only = false
       this.view_comments = true
       this.add_comments = true
       this.can_view = true
     }
 
-    if (this.user_role == Constants.role_keys['none']) {
+    if (this.user_role === Constants.role_keys['none']) {
       // nuclear fusion
-    } else if (this.user_role == Constants.role_keys['student']) {
+    } else if (this.user_role === Constants.role_keys['student']) {
       this.is_student = true
       this.show_assignments = true
-    } else if (this.user_role == Constants.role_keys['teacher']) {
+    } else if (this.user_role === Constants.role_keys['teacher']) {
       this.is_teacher = true
       this.show_assignments = true
     }
@@ -243,8 +120,6 @@ export class WorkflowRenderer {
       this.getWorkflowParentData = getWorkflowParentData
       this.getWorkflowChildData = getWorkflowChildData
     }
-
-    this.is_static = this.always_static
   }
 
   connect() {
@@ -253,7 +128,7 @@ export class WorkflowRenderer {
       let renderer = this
 
       let websocket_prefix
-      if (window.location.protocol == 'https:') {
+      if (window.location.protocol === 'https:') {
         websocket_prefix = 'wss'
       } else {
         websocket_prefix = 'ws'
@@ -274,7 +149,6 @@ export class WorkflowRenderer {
       }.bind(this)
 
       let openfunction = function () {
-        this.is_static = false
         this.has_rendered = true
         this.connection_opened()
       }
@@ -594,6 +468,9 @@ export class WorkflowRenderer {
   }
 }
 
+/****************************************
+ *  @ComparisonRenderer
+ * ****************************************/
 export class ComparisonRenderer {
   constructor(project_data) {
     this.project_data = project_data
@@ -604,20 +481,17 @@ export class ComparisonRenderer {
     this.container = container
     this.view_type = view_type
     reactDom.render(<WorkflowLoader />, container[0])
-    var renderer = this
-    this.locks = {}
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    if (user_permission == Constants.permission_keys['none']) {
+    if (user_permission === Constants.permission_keys['none']) {
       this.read_only = true
-      this.always_static = true
-    } else if (user_permission == Constants.permission_keys['view']) {
+    } else if (user_permission === Constants.permission_keys['view']) {
       this.read_only = true
-    } else if (user_permission == Constants.permission_keys['comment']) {
+    } else if (user_permission === Constants.permission_keys['comment']) {
       this.read_only = true
       this.view_comments = true
       this.add_comments = true
-    } else if (user_permission == Constants.permission_keys['edit']) {
+    } else if (user_permission === Constants.permission_keys['edit']) {
       this.read_only = false
       this.view_comments = true
       this.add_comments = true
@@ -644,6 +518,9 @@ export class ComparisonRenderer {
   }
 }
 
+/****************************************
+ *  @WorkflowComparisonRenderer
+ * ****************************************/
 export class WorkflowComparisonRenderer extends WorkflowRenderer {
   constructor(
     workflowID,
@@ -664,10 +541,10 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
 
   render(view_type = 'workflowview') {
     this.view_type = view_type
-    reactDom.render(<WorkflowLoader />, this.container[0])
+    const el = document.querySelector(this.container)
+
+    reactDom.render(<WorkflowLoader />, el)
     let store = this.store
-    let initial_workflow_data = store.getState()
-    var renderer = this
     this.locks = {}
 
     if (view_type === 'outcomeedit') {
@@ -678,7 +555,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
           <Provider store={store}>
             <WorkflowComparisonBaseView view_type={view_type} renderer={this} />
           </Provider>,
-          this.container[0]
+          el
         )
       })
     } else if (view_type === 'workflowview') {
@@ -686,13 +563,13 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
         <Provider store={this.store}>
           <WorkflowComparisonBaseView view_type={view_type} renderer={this} />
         </Provider>,
-        this.container[0]
+        el
       )
     }
   }
 
   connection_opened(reconnect = false) {
-    let loader = new Utility.Loader(this.container[0])
+    let loader = new Utility.Loader(this.container)
     this.getWorkflowData(this.workflowID, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {
@@ -714,12 +591,6 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
 
   create_connection_bar() {
     return null
-  }
-}
-
-export class WorkflowLoader extends Component {
-  render() {
-    return <div className="load-screen" />
   }
 }
 

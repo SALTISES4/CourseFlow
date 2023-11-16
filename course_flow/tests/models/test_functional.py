@@ -159,6 +159,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super().tearDown()
 
+
     def test_edit_user(self):
         print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
@@ -3643,6 +3644,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
+        # create a project and add 2 courses to it
         project = Project.objects.create(author=self.user)
         workflow = Course.objects.create(author=self.user)
         workflow2 = Course.objects.create(author=self.user)
@@ -3650,23 +3652,36 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow=workflow2, project=project)
         print(reverse("course_flow:project-update", args=[project.pk]))
 
+        # get the just created project's URL
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
         time.sleep(3)
+
+        # click the more icon ( three dots)
         selenium.find_element_by_id("overflow-options").click()
+
+        # click the "workflow comparison tool" menu item
         selenium.find_element_by_id("comparison-view").click()
         time.sleep(3)
+
+        # click the "load new workflow" button
         selenium.find_element_by_id("load-workflow").click()
         time.sleep(2)
+
+        # click the "created by" button (selects card)
         selenium.find_elements_by_css_selector(
             ".message-wrap .workflow-created"
         )[0].click()
+
+        # click select button
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
+
+        # can we see one course box?
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".node")), 1
+            len(selenium.find_elements_by_css_selector(".workflow-wrapper .workflow-for-menu")), 1
         )
         selenium.find_element_by_id("load-workflow").click()
         time.sleep(2)
@@ -3675,8 +3690,10 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )[1].click()
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
+
+        # can we see two course boxes?
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".node")), 2
+            len(selenium.find_elements_by_css_selector(".workflow-wrapper .workflow-for-menu")), 2
         )
         selenium.find_element_by_id("button_outcomeedit").click()
         time.sleep(5)

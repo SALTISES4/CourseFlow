@@ -1425,7 +1425,7 @@ export class CommentBox extends Component {
             <div
               className="comment-text"
               dangerouslySetInnerHTML={{ __html: text }}
-            ></div>
+            />
             {!this.props.renderer.read_only && (
               <div className="mouseover-actions">
                 <div
