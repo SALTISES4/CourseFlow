@@ -356,8 +356,9 @@ export function deleteSelf(
   callBackFunction = () => console.log('success')
 ) {
   let path
-  if (soft) path = post_paths.delete_self_soft
-  else path = post_paths.delete_self
+  if (soft) path = config.post_paths.delete_self_soft
+  else path = config.post_paths.delete_self
+
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
@@ -377,13 +378,13 @@ export function deleteSelfLive(
   objectType,
   callBackFunction = () => console.log('success')
 ) {
-  let path = post_paths.delete_self_live
+  let path = config.post_paths.delete_self_live
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -403,7 +404,7 @@ export function restoreSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -443,7 +444,7 @@ export function removeAllComments(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -464,7 +465,7 @@ export function updateOutcomenodeDegree(
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -489,7 +490,7 @@ export function duplicateSelf(
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {

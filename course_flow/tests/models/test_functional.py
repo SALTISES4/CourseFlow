@@ -18,6 +18,8 @@ from selenium.webdriver import Firefox
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 from course_flow.models import (
     Activity,
@@ -351,6 +353,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
+
         user2 = get_author()
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
@@ -436,19 +439,27 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
+
+        #create test data, project + activity
         project = Project.objects.create(author=self.user, title="new title")
         workflow = Activity.objects.create(
             author=self.user, title="new workflow"
         )
         WorkflowProject.objects.create(project=project, workflow=workflow)
         liveproject = LiveProject.objects.create(project=project)
+
+        # navigate to just created project single page
+        print(reverse("course_flow:project-update", args=[project.id]))
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.id])
         )
-        selenium.find_element_by_css_selector("#button_workflows").click()
-        time.sleep(1)
+        # todo where is this from?
+        print(selenium.current_url)
+        button_workflows = wait.until(EC.element_to_be_clickable(( By.ID, "button_workflows")))
+        button_workflows.click()
 
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".permission-select select ")))
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -1912,6 +1923,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             Workflow.objects.get(is_strategy=True).delete()
 
+    # @todo currently crashing app
     def test_outcome_view(self):
         print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
@@ -2816,12 +2828,17 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                         project=item,
                     )
 
+    # Begin tests
     def test_delete_restore_column(self):
         print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
+
         project = Project.objects.create(author=self.user)
+
         for workflow_type in ["activity", "course", "program"]:
+            # create test data
+            # create one of activity, course, program and add the to the previously created project
             workflow = get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
@@ -2831,6 +2848,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
             workflow.outcomes.create(author=self.user)
             workflow.outcomes.first().children.create(author=self.user)
+
             selenium.get(
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
@@ -3441,14 +3459,18 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
+
+        # Navigate to newly created project
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
-        time.sleep(1)
-        selenium.find_element_by_id("edit-project-button").click()
-        time.sleep(1)
-        selenium.find_element_by_css_selector("#nomenclature-select").click()
+        edit_projects_button = wait.until(EC.element_to_be_clickable(( By.ID, "edit-project-button")))
+        edit_projects_button.click()
+
+        nomenclature_select_button = wait.until(EC.element_to_be_clickable(( By.ID, "nomenclature-select")))
+        nomenclature_select_button.click()
+
         selenium.find_element_by_css_selector(
             "#nomenclature-select option[value='program outcome']"
         ).click()
@@ -3456,17 +3478,22 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             "competency"
         )
         selenium.find_element_by_css_selector(
-
             ".nomenclature-add-button"
-
         ).click()
+
         time.sleep(1)
+
+        #test how many object sets are on project
         self.assertEqual(project.object_sets.count(), 1)
+
+        #now delete the project set
         selenium.find_element_by_css_selector(
             ".nomenclature-delete-button"
         ).click()
+
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
+
         time.sleep(2)
         self.assertEqual(project.object_sets.count(), 0)
 
@@ -3640,6 +3667,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_comparison_views(self):
+
         print("In method", self._testMethodName, ': ')
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -3650,56 +3678,67 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         workflow2 = Course.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=workflow, project=project)
         WorkflowProject.objects.create(workflow=workflow2, project=project)
-        print(reverse("course_flow:project-update", args=[project.pk]))
 
         # get the just created project's URL
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
-        time.sleep(3)
 
         # click the more icon ( three dots)
-        selenium.find_element_by_id("overflow-options").click()
+        more_icon = wait.until(EC.element_to_be_clickable((By.ID, "overflow-options")))
+        more_icon.click()
 
         # click the "workflow comparison tool" menu item
-        selenium.find_element_by_id("comparison-view").click()
-        time.sleep(3)
+        workflow_comparison_tool_button = wait.until(EC.element_to_be_clickable((By.ID, "comparison-view")))
+        workflow_comparison_tool_button.click()
 
         # click the "load new workflow" button
-        selenium.find_element_by_id("load-workflow").click()
-        time.sleep(2)
+        load_new_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
+        load_new_workflow_button.click()
 
         # click the "created by" button (selects card)
-        selenium.find_elements_by_css_selector(
-            ".message-wrap .workflow-created"
-        )[0].click()
+        # using presence_of_all_elements_located but could move this back to element_to_be_clickable if problems
+        created_by_button = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".message-wrap .workflow-for-menu")))
+        created_by_button[0].click()
+
+        print(created_by_button)
 
         # click select button
-        selenium.find_element_by_id("set-linked-workflow").click()
-        time.sleep(5)
+        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button.click()
+
+        workflow_menu = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")))
 
         # can we see one course box?
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-wrapper .workflow-for-menu")), 1
+            len(workflow_menu), 1
         )
-        selenium.find_element_by_id("load-workflow").click()
-        time.sleep(2)
-        selenium.find_elements_by_css_selector(
-            ".message-wrap .workflow-created"
-        )[1].click()
-        selenium.find_element_by_id("set-linked-workflow").click()
-        time.sleep(5)
+
+        #load a different workflow
+        load_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
+        load_workflow_button.click()
+
+        # click the "created by" button (selects card), get the 2nd element this time
+        created_by_button = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".message-wrap .workflow-created")))
+        created_by_button[1].click()
+
+        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button.click()
 
         # can we see two course boxes?
+        workflow_menu = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")))
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-wrapper .workflow-for-menu")), 2
+            len(workflow_menu), 2
         )
-        selenium.find_element_by_id("button_outcomeedit").click()
-        time.sleep(5)
 
+        outcome_button = wait.until(EC.element_to_be_clickable((By.ID, "button_outcomeedit")))
+        outcome_button.click()
+
+        # @todo this is still failing, not sure why we have expected outcomes here
+        outcomes = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".outcome")))
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".outcome")), 2
+            len(outcomes), 2
         )
 
 

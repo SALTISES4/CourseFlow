@@ -24,7 +24,7 @@ import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
-import { TinyLoader } from '../redux/helpers.js'
+import {SelectionManager, TinyLoader} from '../redux/helpers.js'
 
 export { fail_function } from '../PostFunctions.js'
 
@@ -188,6 +188,9 @@ export class WorkflowRenderer {
   }
 
   render(container, view_type = 'workflowview') {
+    this.tiny_loader = new TinyLoader($('body')[0])
+    this.selection_manager = new SelectionManager(this.read_only)
+
     // In case we need to get child workflows
     this.child_data_needed = []
     this.child_data_completed = -1
@@ -198,14 +201,10 @@ export class WorkflowRenderer {
     let store = this.store
     let initial_workflow_data = store.getState()
     var renderer = this
-    this.initial_loading = true
     this.container = container
     this.locks = {}
-    let weeks = initial_workflow_data.week.filter((x) => !x.deleted)
 
-    this.selection_manager = new SelectionManager(this.read_only)
     this.selection_manager.renderer = renderer
-    this.tiny_loader = new TinyLoader($('body')[0])
 
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render

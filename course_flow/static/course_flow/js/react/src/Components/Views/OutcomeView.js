@@ -336,7 +336,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component {
     let dropIcon
     let droptext
 
-    if (Utitlity.checkSetHidden(data, this.props.object_sets)) return null
+    if (Utility.checkSetHidden(data, this.props.object_sets)) return null
     if (this.state.is_dropped)
       children = data.child_outcome_links.map((outcomeoutcome) => (
         <OutcomeBarOutcomeOutcomeView

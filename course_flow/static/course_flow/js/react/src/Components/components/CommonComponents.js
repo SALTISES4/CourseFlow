@@ -10,7 +10,6 @@ import {
   add as mathadd,
   multiply as mathmultiply,
   norm as mathnorm,
-  isNaN as mathisnan
 } from 'mathjs'
 import { reloadCommentsAction } from '../../Reducers.js'
 import {
@@ -23,7 +22,6 @@ import {
   deleteSelf,
   insertSibling,
   getLinkedWorkflowMenu,
-  addStrategy,
   toggleStrategy,
   insertChild,
   getCommentsForObject,
@@ -88,7 +86,7 @@ export class EditableComponent extends Component {
                 checked={data.sets.indexOf(set.id) >= 0}
                 onChange={this.setChanged.bind(this, set.id)}
               />
-              <label for={set.id}>{set.title}</label>
+              <label htmlFor={set.id}>{set.title}</label>
             </div>
           ))
           sets = [<h4>{gettext('Sets')}</h4>, set_options]
@@ -96,7 +94,10 @@ export class EditableComponent extends Component {
       }
 
       return reactDom.createPortal(
-        <div className="right-panel-inner" onClick={(evt) => evt.stopPropagation()}>
+        <div
+          className="right-panel-inner"
+          onClick={(evt) => evt.stopPropagation()}
+        >
           <h3>
             {gettext('Edit ') + Constants.get_verbose(data, this.objectType)}
           </h3>
@@ -113,11 +114,11 @@ export class EditableComponent extends Component {
               <textarea
                 resize="none"
                 disabled={override || read_only}
-                autocomplete="off"
+                autoComplete="off"
                 id="title-editor"
                 type="text"
                 value={title}
-                maxlength={title_length}
+                maxLength={title_length}
                 onChange={this.inputChanged.bind(this, 'title')}
               />
               <div className="character-length">
@@ -149,11 +150,11 @@ export class EditableComponent extends Component {
               </p>
               <input
                 disabled={override || read_only}
-                autocomplete="off"
+                autoComplete="off"
                 id="column-icon-editor"
                 type="text"
                 value={data.icon}
-                maxlength={50}
+                maxLength={50}
                 onChange={this.inputChanged.bind(this, 'icon')}
               />
             </div>
@@ -163,12 +164,12 @@ export class EditableComponent extends Component {
             <div>
               <h4>{gettext('Code (Optional)')}</h4>
               <input
-                autocomplete="off"
+                autoComplete="off"
                 disabled={read_only}
                 id="code-editor"
                 type="text"
                 value={data.code}
-                maxlength="50"
+                maxLength="50"
                 onChange={this.inputChanged.bind(this, 'code')}
               />
             </div>
@@ -224,12 +225,12 @@ export class EditableComponent extends Component {
               <div>
                 <input
                   disabled={override || read_only}
-                  autocomplete="off"
+                  autoComplete="off"
                   id="time-editor"
                   className="half-width"
                   type="text"
                   value={data.time_required}
-                  maxlength="30"
+                  maxLength="30"
                   onChange={this.inputChanged.bind(this, 'time_required')}
                 />
                 <select
@@ -252,12 +253,12 @@ export class EditableComponent extends Component {
               <div>
                 <input
                   disabled={read_only}
-                  autocomplete="off"
+                  autoComplete="off"
                   id="colour-editor"
                   className="half-width"
                   type="color"
                   value={'#' + data.colour?.toString(16)}
-                  maxlength="30"
+                  maxLength="30"
                   onChange={this.inputChanged.bind(this, 'colour')}
                 />
               </div>
@@ -269,7 +270,7 @@ export class EditableComponent extends Component {
               <h4>{gettext('Ponderation')}</h4>
               <input
                 disabled={override || read_only}
-                autocomplete="off"
+                autoComplete="off"
                 className="half-width"
                 id="ponderation-theory"
                 type="number"
@@ -279,7 +280,7 @@ export class EditableComponent extends Component {
               <div className="half-width">{gettext('hrs. Theory')}</div>
               <input
                 disabled={override || read_only}
-                autocomplete="off"
+                autoComplete="off"
                 className="half-width"
                 id="ponderation-practical"
                 type="number"
@@ -290,7 +291,7 @@ export class EditableComponent extends Component {
               <input
                 disabled={override || read_only}
                 className="half-width"
-                autocomplete="off"
+                autoComplete="off"
                 id="ponderation-individual"
                 type="number"
                 value={data.ponderation_individual}
@@ -303,23 +304,27 @@ export class EditableComponent extends Component {
               <input
                 disabled={override || read_only}
                 className="half-width"
-                autocomplete="off"
+                autoComplete="off"
                 id="time-general-hours"
                 type="number"
                 value={data.time_general_hours}
                 onChange={this.inputChanged.bind(this, 'time_general_hours')}
               />
-              <div className="half-width">{gettext('hrs. General Education')}</div>
+              <div className="half-width">
+                {gettext('hrs. General Education')}
+              </div>
               <input
                 disabled={override || read_only}
                 className="half-width"
-                autocomplete="off"
+                autoComplete="off"
                 id="time-specific-hours"
                 type="number"
                 value={data.time_specific_hours}
                 onChange={this.inputChanged.bind(this, 'time_specific_hours')}
               />
-              <div className="half-width">{gettext('hrs. Specific Education')}</div>
+              <div className="half-width">
+                {gettext('hrs. Specific Education')}
+              </div>
             </div>
           )}
           {type == 'node' && data.node_type != 0 && (
@@ -357,7 +362,7 @@ export class EditableComponent extends Component {
                   'represents_workflow'
                 )}
               />
-              <label for="repesents_workflow">
+              <label htmlFor="repesents_workflow">
                 {gettext('Display linked workflow data')}
               </label>
             </div>
@@ -372,7 +377,7 @@ export class EditableComponent extends Component {
                 checked={data.has_autolink}
                 onChange={this.checkboxChanged.bind(this, 'has_autolink')}
               />
-              <label for="has_autolink">
+              <label htmlFor="has_autolink">
                 {gettext('Draw arrow to next node')}
               </label>
             </div>
@@ -388,10 +393,10 @@ export class EditableComponent extends Component {
                   checked={data.dashed}
                   onChange={this.checkboxChanged.bind(this, 'dashed')}
                 />
-                <label for="dashed">{gettext('Dashed Line')}</label>
+                <label htmlFor="dashed">{gettext('Dashed Line')}</label>
               </div>
               <div>
-                <label for="text-position-range">
+                <label htmlFor="text-position-range">
                   {gettext('Text Position')}
                 </label>
                 <div className="slidecontainer">
@@ -413,7 +418,9 @@ export class EditableComponent extends Component {
             <div>
               <h4>{gettext('Settings')}</h4>
               <div>
-                <label for="outcomes_type">{gettext('Outcomes Style')}</label>
+                <label htmlFor="outcomes_type">
+                  {gettext('Outcomes Style')}
+                </label>
                 <select
                   disabled={read_only}
                   name="outcomes_type"
@@ -426,7 +433,7 @@ export class EditableComponent extends Component {
                 </select>
               </div>
               <div>
-                <label for="condensed">{gettext('Condensed View')}</label>
+                <label htmlFor="condensed">{gettext('Condensed View')}</label>
                 <input
                   disabled={read_only}
                   type="checkbox"
@@ -437,7 +444,7 @@ export class EditableComponent extends Component {
               </div>
               {data.is_strategy && (
                 <div>
-                  <label for="is_published">{gettext('Published')}</label>
+                  <label htmlFor="is_published">{gettext('Published')}</label>
                   <input
                     disabled={read_only}
                     type="checkbox"
@@ -1035,7 +1042,7 @@ export class NodeLinkSVG extends Component {
         <g ref={this.maindiv} stroke="black" fill="none">
           <path
             opacity="0"
-            stroke-width="10px"
+            strokeWidth="10px"
             d={path}
             onClick={this.props.clickFunction}
             onMouseEnter={() => this.setState({ hovered: true })}
@@ -1044,9 +1051,9 @@ export class NodeLinkSVG extends Component {
           />
           <path
             style={style}
-            stroke-width="2px"
+            strokeWidth="2px"
             d={path}
-            marker-end="url(#arrow)"
+            markerEnd="url(#arrow)"
           />
           {title}
         </g>
@@ -1270,7 +1277,7 @@ export class NodePorts extends React.Component {
         style={style}
         className={'node-ports port-' + this.props.nodeID}
         stroke="black"
-        stroke-width="2"
+        strokeWidth="2"
         fill="white"
         transform={transform}
       >
@@ -1359,7 +1366,11 @@ export class NodePorts extends React.Component {
   }
 }
 
-//A commenting box
+/*******************************************************
+ * @CommentBox
+ *
+ * @todo description
+ *******************************************************/
 export class CommentBox extends Component {
   constructor(props) {
     super(props)
@@ -1370,10 +1381,13 @@ export class CommentBox extends Component {
 
   render() {
     let has_comments = false
+
     let has_unread =
-      this.props.comments.filter((value) =>
-        this.props.renderer.unread_comments.includes(value)
-      ).length > 0
+      this.props.comments.filter((value) => {
+        // @todo unread_comments is undefined
+        return this.props?.renderer?.unread_comments?.includes(value)
+      }).length > 0
+
     if (this.state.has_rendered) {
       has_comments = this.props.comments.length > 0
     }
