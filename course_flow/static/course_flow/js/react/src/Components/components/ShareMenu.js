@@ -7,11 +7,12 @@ import {
 } from '../../PostFunctions.js'
 import { WorkflowTitle } from './CommonComponents.js'
 import * as Constants from '../../Constants.js'
+import { TinyLoader } from '../../redux/helpers.js'
 
 export class ShareMenu extends React.Component {
   constructor(props) {
     super(props)
-    this.tiny_loader = new renderers.TinyLoader($('body'))
+    this.tiny_loader = new TinyLoader($('body'))
     this.state = {
       owner: props.data.author,
       edit: [],
@@ -110,11 +111,17 @@ export class ShareMenu extends React.Component {
           share_info={share_info}
         />
         {shared_with}
-        <div className="window-close-button" onClick={this.props.actionFunction}>
+        <div
+          className="window-close-button"
+          onClick={this.props.actionFunction}
+        >
           <span className="green material-symbols-rounded">close</span>
         </div>
         <div className="action-bar">
-          <button className="secondary-button" onClick={this.props.actionFunction}>
+          <button
+            className="secondary-button"
+            onClick={this.props.actionFunction}
+          >
             {gettext('Close')}
           </button>
         </div>
@@ -125,7 +132,7 @@ export class ShareMenu extends React.Component {
   getPublication() {
     let published = this.state.published
     let data = this.props.data
-    if (data.type == 'project' || data.is_strategy) {
+    if (data.type === 'project' || data.is_strategy) {
       let public_class = 'big-button make-public'
       let private_class = 'big-button hover-shade make-private'
       if (published) public_class += ' active'
@@ -168,7 +175,9 @@ export class ShareMenu extends React.Component {
             className={private_class}
             onClick={this.setPublication.bind(this, false)}
           >
-            <span className="material-symbols-rounded filled">visibility_off</span>
+            <span className="material-symbols-rounded filled">
+              visibility_off
+            </span>
             <div className="big-button-title">{gettext('Private')}</div>
             <div className="big-button-description">
               {gettext('Only added collaborators can view')}
@@ -215,8 +224,10 @@ export class ShareMenu extends React.Component {
 
   getPublicLink() {
     let data = this.props.data
-            let public_link = "https://"+window.location.host+public_update_path["workflow"].replace("0",data.id);
-
+    let public_link =
+      'https://' +
+      window.location.host +
+      public_update_path['workflow'].replace('0', data.id)
 
     if (data.type !== 'project') {
       let public_view = this.state.public_view
@@ -237,7 +248,6 @@ export class ShareMenu extends React.Component {
                 {gettext(
                   'Anyone with the link will be able to view the workflow'
                 )}
-                }
               </div>
             </div>
           </div>
@@ -245,44 +255,87 @@ export class ShareMenu extends React.Component {
       else
         return [
           <div className="flex-middle">
-            <div id="public-page-link" className="public-link-button  hover-shade" onClick={() => {
-              navigator.clipboard.writeText(public_link);
-              let copy_icon_text = $("#public-page-link .copy-link-icon .material-symbols-rounded").text();
-              let copy_description_text = $("#public-page-link .copy-link-text").text();
-              $("#public-page-link .copy-link-icon .material-symbols-rounded").text("done");
-              $("#public-page-link .copy-link-text").text("Copied to Clipboard");
-              setTimeout(() => {
-                $("#public-page-link .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
-                $("#public-page-link .copy-link-text").text(copy_description_text);
-              }, 1000)
-            }}>
-              <div className="copy-link-icon"><span className="material-symbols-rounded">link</span></div>
+            <div
+              id="public-page-link"
+              className="public-link-button  hover-shade"
+              onClick={() => {
+                navigator.clipboard.writeText(public_link)
+                let copy_icon_text = $(
+                  '#public-page-link .copy-link-icon .material-symbols-rounded'
+                ).text()
+                let copy_description_text = $(
+                  '#public-page-link .copy-link-text'
+                ).text()
+                $(
+                  '#public-page-link .copy-link-icon .material-symbols-rounded'
+                ).text('done')
+                $('#public-page-link .copy-link-text').text(
+                  'Copied to Clipboard'
+                )
+                setTimeout(() => {
+                  $(
+                    '#public-page-link .copy-link-icon .material-symbols-rounded'
+                  ).text(copy_icon_text)
+                  $('#public-page-link .copy-link-text').text(
+                    copy_description_text
+                  )
+                }, 1000)
+              }}
+            >
+              <div className="copy-link-icon">
+                <span className="material-symbols-rounded">link</span>
+              </div>
               <div>
-                <div className="copy-link-text">{gettext("Copy public link")}</div>
-                <div className="public-link-description">{gettext("Anyone with the link can view the workflow")}</div>
+                <div className="copy-link-text">
+                  {gettext('Copy public link')}
+                </div>
+                <div className="public-link-description">
+                  {gettext('Anyone with the link can view the workflow')}
+                </div>
               </div>
             </div>
-            <div id="public-page-code" className="public-link-button  hover-shade" onClick={() => {
-              let iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' +
-                public_link +
-                '"></iframe>';
-              navigator.clipboard.writeText(iframe);
-              let copy_icon_text = $("#public-page-code .copy-link-icon .material-symbols-rounded").text();
-              let copy_description_text = $("#public-page-code .copy-link-text").text();
-              $("#public-page-code .copy-link-icon .material-symbols-rounded").text("done");
-              $("#public-page-code .copy-link-text").text("Copied to Clipboard");
-              setTimeout(() => {
-                $("#public-page-code .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
-                $("#public-page-code .copy-link-text").text(copy_description_text);
-              }, 1000)
-            }}>
-              <div className="copy-link-icon"><span className="material-symbols-rounded">frame_source</span></div>
-              <div>
-                <div className="copy-link-text">{gettext("Copy embed code")}</div>
-                <div
-                  className="public-link-description">{gettext("HTML code to embed the workflow in a site or page")}</div>
+            <div
+              id="public-page-code"
+              className="public-link-button  hover-shade"
+              onClick={() => {
+                let iframe =
+                  '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' +
+                  public_link +
+                  '"></iframe>'
+                navigator.clipboard.writeText(iframe)
+                let copy_icon_text = $(
+                  '#public-page-code .copy-link-icon .material-symbols-rounded'
+                ).text()
+                let copy_description_text = $(
+                  '#public-page-code .copy-link-text'
+                ).text()
+                $(
+                  '#public-page-code .copy-link-icon .material-symbols-rounded'
+                ).text('done')
+                $('#public-page-code .copy-link-text').text(
+                  'Copied to Clipboard'
+                )
+                setTimeout(() => {
+                  $(
+                    '#public-page-code .copy-link-icon .material-symbols-rounded'
+                  ).text(copy_icon_text)
+                  $('#public-page-code .copy-link-text').text(
+                    copy_description_text
+                  )
+                }, 1000)
+              }}
+            >
+              <div className="copy-link-icon">
+                <span className="material-symbols-rounded">frame_source</span>
               </div>
-
+              <div>
+                <div className="copy-link-text">
+                  {gettext('Copy embed code')}
+                </div>
+                <div className="public-link-description">
+                  {gettext('HTML code to embed the workflow in a site or page')}
+                </div>
+              </div>
             </div>
           </div>,
           <div

@@ -9,7 +9,11 @@ import {
 } from '../Components/Views/LiveProjectView.js'
 import { LiveAssignmentMenu } from '../Components/Views/LiveAssignmentView.js'
 import 'flatpickr/dist/flatpickr.css'
+import { TinyLoader } from '../redux/helpers.js'
 
+/*******************************************************
+ * @LiveProjectRenderer
+ *******************************************************/
 export class LiveProjectRenderer {
   constructor(live_project_data, project_data) {
     this.live_project_data = live_project_data
@@ -20,7 +24,7 @@ export class LiveProjectRenderer {
 
   render(container) {
     this.container = container
-    this.tiny_loader = new renderers.TinyLoader($('body')[0])
+    this.tiny_loader = new TinyLoader($('body')[0])
 
     reactDom.render(this.getContents(), container[0])
   }
@@ -42,6 +46,9 @@ export class LiveProjectRenderer {
   }
 }
 
+/*******************************************************
+ * @LiveAssignmentRenderer
+ *******************************************************/
 export class LiveAssignmentRenderer {
   constructor(assignment_data, live_project_data) {
     this.live_project_data = live_project_data
@@ -51,7 +58,7 @@ export class LiveAssignmentRenderer {
 
   render(container) {
     this.container = container
-    this.tiny_loader = new renderers.TinyLoader($('body')[0])
+    this.tiny_loader = new TinyLoader($('body')[0])
 
     reactDom.render(this.getContents(), container[0])
   }

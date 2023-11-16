@@ -7,11 +7,12 @@ import {
   getUserList
 } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
+import { TinyLoader } from '../../redux/helpers.js'
 
 export class StudentManagement extends React.Component {
   constructor(props) {
     super(props)
-    this.tiny_loader = new renderers.TinyLoader($('body'))
+    this.tiny_loader = new TinyLoader($('body'))
     this.state = { owner: null, teacher: [], student: [] }
   }
 

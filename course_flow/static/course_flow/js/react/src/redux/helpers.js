@@ -1,6 +1,6 @@
 //Manages the current selection, ensuring we only have one at a time
+import React, { Component } from 'react'
 import * as Constants from '../Constants.js'
-import React, {Component} from "@types/react";
 
 /**
  *
@@ -98,7 +98,6 @@ export class SelectionManager {
   }
 }
 
-
 export class TinyLoader {
   constructor(identifier) {
     this.identifier = identifier
@@ -120,7 +119,6 @@ export class TinyLoader {
     }
   }
 }
-
 
 export class WorkflowLoader extends Component {
   render() {

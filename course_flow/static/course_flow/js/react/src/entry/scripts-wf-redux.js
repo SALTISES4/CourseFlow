@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
@@ -206,6 +206,8 @@ export class WorkflowRenderer {
     this.selection_manager = new SelectionManager(this.read_only)
     this.selection_manager.renderer = renderer
     this.tiny_loader = new TinyLoader($('body')[0])
+
+
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
