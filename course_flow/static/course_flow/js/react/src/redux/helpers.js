@@ -98,6 +98,7 @@ export class SelectionManager {
   }
 }
 
+
 export class TinyLoader {
   constructor(identifier) {
     this.identifier = identifier
@@ -117,11 +118,5 @@ export class TinyLoader {
     if (this.loadings <= 0) {
       $(this.identifier).removeClass('waiting')
     }
-  }
-}
-
-export class WorkflowLoader extends Component {
-  render() {
-    return <div className="load-screen" />
   }
 }

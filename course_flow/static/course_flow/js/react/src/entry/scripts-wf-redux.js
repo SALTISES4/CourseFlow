@@ -24,7 +24,7 @@ import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
-import { TinyLoader, WorkflowLoader } from '../redux/helpers.js'
+import { TinyLoader } from '../redux/helpers.js'
 
 export { fail_function } from '../PostFunctions.js'
 
@@ -206,7 +206,6 @@ export class WorkflowRenderer {
     this.selection_manager = new SelectionManager(this.read_only)
     this.selection_manager.renderer = renderer
     this.tiny_loader = new TinyLoader($('body')[0])
-
 
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render
@@ -505,6 +504,7 @@ export class ComparisonRenderer {
       reactDom.render(
         <ComparisonView
           view_type={view_type}
+          // turn this into config object
           renderer={this}
           data={this.project_data}
           selection_manager={this.selection_manager}
@@ -613,4 +613,10 @@ export function CreateNew(create_url) {
       tiny_loader.endLoad()
     }
   )
+}
+
+export class WorkflowLoader extends Component {
+  render() {
+    return <div className="load-screen" />
+  }
 }
