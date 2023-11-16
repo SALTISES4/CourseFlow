@@ -24,7 +24,7 @@ import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
-import {SelectionManager, TinyLoader} from '../redux/helpers.js'
+import { SelectionManager, TinyLoader } from '../redux/helpers.js'
 
 export { fail_function } from '../PostFunctions.js'
 

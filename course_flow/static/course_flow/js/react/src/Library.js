@@ -76,7 +76,9 @@ export class LibraryMenu extends React.Component {
           title={gettext('Create project or strategy')}
           ref={this.createDiv}
         >
-          <span className="material-symbols-rounded filled green">add_circle</span>
+          <span className="material-symbols-rounded filled green">
+            add_circle
+          </span>
           <div id="create-links-project" className="create-dropdown">
             <a
               id="project-create-library"
@@ -197,7 +199,9 @@ export class HomeMenu extends React.Component {
       project_box = (
         <div className="home-item">
           <div className="home-title-row">
-            <div className="home-item-title">{gettext('Recent classrooms')}</div>
+            <div className="home-item-title">
+              {gettext('Recent classrooms')}
+            </div>
             <a className="collapsed-text-show-more" href={library_path}>
               {gettext('See all')}
             </a>
@@ -436,7 +440,10 @@ export class ProjectMenu extends LibraryMenu {
         <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
           <div>{gettext('Restore project')}</div>
         </div>,
-        <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+        <div
+          className="hover-shade"
+          onClick={this.deleteProjectHard.bind(this)}
+        >
           <div>{gettext('Permanently delete project')}</div>
         </div>
       ]
@@ -593,13 +600,15 @@ export class ProjectMenu extends LibraryMenu {
     let commenters = this.state.users.commentors
     let viewers = this.state.users.viewers
     if (!author) return null
-    let users_group = [];
-    if(this.state.users.published){
-        users_group.push(
-            <div className="user-name">
-                {Utility.getUserTag("view")}<span className="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
-            </div>
-        );
+    let users_group = []
+    if (this.state.users.published) {
+      users_group.push(
+        <div className="user-name">
+          {Utility.getUserTag('view')}
+          <span className="material-symbols-rounded">public</span>{' '}
+          {gettext('All CourseFlow')}
+        </div>
+      )
     }
     users_group.push([
       <div className="user-name">
@@ -867,7 +876,7 @@ export class WorkflowFilter extends Component {
             onChange={debounce(this.searchChange.bind(this))}
             id="workflow-search-input"
             className="search-input"
-            autocomplete="off"
+            autoComplete="off"
           />
           <span className="material-symbols-rounded">search</span>
           <div className="create-dropdown">{search_results}</div>
@@ -972,9 +981,13 @@ export class WorkflowFilter extends Component {
             if (this.state.active_sort == i) {
               css_class += ' active'
               if (this.state.reversed)
-                sort_dir = <span className="material-symbols-rounded">north</span>
+                sort_dir = (
+                  <span className="material-symbols-rounded">north</span>
+                )
               else
-                sort_dir = <span className="material-symbols-rounded">south</span>
+                sort_dir = (
+                  <span className="material-symbols-rounded">south</span>
+                )
             }
             return (
               <div
@@ -1362,9 +1375,13 @@ export class ExploreFilter extends WorkflowFilter {
             if (this.state.active_sort == i) {
               css_class += ' active'
               if (this.state.reversed)
-                sort_dir = <span className="material-symbols-rounded">north</span>
+                sort_dir = (
+                  <span className="material-symbols-rounded">north</span>
+                )
               else
-                sort_dir = <span className="material-symbols-rounded">south</span>
+                sort_dir = (
+                  <span className="material-symbols-rounded">south</span>
+                )
             }
             return (
               <div

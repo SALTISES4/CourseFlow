@@ -22,7 +22,7 @@ export class ImportMenu extends React.Component {
           )}
         </p>
         <form
-          enctype="multipart/form-data"
+          encType="multipart/form-data"
           action={post_paths.import_data}
           method="POST"
           id="upload-form"
@@ -67,7 +67,10 @@ export class ImportMenu extends React.Component {
             'The uploading process may take some time. It is not recommended to continue editing until it is complete.'
           )}
         </p>
-        <div className="window-close-button" onClick={this.props.actionFunction}>
+        <div
+          className="window-close-button"
+          onClick={this.props.actionFunction}
+        >
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>

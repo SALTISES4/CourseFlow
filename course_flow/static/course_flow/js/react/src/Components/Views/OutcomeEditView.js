@@ -78,7 +78,10 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       ]
 
     return (
-      <div id={'#workflow-' + this.props.workflow.id} className="workflow-details">
+      <div
+        id={'#workflow-' + this.props.workflow.id}
+        className="workflow-details"
+      >
         <div className="outcome-edit" ref={this.maindiv}>
           {outcomes}
           {this.getParentOutcomeBar()}

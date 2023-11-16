@@ -9,7 +9,7 @@ import {
   matrix as mathmatrix,
   add as mathadd,
   multiply as mathmultiply,
-  norm as mathnorm,
+  norm as mathnorm
 } from 'mathjs'
 import { reloadCommentsAction } from '../../Reducers.js'
 import {

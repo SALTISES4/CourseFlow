@@ -98,7 +98,6 @@ export class SelectionManager {
   }
 }
 
-
 export class TinyLoader {
   constructor(identifier) {
     this.identifier = identifier

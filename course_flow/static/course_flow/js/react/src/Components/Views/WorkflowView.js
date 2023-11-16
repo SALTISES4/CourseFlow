@@ -167,7 +167,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let data = this.props.data
     let type_text = gettext(data.type)
     if (data.is_strategy) type_text += gettext(' strategy')
-    return <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>
+    return (
+      <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>
+    )
   }
 
   getUsers() {
@@ -643,7 +645,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     )
 
     return [
-      <div className="workflow-view-select hide-print">{view_buttons_sorted}</div>,
+      <div className="workflow-view-select hide-print">
+        {view_buttons_sorted}
+      </div>,
       workflow_content
     ]
   }
@@ -1231,7 +1235,7 @@ class ViewBarUnconnected extends React.Component {
                 checked={data.outcomes_sort == choice.type}
                 onChange={this.changeSort.bind(this)}
               />
-              <label for={'sort_type_choice' + choice.type}>
+              <label htmlFor={'sort_type_choice' + choice.type}>
                 {choice.name}
               </label>
             </div>
@@ -1249,7 +1253,7 @@ class ViewBarUnconnected extends React.Component {
               checked={table_type_value == 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label for="table_type_table">{gettext('Table Style')}</label>
+            <label htmlFor="table_type_table">{gettext('Table Style')}</label>
           </div>
           <div>
             <input
@@ -1260,7 +1264,7 @@ class ViewBarUnconnected extends React.Component {
               checked={table_type_value == 1}
               onChange={this.changeTableType.bind(this)}
             />
-            <label for="table_type_matrix">
+            <label htmlFor="table_type_matrix">
               {gettext('Competency Matrix Style')}
             </label>
           </div>
@@ -1295,7 +1299,7 @@ class ViewBarUnconnected extends React.Component {
                 checked={!set.hidden}
                 onChange={this.toggleHidden.bind(this, set.id, !set.hidden)}
               />
-              <label for={'set' + set.id}>{set.title}</label>
+              <label htmlFor={'set' + set.id}>{set.title}</label>
             </div>
           ))}
       </div>
@@ -1401,7 +1405,9 @@ class NodeBarUnconnected extends React.Component {
         <div className="strategy-bar-strategy-block">{strategies}</div>
         {saltise_strategies.length > 0 && [
           <h4>{gettext('SALTISE strategies')}</h4>,
-          <div className="strategy-bar-strategy-block">{saltise_strategies}</div>
+          <div className="strategy-bar-strategy-block">
+            {saltise_strategies}
+          </div>
         ]}
       </div>,
       $('#node-bar')[0]

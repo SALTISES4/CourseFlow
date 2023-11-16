@@ -156,7 +156,10 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
 export function getCompletionImg(completion_status, outcomes_type) {
   if (outcomes_type === 0 || completion_status & 1) {
     return (
-      <img className="self-completed" src={config.icon_path + 'solid_check.svg'} />
+      <img
+        className="self-completed"
+        src={config.icon_path + 'solid_check.svg'}
+      />
     )
   }
   let contents = []

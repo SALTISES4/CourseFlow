@@ -215,7 +215,7 @@ class LiveAssignmentEdit extends React.Component {
         </div>
         <div>
           <label
-            for="single-completion"
+            htmlFor="single-completion"
             title={gettext(
               'Whether to mark the assignment as complete if any user has completed it.'
             )}
@@ -236,7 +236,7 @@ class LiveAssignmentEdit extends React.Component {
         </div>
         <div>
           <label
-            for="self-reporting"
+            htmlFor="self-reporting"
             title={gettext(
               'Whether students can mark their own assignments as complete.'
             )}

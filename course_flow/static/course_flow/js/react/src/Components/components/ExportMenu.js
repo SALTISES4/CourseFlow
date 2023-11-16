@@ -33,7 +33,7 @@ export class ExportMenu extends React.Component {
         <p>{gettext('Use this menu to export files.')}</p>
         <form
           id="export-form"
-          enctype="multipart/form-data"
+          encType="multipart/form-data"
           action={post_paths.get_export}
           method="POST"
           target="redirect-iframe"
@@ -71,7 +71,10 @@ export class ExportMenu extends React.Component {
           />
         </form>
         <iframe hidden name="redirect-iframe" id="redirect-iframe"></iframe>
-        <div className="window-close-button" onClick={this.props.actionFunction}>
+        <div
+          className="window-close-button"
+          onClick={this.props.actionFunction}
+        >
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>
@@ -89,7 +92,7 @@ export class ExportMenu extends React.Component {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'outcome'}
       />,
-      <label for="export_type">{gettext('Outcomes')}</label>
+      <label htmlFor="export_type">{gettext('Outcomes')}</label>
     ])
     exports.push([
       <input
@@ -99,7 +102,7 @@ export class ExportMenu extends React.Component {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'node'}
       />,
-      <label for="export_type">{gettext('Nodes')}</label>
+      <label htmlFor="export_type">{gettext('Nodes')}</label>
     ])
     if (type == 'project' || type == 'course')
       exports.push([
@@ -110,7 +113,7 @@ export class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label for="export_type">{gettext('Course Framework')}</label>
+        <label htmlFor="export_type">{gettext('Course Framework')}</label>
       ])
     if (type == 'project' || type == 'program')
       exports.push([
@@ -121,14 +124,21 @@ export class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label for="export_type">{gettext('Competency Matrix')}</label>
+        <label htmlFor="export_type">{gettext('Competency Matrix')}</label>
       ])
 
-      // brought from master branch
-    if (type == "project" || type == "program") exports.push(
-      [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this, "type", "")}
-              checked={this.state.type == "sobec"}/>, <label for="export_type">{gettext("Sobec Validation")}</label>]
-    );
+    // brought from master branch
+    if (type == 'project' || type == 'program')
+      exports.push([
+        <input
+          name="export_type"
+          type="radio"
+          value="sobec"
+          onChange={this.inputChange.bind(this, 'type', '')}
+          checked={this.state.type == 'sobec'}
+        />,
+        <label htmlFor="export_type">{gettext('Sobec Validation')}</label>
+      ])
 
     return exports
   }

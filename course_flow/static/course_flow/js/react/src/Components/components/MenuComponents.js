@@ -154,7 +154,9 @@ export class WorkflowsMenu extends React.Component {
           />
         </div>,
         <hr className={'big-space'} />,
-        <h4 className={'big-space'}>{gettext('Or select from your projects')}</h4>
+        <h4 className={'big-space'}>
+          {gettext('Or select from your projects')}
+        </h4>
       ]
     }
     return (
@@ -575,7 +577,7 @@ export class ProjectEditMenu extends React.Component {
         <div>
           <h4>{gettext('Title')}</h4>
           <textarea
-            autocomplete="off"
+            autoComplete="off"
             id="project-title-input"
             value={title}
             onChange={this.inputChanged.bind(this, 'title')}
@@ -584,7 +586,7 @@ export class ProjectEditMenu extends React.Component {
         <div>
           <h4>{gettext('Description')}</h4>
           <textarea
-            autocomplete="off"
+            autoComplete="off"
             id="project-description-input"
             value={description}
             onChange={this.inputChanged.bind(this, 'description')}
@@ -594,7 +596,7 @@ export class ProjectEditMenu extends React.Component {
           <h4>{gettext('Disciplines')}</h4>
           <div className="flex-middle disciplines-div">{disciplines}</div>
           <input
-            autocomplete="off"
+            autoComplete="off"
             id="project-discipline-input"
             placeholder="Search"
           />
@@ -618,7 +620,7 @@ export class ProjectEditMenu extends React.Component {
               placeholder={gettext('Set name')}
               type="text"
               id="term-singular"
-              maxlength="50"
+              maxLength="50"
               value={this.state.termsingular}
               onChange={this.inputChanged.bind(this, 'termsingular')}
               disabled={selected_set == null}

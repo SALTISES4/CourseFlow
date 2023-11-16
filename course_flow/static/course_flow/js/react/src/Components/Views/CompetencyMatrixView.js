@@ -107,7 +107,9 @@ class CompetencyMatrixView extends React.Component {
           ))}
         </div>
       ))
-      let blank_row = Array(10).fill(<div className="table-cell empty-cell"></div>)
+      let blank_row = Array(10).fill(
+        <div className="table-cell empty-cell"></div>
+      )
       let weeks = nodecategory.map((category) => (
         <div className="matrix-time-week">
           <MatrixWeekView
@@ -358,15 +360,23 @@ class MatrixWeekViewUnconnected extends Component {
     return (
       <div className="matrix-time-row">
         <div className="total-cell table-cell blank"></div>
-        <div className="total-cell table-cell">{this.props.general_education}</div>
-        <div className="total-cell table-cell">{this.props.specific_education}</div>
+        <div className="total-cell table-cell">
+          {this.props.general_education}
+        </div>
+        <div className="total-cell table-cell">
+          {this.props.specific_education}
+        </div>
         <div className="total-cell table-cell">
           {this.props.general_education + this.props.specific_education}
         </div>
         <div className="total-cell table-cell blank"></div>
         <div className="total-cell table-cell">{this.props.total_theory}</div>
-        <div className="total-cell table-cell">{this.props.total_practical}</div>
-        <div className="total-cell table-cell">{this.props.total_individual}</div>
+        <div className="total-cell table-cell">
+          {this.props.total_practical}
+        </div>
+        <div className="total-cell table-cell">
+          {this.props.total_individual}
+        </div>
         <div className="total-cell table-cell">{this.props.total_time}</div>
         <div className="total-cell table-cell">{this.props.total_required}</div>
       </div>

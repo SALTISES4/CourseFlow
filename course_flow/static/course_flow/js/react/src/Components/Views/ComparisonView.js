@@ -295,7 +295,6 @@ class WorkflowComparisonRendererComponent extends Component {
     if (workflows_added.indexOf(this.props.workflowID) < 0) {
       url_params.append('workflows', this.props.workflowID)
 
-
       // @todo
       if (history.pushState) {
         let newurl =
@@ -310,7 +309,6 @@ class WorkflowComparisonRendererComponent extends Component {
     }
 
     getWorkflowContext(this.props.workflowID, (context_response_data) => {
-
       let context_data = context_response_data.data_package
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,

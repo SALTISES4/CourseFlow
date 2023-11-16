@@ -29,7 +29,10 @@ class TermView extends WeekViewUnconnected {
       }
       if (nodeweeks.length == 0)
         nodeweeks.push(
-          <div className="node-week placeholder" style={{ height: '100%' }}></div>
+          <div
+            className="node-week placeholder"
+            style={{ height: '100%' }}
+          ></div>
         )
       node_blocks.push(
         <div

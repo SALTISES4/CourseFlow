@@ -16,9 +16,7 @@ import OutcomeNodeView from '../components/OutcomeNode.js'
 import { getNodeByID } from '../../FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import {
-  updateOutcomenodeDegree,
-} from '../../PostFunctions.js'
+import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 
 //Basic component to represent a Node
 class NodeView extends EditableComponentWithActions {
@@ -93,7 +91,9 @@ class NodeView extends EditableComponentWithActions {
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
-            style={{ borderColor: Constants.getColumnColour(this.props.column) }}
+            style={{
+              borderColor: Constants.getColumnColour(this.props.column)
+            }}
           >
             {data.outcomenode_unique_set.length}
           </div>
@@ -423,7 +423,9 @@ class NodeOutcomeViewUnconnected extends Component {
     else data_override = data
     let selection_manager = this.props.renderer.selection_manager
 
-    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
+    let style = {
+      backgroundColor: Constants.getColumnColour(this.props.column)
+    }
     // if(data.lock){
     //     style.outline="2px solid "+data.lock.user_colour;
     // }
@@ -506,7 +508,9 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
-            style={{ borderColor: Constants.getColumnColour(this.props.column) }}
+            style={{
+              borderColor: Constants.getColumnColour(this.props.column)
+            }}
           >
             {data.outcomenode_unique_set.length}
           </div>
@@ -548,7 +552,9 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
       )
     let titleText = <NodeTitle data={data} />
 
-    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
+    let style = {
+      backgroundColor: Constants.getColumnColour(this.props.column)
+    }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
     }

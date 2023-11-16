@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { NodeOutcomeView } from './NodeView.js'
 import { TableOutcomeBase } from './OutcomeView.js'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../FindState.js'
-import * as Utility from "../../UtilityFunctions.js";
+import * as Utility from '../../UtilityFunctions.js'
 
 //Represents the entire outcomeview, barring top level workflow stuff
 class WorkflowOutcomeView extends React.Component {
@@ -118,9 +118,10 @@ class WorkflowOutcomeView extends React.Component {
       nodeweek_order
     )
     let node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
-    let nodes_ordered = Utility.filterThenSortByID(this.props.nodes, node_order).filter(
-      (node) => !Utility.checkSetHidden(node, this.props.object_sets)
-    )
+    let nodes_ordered = Utility.filterThenSortByID(
+      this.props.nodes,
+      node_order
+    ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
 
     switch (parseInt(this.props.outcomes_sort)) {
       case 0:
@@ -188,7 +189,11 @@ class WorkflowOutcomeView extends React.Component {
         let nodes_by_context = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
           let node = nodes_ordered[i]
-          Utility.pushOrCreate(nodes_by_context, node.context_classification, node.id)
+          Utility.pushOrCreate(
+            nodes_by_context,
+            node.context_classification,
+            node.id
+          )
         }
         return context_ordered.map((context) => {
           return {

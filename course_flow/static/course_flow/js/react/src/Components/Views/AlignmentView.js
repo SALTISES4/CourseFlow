@@ -147,7 +147,9 @@ class AlignmentView extends React.Component {
         <h3>{gettext('Filters')}:</h3>
         {view_buttons_outcomes}
         <h4>{gettext('Sections')}:</h4>
-        <div className="workflow-view-select hide-print">{view_buttons_terms}</div>
+        <div className="workflow-view-select hide-print">
+          {view_buttons_terms}
+        </div>
         {outcomes_block}
         {terms_block}
         {alignment_block}
@@ -450,7 +452,9 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       )
     }
 
-    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
+    let style = {
+      backgroundColor: Constants.getColumnColour(this.props.column)
+    }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
     }
