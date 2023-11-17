@@ -67,6 +67,7 @@ class SeleniumBase:
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
         options.add_argument('--allow-running-insecure-content')
+        options.add_argument('window-size=1920x1480')
         options.set_capability("acceptInsecureCerts", True)
         browser = Firefox(options=options)
         browser.implicitly_wait(10)
@@ -2369,6 +2370,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def test_linked_workflow(self):
         print("\nIn method", self._testMethodName, ': ')
         selenium = self.selenium
+        selenium.set_window_size(1920, 1480) # need to expand the window size to show the right sidebar buttons
         workflow_types = ["activity", "course", "program"]
 
         wait = WebDriverWait(selenium, timeout=10)
@@ -2377,6 +2379,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         for i, workflow_type in enumerate(workflow_types):
+            print("creating: " + workflow_type)
             workflow = get_model_from_str(workflow_type).objects.create(
                 author=self.user, title=workflow_type
             )
@@ -2388,62 +2391,56 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 node_type=i,
             )
 
+            # app is crashing without this
+            time.sleep(1)
+            # navigate to newly created workflow page
             selenium.get(
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
-            time.sleep(2)
+
             this_url = selenium.current_url
 
+            # why?
             if workflow_type == "activity":
                 continue
-        
-            ActionChains(selenium).move_to_element_with_offset(
-                selenium.find_element_by_css_selector(
-                    ".workflow-details .node .node-title"
-                ),
-                5,
-                5,
-            ).click().perform()
-            time.sleep(2)
-            selenium.find_element_by_id("linked-workflow-editor").click()
-            time.sleep(2)
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_types[i - 1] + " .workflow-for-menu"
-            ).click()
-            selenium.find_element_by_id("set-linked-workflow").click()
-            time.sleep(1)
+
+            node_details = wait.until(EC.element_to_be_clickable(( By.CSS_SELECTOR, ".workflow-details .node .node-title")))
+            node_details.click()
+
+            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor.click()
+
+            section_workflow_menu = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,  ".section-" + workflow_types[i - 1] + " .workflow-for-menu")))
+            section_workflow_menu.click()
+
+            # link to node button
+            set_linked_workflow = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+            set_linked_workflow.click()
+
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,
                 get_model_from_str(workflow_types[i - 1]).objects.first().id,
             )
-            ActionChains(selenium).move_to_element_with_offset(
-                selenium.find_element_by_css_selector(
-                    ".workflow-details .node .node-title"
-                ),
-                5,
-                5,
-            ).double_click().perform()
-            time.sleep(2)
+            linked_workflow_cta = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".workflow-details .node .linked-workflow")))
+            linked_workflow_cta.click()
 
-            # windows = selenium.window_handles
-            # if len(windows) > 0:
-            #     selenium.switch_to.window(windows[0])
-            #     selenium.close()
-            # else:
-            #     # Handle the case where no windows are left
-            #     print("No more windows to switch to.")
-            #
-            # windows = selenium.window_handles
-            # if len(windows) > 0:
-            #     selenium.switch_to.window(windows[0])
-            # else:
-            #     # Handle the case where no windows are left
-            #     print("No more windows to switch to.")
+            windows = selenium.window_handles
+            if len(windows) > 0:
+                selenium.switch_to.window(windows[0])
+                selenium.close()
+            else:
+                # Handle the case where no windows are left
+                print("No more windows to switch to.")
 
-            # why?
-            # time.sleep(10)
+            windows = selenium.window_handles
+            if len(windows) > 0:
+                selenium.switch_to.window(windows[0])
+            else:
+                # Handle the case where no windows are left
+                print("No more windows to switch to.")
 
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-title")))
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(".project-title").text
@@ -2457,13 +2454,16 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 5,
                 5,
             ).click().perform()
-            selenium.find_element_by_id("linked-workflow-editor").click()
-            time.sleep(2)
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_types[i - 1] + " .workflow-for-menu"
-            ).click()
+
+            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor.click()
+
+            section_workflow_menu = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,  ".section-" + workflow_types[i - 1] + " .workflow-for-menu")))
+            section_workflow_menu.click()
+
             selenium.find_element_by_id("set-linked-workflow-none").click()
             time.sleep(2)
+
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow, None
             )
