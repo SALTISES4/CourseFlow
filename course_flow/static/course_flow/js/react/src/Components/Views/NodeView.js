@@ -468,15 +468,22 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
   constructor(props) {
     super(props)
     this.objectType = 'node'
-    this.objectClass = '.node'
   }
 
   render() {
     let data = this.props.data
     let data_override
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
-    else data_override = { ...data }
+
+    if (data.represents_workflow) {
+      data_override = {
+        ...data,
+        ...data.linked_workflow_data,
+        id: data.id
+      }
+    } else {
+      data_override = { ...data }
+    }
+
     let renderer = this.props.renderer
     let selection_manager = renderer.selection_manager
 
@@ -484,7 +491,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
     if (this.state.show_outcomes)
       outcomenodes = (
         <div
-          className={'outcome-node-container column-' + data.column}
+          className={'outcome-node-container column-111111-' + data.column}
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}

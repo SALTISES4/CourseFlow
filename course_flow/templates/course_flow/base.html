@@ -33,6 +33,12 @@
 <body id="site">
   <div class="main-wrapper">
     {% include 'course_flow/base/left_panel.html' %}
+
+      {% comment %}
+        @todo see https://course-flow.atlassian.net/browse/COUR-246
+      {% endcomment %}
+      <div id="react-portal-left-panel-extra"></div>
+
     {% include 'course_flow/base/main_block.html' %}
   </div>
 

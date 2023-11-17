@@ -1,9 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   Component,
-  EditableComponent,
   EditableComponentWithActions,
   EditableComponentWithSorting,
   WorkflowTitle,
@@ -36,7 +35,6 @@ import {
   insertedAt,
   restoreSelf,
   deleteSelf,
-  getExport,
   toggleDrop,
   getUsersForObject,
   getTargetProjectMenu,
@@ -1677,9 +1675,15 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
           />
         )
       )
-      let child_workflows = this.props.child_workflows.map((child_workflow) => (
-        <WorkflowTitle data={child_workflow} class_name={'panel-favourite'} />
-      ))
+      let child_workflows = this.props.child_workflows.map(
+        (child_workflow, index) => (
+          <WorkflowTitle
+            key={index}
+            data={child_workflow}
+            class_name={'panel-favourite'}
+          />
+        )
+      )
       let return_val = [
         <hr />,
         <a className="panel-item">{gettext('Quick Navigation')}</a>
@@ -1694,7 +1698,9 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
           <a className="panel-item">{gettext('Workflows Used:')}</a>,
           ...child_workflows
         )
-      return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
+      // return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
+      // @todo see https://course-flow.atlassian.net/browse/COUR-246
+      return reactDom.createPortal(return_val, $('#react-portal-left-panel-extra')[0])
     }
 
     return null

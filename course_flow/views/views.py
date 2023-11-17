@@ -1735,7 +1735,7 @@ class CourseStrategyCreateView(
 ):
     model = Course
     fields = ["title", "description"]
-    template_name = "course_flow/course_create.html"
+    template_name = "course_flow/workflow_create.html"
 
     def workflow_type(self): return 'course'
 

@@ -196,15 +196,6 @@ class OutcomeView extends EditableComponentWithSorting {
     //        if(this.props.show_horizontal)this.updateIndicator();
   }
 
-  //
-  //    updateIndicator(){
-  //        let indicator = $(this.maindiv.current).children(".outcome-node-indicator");
-  //        let indicator_number = indicator.children(".outcome-node-indicator-number");
-  //        let number = indicator.children(".outcome-node-container").children().length;
-  //        indicator_number.text(number);
-  //        if(number>0)indicator.show();
-  //        else indicator.hide();
-  //    }
 
   makeDragAndDrop() {
     this.makeSortableNode(
@@ -1012,6 +1003,9 @@ class OutcomeHorizontalLinkViewUnconnected extends Component {
     )
   }
 
+  /**
+   * @todo what is this doing?
+   */
   checkHidden() {
     if ($(this.maindiv.current).children('.outcome').length == 0)
       $(this.maindiv.current).css('display', 'none')

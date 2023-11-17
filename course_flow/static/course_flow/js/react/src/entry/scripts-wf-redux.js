@@ -25,8 +25,18 @@ import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
+import { Enum } from '../UtilityFunctions.js'
 
 export { fail_function } from '../PostFunctions.js'
+
+const DATA_TYPE = Enum({
+  OUTCOME: 'workflow_action',
+  LOCK_UPDATE: 'lock_update',
+  CONNECTION_UPDATE: 'connection_update',
+  WORKFLOW_PARENT_UPDATED: 'workflow_parent_updated',
+  WORKFLOW_CHILD_UPDATED: 'workflow_child_updated',
+  WORKFLOW_ACTION: 'workflow_action'
+})
 
 /****************************************
  *
@@ -334,16 +344,25 @@ export class WorkflowRenderer {
 
   parsemessage = function (e) {
     const data = JSON.parse(e.data)
-    if (data.type === 'workflow_action') {
-      this.store.dispatch(data.action)
-    } else if (data.type === 'lock_update') {
-      this.lock_update_received(data.action)
-    } else if (data.type === 'connection_update') {
-      this.connection_update_received(data.action)
-    } else if (data.type === 'workflow_parent_updated') {
-      this.parent_workflow_updated(data.edit_count)
-    } else if (data.type === 'workflow_child_updated') {
-      this.child_workflow_updated(data.edit_count, data.child_workflow_id)
+
+    switch (data.type) {
+      case DATA_TYPE.WORKFLOW_ACTION:
+        this.store.dispatch(data.action)
+        break
+      case DATA_TYPE.LOCK_UPDATE:
+        this.lock_update_received(data.action)
+        break
+      case DATA_TYPE.CONNECTION_UPDATE:
+        this.connection_update_received(data.action)
+        break
+      case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
+        this.parent_workflow_updated(data.edit_count)
+        break
+      case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
+        this.child_workflow_updated(data.edit_count, data.child_workflow_id)
+        break
+      default:
+        break
     }
   }
 

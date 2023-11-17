@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   getTableOutcomeNodeByID
@@ -152,7 +153,13 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   return null
 }
 
-/*Based on an outcomenode's completion status, return the correct icon*/
+/**
+ * Based on an outcomenode's completion status, return the correct icon
+ *
+ * @param completion_status
+ * @param outcomes_type
+ * @returns {JSX.Element|*[]}
+ */
 export function getCompletionImg(completion_status, outcomes_type) {
   if (outcomes_type === 0 || completion_status & 1) {
     return (

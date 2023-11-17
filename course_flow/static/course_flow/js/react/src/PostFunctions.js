@@ -1,6 +1,7 @@
 import { renderMessageBox } from './Components/components/MenuComponents.js'
 import { changeField } from './Reducers.js'
 import * as Constants from './Constants.js'
+import { Enum } from './UtilityFunctions.js'
 
 /*
 All functions for API calls.
@@ -11,6 +12,7 @@ All functions for API calls.
 // JQUERY
 export function fail_function(a, b, c, d) {
   if (typeof a === 'string') {
+    alert(b)
     alert(a + ' - ' + gettext('Something went wrong. Please reload the page.'))
   } else if (a && a.type === 'ajaxError') {
     if (b.status === 429) {
@@ -19,13 +21,33 @@ export function fail_function(a, b, c, d) {
           'Too many requests from your IP address. Please wait and try again later.'
         )
       )
-    } else if (b.status === 403 || b.status === 401 || b.satus === 500) {
+    } else if (b.status === 403 || b.status === 401 || b.status === 500) {
       alert(b.status + ' ' + gettext('error at ') + ' ' + c.url)
-    } else alert(gettext('Something went wrong. Please reload the page.'))
+    } else
+      alert(
+        a +
+          b.status +
+          c +
+          gettext('final Something went wrong. Please reload the page.')
+      )
   } else {
-    alert(gettext('Something went wrong. Please reload the page.'))
+    alert(
+      a +
+        b.status +
+        c +
+        gettext('final Something went wrong. Please reload the page.')
+    )
   }
 }
+
+const DATA_ACTIONS = Enum({
+  POSTED: 'posted'
+})
+
+const OBJECT_TYPE = Enum({
+  OUTCOME: 'outcome',
+  PROJECT: 'project'
+})
 
 //Get a list of possible workflows we can add to this project
 export function getAddedWorkflowMenu(
@@ -59,7 +81,7 @@ export function getWorkflowContext(
     $.post(config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -140,7 +162,7 @@ export function setLinkedWorkflow(
     nodePk: node_id,
     workflowPk: workflow_id
   }).done(function (data) {
-    if (data.action === 'posted') callBackFunction(data)
+    if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
     else fail_function(data.action)
   })
 }
@@ -183,7 +205,7 @@ export function updateValue(
   document.lastUpdateCallFunction = () => {
     try {
       $.post(config.post_paths.update_value, post_object).done(function (data) {
-        if (data.action === 'posted') callBackFunction(data)
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     } catch (err) {
@@ -206,7 +228,7 @@ export function updateValueInstant(
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -257,7 +279,7 @@ export function newNode(
       columnPk: JSON.stringify(column),
       columnType: JSON.stringify(column_type)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -276,7 +298,7 @@ export function newOutcome(
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -300,7 +322,7 @@ export function newNodeLink(
       sourcePort: JSON.stringify(source_port),
       targetPort: JSON.stringify(target_port)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -322,7 +344,7 @@ export function addStrategy(
       objectID: JSON.stringify(strategyPk),
       objectType: JSON.stringify('workflow')
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -340,7 +362,7 @@ export function toggleStrategy(
       weekPk: JSON.stringify(weekPk),
       is_strategy: JSON.stringify(is_strategy)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -364,7 +386,7 @@ export function deleteSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -384,7 +406,7 @@ export function deleteSelfLive(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -404,7 +426,7 @@ export function restoreSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -425,7 +447,7 @@ export function removeComment(
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -444,7 +466,7 @@ export function removeAllComments(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -465,7 +487,7 @@ export function updateOutcomenodeDegree(
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -490,7 +512,7 @@ export function duplicateSelf(
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -514,7 +536,7 @@ export function insertSibling(
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -533,7 +555,7 @@ export function insertChild(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -601,7 +623,7 @@ export function dragAction(
     renderer.tiny_loader.startLoad()
     $('.ui-draggable').draggable('disable')
     $.post(config.post_paths.inserted_at, action_data).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
       $('.ui-draggable').draggable('enable')
       renderer.tiny_loader.endLoad()
@@ -636,7 +658,7 @@ export function insertedAtInstant(
       inserted: JSON.stringify(true),
       allowDifferent: JSON.stringify(true)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === 'posted') callBackFunction(data)
       else fail_function(data.action)
       $('.ui-draggable').draggable('enable')
       renderer.tiny_loader.endLoad()
@@ -660,7 +682,7 @@ export function updateOutcomehorizontallinkDegree(
       objectType: JSON.stringify('outcome'),
       degree: JSON.stringify(degree)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -681,7 +703,7 @@ export function toggleFavourite(
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -697,26 +719,26 @@ export function duplicateBaseItem(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    if (objectType == 'project') {
+    if (objectType === OBJECT_TYPE.PROJECT) {
       $.post(config.post_paths.duplicate_project_ajax, {
         projectPk: JSON.stringify(itemPk)
       }).done(function (data) {
-        if (data.action == 'posted') callBackFunction(data)
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
-    } else if (objectType == 'outcome') {
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
       $.post(config.post_paths.duplicate_outcome_ajax, {
         outcomePk: JSON.stringify(itemPk),
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
-        if (data.action == 'posted') callBackFunction(data)
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     } else if (!projectID && projectID !== 0) {
       $.post(config.post_paths.duplicate_strategy_ajax, {
         workflowPk: JSON.stringify(itemPk)
       }).done(function (data) {
-        if (data.action == 'posted') callBackFunction(data)
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     } else {
@@ -724,7 +746,7 @@ export function duplicateBaseItem(
         workflowPk: JSON.stringify(itemPk),
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
-        if (data.action == 'posted') callBackFunction(data)
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     }
@@ -742,7 +764,7 @@ export function getWorkflowData(
     $.post(config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -759,7 +781,7 @@ export function getWorkflowParentData(
     $.post(config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -776,7 +798,7 @@ export function getWorkflowChildData(
     $.post(config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -793,7 +815,7 @@ export function getPublicWorkflowData(
     $.get(
       config.get_paths.get_public_workflow_data.replace('0', workflowPk)
     ).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -810,7 +832,7 @@ export function getPublicWorkflowParentData(
     $.get(
       config.get_paths.get_public_workflow_parent_data.replace('0', workflowPk)
     ).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -827,7 +849,7 @@ export function getPublicWorkflowChildData(
     $.get(
       config.get_paths.get_public_workflow_child_data.replace('0', nodePk)
     ).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -863,7 +885,7 @@ export function setUserPermission(
       permission_user: JSON.stringify(user_id),
       permission_type: JSON.stringify(permission_type)
     }).done(function (data) {
-      if (data.action === 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.error)
     })
   } catch (err) {
@@ -884,7 +906,7 @@ export function setLiveProjectRole(
       permission_user: JSON.stringify(user_id),
       role_type: JSON.stringify(permission_type)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.error)
     })
   } catch (err) {
@@ -905,7 +927,7 @@ export function getUsersForObject(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -921,7 +943,7 @@ export function getUsersForLiveProject(
     $.post(config.post_paths.get_users_for_liveproject, {
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -938,7 +960,7 @@ export function getUserList(
     $.post(config.post_paths.get_user_list, {
       filter: JSON.stringify(filter)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -957,7 +979,7 @@ export function getCommentsForObject(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -978,7 +1000,7 @@ export function addComment(
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1001,7 +1023,7 @@ export function addTerminology(
       title: JSON.stringify(title),
       translation_plural: JSON.stringify(translation_plural)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1024,7 +1046,7 @@ export function updateObjectSet(
       objectsetPk: JSON.stringify(objectsetPk),
       add: JSON.stringify(add)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1041,7 +1063,7 @@ export function getParentWorkflowInfo(
     $.post(config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1058,7 +1080,7 @@ export function getPublicParentWorkflowInfo(
     $.get(
       config.get_paths.get_public_parent_workflow_info.replace('0', workflowPk)
     ).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1079,7 +1101,7 @@ export function getExport(
       objectType: JSON.stringify(objectType),
       exportType: JSON.stringify(exportType)
     }).done(function (data, status, xhr) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1096,7 +1118,7 @@ export function makeProjectLive(
     $.post(config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1117,7 +1139,7 @@ export function setWorkflowVisibility(
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1136,7 +1158,7 @@ export function getLiveProjectData(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1155,7 +1177,7 @@ export function getLiveProjectDataStudent(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1174,7 +1196,7 @@ export function getAssignmentData(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1193,7 +1215,7 @@ export function getAssignmentDataStudent(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1210,7 +1232,7 @@ export function getWorkflowNodes(
     $.post(config.post_paths.get_workflow_nodes, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1229,7 +1251,7 @@ export function createAssignment(
       nodePk: JSON.stringify(nodePk),
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1250,7 +1272,7 @@ export function addUsersToAssignment(
       user_list: JSON.stringify(user_list),
       add: JSON.stringify(add)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1270,7 +1292,7 @@ export function updateLiveProjectValue(
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1288,7 +1310,7 @@ export function setAssignmentCompletion(
       userassignmentPk: JSON.stringify(userassignmentPk),
       completed: JSON.stringify(completed)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1304,7 +1326,7 @@ export function getAssignmentsForNode(
     $.post(config.post_paths.get_assignments_for_node, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
-      if (data.action == 'posted') callBackFunction(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
     })
   } catch (err) {
@@ -1384,26 +1406,26 @@ export function searchAllObjects(
  * @TODO jquery should not be interacting with react
  */
 export function openLinkedWorkflowMenu(response, updateFunction) {
-  if (response.action === 'posted') {
+  if (response.action === DATA_ACTIONS.POSTED) {
     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
   } else
     alert('Failed to find the parent project. Is this workflow in a project?')
 }
 
 export function openAddedWorkflowMenu(response, updateFunction) {
-  if (response.action === 'posted') {
+  if (response.action === DATA_ACTIONS.POSTED) {
     renderMessageBox(response, 'added_workflow_menu', updateFunction)
   } else alert('Failed to find your workflows.')
 }
 
 export function openWorkflowSelectMenu(response, updateFunction) {
-  if (response.action === 'posted') {
+  if (response.action === DATA_ACTIONS.POSTED) {
     renderMessageBox(response, 'workflow_select_menu', updateFunction)
   } else alert('Failed to find your workflows.')
 }
 
 export function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === 'posted') {
+  if (response.action === DATA_ACTIONS.POSTED) {
     renderMessageBox(response, 'target_project_menu', updateFunction)
   } else alert('Failed to find potential projects.')
 }

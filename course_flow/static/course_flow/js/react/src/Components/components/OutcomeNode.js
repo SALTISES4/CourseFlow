@@ -26,7 +26,7 @@ class OutcomeNodeView extends Component {
 
   render() {
     let data = this.props.data
-    if (data.outcome == -1) return null
+    if (data.outcome === -1) return null
 
     return (
       <div
