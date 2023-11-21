@@ -14,8 +14,8 @@ COPY ./course_flow.py ./src/
 COPY ./course_flow.py ./src/
 COPY ./pyproject.toml ./src/
 COPY ./pytest.ini ./src/
-COPY ./setup.py ./src/
-COPY ./setup.cfg ./src/
+#COPY ./setup.py ./src/
+#COPY ./setup.cfg ./src/
 COPY ./SALTISE_course_flow.egg-info ./src/SALTISE_course_flow.egg-info
 COPY ./course_flow/ ./src/course_flow
 COPY ./requirements/ ./src/requirements
@@ -30,8 +30,9 @@ RUN apt-get install -y \
 # PIP LIBS
 ########################
 RUN pip install \
-    redislite
-RUN pip install -r ./requirements/requirements.txt
+    redislite \
+    pip-tools
+RUN python3 -m pip install -r requirements/requirements.txt
 
 
 ########################
