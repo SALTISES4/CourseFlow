@@ -13,6 +13,9 @@ jobs:
             . test_venv/bin/activate
             pip install -r requirements/requirements.txt
             wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             nvm install v18
             yarn install
             yarn build-js
