@@ -54,7 +54,7 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
-        self.executable_path: str = ""
+        self.executable_path: str = "nopath"
 
     def create_ff_browser(self):
         options = FirefoxOptions()
