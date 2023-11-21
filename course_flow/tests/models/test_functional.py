@@ -91,15 +91,17 @@ class SeleniumBase:
 
         if settings.CHROMEDRIVER_PATH is not None:
             self.executable_path = settings.CHROMEDRIVER_PATH
-        if settings.COURSEFLOW_TEST_HEADLESS is not None:
-            self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
-        else:
-            self.test_headless = True
 
-        if settings.COURSEFLOW_TEST_BROWSER == "ff":
-            return self.create_ff_browser()
-        else:
-            return self.create_chrome_browser(options)
+        try:
+            self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
+        except AttributeError:
+            self.test_headless = False
+        try:
+            if settings.COURSEFLOW_TEST_BROWSER == "ff":
+                return self.create_ff_browser()
+        except AttributeError:
+            pass
+        return self.create_chrome_browser(options)
 
 
 @tag("selenium")
