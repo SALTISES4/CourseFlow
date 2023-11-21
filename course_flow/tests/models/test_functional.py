@@ -96,10 +96,10 @@ class SeleniumBase:
         else:
             self.test_headless = True
 
-        if settings.COURSEFLOW_TEST_BROWSER == "chrome":
-            return self.create_chrome_browser(options)
-        else:
+        if settings.COURSEFLOW_TEST_BROWSER == "ff":
             return self.create_ff_browser()
+        else:
+            return self.create_chrome_browser(options)
 
 
 @tag("selenium")
