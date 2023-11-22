@@ -86,7 +86,10 @@ def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
             )[:5]
         ],
         many=True,
+        context={"user": user},
     ).data
+
+    print(favourites)
 
     return JsonResponse(
         {

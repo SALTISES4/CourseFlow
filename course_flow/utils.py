@@ -325,6 +325,21 @@ def user_workflow_url(workflow, user):
     return "noaccess"
 
 
+def user_project_url(project, user):
+    user_permission = get_user_permission(project, user)
+    user_role = get_user_role(project, user)
+    if not user.is_authenticated:
+        return "noaccess"
+    if (
+        user_permission != models.ObjectPermission.PERMISSION_NONE
+        or user_role == models.LiveProjectUser.ROLE_TEACHER
+    ):
+        return reverse("course_flow:project-update", kwargs={"pk": project.pk})
+    return reverse(
+        "course_flow:live-project-update", kwargs={"pk": project.pk}
+    )
+
+
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
         if serializer.is_valid():

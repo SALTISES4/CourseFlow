@@ -51,6 +51,7 @@ from .utils import (
     get_user_permission,
     get_user_role,
     linkIDMap,
+    user_project_url,
     user_workflow_url,
 )
 
@@ -1276,11 +1277,12 @@ class FavouriteSerializer(
     TitleSerializerMixin,
 ):
     title = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
 
     def get_url(self, instance):
-        if instance.type in ["project", "liveproject"]:
-            return None
         user = self.context.get("user", None)
+        if instance.type in ["project", "liveproject"]:
+            return user_project_url(instance, user)
         return user_workflow_url(instance, user)
 
     def get_title(self, instance):
