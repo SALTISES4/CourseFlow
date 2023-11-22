@@ -127,7 +127,7 @@ const TopBar = () => {
           <Toolbar variant="dense">
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex' }}>
-              {apiData.isTeacher ? (
+              {apiData.is_teacher ? (
                 <IconButton
                   size="large"
                   aria-label="add menu"
@@ -164,7 +164,7 @@ const TopBar = () => {
           </Toolbar>
         </Paper>
       </AppBar>
-      {apiData.isTeacher && addMenu}
+      {apiData.is_teacher && addMenu}
       {accountMenu}
     </Box>
   )

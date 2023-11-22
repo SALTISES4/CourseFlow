@@ -12,12 +12,13 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import HomeIcon from '@mui/icons-material/Home'
-import FolderCopyIcon from '@mui/icons-material/FolderCopy'
-import SearchIcon from '@mui/icons-material/Search'
+import FolderCopyIcon from '@mui/icons-material/CollectionsBookmark'
+import SearchIcon from '@mui/icons-material/ManageSearch'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
+import useApi from '../../../hooks/useApi'
 
 export const SidebarRootStyles = {
   height: '100%'
@@ -84,7 +85,7 @@ const MainMenuWrap = styled(List)({
   }
 })
 
-const FavoritesWrap = styled(Box)({
+const FavouritesWrap = styled(Box)({
   overflow: 'auto',
   '& .MuiListItemText-primary': {
     whiteSpace: 'nowrap',
@@ -96,7 +97,7 @@ const FavoritesWrap = styled(Box)({
   }
 })
 
-const FavoritesLabel = styled(Typography)(({ theme }) => ({
+const FavouritesLabel = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(1),
   paddingLeft: 16,
@@ -120,6 +121,9 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(
     sessionStorage.getItem('collapsed_sidebar')
   )
+
+
+  const [apiData, loading, error] = useApi(config.json_api_paths.get_sidebar)
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -162,7 +166,7 @@ const Sidebar = () => {
               <ListItemText primary={COURSEFLOW_APP.strings.home} />
             </ListItemButton>
           </ListItem>
-          {COURSEFLOW_APP_SIDEBAR.is_teacher ? (
+          {apiData.is_teacher ? (
             <>
               <ListItem disablePadding dense>
                 <ListItemButton
@@ -190,7 +194,7 @@ const Sidebar = () => {
               </ListItem>
             </>
           ) : null}
-          {COURSEFLOW_APP_SIDEBAR.is_not_anonymous ? (
+          {!apiData.is_anonymous ? (
             <ListItem disablePadding dense>
               <ListItemButton
                 component="a"
@@ -208,28 +212,28 @@ const Sidebar = () => {
           ) : null}
         </MainMenuWrap>
 
-        {COURSEFLOW_APP_SIDEBAR.is_teacher &&
-        COURSEFLOW_APP_SIDEBAR.favorites.length ? (
+        {apiData.is_teacher &&
+        apiData.favourites.length ? (
           <>
             <Divider />
-            <FavoritesWrap>
-              <FavoritesLabel variant="body1">
-                {COURSEFLOW_APP.strings.favorites}
-              </FavoritesLabel>
+            <FavouritesWrap>
+              <FavouritesLabel variant="body1">
+                {COURSEFLOW_APP.strings.favourites}
+              </FavouritesLabel>
               <List>
-                {COURSEFLOW_APP_SIDEBAR.favorites.map((favorite, id) => (
+                {apiData.favourites.map((favourite, id) => (
                   <ListItem disablePadding dense key={id}>
                     <ListItemButton
                       component="a"
-                      href={favorite.url}
-                      selected={window.location.pathname === favorite.url}
+                      href={favourite.url}
+                      selected={window.location.pathname === favourite.url}
                     >
-                      <ListItemText primary={favorite.text} />
+                      <ListItemText primary={favourite.title} />
                     </ListItemButton>
                   </ListItem>
                 ))}
 
-                {COURSEFLOW_APP_SIDEBAR.favorites.length >= 5 ? (
+                {apiData.favourites.length >= 5 ? (
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
                       component="a"
@@ -246,7 +250,7 @@ const Sidebar = () => {
                   </ListItem>
                 ) : null}
               </List>
-            </FavoritesWrap>
+            </FavouritesWrap>
           </>
         ) : null}
 

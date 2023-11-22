@@ -1271,6 +1271,25 @@ class ObjectSetSerializerShallow(
         return instance
 
 
+class FavouriteSerializer(
+    serializers.Serializer,
+    TitleSerializerMixin,
+):
+    title = serializers.SerializerMethodField()
+
+    def get_url(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return None
+        user = self.context.get("user", None)
+        return user_workflow_url(instance, user)
+
+    def get_title(self, instance):
+        title = super().get_title(instance)
+        if title is None or title == "":
+            return _("Untitled ") + instance._meta.verbose_name
+        return title
+
+
 class InfoBoxSerializer(
     serializers.Serializer,
     TitleSerializerMixin,
