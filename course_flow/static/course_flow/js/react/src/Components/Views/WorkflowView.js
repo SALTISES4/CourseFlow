@@ -1700,7 +1700,10 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
         )
       // return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
       // @todo see https://course-flow.atlassian.net/browse/COUR-246
-      return reactDom.createPortal(return_val, $('#react-portal-left-panel-extra')[0])
+      return reactDom.createPortal(
+        return_val,
+        $('#react-portal-left-panel-extra')[0]
+      )
     }
 
     return null

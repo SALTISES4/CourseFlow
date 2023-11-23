@@ -39,7 +39,9 @@ from course_flow.utils import get_model_from_str
 
 from .utils import check_order, get_author, login, make_object
 
-TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "assets/test_json.json")
+TESTJSON_FILENAME = os.path.join(
+    os.path.dirname(__file__), "assets/test_json.json"
+)
 TESTNODESXLS_FILENAME = os.path.join(
     os.path.dirname(__file__), "assets/test_nodes.xls"
 )

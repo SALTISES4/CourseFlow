@@ -292,9 +292,7 @@ def get_outcomes_export(
             for workflow in workflows:
                 df = get_workflow_outcomes_table(workflow, allowed_sets)
                 sheet_name = (
-                    get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk)
+                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
                 )[:30]
                 df.to_excel(
                     writer,
@@ -424,7 +422,9 @@ def get_program_matrix_export(
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_program_matrix(workflow, True, allowed_sets)
-                sheet_name = (get_alphanum(workflow.title)+ "_" + str(workflow.pk))[:30]
+                sheet_name = (
+                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                )[:30]
                 df.to_excel(
                     writer,
                     sheet_name=sheet_name,
@@ -512,9 +512,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
             for workflow in workflows:
                 df = get_workflow_nodes_table(workflow, allowed_sets)
                 sheet_name = (
-                    get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk)
+                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
                 )[:30]
                 df.to_excel(
                     writer,
@@ -948,7 +946,6 @@ def get_sobec(workflow, allowed_sets):
 
 
 def get_saltise_analytics():
-
     df = analytics.get_base_dataframe()
 
     with BytesIO() as b:

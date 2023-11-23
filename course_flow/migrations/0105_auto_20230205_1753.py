@@ -58,7 +58,6 @@ def reverse_func(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("course_flow", "0104_rename_author_temp_workflow_author"),
     ]

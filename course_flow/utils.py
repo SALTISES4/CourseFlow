@@ -51,12 +51,10 @@ def get_model_from_str(model_str: str):
 
 
 def get_parent_model_str(model_str: str) -> str:
-
     return owned_throughmodels[owned_throughmodels.index(model_str) + 1]
 
 
 def get_parent_model(model_str: str):
-
     return ContentType.objects.get(
         model=get_parent_model_str(model_str)
     ).model_class()

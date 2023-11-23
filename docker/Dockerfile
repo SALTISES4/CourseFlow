@@ -11,7 +11,6 @@ WORKDIR /app
 # COPY FILES
 ########################
 COPY ./course_flow.py ./src/
-COPY ./course_flow.py ./src/
 COPY ./pyproject.toml ./src/
 COPY ./pytest.ini ./src/
 COPY ./setup.py ./src/

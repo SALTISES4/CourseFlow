@@ -317,7 +317,6 @@ class NodeSerializerShallow(
     DescriptionSerializerMixin,
     TimeRequiredSerializerMixin,
 ):
-
     outgoing_links = serializers.SerializerMethodField()
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
@@ -546,7 +545,6 @@ class NodeWeekSerializerShallow(serializers.ModelSerializer):
 class ColumnSerializerShallow(
     serializers.ModelSerializer, TitleSerializerMixin
 ):
-
     column_type_display = serializers.CharField(
         source="get_column_type_display"
     )
@@ -587,7 +585,6 @@ class WeekSerializerShallow(
     TitleSerializerMixin,
     DescriptionSerializerMixin,
 ):
-
     nodeweek_set = serializers.SerializerMethodField()
 
     week_type_display = serializers.CharField(source="get_week_type_display")
@@ -640,7 +637,6 @@ class WeekSerializerShallow(
 
 
 class WeekWorkflowSerializerShallow(serializers.ModelSerializer):
-
     week_type = serializers.SerializerMethodField()
 
     class Meta:
@@ -931,7 +927,6 @@ class WorkflowSerializerShallow(
     DescriptionSerializerMixin,
     AuthorSerializerMixin,
 ):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1087,7 +1082,6 @@ class WorkflowSerializerShallow(
 
 
 class ProgramSerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1142,7 +1136,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
 
 
 class CourseSerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1197,7 +1190,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
 
 
 class ActivitySerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1277,7 +1269,6 @@ class InfoBoxSerializer(
     DescriptionSerializerMixin,
     AuthorSerializerMixin,
 ):
-
     deleted = serializers.ReadOnlyField()
     id = serializers.ReadOnlyField()
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -1506,7 +1497,6 @@ class RefreshSerializerOutcome(serializers.ModelSerializer):
 
 
 class RefreshSerializerNode(serializers.ModelSerializer):
-
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
 

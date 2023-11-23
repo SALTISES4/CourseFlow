@@ -896,7 +896,7 @@ class ModelViewTest(TestCase):
                 user=user,
                 assignment=assignment,
             )
-        self.assertEqual(len(UserAssignment.objects.filter(user=user)),1)
+        self.assertEqual(len(UserAssignment.objects.filter(user=user)), 1)
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
             {

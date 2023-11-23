@@ -196,7 +196,6 @@ class OutcomeView extends EditableComponentWithSorting {
     //        if(this.props.show_horizontal)this.updateIndicator();
   }
 
-
   makeDragAndDrop() {
     this.makeSortableNode(
       $(this.children_block.current)

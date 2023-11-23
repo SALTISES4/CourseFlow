@@ -22,7 +22,6 @@ def fix_months(df):
 
 
 def get_base_dataframe():
-
     df = cache.get("COURSEFLOW_ANALYTICS_DATAFRAME", None)
     if df is not None:
         return df
