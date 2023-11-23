@@ -42,4 +42,10 @@ repos:
         always_run: true
         exclude: ".*"
         verbose: true
-
+      - id: prettier
+        name: prettier
+        language: system
+        entry: bash -c 'yarn prettier || true' --
+        always_run: true
+        exclude: ".*"
+        verbose: true
