@@ -1,7 +1,7 @@
 import asyncio
 import json
-import time
 import logging
+import time
 
 from channels.routing import URLRouter
 from channels.testing import ChannelsLiveServerTestCase, WebsocketCommunicator
@@ -11,15 +11,11 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import tag
 from django.urls import reverse
 from selenium import webdriver
+from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver import Firefox
-from selenium.webdriver import FirefoxOptions
-from selenium.webdriver import Chrome
-from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -59,35 +55,37 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
-        self.executable_path: str = ''
+        self.executable_path: str = "nopath"
 
-    @staticmethod
-    def create_ff_browser():
+    def create_ff_browser(self):
         options = FirefoxOptions()
-        options.add_argument('--headless')
-        options.add_argument('--disable-extensions')
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
-        options.add_argument('--allow-running-insecure-content')
-        options.add_argument('window-size=1920x1480')
+        options.add_argument("--allow-running-insecure-content")
+        options.add_argument("window-size=1920x1480")
         options.set_capability("acceptInsecureCerts", True)
         browser = Firefox(options=options)
         browser.implicitly_wait(10)
         return browser
 
-    @staticmethod
     def create_chrome_browser(self, options):
         if options is None:
             options = webdriver.chrome.options.Options()
 
-        options.add_argument('--headless')
-        options.add_argument('--disable-extensions')
+        if self.test_headless:
+            options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
-        options.add_argument('--disable-gpu')
-        options.add_argument('--allow-running-insecure-content')
+        options.add_argument("--disable-gpu")
+        options.add_argument("--allow-running-insecure-content")
         options.set_capability("acceptInsecureCerts", True)
-        browser = Chrome(self.executable_path, options=options)
+        if self.executable_path == "nopath":
+            browser = Chrome(options=options)
+        else:
+            browser = Chrome(self.executable_path, options=options)
         return browser
 
     def init_selenium(self, options: dict = None):
@@ -95,8 +93,16 @@ class SeleniumBase:
         if settings.CHROMEDRIVER_PATH is not None:
             self.executable_path = settings.CHROMEDRIVER_PATH
 
-        # return self.create_ff_browser(options)
-        return self.create_ff_browser()
+        try:
+            self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
+        except AttributeError:
+            self.test_headless = False
+        try:
+            if settings.COURSEFLOW_TEST_BROWSER == "ff":
+                return self.create_ff_browser()
+        except AttributeError:
+            pass
+        return self.create_chrome_browser(options)
 
 
 @tag("selenium")
@@ -112,7 +118,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         super().tearDown()
 
     def test_register_user(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
 
         selenium.get(self.live_server_url + "/register/")
@@ -165,9 +171,8 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super().tearDown()
 
-
     def test_edit_user(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         selenium.get(self.live_server_url + reverse("course_flow:user-update"))
@@ -217,7 +222,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_liveproject(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -238,7 +243,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         assert LiveProject.objects.filter(project=project).count() == 1
 
     def test_my_classrooms_teacher(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -272,7 +277,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_my_classrooms_student(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         self.user.groups.remove(self.user.groups.first())
         author = get_author()
         selenium = self.selenium
@@ -325,7 +330,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_settings(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -353,7 +358,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.default_all_workflows_visible, True)
 
     def test_add_roles(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -440,7 +445,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_add_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -463,7 +468,11 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         button_workflows = wait.until(EC.element_to_be_clickable((By.ID, "button_workflows")))
         button_workflows.click()
 
-        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".permission-select select ")))
+        wait.until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, ".permission-select select ")
+            )
+        )
         self.assertEqual(
             len(
                 selenium.find_elements(By.CSS_SELECTOR,
@@ -532,7 +541,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_student_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -578,7 +587,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -640,7 +649,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(UserAssignment.objects.first().completed, True)
 
     def test_student_assignment(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -782,7 +791,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment_from_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -821,7 +830,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_student_complete_assignment_from_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         user2 = get_author()
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -897,9 +906,7 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
         chrome_options.add_experimental_option(
-            "prefs", {
-                "intl.accept_languages": "fr"
-            }
+            "prefs", {"intl.accept_languages": "fr"}
         )
         chrome_options.add_argument("--lang=fr")
         selbase = SeleniumBase(chrome_options)
@@ -922,7 +929,7 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_home(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         selenium.get(self.live_server_url + "/course-flow/home/")
         assert (
@@ -955,7 +962,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_project_and_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -965,7 +972,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # Navigate to My Library
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
 
-        create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+        create_project_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "create-project-button"))
+        )
         create_project_button.click()
 
         # click new project button
@@ -984,7 +993,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # this sleep is a hack because jquery is giving back interrmittent errors on save and we can't figure out why yet
         time.sleep(1)
         # wait for evidence that the save is finished
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu")))
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu"))
+        )
         project_url = selenium.current_url
 
         assert (
@@ -1002,13 +1013,17 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # input('wait')
         # Create templates
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu")))
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu"))
+        )
         mylibrary = selenium.current_url
 
         for template_type in ["activity", "course"]:
-            print('in: ' + template_type)
+            print("in: " + template_type)
 
-            create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+            create_project_button = wait.until(
+                EC.element_to_be_clickable((By.ID, "create-project-button"))
+            )
             create_project_button.click()
 
             # click activity-strategy-create
@@ -1017,7 +1032,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 "#" + template_type + "-strategy-create"
             ).click()
 
-            title = wait.until(EC.presence_of_element_located((By.ID, "id_title")))
+            title = wait.until(
+                EC.presence_of_element_located((By.ID, "id_title"))
+            )
 
             description = selenium.find_element(By.ID, "id_description")
             project_title = "test project title"
@@ -1045,8 +1062,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.get(project_url)
             time.sleep(1)
             # Create the workflow
-            create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+            create_project_button = wait.until(
+                EC.element_to_be_clickable((By.ID, "create-project-button"))
+            )
             create_project_button.click()
+
 
             create_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, workflow_type + "-create-project")))
             create_workflow_button.click()
@@ -1097,8 +1117,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.exclude(parent_workflow=None)
-                    .count(),
+                .objects.exclude(parent_workflow=None)
+                .count(),
                 1,
             )
             selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
@@ -1108,19 +1128,19 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.filter(is_strategy=False, deleted=False)
-                    .count(),
+                .objects.filter(is_strategy=False, deleted=False)
+                .count(),
                 1,
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.filter(is_strategy=False, deleted=True)
-                    .count(),
+                .objects.filter(is_strategy=False, deleted=True)
+                .count(),
                 1,
             )
 
     def test_edit_project_details(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1159,7 +1179,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.disciplines.first(), discipline)
 
     def test_import_favourite(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1292,18 +1312,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         for workflow_type in ["activity", "course", "program"]:
             assert WorkflowProject.objects.get(
                 workflow=get_model_from_str(workflow_type)
-                    .objects.filter(
+                .objects.filter(
                     author=self.user,
                     parent_workflow=get_model_from_str(
                         workflow_type
                     ).objects.get(author=author),
                 )
-                    .last(),
+                .last(),
                 project=my_project1,
             )
 
     def test_workflow_read_only(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1340,7 +1360,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_workflow_editing(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1496,7 +1516,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_workflow_duplication(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1595,7 +1615,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_outcome_editing(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1761,7 +1781,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_edit_menu(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         # Note that we don't test ALL parts of the edit menu, and we test only for nodes. This will catch the vast majority of potential issues. Linked workflows are tested in a different test
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -1810,9 +1830,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 time.sleep(2.5)
                 self.assertEqual(
                     workflow.weeks.first()
-                        .nodes.first()
-                        .context_classification,
-                        2 + 100 * i,
+                    .nodes.first()
+                    .context_classification,
+                    2 + 100 * i,
                 )
             else:
                 self.assertEqual(
@@ -1843,7 +1863,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 )
 
     def test_project_return(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1873,7 +1893,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_strategy_convert(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1938,15 +1958,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             self.assertEqual(
                 Workflow.objects.get(is_strategy=True)
-                    .weeks.get(is_strategy=True)
-                    .parent_week,
+                .weeks.get(is_strategy=True)
+                .parent_week,
                 workflow.weeks.first(),
             )
             Workflow.objects.get(is_strategy=True).delete()
 
     # @todo currently crashing app
     def test_outcome_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2200,7 +2220,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
 
     def test_outcome_analytics(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -2233,11 +2253,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
-            {
-                "nodePk": node.id,
-                "outcomePk": base_outcome.id,
-                "degree": 1
-            },
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
 
         OutcomeHorizontalLink.objects.create(
@@ -2252,7 +2268,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
-        other_views = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".other-views")))
+        other_views = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".other-views"))
+        )
         other_views.click()
 
         # click the Course Outcome Analytics button
@@ -2261,18 +2279,24 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
 
         # input("wait")
-        title_text = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".week .title-text")))
-        assert (title_text.text == "Term 1")
+        title_text = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".week .title-text")
+            )
+        )
+        assert title_text.text == "Term 1"
 
         assert len(selenium.find_elements(By.CSS_SELECTOR,".week .node")) == 1
 
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".week .node .child-outcome")
+            len(selenium.find_elements(By.CSS_SELECTOR,
+                    ".week .node .child-outcome")
             ) == 3
         )
 
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".week .node .child-outcome .half-width>.outcome")
+            len(selenium.find_elements(By.CSS_SELECTOR,
+                ".week .node .child-outcome .half-width>.outcome")
             ) == 2
         )
         assert (
@@ -2285,7 +2309,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_outcome_matrix_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2344,7 +2368,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_grid_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2370,9 +2394,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_linked_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
-        selenium.set_window_size(1920, 1480)  # need to expand the window size to show the right sidebar buttons
+        selenium.set_window_size(
+            1920, 1480
+        )  # need to expand the window size to show the right sidebar buttons
         workflow_types = ["activity", "course", "program"]
 
         wait = WebDriverWait(selenium, timeout=10)
@@ -2411,7 +2437,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             By.CSS_SELECTOR, ".workflow-details .node .node-title")))
             node_details.click()
 
-            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor = wait.until(
+                EC.element_to_be_clickable((By.ID, "linked-workflow-editor"))
+            )
             linked_workflow_editor.click()
 
             section_workflow_menu = wait.until(EC.element_to_be_clickable((
@@ -2419,7 +2447,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             section_workflow_menu.click()
 
             # link to node button
-            set_linked_workflow = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+            set_linked_workflow = wait.until(
+                EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+            )
             set_linked_workflow.click()
 
             self.assertEqual(
@@ -2427,7 +2457,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 get_model_from_str(workflow_types[i - 1]).objects.first().id,
             )
             linked_workflow_cta = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".workflow-details .node .linked-workflow")))
+                By.CSS_SELECTOR, ".workflow-details .node .linked-workflow")))
             linked_workflow_cta.click()
 
             windows = selenium.window_handles
@@ -2445,7 +2475,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 # Handle the case where no windows are left
                 print("No more windows to switch to.")
 
-            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-title")))
+            wait.until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, ".project-title")
+                )
+            )
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
@@ -2460,7 +2494,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 5,
             ).click().perform()
 
-            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor = wait.until(
+                EC.element_to_be_clickable((By.ID, "linked-workflow-editor"))
+            )
             linked_workflow_editor.click()
 
             section_workflow_menu = wait.until(EC.element_to_be_clickable((
@@ -2486,7 +2522,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def create_many_items(self, author, published, disciplines):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         for object_type in [
             "activity",
             "course",
@@ -2521,6 +2557,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     # why does this method get invoked 3 times by test runner?
     # this test working again but needs a lot of work to remove the time.sleeps
     def test_explore(self):
+        print("\nIn method", self._testMethodName, ": ")
 
         # helper functions
         def count_pagination_and_elements():
@@ -2598,6 +2635,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.find_element(By.CSS_SELECTOR, "#prev-page-button").click()
 
+        created_by_buttons = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".page-button")
+            )
+        )
+        self.assertEqual(len(created_by_buttons), 4)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
+        )
         has_loading_finished()
         count_pagination_and_elements()
 
@@ -2662,7 +2708,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_no_publish(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2680,7 +2726,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_disciplines(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2749,7 +2795,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_share_edit_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -2881,7 +2927,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def create_many_items(self, author, published, disciplines):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         for object_type in [
             "activity",
             "course",
@@ -2915,7 +2961,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
     # Begin tests
     def test_delete_restore_column(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -3023,7 +3069,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_node(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3123,7 +3169,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_outcome(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3335,7 +3381,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
 
     def test_delete_restore_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3468,7 +3514,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_deleted(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
 
         wait = WebDriverWait(selenium, timeout=10)
@@ -3540,7 +3586,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_sets(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3583,7 +3629,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.object_sets.count(), 0)
 
     def test_view_sets(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -3609,10 +3655,10 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
-        created_by_button = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".node")))
-        self.assertEqual(
-            len(created_by_button), 1
+        created_by_button = wait.until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".node"))
         )
+        self.assertEqual(len(created_by_button), 1)
 
         # hover over the side actions panel to show outcomes assigned to node
         ActionChains(selenium).move_to_element(
@@ -3777,36 +3823,42 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         # click the more icon ( three dots)
-        more_icon = wait.until(EC.element_to_be_clickable((By.ID, "overflow-options")))
+        more_icon = wait.until(
+            EC.element_to_be_clickable((By.ID, "overflow-options"))
+        )
         more_icon.click()
 
         # click the "workflow comparison tool" menu item
-        workflow_comparison_tool_button = wait.until(EC.element_to_be_clickable((By.ID, "comparison-view")))
+        workflow_comparison_tool_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "comparison-view"))
+        )
         workflow_comparison_tool_button.click()
 
         # click the "load new workflow" button
-        load_new_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
+        load_new_workflow_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "load-workflow"))
+        )
         load_new_workflow_button.click()
 
         # click the "created by" button (selects card)
         # using presence_of_all_elements_located but could move this back to element_to_be_clickable if problems
         created_by_button = wait.until(EC.presence_of_all_elements_located((
-        By.CSS_SELECTOR, ".message-wrap .workflow-for-menu")))
+            By.CSS_SELECTOR, ".message-wrap .workflow-for-menu")))
         created_by_button[0].click()
 
         print(created_by_button)
 
         # click select button
-        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+        )
         select_button.click()
 
         workflow_menu = wait.until(EC.presence_of_all_elements_located((
         By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")))
 
         # can we see one course box?
-        self.assertEqual(
-            len(workflow_menu), 1
-        )
+        self.assertEqual(len(workflow_menu), 1)
 
         # load a different workflow
         load_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
@@ -3817,7 +3869,9 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         By.CSS_SELECTOR, ".message-wrap .workflow-created")))
         created_by_button[1].click()
 
-        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+        )
         select_button.click()
 
         # can we see two course boxes?
@@ -3827,14 +3881,16 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
             len(workflow_menu), 2
         )
 
-        outcome_button = wait.until(EC.element_to_be_clickable((By.ID, "button_outcomeedit")))
+        outcome_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "button_outcomeedit"))
+        )
         outcome_button.click()
 
         # @todo this is still failing, not sure why we have expected outcomes here
-        outcomes = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".outcome")))
-        self.assertEqual(
-            len(outcomes), 2
+        outcomes = wait.until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".outcome"))
         )
+        self.assertEqual(len(outcomes), 2)
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
@@ -4003,6 +4059,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 ########################
 # HELPERS
 ########################
+
 
 def action_hover_click(selenium, hover_item, click_item):
     hover = (
