@@ -555,6 +555,9 @@ def public_access(**outer_kwargs):
                 return response
             return fct(request, *args, **kwargs)
 
+        return _wrapped_view
+
+    return wrapped_view
 
 
 def public_model_access(model, **outer_kwargs):

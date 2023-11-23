@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required, public_access
+from course_flow.decorators import public_access
 from django.contrib.humanize.templatetags import humanize
 from django.db.models import Q
 from django.http import (
@@ -18,7 +18,7 @@ from course_flow.templatetags.course_flow_templatetags import (
 )
 
 
-@public_access
+@public_access()
 def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
     user = request.user
 
@@ -72,7 +72,7 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
     )
 
 
-@public_access
+@public_access()
 def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
     user = request.user
 
