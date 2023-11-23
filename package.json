@@ -13,6 +13,7 @@
     "build-js": "rollup -c",
     "watch": "rollup -c rollup.cofig.redesign.js -w",
     "watch-local": "rollup -c rollup.cofig.local.js -w",
+    "prettier": "prettier --write 'course_flow/static/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "test": "jest"
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
