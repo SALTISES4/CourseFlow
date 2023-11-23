@@ -12,6 +12,7 @@
   "scripts": {
     "build-js": "rollup -c",
     "watch": "rollup -c rollup.cofig.redesign.js -w",
+    "watch-local": "rollup -c rollup.cofig.local.js -w",
     "test": "jest"
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
