@@ -226,6 +226,7 @@ const Sidebar = () => {
                     <ListItemButton
                       component="a"
                       href={favourite.url}
+                      class="panel-favourite hover-shade"
                       selected={window.location.pathname === favourite.url}
                     >
                       <ListItemText primary={favourite.title} />

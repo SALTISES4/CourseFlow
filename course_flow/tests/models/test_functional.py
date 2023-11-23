@@ -3396,9 +3396,13 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:project-update", args=[project.pk])
         )
 
+        wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".panel-favourite"))
+        )
+
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
-            2,
+            1,
         )
 
         # delete a workflow
@@ -3422,7 +3426,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
-            1,
+            0,
         )
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
@@ -3475,7 +3479,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
-            2,
+            1,
         )
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
