@@ -248,10 +248,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         project = Project.objects.create(author=self.user, title="new title")
         LiveProject.objects.create(project=project)
         selenium.get(self.live_server_url + "/course-flow/home/")
-        time.sleep(3)
-        # button_workflows = wait.until(
-        #     EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
-        # )
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
+        )
         selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
