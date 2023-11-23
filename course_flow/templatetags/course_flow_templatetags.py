@@ -1,9 +1,10 @@
-import logging
 import json
+import logging
+
 from django import template
 from django.conf import settings
-from django.db.models import Count, Q
 from django.contrib.humanize.templatetags import humanize
+from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils.html import format_html
 

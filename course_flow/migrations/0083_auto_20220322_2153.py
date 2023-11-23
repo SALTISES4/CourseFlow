@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("course_flow", "0082_auto_20220321_1804"),
     ]

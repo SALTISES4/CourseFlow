@@ -1,6 +1,5 @@
 import json
 
-
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.urls import reverse

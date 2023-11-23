@@ -9,7 +9,6 @@ import course_flow.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("course_flow", "0093_liveprojectuser"),

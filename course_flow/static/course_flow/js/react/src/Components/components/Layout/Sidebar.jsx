@@ -122,7 +122,6 @@ const Sidebar = () => {
     sessionStorage.getItem('collapsed_sidebar')
   )
 
-
   const [apiData, loading, error] = useApi(config.json_api_paths.get_sidebar)
 
   function toggleCollapse() {
@@ -212,8 +211,7 @@ const Sidebar = () => {
           ) : null}
         </MainMenuWrap>
 
-        {apiData.is_teacher &&
-        apiData.favourites.length ? (
+        {apiData.is_teacher && apiData.favourites.length ? (
           <>
             <Divider />
             <FavouritesWrap>

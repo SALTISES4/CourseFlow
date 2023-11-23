@@ -37,7 +37,6 @@ def add_to_outcome_parent_with_depth(to_add, base_outcome, required_depth):
 
 
 def import_outcomes(df, workflow, user):
-
     last_outcome = None
     for index, row in df.iterrows():
         code = str(row["code"])

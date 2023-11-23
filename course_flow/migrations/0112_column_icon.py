@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('course_flow', '0111_alter_favourite_content_type'),
+        ("course_flow", "0111_alter_favourite_content_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='column',
-            name='icon',
+            model_name="column",
+            name="icon",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
     ]
