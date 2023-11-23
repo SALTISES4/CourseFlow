@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.humanize.templatetags import humanize
+from django.db.models import Q
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -8,6 +9,7 @@ from django.http import (
 )
 from django.urls import reverse
 
+from course_flow.serializers import FavouriteSerializer
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
     course_flow_return_title,
@@ -49,7 +51,7 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
 
     return JsonResponse(
         {
-            "isTeacher": has_group(user, "Teacher"),
+            "is_teacher": has_group(user, "Teacher"),
             "notifications": {
                 "url": reverse("course_flow:user-notifications"),
                 "unread": unread,
@@ -66,5 +68,33 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
                     "daliteText": course_flow_return_title(),
                 },
             },
+        }
+    )
+
+
+@login_required
+def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
+    user = request.user
+
+    # Prepare 5 most recent favourites, using a serializer that will give just the url and name
+    favourites = FavouriteSerializer(
+        [
+            x.content_object
+            for x in user.favourite_set.filter(
+                Q(workflow__deleted=False, workflow__project__deleted=False)
+                | Q(project__deleted=False)
+            )[:5]
+        ],
+        many=True,
+        context={"user": user},
+    ).data
+
+    print(favourites)
+
+    return JsonResponse(
+        {
+            "is_teacher": has_group(user, "Teacher"),
+            "is_anonymous": user.is_anonymous,
+            "favourites": favourites,
         }
     )

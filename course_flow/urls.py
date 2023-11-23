@@ -446,6 +446,11 @@ def course_flow_patterns():
             views.json_api_get_top_bar,
             name="json-api-get-top-bar",
         ),
+        path(
+            "json-api-get-sidebar/",
+            views.json_api_get_sidebar,
+            name="json-api-get-sidebar",
+        ),
     ] + router.urls
 
 

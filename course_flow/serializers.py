@@ -51,6 +51,7 @@ from .utils import (
     get_user_permission,
     get_user_role,
     linkIDMap,
+    user_project_url,
     user_workflow_url,
 )
 
@@ -1261,6 +1262,26 @@ class ObjectSetSerializerShallow(
         )
         instance.save()
         return instance
+
+
+class FavouriteSerializer(
+    serializers.Serializer,
+    TitleSerializerMixin,
+):
+    title = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, instance):
+        user = self.context.get("user", None)
+        if instance.type in ["project", "liveproject"]:
+            return user_project_url(instance, user)
+        return user_workflow_url(instance, user)
+
+    def get_title(self, instance):
+        title = super().get_title(instance)
+        if title is None or title == "":
+            return _("Untitled ") + instance._meta.verbose_name
+        return title
 
 
 class InfoBoxSerializer(
