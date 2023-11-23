@@ -53,6 +53,7 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
     serve_static = True
 
 
+# test
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
