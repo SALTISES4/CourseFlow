@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('course_flow', '0116_auto_20230913_1423'),
+        ("course_flow", "0116_auto_20230913_1423"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='notification',
-            options={'ordering': ['-created_on']},
+            name="notification",
+            options={"ordering": ["-created_on"]},
         ),
     ]

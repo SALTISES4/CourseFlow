@@ -1,18 +1,20 @@
-from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.humanize.templatetags import humanize
 from django.http import (
     HttpRequest,
     HttpResponse,
     HttpResponseForbidden,
     JsonResponse,
 )
-from django.contrib.auth.decorators import login_required
-from django.contrib.humanize.templatetags import humanize
+from django.urls import reverse
+
 from course_flow.templatetags.course_flow_templatetags import (
-    course_flow_return_url,
-    course_flow_return_title,
     course_flow_password_change_url,
-    has_group
+    course_flow_return_title,
+    course_flow_return_url,
+    has_group,
 )
+
 
 @login_required
 def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
@@ -28,37 +30,41 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
         if notification.content_object.type == "project":
             url = reverse(
                 "course_flow:project-update",
-                kwargs={ "pk": notification.content_object.pk }
+                kwargs={"pk": notification.content_object.pk},
             )
         else:
             url = reverse(
                 "course_flow:workflow-update",
-                kwargs={ "pk": notification.content_object.pk }
+                kwargs={"pk": notification.content_object.pk},
             )
 
-        prepared_notifications.append({
-            "unread": notification.is_unread,
-            "url": url,
-            "date": humanize.naturaltime(notification.created_on),
-            "text": notification.text,
-        })
-
-    return JsonResponse({
-        "isTeacher": has_group(user, "Teacher"),
-        "notifications": {
-            "url": reverse("course_flow:user-notifications"),
-            "unread": unread,
-            "items": prepared_notifications,
-        },
-        "menus": {
-            "add": {
-                "projectUrl": reverse("course_flow:project-create"),
-            },
-            "account": {
-                "profileUrl": reverse("course_flow:user-update"),
-                "resetPasswordUrl": course_flow_password_change_url(),
-                "daliteUrl": course_flow_return_url(),
-                "daliteText": course_flow_return_title(),
+        prepared_notifications.append(
+            {
+                "unread": notification.is_unread,
+                "url": url,
+                "date": humanize.naturaltime(notification.created_on),
+                "text": notification.text,
             }
+        )
+
+    return JsonResponse(
+        {
+            "isTeacher": has_group(user, "Teacher"),
+            "notifications": {
+                "url": reverse("course_flow:user-notifications"),
+                "unread": unread,
+                "items": prepared_notifications,
+            },
+            "menus": {
+                "add": {
+                    "projectUrl": reverse("course_flow:project-create"),
+                },
+                "account": {
+                    "profileUrl": reverse("course_flow:user-update"),
+                    "resetPasswordUrl": course_flow_password_change_url(),
+                    "daliteUrl": course_flow_return_url(),
+                    "daliteText": course_flow_return_title(),
+                },
+            },
         }
-    })
+    )

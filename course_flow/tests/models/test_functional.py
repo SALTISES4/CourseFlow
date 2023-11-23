@@ -1,7 +1,7 @@
 import asyncio
 import json
-import time
 import logging
+import time
 
 from channels.routing import URLRouter
 from channels.testing import ChannelsLiveServerTestCase, WebsocketCommunicator
@@ -11,17 +11,14 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import tag
 from django.urls import reverse
 from selenium import webdriver
+from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver import Firefox
-from selenium.webdriver import FirefoxOptions
-from selenium.webdriver import Chrome
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from course_flow.models import (
     Activity,
@@ -59,17 +56,17 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
-        self.executable_path: str = ''
+        self.executable_path: str = ""
 
     @staticmethod
     def create_ff_browser():
         options = FirefoxOptions()
-        options.add_argument('--headless')
-        options.add_argument('--disable-extensions')
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
-        options.add_argument('--allow-running-insecure-content')
-        options.add_argument('window-size=1920x1480')
+        options.add_argument("--allow-running-insecure-content")
+        options.add_argument("window-size=1920x1480")
         options.set_capability("acceptInsecureCerts", True)
         browser = Firefox(options=options)
         browser.implicitly_wait(10)
@@ -80,18 +77,17 @@ class SeleniumBase:
         if options is None:
             options = webdriver.chrome.options.Options()
 
-        options.add_argument('--headless')
-        options.add_argument('--disable-extensions')
+        options.add_argument("--headless")
+        options.add_argument("--disable-extensions")
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
-        options.add_argument('--disable-gpu')
-        options.add_argument('--allow-running-insecure-content')
+        options.add_argument("--disable-gpu")
+        options.add_argument("--allow-running-insecure-content")
         options.set_capability("acceptInsecureCerts", True)
         browser = Chrome(self.executable_path, options=options)
         return browser
 
     def init_selenium(self, options: dict = None):
-
         if settings.CHROMEDRIVER_PATH is not None:
             self.executable_path = settings.CHROMEDRIVER_PATH
 
@@ -112,7 +108,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         super().tearDown()
 
     def test_register_user(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
 
         selenium.get(self.live_server_url + "/register/")
@@ -165,9 +161,8 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super().tearDown()
 
-
     def test_edit_user(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         selenium.get(self.live_server_url + reverse("course_flow:user-update"))
@@ -217,7 +212,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_liveproject(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -238,14 +233,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         assert LiveProject.objects.filter(project=project).count() == 1
 
     def test_my_classrooms_teacher(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
         LiveProject.objects.create(project=project)
         selenium.get(self.live_server_url + "/course-flow/home/")
-        selenium.find_element(By.CSS_SELECTOR,
-            "#panel-my-live-projects"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#panel-my-live-projects"
         ).click()
         selenium.find_element(By.CSS_SELECTOR, ".workflow-top-row a").click()
         # windows = selenium.window_handles
@@ -258,8 +253,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
         time.sleep(0.5)
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-for-menu .workflow-live-classroom"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-for-menu .workflow-live-classroom"
         ).click()
         time.sleep(0.5)
         # windows = selenium.window_handles
@@ -272,7 +267,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_my_classrooms_student(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         self.user.groups.remove(self.user.groups.first())
         author = get_author()
         selenium = self.selenium
@@ -287,12 +282,12 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.get(self.live_server_url + "/course-flow/home/")
         # make sure only correct items are visible
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,"#panel-my-projects"))
+            len(selenium.find_elements(By.CSS_SELECTOR, "#panel-my-projects"))
             == 0
         )
         time.sleep(0.5)
-        selenium.find_element(By.CSS_SELECTOR,
-            "#panel-my-live-projects"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#panel-my-live-projects"
         ).click()
         selenium.find_element(By.CSS_SELECTOR, ".workflow-top-row a").click()
         # windows = selenium.window_handles
@@ -304,8 +299,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             in selenium.find_element(By.CSS_SELECTOR, ".workflow-title").text
         )
         selenium.get(self.live_server_url + "/course-flow/home/")
-        selenium.find_element(By.CSS_SELECTOR,
-            ".home-item .home-title-row a"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".home-item .home-title-row a"
         ).click()
         selenium.find_element(By.CSS_SELECTOR, ".workflow-top-row a").click()
         # windows = selenium.window_handles
@@ -325,7 +320,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_settings(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -341,8 +336,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.ID, "default-single-completion").click()
         selenium.find_element(By.ID, "default-all-workflows-visible").click()
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details button"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details button"
         ).click()
 
         time.sleep(1)
@@ -353,7 +348,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.default_all_workflows_visible, True)
 
     def test_add_roles(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -366,14 +361,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.find_element(By.CSS_SELECTOR, "#button_students").click()
         time.sleep(1)
-        inputs = selenium.find_elements(By.CSS_SELECTOR,".user-add input")
+        inputs = selenium.find_elements(By.CSS_SELECTOR, ".user-add input")
         inputs[0].send_keys("testuser2")
         time.sleep(2)
-        selenium.find_elements(By.CSS_SELECTOR,".ui-autocomplete li")[
+        selenium.find_elements(By.CSS_SELECTOR, ".ui-autocomplete li")[
             0
         ].click()
         time.sleep(0.5)
-        selenium.find_elements(By.CSS_SELECTOR,".user-add button")[0].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-add button")[0].click()
         time.sleep(2)
         self.assertEqual(
             LiveProjectUser.objects.filter(
@@ -384,8 +379,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             1,
         )
 
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select")[1].click()
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select option")[
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select")[
+            1
+        ].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select option")[
             4
         ].click()
         time.sleep(2)
@@ -405,8 +402,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             1,
         )
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select")[1].click()
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select option")[
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select")[
+            1
+        ].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select option")[
             5
         ].click()
         alert = wait.until(expected_conditions.alert_is_present())
@@ -440,7 +439,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_add_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -460,79 +459,91 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         # todo where is this from?
         print(selenium.current_url)
-        button_workflows = wait.until(EC.element_to_be_clickable((By.ID, "button_workflows")))
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "button_workflows"))
+        )
         button_workflows.click()
 
-        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".permission-select select ")))
+        wait.until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, ".permission-select select ")
+            )
+        )
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='true']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='true']",
                 )
             ),
             0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='false']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='false']",
                 )
             ),
             1,
         )
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".permission-select select"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".permission-select select"
         ).click()
-        selenium.find_elements(By.CSS_SELECTOR,
-            ".permission-select select option"
+        selenium.find_elements(
+            By.CSS_SELECTOR, ".permission-select select option"
         )[1].click()
         time.sleep(2)
         self.assertEqual(liveproject.visible_workflows.count(), 1)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='true']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='true']",
                 )
             ),
             1,
         )
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='false']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='false']",
                 )
             ),
             0,
         )
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".permission-select select"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".permission-select select"
         ).click()
-        selenium.find_elements(By.CSS_SELECTOR,
-            ".permission-select select option"
+        selenium.find_elements(
+            By.CSS_SELECTOR, ".permission-select select option"
         )[0].click()
         time.sleep(2)
         self.assertEqual(liveproject.visible_workflows.count(), 0)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='true']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='true']",
                 )
             ),
             0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".permission-select select option:checked[value='false']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".permission-select select option:checked[value='false']",
                 )
             ),
             1,
         )
 
     def test_student_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -555,15 +566,15 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,".menu-grid")[
+                selenium.find_elements(By.CSS_SELECTOR, ".menu-grid")[
                     0
-                ].find_elements(By.CSS_SELECTOR,".workflow-for-menu")
+                ].find_elements(By.CSS_SELECTOR, ".workflow-for-menu")
             ),
             1,
         )
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".menu-grid .workflow-for-menu .workflow-title"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".menu-grid .workflow-for-menu .workflow-title"
         ).click()
 
         # windows = selenium.window_handles
@@ -578,7 +589,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -599,31 +610,34 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.CSS_SELECTOR, "#button_assignments").click()
         time.sleep(3)
 
-        selenium.find_element(By.CSS_SELECTOR, "#select-workflow > div").click()
+        selenium.find_element(
+            By.CSS_SELECTOR, "#select-workflow > div"
+        ).click()
 
         time.sleep(3)
 
         hover_item = selenium.find_element(By.CSS_SELECTOR, ".node")
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".node .mouseover-actions img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".node .mouseover-actions img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
 
         time.sleep(3)
 
-        selenium.find_elements(By.CSS_SELECTOR,"#users_all option")[0].click()
+        selenium.find_elements(By.CSS_SELECTOR, "#users_all option")[0].click()
         selenium.find_element(By.ID, "add-user").click()
 
         time.sleep(2)
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,"#users_chosen option")
+                selenium.find_elements(By.CSS_SELECTOR, "#users_chosen option")
             ),
             1,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,"#users_all option")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, "#users_all option")),
+            0,
         )
         self.assertEqual(
             UserAssignment.objects.filter(
@@ -640,7 +654,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(UserAssignment.objects.first().completed, True)
 
     def test_student_assignment(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -677,8 +691,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .node"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .node"
                 )
             ),
             0,
@@ -695,15 +709,15 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .node"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .node"
                 )
             ),
             1,
         )
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".node input[type='checkbox']"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".node input[type='checkbox']"
         ).click()
 
         time.sleep(1)
@@ -714,8 +728,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".node .linked-workflow"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".node .linked-workflow"
                 )
             ),
             0,
@@ -733,14 +747,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".node .linked-workflow"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".node .linked-workflow"
                 )
             ),
             2,
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".node .containing-workflow"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".node .containing-workflow"
         ).click()
         time.sleep(2)
 
@@ -764,14 +778,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".node .linked-workflow"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".node .linked-workflow"
                 )
             ),
             2,
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".node .linked-workflow:not(.containing-workflow)"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".node .linked-workflow:not(.containing-workflow)"
         ).click()
         time.sleep(2)
         windows = selenium.window_handles
@@ -782,7 +796,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_create_assignment_from_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
@@ -801,27 +815,29 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(2)
 
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .node"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .node"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".node .assignment-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".node .assignment-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".node .create-assignment img"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".node .create-assignment img"
         ).click()
         time.sleep(1)
 
         self.assertEqual(LiveAssignment.objects.filter(task=node).count(), 1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".assignment-in-node")),
+            len(
+                selenium.find_elements(By.CSS_SELECTOR, ".assignment-in-node")
+            ),
             1,
         )
 
     def test_student_complete_assignment_from_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         user2 = get_author()
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -849,42 +865,46 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(2)
 
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .node"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .node"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".node .assignment-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".node .assignment-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
 
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".assignment-in-node")),
+            len(
+                selenium.find_elements(By.CSS_SELECTOR, ".assignment-in-node")
+            ),
             0,
         )
         UserAssignment.objects.create(user=self.user, assignment=assignment)
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".node .close-button img"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".node .close-button img"
         ).click()
         time.sleep(0.5)
 
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".assignment-in-node")),
+            len(
+                selenium.find_elements(By.CSS_SELECTOR, ".assignment-in-node")
+            ),
             1,
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".assignment-timing input[type='checkbox']"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".assignment-timing input[type='checkbox']"
         ).click()
         time.sleep(1)
         self.assertEqual(
             UserAssignment.objects.filter(user=self.user).first().completed,
             True,
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".assignment-timing input[type='checkbox']"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".assignment-timing input[type='checkbox']"
         ).click()
         time.sleep(1)
         self.assertEqual(
@@ -897,9 +917,7 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
         chrome_options.add_experimental_option(
-            "prefs", {
-                "intl.accept_languages": "fr"
-            }
+            "prefs", {"intl.accept_languages": "fr"}
         )
         chrome_options.add_argument("--lang=fr")
         selbase = SeleniumBase(chrome_options)
@@ -922,12 +940,12 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_home(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         selenium.get(self.live_server_url + "/course-flow/home/")
         assert (
             "Projets récents"
-            in selenium.find_elements(By.CSS_SELECTOR,".home-item-title")[
+            in selenium.find_elements(By.CSS_SELECTOR, ".home-item-title")[
                 0
             ].text
         )
@@ -955,7 +973,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_project_and_workflows(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -965,12 +983,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # Navigate to My Library
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
 
-        create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+        create_project_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "create-project-button"))
+        )
         create_project_button.click()
 
         # click new project button
-        selenium.find_element(By.CSS_SELECTOR,
-            "#project-create-library"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#project-create-library"
         ).click()
 
         title = selenium.find_element(By.ID, "id_title")
@@ -984,7 +1004,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # this sleep is a hack because jquery is giving back interrmittent errors on save and we can't figure out why yet
         time.sleep(1)
         # wait for evidence that the save is finished
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu")))
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu"))
+        )
         project_url = selenium.current_url
 
         assert (
@@ -994,30 +1016,36 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         assert (
             project_description
-            in selenium.find_element(By.CSS_SELECTOR,
-            ".project-description"
-        ).text
+            in selenium.find_element(
+                By.CSS_SELECTOR, ".project-description"
+            ).text
         )
 
         # input('wait')
         # Create templates
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu")))
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".project-menu"))
+        )
         mylibrary = selenium.current_url
 
         for template_type in ["activity", "course"]:
-            print('in: ' + template_type)
+            print("in: " + template_type)
 
-            create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+            create_project_button = wait.until(
+                EC.element_to_be_clickable((By.ID, "create-project-button"))
+            )
             create_project_button.click()
 
             # click activity-strategy-create
             # click course-strategy-create
-            selenium.find_element(By.CSS_SELECTOR,
-                "#" + template_type + "-strategy-create"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#" + template_type + "-strategy-create"
             ).click()
 
-            title = wait.until(EC.presence_of_element_located((By.ID, "id_title")))
+            title = wait.until(
+                EC.presence_of_element_located((By.ID, "id_title"))
+            )
 
             description = selenium.find_element(By.ID, "id_description")
             project_title = "test project title"
@@ -1030,13 +1058,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(1)
             assert (
                 project_title
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
             assert (
                 project_description
-                in selenium.find_element(By.CSS_SELECTOR,
-                ".project-description"
-            ).text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-description"
+                ).text
             )
 
             selenium.get(mylibrary)
@@ -1045,10 +1075,16 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.get(project_url)
             time.sleep(1)
             # Create the workflow
-            create_project_button = wait.until(EC.element_to_be_clickable((By.ID, "create-project-button")))
+            create_project_button = wait.until(
+                EC.element_to_be_clickable((By.ID, "create-project-button"))
+            )
             create_project_button.click()
 
-            create_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, workflow_type + "-create-project")))
+            create_workflow_button = wait.until(
+                EC.element_to_be_clickable(
+                    (By.ID, workflow_type + "-create-project")
+                )
+            )
             create_workflow_button.click()
 
             title = selenium.find_element(By.ID, "id_title")
@@ -1063,42 +1099,49 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 project_title
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
             assert (
                 project_description
-                in selenium.find_element(By.CSS_SELECTOR,
-                ".project-description"
-            ).text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-description"
+                ).text
             )
             selenium.get(project_url)
 
             # edit link
             time.sleep(1)
-            selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-for-menu." + workflow_type + " .workflow-title"
+            selenium.find_element(
+                By.CSS_SELECTOR,
+                ".workflow-for-menu." + workflow_type + " .workflow-title",
             ).click()
 
             time.sleep(5)
 
             assert (
                 project_title
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
 
             selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
-            selenium.find_element(By.CSS_SELECTOR,
-                "#copy-to-project-button"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#copy-to-project-button"
             ).click()
             time.sleep(5)
             assert (
                 project_title
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.exclude(parent_workflow=None)
-                    .count(),
+                .objects.exclude(parent_workflow=None)
+                .count(),
                 1,
             )
             selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
@@ -1108,19 +1151,19 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.filter(is_strategy=False, deleted=False)
-                    .count(),
+                .objects.filter(is_strategy=False, deleted=False)
+                .count(),
                 1,
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                    .objects.filter(is_strategy=False, deleted=True)
-                    .count(),
+                .objects.filter(is_strategy=False, deleted=True)
+                .count(),
                 1,
             )
 
     def test_edit_project_details(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1138,7 +1181,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             "new description"
         )
         selenium.find_element(By.ID, "project-discipline-input").click()
-        selenium.find_elements(By.CSS_SELECTOR,".ui-autocomplete li")[
+        selenium.find_elements(By.CSS_SELECTOR, ".ui-autocomplete li")[
             0
         ].click()
         selenium.find_element(By.ID, "save-changes").click()
@@ -1148,9 +1191,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         assert (
             "new description"
-            in selenium.find_element(By.CSS_SELECTOR,
-            ".project-description"
-        ).text
+            in selenium.find_element(
+                By.CSS_SELECTOR, ".project-description"
+            ).text
         )
         time.sleep(2)
         project = Project.objects.first()
@@ -1159,7 +1202,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.disciplines.first(), discipline)
 
     def test_import_favourite(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1206,21 +1249,23 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(2)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-for-menu .workflow-toggle-favourite .filled"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".workflow-for-menu .workflow-toggle-favourite .filled",
                 )
             ),
             4,
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-for-menu.project .workflow-title"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-for-menu.project .workflow-title"
         ).click()
         favourites = selenium.current_url
         time.sleep(2)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-for-menu .workflow-toggle-favourite .filled"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".workflow-for-menu .workflow-toggle-favourite .filled",
                 )
             ),
             3,
@@ -1246,45 +1291,45 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         my_project1 = Project.objects.create(author=self.user)
         selenium.get(favourites)
         time.sleep(1)
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-for-menu.activity .workflow-title"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-for-menu.activity .workflow-title"
         ).click()
         time.sleep(0.5)
         selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
         selenium.find_element(By.CSS_SELECTOR, "#copy-button").click()
         time.sleep(0.5)
-        selenium.find_elements(By.CSS_SELECTOR,
-            "#popup-container #tabs-0 .workflow-for-menu"
+        selenium.find_elements(
+            By.CSS_SELECTOR, "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element(By.CSS_SELECTOR, "#set-linked-workflow").click()
         time.sleep(1)
 
         selenium.get(favourites)
         time.sleep(1)
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-for-menu.course .workflow-title"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-for-menu.course .workflow-title"
         ).click()
         time.sleep(0.5)
         selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
         selenium.find_element(By.CSS_SELECTOR, "#copy-button").click()
         time.sleep(0.5)
-        selenium.find_elements(By.CSS_SELECTOR,
-            "#popup-container #tabs-0 .workflow-for-menu"
+        selenium.find_elements(
+            By.CSS_SELECTOR, "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element(By.CSS_SELECTOR, "#set-linked-workflow").click()
         time.sleep(1)
 
         selenium.get(favourites)
         time.sleep(1)
-        selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-for-menu.program .workflow-title"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-for-menu.program .workflow-title"
         ).click()
         time.sleep(0.5)
         selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
         selenium.find_element(By.CSS_SELECTOR, "#copy-button").click()
         time.sleep(0.5)
-        selenium.find_elements(By.CSS_SELECTOR,
-            "#popup-container #tabs-0 .workflow-for-menu"
+        selenium.find_elements(
+            By.CSS_SELECTOR, "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element(By.CSS_SELECTOR, "#set-linked-workflow").click()
         time.sleep(1)
@@ -1292,18 +1337,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         for workflow_type in ["activity", "course", "program"]:
             assert WorkflowProject.objects.get(
                 workflow=get_model_from_str(workflow_type)
-                    .objects.filter(
+                .objects.filter(
                     author=self.user,
                     parent_workflow=get_model_from_str(
                         workflow_type
                     ).objects.get(author=author),
                 )
-                    .last(),
+                .last(),
                 project=my_project1,
             )
 
     def test_workflow_read_only(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -1324,23 +1369,24 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
 
             self.assertEqual(
-                len(selenium.find_elements(By.CSS_SELECTOR,".action-button")),
+                len(selenium.find_elements(By.CSS_SELECTOR, ".action-button")),
                 0,
             )
 
-            selenium.find_elements(By.CSS_SELECTOR,".week")[0].click()
+            selenium.find_elements(By.CSS_SELECTOR, ".week")[0].click()
             time.sleep(0.3)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        "#edit-menu .right-panel-inner #title-editor:disabled"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        "#edit-menu .right-panel-inner #title-editor:disabled",
                     )
                 ),
                 1,
             )
 
     def test_workflow_editing(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1362,105 +1408,105 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             num_nodes = 1
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .column"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .column"
                     )
                 ),
                 num_columns,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .week"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .week"
                     )
                 ),
                 num_weeks,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 num_nodes,
             )
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .column"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .column"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".column .insert-sibling-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".column .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(0.5)
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .week"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .week"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".week .insert-sibling-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".week .insert-sibling-button img"
             )
-            selenium.find_element(By.CSS_SELECTOR,
-                "#sidebar .window-close-button"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#sidebar .window-close-button"
             ).click()
             time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".node .insert-sibling-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".node .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(8)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .column"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .column"
                     )
                 ),
                 num_columns + 1,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .week"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .week"
                     )
                 ),
                 num_weeks + 1,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 num_nodes + 1,
             )
             # Deleting
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".node .delete-self-button img"
-            )
-            action_hover_click(selenium, hover_item, click_item).perform()
-            alert = wait.until(expected_conditions.alert_is_present())
-            selenium.switch_to.alert.accept()
-            time.sleep(1)
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .column"
-            )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".column .delete-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".node .delete-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
             time.sleep(1)
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .week"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .column"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".week .delete-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".column .delete-self-button img"
+            )
+            action_hover_click(selenium, hover_item, click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(1)
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .week"
+            )
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".week .delete-self-button img"
             )
             #            selenium.find_element(By.CSS_SELECTOR,
             #                "#sidebar .window-close-button"
@@ -1472,31 +1518,31 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(1)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .column"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .column"
                     )
                 ),
                 num_columns,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .week"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .week"
                     )
                 ),
                 num_weeks,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 0,
             )
 
     def test_workflow_duplication(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1519,83 +1565,84 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             num_nodes = 1
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .column"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .column"
                     )
                 ),
                 num_columns,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .week"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .week"
                     )
                 ),
                 num_weeks,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 num_nodes,
             )
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .column"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .column"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".column .duplicate-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".column .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(1)
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .week"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .week"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".week > .mouseover-container-bypass > .mouseover-actions > .duplicate-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR,
+                ".week > .mouseover-container-bypass > .mouseover-actions > .duplicate-self-button img",
             )
-            selenium.find_element(By.CSS_SELECTOR,
-                "#sidebar .window-close-button"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#sidebar .window-close-button"
             ).click()
             time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(1)
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".node .duplicate-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".node .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(1)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .column"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .column"
                     )
                 ),
                 num_columns + 1,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .week"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .week"
                     )
                 ),
                 num_weeks + 1,
             )
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 num_nodes * 2 + 1,
             )
 
     def test_outcome_editing(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -1608,22 +1655,24 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
         time.sleep(4)
-        selenium.find_element(By.CSS_SELECTOR, "a[href='#outcome-bar']").click()
+        selenium.find_element(
+            By.CSS_SELECTOR, "a[href='#outcome-bar']"
+        ).click()
         selenium.find_element(By.CSS_SELECTOR, "#edit-outcomes-button").click()
         time.sleep(1)
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".outcome .insert-child-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".outcome .insert-child-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
                 )
             ),
             1,
@@ -1631,18 +1680,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 1
         )
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".outcome .outcome .insert-sibling-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".outcome .outcome .insert-sibling-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
                 )
             ),
             2,
@@ -1650,11 +1699,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".outcome .outcome .delete-self-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".outcome .outcome .delete-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         alert = wait.until(expected_conditions.alert_is_present())
@@ -1662,8 +1711,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(2)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
                 )
             ),
             1,
@@ -1674,38 +1723,38 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(1)
 
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".outcome .outcome .insert-child-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".outcome .outcome .insert-child-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
-        selenium.find_element(By.CSS_SELECTOR,
-            ".outcome:not(.dropped) > .outcome-drop"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".outcome:not(.dropped) > .outcome-drop"
         ).click()
         time.sleep(1)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
                 )
             ),
             2,
         )
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".outcome .outcome .duplicate-self-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR, ".outcome .outcome .duplicate-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".workflow-details .outcome .outcome"
                 )
             ),
             3,
@@ -1719,19 +1768,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 2
         )
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome-workflow > .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome-workflow > .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR,
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img",
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome-workflow > .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".workflow-details .outcome-workflow > .outcome",
                 )
             ),
             3,
@@ -1739,19 +1790,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 3
         )
-        hover_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome-workflow > .outcome"
+        hover_item = selenium.find_element(
+            By.CSS_SELECTOR, ".workflow-details .outcome-workflow > .outcome"
         )
-        click_item = selenium.find_element(By.CSS_SELECTOR,
-            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img"
+        click_item = selenium.find_element(
+            By.CSS_SELECTOR,
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img",
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".workflow-details .outcome-workflow > .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".workflow-details .outcome-workflow > .outcome",
                 )
             ),
             4,
@@ -1761,7 +1814,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_edit_menu(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         # Note that we don't test ALL parts of the edit menu, and we test only for nodes. This will catch the vast majority of potential issues. Linked workflows are tested in a different test
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -1783,8 +1836,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             time.sleep(2)
-            selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node"
+            selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node"
             ).click()
             time.sleep(1)
             title = selenium.find_element(By.ID, "title-editor")
@@ -1794,9 +1847,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2.5)
             assert (
                 "new title"
-                in selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node .node-title"
-            ).text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".workflow-details .node .node-title"
+                ).text
             )
             self.assertEqual(
                 workflow.weeks.first().nodes.first().title, "new title"
@@ -1804,21 +1857,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             if i < 2:
                 context = selenium.find_element(By.ID, "context-editor")
                 context.click()
-                selenium.find_elements(By.CSS_SELECTOR,
-                    "#context-editor option"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "#context-editor option"
                 )[2].click()
                 time.sleep(2.5)
                 self.assertEqual(
                     workflow.weeks.first()
-                        .nodes.first()
-                        .context_classification,
-                        2 + 100 * i,
+                    .nodes.first()
+                    .context_classification,
+                    2 + 100 * i,
                 )
             else:
                 self.assertEqual(
                     len(
-                        selenium.find_elements(By.CSS_SELECTOR,
-                            "#context-editor"
+                        selenium.find_elements(
+                            By.CSS_SELECTOR, "#context-editor"
                         )
                     ),
                     0,
@@ -1826,7 +1879,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             if i < 2:
                 context = selenium.find_element(By.ID, "task-editor")
                 context.click()
-                selenium.find_elements(By.CSS_SELECTOR,"#task-editor option")[
+                selenium.find_elements(By.CSS_SELECTOR, "#task-editor option")[
                     2
                 ].click()
                 time.sleep(2.5)
@@ -1837,13 +1890,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             else:
                 self.assertEqual(
                     len(
-                        selenium.find_elements(By.CSS_SELECTOR,"#task-editor")
+                        selenium.find_elements(By.CSS_SELECTOR, "#task-editor")
                     ),
                     0,
                 )
 
     def test_project_return(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1869,11 +1922,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element(By.ID, "project-return").click()
             assert (
                 "project title"
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
 
     def test_strategy_convert(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1896,8 +1951,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             time.sleep(5)
-            selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .week"
+            selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .week"
             ).click()
             time.sleep(1)
             title = selenium.find_element(By.ID, "title-editor").send_keys(
@@ -1906,21 +1961,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2.5)
             selenium.find_element(By.ID, "toggle-strategy-editor").click()
             time.sleep(4)
-            selenium.find_element(By.CSS_SELECTOR,
-                "a[href='#node-bar']"
+            selenium.find_element(
+                By.CSS_SELECTOR, "a[href='#node-bar']"
             ).click()
             assert (
                 "new strategy"
-                in selenium.find_element(By.CSS_SELECTOR,
-                ".strategy-bar-strategy div"
-            ).text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".strategy-bar-strategy div"
+                ).text
             )
             selenium.get(
                 self.live_server_url + reverse("course_flow:my-library")
             )
             time.sleep(1)
-            selenium.find_element(By.CSS_SELECTOR,
-                "." + workflow_type + " .workflow-title"
+            selenium.find_element(
+                By.CSS_SELECTOR, "." + workflow_type + " .workflow-title"
             ).click()
             time.sleep(2)
 
@@ -1931,22 +1986,24 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 "new strategy"
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
             self.assertEqual(
                 Workflow.objects.filter(is_strategy=True).count(), 1
             )
             self.assertEqual(
                 Workflow.objects.get(is_strategy=True)
-                    .weeks.get(is_strategy=True)
-                    .parent_week,
+                .weeks.get(is_strategy=True)
+                .parent_week,
                 workflow.weeks.first(),
             )
             Workflow.objects.get(is_strategy=True).delete()
 
     # @todo currently crashing app
     def test_outcome_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1988,8 +2045,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
             selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
-            selenium.find_element(By.CSS_SELECTOR,
-                "#button_outcometable"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#button_outcometable"
             ).click()
             time.sleep(1)
             base_outcome_row_select = ".outcome-table > div > .outcome-row:first-child > .outcome-cells"
@@ -2105,14 +2162,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
 
             def assert_image(element_string, string):
-                assert string in selenium.find_element(By.CSS_SELECTOR,
-                    element_string
+                assert string in selenium.find_element(
+                    By.CSS_SELECTOR, element_string
                 ).get_attribute("src")
 
             def assert_no_image(element_string):
                 self.assertEqual(
                     len(
-                        selenium.find_elements(By.CSS_SELECTOR,element_string)
+                        selenium.find_elements(By.CSS_SELECTOR, element_string)
                     ),
                     0,
                 )
@@ -2200,7 +2257,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
 
     def test_outcome_analytics(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -2233,11 +2290,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
-            {
-                "nodePk": node.id,
-                "outcomePk": base_outcome.id,
-                "degree": 1
-            },
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
 
         OutcomeHorizontalLink.objects.create(
@@ -2252,40 +2305,56 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
-        other_views = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".other-views")))
+        other_views = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".other-views"))
+        )
         other_views.click()
 
         # click the Course Outcome Analytics button
-        selenium.find_element(By.CSS_SELECTOR,
-            "#button_alignmentanalysis"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#button_alignmentanalysis"
         ).click()
 
         # input("wait")
-        title_text = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".week .title-text")))
-        assert (title_text.text == "Term 1")
+        title_text = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".week .title-text")
+            )
+        )
+        assert title_text.text == "Term 1"
 
-        assert len(selenium.find_elements(By.CSS_SELECTOR,".week .node")) == 1
+        assert len(selenium.find_elements(By.CSS_SELECTOR, ".week .node")) == 1
 
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".week .node .child-outcome")
-            ) == 3
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".week .node .child-outcome"
+                )
+            )
+            == 3
         )
 
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".week .node .child-outcome .half-width>.outcome")
-            ) == 2
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".week .node .child-outcome .half-width>.outcome",
+                )
+            )
+            == 2
         )
         assert (
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".week .node .child-outcome .alignment-row .outcome"
+                selenium.find_elements(
+                    By.CSS_SELECTOR,
+                    ".week .node .child-outcome .alignment-row .outcome",
                 )
             )
             == 2
         )
 
     def test_outcome_matrix_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2330,21 +2399,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.CSS_SELECTOR, "#table_type_matrix").click()
         time.sleep(2)
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".table-cell .node"))
+            len(selenium.find_elements(By.CSS_SELECTOR, ".table-cell .node"))
             == 1
         )
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".table-cell input"))
+            len(selenium.find_elements(By.CSS_SELECTOR, ".table-cell input"))
             == 1
         )
         time.sleep(2)
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".table-cell > img"))
+            len(selenium.find_elements(By.CSS_SELECTOR, ".table-cell > img"))
             == 3
         )
 
     def test_grid_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -2366,13 +2435,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.CSS_SELECTOR, "#button_grid").click()
         time.sleep(1)
         assert (
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-grid")) > 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-grid")) > 0
         )
 
     def test_linked_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
-        selenium.set_window_size(1920, 1480)  # need to expand the window size to show the right sidebar buttons
+        selenium.set_window_size(
+            1920, 1480
+        )  # need to expand the window size to show the right sidebar buttons
         workflow_types = ["activity", "course", "program"]
 
         wait = WebDriverWait(selenium, timeout=10)
@@ -2407,27 +2478,48 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             if workflow_type == "activity":
                 continue
 
-            node_details = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".workflow-details .node .node-title")))
+            node_details = wait.until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, ".workflow-details .node .node-title")
+                )
+            )
             node_details.click()
 
-            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor = wait.until(
+                EC.element_to_be_clickable((By.ID, "linked-workflow-editor"))
+            )
             linked_workflow_editor.click()
 
-            section_workflow_menu = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".section-" + workflow_types[i - 1] + " .workflow-for-menu")))
+            section_workflow_menu = wait.until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        ".section-"
+                        + workflow_types[i - 1]
+                        + " .workflow-for-menu",
+                    )
+                )
+            )
             section_workflow_menu.click()
 
             # link to node button
-            set_linked_workflow = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+            set_linked_workflow = wait.until(
+                EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+            )
             set_linked_workflow.click()
 
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,
                 get_model_from_str(workflow_types[i - 1]).objects.first().id,
             )
-            linked_workflow_cta = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".workflow-details .node .linked-workflow")))
+            linked_workflow_cta = wait.until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node .linked-workflow",
+                    )
+                )
+            )
             linked_workflow_cta.click()
 
             windows = selenium.window_handles
@@ -2445,26 +2537,42 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 # Handle the case where no windows are left
                 print("No more windows to switch to.")
 
-            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".project-title")))
+            wait.until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, ".project-title")
+                )
+            )
             assert (
                 workflow_types[i - 1]
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
             selenium.get(this_url)
             time.sleep(2)
             ActionChains(selenium).move_to_element_with_offset(
-                selenium.find_element(By.CSS_SELECTOR,
-                    ".workflow-details .node .node-title"
+                selenium.find_element(
+                    By.CSS_SELECTOR, ".workflow-details .node .node-title"
                 ),
                 5,
                 5,
             ).click().perform()
 
-            linked_workflow_editor = wait.until(EC.element_to_be_clickable((By.ID, "linked-workflow-editor")))
+            linked_workflow_editor = wait.until(
+                EC.element_to_be_clickable((By.ID, "linked-workflow-editor"))
+            )
             linked_workflow_editor.click()
 
-            section_workflow_menu = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".section-" + workflow_types[i - 1] + " .workflow-for-menu")))
+            section_workflow_menu = wait.until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        ".section-"
+                        + workflow_types[i - 1]
+                        + " .workflow-for-menu",
+                    )
+                )
+            )
             section_workflow_menu.click()
 
             selenium.find_element(By.ID, "set-linked-workflow-none").click()
@@ -2474,19 +2582,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 workflow.weeks.first().nodes.first().linked_workflow, None
             )
             ActionChains(selenium).move_to_element_with_offset(
-                selenium.find_element(By.CSS_SELECTOR,
-                    ".workflow-details .node .node-title"
+                selenium.find_element(
+                    By.CSS_SELECTOR, ".workflow-details .node .node-title"
                 ),
                 5,
                 5,
             ).double_click().perform()
             assert (
                 workflow_type
-                in selenium.find_element(By.CSS_SELECTOR, ".project-title").text
+                in selenium.find_element(
+                    By.CSS_SELECTOR, ".project-title"
+                ).text
             )
 
     def create_many_items(self, author, published, disciplines):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         for object_type in [
             "activity",
             "course",
@@ -2521,20 +2631,20 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     # why does this method get invoked 3 times by test runner?
     # this test working again but needs a lot of work to remove the time.sleeps
     def test_explore(self):
-
         # helper functions
         def count_pagination_and_elements():
-
             # find all the paginated page links and count them  (4)
-            created_by_buttons = wait.until(EC.presence_of_all_elements_located(page_buttons_selector))
-            self.assertEqual(
-                len(created_by_buttons), 4
+            created_by_buttons = wait.until(
+                EC.presence_of_all_elements_located(page_buttons_selector)
             )
+            self.assertEqual(len(created_by_buttons), 4)
             # count the number of articles (20)
-            workflow_title = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".workflow-title")))
-            self.assertEqual(
-                len(workflow_title), 20
+            workflow_title = wait.until(
+                EC.presence_of_all_elements_located(
+                    (By.CSS_SELECTOR, ".workflow-title")
+                )
             )
+            self.assertEqual(len(workflow_title), 20)
 
         def has_loading_finished():
             # not sure why this check is not working, use time sleep as a 'hack/stopgap' until we can fix it
@@ -2543,9 +2653,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             wait.until(EC.element_to_be_clickable((By.ID, "prev-page-button")))
             time.sleep(5)
 
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
-        selenium.set_window_size(1920, 1480)  # need to expand the window size to show the right sidebar buttons
+        selenium.set_window_size(
+            1920, 1480
+        )  # need to expand the window size to show the right sidebar buttons
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
@@ -2565,25 +2677,29 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.ID, "workflow-filter").click()
 
         # select all filter checkboxes
-        for checkbox in selenium.find_elements(By.CSS_SELECTOR,
-            "#workflow-filter input"
+        for checkbox in selenium.find_elements(
+            By.CSS_SELECTOR, "#workflow-filter input"
         ):
             checkbox.click()
 
         # click search button
-        search_button = wait.until(EC.element_to_be_clickable(search_button_selector))
+        search_button = wait.until(
+            EC.element_to_be_clickable(search_button_selector)
+        )
         search_button.click()
 
         # count pagination and elements
         count_pagination_and_elements()
 
         # go to page 2
-        selenium.find_elements(By.CSS_SELECTOR,".page-button")[2].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".page-button")[2].click()
         has_loading_finished()
         count_pagination_and_elements()
 
         # check that page 2 button CTA is active
-        page_buttons = wait.until(EC.presence_of_all_elements_located(page_buttons_selector))
+        page_buttons = wait.until(
+            EC.presence_of_all_elements_located(page_buttons_selector)
+        )
         assert "active" in page_buttons[2].get_attribute("class")
 
         # paginate right
@@ -2593,7 +2709,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         count_pagination_and_elements()
 
         # check that page 3 button CTA is active
-        page_buttons = wait.until(EC.presence_of_all_elements_located(page_buttons_selector))
+        page_buttons = wait.until(
+            EC.presence_of_all_elements_located(page_buttons_selector)
+        )
         assert "active" in page_buttons[3].get_attribute("class")
 
         selenium.find_element(By.CSS_SELECTOR, "#prev-page-button").click()
@@ -2601,46 +2719,56 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         has_loading_finished()
         count_pagination_and_elements()
 
-        page_buttons = wait.until(EC.presence_of_all_elements_located(page_buttons_selector))
+        page_buttons = wait.until(
+            EC.presence_of_all_elements_located(page_buttons_selector)
+        )
         assert "active" in page_buttons[2].get_attribute("class")
 
         # open the disciplines menu
         selenium.find_element(By.ID, "workflow-disciplines").click()
 
         # check all the disciplines checkboxes
-        for checkbox in selenium.find_elements(By.CSS_SELECTOR,
-            "#workflow-disciplines input"
+        for checkbox in selenium.find_elements(
+            By.CSS_SELECTOR, "#workflow-disciplines input"
         ):
             checkbox.click()
 
         # click search button again
-        search_button = wait.until(EC.element_to_be_clickable(search_button_selector))
+        search_button = wait.until(
+            EC.element_to_be_clickable(search_button_selector)
+        )
         search_button.click()
         has_loading_finished()
 
         count_pagination_and_elements()
 
         # still failing here
-        workflow_search_input = selenium.find_element(By.ID, "workflow-search-input")
+        workflow_search_input = selenium.find_element(
+            By.ID, "workflow-search-input"
+        )
         workflow_search_input.send_keys("1")
         workflow_search_input.send_keys(Keys.TAB)
         wait.until_not(
-            lambda driver: selenium.find_element(*search_button_selector).get_attribute("disabled")
+            lambda driver: selenium.find_element(
+                *search_button_selector
+            ).get_attribute("disabled")
         )
-        search_button = wait.until(EC.element_to_be_clickable(search_button_selector))
+        search_button = wait.until(
+            EC.element_to_be_clickable(search_button_selector)
+        )
         search_button.click()
 
         # has_loading_finished()
         time.sleep(5)
 
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 8
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 8
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 1
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 1
         )
-        for button in selenium.find_elements(By.CSS_SELECTOR,
-            ".workflow-toggle-favourite"
+        for button in selenium.find_elements(
+            By.CSS_SELECTOR, ".workflow-toggle-favourite"
         ):
             button.click()
 
@@ -2662,25 +2790,25 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
     def test_explore_no_publish(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
         self.create_many_items(author, False, disciplines=[discipline])
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 0
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 0
         )
 
     def test_explore_disciplines(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -2692,64 +2820,66 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             author, True, disciplines=[discipline1, discipline2]
         )
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            selenium.find_elements(By.CSS_SELECTOR,".page-button")[4].text, "6"
+            selenium.find_elements(By.CSS_SELECTOR, ".page-button")[4].text,
+            "6",
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
         selenium.find_element(By.ID, "workflow-disciplines").click()
-        selenium.find_elements(By.CSS_SELECTOR,"#workflow-disciplines input")[
+        selenium.find_elements(By.CSS_SELECTOR, "#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 4
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
         selenium.find_element(By.ID, "workflow-disciplines").click()
-        selenium.find_elements(By.CSS_SELECTOR,"#workflow-disciplines input")[
+        selenium.find_elements(By.CSS_SELECTOR, "#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_elements(By.CSS_SELECTOR,"#workflow-disciplines input")[
+        selenium.find_elements(By.CSS_SELECTOR, "#workflow-disciplines input")[
             1
         ].click()
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 4
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
         selenium.find_element(By.ID, "workflow-disciplines").click()
-        selenium.find_elements(By.CSS_SELECTOR,"#workflow-disciplines input")[
+        selenium.find_elements(By.CSS_SELECTOR, "#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            selenium.find_elements(By.CSS_SELECTOR,".page-button")[4].text, "6"
+            selenium.find_elements(By.CSS_SELECTOR, ".page-button")[4].text,
+            "6",
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
 
     def test_share_edit_view(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
@@ -2763,14 +2893,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:project-update", args=[project.pk])
         )
         selenium.find_element(By.ID, "share-button").click()
-        inputs = selenium.find_elements(By.CSS_SELECTOR,".user-add input")
+        inputs = selenium.find_elements(By.CSS_SELECTOR, ".user-add input")
         inputs[0].send_keys("testuser2")
         time.sleep(2)
-        selenium.find_elements(By.CSS_SELECTOR,".ui-autocomplete li")[
+        selenium.find_elements(By.CSS_SELECTOR, ".ui-autocomplete li")[
             0
         ].click()
         time.sleep(0.5)
-        selenium.find_elements(By.CSS_SELECTOR,".user-add button")[0].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-add button")[0].click()
         time.sleep(2)
         self.assertEqual(
             ObjectPermission.objects.filter(
@@ -2782,8 +2912,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             1,
         )
 
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select")[0].click()
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select option")[
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select")[
+            0
+        ].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select option")[
             1
         ].click()
         time.sleep(2)
@@ -2805,8 +2937,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             1,
         )
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select")[0].click()
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select option")[
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select")[
+            0
+        ].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select option")[
             2
         ].click()
         time.sleep(2)
@@ -2828,8 +2962,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             1,
         )
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select")[0].click()
-        selenium.find_elements(By.CSS_SELECTOR,".user-label select option")[
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select")[
+            0
+        ].click()
+        selenium.find_elements(By.CSS_SELECTOR, ".user-label select option")[
             3
         ].click()
         alert = wait.until(expected_conditions.alert_is_present())
@@ -2851,11 +2987,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         project = Project.objects.get(pk=project.pk)
         self.assertEqual(project.published, True)
 
-        selenium.find_element(By.CSS_SELECTOR,
-            ".message-wrap > .window-close-button"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".message-wrap > .window-close-button"
         ).click()
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".message-wrap")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".message-wrap")), 0
         )
 
 
@@ -2881,7 +3017,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def create_many_items(self, author, published, disciplines):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         for object_type in [
             "activity",
             "course",
@@ -2915,7 +3051,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
     # Begin tests
     def test_delete_restore_column(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -2945,17 +3081,18 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node.column-" + str(column_id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node.column-" + str(column_id),
                     )
                 ),
                 1,
             )
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .column"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .column"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".column .delete-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".column .delete-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
@@ -2966,8 +3103,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Make sure all nodes have been moved to the first column
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node.column-" + str(column2_id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node.column-" + str(column2_id),
                     )
                 ),
                 1,
@@ -2981,27 +3119,30 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node.column-" + str(column2_id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node.column-" + str(column2_id),
                     )
                 ),
                 1,
             )
 
             # Restore the column
-            selenium.find_element(By.CSS_SELECTOR,
-                "a[href='#restore-bar'] span"
+            selenium.find_element(
+                By.CSS_SELECTOR, "a[href='#restore-bar'] span"
             ).click()
-            selenium.find_element(By.CSS_SELECTOR,
-                "#restore-bar-workflow .node-bar-column-block button"
+            selenium.find_element(
+                By.CSS_SELECTOR,
+                "#restore-bar-workflow .node-bar-column-block button",
             ).click()
             time.sleep(2)
 
             # Make sure all nodes have been moved back to the restored column
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node.column-" + str(column_id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node.column-" + str(column_id),
                     )
                 ),
                 1,
@@ -3015,15 +3156,16 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node.column-" + str(column_id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".workflow-details .node.column-" + str(column_id),
                     )
                 ),
                 1,
             )
 
     def test_delete_restore_node(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3046,17 +3188,17 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Delete a node
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 1,
             )
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".node .delete-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR, ".node .delete-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
@@ -3066,8 +3208,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Make sure the node has vanished
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 0,
@@ -3081,27 +3223,28 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 0,
             )
 
             # Restore the node
-            selenium.find_element(By.CSS_SELECTOR,
-                "a[href='#restore-bar'] span"
+            selenium.find_element(
+                By.CSS_SELECTOR, "a[href='#restore-bar'] span"
             ).click()
-            selenium.find_element(By.CSS_SELECTOR,
-                "#restore-bar-workflow .node-bar-column-block button"
+            selenium.find_element(
+                By.CSS_SELECTOR,
+                "#restore-bar-workflow .node-bar-column-block button",
             ).click()
             time.sleep(2)
 
             # Make sure the node was restored
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 1,
@@ -3115,15 +3258,15 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".workflow-details .node"
+                    selenium.find_elements(
+                        By.CSS_SELECTOR, ".workflow-details .node"
                     )
                 ),
                 1,
             )
 
     def test_delete_restore_outcome(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3157,75 +3300,80 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(3)
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     1
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(outcome.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(outcome.id),
                     )
                 ),
                 1,
             )
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     0
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(child1.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(child1.id),
                     )
                 ),
                 1,
             )
 
-            selenium.find_element(By.CSS_SELECTOR,
-                "#button_outcomeedit"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#button_outcomeedit"
             ).click()
             time.sleep(3)
             # Delete the parent outcome
-            hover_item = selenium.find_element(By.CSS_SELECTOR,
-                ".outcome-edit .outcome-workflow > .outcome"
+            hover_item = selenium.find_element(
+                By.CSS_SELECTOR, ".outcome-edit .outcome-workflow > .outcome"
             )
-            click_item = selenium.find_element(By.CSS_SELECTOR,
-                ".outcome-edit .outcome-workflow > .outcome>.mouseover-actions .delete-self-button img"
+            click_item = selenium.find_element(
+                By.CSS_SELECTOR,
+                ".outcome-edit .outcome-workflow > .outcome>.mouseover-actions .delete-self-button img",
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
             time.sleep(2)
-            selenium.find_element(By.CSS_SELECTOR,
-                "#button_workflowview"
+            selenium.find_element(
+                By.CSS_SELECTOR, "#button_workflowview"
             ).click()
 
             # Make sure the outcomenodes have vanished
             time.sleep(1)
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     1
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(outcome.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(outcome.id),
                     )
                 ),
                 0,
             )
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     0
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(child1.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(child1.id),
                     )
                 ),
                 0,
@@ -3238,64 +3386,69 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     1
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(outcome.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(outcome.id),
                     )
                 ),
                 0,
             )
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     0
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(child1.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(child1.id),
                     )
                 ),
                 0,
             )
 
             # Restore the outcome
-            selenium.find_element(By.CSS_SELECTOR,
-                "a[href='#restore-bar'] span"
+            selenium.find_element(
+                By.CSS_SELECTOR, "a[href='#restore-bar'] span"
             ).click()
-            selenium.find_element(By.CSS_SELECTOR,
-                "#restore-bar-workflow .node-bar-column-block button"
+            selenium.find_element(
+                By.CSS_SELECTOR,
+                "#restore-bar-workflow .node-bar-column-block button",
             ).click()
             time.sleep(2)
 
             # Make sure the outcome was restored
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     1
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(outcome.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(outcome.id),
                     )
                 ),
                 1,
             )
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     0
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(child1.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(child1.id),
                     )
                 ),
                 1,
@@ -3308,34 +3461,36 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     1
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(outcome.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(outcome.id),
                     )
                 ),
                 1,
             )
             ActionChains(selenium).move_to_element(
-                selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[
+                selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[
                     0
                 ]
             ).perform()
             self.assertEqual(
                 len(
-                    selenium.find_elements(By.CSS_SELECTOR,
-                        ".outcome-node .outcome-" + str(child1.id)
+                    selenium.find_elements(
+                        By.CSS_SELECTOR,
+                        ".outcome-node .outcome-" + str(child1.id),
                     )
                 ),
                 1,
             )
 
     def test_delete_restore_workflow(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3355,7 +3510,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
             2,
         )
 
@@ -3379,11 +3534,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
             1,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-for-menu")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-for-menu")),
             1,
         )
 
@@ -3394,21 +3549,21 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(2)
         ActionChains(selenium).move_to_element_with_offset(
-            selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node .node-title"
+            selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node .node-title"
             ),
             5,
             5,
         ).click().perform()
         time.sleep(1)
-        selenium.find_element(By.CSS_SELECTOR,
-            "#linked-workflow-editor"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#linked-workflow-editor"
         ).click()
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".message-wrap .workflow-for-menu"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".message-wrap .workflow-for-menu"
                 )
             ),
             0,
@@ -3432,11 +3587,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
             2,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-for-menu")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-for-menu")),
             2,
         )
 
@@ -3447,28 +3602,28 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(2)
         ActionChains(selenium).move_to_element_with_offset(
-            selenium.find_element(By.CSS_SELECTOR,
-                ".workflow-details .node .node-title"
+            selenium.find_element(
+                By.CSS_SELECTOR, ".workflow-details .node .node-title"
             ),
             5,
             5,
         ).click().perform()
         time.sleep(1)
-        selenium.find_element(By.CSS_SELECTOR,
-            "#linked-workflow-editor"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#linked-workflow-editor"
         ).click()
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".message-wrap .workflow-for-menu"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".message-wrap .workflow-for-menu"
                 )
             ),
             1,
         )
 
     def test_explore_deleted(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
 
         wait = WebDriverWait(selenium, timeout=10)
@@ -3480,41 +3635,41 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make deleted workflows don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
 
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 1
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 1
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 10
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 10
         )
         Project.objects.all().update(deleted=True)
         # make deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 0
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 0
         )
         Workflow.objects.all().update(deleted=False)
         # make workflows from deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        selenium.find_element(By.CSS_SELECTOR,
-            "#workflow-search+button"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#workflow-search+button"
         ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".page-button")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".page-button")), 0
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 0
         )
 
 
@@ -3540,7 +3695,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_create_sets(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -3550,20 +3705,25 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
-        edit_projects_button = wait.until(EC.element_to_be_clickable((By.ID, "edit-project-button")))
+        edit_projects_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "edit-project-button"))
+        )
         edit_projects_button.click()
 
-        nomenclature_select_button = wait.until(EC.element_to_be_clickable((By.ID, "nomenclature-select")))
+        nomenclature_select_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "nomenclature-select"))
+        )
         nomenclature_select_button.click()
 
-        selenium.find_element(By.CSS_SELECTOR,
-            "#nomenclature-select option[value='program outcome']"
+        selenium.find_element(
+            By.CSS_SELECTOR,
+            "#nomenclature-select option[value='program outcome']",
         ).click()
         selenium.find_element(By.CSS_SELECTOR, "#term-singular").send_keys(
             "competency"
         )
-        selenium.find_element(By.CSS_SELECTOR,
-            ".nomenclature-add-button"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".nomenclature-add-button"
         ).click()
 
         time.sleep(1)
@@ -3572,8 +3732,8 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.object_sets.count(), 1)
 
         # now delete the project set
-        selenium.find_element(By.CSS_SELECTOR,
-            ".nomenclature-delete-button"
+        selenium.find_element(
+            By.CSS_SELECTOR, ".nomenclature-delete-button"
         ).click()
 
         alert = wait.until(expected_conditions.alert_is_present())
@@ -3583,7 +3743,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(project.object_sets.count(), 0)
 
     def test_view_sets(self):
-        print("\nIn method", self._testMethodName, ': ')
+        print("\nIn method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -3609,14 +3769,14 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
-        created_by_button = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".node")))
-        self.assertEqual(
-            len(created_by_button), 1
+        created_by_button = wait.until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".node"))
         )
+        self.assertEqual(len(created_by_button), 1)
 
         # hover over the side actions panel to show outcomes assigned to node
         ActionChains(selenium).move_to_element(
-            selenium.find_elements(By.CSS_SELECTOR,".node .side-actions")[0]
+            selenium.find_elements(By.CSS_SELECTOR, ".node .side-actions")[0]
         ).perform()
 
         print(str(outcome.id))
@@ -3625,8 +3785,8 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         # test needs to be fixed (and some more verbose commenting would help)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             2,
@@ -3635,42 +3795,44 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element(By.CSS_SELECTOR, ".node").click()
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    "input[name='" + str(outcomeset.id) + "']"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "input[name='" + str(outcomeset.id) + "']"
                 )
             ),
             0,
         )
-        element = selenium.find_element(By.CSS_SELECTOR,
-            "input[name='" + str(nodeset.id) + "']"
+        element = selenium.find_element(
+            By.CSS_SELECTOR, "input[name='" + str(nodeset.id) + "']"
         )
         selenium.execute_script("arguments[0].scrollIntoView();", element)
         element.click()
         time.sleep(2)
         selenium.find_element(By.CSS_SELECTOR, "[href='#view-bar']").click()
-        selenium.find_element(By.CSS_SELECTOR,
-            "#set" + str(outcomeset.id)
+        selenium.find_element(
+            By.CSS_SELECTOR, "#set" + str(outcomeset.id)
         ).click()
 
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
         )
-        selenium.find_element(By.CSS_SELECTOR, "#set" + str(nodeset.id)).click()
+        selenium.find_element(
+            By.CSS_SELECTOR, "#set" + str(nodeset.id)
+        ).click()
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".node")), 1
+            len(selenium.find_elements(By.CSS_SELECTOR, ".node")), 1
         )
 
         selenium.find_element(By.CSS_SELECTOR, "#button_outcomeedit").click()
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
@@ -3681,43 +3843,43 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".node")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".node")), 0
         )
         selenium.find_element(By.CSS_SELECTOR, "#table_type_matrix").click()
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".node")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".node")), 0
         )
         selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
-        selenium.find_element(By.CSS_SELECTOR,
-            "#button_alignmentanalysis"
+        selenium.find_element(
+            By.CSS_SELECTOR, "#button_alignmentanalysis"
         ).click()
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".node")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".node")), 0
         )
 
         selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
@@ -3725,14 +3887,14 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".outcome-" + str(outcome.id)
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".outcome-" + str(outcome.id)
                 )
             ),
             0,
         )
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".node")), 0
+            len(selenium.find_elements(By.CSS_SELECTOR, ".node")), 0
         )
 
 
@@ -3759,7 +3921,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         super().tearDown()
 
     def test_comparison_views(self):
-        print("In method", self._testMethodName, ': ')
+        print("In method", self._testMethodName, ": ")
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
 
@@ -3777,64 +3939,86 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         # click the more icon ( three dots)
-        more_icon = wait.until(EC.element_to_be_clickable((By.ID, "overflow-options")))
+        more_icon = wait.until(
+            EC.element_to_be_clickable((By.ID, "overflow-options"))
+        )
         more_icon.click()
 
         # click the "workflow comparison tool" menu item
-        workflow_comparison_tool_button = wait.until(EC.element_to_be_clickable((By.ID, "comparison-view")))
+        workflow_comparison_tool_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "comparison-view"))
+        )
         workflow_comparison_tool_button.click()
 
         # click the "load new workflow" button
-        load_new_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
+        load_new_workflow_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "load-workflow"))
+        )
         load_new_workflow_button.click()
 
         # click the "created by" button (selects card)
         # using presence_of_all_elements_located but could move this back to element_to_be_clickable if problems
-        created_by_button = wait.until(EC.presence_of_all_elements_located((
-        By.CSS_SELECTOR, ".message-wrap .workflow-for-menu")))
+        created_by_button = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".message-wrap .workflow-for-menu")
+            )
+        )
         created_by_button[0].click()
 
         print(created_by_button)
 
         # click select button
-        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+        )
         select_button.click()
 
-        workflow_menu = wait.until(EC.presence_of_all_elements_located((
-        By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")))
-
-        # can we see one course box?
-        self.assertEqual(
-            len(workflow_menu), 1
+        workflow_menu = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")
+            )
         )
 
+        # can we see one course box?
+        self.assertEqual(len(workflow_menu), 1)
+
         # load a different workflow
-        load_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, "load-workflow")))
+        load_workflow_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "load-workflow"))
+        )
         load_workflow_button.click()
 
         # click the "created by" button (selects card), get the 2nd element this time
-        created_by_button = wait.until(EC.presence_of_all_elements_located((
-        By.CSS_SELECTOR, ".message-wrap .workflow-created")))
+        created_by_button = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".message-wrap .workflow-created")
+            )
+        )
         created_by_button[1].click()
 
-        select_button = wait.until(EC.element_to_be_clickable((By.ID, "set-linked-workflow")))
+        select_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
+        )
         select_button.click()
 
         # can we see two course boxes?
-        workflow_menu = wait.until(EC.presence_of_all_elements_located((
-        By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")))
-        self.assertEqual(
-            len(workflow_menu), 2
+        workflow_menu = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".workflow-wrapper .workflow-for-menu")
+            )
         )
+        self.assertEqual(len(workflow_menu), 2)
 
-        outcome_button = wait.until(EC.element_to_be_clickable((By.ID, "button_outcomeedit")))
+        outcome_button = wait.until(
+            EC.element_to_be_clickable((By.ID, "button_outcomeedit"))
+        )
         outcome_button.click()
 
         # @todo this is still failing, not sure why we have expected outcomes here
-        outcomes = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".outcome")))
-        self.assertEqual(
-            len(outcomes), 2
+        outcomes = wait.until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".outcome"))
         )
+        self.assertEqual(len(outcomes), 2)
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
@@ -3972,8 +4156,8 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".users-box .users-small .user-indicator"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".users-box .users-small .user-indicator"
                 )
             ),
             1,
@@ -3991,8 +4175,8 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(3)
         self.assertEqual(
             len(
-                selenium.find_elements(By.CSS_SELECTOR,
-                    ".users-box .users-small .user-indicator"
+                selenium.find_elements(
+                    By.CSS_SELECTOR, ".users-box .users-small .user-indicator"
                 )
             ),
             0,
@@ -4003,6 +4187,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 ########################
 # HELPERS
 ########################
+
 
 def action_hover_click(selenium, hover_item, click_item):
     hover = (
