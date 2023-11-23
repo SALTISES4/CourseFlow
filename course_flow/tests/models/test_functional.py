@@ -56,10 +56,9 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
 class SeleniumBase:
     def __init__(self):
         self.selenium = None
-        self.executable_path: str = ""
+        self.executable_path: str = "nopath"
 
-    @staticmethod
-    def create_ff_browser():
+    def create_ff_browser(self):
         options = FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--disable-extensions")
@@ -72,27 +71,38 @@ class SeleniumBase:
         browser.implicitly_wait(10)
         return browser
 
-    @staticmethod
     def create_chrome_browser(self, options):
         if options is None:
             options = webdriver.chrome.options.Options()
 
-        options.add_argument("--headless")
+        if self.test_headless:
+            options.add_argument("--headless")
         options.add_argument("--disable-extensions")
         options.add_argument("--no-sandbox")
         options.add_argument("--ignore-certificate-errors")
         options.add_argument("--disable-gpu")
         options.add_argument("--allow-running-insecure-content")
         options.set_capability("acceptInsecureCerts", True)
-        browser = Chrome(self.executable_path, options=options)
+        if self.executable_path == "nopath":
+            browser = Chrome(options=options)
+        else:
+            browser = Chrome(self.executable_path, options=options)
         return browser
 
     def init_selenium(self, options: dict = None):
         if settings.CHROMEDRIVER_PATH is not None:
             self.executable_path = settings.CHROMEDRIVER_PATH
 
-        # return self.create_ff_browser(options)
-        return self.create_ff_browser()
+        try:
+            self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
+        except AttributeError:
+            self.test_headless = False
+        try:
+            if settings.COURSEFLOW_TEST_BROWSER == "ff":
+                return self.create_ff_browser()
+        except AttributeError:
+            pass
+        return self.create_chrome_browser(options)
 
 
 @tag("selenium")
@@ -2631,6 +2641,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     # why does this method get invoked 3 times by test runner?
     # this test working again but needs a lot of work to remove the time.sleeps
     def test_explore(self):
+        print("\nIn method", self._testMethodName, ": ")
+
         # helper functions
         def count_pagination_and_elements():
             # find all the paginated page links and count them  (4)
@@ -2716,6 +2728,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.find_element(By.CSS_SELECTOR, "#prev-page-button").click()
 
+        created_by_buttons = wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".page-button")
+            )
+        )
+        self.assertEqual(len(created_by_buttons), 4)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
+        )
         has_loading_finished()
         count_pagination_and_elements()
 
