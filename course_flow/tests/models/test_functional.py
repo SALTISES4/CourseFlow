@@ -248,6 +248,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         project = Project.objects.create(author=self.user, title="new title")
         LiveProject.objects.create(project=project)
         selenium.get(self.live_server_url + "/course-flow/home/")
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
+        )
         selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
@@ -290,11 +293,13 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.get(self.live_server_url + "/course-flow/home/")
         # make sure only correct items are visible
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
+        )
         assert (
-            len(selenium.find_elements_by_css_selector("#panel-my-projects"))
+            len(selenium.find_elements_by_css_selector("#panel-my-library"))
             == 0
         )
-        time.sleep(0.5)
         selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
@@ -910,8 +915,8 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
             "prefs", {"intl.accept_languages": "fr"}
         )
         chrome_options.add_argument("--lang=fr")
-        selbase = SeleniumBase(chrome_options)
-        self.selenium = selbase.init_selenium()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium(chrome_options)
 
         super().setUp()
         selenium = self.selenium
@@ -2282,12 +2287,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             "#button_alignmentanalysis"
         ).click()
 
-        # input("wait")
-        title_text = wait.until(
+        wait.until(
             EC.presence_of_all_elements_located(
                 (By.CSS_SELECTOR, ".week .title-text")
             )
         )
+
+        title_text = selenium.find_elements_by_css_selector(".week .title-text")[0]
+        
         assert title_text.text == "Term 1"
 
         assert len(selenium.find_elements_by_css_selector(".week .node")) == 1
@@ -2472,6 +2479,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 EC.element_to_be_clickable((By.ID, "set-linked-workflow"))
             )
             set_linked_workflow.click()
+
+            set_linked_workflow = wait.until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, ".linked-workflow.hover-shade"))
+            )
 
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,

@@ -89,8 +89,6 @@ def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
         context={"user": user},
     ).data
 
-    print(favourites)
-
     return JsonResponse(
         {
             "is_teacher": has_group(user, "Teacher"),

@@ -3,6 +3,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
+import flatpickr from "flatpickr"
 import {
   dot as mathdot,
   subtract as mathsubtract,

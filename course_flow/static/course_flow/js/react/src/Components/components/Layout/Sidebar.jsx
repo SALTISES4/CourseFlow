@@ -157,6 +157,7 @@ const Sidebar = () => {
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
+              id="panel-home"
               href={config.home_path}
               selected={window.location.pathname === config.home_path}
             >
@@ -171,6 +172,7 @@ const Sidebar = () => {
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
+                  id="panel-my-library"
                   href={config.my_library_path}
                   selected={window.location.pathname === config.my_library_path}
                 >
@@ -183,6 +185,7 @@ const Sidebar = () => {
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
+                  id="panel-explore"
                   href={config.explore_path}
                   selected={window.location.pathname === config.explore_path}
                 >
@@ -198,6 +201,7 @@ const Sidebar = () => {
             <ListItem disablePadding dense>
               <ListItemButton
                 component="a"
+                id="panel-my-live-projects"
                 href={config.my_liveprojects_path}
                 selected={
                   window.location.pathname === config.my_liveprojects_path
