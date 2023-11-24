@@ -424,7 +424,6 @@ class ExploreFilter extends WorkflowFilter {
         </div>
         <div className="workflow-filter-sort">
           {this.getFromSaltise()}
-          {this.getContentRich()}
           {this.getFilter()}
           {this.getDisciplines()}
           {this.getSort()}
