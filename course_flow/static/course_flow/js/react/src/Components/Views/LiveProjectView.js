@@ -8,7 +8,7 @@ import {
   TitleText,
   ActionButton,
   SimpleWorkflow
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import {
   setAssignmentCompletion,
   updateLiveProjectValue,

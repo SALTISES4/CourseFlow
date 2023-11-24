@@ -2,14 +2,13 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import {
-  EditableComponent,
   EditableComponentWithComments,
   NodeTitle,
   TitleText,
   OutcomeTitle,
   getOutcomeTitle,
   WeekTitle
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import {
   getOutcomeByID,
   getOutcomeOutcomeByID,

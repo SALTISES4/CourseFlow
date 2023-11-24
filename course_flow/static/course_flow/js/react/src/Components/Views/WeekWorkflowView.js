@@ -3,7 +3,7 @@ import { Provider, connect } from 'react-redux'
 import WeekView from './WeekView.js'
 import TermView from './TermView.js'
 import { getWeekWorkflowByID } from '../../FindState.js'
-import { Component } from '../components/CommonComponents/CommonComponents.js'
+import { Component } from '../components/CommonComponents'
 import {} from '../../Reducers.js'
 import { WeekComparisonView, NodeBarWeekView } from './WeekView.js'
 

@@ -4,8 +4,7 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithSorting,
   OutcomeTitle
-} from '../components/CommonComponents/CommonComponents.js'
-import OutcomeWorkflowView from './OutcomeWorkflowView.js'
+} from '../components/CommonComponents'
 import {
   OutcomeBarOutcomeView,
   OutcomeBarOutcomeViewUnconnected

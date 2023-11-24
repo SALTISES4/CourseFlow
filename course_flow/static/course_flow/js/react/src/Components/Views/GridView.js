@@ -4,7 +4,7 @@ import {
   EditableComponentWithComments,
   TitleText,
   NodeTitle
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import * as Constants from '../../Constants.js'
 import {
   getWeekWorkflowByID,

@@ -1,8 +1,5 @@
 import * as React from 'react'
-import {
-  Component,
-  WorkflowTitle
-} from '../components/CommonComponents/CommonComponents.js'
+import { Component } from '../components/CommonComponents'
 import { searchAllObjects } from '../../PostFunctions.js'
 import WorkflowForMenu from './WorkflowForMenu.js'
 

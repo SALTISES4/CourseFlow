@@ -11,14 +11,12 @@ import {
   restoreSelf
 } from '../../PostFunctions.js'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
-import {
-  CollapsibleText,
-  WorkflowTitle
-} from '../components/CommonComponents/CommonComponents.js'
 import * as Utility from '../../UtilityFunctions.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import { WorkflowTitle } from '../components/CommonComponents/Titles.js'
+import { CollapsibleText } from '../components/CommonComponents/index.js'
 
 /*******************************************************
  * The project library menu

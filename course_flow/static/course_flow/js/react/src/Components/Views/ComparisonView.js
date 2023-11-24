@@ -6,7 +6,7 @@ import {
   EditableComponent,
   EditableComponentWithSorting,
   WorkflowTitle
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 import {

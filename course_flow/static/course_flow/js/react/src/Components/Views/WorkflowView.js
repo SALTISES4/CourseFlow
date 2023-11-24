@@ -7,7 +7,7 @@ import {
   EditableComponentWithSorting,
   WorkflowTitle,
   CollapsibleText
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import ColumnWorkflowView from './ColumnWorkflowView.js'
 import WeekWorkflowView from './WeekWorkflowView.js'
 import { NodeBarColumnWorkflow } from './ColumnWorkflowView.js'

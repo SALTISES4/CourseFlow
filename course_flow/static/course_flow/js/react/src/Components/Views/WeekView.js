@@ -3,7 +3,7 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithSorting,
   TitleText
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import NodeWeekView from './NodeWeekView.js'
 import { NodeWeekComparisonView } from './NodeWeekView.js'
 import { getWeekByID, getNodeWeekByID } from '../../FindState.js'

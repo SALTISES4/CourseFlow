@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponent } from '../components/CommonComponents/CommonComponents.js'
+import { EditableComponent } from '../components/CommonComponents'
 import OutcomeView from './OutcomeView.js'
 import { OutcomeBarOutcomeView } from './OutcomeView.js'
 import { getOutcomeByID } from '../../FindState.js'

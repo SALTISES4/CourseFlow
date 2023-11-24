@@ -6,7 +6,7 @@ import {
   EditableComponentWithSorting,
   EditableComponentWithComments,
   OutcomeTitle
-} from '../components/CommonComponents/CommonComponents.js'
+} from '../components/CommonComponents'
 import OutcomeOutcomeView from './OutcomeOutcomeView.js'
 import {
   OutcomeBarOutcomeOutcomeView,
