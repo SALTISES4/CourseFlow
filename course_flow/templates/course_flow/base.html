@@ -17,9 +17,10 @@
   <script nonce="{{ request.csp_nonce }}">
     // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
     // the module is loaded.
+    // @todo we should not be hardcoding this
     window.process = {
       env: {
-        NODE_ENV: "production"
+       //  NODE_ENV: "production"
       }
     };
   </script>

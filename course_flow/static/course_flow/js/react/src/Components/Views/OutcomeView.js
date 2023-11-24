@@ -481,6 +481,7 @@ const mapOutcomeBarOutcomeStateToProps = (state, own_props) => ({
     .filter((ochl) => ochl.parent_outcome == own_props.objectID)
     .map((ochl) => ochl.outcome)
 })
+
 export const OutcomeBarOutcomeView = connect(
   mapOutcomeBarOutcomeStateToProps,
   null

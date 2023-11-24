@@ -219,6 +219,7 @@ const mapTableTotalCellStateToProps = (state, own_props) => ({
     getOutcomeByID(state, own_props.outcomeID).data
   )
 })
+
 export const TableTotalCell = connect(
   mapTableTotalCellStateToProps,
   null
