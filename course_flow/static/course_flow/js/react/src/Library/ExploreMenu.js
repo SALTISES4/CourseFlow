@@ -34,53 +34,17 @@ class ExploreFilter extends WorkflowFilter {
     this.disciplineDOM = React.createRef()
   }
 
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
   componentDidMount() {
     makeDropdown(this.disciplineDOM.current)
     super.componentDidMount()
   }
 
-  render() {
-    let workflows = this.state.workflows.map((workflow) => (
-      <WorkflowForMenu
-        key={workflow.type + workflow.id}
-        workflow_data={workflow}
-        context={this.props.context}
-      />
-    ))
-    return [
-      <div className="workflow-filter-top">
-        <div className="flex-middle">
-          <div id="workflow-search" ref={this.searchDOM}>
-            <input
-              placeholder={gettext('Search the public library')}
-              onChange={debounce(this.searchChange.bind(this))}
-              id="workflow-search-input"
-              className="search-input"
-            />
-            <span className="material-symbols-rounded">search</span>
-          </div>
-          <button
-            className="primary-button"
-            disabled={this.state.has_searched}
-            onClick={this.doSearch.bind(this)}
-          >
-            {gettext('Search')}
-          </button>
-        </div>
-        <div className="workflow-filter-sort">
-          {this.getFromSaltise()}
-          {this.getContentRich()}
-          {this.getFilter()}
-          {this.getDisciplines()}
-          {this.getSort()}
-        </div>
-      </div>,
-      this.getInfo(),
-      <div className="menu-grid">{workflows}</div>,
-      this.getPages()
-    ]
-  }
-
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   doSearch() {
     this.searchWithout(
       $(this.searchDOM.current).children('#workflow-search-input')[0].value,
@@ -89,7 +53,7 @@ class ExploreFilter extends WorkflowFilter {
   }
 
   getInfo() {
-    if (this.state.workflows == this.props.workflows)
+    if (this.state.workflows === this.props.workflows)
       return (
         <p>
           {gettext(
@@ -132,7 +96,7 @@ class ExploreFilter extends WorkflowFilter {
         i++
       ) {
         let button_class = 'page-button'
-        if (i == this.state.pages.current_page)
+        if (i === this.state.pages.current_page)
           button_class += ' active-page-button'
         page_buttons.push(
           <button className={button_class} onClick={this.toPage.bind(this, i)}>
@@ -289,7 +253,6 @@ class ExploreFilter extends WorkflowFilter {
   }
 
   getDisciplines() {
-    let component = this
     return (
       <div
         id="workflow-disciplines"
@@ -344,18 +307,17 @@ class ExploreFilter extends WorkflowFilter {
   }
 
   getFromSaltise() {
-    let component = this
     return (
       <div
         title={gettext('Restrict results to content provided by SALTISE')}
         id="content-rich"
         className="hover-shade"
         onClick={() => {
-          component.setState({
-            from_saltise: !component.state.from_saltise,
+          this.setState({
+            from_saltise: !this.state.from_saltise,
             has_searched: false
           })
-          component.doSearch()
+          this.doSearch()
         }}
       >
         <input type="checkbox" checked={this.state.from_saltise} />
@@ -426,6 +388,51 @@ class ExploreFilter extends WorkflowFilter {
         this.props.renderer.tiny_loader.endLoad()
       }
     )
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let workflows = this.state.workflows.map((workflow) => (
+      <WorkflowForMenu
+        key={workflow.type + workflow.id}
+        workflow_data={workflow}
+        context={this.props.context}
+      />
+    ))
+    return [
+      <div className="workflow-filter-top">
+        <div className="flex-middle">
+          <div id="workflow-search" ref={this.searchDOM}>
+            <input
+              placeholder={gettext('Search the public library')}
+              onChange={debounce(this.searchChange.bind(this))}
+              id="workflow-search-input"
+              className="search-input"
+            />
+            <span className="material-symbols-rounded">search</span>
+          </div>
+          <button
+            className="primary-button"
+            disabled={this.state.has_searched}
+            onClick={this.doSearch.bind(this)}
+          >
+            {gettext('Search')}
+          </button>
+        </div>
+        <div className="workflow-filter-sort">
+          {this.getFromSaltise()}
+          {this.getContentRich()}
+          {this.getFilter()}
+          {this.getDisciplines()}
+          {this.getSort()}
+        </div>
+      </div>,
+      this.getInfo(),
+      <div className="menu-grid">{workflows}</div>,
+      this.getPages()
+    ]
   }
 }
 

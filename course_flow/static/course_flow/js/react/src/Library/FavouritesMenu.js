@@ -4,6 +4,20 @@ import WorkflowFilter from './WorkFlowFilter.js'
 import LibraryMenu from './LibraryMenu.js'
 
 class FavouritesMenu extends LibraryMenu {
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
+  componentDidMount() {
+    let component = this
+    getFavourites((data) => {
+      component.setState({ project_data: data.data_package })
+    })
+    makeDropdown(this.createDiv.current)
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     return (
       <div className="project-menu">
@@ -14,14 +28,6 @@ class FavouritesMenu extends LibraryMenu {
         />
       </div>
     )
-  }
-
-  componentDidMount() {
-    let component = this
-    getFavourites((data) => {
-      component.setState({ project_data: data.data_package })
-    })
-    makeDropdown(this.createDiv.current)
   }
 }
 

@@ -59,7 +59,6 @@ class ProjectMenu extends LibraryMenu {
       { type: 'students', name: gettext('Students') },
       { type: 'assignments', name: gettext('Assignments') },
       { type: 'completion_table', name: gettext('Completion Table') }
-      // {type:"settings",name:gettext("Classroom Settings")},
     ]
   }
 
@@ -344,14 +343,18 @@ class ProjectMenu extends LibraryMenu {
     )
   }
 
+  // @todo needs work
   getUsers() {
     if (!this.state.users) return null
+
     let author = this.state.users.author
     let editors = this.state.users.editors
     let commenters = this.state.users.commentors
     let viewers = this.state.users.viewers
-    if (!author) return null
     let users_group = []
+
+    if (!author) return null
+
     if (this.state.users.published) {
       users_group.push(
         <div className="user-name">

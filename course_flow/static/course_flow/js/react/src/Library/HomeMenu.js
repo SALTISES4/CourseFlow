@@ -8,6 +8,22 @@ class HomeMenu extends React.Component {
     this.state = { projects: [], favourites: [] }
   }
 
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
+  componentDidMount() {
+    let component = this
+    getHome((data) => {
+      component.setState({
+        projects: data.projects,
+        favourites: data.favourites
+      })
+    })
+  }
+
+  /*******************************************************
+   * Render
+   *******************************************************/
   render() {
     let projects = this.state.projects.map((project) => (
       <WorkflowForMenu workflow_data={project} renderer={this.props.renderer} />
@@ -72,16 +88,6 @@ class HomeMenu extends React.Component {
         {favourite_box}
       </div>
     )
-  }
-
-  componentDidMount() {
-    let component = this
-    getHome((data) => {
-      component.setState({
-        projects: data.projects,
-        favourites: data.favourites
-      })
-    })
   }
 }
 

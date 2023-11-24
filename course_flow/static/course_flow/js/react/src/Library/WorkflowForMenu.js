@@ -21,46 +21,9 @@ class WorkflowForMenu extends React.Component {
     this.maindiv = React.createRef()
   }
 
-  render() {
-    let data = this.props.workflow_data
-    let css_class = 'workflow-for-menu hover-shade ' + data.type
-    if (this.props.selected) css_class += ' selected'
-
-    let creation_text = gettext('Created')
-    if (data.author && data.author !== 'None')
-      creation_text += ' ' + gettext('by') + ' ' + data.author
-    creation_text += gettext(' on ') + data.created_on
-    let description = data.description
-    if (!description) description = ' '
-
-    return (
-      <div
-        ref={this.maindiv}
-        className={css_class}
-        onClick={this.clickAction.bind(this)}
-        onMouseDown={(evt) => {
-          evt.preventDefault()
-        }}
-      >
-        <div className="workflow-top-row">
-          <WorkflowTitle
-            no_hyperlink={this.props.no_hyperlink}
-            class_name="workflow-title"
-            data={data}
-          />
-          {this.getVisible()}
-          {this.getTypeIndicator()}
-        </div>
-        <div className="workflow-created">{creation_text}</div>
-        <div
-          className="workflow-description collapsible-text"
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
-        {this.getButtons()}
-      </div>
-    )
-  }
-
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getTypeIndicator() {
     let data = this.props.workflow_data
     let type = data.type
@@ -103,7 +66,7 @@ class WorkflowForMenu extends React.Component {
       )
     let workflows = []
     if (
-      this.props.workflow_data.type == 'project' &&
+      this.props.workflow_data.type === 'project' &&
       !(this.props.workflow_data.workflow_count == null)
     )
       workflows.push(
@@ -114,7 +77,7 @@ class WorkflowForMenu extends React.Component {
     if (
       this.props.workflow_data.type == 'project' &&
       this.props.workflow_data.has_liveproject &&
-      this.props.workflow_data.object_permission.role_type !=
+      this.props.workflow_data.object_permission.role_type !==
         Constants.role_keys['none']
     )
       workflows.push(
@@ -195,13 +158,54 @@ class WorkflowForMenu extends React.Component {
   }
 
   visibilityFunction(id, is_visible) {
-    if (is_visible == 'true') is_visible = true
-    else is_visible = false
+    is_visible = is_visible === 'true'
     this.props.updateWorkflow(id, {
       is_visible: is_visible
     })
     setWorkflowVisibility(this.props.renderer.project_data.id, id, is_visible)
-    console.log('visibility changed')
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.props.workflow_data
+    let css_class = 'workflow-for-menu hover-shade ' + data.type
+    if (this.props.selected) css_class += ' selected'
+
+    let creation_text = gettext('Created')
+    if (data.author && data.author !== 'None')
+      creation_text += ' ' + gettext('by') + ' ' + data.author
+    creation_text += gettext(' on ') + data.created_on
+    let description = data.description
+    if (!description) description = ' '
+
+    return (
+      <div
+        ref={this.maindiv}
+        className={css_class}
+        onClick={this.clickAction.bind(this)}
+        onMouseDown={(evt) => {
+          evt.preventDefault()
+        }}
+      >
+        <div className="workflow-top-row">
+          <WorkflowTitle
+            no_hyperlink={this.props.no_hyperlink}
+            class_name="workflow-title"
+            data={data}
+          />
+          {this.getVisible()}
+          {this.getTypeIndicator()}
+        </div>
+        <div className="workflow-created">{creation_text}</div>
+        <div
+          className="workflow-description collapsible-text"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
+        {this.getButtons()}
+      </div>
+    )
   }
 }
 

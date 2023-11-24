@@ -1,11 +1,3 @@
-/*
-A container for workflow cards that allows searching and filtering
-
-Accepts a list of workflows as props.
-Optional prop search_within restricts searches to the existing list of workflows.
-
-*/
-
 import * as React from 'react'
 import {
   Component,
@@ -14,8 +6,35 @@ import {
 import { searchAllObjects } from '../PostFunctions.js'
 import WorkflowForMenu from './WorkflowForMenu.js'
 
+/*******************************************************
+A container for workflow cards that allows searching and filtering
+
+Accepts a list of workflows as props.
+Optional prop search_within restricts searches to the existing list of workflows.
+ *******************************************************/
 // @todo define props
 class WorkflowForMenuCondensed extends WorkflowForMenu {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getButtons() {
+    return null
+  }
+
+  getProjectTitle() {
+    if (this.props.workflow_data.project_title) {
+      return (
+        <div className="project-title">
+          {this.props.workflow_data.project_title}
+        </div>
+      )
+    } else {
+      return '-'
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     let data = this.props.workflow_data
     let css_class = 'workflow-for-menu simple-workflow hover-shade ' + data.type
@@ -42,24 +61,11 @@ class WorkflowForMenuCondensed extends WorkflowForMenu {
       </div>
     )
   }
-
-  getButtons() {
-    return null
-  }
-
-  getProjectTitle() {
-    if (this.props.workflow_data.project_title) {
-      return (
-        <div className="project-title">
-          {this.props.workflow_data.project_title}
-        </div>
-      )
-    } else {
-      return '-'
-    }
-  }
 }
 
+/*******************************************************
+ * @todo, what is this doing
+ *******************************************************/
 class WorkflowFilter extends Component {
   constructor(props) {
     super(props)
@@ -94,78 +100,23 @@ class WorkflowFilter extends Component {
     this.sortDOM = React.createRef()
   }
 
-  render() {
-    let workflows
-    if (!this.state.workflows) workflows = this.defaultRender()
-    else {
-      workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows))
-      workflows = workflows.map((workflow) => (
-        <WorkflowForMenu
-          renderer={this.props.renderer}
-          key={workflow.type + workflow.id}
-          workflow_data={workflow}
-          context={this.props.context}
-          updateWorkflow={this.props.updateWorkflow}
-        />
-      ))
-    }
-    let search_results = this.state.search_results.map((workflow) => (
-      <WorkflowForMenuCondensed
-        key={workflow.type + workflow.id}
-        workflow_data={workflow}
-        context={this.props.context}
-      />
-    ))
-    if (
-      this.state.search_filter &&
-      this.state.search_filter.length > 0 &&
-      this.state.search_results.length === 0
-    ) {
-      search_results.push(<div>{gettext('No results found')}</div>)
-    } else if (search_results.length === 10) {
-      search_results.push(
-        <div className="hover-shade" onClick={() => this.seeAll()}>
-          {gettext('+ See all')}
-        </div>
-      )
-    }
-    let search_filter_lock
-    if (this.state.search_filter_lock) {
-      search_filter_lock = (
-        <div className="search-filter-lock">
-          <span
-            onClick={this.clearSearchLock.bind(this)}
-            className="material-symbols-rounded hover-shade"
-          >
-            close
-          </span>
-          {gettext('Search: ' + this.state.search_filter_lock)}
-        </div>
-      )
-    }
-    return [
-      <div className="workflow-filter-top">
-        <div id="workflow-search" ref={this.searchDOM}>
-          <input
-            placeholder={this.getPlaceholder()}
-            onChange={debounce(this.searchChange.bind(this))}
-            id="workflow-search-input"
-            className="search-input"
-            autoComplete="off"
-          />
-          <span className="material-symbols-rounded">search</span>
-          <div className="create-dropdown">{search_results}</div>
-          {search_filter_lock}
-        </div>
-        <div className="workflow-filter-sort">
-          {this.getFilter()}
-          {this.getSort()}
-        </div>
-      </div>,
-      <div className="menu-grid">{workflows}</div>
-    ]
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    makeDropdown(this.filterDOM.current)
+    makeDropdown(this.sortDOM.current)
+    makeDropdown(this.searchDOM.current)
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.workflows !== this.props.workflows)
+      this.setState({ workflows: this.props.workflows })
+  }
+
+  /*******************************************************
+   *  FUNCTIONS
+   *******************************************************/
   getPlaceholder() {
     if (this.props.context === 'project') {
       return gettext('Search the project')
@@ -286,11 +237,6 @@ class WorkflowFilter extends Component {
     )
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.workflows !== this.props.workflows)
-      this.setState({ workflows: this.props.workflows })
-  }
-
   sortChange(index) {
     if (this.state.active_sort === index)
       this.setState({ reversed: !this.state.reversed })
@@ -321,12 +267,6 @@ class WorkflowFilter extends Component {
       component.setState({ search_results: [], search_filter: '' })
       $(this.searchDOM.current).removeClass('active')
     }
-  }
-
-  componentDidMount() {
-    makeDropdown(this.filterDOM.current)
-    makeDropdown(this.sortDOM.current)
-    makeDropdown(this.searchDOM.current)
   }
 
   searchWithin(request, response_function) {
@@ -388,6 +328,81 @@ class WorkflowFilter extends Component {
 
   defaultRender() {
     return <renderers.WorkflowLoader />
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let workflows
+    if (!this.state.workflows) workflows = this.defaultRender()
+    else {
+      workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows))
+      workflows = workflows.map((workflow) => (
+        <WorkflowForMenu
+          renderer={this.props.renderer}
+          key={workflow.type + workflow.id}
+          workflow_data={workflow}
+          context={this.props.context}
+          updateWorkflow={this.props.updateWorkflow}
+        />
+      ))
+    }
+    let search_results = this.state.search_results.map((workflow) => (
+      <WorkflowForMenuCondensed
+        key={workflow.type + workflow.id}
+        workflow_data={workflow}
+        context={this.props.context}
+      />
+    ))
+    if (
+      this.state.search_filter &&
+      this.state.search_filter.length > 0 &&
+      this.state.search_results.length === 0
+    ) {
+      search_results.push(<div>{gettext('No results found')}</div>)
+    } else if (search_results.length === 10) {
+      search_results.push(
+        <div className="hover-shade" onClick={() => this.seeAll()}>
+          {gettext('+ See all')}
+        </div>
+      )
+    }
+    let search_filter_lock
+    if (this.state.search_filter_lock) {
+      search_filter_lock = (
+        <div className="search-filter-lock">
+          <span
+            onClick={this.clearSearchLock.bind(this)}
+            className="material-symbols-rounded hover-shade"
+          >
+            close
+          </span>
+          {gettext('Search: ' + this.state.search_filter_lock)}
+        </div>
+      )
+    }
+    return [
+      <div className="workflow-filter-top">
+        <div id="workflow-search" ref={this.searchDOM}>
+          <input
+            placeholder={this.getPlaceholder()}
+            onChange={debounce(this.searchChange.bind(this))}
+            id="workflow-search-input"
+            className="search-input"
+            autoComplete="off"
+          />
+          <span className="material-symbols-rounded">search</span>
+          <div className="create-dropdown">{search_results}</div>
+          {search_filter_lock}
+        </div>
+        <div className="workflow-filter-sort">
+          {this.getFilter()}
+          {this.getSort()}
+        </div>
+      </div>,
+      <div className="menu-grid">{workflows}</div>
+    ]
   }
 }
 

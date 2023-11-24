@@ -3,12 +3,12 @@ import * as reactDom from 'react-dom'
 import { getLibrary } from '../PostFunctions.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
-/*
-The main library menu
-
-On mount, this will fetch the user's projects. When they have been
-retrieved it will display them in a workflowfilter.
-*/
+/*******************************************************
+ * The main library menu
+ *
+ * On mount, this will fetch the user's projects. When they have been
+ * retrieved it will display them in a workflowfilter.
+ *******************************************************/
 class LibraryMenu extends React.Component {
   constructor(props) {
     super(props)
@@ -16,26 +16,20 @@ class LibraryMenu extends React.Component {
     this.createDiv = React.createRef()
   }
 
-  render() {
-    return (
-      <div className="project-menu">
-        {reactDom.createPortal(
-          this.getCreate(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getOverflowLinks(),
-          document.getElementById('overflow-links')
-        )}
-        <WorkflowFilter
-          renderer={this.props.renderer}
-          workflows={this.state.project_data}
-          context="library"
-        />
-      </div>
-    )
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  componentDidMount() {
+    let component = this
+    getLibrary((data) => {
+      component.setState({ project_data: data.data_package })
+    })
+    makeDropdown(this.createDiv.current)
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getCreate() {
     let create
     if (!this.props.renderer.read_only)
@@ -88,12 +82,27 @@ class LibraryMenu extends React.Component {
     return overflow_links
   }
 
-  componentDidMount() {
-    let component = this
-    getLibrary((data) => {
-      component.setState({ project_data: data.data_package })
-    })
-    makeDropdown(this.createDiv.current)
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return (
+      <div className="project-menu">
+        {reactDom.createPortal(
+          this.getCreate(),
+          document.getElementById('visible-icons')
+        )}
+        {reactDom.createPortal(
+          this.getOverflowLinks(),
+          document.getElementById('overflow-links')
+        )}
+        <WorkflowFilter
+          renderer={this.props.renderer}
+          workflows={this.state.project_data}
+          context="library"
+        />
+      </div>
+    )
   }
 }
 
