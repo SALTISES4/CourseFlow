@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { searchAllObjects } from '../../PostFunctions.js'
-import { WorkflowForMenu, LibraryMenu } from './index.js'
+import WorkflowForMenu from './WorkflowForMenu.js'
+import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
 class ExploreFilter extends WorkflowFilter {

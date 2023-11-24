@@ -1,45 +1,17 @@
 import React from 'react'
-import {
-  getSortedOutcomesFromOutcomeWorkflowSet,
-  getTableOutcomeNodeByID
-} from './FindState.js'
-import { filterThenSortByID } from './UtilityFunctions.js'
+import { getTableOutcomeNodeByID } from '../../FindState.js'
+import { filterThenSortByID } from '../../UtilityFunctions.js'
 
 /**
- * TOO DOMAIN SPECIFIC, SHOULD BE MOVED OUT
+ * Used in the table. Creates a shaped tree-like structure
+ * for an outcome and its children that includes each one's
+ * relationship to each node.
+ *
+ * @param props
+ * @param outcome_id
+ * @param nodecategory
+ * @returns {{outcomenodes: *[], children: *[], id}|null}
  */
-export function createOutcomeBranch(state, outcome_id) {
-  for (let i = 0; i < state.outcome.length; i++) {
-    if (state.outcome[i].id === outcome_id) {
-      let children
-      if (
-        state.outcome[i].child_outcome_links.length === 0 ||
-        state.outcome[i].depth >= 2
-      )
-        children = []
-      else
-        children = filterThenSortByID(
-          state.outcomeoutcome,
-          state.outcome[i].child_outcome_links
-        ).map((outcomeoutcome) =>
-          createOutcomeBranch(state, outcomeoutcome.child)
-        )
-
-      return { id: outcome_id, children: children }
-    }
-  }
-  return null
-}
-
-/*From a tree structure of outcomes, flatten the tree*/
-export function flattenOutcomeTree(outcomes_tree, array) {
-  outcomes_tree.forEach((element) => {
-    array.push(element.id)
-    flattenOutcomeTree(element.children, array)
-  })
-}
-
-/*Used in the table. Creates a shaped tree-like structure for an outcome and its children that includes each one's relationship to each node.*/
 export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {
     if (props.outcome[i].id === outcome_id) {
@@ -140,6 +112,8 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
  * @returns {JSX.Element|*[]}
  */
 export function getCompletionImg(completion_status, outcomes_type) {
+  let contents = []
+
   if (outcomes_type === 0 || completion_status & 1) {
     return (
       <img
@@ -148,7 +122,6 @@ export function getCompletionImg(completion_status, outcomes_type) {
       />
     )
   }
-  let contents = []
   if (completion_status & 2) {
     let divclass = ''
     contents.push(

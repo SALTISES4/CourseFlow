@@ -25,7 +25,7 @@ import {
 } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import * as OutcomeNode from '../../outcomeNode.js'
+import * as OutcomeNode from '../OutcomeNode/outcomeNode.js'
 
 //Basic component representing an outcome
 class OutcomeView extends EditableComponentWithSorting {
