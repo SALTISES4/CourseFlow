@@ -29,6 +29,13 @@ const plugins = {
     plugins: [
       '@babel/plugin-transform-class-properties',
       '@babel/plugin-transform-react-jsx'
+      // {
+      //   root: ['./course_flow/static/course_flow/js/'],
+      //   alias: {
+      //     // '@components': './react/src'
+      //     '@components': './react/src'
+      //   }
+      // }
     ],
     presets: [
       '@babel/preset-flow',
@@ -55,7 +62,7 @@ const bundlePlugins = [
   plugins.nodeResolve,
   plugins.babel,
   plugins.commonjs,
-  plugins.terser
+  // plugins.terser
 ]
 
 export default [

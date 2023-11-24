@@ -31,27 +31,6 @@ export function createOutcomeBranch(state, outcome_id) {
   return null
 }
 
-/*From the state, creates a tree structure for an outcome*/
-export function createOutcomeTree(state) {
-  let outcomes_tree = []
-  let sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
-    state,
-    state.workflow.outcomeworkflow_set
-  )
-  for (let i = 0; i < sorted_outcomes.length; i++) {
-    let outcomes_tree_category = []
-    for (let j = 0; j < sorted_outcomes[i].outcomes.length; j++)
-      outcomes_tree_category.push(
-        createOutcomeBranch(state, sorted_outcomes[i].outcomes[j].id)
-      )
-    outcomes_tree.push({
-      title: sorted_outcomes[i].objectset.title,
-      outcomes: outcomes_tree_category
-    })
-  }
-  return outcomes_tree
-}
-
 /*From a tree structure of outcomes, flatten the tree*/
 export function flattenOutcomeTree(outcomes_tree, array) {
   outcomes_tree.forEach((element) => {

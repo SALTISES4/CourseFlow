@@ -14,8 +14,8 @@ import * as Utility from '../../UtilityFunctions.js'
 import { ShareMenu } from './ShareMenu.js'
 import { ImportMenu } from './ImportMenu.js'
 import { ExportMenu } from './ExportMenu.js'
-import { WorkflowForMenu } from '../../Library.js'
 import { LiveProjectSettings } from '../Views/LiveProjectView.js'
+import { WorkflowForMenu } from '../../Library'
 
 /*
 Creates a message box with a screen barrier for popups.
@@ -647,7 +647,7 @@ export class ProjectEditMenu extends React.Component {
     ) {
       let new_state_dict = this.state.object_sets.slice()
       for (let i = 0; i < new_state_dict.length; i++) {
-        if (new_state_dict[i].id == id) {
+        if (new_state_dict[i].id === id) {
           deleteSelf(id, 'objectset')
           new_state_dict.splice(i, 1)
           this.setState({ object_sets: new_state_dict })
@@ -714,12 +714,12 @@ export class ProjectEditMenu extends React.Component {
   inputChanged(field, evt) {
     var new_state = { changed: true }
     new_state[field] = evt.target.value
-    if (field == 'selected_set') new_state['termsingular'] = ''
+    if (field === 'selected_set') new_state['termsingular'] = ''
     this.setState(new_state)
   }
 
   checkboxChanged(field, evt) {
-    if (field == 'published') {
+    if (field === 'published') {
       if (
         !this.state.published &&
         !window.confirm(
@@ -776,7 +776,7 @@ export class ProjectEditMenu extends React.Component {
   }
 
   getLiveProjectSettings() {
-    if (this.props.data.renderer.user_role == Constants.role_keys.teacher) {
+    if (this.props.data.renderer.user_role === Constants.role_keys.teacher) {
       return (
         <div>
           <LiveProjectSettings

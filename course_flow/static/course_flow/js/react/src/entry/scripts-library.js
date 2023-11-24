@@ -3,15 +3,15 @@
  */
 import * as reactDom from 'react-dom'
 import * as React from 'react'
-import {
-  ExploreMenu,
-  LibraryMenu,
-  ProjectMenu,
-  HomeMenu,
-  FavouritesMenu
-} from '../Library.js'
 import * as Constants from '../Constants.js'
 import { TinyLoader } from '../redux/helpers.js'
+import {
+  LibraryMenu,
+  FavouritesMenu,
+  ExploreMenu,
+  ProjectMenu,
+  HomeMenu
+} from '../Library'
 
 /*******************************************************
  * @LibraryRenderer

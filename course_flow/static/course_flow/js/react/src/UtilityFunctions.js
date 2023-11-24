@@ -36,8 +36,6 @@ export class Loader {
     if (identifier instanceof jQuery) {
       // Use the first element in the jQuery object
       parentElement = identifier.get(0)
-      console.log('parentElement')
-      console.log(parentElement)
     } else {
       // Use querySelector to find the element
       parentElement = document.querySelector(identifier)
