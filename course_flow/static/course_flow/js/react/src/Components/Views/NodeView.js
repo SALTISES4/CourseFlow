@@ -9,7 +9,7 @@ import {
   NodePorts,
   NodeTitle,
   TitleText
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents/CommonComponents.js'
 import NodeLinkView from './NodeLinkView.js'
 import { AssignmentBox } from './LiveAssignmentView.js'
 import OutcomeNodeView from '../components/OutcomeNode.js'

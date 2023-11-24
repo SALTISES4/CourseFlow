@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import { TitleText } from '../components/CommonComponents.js'
+import { TitleText } from '../components/CommonComponents/CommonComponents.js'
 import { WeekViewUnconnected } from './WeekView.js'
 import NodeWeekView from './NodeWeekView.js'
 import { getTermByID } from '../../FindState.js'

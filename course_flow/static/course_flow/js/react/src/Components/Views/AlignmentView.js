@@ -9,7 +9,7 @@ import {
   OutcomeTitle,
   getOutcomeTitle,
   WeekTitle
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents/CommonComponents.js'
 import {
   getOutcomeByID,
   getOutcomeOutcomeByID,
@@ -761,6 +761,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
     )
   }
 }
+
 const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
   let weekworkflows = Utility.filterThenSortByID(
     state.weekworkflow,

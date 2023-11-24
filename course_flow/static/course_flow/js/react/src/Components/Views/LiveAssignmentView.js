@@ -4,7 +4,7 @@ import {
   AssignmentTitle,
   TitleText,
   DatePicker
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents/CommonComponents.js'
 import {
   getAssignmentsForNode,
   deleteSelfLive,

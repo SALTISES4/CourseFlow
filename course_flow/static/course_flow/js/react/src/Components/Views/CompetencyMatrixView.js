@@ -7,7 +7,7 @@ import {
   OutcomeTitle,
   TitleText,
   NodeTitle
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents/CommonComponents.js'
 import * as Constants from '../../Constants.js'
 import {
   getSortedOutcomeIDFromOutcomeWorkflowSet,

@@ -1,6 +1,6 @@
 import React from 'react'
-import { getTableOutcomeNodeByID } from '../../FindState.js'
-import { filterThenSortByID } from '../../UtilityFunctions.js'
+import { getTableOutcomeNodeByID } from '../../../FindState.js'
+import { filterThenSortByID } from '../../../UtilityFunctions.js'
 
 /**
  * Used in the table. Creates a shaped tree-like structure

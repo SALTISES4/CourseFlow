@@ -10,17 +10,15 @@ import {
   makeProjectLive,
   restoreSelf
 } from '../../PostFunctions.js'
-import {
-  closeMessageBox,
-  renderMessageBox
-} from '../components/MenuComponents.js'
+import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 import {
   CollapsibleText,
   WorkflowTitle
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents/CommonComponents.js'
 import * as Utility from '../../UtilityFunctions.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
+import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 
 /*******************************************************
  * The project library menu

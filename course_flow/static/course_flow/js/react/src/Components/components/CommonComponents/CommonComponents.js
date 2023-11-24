@@ -1,8 +1,8 @@
 import * as Redux from 'redux'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import * as Constants from '../../Constants.js'
-import * as Utility from '../../UtilityFunctions.js'
+import * as Constants from '../../../Constants.js'
+import * as Utility from '../../../UtilityFunctions.js'
 import {
   dot as mathdot,
   subtract as mathsubtract,
@@ -11,7 +11,7 @@ import {
   multiply as mathmultiply,
   norm as mathnorm
 } from 'mathjs'
-import { reloadCommentsAction } from '../../Reducers.js'
+import { reloadCommentsAction } from '../../../Reducers.js'
 import {
   getUsersForObject,
   restoreSelf,
@@ -29,7 +29,7 @@ import {
   removeComment,
   removeAllComments,
   updateObjectSet
-} from '../../PostFunctions.js'
+} from '../../../PostFunctions.js'
 
 //Extends the react component to add a few features that are used in a large number of components
 export class Component extends React.Component {

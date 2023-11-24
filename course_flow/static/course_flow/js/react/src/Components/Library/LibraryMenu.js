@@ -20,9 +20,8 @@ class LibraryMenu extends React.Component {
    * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
-    let component = this
     getLibrary((data) => {
-      component.setState({ project_data: data.data_package })
+      this.setState({ project_data: data.data_package })
     })
     makeDropdown(this.createDiv.current)
   }
