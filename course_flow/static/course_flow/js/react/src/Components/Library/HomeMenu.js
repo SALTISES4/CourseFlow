@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getHome } from '../PostFunctions.js'
+import { getHome } from '../../PostFunctions.js'
 import WorkflowForMenu from './WorkflowForMenu.js'
 
 class HomeMenu extends React.Component {

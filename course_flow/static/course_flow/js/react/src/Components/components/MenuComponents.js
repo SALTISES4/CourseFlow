@@ -15,7 +15,7 @@ import { ShareMenu } from './ShareMenu.js'
 import { ImportMenu } from './ImportMenu.js'
 import { ExportMenu } from './ExportMenu.js'
 import { LiveProjectSettings } from '../Views/LiveProjectView.js'
-import { WorkflowForMenu } from '../../Library'
+import { WorkflowForMenu } from '../Library'
 
 /*
 Creates a message box with a screen barrier for popups.

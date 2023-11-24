@@ -22,7 +22,7 @@ import { StudentManagement } from '../components/StudentManagement.js'
 import { AssignmentView, AssignmentViewSmall } from './LiveAssignmentView.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import { WorkflowForMenu } from '../../Library'
+import { WorkflowForMenu } from '../Library'
 
 export class LiveProjectMenu extends React.Component {
   constructor(props) {

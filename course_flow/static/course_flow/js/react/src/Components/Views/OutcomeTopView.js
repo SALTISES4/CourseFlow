@@ -9,7 +9,7 @@ import {
   renderMessageBox,
   closeMessageBox
 } from '../components/MenuComponents.js'
-import { WorkflowForMenu } from '../../Library'
+import { WorkflowForMenu } from '../Library'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends EditableComponent {

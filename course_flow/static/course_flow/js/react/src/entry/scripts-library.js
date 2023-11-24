@@ -11,7 +11,7 @@ import {
   ExploreMenu,
   ProjectMenu,
   HomeMenu
-} from '../Library'
+} from '../Components/Library'
 
 /*******************************************************
  * @LibraryRenderer

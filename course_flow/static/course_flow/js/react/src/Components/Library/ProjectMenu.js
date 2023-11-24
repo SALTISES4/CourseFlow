@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import * as Constants from '../Constants.js'
-import * as LiveProjectViews from '../Components/Views/LiveProjectView.js'
+import * as Constants from '../../Constants.js'
+import * as LiveProjectViews from '../Views/LiveProjectView.js'
 import {
   deleteSelf,
   duplicateBaseItem,
@@ -9,16 +9,16 @@ import {
   getWorkflowsForProject,
   makeProjectLive,
   restoreSelf
-} from '../PostFunctions.js'
+} from '../../PostFunctions.js'
 import {
   closeMessageBox,
   renderMessageBox
-} from '../Components/components/MenuComponents.js'
+} from '../components/MenuComponents.js'
 import {
   CollapsibleText,
   WorkflowTitle
-} from '../Components/components/CommonComponents.js'
-import * as Utility from '../UtilityFunctions.js'
+} from '../components/CommonComponents.js'
+import * as Utility from '../../UtilityFunctions.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
