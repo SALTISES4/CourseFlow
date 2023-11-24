@@ -31,34 +31,27 @@ import WorkflowFilter from './WorkFlowFilter.js'
 class ProjectMenu extends LibraryMenu {
   constructor(props) {
     super(props)
-    this.state = { data: props.data, view_type: 'workflows' }
+    this.state = {
+      data: props.data,
+      view_type: 'workflows'
+    }
   }
 
-  render() {
-    return (
-      <div className="project-menu">
-        {this.getHeader()}
-        {this.getContent()}
-        {reactDom.createPortal(
-          this.getOverflowLinks(),
-          document.getElementById('overflow-links')
-        )}
-        {reactDom.createPortal(
-          this.getEdit(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getCreate(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getShare(),
-          document.getElementById('visible-icons')
-        )}
-      </div>
-    )
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  componentDidMount() {
+    let component = this
+    getWorkflowsForProject(this.props.data.id, (data) => {
+      component.setState({ workflow_data: data.data_package })
+    })
+    this.getUserData()
+    makeDropdown($(this.createDiv.current))
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getViewButtons() {
     return [
       { type: 'workflows', name: gettext('Workflows') },
@@ -72,15 +65,16 @@ class ProjectMenu extends LibraryMenu {
 
   getContent() {
     let return_val = []
+
     if (
       this.state.data.liveproject &&
-      this.props.renderer.user_role == Constants.role_keys.teacher
+      this.props.renderer.user_role === Constants.role_keys.teacher
     )
       return_val.push(
         <div className="workflow-view-select hide-print">
           {this.getViewButtons().map((item) => {
             let view_class = 'hover-shade'
-            if (item.type == this.state.view_type) view_class += ' active'
+            if (item.type === this.state.view_type) view_class += ' active'
             return (
               <a
                 id={'button_' + item.type}
@@ -93,7 +87,9 @@ class ProjectMenu extends LibraryMenu {
           })}
         </div>
       )
+
     switch (this.state.view_type) {
+      // @todo remove view_type
       case 'overview':
         return_val.push(
           <LiveProjectViews.LiveProjectOverview
@@ -151,6 +147,7 @@ class ProjectMenu extends LibraryMenu {
     this.setState({ view_type: view_type })
   }
 
+  // @todo, candidate to remove
   getRole() {
     return 'teacher'
   }
@@ -158,7 +155,7 @@ class ProjectMenu extends LibraryMenu {
   getOverflowLinks() {
     let data = this.state.data
     let liveproject
-    if (data.author_id == user_id) {
+    if (data.author_id === user_id) {
       if (data.liveproject) {
         liveproject = (
           <a
@@ -191,7 +188,7 @@ class ProjectMenu extends LibraryMenu {
     overflow_links.push(<hr />)
     overflow_links.push(this.getExportButton())
     overflow_links.push(this.getCopyButton())
-    if (data.author_id == user_id) {
+    if (data.author_id === user_id) {
       overflow_links.push(<hr />)
       overflow_links.push(this.getDeleteProject())
     }
@@ -199,39 +196,34 @@ class ProjectMenu extends LibraryMenu {
   }
 
   getDeleteProject() {
-    if (!this.state.data.deleted)
+    if (!this.state.data.deleted) {
       return (
         <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
           <div>{gettext('Archive project')}</div>
         </div>
       )
-    else
-      return [
-        <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
-          <div>{gettext('Restore project')}</div>
-        </div>,
-        <div
-          className="hover-shade"
-          onClick={this.deleteProjectHard.bind(this)}
-        >
-          <div>{gettext('Permanently delete project')}</div>
-        </div>
-      ]
+    }
+    return [
+      <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
+        <div>{gettext('Restore project')}</div>
+      </div>,
+      <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+        <div>{gettext('Permanently delete project')}</div>
+      </div>
+    ]
   }
 
   deleteProject() {
-    let component = this
     if (
       window.confirm(gettext('Are you sure you want to delete this project?'))
     ) {
       deleteSelf(this.props.data.id, 'project', true, () => {
-        component.setState({ data: { ...this.props.data, deleted: true } })
+        this.setState({ data: { ...this.props.data, deleted: true } })
       })
     }
   }
 
   deleteProjectHard() {
-    let component = this
     if (
       window.confirm(
         gettext('Are you sure you want to permanently delete this project?')
@@ -244,14 +236,12 @@ class ProjectMenu extends LibraryMenu {
   }
 
   restoreProject() {
-    let component = this
     restoreSelf(this.props.data.id, 'project', () => {
-      component.setState({ data: { ...this.props.data, deleted: false } })
+      this.setState({ data: { ...this.props.data, deleted: false } })
     })
   }
 
   makeLive() {
-    let component = this
     if (
       window.confirm(
         gettext(
@@ -260,69 +250,60 @@ class ProjectMenu extends LibraryMenu {
       )
     ) {
       makeProjectLive(this.props.data.id, (data) => {
-        //window.location = {config.update_path.liveproject.replace("0",component.props.data.id);
         location.reload()
       })
     }
   }
 
   getExportButton() {
-    if (!user_id) return null
-    let export_button = (
-      <div
-        id="export-button"
-        className="hover-shade"
-        onClick={() =>
-          renderMessageBox(this.state.data, 'export', closeMessageBox)
-        }
-      >
-        <div>{gettext('Export')}</div>
-      </div>
-    )
-    return export_button
+    if (user_id) {
+      return (
+        <div
+          id="export-button"
+          className="hover-shade"
+          onClick={() =>
+            renderMessageBox(this.state.data, 'export', closeMessageBox)
+          }
+        >
+          <div>{gettext('Export')}</div>
+        </div>
+      )
+    }
+    return null
   }
 
   getCopyButton() {
-    if (!user_id) return null
-    let export_button = (
-      <div
-        id="copy-button"
-        className="hover-shade"
-        onClick={() => {
-          let loader = this.props.renderer.tiny_loader
-          loader.startLoad()
-          duplicateBaseItem(
-            this.props.data.id,
-            this.props.data.type,
-            null,
-            (response_data) => {
-              loader.endLoad()
-              window.location = config.update_path[
-                response_data.new_item.type
-              ].replace('0', response_data.new_item.id)
-            }
-          )
-        }}
-      >
-        <div>{gettext('Copy to my library')}</div>
-      </div>
-    )
-    return export_button
-  }
-
-  componentDidMount() {
-    let component = this
-    getWorkflowsForProject(this.props.data.id, (data) => {
-      component.setState({ workflow_data: data.data_package })
-    })
-    this.getUserData()
-    makeDropdown($(this.createDiv.current))
+    if (user_id) {
+      return (
+        <div
+          id="copy-button"
+          className="hover-shade"
+          onClick={() => {
+            let loader = this.props.renderer.tiny_loader
+            loader.startLoad()
+            duplicateBaseItem(
+              this.props.data.id,
+              this.props.data.type,
+              null,
+              (response_data) => {
+                loader.endLoad()
+                window.location = config.update_path[
+                  response_data.new_item.type
+                ].replace('0', response_data.new_item.id)
+              }
+            )
+          }}
+        >
+          <div>{gettext('Copy to my library')}</div>
+        </div>
+      )
+    }
+    return null
   }
 
   getUserData() {
-    let component = this
     getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-      component.setState({ users: data })
+      this.setState({ users: data })
     })
   }
 
@@ -428,9 +409,8 @@ class ProjectMenu extends LibraryMenu {
   }
 
   getEdit() {
-    let edit
-    if (!this.props.renderer.read_only)
-      edit = (
+    if (!this.props.renderer.read_only) {
+      return (
         <div
           className="hover-shade"
           id="edit-project-button"
@@ -440,14 +420,14 @@ class ProjectMenu extends LibraryMenu {
           <span className="material-symbols-rounded filled">edit</span>
         </div>
       )
-    return edit
+    }
+    return null
   }
 
   openEditMenu() {
-    let data = this.state.data
     renderMessageBox(
       {
-        ...data,
+        ...this.state.data,
         all_disciplines: this.props.renderer.all_disciplines,
         renderer: this.props.renderer
       },
@@ -457,10 +437,8 @@ class ProjectMenu extends LibraryMenu {
   }
 
   getCreate() {
-    if (this.props.read_only) return null
-    let create
-    if (!this.props.renderer.read_only)
-      create = (
+    if (!this.props.renderer.read_only) {
+      return (
         <div
           className="hover-shade"
           id="create-project-button"
@@ -493,7 +471,8 @@ class ProjectMenu extends LibraryMenu {
           </div>
         </div>
       )
-    return create
+    }
+    return null
   }
 
   updateFunction(new_data) {
@@ -544,6 +523,34 @@ class ProjectMenu extends LibraryMenu {
         break
       }
     }
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return (
+      <div className="project-menu">
+        {this.getHeader()}
+        {this.getContent()}
+        {reactDom.createPortal(
+          this.getOverflowLinks(),
+          document.getElementById('overflow-links')
+        )}
+        {reactDom.createPortal(
+          this.getEdit(),
+          document.getElementById('visible-icons')
+        )}
+        {reactDom.createPortal(
+          this.getCreate(),
+          document.getElementById('visible-icons')
+        )}
+        {reactDom.createPortal(
+          this.getShare(),
+          document.getElementById('visible-icons')
+        )}
+      </div>
+    )
   }
 }
 
