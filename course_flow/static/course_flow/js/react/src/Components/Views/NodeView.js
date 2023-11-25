@@ -3,7 +3,9 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import {
   ActionButton,
+  AutoLinkView,
   EditableComponentWithActions,
+  NodePorts,
   NodeTitle,
   TitleText
 } from '../components/CommonComponents'
@@ -14,8 +16,6 @@ import { getNodeByID } from '../../FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
-
-// A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
 
 //Basic component to represent a Node
 class NodeView extends EditableComponentWithActions {

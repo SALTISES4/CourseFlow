@@ -1,6 +1,0 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import { reloadCommentsAction } from '../../../Reducers.js'
-import { toggleDrop } from '../../../PostFunctions.js'

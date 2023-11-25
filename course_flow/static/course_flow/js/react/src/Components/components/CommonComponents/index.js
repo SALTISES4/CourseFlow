@@ -3,8 +3,6 @@
  *******************************************************/
 export { default as ActionButton } from './ActionButton.js'
 export { default as CollapsibleText } from './CollapsibleText.js'
-export { default as CommentBox } from './CommentBox.js'
-export { default as CommonComponents } from './CommonComponents.js'
 export { default as DatePicker } from './DatePicker.js'
 export { default as EditableComponent } from './EditableComponent.js'
 export { default as EditableComponentWithActions } from './EditableComponentWithActions.js'
