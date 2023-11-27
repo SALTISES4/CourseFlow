@@ -26,6 +26,7 @@ import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 import * as OutcomeNode from '../../outcomeNode.js'
 import { OutcomeBarOutcomeView } from './OutcomeView'
+import { OutcomeBarOutcomeViewUnconnected } from './OutcomeView/OutcomeBarOutcomeView.js'
 
 //Basic component representing the outcome view
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {

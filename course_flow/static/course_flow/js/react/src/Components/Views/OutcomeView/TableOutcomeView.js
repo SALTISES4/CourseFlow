@@ -135,7 +135,7 @@ class TableCell extends React.Component {
 /**
  *
  */
-class TableOutcomeViewUnconnected extends Component {
+export class TableOutcomeViewUnconnected extends Component {
   constructor(props) {
     super(props)
     this.objectType = 'outcome'

@@ -214,6 +214,8 @@ export class ComparisonView extends React.Component {
 
   changeView(type) {
     this.props.renderer.selection_manager.changeSelection(null, null)
+
+    // ?? pass in the parent renderer container as its own new container, how is this working?
     this.props.renderer.render(this.props.renderer.container, type)
   }
 

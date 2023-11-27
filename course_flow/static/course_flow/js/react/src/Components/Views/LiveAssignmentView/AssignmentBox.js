@@ -1,5 +1,4 @@
-//A commenting box
-import * as React from '@types/react'
+import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { getAssignmentsForNode } from '../../../PostFunctions.js'
 import { reloadAssignmentsAction } from '../../../redux/Reducers.js'

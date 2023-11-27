@@ -11,16 +11,15 @@ import {
 } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import { ShareMenu } from './ShareMenu.js'
-import { ImportMenu } from './ImportMenu.js'
-import { ExportMenu } from './ExportMenu.js'
 import { WorkflowForMenu } from '../../Library.js'
-import { LiveProjectSettings } from '../Views/LiveProjectView/LiveProjectView.js'
 
 /*
-Creates a message box with a screen barrier for popups.
-The choice of which menu is displayed is determined by props.message_type.
+
 */
+/**
+ *  Creates a message box with a screen barrier for popups.
+ * The choice of which menu is displayed is determined by props.message_type.
+ */
 export class MessageBox extends React.Component {
   render() {
     var menu

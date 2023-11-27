@@ -4,6 +4,7 @@ import { Component } from '../../components/CommonComponents.js'
 import * as OutcomeNode from '../../../outcomeNode.js'
 import { getOutcomeByID } from '../../../redux/FindState.js'
 import { TableOutcomeView } from './index.js'
+import { TableOutcomeViewUnconnected } from './TableOutcomeView.js'
 
 class MatrixOutcomeViewUnconnected extends TableOutcomeViewUnconnected {
   toggleDrop() {

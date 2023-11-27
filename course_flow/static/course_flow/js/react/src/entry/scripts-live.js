@@ -6,7 +6,7 @@ import * as reactDom from 'react-dom'
 import {
   LiveProjectMenu,
   StudentLiveProjectMenu
-} from '../Components/Views/LiveProjectView/LiveProjectView.js'
+} from '../Components/Views/LiveProjectView'
 import 'flatpickr/dist/flatpickr.css'
 import { LiveAssignmentMenu } from '../Components/Views/LiveAssignmentView'
 import { TinyLoader } from '../redux/helpers.js'

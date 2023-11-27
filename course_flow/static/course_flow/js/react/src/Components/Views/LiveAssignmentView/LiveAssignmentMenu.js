@@ -2,7 +2,6 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { AssignmentView } from './LiveAssignmentView.js'
 import * as Utility from '../../../UtilityFunctions.js'
-import { WorkflowVisibility } from '../LiveProjectView/LiveProjectView.js'
 import { DatePicker } from '../../components/CommonComponents.js'
 import {
   addUsersToAssignment,
@@ -12,6 +11,7 @@ import {
   setWorkflowVisibility,
   updateLiveProjectValue
 } from '../../../PostFunctions.js'
+import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility.js'
 
 /**
  *

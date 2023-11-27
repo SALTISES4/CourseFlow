@@ -253,6 +253,11 @@ The project library menu
 
 On mount, this will fetch the workflows for the project. When they have been
 retrieved it will display them in a workflowfilter.
+
+// @todo structure unclear for why we are importing all
+LiveProjectViews.*
+here
+
 */
 
 export class ProjectMenu extends LibraryMenu {
