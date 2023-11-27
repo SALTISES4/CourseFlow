@@ -4361,7 +4361,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
 
 
 # change permissions on an object for a user
-# @user_can_edit(False)
+@user_can_edit(False)
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))
