@@ -10,55 +10,8 @@ export class NodePorts extends React.Component {
     this.state = {}
   }
 
-  render() {
-    var ports = []
-    var node_dimensions
-    if (this.state.node_dimensions) {
-      node_dimensions = this.state.node_dimensions
-      this.positioned = true
-    } else node_dimensions = { width: 0, height: 0 }
-    for (var port_type in Constants.node_ports)
-      for (var port in Constants.node_ports[port_type]) {
-        ports.push(
-          <circle
-            data-port-type={port_type}
-            data-port={port}
-            data-node-id={this.props.nodeID}
-            r="6"
-            key={port_type + port}
-            cx={
-              Constants.node_ports[port_type][port][0] * node_dimensions.width
-            }
-            cy={
-              Constants.node_ports[port_type][port][1] * node_dimensions.height
-            }
-          />
-        )
-      }
-    var style = {}
-    if ($(this.props.node_div.current).css('display') == 'none')
-      style['display'] = 'none'
-    var transform
-    if (this.state.node_offset)
-      transform =
-        'translate(' +
-        this.state.node_offset.left +
-        ',' +
-        this.state.node_offset.top +
-        ')'
-    else transform = 'translate(0,0)'
-    return (
-      <g
-        style={style}
-        className={'node-ports port-' + this.props.nodeID}
-        stroke="black"
-        strokeWidth="2"
-        fill="white"
-        transform={transform}
-      >
-        {ports}
-      </g>
-    )
+  componentDidUpdate() {
+    $(this.props.node_div.current).triggerHandler('ports-rendered')
   }
 
   componentDidMount() {
@@ -125,10 +78,6 @@ export class NodePorts extends React.Component {
     })
   }
 
-  componentDidUpdate() {
-    $(this.props.node_div.current).triggerHandler('ports-rendered')
-  }
-
   nodeLinkAdded(target, source_port, target_port) {
     let props = this.props
     if (target == this.props.nodeID) return
@@ -137,6 +86,57 @@ export class NodePorts extends React.Component {
       target,
       Constants.port_keys.indexOf(source_port),
       Constants.port_keys.indexOf(target_port)
+    )
+  }
+
+  render() {
+    var ports = []
+    var node_dimensions
+    if (this.state.node_dimensions) {
+      node_dimensions = this.state.node_dimensions
+      this.positioned = true
+    } else node_dimensions = { width: 0, height: 0 }
+    for (var port_type in Constants.node_ports)
+      for (var port in Constants.node_ports[port_type]) {
+        ports.push(
+          <circle
+            data-port-type={port_type}
+            data-port={port}
+            data-node-id={this.props.nodeID}
+            r="6"
+            key={port_type + port}
+            cx={
+              Constants.node_ports[port_type][port][0] * node_dimensions.width
+            }
+            cy={
+              Constants.node_ports[port_type][port][1] * node_dimensions.height
+            }
+          />
+        )
+      }
+    var style = {}
+    if ($(this.props.node_div.current).css('display') == 'none')
+      style['display'] = 'none'
+    var transform
+    if (this.state.node_offset)
+      transform =
+        'translate(' +
+        this.state.node_offset.left +
+        ',' +
+        this.state.node_offset.top +
+        ')'
+    else transform = 'translate(0,0)'
+    return (
+      <g
+        style={style}
+        className={'node-ports port-' + this.props.nodeID}
+        stroke="black"
+        strokeWidth="2"
+        fill="white"
+        transform={transform}
+      >
+        {ports}
+      </g>
     )
   }
 }

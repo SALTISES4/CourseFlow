@@ -9,58 +9,11 @@ class AutoLinkView extends React.Component {
     this.rerenderEvents = 'ports-rendered.' + this.eventNameSpace
   }
 
-  render() {
-    if (
-      !this.source_node ||
-      this.source_node.length == 0 ||
-      !this.source_port_handle ||
-      this.source_port_handle.empty()
-    ) {
-      this.source_node = $(this.props.node_div.current)
-      this.source_port_handle = d3.select(
-        'g.port-' +
-          this.props.nodeID +
-          " circle[data-port-type='source'][data-port='s']"
-      )
-      this.source_node.on(this.rerenderEvents, this.rerender.bind(this))
+  componentWillUnmount() {
+    if (this.target_node && this.target_node.length > 0) {
+      this.source_node.off(this.rerenderEvents)
+      this.target_node.off(this.rerenderEvents)
     }
-    if (this.target_node && this.target_node.parent().parent().length == 0)
-      this.target_node = null
-    this.findAutoTarget()
-    if (!this.target_node) return null
-    var source_dims = {
-      width: this.source_node.outerWidth(),
-      height: this.source_node.outerHeight()
-    }
-    var target_dims = {
-      width: this.target_node.outerWidth(),
-      height: this.target_node.outerHeight()
-    }
-
-    let node_selected =
-      this.source_node.attr('data-selected') === 'true' ||
-      this.target_node.attr('data-selected') === 'true'
-    let node_hovered =
-      this.source_node.attr('data-hovered') === 'true' ||
-      this.target_node.attr('data-hovered') === 'true'
-
-    return (
-      <div>
-        {reactDom.createPortal(
-          <NodeLinkSVG
-            hovered={node_hovered}
-            node_selected={node_selected}
-            source_port_handle={this.source_port_handle}
-            source_port="2"
-            target_port_handle={this.target_port_handle}
-            target_port="0"
-            source_dimensions={source_dims}
-            target_dimensions={target_dims}
-          />,
-          $('.workflow-canvas')[0]
-        )}
-      </div>
-    )
   }
 
   findAutoTarget() {
@@ -114,11 +67,58 @@ class AutoLinkView extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    if (this.target_node && this.target_node.length > 0) {
-      this.source_node.off(this.rerenderEvents)
-      this.target_node.off(this.rerenderEvents)
+  render() {
+    if (
+      !this.source_node ||
+      this.source_node.length == 0 ||
+      !this.source_port_handle ||
+      this.source_port_handle.empty()
+    ) {
+      this.source_node = $(this.props.node_div.current)
+      this.source_port_handle = d3.select(
+        'g.port-' +
+          this.props.nodeID +
+          " circle[data-port-type='source'][data-port='s']"
+      )
+      this.source_node.on(this.rerenderEvents, this.rerender.bind(this))
     }
+    if (this.target_node && this.target_node.parent().parent().length == 0)
+      this.target_node = null
+    this.findAutoTarget()
+    if (!this.target_node) return null
+    var source_dims = {
+      width: this.source_node.outerWidth(),
+      height: this.source_node.outerHeight()
+    }
+    var target_dims = {
+      width: this.target_node.outerWidth(),
+      height: this.target_node.outerHeight()
+    }
+
+    let node_selected =
+      this.source_node.attr('data-selected') === 'true' ||
+      this.target_node.attr('data-selected') === 'true'
+    let node_hovered =
+      this.source_node.attr('data-hovered') === 'true' ||
+      this.target_node.attr('data-hovered') === 'true'
+
+    return (
+      <div>
+        {reactDom.createPortal(
+          <NodeLinkSVG
+            hovered={node_hovered}
+            node_selected={node_selected}
+            source_port_handle={this.source_port_handle}
+            source_port="2"
+            target_port_handle={this.target_port_handle}
+            target_port="0"
+            source_dimensions={source_dims}
+            target_dimensions={target_dims}
+          />,
+          $('.workflow-canvas')[0]
+        )}
+      </div>
+    )
   }
 }
 

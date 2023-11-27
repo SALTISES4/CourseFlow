@@ -6,6 +6,17 @@ class DatePicker extends React.Component {
     super(props)
     this.input = React.createRef()
   }
+  componentDidMount() {
+    $(this.input.current).flatpickr({
+      enableTime: true,
+      dateFormat: 'Z',
+      altInput: true,
+      altFormat: 'D M J, Y - H:i',
+      onChange: (dates, datestring) => {
+        this.props.onChange(datestring)
+      }
+    })
+  }
   render() {
     let disabled = false
     if (this.props.disabled) disabled = true
@@ -17,17 +28,6 @@ class DatePicker extends React.Component {
         defaultValue={this.props.default_value}
       />
     )
-  }
-  componentDidMount() {
-    $(this.input.current).flatpickr({
-      enableTime: true,
-      dateFormat: 'Z',
-      altInput: true,
-      altFormat: 'D M J, Y - H:i',
-      onChange: (dates, datestring) => {
-        this.props.onChange(datestring)
-      }
-    })
   }
 }
 

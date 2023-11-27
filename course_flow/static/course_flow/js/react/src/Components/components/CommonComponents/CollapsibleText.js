@@ -3,6 +3,26 @@ import * as React from 'react'
 import Component from './Component.js'
 
 class CollapsibleText extends Component {
+  componentDidMount() {
+    this.checkSize()
+  }
+
+  componentDidUpdate() {
+    this.checkSize()
+  }
+
+  checkSize() {
+    if (this.state.is_dropped) return
+    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
+      if (!this.state.overflow) this.setState({ overflow: true })
+    } else {
+      if (this.state.overflow) this.setState({ overflow: false })
+    }
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     let css_class = ''
     if (this.props.css_class) css_class = this.props.css_class + ' '
@@ -42,22 +62,6 @@ class CollapsibleText extends Component {
       />,
       overflow
     ]
-  }
-  componentDidMount() {
-    this.checkSize()
-  }
-
-  componentDidUpdate() {
-    this.checkSize()
-  }
-
-  checkSize() {
-    if (this.state.is_dropped) return
-    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
-      if (!this.state.overflow) this.setState({ overflow: true })
-    } else {
-      if (this.state.overflow) this.setState({ overflow: false })
-    }
   }
 }
 

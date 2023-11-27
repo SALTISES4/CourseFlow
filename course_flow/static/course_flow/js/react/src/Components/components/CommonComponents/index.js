@@ -1,5 +1,5 @@
 /*******************************************************
- * @todo describe what functionalty in general this module provides
+ * @todo describe what functionality in general this module provides
  *******************************************************/
 export { default as ActionButton } from './ActionButton.js'
 export { default as CollapsibleText } from './CollapsibleText.js'

@@ -198,6 +198,47 @@ class PathGenerator {
 }
 
 class NodeLinkSVG extends Component {
+  componentDidUpdate() {
+    if (
+      this.props.hovered ||
+      this.state.hovered ||
+      this.props.selected ||
+      this.props.node_selected
+    ) {
+      // d3.select(this.maindiv.current).raise();
+      // d3.selectAll(".node-ports").raise();
+    }
+  }
+  getPathArray(source_point, source_port, target_point, target_port) {
+    var source_dims = [
+      this.props.source_dimensions.width,
+      this.props.source_dimensions.height
+    ]
+    var target_dims = [
+      this.props.target_dimensions.width,
+      this.props.target_dimensions.height
+    ]
+    var path_generator = new PathGenerator(
+      source_point,
+      source_port,
+      target_point,
+      target_port,
+      source_dims,
+      target_dims
+    )
+    return path_generator
+  }
+
+  getPath(path_array) {
+    var path = 'M'
+    for (var i = 0; i < path_array.length; i++) {
+      if (i > 0) path += ' L'
+      var thispoint = path_array[i]
+      path += thispoint[0] + ' ' + thispoint[1]
+    }
+    return path
+  }
+
   render() {
     try {
       const source_transform = Utility.getSVGTranslation(
@@ -302,48 +343,6 @@ class NodeLinkSVG extends Component {
     } catch (err) {
       console.log('could not draw a node link')
       return null
-    }
-  }
-
-  getPathArray(source_point, source_port, target_point, target_port) {
-    var source_dims = [
-      this.props.source_dimensions.width,
-      this.props.source_dimensions.height
-    ]
-    var target_dims = [
-      this.props.target_dimensions.width,
-      this.props.target_dimensions.height
-    ]
-    var path_generator = new PathGenerator(
-      source_point,
-      source_port,
-      target_point,
-      target_port,
-      source_dims,
-      target_dims
-    )
-    return path_generator
-  }
-
-  getPath(path_array) {
-    var path = 'M'
-    for (var i = 0; i < path_array.length; i++) {
-      if (i > 0) path += ' L'
-      var thispoint = path_array[i]
-      path += thispoint[0] + ' ' + thispoint[1]
-    }
-    return path
-  }
-
-  componentDidUpdate() {
-    if (
-      this.props.hovered ||
-      this.state.hovered ||
-      this.props.selected ||
-      this.props.node_selected
-    ) {
-      // d3.select(this.maindiv.current).raise();
-      // d3.selectAll(".node-ports").raise();
     }
   }
 }

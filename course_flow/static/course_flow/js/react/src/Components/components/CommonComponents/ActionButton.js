@@ -7,6 +7,11 @@ class ActionButton extends React.Component {
     this.handleClick = this.handleClick.bind(this)
   }
 
+  handleClick(evt) {
+    this.props.handleClick(evt)
+    evt.stopPropagation()
+  }
+
   render() {
     return (
       <div
@@ -17,11 +22,6 @@ class ActionButton extends React.Component {
         <img src={config.icon_path + this.props.button_icon} />
       </div>
     )
-  }
-
-  handleClick(evt) {
-    this.props.handleClick(evt)
-    evt.stopPropagation()
   }
 }
 
