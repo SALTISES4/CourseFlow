@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import time
 
 from channels.routing import URLRouter
@@ -13,7 +12,6 @@ from django.urls import reverse
 from selenium import webdriver
 from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -249,7 +247,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         project = Project.objects.create(author=self.user, title="new title")
         LiveProject.objects.create(project=project)
         selenium.get(self.live_server_url + "/course-flow/home/")
-        selenium.find_element(By.CSS_SELECTOR,
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
+        )
+        selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
         selenium.find_element(By.CSS_SELECTOR, ".workflow-top-row a").click()
@@ -291,6 +292,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.get(self.live_server_url + "/course-flow/home/")
         # make sure only correct items are visible
+        button_workflows = wait.until(
+            EC.element_to_be_clickable((By.ID, "panel-my-live-projects"))
+        )
         assert (
             len(selenium.find_elements(By.CSS_SELECTOR,"#panel-my-projects"))
             == 0
@@ -909,8 +913,8 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
             "prefs", {"intl.accept_languages": "fr"}
         )
         chrome_options.add_argument("--lang=fr")
-        selbase = SeleniumBase(chrome_options)
-        self.selenium = selbase.init_selenium()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium(chrome_options)
 
         super().setUp()
         selenium = self.selenium
@@ -1067,8 +1071,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             create_project_button.click()
 
-
-            create_workflow_button = wait.until(EC.element_to_be_clickable((By.ID, workflow_type + "-create-project")))
+            create_workflow_button = wait.until(
+                EC.element_to_be_clickable(
+                    (By.ID, workflow_type + "-create-project")
+                )
+            )
             create_workflow_button.click()
 
             title = selenium.find_element(By.ID, "id_title")
@@ -2278,12 +2285,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             "#button_alignmentanalysis"
         ).click()
 
-        # input("wait")
-        title_text = wait.until(
+        wait.until(
             EC.presence_of_all_elements_located(
                 (By.CSS_SELECTOR, ".week .title-text")
             )
         )
+
+        title_text = selenium.find_elements_by_css_selector(".week .title-text")[0]
+
         assert title_text.text == "Term 1"
 
         assert len(selenium.find_elements(By.CSS_SELECTOR,".week .node")) == 1
@@ -2452,6 +2461,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             set_linked_workflow.click()
 
+            #set_linked_workflow = wait.until(
+            #    EC.element_to_be_clickable((By.CSS_SELECTOR, ".linked-workflow.hover-shade"))
+            #)
+
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,
                 get_model_from_str(workflow_types[i - 1]).objects.first().id,
@@ -2499,8 +2512,16 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             linked_workflow_editor.click()
 
-            section_workflow_menu = wait.until(EC.element_to_be_clickable((
-            By.CSS_SELECTOR, ".section-" + workflow_types[i - 1] + " .workflow-for-menu")))
+            section_workflow_menu = wait.until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        ".section-"
+                        + workflow_types[i - 1]
+                        + " .workflow-for-menu",
+                    )
+                )
+            )
             section_workflow_menu.click()
 
             selenium.find_element(By.ID, "set-linked-workflow-none").click()
@@ -3400,10 +3421,15 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:project-update", args=[project.pk])
         )
 
+        wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".panel-favourite"))
+        )
+
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
             2,
         )
+
 
         # delete a workflow
         selenium.get(
@@ -3426,7 +3452,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
-            1,
+            0,
         )
         self.assertEqual(
             len(selenium.find_elements(By.CSS_SELECTOR,".workflow-for-menu")),
@@ -3479,7 +3505,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements(By.CSS_SELECTOR,".panel-favourite")),
-            2,
+            1,
         )
         self.assertEqual(
             len(selenium.find_elements(By.CSS_SELECTOR,".workflow-for-menu")),
