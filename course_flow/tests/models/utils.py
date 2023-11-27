@@ -26,8 +26,7 @@ def login(test_case):
     teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
     user.groups.add(teacher_group)
     logged_in = test_case.client.login(
-        username="testuser1",
-        password="testpass1"
+        username="testuser1", password="testpass1"
     )
     test_case.assertTrue(logged_in)
     return user

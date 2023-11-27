@@ -163,7 +163,9 @@ def check_special_case_delete_permission(model_data, user):
     else:
         if instance.get_project() is None:
             return instance.author == user
-        return instance.author == user or check_object_permission(instance.get_project(),user,ObjectPermission.PERMISSION_EDIT)
+        return instance.author == user or check_object_permission(
+            instance.get_project(), user, ObjectPermission.PERMISSION_EDIT
+        )
 
 
 def get_model_from_request(model, request, **kwargs):

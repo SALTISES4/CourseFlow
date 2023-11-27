@@ -31,14 +31,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, TemplateView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow import export_functions, tasks
-
+from course_flow import export_functions
 from course_flow import redux_actions as actions
+from course_flow import tasks
 from course_flow.decorators import (
     ajax_login_required,
     check_object_enrollment,
@@ -302,7 +302,6 @@ def ratelimited_view(request, exception):
 
 
 def registration_view(request):
-
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -1208,6 +1207,7 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse("course_flow:user-update")
 
+
 class UserNotificationsView(LoginRequiredMixin, ListView):
     model = Notification
     paginate_by = 25
@@ -1241,7 +1241,8 @@ class ProjectCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'project'
+    def workflow_type(self):
+        return "project"
 
     def test_func(self):
         return (
@@ -1439,7 +1440,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
 
 
 def get_workflow_data_flat(workflow, user):
-
     SerializerClass = serializer_lookups_shallow[workflow.type]
     columnworkflows = workflow.columnworkflow_set.all()
     weekworkflows = workflow.weekworkflow_set.all()
@@ -1692,7 +1692,8 @@ class ProgramCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'program'
+    def workflow_type(self):
+        return "program"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1715,7 +1716,8 @@ class CourseCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'course'
+    def workflow_type(self):
+        return "course"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1737,7 +1739,8 @@ class CourseStrategyCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'course'
+    def workflow_type(self):
+        return "course"
 
     def test_func(self):
         return (
@@ -1764,7 +1767,8 @@ class ActivityCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'activity'
+    def workflow_type(self):
+        return "activity"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1786,7 +1790,8 @@ class ActivityStrategyCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/workflow_create.html"
 
-    def workflow_type(self): return 'activity'
+    def workflow_type(self):
+        return "activity"
 
     def test_func(self):
         return (
@@ -1935,6 +1940,8 @@ class ActivityStrategyCreateView(
 """
 Import/Export  methods
 """
+
+
 @user_can_edit(False)
 def import_data(request: HttpRequest) -> JsonResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1998,7 +2005,6 @@ def get_export(request: HttpRequest) -> HttpResponse:
 
 @ajax_login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:
-
     if (
         Group.objects.get(name="SALTISE_Staff")
         not in request.user.groups.all()
@@ -2079,6 +2085,8 @@ def get_export_download(request: HttpRequest) -> HttpResponse:
 """
 Contextual information methods
 """
+
+
 @user_can_view_or_enrolled_as_student("workflowPk")
 def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
@@ -2670,7 +2678,6 @@ def fast_program_copy(workflow, author, now):
 
 
 def fast_duplicate_week(week: Week, author: User) -> Week:
-
     try:
         # Duplicate the week
         new_week = Week.objects.create(
@@ -2765,7 +2772,6 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
 
 
 def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
-
     try:
         # Duplicate the workflow
         new_outcome = Outcome.objects.create(
@@ -2830,7 +2836,6 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 def fast_create_strategy(
     week: Week, workflow: Workflow, author: User
 ) -> Workflow:
-
     model = get_model_from_str(workflow.type)
 
     try:
@@ -2945,7 +2950,6 @@ def fast_create_strategy(
 def fast_duplicate_workflow(
     workflow: Workflow, author: User, project
 ) -> Workflow:
-
     model = get_model_from_str(workflow.type)
 
     try:
@@ -3151,7 +3155,6 @@ def fast_duplicate_workflow(
 
 
 def fast_duplicate_project(project: Project, author: User) -> Project:
-
     try:
         # Duplicate the project
         new_project = Project.objects.create(
@@ -3493,7 +3496,6 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 @user_can_view("workflowPk")
 @user_can_edit("projectPk")
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
-
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     project = Project.objects.get(pk=request.POST.get("projectPk"))
 
@@ -3557,7 +3559,6 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
 
 
 def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
-
     new_outcome = Outcome.objects.create(
         title=outcome.title,
         description=outcome.description,
@@ -4360,7 +4361,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
 
 
 # change permissions on an object for a user
-#@user_can_edit(False)
+@user_can_edit(False)
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))
@@ -5072,7 +5073,6 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 @user_can_edit("outcomePk")
 @user_can_view(False)
 def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
-
     outcome_id = json.loads(request.POST.get("outcomePk"))
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("objectID"))
@@ -5999,7 +5999,6 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
         ):
             workflow_model = id_dict["workflow"][workflow["id"]]
             for i, column in enumerate(id_dict["column"][workflow["id"]]):
-
                 column_model = id_dict["column"][workflow["id"]][column]
                 ColumnWorkflow.objects.create(
                     workflow=workflow_model, column=column_model, rank=i
@@ -6835,8 +6834,6 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
         pass
 
     return JsonResponse({"action": "posted"})
-
-
 
 
 def make_user_notification(

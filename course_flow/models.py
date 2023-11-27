@@ -718,7 +718,6 @@ class OutcomeNode(models.Model):
 
     # Check to see if the children already exist, and if not, add them
     def check_child_outcomes(self):
-
         node = self.node
         outcome = self.outcome
         degree = self.degree
@@ -1019,7 +1018,6 @@ class Workflow(models.Model):
 
 
 class Activity(Workflow):
-
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
     WORKFLOW_TYPE = 0
@@ -1040,7 +1038,6 @@ class Activity(Workflow):
 
 
 class Course(Workflow):
-
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
     WORKFLOW_TYPE = 1
@@ -1061,7 +1058,6 @@ class Course(Workflow):
 
 
 class Program(Workflow):
-
     DEFAULT_CUSTOM_COLUMN = 20
     DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
@@ -1241,7 +1237,6 @@ def default_due_date():
 
 
 class LiveProject(models.Model):
-
     created_on = models.DateTimeField(default=timezone.now)
 
     project = models.OneToOneField(
@@ -1482,7 +1477,6 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
 
 @receiver(pre_delete, sender=Project)
 def delete_project_objects(sender, instance, **kwargs):
-
     # Pick up all non-linking instances pks
     nodes = list(
         Node.objects.filter(week__workflow__project=instance).values_list(
@@ -1605,7 +1599,6 @@ def delete_project_objects(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
-
     # Pick up all non-linking instances pks
     nodes = list(
         Node.objects.filter(week__workflow=instance).values_list(
@@ -2052,12 +2045,27 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             permission_type=instance.permission_type,
                         )
 
-        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
+        elif instance.content_type == ContentType.objects.get_for_model(
+            Workflow
+        ):
             workflow = instance.content_object
             project = workflow.get_project()
             if not project is None:
-                if ObjectPermission.objects.filter(user=instance.user,object_id=project.id,content_type=ContentType.objects.get_for_model(Project)).count() == 0:
-                    ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
+                if (
+                    ObjectPermission.objects.filter(
+                        user=instance.user,
+                        object_id=project.id,
+                        content_type=ContentType.objects.get_for_model(
+                            Project
+                        ),
+                    ).count()
+                    == 0
+                ):
+                    ObjectPermission.objects.create(
+                        content_object=project,
+                        user=instance.user,
+                        permission_type=ObjectPermission.PERMISSION_VIEW,
+                    )
 
 
 @receiver(post_save, sender=ObjectPermission)

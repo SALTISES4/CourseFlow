@@ -2,7 +2,7 @@ version: '3'
 
 services:
   courseflow-django:
-    # platform: linux/amd64
+    platform: linux/amd64
     build:
       context: .
       dockerfile: ./docker/Dockerfile
@@ -18,6 +18,11 @@ services:
     networks:
       - cf-network
     entrypoint: ["python", "course_flow.py", "runserver", "0.0.0.0:8000"]
+
+    # use this entrypoint override if the servber crashes and we need to debug it
+    # entrypoint: ["/bin/bash"]
+
+
 #  test-data:
 #    platform: linux/amd64
 #    build:
