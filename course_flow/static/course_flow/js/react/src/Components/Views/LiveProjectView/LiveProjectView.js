@@ -8,12 +8,8 @@ import {
   TitleText,
   ActionButton,
   SimpleWorkflow
-} from '../components/CommonComponents.js'
-import {
-  renderMessageBox,
-  closeMessageBox
-} from '../components/MenuComponents.js'
-import { WorkflowForMenu } from '../../Library.js'
+} from '../../components/CommonComponents.js'
+import { WorkflowForMenu } from '../../../Library.js'
 import {
   setAssignmentCompletion,
   updateLiveProjectValue,
@@ -22,11 +18,11 @@ import {
   getLiveProjectDataStudent,
   setWorkflowVisibility,
   getWorkflowNodes
-} from '../../PostFunctions.js'
-import { StudentManagement } from '../components/StudentManagement.js'
-import { AssignmentView, AssignmentViewSmall } from './LiveAssignmentView.js'
-import * as Constants from '../../Constants.js'
-import * as Utility from '../../UtilityFunctions.js'
+} from '../../../PostFunctions.js'
+import { StudentManagement } from '../../components/StudentManagement.js'
+import { AssignmentView, AssignmentViewSmall } from '../LiveAssignmentView'
+import * as Constants from '../../../Constants.js'
+import * as Utility from '../../../UtilityFunctions.js'
 
 export class LiveProjectMenu extends React.Component {
   constructor(props) {
@@ -38,6 +34,9 @@ export class LiveProjectMenu extends React.Component {
     }
   }
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     let data = this.props.project
 
@@ -86,6 +85,9 @@ export class LiveProjectMenu extends React.Component {
     )
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getViewButtons() {
     return [
       { type: 'overview', name: gettext('Classroom Overview') },
@@ -181,6 +183,7 @@ export class LiveProjectMenu extends React.Component {
     this.setState(new_state)
   }
 }
+
 export class StudentLiveProjectMenu extends LiveProjectMenu {
   getViewButtons() {
     return [

@@ -6,9 +6,9 @@ import * as reactDom from 'react-dom'
 import {
   LiveProjectMenu,
   StudentLiveProjectMenu
-} from '../Components/Views/LiveProjectView.js'
-import { LiveAssignmentMenu } from '../Components/Views/LiveAssignmentView.js'
+} from '../Components/Views/LiveProjectView/LiveProjectView.js'
 import 'flatpickr/dist/flatpickr.css'
+import { LiveAssignmentMenu } from '../Components/Views/LiveAssignmentView'
 import { TinyLoader } from '../redux/helpers.js'
 
 /*******************************************************
@@ -32,13 +32,13 @@ export class LiveProjectRenderer {
   getContents() {
     return user_role === 2 ? (
       <LiveProjectMenu
-        renderer={this}
+        renderer={this} // @todo tighten this interface
         project={this.project_data}
         liveproject={this.live_project_data}
       />
     ) : (
       <StudentLiveProjectMenu
-        renderer={this}
+        renderer={this} // @todo tighten this interface
         project={this.project_data}
         liveproject={this.live_project_data}
       />

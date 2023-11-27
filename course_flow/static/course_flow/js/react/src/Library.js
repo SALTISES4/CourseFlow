@@ -17,7 +17,7 @@ import {
   restoreSelf,
   setWorkflowVisibility
 } from './PostFunctions.js'
-import * as LiveProjectViews from './Components/Views/LiveProjectView.js'
+import * as LiveProjectViews from './Components/Views/LiveProjectView/LiveProjectView.js'
 import * as Constants from './Constants.js'
 import * as Utility from './UtilityFunctions.js'
 import {
