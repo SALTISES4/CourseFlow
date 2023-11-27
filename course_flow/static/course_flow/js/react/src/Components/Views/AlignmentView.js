@@ -26,7 +26,7 @@ import {
   updateOutcomehorizontallinkDegree
 } from '../../PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
-import * as Constants from "../../Constants.js"
+import * as Constants from '../../Constants.js'
 
 //Analytics view
 class AlignmentView extends React.Component {
