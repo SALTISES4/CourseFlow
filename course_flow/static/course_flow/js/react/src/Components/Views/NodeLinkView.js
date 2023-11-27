@@ -5,9 +5,9 @@ import {
   EditableComponentWithActions,
   NodeLinkSVG
 } from '../components/CommonComponents.js'
-import { getNodeLinkByID } from '../../FindState.js'
+import { getNodeLinkByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
-import {} from '../../Reducers.js'
+import {} from '../../redux/Reducers.js'
 
 //Basic component to represent a NodeLink
 class NodeLinkView extends EditableComponentWithActions {

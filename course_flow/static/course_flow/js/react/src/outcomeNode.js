@@ -2,7 +2,7 @@ import React from 'react'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   getTableOutcomeNodeByID
-} from './FindState.js'
+} from './redux/FindState.js'
 import { filterThenSortByID } from './UtilityFunctions.js'
 
 /**

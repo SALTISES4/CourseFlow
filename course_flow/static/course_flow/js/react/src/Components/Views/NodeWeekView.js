@@ -2,8 +2,8 @@ import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import NodeView from './NodeView.js'
 import { NodeComparisonView } from './NodeView.js'
-import { getNodeWeekByID } from '../../FindState.js'
-import {} from '../../Reducers.js'
+import { getNodeWeekByID } from '../../redux/FindState.js'
+import {} from '../../redux/Reducers.js'
 
 //Basic component to represent a NodeWeek
 class NodeWeekView extends React.Component {

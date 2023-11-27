@@ -19,9 +19,9 @@ import {
   insertedAtInstant
 } from '../../PostFunctions.js'
 import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../FindState.js'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
-import { toggleObjectSet, moveWeekWorkflow } from '../../Reducers.js'
+import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
 import { WorkflowForMenu } from '../../Library.js'
 
 //Container for the workflows to be compared

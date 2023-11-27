@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { NodeOutcomeView } from './NodeView.js'
-import { TableOutcomeBase } from './OutcomeView.js'
-import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../FindState.js'
+import { TableOutcomeBase } from './OutcomeView'
+import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import * as Utility from '../../UtilityFunctions.js'
 
 //Represents the entire outcomeview, barring top level workflow stuff

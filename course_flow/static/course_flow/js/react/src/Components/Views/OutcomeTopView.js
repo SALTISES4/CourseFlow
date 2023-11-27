@@ -2,9 +2,8 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { EditableComponent } from '../components/CommonComponents.js'
-import OutcomeView from './OutcomeView.js'
-import { OutcomeBarOutcomeView } from './OutcomeView.js'
-import { getOutcomeByID } from '../../FindState.js'
+import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
+import { getOutcomeByID } from '../../redux/FindState.js'
 import {
   renderMessageBox,
   closeMessageBox

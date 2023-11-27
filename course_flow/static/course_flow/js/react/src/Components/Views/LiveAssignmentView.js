@@ -16,7 +16,7 @@ import {
   setWorkflowVisibility
 } from '../../PostFunctions.js'
 import { WorkflowVisibility } from './LiveProjectView.js'
-import { reloadAssignmentsAction } from '../../Reducers.js'
+import { reloadAssignmentsAction } from '../../redux/Reducers.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 

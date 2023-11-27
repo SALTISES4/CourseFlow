@@ -12,7 +12,7 @@ import {
   multiply as mathmultiply,
   norm as mathnorm
 } from 'mathjs'
-import { reloadCommentsAction } from '../../Reducers.js'
+import { reloadCommentsAction } from '../../redux/Reducers.js'
 import {
   getUsersForObject,
   restoreSelf,

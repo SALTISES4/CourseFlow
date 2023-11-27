@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { Component, ActionButton } from './CommonComponents.js'
-import { SimpleOutcomeView } from '../Views/OutcomeView.js'
+import { SimpleOutcomeView } from '../Views/OutcomeView'
 import {
   getOutcomeNodeByID,
   getTableOutcomeNodeByID,
@@ -11,7 +11,7 @@ import {
   getNodeByID,
   getChildWorkflowByID,
   getOutcomeWorkflowByID
-} from '../../FindState.js'
+} from '../../redux/FindState.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import { TableChildWorkflowView } from './OutcomeHorizontalLink.js'
