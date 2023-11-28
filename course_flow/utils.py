@@ -4,7 +4,6 @@ import time
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
@@ -12,7 +11,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from course_flow import models
-from course_flow.duplication_functions import fast_duplicate_workflow
 
 owned_throughmodels = [
     "node",
@@ -340,31 +338,6 @@ def user_project_url(project, user):
     return reverse(
         "course_flow:live-project-update", kwargs={"pk": project.pk}
     )
-
-
-# A helper function to set the linked workflow.
-# Do not call if you are duplicating the parent workflow,
-# that gets taken care of in another manner.
-def set_linked_workflow(node: models.Node, workflow):
-    project = node.get_workflow().get_project()
-    if (
-        models.WorkflowProject.objects.get(workflow=workflow).project
-        == project
-    ):
-        node.linked_workflow = workflow
-        node.save()
-    else:
-        try:
-            new_workflow = fast_duplicate_workflow(
-                workflow, node.author, project
-            )
-            models.WorkflowProject.objects.create(
-                workflow=new_workflow, project=project
-            )
-            node.linked_workflow = new_workflow
-            node.save()
-        except ValidationError:
-            pass
 
 
 def save_serializer(serializer) -> HttpResponse:

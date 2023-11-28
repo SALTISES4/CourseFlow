@@ -49,11 +49,7 @@ from course_flow.serializers import (
     LiveProjectSerializer,
     ProjectSerializerShallow,
 )
-from course_flow.utils import (
-    get_model_from_str,
-    get_user_permission,
-    get_user_role,
-)
+from course_flow.utils import get_user_permission, get_user_role
 from course_flow.view_utils import get_my_projects, get_workflow_context_data
 from course_flow.views.search_api import get_explore_objects
 
@@ -637,92 +633,6 @@ def get_data_package_for_project(user, project):
         },
     }
     return data_package
-
-
-def get_workflow_info_boxes(user, workflow_type, **kwargs):
-    project = kwargs.get("project", None)
-    this_project = kwargs.get("this_project", True)
-    get_strategies = kwargs.get("get_strategies", False)
-    get_favourites = kwargs.get("get_favourites", False)
-    model = get_model_from_str(workflow_type)
-    permissions_view = {
-        "user_permissions__user": user,
-        "user_permissions__permission_type": ObjectPermission.PERMISSION_EDIT,
-    }
-    permissions_edit = {
-        "user_permissions__user": user,
-        "user_permissions__permission_type": ObjectPermission.PERMISSION_EDIT,
-    }
-    items = []
-    if project is not None:
-        # Add everything from the current project
-        if this_project:
-            items += model.objects.filter(
-                project=project, is_strategy=False, deleted=False
-            )
-        # Add everything from other projects that the user has access to
-        else:
-            items += (
-                list(
-                    model.objects.filter(
-                        author=user, is_strategy=False, deleted=False
-                    ).exclude(project=project)
-                )
-                + list(
-                    model.objects.filter(**permissions_edit)
-                    .exclude(
-                        project=project,
-                    )
-                    .exclude(project=None)
-                    .exclude(Q(deleted=True) | Q(project__deleted=True))
-                )
-                + list(
-                    model.objects.filter(**permissions_view)
-                    .exclude(
-                        project=project, deleted=False, project__deleted=True
-                    )
-                    .exclude(project=None)
-                    .exclude(Q(deleted=True) | Q(project__deleted=True))
-                )
-            )
-    else:
-        favourites_and_strategies = {}
-        published_or_user = {}
-        if get_strategies:
-            favourites_and_strategies["is_strategy"] = True
-        elif workflow_type != "project":
-            favourites_and_strategies["is_strategy"] = False
-        if get_favourites:
-            favourites_and_strategies["favourited_by__user"] = user
-            published_or_user["published"] = True
-        else:
-            published_or_user["author"] = user
-        if workflow_type == "project":
-            exclude = Q(deleted=True)
-        else:
-            exclude = Q(deleted=True) | Q(project__deleted=True)
-        items += (
-            list(
-                model.objects.filter(
-                    **published_or_user,
-                    **favourites_and_strategies,
-                ).exclude(exclude)
-            )
-            + list(
-                model.objects.filter(
-                    **permissions_edit,
-                    **favourites_and_strategies,
-                ).exclude(exclude)
-            )
-            + list(
-                model.objects.filter(
-                    **permissions_view,
-                    **favourites_and_strategies,
-                ).exclude(exclude)
-            )
-        )
-
-    return InfoBoxSerializer(items, many=True, context={"user": user}).data
 
 
 @login_required
