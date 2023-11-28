@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.humanize.templatetags import humanize
 from django.db.models import Q
 from django.http import (
@@ -9,6 +8,7 @@ from django.http import (
 )
 from django.urls import reverse
 
+from course_flow.decorators import public_access
 from course_flow.serializers import (
     FavouriteSerializer,
     UserSerializer
@@ -22,7 +22,7 @@ from course_flow.templatetags.course_flow_templatetags import (
 )
 
 
-@login_required
+@public_access()
 def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
     user = request.user
 
@@ -81,7 +81,7 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
     )
 
 
-@login_required
+@public_access()
 def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
     user = request.user
 
@@ -97,8 +97,6 @@ def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
         many=True,
         context={"user": user},
     ).data
-
-    print(favourites)
 
     return JsonResponse(
         {
