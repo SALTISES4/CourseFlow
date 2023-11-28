@@ -4,6 +4,21 @@
 // TODO: All of these functions should be eventually transferred
 // into a corresponding React component that's rendering the UI
 
+// Helper/utility function to ensure DOM element exists
+// before other code executes
+function waitUntilElementExists(selector) {
+  let itvl
+  return new Promise((res, rej) => {
+    itvl = setInterval(() => {
+      const el = document.querySelector(selector)
+      if (el) {
+        clearInterval(itvl)
+        res(el)
+      }
+    }, 20)
+  })
+}
+
 const debounce = (func, timeout = 300) => {
   let timer
   return (...args) => {
@@ -47,11 +62,6 @@ const makeDropdown = (click_element) => {
   // window.addEventListener("resize",check_position);
 }
 
-makeDropdown('#overflow-options', '#overflow-links')
-makeDropdown('#account-options', '#account-links')
-makeDropdown('#notifications', '#notifications-dropdown')
-makeDropdown('#create-options', '#create-links')
-
 // reload if we got here using forward or back button
 if (
   window.performance &&
@@ -62,6 +72,19 @@ if (
 }
 
 $(window).on('load', () => {
+  waitUntilElementExists('#overflow-options').then((el) => {
+    makeDropdown(el, '#overflow-links')
+  })
+  waitUntilElementExists('#account-options').then((el) => {
+    makeDropdown(el, '#account-links')
+  })
+  waitUntilElementExists('#notifications').then((el) => {
+    makeDropdown(el, '#notifications-dropdown')
+  })
+  waitUntilElementExists('#create-options').then((el) => {
+    makeDropdown(el, '#create-links')
+  })
+
   if (COURSEFLOW_APP.show_notification_request) {
     const confirmNotifications = window.confirm(
       COURSEFLOW_APP.strings.confirm_email_updates

@@ -263,7 +263,7 @@ const TopBar = () => {
       <AppBar position="static">
         <Paper>
           <Toolbar variant="dense">
-            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ flexGrow: 1 }} className="title" />
             <Box sx={{ display: 'flex' }}>
               {apiData.is_teacher ? (
                 <IconButton
