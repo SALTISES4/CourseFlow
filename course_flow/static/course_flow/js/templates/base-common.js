@@ -62,18 +62,6 @@ if (
 }
 
 $(window).on('load', () => {
-  $('#create-links #activity-create').on('click', () => {
-    renderers.CreateNew(config.create_path.activity)
-  })
-
-  $('#create-links #course-create').on('click', () => {
-    renderers.CreateNew(config.create_path.course)
-  })
-
-  $('#create-links #program-create').on('click', () => {
-    renderers.CreateNew(config.create_path.program)
-  })
-
   if (COURSEFLOW_APP.show_notification_request) {
     const confirmNotifications = window.confirm(
       COURSEFLOW_APP.strings.confirm_email_updates

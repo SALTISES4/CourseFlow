@@ -113,6 +113,22 @@ const TopBar = () => {
     setNotificationsMenuAnchorEl(null)
   }
 
+  const handleCreateClick = (type) => {
+    switch (type) {
+      case 'program':
+        window.renderers.CreateNew(config.create_path.program)
+        break
+      case 'activity':
+        window.renderers.CreateNew(config.create_path.activity)
+        break
+      case 'course':
+        window.renderers.CreateNew(config.create_path.course)
+        break
+    }
+
+    closeAllMenus()
+  }
+
   const addMenu = (
     <StyledMenu
       anchorEl={addMenuAnchorEl}
@@ -132,13 +148,13 @@ const TopBar = () => {
       <MenuItem component="a" href={apiData.menus.add.projectUrl}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem onClick={() => handleCreateClick('program')}>
         {COURSEFLOW_APP.strings.program}
       </MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem onClick={() => handleCreateClick('course')}>
         {COURSEFLOW_APP.strings.course}
       </MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem onClick={() => handleCreateClick('activity')}>
         {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
