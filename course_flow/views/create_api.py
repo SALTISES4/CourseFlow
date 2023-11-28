@@ -14,6 +14,10 @@ from course_flow.decorators import (
     user_can_view,
     user_can_view_or_none,
 )
+from course_flow.duplication_functions import (
+    duplicate_column,
+    fast_duplicate_week,
+)
 from course_flow.models import (
     Column,
     ColumnWorkflow,
@@ -204,7 +208,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
-            week = duplication.fast_duplicate_week(old_week, request.user)
+            week = fast_duplicate_week(old_week, request.user)
             week.title = strategy.title
             week.is_strategy = True
             week.original_strategy = strategy

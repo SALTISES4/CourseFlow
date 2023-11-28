@@ -1,25 +1,10 @@
-import json
-import math
-import re
-import time
-
-# import time
-from functools import reduce
-from itertools import chain
-from operator import attrgetter
-
-import bleach
-import pandas as pd
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.paginator import Paginator
-from django.db import transaction
-from django.db.models import Count, ProtectedError, Q
+from django.db.models import Q
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -28,38 +13,20 @@ from django.http import (
 )
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import export_functions
-from course_flow import redux_actions as actions
-from course_flow import tasks
 from course_flow.decorators import (
     ajax_login_required,
     check_object_enrollment,
     check_object_permission,
-    from_same_workflow,
-    public_model_access,
-    user_can_comment,
-    user_can_delete,
-    user_can_edit,
-    user_can_edit_or_none,
-    user_can_view,
-    user_can_view_or_enrolled_as_student,
-    user_can_view_or_enrolled_as_teacher,
-    user_can_view_or_none,
-    user_enrolled_as_student,
-    user_enrolled_as_teacher,
-    user_is_author,
-    user_is_teacher,
 )
 from course_flow.forms import RegistrationForm
-from course_flow.models import (  # OutcomeProject,
+from course_flow.models import (
     Activity,
     Column,
     ColumnWorkflow,
@@ -90,7 +57,7 @@ from course_flow.models import (  # OutcomeProject,
     Workflow,
     WorkflowProject,
 )
-from course_flow.serializers import (  # OutcomeProjectSerializerShallow,
+from course_flow.serializers import (
     ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -128,21 +95,12 @@ from course_flow.serializers import (  # OutcomeProjectSerializerShallow,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
-from course_flow.utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
-    benchmark,
-    check_possible_parent,
-    dateTimeFormatNoSpace,
-    get_all_outcomes_for_outcome,
-    get_all_outcomes_for_workflow,
-    get_descendant_outcomes,
+from course_flow.utils import (
     get_model_from_str,
-    get_nondeleted_favourites,
-    get_parent_nodes_for_workflow,
-    get_relevance,
     get_user_permission,
     get_user_role,
-    save_serializer,
 )
+from course_flow.view_utils import get_my_projects, get_workflow_context_data
 from course_flow.views.search_api import get_explore_objects
 
 
@@ -363,92 +321,6 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             )
             .decode("utf-8"),
         }
-
-
-def get_my_projects(user, add, **kwargs):
-    for_add = kwargs.get("for_add", False)
-    permission_filter = {}
-    if for_add:
-        permission_filter["permission_type"] = ObjectPermission.PERMISSION_EDIT
-
-    data_package = {
-        "owned_projects": {
-            "title": _("My Projects"),
-            "sections": [
-                {
-                    "title": _("Add new"),
-                    "object_type": "project",
-                    "objects": InfoBoxSerializer(
-                        Project.objects.filter(author=user, deleted=False),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "add": add,
-            "duplicate": "copy",
-            "emptytext": _(
-                "Projects are used to organize your Programs, Courses, and Activities. Projects you create will be shown here. Click the button above to create a or import a project to get started."
-            ),
-        },
-        "edit_projects": {
-            "title": _("Shared With Me"),
-            "sections": [
-                {
-                    "title": _("Projects I've Been Added To"),
-                    "object_type": "project",
-                    "objects": InfoBoxSerializer(
-                        [
-                            user_permission.content_object
-                            for user_permission in ObjectPermission.objects.filter(
-                                user=user,
-                                content_type=ContentType.objects.get_for_model(
-                                    Project
-                                ),
-                                project__deleted=False,
-                                **permission_filter,
-                            )
-                        ],
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Projects shared with you by others (for which you have either view or edit permissions) will appear here."
-            ),
-        },
-    }
-    if not for_add:
-        data_package["deleted_projects"] = {
-            "title": _("Restore Projects"),
-            "sections": [
-                {
-                    "title": _("Restore Projects"),
-                    "object_type": "project",
-                    "objects": InfoBoxSerializer(
-                        list(Project.objects.filter(author=user, deleted=True))
-                        + [
-                            user_permission.content_object
-                            for user_permission in ObjectPermission.objects.filter(
-                                user=user,
-                                content_type=ContentType.objects.get_for_model(
-                                    Project
-                                ),
-                                project__deleted=True,
-                            )
-                        ],
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "emptytext": _(
-                "Projects you have deleted can be restored from here."
-            ),
-        }
-    return data_package
 
 
 def get_my_shared(user):
@@ -897,87 +769,6 @@ def get_workflow_info_boxes(user, workflow_type, **kwargs):
         )
 
     return InfoBoxSerializer(items, many=True, context={"user": user}).data
-
-
-# Retrieves a package of workflows and projects matching the specifications.
-def get_workflow_data_package(user, project, **kwargs):
-    type_filter = kwargs.get("type_filter", "workflow")
-    self_only = kwargs.get("self_only", False)
-    get_strategies = kwargs.get("get_strategies", False)
-    this_project_sections = []
-    all_published_sections = []
-    for this_type in ["program", "course", "activity"]:
-        if type_filter == "workflow" or type_filter == this_type:
-            this_project_sections.append(
-                {
-                    "title": "",
-                    "object_type": this_type,
-                    "is_strategy": get_strategies,
-                    "objects": get_workflow_info_boxes(
-                        user,
-                        this_type,
-                        project=project,
-                        this_project=True,
-                        get_strategies=get_strategies,
-                    ),
-                }
-            )
-            if not self_only:
-                all_published_sections.append(
-                    {
-                        "title": "",
-                        "object_type": this_type,
-                        "is_strategy": get_strategies,
-                        "objects": get_workflow_info_boxes(
-                            user,
-                            this_type,
-                            get_strategies=get_strategies,
-                            get_favourites=True,
-                        ),
-                    }
-                )
-    if type_filter == "project":
-        this_project_sections.append(
-            {
-                "title": "",
-                "object_type": type_filter,
-                "is_strategy": get_strategies,
-                "objects": get_workflow_info_boxes(user, type_filter),
-            }
-        )
-        if not self_only:
-            all_published_sections.append(
-                {
-                    "title": "",
-                    "object_type": type_filter,
-                    "is_strategy": get_strategies,
-                    "objects": get_workflow_info_boxes(
-                        user, type_filter, get_favourites=True
-                    ),
-                }
-            )
-
-    first_header = _("This Project")
-    empty_text = _("There are no applicable workflows in this project.")
-    if project is None:
-        first_header = _("Owned By You")
-        empty_text = _("You do not own any projects. Create a project first.")
-    data_package = {
-        "current_project": {
-            "title": first_header,
-            "sections": this_project_sections,
-            "emptytext": _(empty_text),
-        },
-    }
-    if not self_only:
-        data_package["all_published"] = {
-            "title": _("Your Favourites"),
-            "sections": all_published_sections,
-            "emptytext": _(
-                "You have no relevant favourites. Use the Explore menu to find and favourite content by other users."
-            ),
-        }
-    return data_package
 
 
 @login_required
@@ -1573,70 +1364,3 @@ def get_my_live_projects(user):
         "emptytext": _("You aren't registered for any classrooms right now."),
     }
     return data_package
-
-
-def get_workflow_context_data(workflow, context, user):
-    if not workflow.is_strategy:
-        project = WorkflowProject.objects.get(workflow=workflow).project
-    data_package = {}
-
-    column_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Column._meta.get_field("column_type").choices
-    ]
-    context_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("context_classification").choices
-    ]
-    task_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("task_classification").choices
-    ]
-    time_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("time_units").choices
-    ]
-    outcome_type_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Workflow._meta.get_field("outcomes_type").choices
-    ]
-    outcome_sort_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Workflow._meta.get_field("outcomes_sort").choices
-    ]
-    strategy_classification_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Week._meta.get_field("strategy_classification").choices
-    ]
-    if not workflow.is_strategy:
-        parent_project = ProjectSerializerShallow(
-            project, context={"user": user}
-        ).data
-
-    data_package["is_strategy"] = workflow.is_strategy
-    data_package["column_choices"] = column_choices
-    data_package["context_choices"] = context_choices
-    data_package["task_choices"] = task_choices
-    data_package["time_choices"] = time_choices
-    data_package["outcome_type_choices"] = outcome_type_choices
-    data_package["outcome_sort_choices"] = outcome_sort_choices
-
-    data_package[
-        "strategy_classification_choices"
-    ] = strategy_classification_choices
-    if not workflow.is_strategy:
-        data_package["project"] = parent_project
-    context["is_strategy"] = (
-        JSONRenderer().render(workflow.is_strategy).decode("utf-8")
-    )
-    context["data_package"] = (
-        JSONRenderer().render(data_package).decode("utf-8")
-    )
-    user_permission = get_user_permission(workflow, user)
-    user_role = get_user_role(workflow, user)
-    context["user_permission"] = (
-        JSONRenderer().render(user_permission).decode("utf-8")
-    )
-    context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
-
-    return context

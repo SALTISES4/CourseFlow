@@ -1,18 +1,27 @@
+import json
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.contrib.humanize.templatetags import humanize
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 
 from course_flow.decorators import ajax_login_required, public_access
-from course_flow.models import Favourite, ObjectPermission
+from course_flow.models import (
+    CourseFlowUser,
+    Favourite,
+    LiveProject,
+    ObjectPermission,
+    Project,
+    Workflow,
+)
 from course_flow.serializers import (
     FavouriteSerializer,
     InfoBoxSerializer,
-    Project,
-    Workflow,
+    LiveProjectSerializer,
 )
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
@@ -20,6 +29,7 @@ from course_flow.templatetags.course_flow_templatetags import (
     course_flow_return_url,
     has_group,
 )
+from course_flow.utils import get_nondeleted_favourites
 
 
 @public_access()

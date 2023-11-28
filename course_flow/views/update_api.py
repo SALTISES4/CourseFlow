@@ -14,6 +14,7 @@ from course_flow.decorators import (
     user_can_view,
     user_can_view_or_none,
 )
+from course_flow.duplication_functions import fast_create_strategy
 from course_flow.models import (
     Column,
     Favourite,
@@ -25,7 +26,6 @@ from course_flow.models import (
     Week,
     WeekWorkflow,
     Workflow,
-    WorkflowProject,
 )
 from course_flow.serializers import (
     ActivitySerializerShallow,
@@ -46,6 +46,7 @@ from course_flow.utils import (
     get_descendant_outcomes,
     get_model_from_str,
     save_serializer,
+    set_linked_workflow,
 )
 
 ###############################
@@ -641,25 +642,3 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
         response["action"] = "error"
 
     return JsonResponse(response)
-
-
-# A helper function to set the linked workflow.
-# Do not call if you are duplicating the parent workflow,
-# that gets taken care of in another manner.
-def set_linked_workflow(node: Node, workflow):
-    project = node.get_workflow().get_project()
-    if WorkflowProject.objects.get(workflow=workflow).project == project:
-        node.linked_workflow = workflow
-        node.save()
-    else:
-        try:
-            new_workflow = fast_duplicate_workflow(
-                workflow, node.author, project
-            )
-            WorkflowProject.objects.create(
-                workflow=new_workflow, project=project
-            )
-            node.linked_workflow = new_workflow
-            node.save()
-        except ValidationError:
-            pass
