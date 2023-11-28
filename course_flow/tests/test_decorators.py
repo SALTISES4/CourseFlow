@@ -101,7 +101,7 @@ def test_get_possible_linked_workflows(client, node, settings):
 
     # Not logged in -> 401
     response = client.post(
-        reverse("course_flow:get-possible-linked-workflows"),
+        reverse("course_flow:json-api-post-get-possible-linked-workflows"),
         {"nodePk": str(node.pk)},
     )
     assert response.status_code == 401
@@ -109,6 +109,6 @@ def test_get_possible_linked_workflows(client, node, settings):
 
     # Not POST -> 405
     response = client.get(
-        reverse("course_flow:get-possible-linked-workflows"),
+        reverse("course_flow:json-api-post-get-possible-linked-workflows"),
     )
     assert response.status_code == 405
