@@ -756,7 +756,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element(By.CSS_SELECTOR, "#button_assignments").click()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -772,7 +772,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(2)
 
         windows = selenium.window_handles
-        selenium.switch_to_window(windows[1])
+        selenium.switch_to.window(windows[1])
 
         self.assertEqual(
             "new workflow",
@@ -780,14 +780,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         selenium.close()
-        selenium.switch_to_window(windows[0])
+        selenium.switch_to.window(windows[0])
 
         selenium.get(
             self.live_server_url
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element(By.CSS_SELECTOR, "#button_assignments").click()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -2302,7 +2302,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             column=program.columns.first(),
         )
         response = self.client.post(
-            reverse("course_flow:update-outcomenode-degree"),
+            reverse("course_flow:json-api-post-update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
 
@@ -2400,7 +2400,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             column=program.columns.first(),
         )
         response = self.client.post(
-            reverse("course_flow:update-outcomenode-degree"),
+            reverse("course_flow:json-api-post-update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": poo1.child.pk, "degree": 1},
         )
 
@@ -2525,9 +2525,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             set_linked_workflow.click()
 
-            # set_linked_workflow = wait.until(
-            #    EC.element_to_be_clickable((By.CSS_SELECTOR, ".linked-workflow.hover-shade"))
-            # )
+            set_linked_workflow = wait.until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, ".linked-workflow.hover-shade")
+                )
+            )
 
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,
