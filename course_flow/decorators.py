@@ -541,6 +541,26 @@ def user_is_teacher():
     return wrapped_view
 
 
+def public_access(**outer_kwargs):
+    rate_per_min = outer_kwargs.get("rate", 5)
+
+    def wrapped_view(fct):
+        @require_GET
+        @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
+        @wraps(fct)
+        def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
+            ratelimited = getattr(request, "limited", False)
+            if ratelimited:
+                response = JsonResponse({"action": "ratelimited"})
+                response.status_code = 429
+                return response
+            return fct(request, *args, **kwargs)
+
+        return _wrapped_view
+
+    return wrapped_view
+
+
 def public_model_access(model, **outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 

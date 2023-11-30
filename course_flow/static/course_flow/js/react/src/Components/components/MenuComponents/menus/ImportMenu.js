@@ -34,7 +34,7 @@ class ImportMenu extends React.Component {
         </p>
         <form
           encType="multipart/form-data"
-          action={post_paths.import_data}
+          action={config.post_paths.import_data}
           method="POST"
           id="upload-form"
           target="redirect-iframe"
