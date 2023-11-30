@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from course_flow import models
 
@@ -389,6 +391,41 @@ def get_relevance(obj, name_filter, keywords):
             else:
                 relevance += "2"
     return relevance
+
+
+def make_user_notification(
+    source_user, target_user, notification_type, content_object, **kwargs
+):
+    if source_user is not target_user:
+        extra_text = kwargs.get("extra_text", None)
+        comment = kwargs.get("comment", None)
+        text = ""
+        if source_user is not None:
+            text += source_user.username + " "
+        else:
+            text += _("Someone ")
+        if notification_type == models.Notification.TYPE_SHARED:
+            text += _("added you to the ")
+        elif notification_type == models.Notification.TYPE_COMMENT:
+            text += _("notified you in a comment in ")
+        else:
+            text += _(" notified you for ")
+        text += _(content_object.type) + " " + content_object.__str__()
+        if extra_text is not None:
+            text += ": " + extra_text
+        models.Notification.objects.create(
+            user=target_user,
+            source_user=source_user,
+            notification_type=notification_type,
+            content_object=content_object,
+            text=text,
+            comment=comment,
+        )
+
+        # clear any notifications older than two months
+        target_user.notifications.filter(
+            created_on__lt=timezone.now() - timezone.timedelta(days=60)
+        ).delete()
 
 
 def benchmark(identifier, last_time):
