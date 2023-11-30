@@ -22,7 +22,7 @@ import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
 import { toggleObjectSet, moveWeekWorkflow } from '../../Reducers.js'
-import { WorkflowForMenu } from '../../Library.js'
+import { WorkflowForMenu } from '../Library'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component {

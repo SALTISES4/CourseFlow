@@ -49,17 +49,3 @@ $('#close-notification').on('click', () => {
   localStorage.setItem('last_hidden_notification', update_notifications.id)
   $('#update-notifications').css({ display: 'none' })
 })
-
-// TODO: Remove since this is imlpemented by the Sidebar component internally
-// $('.left-panel-toggle').on('click', () => {
-//   $('.left-panel').toggleClass('collapsed')
-//   if ($('.left-panel').hasClass('collapsed')) {
-//     sessionStorage.setItem('collapsed_sidebar', true)
-//   } else {
-//     sessionStorage.removeItem('collapsed_sidebar')
-//   }
-// })
-
-// if (!sessionStorage.getItem('collapsed_sidebar')) {
-//   $('.left-panel').removeClass('collapsed')
-// }

@@ -40,6 +40,7 @@ export class Component extends React.Component {
     this.maindiv = React.createRef()
   }
 
+  // @todo inheritance not approporiate here, create a hook
   toggleDrop(evt) {
     evt.stopPropagation()
     toggleDrop(

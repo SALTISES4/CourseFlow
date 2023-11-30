@@ -9,7 +9,7 @@ import {
   renderMessageBox,
   closeMessageBox
 } from '../components/MenuComponents.js'
-import { WorkflowForMenu } from '../../Library.js'
+import { WorkflowForMenu } from '../Library'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends EditableComponent {
@@ -62,6 +62,7 @@ class OutcomeTopView extends EditableComponent {
     )
   }
 }
+
 const mapOutcomeStateToProps = (state, own_props) =>
   getOutcomeByID(state, own_props.objectID)
 export default connect(mapOutcomeStateToProps, null)(OutcomeTopView)

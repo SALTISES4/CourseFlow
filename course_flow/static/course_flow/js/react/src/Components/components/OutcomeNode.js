@@ -15,7 +15,7 @@ import {
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import { TableChildWorkflowView } from './OutcomeHorizontalLink.js'
-import * as OutcomeNode from '../../outcomeNode.js'
+import * as OutcomeNode from '../OutcomeNode/outcomeNode.js'
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends Component {
@@ -219,6 +219,7 @@ const mapTableTotalCellStateToProps = (state, own_props) => ({
     getOutcomeByID(state, own_props.outcomeID).data
   )
 })
+
 export const TableTotalCell = connect(
   mapTableTotalCellStateToProps,
   null
