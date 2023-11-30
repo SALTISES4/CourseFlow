@@ -4,8 +4,7 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithSorting,
   OutcomeTitle
-} from '../components/CommonComponents.js'
-import OutcomeWorkflowView from './OutcomeWorkflowView.js'
+} from '../components/CommonComponents'
 import {
   OutcomeBarOutcomeView,
   OutcomeBarOutcomeViewUnconnected
@@ -20,14 +19,10 @@ import {
   getSortedOutcomeNodesFromNodes
 } from '../../FindState.js'
 import { moveOutcomeWorkflow } from '../../Reducers.js'
-import {
-  renderMessageBox,
-  closeMessageBox
-} from '../components/MenuComponents.js'
 import { newOutcome, insertedAt } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import * as OutcomeNode from '../OutcomeNode/outcomeNode.js'
+import * as OutcomeNode from '../components/OutcomeNode/outcomeNode.js'
 
 //Basic component representing the outcome view
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {

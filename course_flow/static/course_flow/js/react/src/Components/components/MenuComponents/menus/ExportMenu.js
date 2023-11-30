@@ -1,86 +1,14 @@
 import * as React from 'react'
 
-export class ExportMenu extends React.Component {
+class ExportMenu extends React.Component {
   constructor(props) {
     super(props)
     this.state = { type: 'outcome' }
   }
 
-  render() {
-    let object_sets
-    if (this.props.data.object_sets.length > 0) {
-      object_sets = [
-        <h4>{gettext('Object Set Visibility')}:</h4>,
-        this.props.data.object_sets.map((objectset) => (
-          <div>
-            <input
-              onChange={this.inputChange.bind(this, 'set', objectset.id)}
-              name="object_sets[]"
-              value={objectset.id}
-              type="checkbox"
-              id={objectset.id}
-              checked={!this.state[objectset.id]}
-            />
-            <label>{objectset.title}</label>
-          </div>
-        ))
-      ]
-    }
-
-    return (
-      <div className="message-wrap">
-        <h2>{gettext('Export files')}</h2>
-        <p>{gettext('Use this menu to export files.')}</p>
-        <form
-          id="export-form"
-          encType="multipart/form-data"
-          action={config.post_paths.get_export}
-          method="POST"
-          target="redirect-iframe"
-          onSubmit={this.submit.bind(this)}
-        >
-          <input
-            type="hidden"
-            name="csrfmiddlewaretoken"
-            value={root.getCsrfToken()}
-          />
-          <h4>{gettext('Export Type')}:</h4>
-          {this.getExportTypes()}
-          <h4>{gettext('Export Format')}:</h4>
-          <select name="export_format">
-            <option value="excel">Excel</option>
-            <option value="csv">CSV</option>
-          </select>
-          {object_sets}
-          <input
-            type="hidden"
-            id="objectID"
-            name="objectID"
-            value={JSON.stringify(this.props.data.id)}
-          />
-          <input
-            type="hidden"
-            id="objectType"
-            name="objectType"
-            value={JSON.stringify(this.props.data.type)}
-          />
-          <input
-            onClick={this.click.bind(this)}
-            id="submit-button"
-            type="submit"
-          />
-        </form>
-        <iframe hidden name="redirect-iframe" id="redirect-iframe"></iframe>
-        <div
-          className="window-close-button"
-          onClick={this.props.actionFunction}
-        >
-          <img src={config.icon_path + 'close.svg'} />
-        </div>
-      </div>
-    )
-  }
-
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getExportTypes() {
     let type = this.props.data.type
     let exports = []
@@ -172,4 +100,84 @@ export class ExportMenu extends React.Component {
     }, 100)
     return true
   }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let object_sets
+    if (this.props.data.object_sets.length > 0) {
+      object_sets = [
+        <h4>{gettext('Object Set Visibility')}:</h4>,
+        this.props.data.object_sets.map((objectset) => (
+          <div>
+            <input
+              onChange={this.inputChange.bind(this, 'set', objectset.id)}
+              name="object_sets[]"
+              value={objectset.id}
+              type="checkbox"
+              id={objectset.id}
+              checked={!this.state[objectset.id]}
+            />
+            <label>{objectset.title}</label>
+          </div>
+        ))
+      ]
+    }
+
+    return (
+      <div className="message-wrap">
+        <h2>{gettext('Export files')}</h2>
+        <p>{gettext('Use this menu to export files.')}</p>
+        <form
+          id="export-form"
+          encType="multipart/form-data"
+          action={config.post_paths.get_export}
+          method="POST"
+          target="redirect-iframe"
+          onSubmit={this.submit.bind(this)}
+        >
+          <input
+            type="hidden"
+            name="csrfmiddlewaretoken"
+            value={root.getCsrfToken()}
+          />
+          <h4>{gettext('Export Type')}:</h4>
+          {this.getExportTypes()}
+          <h4>{gettext('Export Format')}:</h4>
+          <select name="export_format">
+            <option value="excel">Excel</option>
+            <option value="csv">CSV</option>
+          </select>
+          {object_sets}
+          <input
+            type="hidden"
+            id="objectID"
+            name="objectID"
+            value={JSON.stringify(this.props.data.id)}
+          />
+          <input
+            type="hidden"
+            id="objectType"
+            name="objectType"
+            value={JSON.stringify(this.props.data.type)}
+          />
+          <input
+            onClick={this.click.bind(this)}
+            id="submit-button"
+            type="submit"
+          />
+        </form>
+        <iframe hidden name="redirect-iframe" id="redirect-iframe"></iframe>
+        <div
+          className="window-close-button"
+          onClick={this.props.actionFunction}
+        >
+          <img src={config.icon_path + 'close.svg'} />
+        </div>
+      </div>
+    )
+  }
 }
+
+export default ExportMenu

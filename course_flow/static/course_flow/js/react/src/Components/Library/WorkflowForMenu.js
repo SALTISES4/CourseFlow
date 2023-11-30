@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowTitle } from '../components/CommonComponents.js'
+import { WorkflowTitle } from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
 import { setWorkflowVisibility, toggleFavourite } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'

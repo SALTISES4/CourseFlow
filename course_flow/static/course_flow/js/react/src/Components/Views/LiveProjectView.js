@@ -8,7 +8,7 @@ import {
   TitleText,
   ActionButton,
   SimpleWorkflow
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents'
 import {
   setAssignmentCompletion,
   updateLiveProjectValue,
@@ -18,7 +18,7 @@ import {
   setWorkflowVisibility,
   getWorkflowNodes
 } from '../../PostFunctions.js'
-import { StudentManagement } from '../components/StudentManagement.js'
+import StudentManagement from '../components/StudentManagement'
 import { AssignmentView, AssignmentViewSmall } from './LiveAssignmentView.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
