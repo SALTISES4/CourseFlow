@@ -17,8 +17,12 @@ import {
   getOutcomeOutcomeByID,
   getSortedOutcomesFromOutcomeWorkflowSet,
   getSortedOutcomeNodesFromNodes
-} from '../../FindState.js'
-import { moveOutcomeWorkflow } from '../../Reducers.js'
+} from '../../redux/FindState.js'
+import { moveOutcomeWorkflow } from '../../redux/Reducers.js'
+import {
+  renderMessageBox,
+  closeMessageBox
+} from '../components/MenuComponents.js'
 import { newOutcome, insertedAt } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'

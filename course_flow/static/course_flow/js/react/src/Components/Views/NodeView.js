@@ -10,9 +10,9 @@ import {
   TitleText
 } from '../components/CommonComponents'
 import NodeLinkView from './NodeLinkView.js'
-import { AssignmentBox } from './LiveAssignmentView.js'
+import { AssignmentBox } from './LiveAssignmentView'
 import OutcomeNodeView from '../components/OutcomeNode.js'
-import { getNodeByID } from '../../FindState.js'
+import { getNodeByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'

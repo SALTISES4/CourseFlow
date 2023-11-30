@@ -20,7 +20,7 @@ import {
   moveColumnWorkflow,
   moveWeekWorkflow,
   toggleObjectSet
-} from '../../Reducers.js'
+} from '../../redux/Reducers.js'
 import { OutcomeBar } from './OutcomeEditView.js'
 import StrategyView from '../components/Strategy.js'
 import WorkflowOutcomeView from './WorkflowOutcomeView.js'

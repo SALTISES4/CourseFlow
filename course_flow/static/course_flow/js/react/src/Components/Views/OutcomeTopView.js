@@ -2,12 +2,13 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { EditableComponent } from '../components/CommonComponents'
-import OutcomeView from './OutcomeView.js'
-import { OutcomeBarOutcomeView } from './OutcomeView.js'
-import { getOutcomeByID } from '../../FindState.js'
-import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 import { WorkflowForMenu } from '../Library'
-import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
+import { getOutcomeByID } from '../../redux/FindState.js'
+import {
+  renderMessageBox,
+  closeMessageBox
+} from '../components/MenuComponents.js'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends EditableComponent {

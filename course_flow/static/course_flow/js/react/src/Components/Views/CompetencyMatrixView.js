@@ -2,12 +2,18 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { Component, NodeOutcomeView } from '../components/CommonComponents'
 import * as Constants from '../../Constants.js'
+import { TableOutcomeBase } from './OutcomeView'
 import {
   getSortedOutcomeIDFromOutcomeWorkflowSet,
+  getOutcomeByID,
+  getWeekWorkflowByID,
   getWeekByID,
-  getNodeByID
-} from '../../FindState.js'
-import { TableOutcomeBase } from './OutcomeView.js'
+  getNodeWeekByID,
+  getNodeByID,
+  getOutcomeNodeByID,
+  getTableOutcomeNodeByID
+} from '../../redux/FindState.js'
+import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js'
 import * as Utility from '../../UtilityFunctions.js'
 
 class CompetencyMatrixView extends React.Component {
@@ -369,6 +375,7 @@ class MatrixWeekViewUnconnected extends Component {
     )
   }
 }
+
 const mapWeekStateToProps = (state, own_props) => {
   let data = getWeekByID(state, own_props.objectID).data
   let node_weeks = Utility.filterThenSortByID(state.nodeweek, data.nodeweek_set)

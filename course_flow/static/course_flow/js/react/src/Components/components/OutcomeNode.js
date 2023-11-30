@@ -11,7 +11,7 @@ import {
   getNodeByID,
   getChildWorkflowByID,
   getOutcomeWorkflowByID
-} from '../../FindState.js'
+} from '../../redux/FindState.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import { TableChildWorkflowView } from './OutcomeHorizontalLink.js'

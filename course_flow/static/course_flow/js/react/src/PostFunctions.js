@@ -1,14 +1,12 @@
 import { renderMessageBox } from './Components/components/MenuComponents/MenuComponents.js'
-import { changeField } from './Reducers.js'
+import { changeField } from './redux/Reducers.js'
 import * as Constants from './Constants.js'
 import { Enum } from './UtilityFunctions.js'
 
 /*
 All functions for API calls.
-
-// @todo intermixed calls to DOMMO via jQuery
-
-// @todo these AJAX calls are mixed up by domain and should be separated
+// @todo rename this file to 'XMLHttp' or 'ajax' etc (not just doing POST requests)
+// @todo intermixed calls to DOM via jQuery
 */
 
 // JQUERY

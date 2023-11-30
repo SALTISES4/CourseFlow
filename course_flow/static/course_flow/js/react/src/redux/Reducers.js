@@ -1,5 +1,5 @@
 import * as Redux from 'redux'
-import * as Utility from './UtilityFunctions.js'
+import * as Utility from '../UtilityFunctions.js'
 
 export const createLockAction = (
   object_id,
@@ -1885,6 +1885,7 @@ export function parentWorkflowReducer(state = [], action) {
       return state
   }
 }
+
 export function childWorkflowReducer(state = [], action) {
   switch (action.type) {
     case 'replaceStoreData':

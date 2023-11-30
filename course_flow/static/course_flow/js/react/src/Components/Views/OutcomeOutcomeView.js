@@ -1,10 +1,14 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import OutcomeView from './OutcomeView.js'
-import { OutcomeBarOutcomeView } from './OutcomeView.js'
-import { SimpleOutcomeView, TableOutcomeView } from './OutcomeView.js'
-import { getOutcomeOutcomeByID } from '../../FindState.js'
+import { TitleText } from '../components/CommonComponents.js'
+import {
+  OutcomeBarOutcomeView,
+  OutcomeView,
+  SimpleOutcomeView,
+  TableOutcomeView
+} from './OutcomeView'
+import { getOutcomeOutcomeByID } from '../../redux/FindState.js'
 
 //Basic component representing an outcome to outcome link
 class OutcomeOutcomeView extends React.Component {

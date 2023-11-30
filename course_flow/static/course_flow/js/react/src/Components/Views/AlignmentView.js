@@ -15,9 +15,8 @@ import {
   getChildWorkflowByID,
   getWeekByID,
   getSortedOutcomesFromOutcomeWorkflowSet
-} from '../../FindState.js'
-import OutcomeView from './OutcomeView.js'
-import { SimpleOutcomeView } from './OutcomeView.js'
+} from '../../redux/FindState.js'
+import { OutcomeView } from './OutcomeView'
 import OutcomeNodeView from '../components/OutcomeNode.js'
 import {
   newOutcome,
@@ -667,6 +666,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     )
   }
 }
+
 const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
   state,
   own_props

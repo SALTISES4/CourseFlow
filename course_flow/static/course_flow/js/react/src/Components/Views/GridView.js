@@ -10,7 +10,7 @@ import {
   getWeekWorkflowByID,
   getWeekByID,
   getNodeByID
-} from '../../FindState.js'
+} from '../../redux/FindState.js'
 import * as Utility from '../../UtilityFunctions.js'
 
 //Creates a grid with just nodes by week and their times

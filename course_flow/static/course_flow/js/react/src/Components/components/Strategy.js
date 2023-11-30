@@ -2,7 +2,8 @@ import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import * as Constants from '../../Constants.js'
 import { Component } from './CommonComponents'
-import { getStrategyByID } from '../../FindState.js'
+import { getStrategyByID } from '../../redux/FindState.js'
+
 
 //Basic component to represent a Strategy
 class StrategyView extends Component {

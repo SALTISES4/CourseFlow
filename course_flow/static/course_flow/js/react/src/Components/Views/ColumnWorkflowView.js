@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import ColumnView from './ColumnView.js'
 import { NodeBarColumn, NodeBarColumnCreator } from './ColumnView.js'
-import { getColumnWorkflowByID } from '../../FindState.js'
+import { getColumnWorkflowByID } from '../../redux/FindState.js'
 
 //Basic component to represent a columnworkflow
 class ColumnWorkflowView extends React.Component {

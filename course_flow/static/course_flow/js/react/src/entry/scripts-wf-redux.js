@@ -9,7 +9,7 @@ import {
   WorkflowComparisonBaseView
 } from '../Components/Views/ComparisonView.js'
 import * as Constants from '../Constants.js'
-import * as Reducers from '../Reducers.js'
+import * as Reducers from '../redux/Reducers.js'
 import {
   getTargetProjectMenu,
   getWorkflowData,

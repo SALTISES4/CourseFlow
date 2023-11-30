@@ -8,7 +8,10 @@ import {
   WorkflowTitle
 } from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
-import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
+import {
+  renderMessageBox,
+  closeMessageBox
+} from '../components/MenuComponents.js'
 import {
   getWorkflowSelectMenu,
   getWorkflowContext,
@@ -16,11 +19,10 @@ import {
   insertedAtInstant
 } from '../../PostFunctions.js'
 import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../FindState.js'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
-import { toggleObjectSet, moveWeekWorkflow } from '../../Reducers.js'
-import { WorkflowForMenu } from '../Library'
-import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
+import { WorkflowForMenu } from '../../Library.js'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component {
@@ -206,6 +208,8 @@ export class ComparisonView extends React.Component {
 
   changeView(type) {
     this.props.renderer.selection_manager.changeSelection(null, null)
+
+    // ?? pass in the parent renderer container as its own new container, how is this working?
     this.props.renderer.render(this.props.renderer.container, type)
   }
 

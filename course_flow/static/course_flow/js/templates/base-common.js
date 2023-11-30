@@ -89,6 +89,7 @@ $(window).on('load', () => {
   }
 })
 
+// @todo imports go at top
 // Fix Quilljs's link sanitization
 const Link = Quill.import('formats/link')
 // Override the existing property on the Quill global object and add custom protocols
@@ -116,4 +117,5 @@ class CustomLinkSanitizer extends Link {
   }
 }
 
+// @todo scope issue
 Quill.register(CustomLinkSanitizer, true)
