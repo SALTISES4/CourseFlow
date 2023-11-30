@@ -19,7 +19,7 @@ import {
 } from '../../../PostFunctions.js'
 import * as Utility from '../../../UtilityFunctions.js'
 import * as Constants from '../../../Constants.js'
-import { SimpleOutcomeView } from './index.js'
+import SimpleOutcomeView from './SimpleOutcomeView.js'
 
 /**
  *

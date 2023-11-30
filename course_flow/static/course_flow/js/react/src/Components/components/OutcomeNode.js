@@ -8,7 +8,7 @@ import {
 } from '../../redux/FindState.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as OutcomeNode from './OutcomeNode/outcomeNode.js'
-import { SimpleOutcomeView } from '../Views/OutcomeView/index.js'
+import { SimpleOutcomeView } from '../Views/OutcomeView'
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends Component {

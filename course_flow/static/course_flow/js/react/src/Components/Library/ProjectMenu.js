@@ -15,7 +15,7 @@ import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 import { WorkflowTitle } from '../components/CommonComponents/Titles.js'
-import { CollapsibleText } from '../components/CommonComponents/index.js'
+import { CollapsibleText } from '../components/CommonComponents'
 import { LiveProjectOverview } from '../Views/LiveProjectView/LiveProjectOverview.js'
 import LiveProjectStudents from '../Views/LiveProjectView/LiveProjectStudents.js'
 import {

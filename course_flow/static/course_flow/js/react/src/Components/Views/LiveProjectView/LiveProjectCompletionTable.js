@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { LiveProjectSection } from './LiveProjectSection.js'
-import { AssignmentViewSmall } from '../LiveAssignmentView/index.js'
+import { AssignmentViewSmall } from '../LiveAssignmentView'
 import * as Utility from '../../../UtilityFunctions.js'
 import { setAssignmentCompletion } from '../../../PostFunctions.js'
 

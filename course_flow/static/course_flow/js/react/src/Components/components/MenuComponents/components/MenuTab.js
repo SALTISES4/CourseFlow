@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '../../../Library/index.js'
+import { WorkflowForMenu } from '../../../Library'
 import { getAddedWorkflowMenu } from '../../../../PostFunctions.js'
 import * as reactDom from 'react-dom'
 

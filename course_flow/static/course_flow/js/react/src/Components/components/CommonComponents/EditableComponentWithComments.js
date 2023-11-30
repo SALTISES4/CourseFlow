@@ -3,14 +3,16 @@ import * as reactDom from 'react-dom'
 import {
   addComment,
   getCommentsForObject,
-  getUsersForObject
+  getUsersForObject,
+  removeAllComments,
+  removeComment
 } from '../../../PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 import * as Utility from '../../../UtilityFunctions.js'
 import { reloadCommentsAction } from '../../../redux/Reducers.js'
 // @components
-import { ActionButton, EditableComponent } from './index.js'
 import Component from './Component.js'
+import ActionButton from './ActionButton.js'
 
 /*******************************************************
  * @CommentBox

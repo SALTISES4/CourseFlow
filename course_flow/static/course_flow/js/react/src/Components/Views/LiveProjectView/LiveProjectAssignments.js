@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { AssignmentView } from '../LiveAssignmentView/index.js'
+import { AssignmentView } from '../LiveAssignmentView'
 import {
   ActionButton,
   NodeTitle,

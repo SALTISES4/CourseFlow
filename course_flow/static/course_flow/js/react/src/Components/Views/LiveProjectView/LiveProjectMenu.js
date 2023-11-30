@@ -3,14 +3,12 @@ import * as reactDom from 'react-dom'
 
 import WorkflowVisibility from './WorkflowVisibility.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
-import {
-  LiveProjectAssignments,
-  LiveProjectCompletionTable,
-  LiveProjectSettings
-} from './index.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
 import { WorkflowForMenu } from '../../Library'
+import LiveProjectCompletionTable from "./LiveProjectCompletionTable.js";
+import LiveProjectSettings from "./LiveProjectSettings.js";
+import LiveProjectAssignments from "./LiveProjectAssignments.js";
 
 /**
  *
