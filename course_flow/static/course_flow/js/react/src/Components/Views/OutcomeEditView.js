@@ -18,6 +18,7 @@ import { newOutcome, insertedAt } from '../../PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 import * as OutcomeNode from '../components/OutcomeNode/outcomeNode.js'
 import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
+import { OutcomeBarOutcomeViewUnconnected } from './OutcomeView/OutcomeBarOutcomeView.js'
 
 //Basic component representing the outcome view
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {

@@ -1,4 +1,4 @@
-import * as React from '@types'
+import * as React from 'react'
 import * as Constants from '../../../Constants.js'
 
 //Text that can be passed a default value. HTML is dangerously set.

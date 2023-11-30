@@ -1,8 +1,9 @@
 //Basic component to represent a node in the outcomes table
+import * as React from 'react'
+import { connect } from 'react-redux'
 import { Component, NodeTitle } from './index.js'
 import * as Constants from '../../../Constants.js'
-import { connect } from 'react-redux'
-import * as React from '@types'
+import {getNodeByID} from "../../../redux/FindState.js";
 
 class NodeOutcomeViewUnconnected extends Component {
   constructor(props) {
@@ -49,6 +50,8 @@ class NodeOutcomeViewUnconnected extends Component {
     )
   }
 }
+const mapNodeStateToProps = (state, own_props) =>
+  getNodeByID(state, own_props.objectID)
 const NodeOutcomeView = connect(
   mapNodeStateToProps,
   null

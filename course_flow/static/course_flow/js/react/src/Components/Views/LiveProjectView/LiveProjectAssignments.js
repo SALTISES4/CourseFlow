@@ -8,6 +8,7 @@ import {
 } from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../PostFunctions.js'
 import * as Constants from '../../../Constants.js'
+import {LiveProjectSection} from "./LiveProjectSection.js";
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {

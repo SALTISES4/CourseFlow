@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
+import NodeLinkSVG from './NodeLinkSVG.js'
 
 // A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
 class AutoLinkView extends React.Component {
