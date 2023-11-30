@@ -1,14 +1,14 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { EditableComponent } from '../components/CommonComponents.js'
+import { connect } from 'react-redux'
+import { EditableComponent } from '../components/CommonComponents'
+import { WorkflowForMenu } from '../Library'
 import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
 import { getOutcomeByID } from '../../redux/FindState.js'
 import {
   renderMessageBox,
   closeMessageBox
 } from '../components/MenuComponents.js'
-import { WorkflowForMenu } from '../../Library.js'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends EditableComponent {
@@ -61,6 +61,7 @@ class OutcomeTopView extends EditableComponent {
     )
   }
 }
+
 const mapOutcomeStateToProps = (state, own_props) =>
   getOutcomeByID(state, own_props.objectID)
 export default connect(mapOutcomeStateToProps, null)(OutcomeTopView)

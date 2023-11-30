@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import { Component, ActionButton } from './CommonComponents.js'
-import { SimpleOutcomeView } from '../Views/OutcomeView'
+import { Component, ActionButton } from './CommonComponents'
+import { SimpleOutcomeView } from '../Views/OutcomeView.js'
 import {
   getOutcomeNodeByID,
   getTableOutcomeNodeByID,
@@ -15,7 +15,7 @@ import {
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import { TableChildWorkflowView } from './OutcomeHorizontalLink.js'
-import * as OutcomeNode from '../../outcomeNode.js'
+import * as OutcomeNode from './OutcomeNode/outcomeNode.js'
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends Component {
@@ -219,6 +219,7 @@ const mapTableTotalCellStateToProps = (state, own_props) => ({
     getOutcomeByID(state, own_props.outcomeID).data
   )
 })
+
 export const TableTotalCell = connect(
   mapTableTotalCellStateToProps,
   null

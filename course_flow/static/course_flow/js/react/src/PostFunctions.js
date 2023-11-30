@@ -1,4 +1,4 @@
-import { renderMessageBox } from './Components/components/MenuComponents.js'
+import { renderMessageBox } from './Components/components/MenuComponents/MenuComponents.js'
 import { changeField } from './redux/Reducers.js'
 import * as Constants from './Constants.js'
 import { Enum } from './UtilityFunctions.js'

@@ -3,8 +3,8 @@ import { Provider, connect } from 'react-redux'
 import {
   Component,
   EditableComponentWithActions
-} from '../components/CommonComponents.js'
-import { getColumnByID } from '../../redux/FindState.js'
+} from '../components/CommonComponents'
+import { getColumnByID } from '../../FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 

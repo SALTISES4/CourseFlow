@@ -97,6 +97,7 @@ export class SelectionManager {
   }
 }
 
+// @todo this should be a component with managed state
 export class TinyLoader {
   constructor(identifier) {
     this.identifier = identifier

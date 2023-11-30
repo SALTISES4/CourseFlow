@@ -4,8 +4,8 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithActions,
   NodeLinkSVG
-} from '../components/CommonComponents.js'
-import { getNodeLinkByID } from '../../redux/FindState.js'
+} from '../components/CommonComponents'
+import { getNodeLinkByID } from '../../FindState.js'
 import * as Constants from '../../Constants.js'
 import {} from '../../redux/Reducers.js'
 

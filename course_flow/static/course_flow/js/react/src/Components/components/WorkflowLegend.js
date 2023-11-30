@@ -3,7 +3,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Constants from '../../Constants.js'
 import { Provider, connect } from 'react-redux'
-import { Slider } from './CommonComponents.js'
+import { Slider } from './CommonComponents'
 
 class LegendLine extends React.Component {
   render() {

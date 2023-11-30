@@ -120,7 +120,7 @@ class ModelViewTest(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         response = self.client.post(
-            reverse("course_flow:make-project-live"),
+            reverse("course_flow:json-api-post-make-project-live"),
             {
                 "projectPk": project.id,
             },
@@ -128,7 +128,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:make-project-live"),
+            reverse("course_flow:json-api-post-make-project-live"),
             {
                 "projectPk": project.id,
             },
@@ -140,7 +140,7 @@ class ModelViewTest(TestCase):
             permission_type=ObjectPermission.PERMISSION_EDIT,
         )
         response = self.client.post(
-            reverse("course_flow:make-project-live"),
+            reverse("course_flow:json-api-post-make-project-live"),
             {
                 "projectPk": project.id,
             },
@@ -148,7 +148,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
         project2 = Project.objects.create(author=user)
         response = self.client.post(
-            reverse("course_flow:make-project-live"),
+            reverse("course_flow:json-api-post-make-project-live"),
             {
                 "projectPk": project2.id,
             },
@@ -167,7 +167,7 @@ class ModelViewTest(TestCase):
         )
         # As a student, try to change your own role
         response = self.client.post(
-            reverse("course_flow:set-liveproject-role"),
+            reverse("course_flow:json-api-post-set-liveproject-role"),
             {
                 "liveprojectPk": project.id,
                 "role_type": LiveProjectUser.ROLE_TEACHER,
@@ -190,7 +190,7 @@ class ModelViewTest(TestCase):
         )
         # As a teacher, try to set your own role
         response = self.client.post(
-            reverse("course_flow:set-liveproject-role"),
+            reverse("course_flow:json-api-post-set-liveproject-role"),
             {
                 "liveprojectPk": project.id,
                 "role_type": LiveProjectUser.ROLE_TEACHER,
@@ -209,7 +209,7 @@ class ModelViewTest(TestCase):
         user2 = User.objects.create()
         # As a teacher, try to change another user who has a student account's role to teacher
         response = self.client.post(
-            reverse("course_flow:set-liveproject-role"),
+            reverse("course_flow:json-api-post-set-liveproject-role"),
             {
                 "liveprojectPk": project.id,
                 "role_type": LiveProjectUser.ROLE_TEACHER,
@@ -227,7 +227,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(json.loads(response.content).get("action"), "error")
         # Try to change the author's permission
         response = self.client.post(
-            reverse("course_flow:set-liveproject-role"),
+            reverse("course_flow:json-api-post-set-liveproject-role"),
             {
                 "liveprojectPk": project.id,
                 "role_type": str(LiveProjectUser.ROLE_TEACHER),
@@ -249,7 +249,7 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
         liveproject = LiveProject.objects.create(project=project)
         response = self.client.post(
-            reverse("course_flow:get-live-project-data"),
+            reverse("course_flow:json-api-post-get-live-project-data"),
             {
                 "liveprojectPk": liveproject.pk,
                 "data_type": JSONRenderer().render("overview").decode("utf-8"),
@@ -258,7 +258,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:get-live-project-data"),
+            reverse("course_flow:json-api-post-get-live-project-data"),
             {
                 "liveprojectPk": liveproject.pk,
                 "data_type": JSONRenderer().render("overview").decode("utf-8"),
@@ -271,7 +271,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:get-live-project-data"),
+            reverse("course_flow:json-api-post-get-live-project-data"),
             {
                 "liveprojectPk": liveproject.pk,
                 "data_type": JSONRenderer().render("overview").decode("utf-8"),
@@ -284,7 +284,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:get-live-project-data"),
+            reverse("course_flow:json-api-post-get-live-project-data"),
             {
                 "liveprojectPk": liveproject.pk,
                 "data_type": JSONRenderer().render("overview").decode("utf-8"),
@@ -297,7 +297,7 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
         liveproject = LiveProject.objects.create(project=project)
         response = self.client.post(
-            reverse("course_flow:get-users-for-liveproject"),
+            reverse("course_flow:json-api-post-get-users-for-liveproject"),
             {
                 "liveprojectPk": liveproject.pk,
             },
@@ -305,7 +305,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:get-users-for-liveproject"),
+            reverse("course_flow:json-api-post-get-users-for-liveproject"),
             {
                 "liveprojectPk": liveproject.pk,
             },
@@ -317,7 +317,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:get-users-for-liveproject"),
+            reverse("course_flow:json-api-post-get-users-for-liveproject"),
             {
                 "liveprojectPk": liveproject.pk,
             },
@@ -329,7 +329,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:get-users-for-liveproject"),
+            reverse("course_flow:json-api-post-get-users-for-liveproject"),
             {
                 "liveprojectPk": liveproject.pk,
             },
@@ -418,7 +418,7 @@ class ModelViewTest(TestCase):
         WorkflowProject.objects.create(project=project, workflow=workflow)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow.pk,
@@ -434,7 +434,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow.pk,
@@ -450,7 +450,7 @@ class ModelViewTest(TestCase):
             permission_type=ObjectPermission.PERMISSION_VIEW,
         )
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow.pk,
@@ -471,7 +471,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow.pk,
@@ -487,7 +487,7 @@ class ModelViewTest(TestCase):
             permission_type=ObjectPermission.PERMISSION_VIEW,
         )
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow.pk,
@@ -503,7 +503,7 @@ class ModelViewTest(TestCase):
             project=Project.objects.create(author=user), workflow=workflow2
         )
         response = self.client.post(
-            reverse("course_flow:set-workflow-visibility"),
+            reverse("course_flow:json-api-post-set-workflow-visibility"),
             {
                 "liveprojectPk": project.id,
                 "workflowPk": workflow2.pk,
@@ -531,7 +531,7 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:get-workflow-data"),
+            reverse("course_flow:json-api-post-get-workflow-data"),
             {
                 "workflowPk": workflow.pk,
             },
@@ -548,7 +548,7 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:get-workflow-data"),
+            reverse("course_flow:json-api-post-get-workflow-data"),
             {
                 "workflowPk": workflow.pk,
             },
@@ -567,7 +567,7 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
-            reverse("course_flow:get-workflow-data"),
+            reverse("course_flow:json-api-post-get-workflow-data"),
             {
                 "workflowPk": workflow.pk,
             },
@@ -584,7 +584,7 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
-            reverse("course_flow:get-workflow-data"),
+            reverse("course_flow:json-api-post-get-workflow-data"),
             {
                 "workflowPk": workflow.pk,
             },
@@ -602,13 +602,13 @@ class ModelViewTest(TestCase):
 
         liveproject = LiveProject.objects.create(project=project)
         response = self.client.post(
-            reverse("course_flow:create-live-assignment"),
+            reverse("course_flow:json-api-post-create-live-assignment"),
             {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
         )
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:create-live-assignment"),
+            reverse("course_flow:json-api-post-create-live-assignment"),
             {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
         )
         self.assertEqual(response.status_code, 403)
@@ -618,7 +618,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:create-live-assignment"),
+            reverse("course_flow:json-api-post-create-live-assignment"),
             {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
         )
         self.assertEqual(response.status_code, 403)
@@ -628,13 +628,13 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:create-live-assignment"),
+            reverse("course_flow:json-api-post-create-live-assignment"),
             {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
         )
         self.assertEqual(response.status_code, 403)
         liveproject.visible_workflows.add(workflow)
         response = self.client.post(
-            reverse("course_flow:create-live-assignment"),
+            reverse("course_flow:json-api-post-create-live-assignment"),
             {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
         )
         self.assertEqual(response.status_code, 200)
@@ -660,7 +660,7 @@ class ModelViewTest(TestCase):
         )
         user_list = [author.pk]
         response = self.client.post(
-            reverse("course_flow:add-users-to-assignment"),
+            reverse("course_flow:json-api-post-add-users-to-assignment"),
             {
                 "liveassignmentPk": assignment.pk,
                 "user_list": JSONRenderer().render(user_list).decode("utf-8"),
@@ -670,7 +670,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:add-users-to-assignment"),
+            reverse("course_flow:json-api-post-add-users-to-assignment"),
             {
                 "liveassignmentPk": assignment.pk,
                 "user_list": JSONRenderer().render(user_list).decode("utf-8"),
@@ -684,7 +684,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:add-users-to-assignment"),
+            reverse("course_flow:json-api-post-add-users-to-assignment"),
             {
                 "liveassignmentPk": assignment.pk,
                 "user_list": JSONRenderer().render(user_list).decode("utf-8"),
@@ -698,7 +698,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:add-users-to-assignment"),
+            reverse("course_flow:json-api-post-add-users-to-assignment"),
             {
                 "liveassignmentPk": assignment.pk,
                 "user_list": JSONRenderer().render(user_list).decode("utf-8"),
@@ -713,7 +713,7 @@ class ModelViewTest(TestCase):
             1,
         )
         response = self.client.post(
-            reverse("course_flow:add-users-to-assignment"),
+            reverse("course_flow:json-api-post-add-users-to-assignment"),
             {
                 "liveassignmentPk": assignment.pk,
                 "user_list": JSONRenderer().render(user_list).decode("utf-8"),
@@ -753,7 +753,7 @@ class ModelViewTest(TestCase):
             assignment=assignment,
         )
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment.pk,
                 "completed": JSONRenderer().render(True).decode("utf-8"),
@@ -762,7 +762,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment.pk,
                 "completed": JSONRenderer().render(True).decode("utf-8"),
@@ -775,7 +775,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment.pk,
                 "completed": JSONRenderer().render(True).decode("utf-8"),
@@ -790,7 +790,7 @@ class ModelViewTest(TestCase):
             assignment=assignment,
         )
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment2.pk,
                 "completed": JSONRenderer().render(True).decode("utf-8"),
@@ -801,7 +801,7 @@ class ModelViewTest(TestCase):
         assignment.self_reporting = False
         assignment.save()
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment2.pk,
                 "completed": JSONRenderer().render(False).decode("utf-8"),
@@ -811,7 +811,7 @@ class ModelViewTest(TestCase):
         lpu.role_type = LiveProjectUser.ROLE_TEACHER
         lpu.save()
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment2.pk,
                 "completed": JSONRenderer().render(False).decode("utf-8"),
@@ -822,7 +822,7 @@ class ModelViewTest(TestCase):
             UserAssignment.objects.get(user=user).completed, False
         )
         response = self.client.post(
-            reverse("course_flow:set-assignment-completion"),
+            reverse("course_flow:json-api-post-set-assignment-completion"),
             {
                 "userassignmentPk": userassignment.pk,
                 "completed": JSONRenderer().render(True).decode("utf-8"),
@@ -861,7 +861,7 @@ class ModelViewTest(TestCase):
             assignment=assignment,
         )
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -869,7 +869,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         user = login(self)
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -882,7 +882,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -898,7 +898,7 @@ class ModelViewTest(TestCase):
             )
         self.assertEqual(len(UserAssignment.objects.filter(user=user)), 1)
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -918,7 +918,7 @@ class ModelViewTest(TestCase):
 
         UserAssignment.objects.filter(user=user).delete()
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -946,7 +946,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },
@@ -968,7 +968,7 @@ class ModelViewTest(TestCase):
 
         UserAssignment.objects.filter(user=user).delete()
         response = self.client.post(
-            reverse("course_flow:get-assignments-for-node"),
+            reverse("course_flow:json-api-post-get-assignments-for-node"),
             {
                 "nodePk": node.pk,
             },

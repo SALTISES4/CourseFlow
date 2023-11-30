@@ -4,10 +4,12 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithSorting,
   OutcomeTitle
-} from '../components/CommonComponents.js'
-import OutcomeWorkflowView from './OutcomeWorkflowView.js'
-
-import OutcomeView from './OutcomeView/OutcomeView.js'
+} from '../components/CommonComponents'
+import {
+  OutcomeBarOutcomeView,
+  OutcomeBarOutcomeViewUnconnected
+} from './OutcomeView.js'
+import OutcomeView from './OutcomeView.js'
 import {
   getParentWorkflowByID,
   getOutcomeNodeByID,
@@ -24,9 +26,7 @@ import {
 import { newOutcome, insertedAt } from '../../PostFunctions.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import * as OutcomeNode from '../../outcomeNode.js'
-import { OutcomeBarOutcomeView } from './OutcomeView'
-import { OutcomeBarOutcomeViewUnconnected } from './OutcomeView/OutcomeBarOutcomeView.js'
+import * as OutcomeNode from '../components/OutcomeNode/outcomeNode.js'
 
 //Basic component representing the outcome view
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {

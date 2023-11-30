@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
 import { WorkflowBaseView } from '../Components/Views/WorkflowView.js'
-import { WorkflowGridMenu } from '../Components/components/MenuComponents.js'
+import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
 import {
   ComparisonView,
   WorkflowComparisonBaseView
