@@ -50,4 +50,4 @@ local_settings.py
 #Local Scripts:
 *_local.sh
 /.env
-/rollup.cofig.local.js
+/rollup.config.local.js
