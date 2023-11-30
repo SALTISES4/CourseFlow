@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '../../components/CommonComponents.js'
+import { Component, OutcomeTitle } from '../../components/CommonComponents'
 import { updateOutcomenodeDegree } from '../../../PostFunctions.js'
 import { getOutcomeByID } from '../../../redux/FindState.js'
 

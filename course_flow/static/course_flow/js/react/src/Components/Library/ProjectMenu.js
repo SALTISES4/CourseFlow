@@ -1,7 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Constants from '../../Constants.js'
-import * as LiveProjectViews from '../Views/LiveProjectView.js'
 import {
   deleteSelf,
   duplicateBaseItem,
@@ -17,6 +16,12 @@ import WorkflowFilter from './WorkFlowFilter.js'
 import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 import { WorkflowTitle } from '../components/CommonComponents/Titles.js'
 import { CollapsibleText } from '../components/CommonComponents/index.js'
+import { LiveProjectOverview } from '../Views/LiveProjectView/LiveProjectOverview.js'
+import LiveProjectStudents from '../Views/LiveProjectView/LiveProjectStudents.js'
+import {
+  LiveProjectAssignments,
+  LiveProjectCompletionTable
+} from '../Views/LiveProjectView'
 
 /*******************************************************
  * The project library menu
@@ -87,7 +92,7 @@ class ProjectMenu extends LibraryMenu {
       // @todo remove view_type
       case 'overview':
         return_val.push(
-          <LiveProjectViews.LiveProjectOverview
+          <LiveProjectOverview
             renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.state.data.id}
@@ -97,7 +102,7 @@ class ProjectMenu extends LibraryMenu {
         break
       case 'students':
         return_val.push(
-          <LiveProjectViews.LiveProjectStudents
+          <LiveProjectStudents
             renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.state.data.id}
@@ -107,7 +112,7 @@ class ProjectMenu extends LibraryMenu {
         break
       case 'assignments':
         return_val.push(
-          <LiveProjectViews.LiveProjectAssignments
+          <LiveProjectAssignments
             renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.state.data.id}
@@ -117,7 +122,7 @@ class ProjectMenu extends LibraryMenu {
         break
       case 'completion_table':
         return_val.push(
-          <LiveProjectViews.LiveProjectCompletionTable
+          <LiveProjectCompletionTable
             renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.props.data.id}

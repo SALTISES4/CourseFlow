@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   EditableComponentWithComments,
   OutcomeTitle
-} from '../../components/CommonComponents.js'
+} from '../../components/CommonComponents'
 import * as Utility from '../../../UtilityFunctions.js'
 import { SimpleOutcomeOutcomeView } from '../OutcomeOutcomeView.js'
 import { connect } from 'react-redux'

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   Component,
   EditableComponent,
@@ -8,10 +8,7 @@ import {
   WorkflowTitle
 } from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
-import {
-  renderMessageBox,
-  closeMessageBox
-} from '../components/MenuComponents.js'
+
 import {
   getWorkflowSelectMenu,
   getWorkflowContext,
@@ -22,7 +19,7 @@ import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
 import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
-import { WorkflowForMenu } from '../../Library.js'
+import { WorkflowForMenu } from '../Library'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component {

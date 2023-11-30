@@ -4,7 +4,7 @@ import {
   Component,
   EditableComponentWithActions
 } from '../components/CommonComponents'
-import { getColumnByID } from '../../FindState.js'
+import { getColumnByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 

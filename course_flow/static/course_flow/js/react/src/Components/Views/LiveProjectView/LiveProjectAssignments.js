@@ -5,7 +5,7 @@ import {
   NodeTitle,
   TitleText,
   WorkflowTitle
-} from '../../components/CommonComponents.js'
+} from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 

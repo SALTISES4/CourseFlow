@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Constants from '../../../Constants.js'
-import { AssignmentTitle } from '../../components/CommonComponents.js'
+import { AssignmentTitle } from '../../components/CommonComponents'
 
 class AssignmentViewSmall extends React.Component {
   render() {

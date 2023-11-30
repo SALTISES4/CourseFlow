@@ -1,14 +1,14 @@
 import * as React from 'react'
 import { LiveProjectMenu } from './index.js'
 import { AssignmentView } from '../LiveAssignmentView/index.js'
-import { WorkflowForMenu } from '../../../Library.js'
 import {
   AssignmentTitle,
   DatePicker,
   SimpleWorkflow
-} from '../../components/CommonComponents.js'
+} from '../../components/CommonComponents'
 import { setAssignmentCompletion } from '../../../PostFunctions.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
+import { WorkflowForMenu } from '../../Library'
 
 export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {

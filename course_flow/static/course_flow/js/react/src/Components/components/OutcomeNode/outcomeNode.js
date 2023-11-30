@@ -2,10 +2,11 @@ import React from 'react'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   getTableOutcomeNodeByID
-} from './redux/FindState.js'
-import { filterThenSortByID } from './UtilityFunctions.js'
+} from '../../../redux/FindState.js'
+import { filterThenSortByID } from '../../../UtilityFunctions.js'
 
 /**
+ * THIS IS NOT BEING USED
  * Used in the table. Creates a shaped tree-like structure
  * for an outcome and its children that includes each one's
  * relationship to each node.
@@ -38,7 +39,12 @@ export function createOutcomeBranch(state, outcome_id) {
   return null
 }
 
-/*From the state, creates a tree structure for an outcome*/
+/**
+ * THIS IS NOT BEING USED
+ * From the state, creates a tree structure for an outcome
+ * @param state
+ * @returns {*[]}
+ */
 export function createOutcomeTree(state) {
   let outcomes_tree = []
   let sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(

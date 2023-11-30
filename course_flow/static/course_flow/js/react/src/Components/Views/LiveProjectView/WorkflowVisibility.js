@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '../../../Library.js'
-import { WorkflowTitle } from '../../components/CommonComponents.js'
+import { WorkflowTitle } from '../../components/CommonComponents'
+import { WorkflowForMenu } from '../../Library'
 
 // @todo circular dependency, wait till merge
 class WorkflowVisibility extends WorkflowForMenu {

@@ -6,8 +6,8 @@ import {
   deleteSelf,
   updateValueInstant
 } from '../../../../PostFunctions.js'
-import { LiveProjectSettings } from '../../../Views/LiveProjectView.js'
 import closeMessageBox from '../components/closeMessageBox.js'
+import { LiveProjectSettings } from '../../../Views/LiveProjectView'
 
 /*
 The menu for editing a project.

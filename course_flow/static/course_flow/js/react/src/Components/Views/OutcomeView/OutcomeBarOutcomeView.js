@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { getOutcomeByID } from '../../../redux/FindState.js'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '../../components/CommonComponents.js'
+import { Component, OutcomeTitle } from '../../components/CommonComponents'
 import * as Utility from '../../../UtilityFunctions.js'
 import { OutcomeBarOutcomeOutcomeView } from '../OutcomeOutcomeView.js'
 

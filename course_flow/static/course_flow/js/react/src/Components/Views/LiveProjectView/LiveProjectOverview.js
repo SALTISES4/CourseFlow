@@ -4,7 +4,7 @@ import {
   AssignmentTitle,
   DatePicker,
   SimpleWorkflow
-} from '../../components/CommonComponents.js'
+} from '../../components/CommonComponents'
 import * as Utility from '../../../UtilityFunctions.js'
 
 export class LiveProjectOverview extends LiveProjectSection {

@@ -4,11 +4,9 @@ import { getAssignmentsForNode } from '../../../PostFunctions.js'
 import { reloadAssignmentsAction } from '../../../redux/Reducers.js'
 import * as Constants from '../../../Constants.js'
 import * as Utility from '../../../UtilityFunctions.js'
-import {
-  AssignmentTitle,
-  DatePicker
-} from '../../components/CommonComponents.js'
+
 import { AssignmentView } from './LiveAssignmentView.js'
+import { AssignmentTitle, DatePicker } from '../../components/CommonComponents'
 
 /**
  *

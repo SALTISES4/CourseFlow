@@ -5,7 +5,7 @@ import {
   getUsersForObject
 } from '../../../PostFunctions.js'
 import * as Constants from '../../../Constants.js'
-import { reloadCommentsAction } from '../../../Reducers.js'
+import { reloadCommentsAction } from '../../../redux/Reducers.js'
 import { ActionButton } from './index.js'
 import Component from './Component.js'
 import * as reactDom from 'react-dom'

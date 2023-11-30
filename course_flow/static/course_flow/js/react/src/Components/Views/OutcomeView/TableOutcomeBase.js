@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '../../components/CommonComponents.js'
-import * as OutcomeNode from '../../../outcomeNode.js'
+import { Component } from '../../components/CommonComponents'
 import { getOutcomeByID } from '../../../redux/FindState.js'
 import { TableOutcomeView } from './index.js'
 import { TableOutcomeViewUnconnected } from './TableOutcomeView.js'

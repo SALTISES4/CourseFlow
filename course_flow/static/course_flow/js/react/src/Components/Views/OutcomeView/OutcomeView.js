@@ -5,7 +5,7 @@ import {
   Component,
   EditableComponentWithSorting,
   OutcomeTitle
-} from '../../components/CommonComponents.js'
+} from '../../components/CommonComponents'
 import OutcomeOutcomeView from '../OutcomeOutcomeView.js'
 import {
   getOutcomeByID,

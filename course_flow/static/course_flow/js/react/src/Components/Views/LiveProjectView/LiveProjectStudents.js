@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { LiveProjectSection } from './LiveProjectSection.js'
-import { StudentManagement } from '../../components/StudentManagement.js'
+import StudentManagement from "../../components/StudentManagement"
 
 class LiveProjectStudents extends LiveProjectSection {
   render() {
