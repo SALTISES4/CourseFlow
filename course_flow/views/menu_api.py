@@ -22,6 +22,7 @@ from course_flow.serializers import (
     FavouriteSerializer,
     InfoBoxSerializer,
     LiveProjectSerializer,
+    UserSerializer,
 )
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
@@ -54,12 +55,17 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
                 kwargs={"pk": notification.content_object.pk},
             )
 
+        source_user = UserSerializer(notification.source_user).data
+
         prepared_notifications.append(
             {
                 "unread": notification.is_unread,
                 "url": url,
+                # TODO: Update notification text to omit the user's name
+                # since now it's a separate 'from' field
                 "date": humanize.naturaltime(notification.created_on),
                 "text": notification.text,
+                "from": f"{source_user['first_name']} {source_user['last_name']}",
             }
         )
 
