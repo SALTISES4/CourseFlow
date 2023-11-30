@@ -3,17 +3,16 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import {
   ActionButton,
-  Component,
-  EditableComponentWithActions,
   AutoLinkView,
+  EditableComponentWithActions,
   NodePorts,
   NodeTitle,
   TitleText
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents'
 import NodeLinkView from './NodeLinkView.js'
-import { AssignmentBox } from './LiveAssignmentView.js'
+import { AssignmentBox } from './LiveAssignmentView'
 import OutcomeNodeView from '../components/OutcomeNode.js'
-import { getNodeByID } from '../../FindState.js'
+import { getNodeByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
@@ -23,10 +22,159 @@ class NodeView extends EditableComponentWithActions {
   constructor(props) {
     super(props)
     this.objectType = 'node'
-    this.objectClass = '.node'
     this.state = { initial_render: true, show_outcomes: false }
   }
 
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    if (this.state.initial_render) this.setState({ initial_render: false })
+    $(this.maindiv.current).on('mouseenter', this.mouseIn.bind(this))
+    this.makeDroppable()
+    $(this.maindiv.current).on('dblclick', this.doubleClick.bind(this))
+    this.updateHidden()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.data.is_dropped == prevProps.data.is_dropped)
+      this.updatePorts()
+    else Utility.triggerHandlerEach($('.node'), 'component-updated')
+    this.updateHidden()
+  }
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
+  updateHidden() {
+    if ($(this.maindiv.current).css('display') == 'none') {
+      let week = $(this.maindiv.current).parent('.node-week').parent()
+      if (week.children('.node-week:not(.empty)').length > 1)
+        $(this.maindiv.current).parent('.node-week').addClass('empty')
+    } else $(this.maindiv.current).parent('.nodeweek').removeClass('empty')
+  }
+
+  updatePorts() {
+    $(this.maindiv.current).triggerHandler('component-updated')
+  }
+
+  doubleClick(evt) {
+    evt.stopPropagation()
+    if (this.props.data.linked_workflow) {
+      window.open(this.props.data.linked_workflow_data.url)
+    }
+  }
+
+  makeDroppable() {
+    var props = this.props
+    $(this.maindiv.current).droppable({
+      tolerance: 'pointer',
+      droppable: '.outcome-ghost',
+      over: (e, ui) => {
+        var drop_item = $(e.target)
+        var drag_item = ui.draggable
+        var drag_helper = ui.helper
+        var new_index = drop_item.prevAll().length
+        var new_parent_id = parseInt(drop_item.parent().attr('id'))
+
+        if (drag_item.hasClass('outcome')) {
+          drag_helper.addClass('valid-drop')
+          drop_item.addClass('outcome-drop-over')
+          return
+        } else {
+          return
+        }
+      },
+      out: (e, ui) => {
+        var drag_item = ui.draggable
+        var drag_helper = ui.helper
+        var drop_item = $(e.target)
+        if (drag_item.hasClass('outcome')) {
+          drag_helper.removeClass('valid-drop')
+          drop_item.removeClass('outcome-drop-over')
+        }
+      },
+      drop: (e, ui) => {
+        $('.outcome-drop-over').removeClass('outcome-drop-over')
+        var drop_item = $(e.target)
+        var drag_item = ui.draggable
+        if (drag_item.hasClass('outcome')) {
+          props.renderer.tiny_loader.startLoad()
+          updateOutcomenodeDegree(
+            this.props.objectID,
+            drag_item[0].dataDraggable.outcome,
+            1,
+            (response_data) => {
+              props.renderer.tiny_loader.endLoad()
+            }
+          )
+        }
+      }
+    })
+  }
+
+  mouseIn(evt) {
+    if ($('.workflow-canvas').hasClass('creating-node-link')) return
+    if (!this.props.renderer.read_only)
+      $(
+        "circle[data-node-id='" +
+          this.props.objectID +
+          "'][data-port-type='source']"
+      ).addClass('mouseover')
+    d3.selectAll('.node-ports').raise()
+    var mycomponent = this
+    this.setState({ hovered: true })
+
+    $(document).on('mousemove', function (evt) {
+      if (
+        !mycomponent ||
+        !mycomponent.maindiv ||
+        Utility.mouseOutsidePadding(evt, $(mycomponent.maindiv.current), 20)
+      ) {
+        $(
+          "circle[data-node-id='" +
+            mycomponent.props.objectID +
+            "'][data-port-type='source']"
+        ).removeClass('mouseover')
+        $(document).off(evt)
+        mycomponent.setState({ hovered: false })
+      }
+    })
+  }
+
+  addShowAssignment(data) {
+    return [
+      <ActionButton
+        key={0}
+        button_icon="assignment.svg"
+        button_class="assignment-button"
+        titletext={gettext('Show Assignment Info')}
+        handleClick={this.showAssignment.bind(this)}
+      />,
+      <AssignmentBox
+        key={1}
+        dispatch={this.props.dispatch.bind(this)}
+        node_id={data.id}
+        show={this.state.show_assignments}
+        has_assignment={this.props.data.has_assignment}
+        parent={this}
+        renderer={this.props.renderer}
+      />
+    ]
+  }
+
+  showAssignment(evt) {
+    let props = this.props
+    evt.stopPropagation()
+    if (!this.state.show_assignments) {
+      this.setState({ show_assignments: true })
+    } else this.setState({ show_assignments: false })
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     let data = this.props.data
     let data_override
@@ -258,210 +406,10 @@ class NodeView extends EditableComponentWithActions {
       </div>
     )
   }
-
-  //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
-  updateHidden() {
-    if ($(this.maindiv.current).css('display') == 'none') {
-      let week = $(this.maindiv.current).parent('.node-week').parent()
-      if (week.children('.node-week:not(.empty)').length > 1)
-        $(this.maindiv.current).parent('.node-week').addClass('empty')
-    } else $(this.maindiv.current).parent('.nodeweek').removeClass('empty')
-  }
-
-  componentDidMount() {
-    if (this.state.initial_render) this.setState({ initial_render: false })
-    $(this.maindiv.current).on('mouseenter', this.mouseIn.bind(this))
-    this.makeDroppable()
-    $(this.maindiv.current).on('dblclick', this.doubleClick.bind(this))
-    this.updateHidden()
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.data.is_dropped == prevProps.data.is_dropped)
-      this.updatePorts()
-    else Utility.triggerHandlerEach($('.node'), 'component-updated')
-    this.updateHidden()
-  }
-
-  updatePorts() {
-    $(this.maindiv.current).triggerHandler('component-updated')
-  }
-
-  doubleClick(evt) {
-    evt.stopPropagation()
-    if (this.props.data.linked_workflow) {
-      window.open(this.props.data.linked_workflow_data.url)
-    }
-  }
-
-  makeDroppable() {
-    var props = this.props
-    $(this.maindiv.current).droppable({
-      tolerance: 'pointer',
-      droppable: '.outcome-ghost',
-      over: (e, ui) => {
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var new_index = drop_item.prevAll().length
-        var new_parent_id = parseInt(drop_item.parent().attr('id'))
-
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.addClass('valid-drop')
-          drop_item.addClass('outcome-drop-over')
-          return
-        } else {
-          return
-        }
-      },
-      out: (e, ui) => {
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var drop_item = $(e.target)
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.removeClass('valid-drop')
-          drop_item.removeClass('outcome-drop-over')
-        }
-      },
-      drop: (e, ui) => {
-        $('.outcome-drop-over').removeClass('outcome-drop-over')
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
-        if (drag_item.hasClass('outcome')) {
-          props.renderer.tiny_loader.startLoad()
-          updateOutcomenodeDegree(
-            this.props.objectID,
-            drag_item[0].dataDraggable.outcome,
-            1,
-            (response_data) => {
-              props.renderer.tiny_loader.endLoad()
-            }
-          )
-        }
-      }
-    })
-  }
-
-  mouseIn(evt) {
-    if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (!this.props.renderer.read_only)
-      $(
-        "circle[data-node-id='" +
-          this.props.objectID +
-          "'][data-port-type='source']"
-      ).addClass('mouseover')
-    d3.selectAll('.node-ports').raise()
-    var mycomponent = this
-    this.setState({ hovered: true })
-
-    $(document).on('mousemove', function (evt) {
-      if (
-        !mycomponent ||
-        !mycomponent.maindiv ||
-        Utility.mouseOutsidePadding(evt, $(mycomponent.maindiv.current), 20)
-      ) {
-        $(
-          "circle[data-node-id='" +
-            mycomponent.props.objectID +
-            "'][data-port-type='source']"
-        ).removeClass('mouseover')
-        $(document).off(evt)
-        mycomponent.setState({ hovered: false })
-      }
-    })
-  }
-
-  addShowAssignment(data) {
-    return [
-      <ActionButton
-        key={0}
-        button_icon="assignment.svg"
-        button_class="assignment-button"
-        titletext={gettext('Show Assignment Info')}
-        handleClick={this.showAssignment.bind(this)}
-      />,
-      <AssignmentBox
-        key={1}
-        dispatch={this.props.dispatch.bind(this)}
-        node_id={data.id}
-        show={this.state.show_assignments}
-        has_assignment={this.props.data.has_assignment}
-        parent={this}
-        renderer={this.props.renderer}
-      />
-    ]
-  }
-
-  showAssignment(evt) {
-    let props = this.props
-    evt.stopPropagation()
-    if (!this.state.show_assignments) {
-      this.setState({ show_assignments: true })
-    } else this.setState({ show_assignments: false })
-  }
 }
 const mapNodeStateToProps = (state, own_props) =>
   getNodeByID(state, own_props.objectID)
 export default connect(mapNodeStateToProps, null)(NodeView)
-
-//Basic component to represent a node in the outcomes table
-class NodeOutcomeViewUnconnected extends Component {
-  constructor(props) {
-    super(props)
-    this.objectType = 'node'
-    this.objectClass = '.node'
-    this.state = {
-      initial_render: true
-    }
-  }
-
-  render() {
-    let data = this.props.data
-    let data_override
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
-    else data_override = data
-    let selection_manager = this.props.renderer.selection_manager
-
-    let style = {
-      backgroundColor: Constants.getColumnColour(this.props.column)
-    }
-    // if(data.lock){
-    //     style.outline="2px solid "+data.lock.user_colour;
-    // }
-    let css_class =
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-    if (data.is_dropped) css_class += ' dropped'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
-
-    let comments
-    // if(this.props.renderer.view_comments)comments=this.addCommenting();
-
-    return (
-      <div ref={this.maindiv} className="table-cell nodewrapper">
-        <div
-          className={css_class}
-          style={style}
-          id={data.id}
-          // onClick={(evt)=>selection_manager.changeSelection(evt,this)}
-        >
-          <div className="node-top-row">
-            <NodeTitle data={data} />
-          </div>
-          {/*this.addEditable(data_override,true)*/}
-          <div className="mouseover-actions">{comments}</div>
-        </div>
-        <div className="side-actions">
-          <div className="comment-indicator-container"></div>
-        </div>
-      </div>
-    )
-  }
-}
-export const NodeOutcomeView = connect(
-  mapNodeStateToProps,
-  null
-)(NodeOutcomeViewUnconnected)
 
 //Basic component to represent a Node
 class NodeComparisonViewUnconnected extends EditableComponentWithActions {

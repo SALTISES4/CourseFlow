@@ -1,9 +1,8 @@
-//Manages the current selection, ensuring we only have one at a time
 import React, { Component } from 'react'
 import * as Constants from '../Constants.js'
 
 /**
- *
+ * Manages the current selection, ensuring we only have one at a time
  */
 export class SelectionManager {
   constructor(read_only) {
@@ -98,6 +97,7 @@ export class SelectionManager {
   }
 }
 
+// @todo this should be a component with managed state
 export class TinyLoader {
   constructor(identifier) {
     this.identifier = identifier

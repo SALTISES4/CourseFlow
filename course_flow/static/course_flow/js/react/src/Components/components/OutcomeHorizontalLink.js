@@ -5,7 +5,7 @@ import {
   getNodeByID,
   getOutcomeByID,
   getOutcomeWorkflowByID
-} from '../../FindState.js'
+} from '../../redux/FindState.js'
 import { updateOutcomehorizontallinkDegree } from '../../PostFunctions.js'
 
 export class TableHorizontalOutcomeLinkUnconnected extends React.Component {
@@ -192,6 +192,7 @@ export class TableChildWorkflowViewUnconnected extends React.Component {
     return cells
   }
 }
+
 const mapTableChildWorkflowStateToProps = (state, own_props) => {
   let node = getNodeByID(state, own_props.nodeID).data
   let linked_workflow = node.linked_workflow

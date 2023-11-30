@@ -2,11 +2,18 @@ import React from 'react'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   getTableOutcomeNodeByID
-} from './FindState.js'
+} from './redux/FindState.js'
 import { filterThenSortByID } from './UtilityFunctions.js'
 
 /**
- * TOO DOMAIN SPECIFIC, SHOULD BE MOVED OUT
+ * Used in the table. Creates a shaped tree-like structure
+ * for an outcome and its children that includes each one's
+ * relationship to each node.
+ *
+ * @param props
+ * @param outcome_id
+ * @param nodecategory
+ * @returns {{outcomenodes: *[], children: *[], id}|null}
  */
 export function createOutcomeBranch(state, outcome_id) {
   for (let i = 0; i < state.outcome.length; i++) {
@@ -161,6 +168,8 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
  * @returns {JSX.Element|*[]}
  */
 export function getCompletionImg(completion_status, outcomes_type) {
+  let contents = []
+
   if (outcomes_type === 0 || completion_status & 1) {
     return (
       <img
@@ -169,7 +178,6 @@ export function getCompletionImg(completion_status, outcomes_type) {
       />
     )
   }
-  let contents = []
   if (completion_status & 2) {
     let divclass = ''
     contents.push(

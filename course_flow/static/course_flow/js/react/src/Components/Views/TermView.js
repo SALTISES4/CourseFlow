@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import { TitleText } from '../components/CommonComponents.js'
+import { TitleText } from '../components/CommonComponents'
 import { WeekViewUnconnected } from './WeekView.js'
 import NodeWeekView from './NodeWeekView.js'
-import { getTermByID } from '../../FindState.js'
+import { getTermByID } from '../../redux/FindState.js'
 
 //Basic component to represent a Week
 class TermView extends WeekViewUnconnected {

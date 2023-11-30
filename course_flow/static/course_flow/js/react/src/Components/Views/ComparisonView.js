@@ -6,7 +6,7 @@ import {
   EditableComponent,
   EditableComponentWithSorting,
   WorkflowTitle
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
 import {
   renderMessageBox,
@@ -19,9 +19,9 @@ import {
   insertedAtInstant
 } from '../../PostFunctions.js'
 import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../FindState.js'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
-import { toggleObjectSet, moveWeekWorkflow } from '../../Reducers.js'
+import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
 import { WorkflowForMenu } from '../../Library.js'
 
 //Container for the workflows to be compared
@@ -46,9 +46,6 @@ export class ComparisonView extends React.Component {
   render() {
     let data = this.props.data
     let renderer = this.props.renderer
-    let selection_manager = renderer.selection_manager
-
-    var selector = this
 
     let share
     if (!this.props.renderer.read_only)
@@ -80,7 +77,6 @@ export class ComparisonView extends React.Component {
       .map((item) => {
         let view_class = 'hover-shade'
         if (item.type == renderer.view_type) view_class += ' active'
-        //if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
         return (
           <div
             id={'button_' + item.type}
@@ -124,8 +120,6 @@ export class ComparisonView extends React.Component {
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
-
-    let project = this
 
     return (
       <div id="workflow-wrapper" className="workflow-wrapper">
@@ -214,6 +208,8 @@ export class ComparisonView extends React.Component {
 
   changeView(type) {
     this.props.renderer.selection_manager.changeSelection(null, null)
+
+    // ?? pass in the parent renderer container as its own new container, how is this working?
     this.props.renderer.render(this.props.renderer.container, type)
   }
 
@@ -250,7 +246,7 @@ export class ComparisonView extends React.Component {
     let object_sets = this.state.object_sets.slice()
     let hidden
     for (let i = 0; i < object_sets.length; i++) {
-      if (object_sets[i].id == id) {
+      if (object_sets[i].id === id) {
         hidden = !object_sets[i].hidden
         object_sets[i].hidden = hidden
         break

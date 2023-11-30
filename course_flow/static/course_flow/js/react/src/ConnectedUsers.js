@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+// @todo should probably be grouped with components/commoncomponents
+
 //Container for common elements for workflows
 export class ConnectionBar extends React.Component {
   constructor(props) {

@@ -1,22 +1,16 @@
-import * as Constants from './Constants.js'
-import * as Utility from './UtilityFunctions.js'
+import * as Constants from '../Constants.js'
+import * as Utility from '../UtilityFunctions.js'
 
-export const getDropped = (objectID, objectType, depth = 1) => {
-  let default_drop = Constants.get_default_drop_state(
-    objectID,
-    objectType,
-    depth
-  )
-  try {
-    let stored_drop = JSON.parse(
-      window.localStorage.getItem(objectType + objectID)
-    )
-    if (stored_drop === null) return default_drop
-    return stored_drop
-  } catch (err) {
-    return default_drop
-  }
-}
+/*******************************************************
+ *
+ *  This file contains selectors to encapsulate accessing the
+ *  Redux state directly
+ *
+ *
+ *
+ *
+ *
+ *******************************************************/
 
 export const getColumnByID = (state, id) => {
   for (var i in state.column) {
@@ -33,6 +27,7 @@ export const getColumnByID = (state, id) => {
       }
   }
 }
+
 export const getColumnWorkflowByID = (state, id) => {
   for (var i in state.columnworkflow) {
     var columnworkflow = state.columnworkflow[i]
@@ -40,6 +35,7 @@ export const getColumnWorkflowByID = (state, id) => {
       return { data: columnworkflow, order: state.workflow.columnworkflow_set }
   }
 }
+
 export const getWeekByID = (state, id) => {
   for (var i in state.week) {
     var week = state.week[i]
@@ -60,6 +56,7 @@ export const getWeekByID = (state, id) => {
     }
   }
 }
+
 export const getTermByID = (state, id) => {
   for (var i in state.week) {
     var week = state.week[i]
@@ -91,6 +88,7 @@ export const getTermByID = (state, id) => {
     }
   }
 }
+
 export const getWeekWorkflowByID = (state, id) => {
   for (var i in state.weekworkflow) {
     var weekworkflow = state.weekworkflow[i]
@@ -98,6 +96,7 @@ export const getWeekWorkflowByID = (state, id) => {
       return { data: weekworkflow, order: state.workflow.weekworkflow_set }
   }
 }
+
 export const getOutcomeWorkflowByID = (state, id) => {
   for (var i in state.outcomeworkflow) {
     var outcomeworkflow = state.outcomeworkflow[i]
@@ -109,6 +108,7 @@ export const getOutcomeWorkflowByID = (state, id) => {
   }
   console.log('failed to find outcomeworkflow')
 }
+
 export const getParentWorkflowByID = (state, id) => {
   for (var i in state.parent_workflow) {
     var workflow = state.parent_workflow[i]
@@ -116,6 +116,7 @@ export const getParentWorkflowByID = (state, id) => {
   }
   console.log('failed to find parent workflow')
 }
+
 export const getNodeByID = (state, id) => {
   for (var i in state.node) {
     var node = state.node[i]
@@ -132,6 +133,7 @@ export const getNodeByID = (state, id) => {
   }
   console.log('failed to find node')
 }
+
 export const getNodeWeekByID = (state, id) => {
   for (var i in state.nodeweek) {
     var nodeweek = state.nodeweek[i]
@@ -151,8 +153,17 @@ export const getNodeLinkByID = (state, id) => {
     if (nodelink.id == id) return { data: nodelink }
   }
 }
-//Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
-//Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
+
+/**
+ * @todo normalize the arguments order
+ * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
+ * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
+ *
+ * @param id
+ * @param rank
+ * @param state
+ * @returns {*|{rank: *, id: *}}
+ */
 function findRootOutcome(id, rank, state) {
   for (let i = 0; i < state.length; i++) {
     if (state[i].child == id) {
@@ -162,6 +173,7 @@ function findRootOutcome(id, rank, state) {
   }
   return { id: id, rank: rank }
 }
+
 function findTopRank(state, outcome) {
   for (let j = 0; j < state.outcomeworkflow.length; j++) {
     if (state.outcomeworkflow[j].outcome == outcome.id) {
@@ -191,6 +203,7 @@ function findTopRank(state, outcome) {
     }
   }
 }
+
 export const getOutcomeByID = (state, id) => {
   let state_section = state.outcome
   for (var i in state_section) {
@@ -253,6 +266,7 @@ export const getOutcomeByID = (state, id) => {
   }
   console.log('failed to find outcome')
 }
+
 export const getChildWorkflowByID = (state, id) => {
   for (var i in state.child_workflow) {
     var workflow = state.child_workflow[i]
@@ -261,6 +275,7 @@ export const getChildWorkflowByID = (state, id) => {
   console.log('failed to find child workflow')
   return -1
 }
+
 export const getOutcomeOutcomeByID = (state, id) => {
   let state_section = state.outcomeoutcome
   for (var i in state_section) {
@@ -269,6 +284,7 @@ export const getOutcomeOutcomeByID = (state, id) => {
   }
   console.log('failed to find outcomeoutcome')
 }
+
 export const getOutcomeNodeByID = (state, id) => {
   for (var i in state.outcomenode) {
     var outcomenode = state.outcomenode[i]
@@ -276,6 +292,7 @@ export const getOutcomeNodeByID = (state, id) => {
   }
   console.log('failed to find outcomenode')
 }
+
 export const getOutcomeHorizontalLinkByID = (state, id) => {
   for (var i in state.outcomehorizontallink) {
     var outcomehorizontallink = state.outcomehorizontallink[i]
@@ -283,20 +300,14 @@ export const getOutcomeHorizontalLinkByID = (state, id) => {
   }
   console.log('failed to find outcomehorizontallink')
 }
-export const getTableOutcomeNodeByID = (outcomenodes, node_id, outcome_id) => {
-  for (var i in outcomenodes) {
-    var outcomenode = outcomenodes[i]
-    if (outcomenode.outcome == outcome_id && outcomenode.node == node_id)
-      return { data: outcomenode }
-  }
-  return { data: null }
-}
+
 export const getStrategyByID = (state, id) => {
   for (var i in state.strategy) {
     var strategy = state.strategy[i]
     if (strategy.id == id) return { data: strategy }
   }
 }
+
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state,
@@ -343,6 +354,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   ]
   return categories
 }
+
 export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
   let outcomenode_ids = []
   for (let i = 0; i < nodes.length; i++) {
@@ -379,6 +391,38 @@ export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
   ]
   return categories
 }
+
+/*******************************************************
+ * HELPER
+ *******************************************************/
+const getDropped = (objectID, objectType, depth = 1) => {
+  let default_drop = Constants.get_default_drop_state(
+    objectID,
+    objectType,
+    depth
+  )
+  try {
+    let stored_drop = JSON.parse(
+      window.localStorage.getItem(objectType + objectID)
+    )
+    if (stored_drop === null) return default_drop
+    return stored_drop
+  } catch (err) {
+    return default_drop
+  }
+}
+
+// @todo doesn't really belong here (not a state selector)
+export const getTableOutcomeNodeByID = (outcomenodes, node_id, outcome_id) => {
+  for (var i in outcomenodes) {
+    var outcomenode = outcomenodes[i]
+    if (outcomenode.outcome == outcome_id && outcomenode.node == node_id)
+      return { data: outcomenode }
+  }
+  return { data: null }
+}
+
+// @todo doesn't really belong here (not a state selector)
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   outcomes_unsorted,

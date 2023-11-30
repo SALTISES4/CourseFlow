@@ -4,11 +4,182 @@ import {
   getUsersForObject,
   getUserList,
   updateValueInstant
-} from '../../PostFunctions.js'
-import { WorkflowTitle } from './CommonComponents.js'
-import * as Constants from '../../Constants.js'
-import { TinyLoader } from '../../redux/helpers.js'
+} from '../../../../PostFunctions.js'
+import { WorkflowTitle } from '../../CommonComponents'
+import * as Constants from '../../../../Constants.js'
+import { TinyLoader } from '../../../../redux/helpers.js'
 
+class UserLabel extends React.Component {
+  constructor(props) {
+    super(props)
+    this.select = React.createRef()
+  }
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  onChange(evt) {
+    switch (evt.target.value) {
+      case 'none':
+        if (window.confirm('Are you sure you want to remove this user?')) {
+          this.props.permissionChange(0, this.props.user)
+        }
+        break
+      default:
+        this.props.permissionChange(
+          Constants.permission_keys[evt.target.value],
+          this.props.user
+        )
+    }
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let permission_select
+    let disabled = false
+    if (
+      this.props.cannot_change &&
+      this.props.cannot_change.indexOf(this.props.user.id) >= 0
+    )
+      disabled = true
+    if (this.props.type !== 'owner') {
+      if (this.props.type === 'add') {
+        permission_select = (
+          <div className="flex-middle">
+            <div className="permission-select">
+              <select ref={this.select} disabled={disabled}>
+                <option value="edit">{gettext('Can edit')}</option>
+                <option value="comment">{gettext('Can comment')}</option>
+                <option value="view">{gettext('Can view')}</option>
+                {/*<option value="student">{gettext("Student")}</option>*/}
+              </select>
+            </div>
+            <button
+              className="primary-button"
+              onClick={() =>
+                this.props.addFunction($(this.select.current).val())
+              }
+            >
+              {gettext('Share')}
+            </button>
+          </div>
+        )
+      } else {
+        permission_select = (
+          <div className="permission-select">
+            <select
+              value={this.props.type}
+              disabled={disabled}
+              onChange={this.onChange.bind(this)}
+            >
+              <option value="edit">{gettext('Can edit')}</option>
+              <option value="comment">{gettext('Can comment')}</option>
+              <option value="view">{gettext('Can view')}</option>
+              {/*<option value="student">{gettext("Student")}</option>*/}
+              <option value="none">{gettext('Remove user')}</option>
+            </select>
+          </div>
+        )
+      }
+    }
+
+    return (
+      <li className="user-label">
+        <div>
+          <div className="user-name">
+            {this.props.user.first_name + ' ' + this.props.user.last_name}
+          </div>
+          <div className="user-username">{this.props.user.username}</div>
+        </div>
+        {permission_select}
+      </li>
+    )
+  }
+}
+
+class UserAdd extends React.Component {
+  constructor(props) {
+    super(props)
+    this.input = React.createRef()
+    this.state = { selected: null }
+  }
+
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this
+    $(this.input.current).autocomplete({
+      source: (request, response_function) => {
+        getUserList(request.term, (response) => {
+          let user_list = response.user_list.map((user) => {
+            return {
+              label:
+                user.first_name + ' ' + user.last_name + ' - ' + user.username,
+              value: user.username,
+              user: user
+            }
+          })
+          response_function(user_list)
+        })
+        component.setState({ selected: null })
+      },
+      select: (evt, ui) => {
+        this.setState({ selected: ui.item.user })
+      },
+      minLength: 1
+    })
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addClick(value) {
+    if (this.state.selected) {
+      this.props.permissionChange(
+        Constants.permission_keys[value],
+        this.state.selected
+      )
+      $(this.input.current).val(null)
+      this.setState({ selected: null })
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let user
+    if (this.state.selected) {
+      user = (
+        <UserLabel
+          user={this.state.selected}
+          type="add"
+          addFunction={this.addClick.bind(this)}
+        />
+      )
+    }
+
+    return (
+      <div className="user-add">
+        <p>{this.props.share_info}</p>
+        <div className="relative">
+          <input
+            className="search-input"
+            ref={this.input}
+            placeholder={gettext('Begin typing to search users')}
+          />
+          <span className="material-symbols-rounded">search</span>
+        </div>
+        {user}
+      </div>
+    )
+  }
+}
+
+/*******************************************************
+ *
+ *******************************************************/
 export class ShareMenu extends React.Component {
   constructor(props) {
     super(props)
@@ -24,111 +195,27 @@ export class ShareMenu extends React.Component {
     }
   }
 
-  render() {
-    let data = this.props.data
-    let owner = <UserLabel user={this.state.owner} type={'owner'} />
-    let editors = this.state.edit
-      .filter((user) => user.id !== this.state.owner.id)
-      .map((user) => (
-        <UserLabel
-          user={user}
-          type={'edit'}
-          cannot_change={this.state.cannot_change}
-          permissionChange={this.setUserPermission.bind(this)}
-        />
-      ))
-    let viewers = this.state.view.map((user) => (
-      <UserLabel
-        user={user}
-        type={'view'}
-        cannot_change={this.state.cannot_change}
-        permissionChange={this.setUserPermission.bind(this)}
-      />
-    ))
-    let commentors = this.state.comment.map((user) => (
-      <UserLabel
-        user={user}
-        type={'comment'}
-        cannot_change={this.state.cannot_change}
-        permissionChange={this.setUserPermission.bind(this)}
-      />
-    ))
-    let students = this.state.student.map((user) => (
-      <UserLabel
-        user={user}
-        type={'student'}
-        cannot_change={this.state.cannot_change}
-        permissionChange={this.setUserPermission.bind(this)}
-      />
-    ))
-
-    let share_info
-    if (data.type === 'project') {
-      share_info = gettext('Invite collaborators to project and its workflows')
-    } else {
-      share_info = gettext(
-        'Invite collaborators to workflow and grant view permissions to the project'
-      )
-    }
-    let shared_with
-    if (
-      editors.length ||
-      commentors.length ||
-      viewers.length ||
-      students.length
-    ) {
-      shared_with = [
-        <hr />,
-        <div className="user-panel">
-          <p>{gettext('Shared With')}:</p>
-          <ul className="user-list">
-            {editors}
-            {commentors}
-            {viewers}
-            {students}
-          </ul>
-        </div>
-      ]
-    }
-
-    return (
-      <div className="message-wrap user-text">
-        <h2>
-          {gettext('Share') + ' ' + gettext(data.type) + ' '}
-          <WorkflowTitle
-            no_hyperlink={true}
-            data={this.props.data}
-            class_name={'inline'}
-          />
-        </h2>
-        {this.getPublication()}
-        <hr />
-        <p>{gettext('Owned By')}:</p>
-        <div>{owner}</div>
-        <hr />
-        <UserAdd
-          permissionChange={this.setUserPermission.bind(this)}
-          share_info={share_info}
-        />
-        {shared_with}
-        <div
-          className="window-close-button"
-          onClick={this.props.actionFunction}
-        >
-          <span className="green material-symbols-rounded">close</span>
-        </div>
-        <div className="action-bar">
-          <button
-            className="secondary-button"
-            onClick={this.props.actionFunction}
-          >
-            {gettext('Close')}
-          </button>
-        </div>
-      </div>
-    )
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    getUsersForObject(this.props.data.id, this.props.data.type, (response) => {
+      this.setState({
+        owner: response.author,
+        view: response.viewers,
+        comment: response.commentors,
+        edit: response.editors,
+        student: response.students,
+        published: response.published,
+        public_view: response.public_view,
+        cannot_change: response.cannot_change
+      })
+    })
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getPublication() {
     let published = this.state.published
     let data = this.props.data
@@ -430,175 +517,113 @@ export class ShareMenu extends React.Component {
     )
   }
 
-  componentDidMount() {
-    getUsersForObject(this.props.data.id, this.props.data.type, (response) => {
-      this.setState({
-        owner: response.author,
-        view: response.viewers,
-        comment: response.commentors,
-        edit: response.editors,
-        student: response.students,
-        published: response.published,
-        public_view: response.public_view,
-        cannot_change: response.cannot_change
-      })
-    })
-  }
-}
-
-class UserLabel extends React.Component {
-  constructor(props) {
-    super(props)
-    this.select = React.createRef()
-  }
-
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
-    let permission_select
-    let disabled = false
-    if (
-      this.props.cannot_change &&
-      this.props.cannot_change.indexOf(this.props.user.id) >= 0
-    )
-      disabled = true
-    if (this.props.type != 'owner') {
-      if (this.props.type == 'add') {
-        permission_select = (
-          <div className="flex-middle">
-            <div className="permission-select">
-              <select ref={this.select} disabled={disabled}>
-                <option value="edit">{gettext('Can edit')}</option>
-                <option value="comment">{gettext('Can comment')}</option>
-                <option value="view">{gettext('Can view')}</option>
-                {/*<option value="student">{gettext("Student")}</option>*/}
-              </select>
-            </div>
-            <button
-              className="primary-button"
-              onClick={() =>
-                this.props.addFunction($(this.select.current).val())
-              }
-            >
-              {gettext('Share')}
-            </button>
-          </div>
-        )
-      } else {
-        permission_select = (
-          <div className="permission-select">
-            <select
-              value={this.props.type}
-              disabled={disabled}
-              onChange={this.onChange.bind(this)}
-            >
-              <option value="edit">{gettext('Can edit')}</option>
-              <option value="comment">{gettext('Can comment')}</option>
-              <option value="view">{gettext('Can view')}</option>
-              {/*<option value="student">{gettext("Student")}</option>*/}
-              <option value="none">{gettext('Remove user')}</option>
-            </select>
-          </div>
-        )
-      }
-    }
-
-    return (
-      <li className="user-label">
-        <div>
-          <div className="user-name">
-            {this.props.user.first_name + ' ' + this.props.user.last_name}
-          </div>
-          <div className="user-username">{this.props.user.username}</div>
-        </div>
-        {permission_select}
-      </li>
-    )
-  }
-
-  onChange(evt) {
-    switch (evt.target.value) {
-      case 'none':
-        if (window.confirm('Are you sure you want to remove this user?')) {
-          this.props.permissionChange(0, this.props.user)
-        }
-        break
-      default:
-        this.props.permissionChange(
-          Constants.permission_keys[evt.target.value],
-          this.props.user
-        )
-    }
-  }
-}
-
-class UserAdd extends React.Component {
-  constructor(props) {
-    super(props)
-    this.input = React.createRef()
-    this.state = { selected: null }
-  }
-
-  render() {
-    let disabled = this.state.selected === null
-
-    let user
-    if (this.state.selected) {
-      user = (
+    let data = this.props.data
+    let owner = <UserLabel user={this.state.owner} type={'owner'} />
+    let editors = this.state.edit
+      .filter((user) => user.id !== this.state.owner.id)
+      .map((user) => (
         <UserLabel
-          user={this.state.selected}
-          type="add"
-          addFunction={this.addClick.bind(this)}
+          user={user}
+          type={'edit'}
+          cannot_change={this.state.cannot_change}
+          permissionChange={this.setUserPermission.bind(this)}
         />
+      ))
+    let viewers = this.state.view.map((user) => (
+      <UserLabel
+        user={user}
+        type={'view'}
+        cannot_change={this.state.cannot_change}
+        permissionChange={this.setUserPermission.bind(this)}
+      />
+    ))
+    let commentors = this.state.comment.map((user) => (
+      <UserLabel
+        user={user}
+        type={'comment'}
+        cannot_change={this.state.cannot_change}
+        permissionChange={this.setUserPermission.bind(this)}
+      />
+    ))
+    let students = this.state.student.map((user) => (
+      <UserLabel
+        user={user}
+        type={'student'}
+        cannot_change={this.state.cannot_change}
+        permissionChange={this.setUserPermission.bind(this)}
+      />
+    ))
+
+    let share_info
+    if (data.type === 'project') {
+      share_info = gettext('Invite collaborators to project and its workflows')
+    } else {
+      share_info = gettext(
+        'Invite collaborators to workflow and grant view permissions to the project'
       )
     }
+    let shared_with
+    if (
+      editors.length ||
+      commentors.length ||
+      viewers.length ||
+      students.length
+    ) {
+      shared_with = [
+        <hr />,
+        <div className="user-panel">
+          <p>{gettext('Shared With')}:</p>
+          <ul className="user-list">
+            {editors}
+            {commentors}
+            {viewers}
+            {students}
+          </ul>
+        </div>
+      ]
+    }
 
     return (
-      <div className="user-add">
-        <p>{this.props.share_info}</p>
-        <div className="relative">
-          <input
-            className="search-input"
-            ref={this.input}
-            placeholder={gettext('Begin typing to search users')}
+      <div className="message-wrap user-text">
+        <h2>
+          {gettext('Share') + ' ' + gettext(data.type) + ' '}
+          <WorkflowTitle
+            no_hyperlink={true}
+            data={this.props.data}
+            class_name={'inline'}
           />
-          <span className="material-symbols-rounded">search</span>
+        </h2>
+        {this.getPublication()}
+        <hr />
+        <p>{gettext('Owned By')}:</p>
+        <div>{owner}</div>
+        <hr />
+        <UserAdd
+          permissionChange={this.setUserPermission.bind(this)}
+          share_info={share_info}
+        />
+        {shared_with}
+        <div
+          className="window-close-button"
+          onClick={this.props.actionFunction}
+        >
+          <span className="green material-symbols-rounded">close</span>
         </div>
-        {user}
+        <div className="action-bar">
+          <button
+            className="secondary-button"
+            onClick={this.props.actionFunction}
+          >
+            {gettext('Close')}
+          </button>
+        </div>
       </div>
     )
   }
-
-  componentDidMount() {
-    let component = this
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          let user_list = response.user_list.map((user) => {
-            return {
-              label:
-                user.first_name + ' ' + user.last_name + ' - ' + user.username,
-              value: user.username,
-              user: user
-            }
-          })
-          response_function(user_list)
-        })
-        component.setState({ selected: null })
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user })
-      },
-      minLength: 1
-    })
-  }
-
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        Constants.permission_keys[value],
-        this.state.selected
-      )
-      $(this.input.current).val(null)
-      this.setState({ selected: null })
-    }
-  }
 }
+
+export default ShareMenu

@@ -1,17 +1,28 @@
-import * as Redux from 'redux'
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import {
-  setUserPermission,
-  getUsersForObject,
-  getUserList
-} from '../../PostFunctions.js'
 
-export class ImportMenu extends React.Component {
+class ImportMenu extends React.Component {
   constructor(props) {
     super(props)
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  submit(evt) {
+    $('#submit-button').attr('disabled', true)
+    setTimeout(() => {
+      this.props.actionFunction()
+      alert(
+        gettext(
+          'Your file has been submitted. Please wait while it is imported. You may close this message.'
+        )
+      )
+    }, 100)
+    return true
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     return (
       <div className="message-wrap">
@@ -76,17 +87,6 @@ export class ImportMenu extends React.Component {
       </div>
     )
   }
-
-  submit(evt) {
-    $('#submit-button').attr('disabled', true)
-    setTimeout(() => {
-      this.props.actionFunction()
-      alert(
-        gettext(
-          'Your file has been submitted. Please wait while it is imported. You may close this message.'
-        )
-      )
-    }, 100)
-    return true
-  }
 }
+
+export default ImportMenu

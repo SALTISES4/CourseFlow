@@ -2,23 +2,21 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import {
-  EditableComponent,
   EditableComponentWithComments,
   NodeTitle,
   TitleText,
   OutcomeTitle,
   getOutcomeTitle,
   WeekTitle
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents'
 import {
   getOutcomeByID,
   getOutcomeOutcomeByID,
   getChildWorkflowByID,
   getWeekByID,
   getSortedOutcomesFromOutcomeWorkflowSet
-} from '../../FindState.js'
-import OutcomeView from './OutcomeView.js'
-import { SimpleOutcomeView } from './OutcomeView.js'
+} from '../../redux/FindState.js'
+import { OutcomeView } from './OutcomeView'
 import OutcomeNodeView from '../components/OutcomeNode.js'
 import {
   newOutcome,
@@ -668,6 +666,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     )
   }
 }
+
 const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
   state,
   own_props
@@ -762,6 +761,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
     )
   }
 }
+
 const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
   let weekworkflows = Utility.filterThenSortByID(
     state.weekworkflow,

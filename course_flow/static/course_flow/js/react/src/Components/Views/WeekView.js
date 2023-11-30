@@ -3,12 +3,12 @@ import { Provider, connect } from 'react-redux'
 import {
   EditableComponentWithSorting,
   TitleText
-} from '../components/CommonComponents.js'
+} from '../components/CommonComponents'
 import NodeWeekView from './NodeWeekView.js'
 import { NodeWeekComparisonView } from './NodeWeekView.js'
-import { getWeekByID, getNodeWeekByID } from '../../FindState.js'
+import { getWeekByID, getNodeWeekByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
-import { columnChangeNode, moveNodeWeek } from '../../Reducers.js'
+import { columnChangeNode, moveNodeWeek } from '../../redux/Reducers.js'
 import {
   toggleDrop,
   insertedAt,

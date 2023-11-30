@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import OutcomeView from './OutcomeView.js'
-import { TableOutcomeView } from './OutcomeView.js'
-import { getOutcomeWorkflowByID } from '../../FindState.js'
+import { TableOutcomeView, OutcomeView } from './OutcomeView'
+import { getOutcomeWorkflowByID } from '../../redux/FindState.js'
 
 //Basic component to represent a outcomeworkflow
 class OutcomeWorkflowView extends React.Component {
