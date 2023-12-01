@@ -20,10 +20,12 @@ import Sidebar, {
 } from '../Components/components/Layout/Sidebar.jsx'
 import TopBar from '../Components/components/Layout/TopBar.jsx'
 
+console.log('window.cf_nonce')
+console.log(window.cf_nonce)
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
-  nonce: window.nonce
+  nonce: window.cf_nonce
 })
 
 // helper function that wraps each of the components we want to render
