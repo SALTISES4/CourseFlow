@@ -23,7 +23,7 @@ import TopBar from '../Components/components/Layout/TopBar.jsx'
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
-  nonce: document.querySelector('#script-redesign').nonce
+  nonce: window.nonce
 })
 
 // helper function that wraps each of the components we want to render
