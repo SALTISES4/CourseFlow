@@ -1376,25 +1376,28 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       )
         return null
       let parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow) => (
+        (parent_workflow, index) => (
           <WorkflowTitle
+            key={`parent-${index}`}
             data={parent_workflow}
-            class_name={'panel-favourite'}
+            test_id="panel-favourite"
           />
         )
       )
       let child_workflows = this.props.child_workflows.map(
         (child_workflow, index) => (
           <WorkflowTitle
-            key={index}
+            key={`child-${index}`}
             data={child_workflow}
-            class_name={'panel-favourite'}
+            test_id="panel-favourite"
           />
         )
       )
       let return_val = [
-        <hr />,
-        <a className="panel-item">{gettext('Quick Navigation')}</a>
+        <hr key="br" />,
+        <a key="quick-nav" className="panel-item">
+          {gettext('Quick Navigation')}
+        </a>
       ]
       if (parent_workflows.length > 0)
         return_val.push(
