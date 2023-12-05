@@ -3,9 +3,11 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.humanize.templatetags import humanize
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -238,6 +240,50 @@ def json_api_post_get_user_list(request: HttpRequest) -> JsonResponse:
         {
             "action": "posted",
             "user_list": UserSerializer(user_list, many=True).data,
+        }
+    )
+
+
+# Create a JSON response for the Notifications page
+@ajax_login_required
+def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
+    user = request.user
+
+    # get total count of unread notifications
+    unread = user.notifications.filter(is_unread=True).count()
+
+    # prepare notification data to be consumed by the frontend
+    prepared_notifications = []
+    for notification in user.notifications.all():
+        if notification.content_object.type == "project":
+            url = reverse(
+                "course_flow:project-update",
+                kwargs={"pk": notification.content_object.pk},
+            )
+        else:
+            url = reverse(
+                "course_flow:workflow-update",
+                kwargs={"pk": notification.content_object.pk},
+            )
+
+        source_user = UserSerializer(notification.source_user).data
+
+        prepared_notifications.append(
+            {
+                "unread": notification.is_unread,
+                "url": url,
+                # TODO: Update notification text to omit the user's name
+                # since now it's a separate 'from' field
+                "date": humanize.naturaltime(notification.created_on),
+                "text": notification.text,
+                "from": f"{source_user['first_name']} {source_user['last_name']}",
+            }
+        )
+
+    return JsonResponse(
+        {
+            "notifications": prepared_notifications,
+            "unread": unread,
         }
     )
 
