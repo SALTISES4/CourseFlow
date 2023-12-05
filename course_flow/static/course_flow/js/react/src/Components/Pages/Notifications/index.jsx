@@ -16,10 +16,10 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 
-import apiData from './apiData'
+import useApi from '../../../hooks/useApi'
 import { OuterContentWrap } from '../../../mui/helper'
 
-const NotificationsMenu = styled(Box)({})
+const NotificationsWrap = styled(Box)({})
 
 const NotificationsHeader = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -81,9 +81,18 @@ const NotificationsPage = () => {
     page: 0,
     countPerPage: 10
   })
-  const [anchorEl, setAnchorEl] = useState(null)
-  const menuOpen = Boolean(anchorEl)
 
+  const [anchorEl, setAnchorEl] = useState(null)
+
+  const [apiData, loading, error] = useApi(
+    config.json_api_paths.get_notifications_page
+  )
+
+  if (loading || error) {
+    return null
+  }
+
+  const menuOpen = Boolean(anchorEl)
   const paginateFrom = pagination.page * pagination.countPerPage
   const paginateTo = (pagination.page + 1) * pagination.countPerPage
 
@@ -114,6 +123,14 @@ const NotificationsPage = () => {
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
     console.log('mark all as read')
+    // use fetch to post
+    // promise?
+    // on done, set the "all-as-read" to true
+    // and in turn stop rendering the "mark all as read" button
+
+    // $.post("{% url 'course_flow:json-api-post-mark-all-as-read' %}",{},()=>{
+    //   window.location = window.location;
+    // });
   }
 
   function onPaginationChange(e, page) {
@@ -125,94 +142,115 @@ const NotificationsPage = () => {
 
   return (
     <OuterContentWrap>
-      <NotificationsMenu>
-        <NotificationsHeader>
-          <Typography variant="h1">Notifications</Typography>
-          <MarkAsRead>
-            <Link href={'#'} underline="always" onClick={onMarkAllAsReadClick}>
-              Mark all as read
-            </Link>
-          </MarkAsRead>
-        </NotificationsHeader>
+      {apiData.notifications.length > 0 ? (
+        <>
+          <NotificationsWrap>
+            <NotificationsHeader>
+              <Typography variant="h1">Notifications</Typography>
+              <MarkAsRead>
+                <Link
+                  href={'#'}
+                  underline="always"
+                  onClick={onMarkAllAsReadClick}
+                >
+                  Mark all as read
+                </Link>
+              </MarkAsRead>
+            </NotificationsHeader>
 
-        <NotificationsList>
-          {apiData.notifications
-            .slice(paginateFrom, paginateTo)
-            .map((n, idx) => (
-              <StyledListItem
-                key={idx}
-                alignItems="flex-start"
-                sx={{
-                  backgroundColor: n.unread ? 'primary.lightest' : null
-                }}
-                secondaryAction={
-                  <IconButton
-                    onClick={handleClick}
-                    aria-label="show notifications menu"
-                    aria-haspopup="true"
-                  >
-                    <DotsIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemButton href={n.url}>
-                  {n.unread && <Badge color="primary" variant="dot" />}
-                  <ListItemAvatar>
-                    <Avatar alt={n.from}>
-                      {`${n.from.split(' ')[0][0]}${n.from.split(' ')[1][0]}`}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${n.from} • ${n.date}`}
-                    secondary={
-                      <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
+            <NotificationsList>
+              {apiData.notifications
+                .slice(paginateFrom, paginateTo)
+                .map((n, idx) => (
+                  <StyledListItem
+                    key={idx}
+                    alignItems="flex-start"
+                    sx={{
+                      backgroundColor: n.unread ? 'primary.lightest' : null
+                    }}
+                    secondaryAction={
+                      <IconButton
+                        onClick={handleClick}
+                        aria-label="show notifications menu"
+                        aria-haspopup="true"
                       >
-                        {n.text}
-                      </Typography>
+                        <DotsIcon />
+                      </IconButton>
                     }
-                  />
-                </ListItemButton>
-              </StyledListItem>
-            ))}
-        </NotificationsList>
+                  >
+                    <ListItemButton href={n.url}>
+                      {n.unread && <Badge color="primary" variant="dot" />}
+                      <ListItemAvatar>
+                        <Avatar alt={n.from}>
+                          {`${n.from.split(' ')[0][0]}${
+                            n.from.split(' ')[1][0]
+                          }`}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`${n.from} • ${n.date}`}
+                        secondary={
+                          <Typography
+                            sx={{ display: 'inline' }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {n.text}
+                          </Typography>
+                        }
+                      />
+                    </ListItemButton>
+                  </StyledListItem>
+                ))}
+            </NotificationsList>
 
-        <Menu
-          id="notification-menu"
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          anchorEl={anchorEl}
-          open={menuOpen}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            'aria-label': 'basic-button'
-          }}
-        >
-          <MenuItem onClick={() => onMarkAsReadClick('id here')}>
-            Mark as read
-          </MenuItem>
-          <MenuItem onClick={() => onDeleteClick('id here')}>Delete</MenuItem>
-        </Menu>
-      </NotificationsMenu>
+            <Menu
+              id="notification-menu"
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              anchorEl={anchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              MenuListProps={{
+                'aria-label': 'basic-button'
+              }}
+            >
+              <MenuItem onClick={() => onMarkAsReadClick('id here')}>
+                Mark as read
+              </MenuItem>
+              <MenuItem onClick={() => onDeleteClick('id here')}>
+                Delete
+              </MenuItem>
+            </Menu>
+          </NotificationsWrap>
 
-      <StyledPagination
-        count={Math.ceil(
-          apiData.notifications.length / pagination.countPerPage
-        )}
-        page={pagination.page + 1}
-        onChange={onPaginationChange}
-        showFirstButton
-        showLastButton
-      />
+          <StyledPagination
+            count={Math.ceil(
+              apiData.notifications.length / pagination.countPerPage
+            )}
+            page={pagination.page + 1}
+            onChange={onPaginationChange}
+            showFirstButton
+            showLastButton
+          />
+        </>
+      ) : (
+        <NotificationsWrap>
+          <NotificationsHeader>
+            <Typography variant="h1">Notifications</Typography>
+            <Typography sx={{ marginTop: 3 }}>
+              You have no notifications yet.
+            </Typography>
+          </NotificationsHeader>
+        </NotificationsWrap>
+      )}
     </OuterContentWrap>
   )
 }

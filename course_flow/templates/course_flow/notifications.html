@@ -27,7 +27,6 @@
         "><div class="created-on">{{ notification.created_on }}</div>{{ notification.text }}</a>
     {% endfor %}
 
-    <div><button id="mark-all-as-read" class="primary-button">Mark all as read</button></div>
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}
@@ -58,10 +57,5 @@
 <script nonce="{{request.csp_nonce}}">
   $("#create").detach().appendTo("#container");
   $("form input").on("input",()=>$("#save-button").attr("disabled",false));
-  $("#mark-all-as-read").on("click",()=>{
-    $.post("{% url 'course_flow:json-api-post-mark-all-as-read' %}",{},()=>{
-      window.location = window.location;
-    });
-  });
 </script>
 {% endblock %}
