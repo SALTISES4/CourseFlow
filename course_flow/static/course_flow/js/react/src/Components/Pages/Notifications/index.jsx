@@ -140,6 +140,10 @@ const NotificationsPage = () => {
     })
   }
 
+  const totalPaginationPages = Math.ceil(
+    apiData.notifications.length / pagination.countPerPage
+  )
+
   return (
     <OuterContentWrap>
       {apiData.notifications.length > 0 ? (
@@ -231,15 +235,15 @@ const NotificationsPage = () => {
             </Menu>
           </NotificationsWrap>
 
-          <StyledPagination
-            count={Math.ceil(
-              apiData.notifications.length / pagination.countPerPage
-            )}
-            page={pagination.page + 1}
-            onChange={onPaginationChange}
-            showFirstButton
-            showLastButton
-          />
+          {totalPaginationPages > 1 && (
+            <StyledPagination
+              count={totalPaginationPages}
+              page={pagination.page + 1}
+              onChange={onPaginationChange}
+              showFirstButton
+              showLastButton
+            />
+          )}
         </>
       ) : (
         <NotificationsWrap>
