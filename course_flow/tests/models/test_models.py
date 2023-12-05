@@ -3793,7 +3793,7 @@ class NotificationTest(TestCase):
 
         # Retrieve the comments
         response = self.client.post(
-            reverse("course_flow:json-api-post-mark-all-as-read"),
+            reverse("course_flow:json-api-post-mark-all-notifications-as-read"),
             {},
         )
         self.assertEqual(len(user.notifications.filter(is_unread=True)), 0)

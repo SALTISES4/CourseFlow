@@ -325,9 +325,9 @@ def course_flow_patterns():
             name="json-api-post-get-user-list",
         ),
         path(
-            "user/mark-all-as-read/",
-            views.sharing_api.json_api_post_mark_all_as_read,
-            name="json-api-post-mark-all-as-read",
+            "user/mark-all-notifications-as-read/",
+            views.sharing_api.json_api_post_mark_all_notifications_as_read,
+            name="json-api-post-mark-all-notifications-as-read",
         ),
         # Register search JSON routes
         path(

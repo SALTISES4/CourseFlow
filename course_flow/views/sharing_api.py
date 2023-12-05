@@ -290,6 +290,10 @@ def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
 
 @ajax_login_required
 @require_POST
-def json_api_post_mark_all_as_read(request):
+def json_api_post_mark_all_notifications_as_read(request):
     request.user.notifications.filter(is_unread=True).update(is_unread=False)
-    return JsonResponse({"action": "posted"})
+    return JsonResponse(
+        {
+            "action": "posted"
+        }
+    )
