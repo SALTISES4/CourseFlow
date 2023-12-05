@@ -24,6 +24,12 @@
     </div>
   </div>
 
+  {% comment %}
+    TODO: Should be cleaned up as #container is the main element jQuery
+    is appending elements into. Ideally all of this should be handled in
+    the base layout template (or completely by React once we end up with
+    a single script rendering the whole application)
+  {% endcomment %}
   <div class="right-panel-wrapper">
     <div id="container" class="body-wrapper"></div>
     <div id="sidebar-container"></div>
