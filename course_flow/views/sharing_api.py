@@ -270,6 +270,7 @@ def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
 
         prepared_notifications.append(
             {
+                "id": notification.id,
                 "unread": notification.is_unread,
                 "url": url,
                 # TODO: Update notification text to omit the user's name

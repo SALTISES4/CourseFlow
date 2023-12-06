@@ -62,7 +62,7 @@ window.addEventListener('load', () => {
     },
     {
       component: <NotificationsPage />,
-      target: '.main-block #container'
+      target: '[data-component="notifications-page"]'
     }
   ])
 })

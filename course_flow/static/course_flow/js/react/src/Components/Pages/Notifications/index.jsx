@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
@@ -23,6 +23,7 @@ const NotificationsWrap = styled(Box)({})
 
 const NotificationsHeader = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(2),
   '& .MuiTypography-h1': {
     color: 'currentColor',
     fontWeight: 400,
@@ -32,7 +33,6 @@ const NotificationsHeader = styled(Box)(({ theme }) => ({
 
 const MarkAsRead = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(2),
   textAlign: 'right'
 }))
 
@@ -82,55 +82,111 @@ const NotificationsPage = () => {
     countPerPage: 10
   })
 
-  const [anchorEl, setAnchorEl] = useState(null)
-
   const [apiData, loading, error] = useApi(
     config.json_api_paths.get_notifications_page
   )
+
+  const [pageState, setPageState] = useState({
+    notifications: [],
+    allRead: false,
+    menuAnchor: null,
+    notification: null
+  })
+
+  useEffect(() => {
+    if (pageState.notifications.length === 0 && apiData.notifications) {
+      setPageState({
+        ...pageState,
+        notifications: apiData.notifications
+      })
+    }
+  }, [apiData])
 
   if (loading || error) {
     return null
   }
 
-  const menuOpen = Boolean(anchorEl)
   const paginateFrom = pagination.page * pagination.countPerPage
   const paginateTo = (pagination.page + 1) * pagination.countPerPage
 
-  function handleClick(event) {
+  function handleMenuOpen(event, notification) {
     // a11y
     event.currentTarget.setAttribute('aria-controls', 'notification-men')
     event.currentTarget.setAttribute('aria-expanded', true)
-    setAnchorEl(event.currentTarget)
+
+    setPageState({
+      ...pageState,
+      notification,
+      menuAnchor: event.currentTarget
+    })
   }
 
   function handleMenuClose() {
     // a11y
-    anchorEl.removeAttribute('aria-controls', null)
-    anchorEl.setAttribute('aria-expanded', false)
-    setAnchorEl(null)
+    pageState.menuAnchor.removeAttribute('aria-controls', null)
+    pageState.menuAnchor.setAttribute('aria-expanded', false)
+    setPageState((state) => {
+      return {
+        ...state,
+        notification: null,
+        menuAnchor: null
+      }
+    })
   }
 
-  function onMarkAsReadClick(id) {
-    console.log('onMarkAsReadClick', id)
+  // TODO: Implement mark as read action
+  function onMarkAsReadClick() {
+    const { notification } = pageState
+    console.log('onMarkAsReadClick', notification)
+
+    const updated = [...pageState.notifications]
+    const index = updated.findIndex((n) => n.id === notification.id)
+    updated[index].unread = false
+
+    setPageState({
+      ...pageState,
+      notifications: updated
+    })
+
     handleMenuClose()
   }
 
-  function onDeleteClick(id) {
-    console.log('onDeleteClick', id)
+  // TODO: Implement delete action
+  function onDeleteClick() {
+    const { notification } = pageState
+    console.log('onDeleteClick', notification)
+
+    let updated = [...pageState.notifications]
+    const index = updated.findIndex((n) => n.id === notification.id)
+    updated.splice(index, 1)
+
+    setPageState({
+      ...pageState,
+      notifications: updated
+    })
+
     handleMenuClose()
   }
 
+  // TODO: Implement 'mark all as read' action
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
-    console.log('mark all as read')
-    // use fetch to post
-    // promise?
-    // on done, set the "all-as-read" to true
-    // and in turn stop rendering the "mark all as read" button
+    const markAllAsRead = () => {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          // TODO: fire a fetch (post), then resolve when done
+          // config.json_api_paths.mark_all_notifications_as_read
+          res(true)
+        }, 500)
+      })
+    }
 
-    // $.post("{% url 'course_flow:json-api-post-mark-all-as-read' %}",{},()=>{
-    //   window.location = window.location;
-    // });
+    markAllAsRead().then(() => {
+      setPageState({
+        ...pageState,
+        allRead: true
+      })
+    })
   }
 
   function onPaginationChange(e, page) {
@@ -141,40 +197,45 @@ const NotificationsPage = () => {
   }
 
   const totalPaginationPages = Math.ceil(
-    apiData.notifications.length / pagination.countPerPage
+    pageState.notifications.length / pagination.countPerPage
   )
 
   return (
     <OuterContentWrap>
-      {apiData.notifications.length > 0 ? (
+      {pageState.notifications.length > 0 ? (
         <>
           <NotificationsWrap>
             <NotificationsHeader>
               <Typography variant="h1">Notifications</Typography>
-              <MarkAsRead>
-                <Link
-                  href={'#'}
-                  underline="always"
-                  onClick={onMarkAllAsReadClick}
-                >
-                  Mark all as read
-                </Link>
-              </MarkAsRead>
+              {apiData.unread > 0 && !pageState?.allRead && (
+                <MarkAsRead>
+                  <Link
+                    href="#"
+                    underline="always"
+                    onClick={onMarkAllAsReadClick}
+                  >
+                    Mark all as read
+                  </Link>
+                </MarkAsRead>
+              )}
             </NotificationsHeader>
 
             <NotificationsList>
-              {apiData.notifications
+              {pageState.notifications
                 .slice(paginateFrom, paginateTo)
                 .map((n, idx) => (
                   <StyledListItem
                     key={idx}
                     alignItems="flex-start"
                     sx={{
-                      backgroundColor: n.unread ? 'primary.lightest' : null
+                      backgroundColor:
+                        n.unread && !pageState.allRead
+                          ? 'primary.lightest'
+                          : null
                     }}
                     secondaryAction={
                       <IconButton
-                        onClick={handleClick}
+                        onClick={(e) => handleMenuOpen(e, n)}
                         aria-label="show notifications menu"
                         aria-haspopup="true"
                       >
@@ -182,8 +243,10 @@ const NotificationsPage = () => {
                       </IconButton>
                     }
                   >
-                    <ListItemButton href={n.url}>
-                      {n.unread && <Badge color="primary" variant="dot" />}
+                    <ListItemButton>
+                      {n.unread && !pageState.allRead && (
+                        <Badge color="primary" variant="dot" />
+                      )}
                       <ListItemAvatar>
                         <Avatar alt={n.from}>
                           {`${n.from.split(' ')[0][0]}${
@@ -219,19 +282,17 @@ const NotificationsPage = () => {
                 vertical: 'top',
                 horizontal: 'right'
               }}
-              anchorEl={anchorEl}
-              open={menuOpen}
+              anchorEl={pageState.menuAnchor}
+              open={!!pageState.menuAnchor}
               onClose={handleMenuClose}
               MenuListProps={{
                 'aria-label': 'basic-button'
               }}
             >
-              <MenuItem onClick={() => onMarkAsReadClick('id here')}>
-                Mark as read
-              </MenuItem>
-              <MenuItem onClick={() => onDeleteClick('id here')}>
-                Delete
-              </MenuItem>
+              {pageState.notification?.unread && !pageState.allRead && (
+                <MenuItem onClick={onMarkAsReadClick}>Mark as read</MenuItem>
+              )}
+              <MenuItem onClick={onDeleteClick}>Delete</MenuItem>
             </Menu>
           </NotificationsWrap>
 
