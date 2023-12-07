@@ -181,27 +181,34 @@ const NotificationsPage = () => {
           allRead: updated.every((n) => n.unread === false),
           notifications: updated
         })
-
-        handleMenuClose()
       })
       .catch((err) => console.log('error -', err))
+      .finally(() => {
+        handleMenuClose()
+      })
   }
 
-  // TODO: Implement delete action
   function onDeleteClick() {
     const { notification } = pageState
-    console.log('onDeleteClick', notification)
 
-    let updated = [...pageState.notifications]
-    const index = updated.findIndex((n) => n.id === notification.id)
-    updated.splice(index, 1)
-
-    setPageState({
-      ...pageState,
-      notifications: updated
+    API_POST(config.json_api_paths.delete_notification, {
+      notification_id: notification.id
     })
+      .then(() => {
+        let updated = [...pageState.notifications]
+        const index = updated.findIndex((n) => n.id === notification.id)
+        updated.splice(index, 1)
 
-    handleMenuClose()
+        setPageState({
+          ...pageState,
+          allRead: updated.every((n) => n.unread === false),
+          notifications: updated
+        })
+      })
+      .catch((err) => console.log('error -', err))
+      .finally(() => {
+        handleMenuClose()
+      })
   }
 
   function onMarkAllAsReadClick(e) {
