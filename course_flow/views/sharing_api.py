@@ -308,3 +308,23 @@ def json_api_post_mark_all_notifications_as_read(request):
             "action": "posted"
         }
     )
+
+
+@ajax_login_required
+@require_POST
+def json_api_post_delete_notification(request):
+    post_data = json.loads(request.body)
+    if "notification_id" in post_data:
+        notification_id = post_data["notification_id"]
+        request.user.notifications.filter(id=notification_id).delete()
+        return JsonResponse(
+            {
+                "action": "posted"
+            }
+        )
+
+    return JsonResponse(
+        {
+            "action": "error"
+        }
+    )

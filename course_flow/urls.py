@@ -329,6 +329,11 @@ def course_flow_patterns():
             views.sharing_api.json_api_post_mark_all_notifications_as_read,
             name="json-api-post-mark-all-notifications-as-read",
         ),
+        path(
+            "user/delete-notification/",
+            views.sharing_api.json_api_post_delete_notification,
+            name="json-api-post-delete-notification",
+        ),
         # Register search JSON routes
         path(
             "mylibrary/search-all-objects/",
