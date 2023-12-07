@@ -93,8 +93,14 @@ function API_POST(url = '', data = {}) {
     })
       // convert to JSON
       .then((response) => response.json())
-      // and resolve the initial promise
-      .then((data) => res(data))
+      .then((data) => {
+        // and if the action successfully posted, resolve the initial promise
+        if (data.action === DATA_ACTIONS.POSTED) {
+          res(data)
+        } else {
+          rej(url, 'post action !== "posted".')
+        }
+      })
       // otherwise reject if anything fishy is going on
       .catch((err) => rej(err))
   })
@@ -165,19 +171,17 @@ const NotificationsPage = () => {
     API_POST(config.json_api_paths.mark_all_notifications_as_read, {
       notification_id: notification.id
     })
-      .then((data) => {
-        if (data.action === DATA_ACTIONS.POSTED) {
-          const updated = [...pageState.notifications]
-          const index = updated.findIndex((n) => n.id === notification.id)
-          updated[index].unread = false
+      .then(() => {
+        const updated = [...pageState.notifications]
+        const index = updated.findIndex((n) => n.id === notification.id)
+        updated[index].unread = false
 
-          setPageState({
-            ...pageState,
-            notifications: updated
-          })
+        setPageState({
+          ...pageState,
+          notifications: updated
+        })
 
-          handleMenuClose()
-        }
+        handleMenuClose()
       })
       .catch((err) => console.log('error -', err))
   }
@@ -199,25 +203,17 @@ const NotificationsPage = () => {
     handleMenuClose()
   }
 
-  // TODO: Implement 'mark all as read' action
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
-    const markAllAsRead = () => {
-      return new Promise((res, rej) => {
-        setTimeout(() => {
-          // TODO: fire a fetch (post), then resolve when done
-          // config.json_api_paths.mark_all_notifications_as_read
-          res(true)
-        }, 500)
-      })
-    }
 
-    markAllAsRead().then(() => {
-      setPageState({
-        ...pageState,
-        allRead: true
+    API_POST(config.json_api_paths.mark_all_notifications_as_read)
+      .then(() => {
+        setPageState({
+          ...pageState,
+          allRead: true
+        })
       })
-    })
+      .catch((err) => console.log('error -', err))
   }
 
   function onPaginationChange(e, page) {
