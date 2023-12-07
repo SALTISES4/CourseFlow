@@ -178,6 +178,7 @@ const NotificationsPage = () => {
 
         setPageState({
           ...pageState,
+          allRead: updated.every((n) => n.unread === false),
           notifications: updated
         })
 
