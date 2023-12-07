@@ -350,7 +350,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       )
     ) {
       deleteSelf(this.props.data.id, 'workflow', false, () => {
-        window.location = config.update_path['project'].replace(
+        window.location = window.config.update_path['project'].replace(
           0,
           renderer.project.id
         )
@@ -400,7 +400,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = config.update_path[
+                window.location = window.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -415,7 +415,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
                   response_data.parentID,
                   (response_data) => {
                     loader.endLoad()
-                    window.location = config.update_path[
+                    window.location = window.config.update_path[
                       response_data.new_item.type
                     ].replace('0', response_data.new_item.id)
                   }
@@ -444,7 +444,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               this.props.renderer.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = config.update_path[
+                window.location = window.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -502,7 +502,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(0, renderer.project.id)}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>
@@ -521,7 +521,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(0, renderer.project.id)}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>{gettext('Return to Editable Workflow')}</div>

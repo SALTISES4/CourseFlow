@@ -49,9 +49,9 @@ from course_flow.serializers import (
     LiveProjectSerializer,
     ProjectSerializerShallow,
 )
-from course_flow.utils import get_user_permission, get_user_role
+from course_flow.utils import get_user_permission
 from course_flow.view_utils import get_my_projects, get_workflow_context_data
-from course_flow.views.search_api import get_explore_objects
+from course_flow.views.json_api.search_api import get_explore_objects
 
 
 class ContentPublicViewMixin(UserPassesTestMixin):
@@ -637,7 +637,8 @@ def get_data_package_for_project(user, project):
 
 @login_required
 def home_view(request):
-    return render(request, "course_flow/home.html")
+    context = {"title": "Home", "view_id": "home"}
+    return render(request, "course_flow/unified/home.html", context)
 
 
 @login_required
@@ -662,7 +663,7 @@ def myfavourites_view(request):
 
 @login_required
 def import_view(request):
-    return render(request, "course_flow/import.html")
+    return render(request, "course_flow/react/import.html")
 
 
 class SALTISEAnalyticsView(
@@ -730,113 +731,12 @@ class UserNotificationsView(LoginRequiredMixin, ListView):
         return form
 
 
-class ProjectCreateView(
-    LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
-):
-    model = Project
-    fields = ["title", "description"]
-    template_name = "course_flow/workflow_create.html"
-
-    def workflow_type(self):
-        return "project"
-
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super(ProjectCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:project-update", kwargs={"pk": self.object.pk}
-        )
-
-
-class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Project
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/project_update.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        project = self.object
-        context["project_data"] = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(
-                    project, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
-        context["disciplines"] = (
-            JSONRenderer()
-            .render(
-                DisciplineSerializer(
-                    Discipline.objects.order_by("title"), many=True
-                ).data
-            )
-            .decode("utf-8")
-        )
-        if hasattr(project, "liveproject") and project.liveproject is not None:
-            context["user_role"] = (
-                JSONRenderer()
-                .render(get_user_role(project.liveproject, self.request.user))
-                .decode("utf-8")
-            )
-        else:
-            context["user_role"] = (
-                JSONRenderer()
-                .render(LiveProjectUser.ROLE_NONE)
-                .decode("utf-8")
-            )
-        context["user_permission"] = (
-            JSONRenderer()
-            .render(get_user_permission(project, self.request.user))
-            .decode("utf-8")
-        )
-
-        return context
-
-
-class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Project
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/comparison.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        user = self.request.user
-        project = self.object
-        context["project_data"] = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(project, context={"user": user}).data
-            )
-            .decode("utf-8")
-        )
-        context["is_strategy"] = JSONRenderer().render(False).decode("utf-8")
-
-        user_permission = get_user_permission(project, user)
-        user_role = get_user_role(project, user)
-        context["user_permission"] = (
-            JSONRenderer().render(user_permission).decode("utf-8")
-        )
-        context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
-
-        return context
-
-
 class WorkflowDetailView(
     LoginRequiredMixin, UserCanViewOrEnrolledMixin, DetailView
 ):
     model = Workflow
     fields = ["id", "title", "description", "type"]
-    template_name = "course_flow/workflow_update.html"
+    template_name = "course_flow/react/workflow_update.html"
 
     def get_success_url(self):
         return reverse(
@@ -858,7 +758,7 @@ class WorkflowDetailView(
 class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
     model = Workflow
     fields = ["id", "title", "description"]
-    template_name = "course_flow/workflow_update.html"
+    template_name = "course_flow/react/workflow_update.html"
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()
@@ -1023,7 +923,7 @@ def my_live_projects_view(request):
         .render(get_my_live_projects(request.user))
         .decode("utf-8")
     }
-    return render(request, "course_flow/my_live_projects.html", context)
+    return render(request, "course_flow/react/my_live_projects.html", context)
 
 
 class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
@@ -1075,7 +975,7 @@ class AssignmentDetailView(
 ):
     model = LiveAssignment
     fields = ["task__title"]
-    template_name = "course_flow/live_assignment_update.html"
+    template_name = "course_flow/react/live_assignment_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)

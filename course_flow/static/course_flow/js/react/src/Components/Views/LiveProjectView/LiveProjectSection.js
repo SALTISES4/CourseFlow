@@ -29,6 +29,6 @@ export class LiveProjectSection extends React.Component {
 
   defaultRender() {
     // @todo undefined scope error
-    return <renderers.WorkflowLoader />
+    return <window.renderers.WorkflowLoader />
   }
 }

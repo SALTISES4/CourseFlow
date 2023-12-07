@@ -324,7 +324,7 @@ class WorkflowFilter extends Component {
   }
 
   defaultRender() {
-    return <renderers.WorkflowLoader />
+    return <window.renderers.WorkflowLoader />
   }
 
   /*******************************************************

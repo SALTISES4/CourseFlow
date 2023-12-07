@@ -103,7 +103,7 @@ class LiveAssignmentEdit extends React.Component {
       )
     ) {
       deleteSelfLive(data.id, 'liveassignment', (response_data) => {
-        window.location = config.update_path.liveproject.replace(
+        window.location = window.config.update_path.liveproject.replace(
           '0',
           data.liveproject
         )
@@ -349,8 +349,7 @@ class LiveAssignmentReport extends React.Component {
    * FUNCTIONS
    *******************************************************/
   defaultRender() {
-    // @TODO GLOBAL SCOPE ERROR
-    return <renderers.WorkflowLoader />
+    return <window.renderers.WorkflowLoader />
   }
 
   updateCompletion(id, completed) {
@@ -490,7 +489,7 @@ class LiveAssignmentMenu extends React.Component {
           {reactDom.createPortal(
             <a
               id="live-project-return"
-              href={config.update_path['liveproject'].replace(
+              href={window.config.update_path['liveproject'].replace(
                 0,
                 liveproject.pk
               )}

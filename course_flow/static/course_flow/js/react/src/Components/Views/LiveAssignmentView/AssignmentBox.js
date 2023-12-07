@@ -178,7 +178,7 @@ class AssignmentBox extends React.Component {
           className="comment-indicator hover-shade"
           onClick={this.props.parent.showAssignment.bind(this.props.parent)}
         >
-          <img src={config.icon_path + 'assignment.svg'} />
+          <img src={window.config.icon_path + 'assignment.svg'} />
         </div>,
         $(this.props.parent.maindiv.current)
           .children('.side-actions')
@@ -196,7 +196,7 @@ class AssignmentBox extends React.Component {
         title={gettext('Close')}
         onClick={this.props.parent.showAssignment.bind(this.props.parent)}
       >
-        <img src={config.icon_path + 'close.svg'} />
+        <img src={window.config.icon_path + 'close.svg'} />
       </div>
     )
     if (this.props.renderer.is_teacher) {
@@ -206,7 +206,7 @@ class AssignmentBox extends React.Component {
           title={gettext('Create New')}
           onClick={this.createAssignment.bind(this)}
         >
-          <img src={config.icon_path + 'add_new.svg'} />
+          <img src={window.config.icon_path + 'add_new.svg'} />
         </div>
       )
     }

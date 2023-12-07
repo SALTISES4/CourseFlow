@@ -9,11 +9,7 @@ from django.http import (
 from django.urls import reverse
 
 from course_flow.decorators import public_access
-from course_flow.serializers import (
-    FavouriteSerializer,
-    UserSerializer
-)
-
+from course_flow.serializers import FavouriteSerializer, UserSerializer
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
     course_flow_return_title,

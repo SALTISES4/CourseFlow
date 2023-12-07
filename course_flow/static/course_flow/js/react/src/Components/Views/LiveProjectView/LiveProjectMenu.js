@@ -6,9 +6,9 @@ import { LiveProjectSection } from './LiveProjectSection.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
 import { WorkflowForMenu } from '../../Library'
-import LiveProjectCompletionTable from "./LiveProjectCompletionTable.js";
-import LiveProjectSettings from "./LiveProjectSettings.js";
-import LiveProjectAssignments from "./LiveProjectAssignments.js";
+import LiveProjectCompletionTable from './LiveProjectCompletionTable.js'
+import LiveProjectSettings from './LiveProjectSettings.js'
+import LiveProjectAssignments from './LiveProjectAssignments.js'
 
 /**
  *
@@ -199,7 +199,7 @@ class LiveProjectMenu extends React.Component {
         <a
           id="project"
           className="hover-shade"
-          href={config.update_path.project.replace('0', data.id)}
+          href={window.config.update_path.project.replace('0', data.id)}
         >
           {gettext('Edit Project')}
         </a>

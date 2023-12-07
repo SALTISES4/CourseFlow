@@ -261,7 +261,7 @@ class NodeView extends EditableComponentWithActions {
               ).name
             }
             src={
-              config.icon_path +
+              window.config.icon_path +
               Constants.context_keys[data.context_classification] +
               '.svg'
             }
@@ -278,7 +278,7 @@ class NodeView extends EditableComponentWithActions {
               ).name
             }
             src={
-              config.icon_path +
+              window.config.icon_path +
               Constants.task_keys[data.task_classification] +
               '.svg'
             }
@@ -312,7 +312,7 @@ class NodeView extends EditableComponentWithActions {
     if (data.linked_workflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
-          <img src={config.icon_path + 'wflink.svg'} />
+          <img src={window.config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -381,7 +381,7 @@ class NodeView extends EditableComponentWithActions {
         >
           <div className="node-drop-side node-drop-left">{dropText}</div>
           <div className="node-drop-middle">
-            <img src={config.icon_path + dropIcon + '.svg'} />
+            <img src={window.config.icon_path + dropIcon + '.svg'} />
           </div>
           <div className="node-drop-side node-drop-right">
             <div className="node-drop-time">
@@ -484,7 +484,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -499,7 +499,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }

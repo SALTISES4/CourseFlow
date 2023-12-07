@@ -161,7 +161,7 @@ class ProjectMenu extends LibraryMenu {
           <a
             id="live-project"
             className="hover-shade"
-            href={config.update_path.liveproject.replace('0', data.id)}
+            href={window.config.update_path.liveproject.replace('0', data.id)}
           >
             {gettext('View Classroom')}
           </a>
@@ -230,7 +230,7 @@ class ProjectMenu extends LibraryMenu {
       )
     ) {
       deleteSelf(this.props.data.id, 'project', false, () => {
-        window.location = config.home_path
+        window.location = window.config.home_path
       })
     }
   }
@@ -287,7 +287,7 @@ class ProjectMenu extends LibraryMenu {
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = config.update_path[
+                window.location = window.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }

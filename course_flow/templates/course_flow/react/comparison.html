@@ -63,12 +63,7 @@
   {{ block.super }}
   <script nonce="{{ request.csp_nonce }}">
 
-    const workflow_paths = {
-      activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      course: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      program: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
-    }
+
 
     $("#sidebar").detach().appendTo("#sidebar-container");
 
@@ -91,6 +86,14 @@
     }).appendTo("#container");
 
 
+        const workflow_paths = {
+      activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      course: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      program: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
+    }
+
+
     const user_permission = {{user_permission|safe}}
 
       $("#side-bar-close-button").on("click", () => {
@@ -110,9 +113,9 @@
     const changeFieldID = Math.floor(Math.random() * 10000);
 
     window.addEventListener("load", function () {
-      const comparison_renderer = new renderers.ComparisonRenderer(project_data);
+      const comparison_renderer = new window.renderers.ComparisonRenderer(project_data);
 
-      $(document).ajaxError(renderers.fail_function);
+      $(document).ajaxError(window.renderers.fail_function);
       comparison_renderer.render($("#container"));
     });
   </script>

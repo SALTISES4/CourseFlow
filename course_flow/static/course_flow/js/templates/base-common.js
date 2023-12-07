@@ -85,12 +85,12 @@ $(window).on('load', () => {
     makeDropdown(el, '#create-links')
   })
 
-  if (COURSEFLOW_APP.show_notification_request) {
+  if (window.COURSEFLOW_APP.show_notification_request) {
     const confirmNotifications = window.confirm(
-      COURSEFLOW_APP.strings.confirm_email_updates
+      window.COURSEFLOW_APP.strings.confirm_email_updates
     )
 
-    $.post(config.post_paths.select_notifications, {
+    $.post(window.config.post_paths.select_notifications, {
       notifications: JSON.stringify(!!confirmNotifications)
     })
   }

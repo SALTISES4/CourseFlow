@@ -42,6 +42,9 @@ export class FavouritesRenderer extends LibraryRenderer {
 
 /*******************************************************
  * @ExploreRenderer
+ *  disciplines: any
+ *  initial_workflows: any[]
+ *  initial_pages: any
  *******************************************************/
 export class ExploreRenderer extends LibraryRenderer {
   constructor(disciplines, initial_workflows = [], initial_pages = {}) {
@@ -60,22 +63,31 @@ export class ExploreRenderer extends LibraryRenderer {
 /*******************************************************
  * @ProjectRenderer
  *******************************************************/
+/**
+ * type Data: {
+ *  disciplines: Discipline[
+ *  project_data: Project[]
+ *  user_permission: num
+ *  user_role: num
+ *  user_id:
+ * }
+ *
+ */
 export class ProjectRenderer {
-  constructor(project_data, disciplines) {
-    this.project_data = project_data
-    this.all_disciplines = disciplines
+  constructor(data /*: Data*/) {
     this.read_only = true
+    this.project_data = data.project_data
+    this.all_disciplines = data.disciplines
+    this.user_role = data.user_role
+    this.user_permission = data.user_permission
 
     if (
-      project_data.object_permission &&
-      project_data.object_permission.permission_type ===
+      this.project_data.object_permission &&
+      this.project_data.object_permission.permission_type ===
         Constants.permission_keys['edit']
     ) {
       this.read_only = false
     }
-
-    this.user_role = user_role
-    this.user_permission = user_permission
   }
 
   render(container) {

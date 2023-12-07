@@ -30,7 +30,6 @@
     ></script>
     {% endcompress %}
     <!-- -->
-    {% compress js %}
     <script
       id="script-redesign"
       nonce="{{ request.csp_nonce }}"
@@ -38,7 +37,6 @@
       defer="true"
       charset="utf-8"
     ></script>
-    {% endcompress %}
     <!-- -->
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"

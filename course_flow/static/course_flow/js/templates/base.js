@@ -24,11 +24,11 @@ const isTouch = isMobile || isTablet
 if (isTouch) {
   if (!sessionStorage.getItem('unsupported_alerted')) {
     sessionStorage.setItem('unsupported_alerted', true)
-    alert(COURSEFLOW_APP.strings.unsuported_device)
+    alert(window.COURSEFLOW_APP.strings.unsuported_device)
   }
 }
 
-const { update_notifications } = COURSEFLOW_APP
+const { update_notifications } = window.COURSEFLOW_APP
 
 if (
   update_notifications.title &&

@@ -65,7 +65,7 @@ class ColumnView extends EditableComponentWithActions {
     return (
       <img
         src={
-          config.icon_path +
+          window.config.icon_path +
           Constants.default_column_settings[this.props.data.column_type].icon +
           '.svg'
         }

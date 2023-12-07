@@ -2,7 +2,7 @@
 {% load course_flow_templatetags %}
 
 <script nonce="{{ request.csp_nonce }}">
-  const config = {
+  window.config = {
     post_paths: {
       get_possible_linked_workflows:
         "{% url 'course_flow:json-api-post-get-possible-linked-workflows' %}",
@@ -129,7 +129,7 @@
 
   // NOTE: This is the place where we keep all variables
   // injected by Django to be consumed by React
-  const COURSEFLOW_APP = {
+  window.COURSEFLOW_APP = {
     show_notification_request: {{ show_notification_request }},
     update_notifications: {{ update_notifications|safe }},
 

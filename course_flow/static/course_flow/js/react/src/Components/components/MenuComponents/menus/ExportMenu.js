@@ -84,7 +84,7 @@ class ExportMenu extends React.Component {
   click(evt) {
     if (evt.ctrlKey) {
       this.ctrlKey = true
-      $('#export-form')[0].action = config.post_paths.get_export_download
+      $('#export-form')[0].action = window.config.post_paths.get_export_download
     }
   }
 
@@ -132,7 +132,7 @@ class ExportMenu extends React.Component {
         <form
           id="export-form"
           encType="multipart/form-data"
-          action={config.post_paths.get_export}
+          action={window.config.post_paths.get_export}
           method="POST"
           target="redirect-iframe"
           onSubmit={this.submit.bind(this)}
@@ -173,7 +173,7 @@ class ExportMenu extends React.Component {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={window.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

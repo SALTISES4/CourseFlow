@@ -40,14 +40,14 @@ class MenuSection extends React.Component {
     if (this.props.replacement_text) objects = this.props.replacement_text
 
     let add_button
-    if (config.create_path && this.props.add) {
+    if (window.config.create_path && this.props.add) {
       let types
       if (section_type === 'workflow') types = ['program', 'course', 'activity']
       else types = [section_type]
       let adds
       {
         adds = types.map((this_type) => (
-          <a className="hover-shade" href={config.create_path[this_type]}>
+          <a className="hover-shade" href={window.config.create_path[this_type]}>
             {gettext('Create new ') + gettext(this_type)}
           </a>
         ))
@@ -92,7 +92,7 @@ class MenuSection extends React.Component {
               ' link-image'
             }
             title={gettext('Add New')}
-            src={config.icon_path + 'add_new_white.svg'}
+            src={window.config.icon_path + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

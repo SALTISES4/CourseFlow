@@ -24,7 +24,7 @@ class StrategyView extends Component {
       strategy_icon = (
         <img
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.strategy_keys[data.strategy_icon] +
             '.svg'
           }

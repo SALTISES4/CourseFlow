@@ -13,6 +13,7 @@ import { reloadCommentsAction } from '../../../redux/Reducers.js'
 // @components
 import Component from './Component.js'
 import ActionButton from './ActionButton.js'
+import EditableComponent from './EditableComponent.js'
 
 /*******************************************************
  * @CommentBox
@@ -178,7 +179,7 @@ class CommentBox extends Component {
           className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
-          <img src={config.icon_path + 'comment_new.svg'} />
+          <img src={window.config.icon_path + 'comment_new.svg'} />
         </div>,
         render_div
       )
@@ -218,7 +219,7 @@ class CommentBox extends Component {
                   title={gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
-                  <img src={config.icon_path + 'rubbish.svg'} />
+                  <img src={window.config.icon_path + 'rubbish.svg'} />
                 </div>
               </div>
             )}
@@ -233,7 +234,7 @@ class CommentBox extends Component {
         title={gettext('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
-        <img src={config.icon_path + 'close.svg'} />
+        <img src={window.config.icon_path + 'close.svg'} />
       </div>
     )
     if (!this.props.renderer.read_only && comments.length > 1)
@@ -243,7 +244,7 @@ class CommentBox extends Component {
           title={gettext('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
-          <img src={config.icon_path + 'rubbish.svg'} />
+          <img src={window.config.icon_path + 'rubbish.svg'} />
         </div>
       )
 
@@ -288,7 +289,7 @@ class CommentBox extends Component {
               />
               <img
                 ref={this.submit}
-                src={config.icon_path + 'add_new.svg'}
+                src={window.config.icon_path + 'add_new.svg'}
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
                 title={gettext('Submit')}

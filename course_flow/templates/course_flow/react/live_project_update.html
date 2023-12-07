@@ -28,6 +28,7 @@
 {% endblock %}
 <!-- -->
 {% block scripts %} {{ block.super }}
+
 <script nonce="{{request.csp_nonce}}">
 
   const project_data= {{project_data|safe}};
@@ -45,4 +46,5 @@
       live_project_renderer.render($("#container"));
   });
 </script>
+
 {% endblock %}

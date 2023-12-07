@@ -33,7 +33,7 @@ class OutcomeTopView extends EditableComponent {
             closeMessageBox
           )}
         >
-          <img src={config.icon_path + 'add_person.svg'} />
+          <img src={window.config.icon_path + 'add_person.svg'} />
           <div>Sharing</div>
         </div>
       )

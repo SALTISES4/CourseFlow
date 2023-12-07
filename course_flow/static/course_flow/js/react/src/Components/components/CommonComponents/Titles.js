@@ -39,7 +39,7 @@ export class WorkflowTitle extends React.Component {
       text += ' (deleted)'
     }
     let href = data.url
-    if (!data.url) href = config.update_path[data.type].replace('0', data.id)
+    if (!data.url) href = window.config.update_path[data.type].replace('0', data.id)
 
     if (
       this.props.no_hyperlink ||
@@ -118,7 +118,7 @@ export class AssignmentTitle extends React.Component {
     if (this.props.user_role == Constants.role_keys.teacher) {
       return (
         <a
-          href={config.update_path.liveassignment.replace('0', data.id)}
+          href={window.config.update_path.liveassignment.replace('0', data.id)}
           className="workflow-title hover-shade"
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}

@@ -58,7 +58,7 @@ export function getAddedWorkflowMenu(
   updateFunction
 ) {
   $.post(
-    config.post_paths.get_possible_added_workflows,
+    window.config.post_paths.get_possible_added_workflows,
     {
       projectPk: JSON.stringify(projectPk),
       type_filter: JSON.stringify(type_filter),
@@ -78,7 +78,7 @@ export function getWorkflowContext(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflow_context, {
+    $.post(window.config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -99,7 +99,7 @@ export function getWorkflowSelectMenu(
   receiptFunction
 ) {
   $.post(
-    config.post_paths.get_possible_added_workflows,
+    window.config.post_paths.get_possible_added_workflows,
     {
       projectPk: JSON.stringify(projectPk),
       type_filter: JSON.stringify(type_filter),
@@ -121,7 +121,7 @@ export function getLinkedWorkflowMenu(
   callBackFunction = () => console.log('success')
 ) {
   $.post(
-    config.post_paths.get_possible_linked_workflows,
+    window.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },
@@ -140,7 +140,7 @@ export function getTargetProjectMenu(
   callBackFunction = () => console.log('success')
 ) {
   $.post(
-    config.post_paths.get_target_projects,
+    window.config.post_paths.get_target_projects,
     {
       workflowPk: JSON.stringify(workflowPk)
     },
@@ -158,7 +158,7 @@ export function setLinkedWorkflow(
   workflow_id,
   callBackFunction = () => console.log('success')
 ) {
-  $.post(config.post_paths.set_linked_workflow, {
+  $.post(window.config.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
   }).done(function (data) {
@@ -204,7 +204,7 @@ export function updateValue(
   else post_object.changeFieldID = 0
   document.lastUpdateCallFunction = () => {
     try {
-      $.post(config.post_paths.update_value, post_object).done(function (data) {
+      $.post(window.config.post_paths.update_value, post_object).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
@@ -223,7 +223,7 @@ export function updateValueInstant(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.update_value, {
+    $.post(window.config.post_paths.update_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
@@ -273,7 +273,7 @@ export function newNode(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.new_node, {
+    $.post(window.config.post_paths.new_node, {
       weekPk: JSON.stringify(weekPk),
       position: JSON.stringify(position),
       columnPk: JSON.stringify(column),
@@ -294,7 +294,7 @@ export function newOutcome(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.new_outcome, {
+    $.post(window.config.post_paths.new_outcome, {
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
     }).done(function (data) {
@@ -315,7 +315,7 @@ export function newNodeLink(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.new_node_link, {
+    $.post(window.config.post_paths.new_node_link, {
       nodePk: JSON.stringify(source_node),
       objectID: JSON.stringify(target_node),
       objectType: JSON.stringify('node'),
@@ -338,7 +338,7 @@ export function addStrategy(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.add_strategy, {
+    $.post(window.config.post_paths.add_strategy, {
       workflowPk: JSON.stringify(workflowPk),
       position: JSON.stringify(position),
       objectID: JSON.stringify(strategyPk),
@@ -358,7 +358,7 @@ export function toggleStrategy(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.toggle_strategy, {
+    $.post(window.config.post_paths.toggle_strategy, {
       weekPk: JSON.stringify(weekPk),
       is_strategy: JSON.stringify(is_strategy)
     }).done(function (data) {
@@ -378,8 +378,8 @@ export function deleteSelf(
   callBackFunction = () => console.log('success')
 ) {
   let path
-  if (soft) path = config.post_paths.delete_self_soft
-  else path = config.post_paths.delete_self
+  if (soft) path = window.config.post_paths.delete_self_soft
+  else path = window.config.post_paths.delete_self
 
   try {
     $.post(path, {
@@ -400,7 +400,7 @@ export function deleteSelfLive(
   objectType,
   callBackFunction = () => console.log('success')
 ) {
-  let path = config.post_paths.delete_self_live
+  let path = window.config.post_paths.delete_self_live
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
@@ -422,7 +422,7 @@ export function restoreSelf(
 ) {
   let path
   try {
-    $.post(config.post_paths.restore_self, {
+    $.post(window.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
@@ -442,7 +442,7 @@ export function removeComment(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.remove_comment, {
+    $.post(window.config.post_paths.remove_comment, {
       objectID: JSON.stringify(objectID),
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
@@ -462,7 +462,7 @@ export function removeAllComments(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.remove_all_comments, {
+    $.post(window.config.post_paths.remove_all_comments, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
@@ -482,7 +482,7 @@ export function updateOutcomenodeDegree(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.update_outcomenode_degree, {
+    $.post(window.config.post_paths.update_outcomenode_degree, {
       nodePk: JSON.stringify(nodeID),
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
@@ -505,7 +505,7 @@ export function duplicateSelf(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.duplicate_self, {
+    $.post(window.config.post_paths.duplicate_self, {
       parentID: JSON.stringify(parentID),
       parentType: JSON.stringify(parentType),
       objectID: JSON.stringify(objectID),
@@ -529,7 +529,7 @@ export function insertSibling(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.insert_sibling, {
+    $.post(window.config.post_paths.insert_sibling, {
       parentID: JSON.stringify(parentID),
       parentType: JSON.stringify(parentType),
       objectID: JSON.stringify(objectID),
@@ -551,7 +551,7 @@ export function insertChild(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.insert_child, {
+    $.post(window.config.post_paths.insert_child, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
@@ -622,7 +622,7 @@ export function dragAction(
   try {
     renderer.tiny_loader.startLoad()
     $('.ui-draggable').draggable('disable')
-    $.post(config.post_paths.inserted_at, action_data).done(function (data) {
+    $.post(window.config.post_paths.inserted_at, action_data).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
       $('.ui-draggable').draggable('enable')
@@ -648,7 +648,7 @@ export function insertedAtInstant(
   try {
     renderer.tiny_loader.startLoad()
     $('.ui-draggable').draggable('disable')
-    $.post(config.post_paths.inserted_at, {
+    $.post(window.config.post_paths.inserted_at, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       parentID: JSON.stringify(parentID),
@@ -676,7 +676,7 @@ export function updateOutcomehorizontallinkDegree(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.update_outcomehorizontallink_degree, {
+    $.post(window.config.post_paths.update_outcomehorizontallink_degree, {
       outcomePk: JSON.stringify(outcomePk),
       objectID: JSON.stringify(outcome2Pk),
       objectType: JSON.stringify('outcome'),
@@ -698,7 +698,7 @@ export function toggleFavourite(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.toggle_favourite, {
+    $.post(window.config.post_paths.toggle_favourite, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
@@ -720,14 +720,14 @@ export function duplicateBaseItem(
 ) {
   try {
     if (objectType === OBJECT_TYPE.PROJECT) {
-      $.post(config.post_paths.duplicate_project_ajax, {
+      $.post(window.config.post_paths.duplicate_project_ajax, {
         projectPk: JSON.stringify(itemPk)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      $.post(config.post_paths.duplicate_outcome_ajax, {
+      $.post(window.config.post_paths.duplicate_outcome_ajax, {
         outcomePk: JSON.stringify(itemPk),
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
@@ -735,14 +735,14 @@ export function duplicateBaseItem(
         else fail_function(data.action)
       })
     } else if (!projectID && projectID !== 0) {
-      $.post(config.post_paths.duplicate_strategy_ajax, {
+      $.post(window.config.post_paths.duplicate_strategy_ajax, {
         workflowPk: JSON.stringify(itemPk)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else fail_function(data.action)
       })
     } else {
-      $.post(config.post_paths.duplicate_workflow_ajax, {
+      $.post(window.config.post_paths.duplicate_workflow_ajax, {
         workflowPk: JSON.stringify(itemPk),
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
@@ -761,7 +761,7 @@ export function getWorkflowData(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflow_data, {
+    $.post(window.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -778,7 +778,7 @@ export function getWorkflowParentData(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflow_parent_data, {
+    $.post(window.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -795,7 +795,7 @@ export function getWorkflowChildData(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflow_child_data, {
+    $.post(window.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -813,7 +813,7 @@ export function getPublicWorkflowData(
 ) {
   try {
     $.get(
-      config.get_paths.get_public_workflow_data.replace('0', workflowPk)
+      window.config.get_paths.get_public_workflow_data.replace('0', workflowPk)
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
@@ -830,7 +830,7 @@ export function getPublicWorkflowParentData(
 ) {
   try {
     $.get(
-      config.get_paths.get_public_workflow_parent_data.replace('0', workflowPk)
+      window.config.get_paths.get_public_workflow_parent_data.replace('0', workflowPk)
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
@@ -847,7 +847,7 @@ export function getPublicWorkflowChildData(
 ) {
   try {
     $.get(
-      config.get_paths.get_public_workflow_child_data.replace('0', nodePk)
+      window.config.get_paths.get_public_workflow_child_data.replace('0', nodePk)
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
@@ -862,7 +862,7 @@ export function getDisciplines(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.get(config.get_paths.get_disciplines).done(function (data) {
+    $.get(window.config.get_paths.get_disciplines).done(function (data) {
       callBackFunction(data)
     })
   } catch (err) {
@@ -879,7 +879,7 @@ export function setUserPermission(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.set_permission, {
+    $.post(window.config.post_paths.set_permission, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       permission_user: JSON.stringify(user_id),
@@ -901,7 +901,7 @@ export function setLiveProjectRole(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.set_liveproject_role, {
+    $.post(window.config.post_paths.set_liveproject_role, {
       liveprojectPk: JSON.stringify(liveprojectPk),
       permission_user: JSON.stringify(user_id),
       role_type: JSON.stringify(permission_type)
@@ -923,7 +923,7 @@ export function getUsersForObject(
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
   try {
-    $.post(config.post_paths.get_users_for_object, {
+    $.post(window.config.post_paths.get_users_for_object, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
@@ -940,7 +940,7 @@ export function getUsersForLiveProject(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_users_for_liveproject, {
+    $.post(window.config.post_paths.get_users_for_liveproject, {
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -957,7 +957,7 @@ export function getUserList(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_user_list, {
+    $.post(window.config.post_paths.get_user_list, {
       filter: JSON.stringify(filter)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -975,7 +975,7 @@ export function getCommentsForObject(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_comments_for_object, {
+    $.post(window.config.post_paths.get_comments_for_object, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
@@ -995,7 +995,7 @@ export function addComment(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.add_comment, {
+    $.post(window.config.post_paths.add_comment, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
@@ -1017,7 +1017,7 @@ export function addTerminology(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.add_terminology, {
+    $.post(window.config.post_paths.add_terminology, {
       projectPk: JSON.stringify(projectPk),
       term: JSON.stringify(term),
       title: JSON.stringify(title),
@@ -1040,7 +1040,7 @@ export function updateObjectSet(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.update_object_set, {
+    $.post(window.config.post_paths.update_object_set, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       objectsetPk: JSON.stringify(objectsetPk),
@@ -1060,7 +1060,7 @@ export function getParentWorkflowInfo(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_parent_workflow_info, {
+    $.post(window.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -1078,7 +1078,7 @@ export function getPublicParentWorkflowInfo(
 ) {
   try {
     $.get(
-      config.get_paths.get_public_parent_workflow_info.replace('0', workflowPk)
+      window.config.get_paths.get_public_parent_workflow_info.replace('0', workflowPk)
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else fail_function(data.action)
@@ -1096,7 +1096,7 @@ export function getExport(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_export, {
+    $.post(window.config.post_paths.get_export, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       exportType: JSON.stringify(exportType)
@@ -1115,7 +1115,7 @@ export function makeProjectLive(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.make_project_live, {
+    $.post(window.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -1134,7 +1134,7 @@ export function setWorkflowVisibility(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.set_workflow_visibility, {
+    $.post(window.config.post_paths.set_workflow_visibility, {
       liveprojectPk: JSON.stringify(liveprojectPk),
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
@@ -1154,7 +1154,7 @@ export function getLiveProjectData(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_live_project_data, {
+    $.post(window.config.post_paths.get_live_project_data, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
@@ -1173,7 +1173,7 @@ export function getLiveProjectDataStudent(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_live_project_data_student, {
+    $.post(window.config.post_paths.get_live_project_data_student, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
@@ -1192,7 +1192,7 @@ export function getAssignmentData(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_assignment_data, {
+    $.post(window.config.post_paths.get_assignment_data, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
@@ -1211,7 +1211,7 @@ export function getAssignmentDataStudent(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_assignment_data_student, {
+    $.post(window.config.post_paths.get_assignment_data_student, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
@@ -1229,7 +1229,7 @@ export function getWorkflowNodes(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflow_nodes, {
+    $.post(window.config.post_paths.get_workflow_nodes, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -1247,7 +1247,7 @@ export function createAssignment(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.create_live_assignment, {
+    $.post(window.config.post_paths.create_live_assignment, {
       nodePk: JSON.stringify(nodePk),
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
@@ -1267,7 +1267,7 @@ export function addUsersToAssignment(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.add_users_to_assignment, {
+    $.post(window.config.post_paths.add_users_to_assignment, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       user_list: JSON.stringify(user_list),
       add: JSON.stringify(add)
@@ -1287,7 +1287,7 @@ export function updateLiveProjectValue(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.update_liveproject_value, {
+    $.post(window.config.post_paths.update_liveproject_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
@@ -1306,7 +1306,7 @@ export function setAssignmentCompletion(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.set_assignment_completion, {
+    $.post(window.config.post_paths.set_assignment_completion, {
       userassignmentPk: JSON.stringify(userassignmentPk),
       completed: JSON.stringify(completed)
     }).done(function (data) {
@@ -1323,7 +1323,7 @@ export function getAssignmentsForNode(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_assignments_for_node, {
+    $.post(window.config.post_paths.get_assignments_for_node, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
@@ -1337,7 +1337,7 @@ export function getAssignmentsForNode(
 //Get the library projects
 export function getLibrary(callBackFunction = () => console.log('success')) {
   try {
-    $.get(config.get_paths.get_library).done(function (data) {
+    $.get(window.config.get_paths.get_library).done(function (data) {
       callBackFunction(data)
     })
   } catch (err) {
@@ -1348,7 +1348,7 @@ export function getLibrary(callBackFunction = () => console.log('success')) {
 //Get the library projects
 export function getFavourites(callBackFunction = () => console.log('success')) {
   try {
-    $.get(config.get_paths.get_favourites).done(function (data) {
+    $.get(window.config.get_paths.get_favourites).done(function (data) {
       callBackFunction(data)
     })
   } catch (err) {
@@ -1359,7 +1359,7 @@ export function getFavourites(callBackFunction = () => console.log('success')) {
 //Get the home projects
 export function getHome(callBackFunction = () => console.log('success')) {
   try {
-    $.get(config.get_paths.get_home).done(function (data) {
+    $.get(window.config.get_paths.get_home).done(function (data) {
       callBackFunction(data)
     })
   } catch (err) {
@@ -1373,7 +1373,7 @@ export function getWorkflowsForProject(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.get_workflows_for_project, {
+    $.post(window.config.post_paths.get_workflows_for_project, {
       projectPk: projectPk
     }).done(function (data) {
       callBackFunction(data)
@@ -1390,7 +1390,7 @@ export function searchAllObjects(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    $.post(config.post_paths.search_all_objects, {
+    $.post(window.config.post_paths.search_all_objects, {
       filter: JSON.stringify(filter),
       additional_data: JSON.stringify(data)
     }).done(function (data) {

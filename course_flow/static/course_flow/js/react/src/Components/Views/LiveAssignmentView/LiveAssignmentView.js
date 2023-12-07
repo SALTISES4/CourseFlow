@@ -20,7 +20,7 @@ export class AssignmentView extends React.Component {
    * FUNCTIONS
    *******************************************************/
   visitWorkflow(id, evt) {
-    let path = config.update_path['workflow']
+    let path = window.config.update_path['workflow']
     evt.stopPropagation()
     window.open(path.replace('0', id))
   }
@@ -62,7 +62,7 @@ export class AssignmentView extends React.Component {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -77,7 +77,7 @@ export class AssignmentView extends React.Component {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.task_keys[node_data.task_classification] +
             '.svg'
           }
@@ -99,7 +99,7 @@ export class AssignmentView extends React.Component {
     if (data.linked_workflow_access && node_data.linked_workflow)
       linkIcon = (
         <div className="hover-shade linked-workflow" onClick={clickfunc}>
-          <img src={config.icon_path + 'wflink.svg'} />
+          <img src={window.config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -112,7 +112,7 @@ export class AssignmentView extends React.Component {
           className="hover-shade linked-workflow containing-workflow"
           onClick={parentclickfunc}
         >
-          <img src={config.icon_path + 'wflink.svg'} />
+          <img src={window.config.icon_path + 'wflink.svg'} />
           <div>{parentlinktext}</div>
         </div>
       )
@@ -216,7 +216,7 @@ export class AssignmentView extends React.Component {
         >
           <div className="node-drop-side node-drop-left">{dropText}</div>
           <div className="node-drop-middle">
-            <img src={config.icon_path + dropIcon + '.svg'} />
+            <img src={window.config.icon_path + dropIcon + '.svg'} />
           </div>
           <div className="node-drop-side node-drop-right">
             <div className="node-drop-time">

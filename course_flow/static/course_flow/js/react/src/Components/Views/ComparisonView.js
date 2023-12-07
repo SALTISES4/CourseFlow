@@ -58,7 +58,7 @@ export class ComparisonView extends React.Component {
             closeMessageBox
           )}
         >
-          <img src={config.icon_path + 'add_person.svg'} />
+          <img src={window.config.icon_path + 'add_person.svg'} />
         </div>
       )
 
@@ -153,7 +153,7 @@ export class ComparisonView extends React.Component {
           <a
             className="hover-shade no-underline"
             id="project-return"
-            href={config.update_path['project'].replace(0, data.id)}
+            href={window.config.update_path['project'].replace(0, data.id)}
           >
             <span className="green material-symbols-rounded">
               arrow_back_ios
@@ -271,7 +271,7 @@ class WorkflowComparisonRendererComponent extends Component {
           className="window-close-button"
           onClick={this.props.removeFunction}
         >
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={window.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

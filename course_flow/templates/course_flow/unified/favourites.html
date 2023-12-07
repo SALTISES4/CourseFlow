@@ -13,15 +13,16 @@
   <script nonce="{{ request.csp_nonce }}">
 
     $(".menubar").removeClass("hidden");
-    const user_id = {{ user.id }};
 
-//    var library_renderer;
+   // const user_id = {{ user.id }};
+
 
     window.addEventListener("load", function () {
-      favourites_renderer = new library_renderers.FavouritesRenderer();
+      const favourites_renderer = new library_renderers.FavouritesRenderer();
       $(document).ajaxError(renderers.fail_function);
       favourites_renderer.render($("#container"));
       makeActiveSidebar("#my-favourites");
     });
+
   </script>
 {% endblock %}

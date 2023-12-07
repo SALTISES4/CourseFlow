@@ -407,7 +407,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         >
           <img
             className="create-button"
-            src={config.icon_path + 'add_new_white.svg'}
+            src={window.config.icon_path + 'add_new_white.svg'}
           />
           <div>{gettext('Add new')}</div>
         </div>

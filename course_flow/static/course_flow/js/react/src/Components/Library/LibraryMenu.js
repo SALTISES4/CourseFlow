@@ -45,7 +45,7 @@ class LibraryMenu extends React.Component {
           <div id="create-links-project" className="create-dropdown">
             <a
               id="project-create-library"
-              href={config.create_path.project}
+              href={window.config.create_path.project}
               className="hover-shade"
             >
               {gettext('New project')}
@@ -53,14 +53,14 @@ class LibraryMenu extends React.Component {
             <hr />
             <a
               id="activity-strategy-create"
-              href={config.create_path.activity_strategy}
+              href={window.config.create_path.activity_strategy}
               className="hover-shade"
             >
               {gettext('New activity strategy')}
             </a>
             <a
               id="course-strategy-create"
-              href={config.create_path.course_strategy}
+              href={window.config.create_path.course_strategy}
               className="hover-shade"
             >
               {gettext('New course strategy')}
@@ -74,7 +74,7 @@ class LibraryMenu extends React.Component {
   getOverflowLinks() {
     let overflow_links = []
     overflow_links.push(
-      <a id="import-old" className="hover-shade" href={config.get_paths.import}>
+      <a id="import-old" className="hover-shade" href={window.config.get_paths.import}>
         {gettext('Import from old CourseFlow')}
       </a>
     )

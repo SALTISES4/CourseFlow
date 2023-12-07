@@ -9,7 +9,7 @@ class LegendLine extends React.Component {
   render() {
     let icon
     if (this.props.icon)
-      icon = <img src={config.icon_path + this.props.icon + '.svg'} />
+      icon = <img src={window.config.icon_path + this.props.icon + '.svg'} />
     else icon = <div className={this.props.divclass}>{this.props.div}</div>
     return (
       <div className="legend-line">
@@ -85,7 +85,7 @@ class WorkflowLegend extends React.Component {
           </div>
         )}
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={window.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )
@@ -187,7 +187,7 @@ class WorkflowOutcomeLegendUnconnected extends WorkflowLegend {
           </div>
         )}
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={window.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

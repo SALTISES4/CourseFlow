@@ -31,9 +31,9 @@ class HomeMenu extends React.Component {
     let favourites = this.state.favourites.map((project) => (
       <WorkflowForMenu workflow_data={project} renderer={this.props.renderer} />
     ))
-    let library_path = config.my_library_path
+    let library_path = window.config.my_library_path
     if (!this.props.renderer.is_teacher)
-      library_path = config.my_liveprojects_path
+      library_path = window.config.my_liveprojects_path
 
     let project_box
     if (this.props.renderer.is_teacher) {
@@ -72,7 +72,7 @@ class HomeMenu extends React.Component {
             <div className="home-item-title">{gettext('Favourites')}</div>
             <a
               className="collapsed-text-show-more"
-              href={config.my_favourites_path}
+              href={window.config.my_favourites_path}
             >
               {gettext('See all')}
             </a>

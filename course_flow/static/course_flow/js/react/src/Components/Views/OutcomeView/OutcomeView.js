@@ -404,7 +404,7 @@ class OutcomeView extends EditableComponentWithSorting {
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img src={config.icon_path + dropIcon + '.svg'} />
+              <img src={window.config.icon_path + dropIcon + '.svg'} />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>
