@@ -22,7 +22,7 @@ import {
   newOutcome,
   updateOutcomenodeDegree,
   updateOutcomehorizontallinkDegree
-} from '../../PostFunctions.js'
+} from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 import * as Constants from '../../Constants.js'
 

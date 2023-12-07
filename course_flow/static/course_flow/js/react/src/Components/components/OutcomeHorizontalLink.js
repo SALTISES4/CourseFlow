@@ -6,7 +6,7 @@ import {
   getOutcomeByID,
   getOutcomeWorkflowByID
 } from '../../redux/FindState.js'
-import { updateOutcomehorizontallinkDegree } from '../../PostFunctions.js'
+import { updateOutcomehorizontallinkDegree } from '../../XMLHTTP/PostFunctions.js'
 
 export class TableHorizontalOutcomeLinkUnconnected extends React.Component {
   render() {

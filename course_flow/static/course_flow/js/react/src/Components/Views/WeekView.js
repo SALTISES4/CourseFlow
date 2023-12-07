@@ -16,7 +16,7 @@ import {
   columnChanged,
   addStrategy,
   updateValueInstant
-} from '../../PostFunctions.js'
+} from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 
 //Basic component to represent a Week

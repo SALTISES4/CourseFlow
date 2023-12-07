@@ -10,11 +10,11 @@ import {
 import * as Utility from '../../UtilityFunctions.js'
 
 import {
-  getWorkflowSelectMenu,
   getWorkflowContext,
   insertedAt,
   insertedAtInstant
-} from '../../PostFunctions.js'
+} from '../../XMLHTTP/PostFunctions.js'
+import { getWorkflowSelectMenu } from '../../XMLHTTP/postTemp.js'
 import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'

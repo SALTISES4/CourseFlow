@@ -11,7 +11,6 @@ import {
 import * as Constants from '../Constants.js'
 import * as Reducers from '../redux/Reducers.js'
 import {
-  getTargetProjectMenu,
   getWorkflowData,
   getWorkflowParentData,
   getWorkflowChildData,
@@ -19,7 +18,9 @@ import {
   getPublicWorkflowParentData,
   getPublicWorkflowChildData,
   updateValue
-} from '../PostFunctions.js'
+} from '../XMLHTTP/PostFunctions.js'
+import { getTargetProjectMenu } from '../XMLHTTP/postTemp.js'
+
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
@@ -27,7 +28,7 @@ import * as Utility from '../UtilityFunctions.js'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
 import { Enum } from '../UtilityFunctions.js'
 
-export { fail_function } from '../PostFunctions.js'
+export { fail_function } from '../XMLHTTP/PostFunctions.js'
 
 const DATA_TYPE = Enum({
   OUTCOME: 'workflow_action',

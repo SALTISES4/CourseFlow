@@ -16,7 +16,7 @@ import {
   updateOutcomehorizontallinkDegree,
   insertedAt,
   insertedAtInstant
-} from '../../../PostFunctions.js'
+} from '../../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../../UtilityFunctions.js'
 import * as Constants from '../../../Constants.js'
 import SimpleOutcomeView from './SimpleOutcomeView.js'

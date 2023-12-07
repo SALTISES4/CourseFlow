@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getFavourites } from '../../PostFunctions.js'
+import { getFavourites } from '../../XMLHTTP/PostFunctions.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 import LibraryMenu from './LibraryMenu.js'
 

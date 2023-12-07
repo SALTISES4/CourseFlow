@@ -542,7 +542,6 @@ input[type="submit"] {
   vertical-align: middle;
   display: inline-block; }
 
-<<<<<<< HEAD
 .outcome {
   position: relative;
   margin-left: 20px;
@@ -561,11 +560,6 @@ li.outcome-outcome::before {
   position: absolute;
   top: 15px;
   left: -12px; }
-=======
-.panel-item > img,
-.panel-item .material-symbols-rounded {
-  margin-right: 10px; }
->>>>>>> feature/structure-review
 
 li.outcome-outcome {
   position: relative;
@@ -575,17 +569,11 @@ li.outcome-outcome {
 li.outcome-outcome > .outcome {
   margin-left: 0px; }
 
-<<<<<<< HEAD
 ol.children-block {
   padding-left: 0px; }
 
 .outcome ol ol {
   list-style-type: lower-roman; }
-=======
-.left-panel hr {
-  margin-bottom: 20px;
-  margin-top: 20px; }
->>>>>>> feature/structure-review
 
 .outcome.dropped > .outcome-create-child {
   display: block; }
@@ -2636,9 +2624,6 @@ h3.big-space {
 .panel-item.active {
   background: #eefff8; }
 
-.panel-favourite.active {
-  background: #eefff8; }
-
 .panel-item > img,
 .panel-item .material-symbols-rounded {
   margin-right: 10px; }
@@ -2648,17 +2633,6 @@ h3.big-space {
 
 .panel-item img {
   width: 24px; }
-
-.panel-favourite {
-  padding: 3px;
-  font-size: 13px;
-  display: block;
-  margin-left: 22px;
-  margin-right: 20px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical; }
 
 .left-panel hr {
   margin-bottom: 20px;

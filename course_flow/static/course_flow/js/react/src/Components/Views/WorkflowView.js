@@ -27,16 +27,16 @@ import WorkflowOutcomeView from './WorkflowOutcomeView.js'
 import WorkflowLegend from '../components/WorkflowLegend.js'
 import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js'
 import {
-  getParentWorkflowInfo,
   getPublicParentWorkflowInfo,
   insertedAt,
   restoreSelf,
   deleteSelf,
   toggleDrop,
   getUsersForObject,
-  getTargetProjectMenu,
   duplicateBaseItem
-} from '../../PostFunctions.js'
+} from '../../XMLHTTP/PostFunctions.js'
+import { getTargetProjectMenu } from '../../XMLHTTP/postTemp.js'
+
 import OutcomeEditView from './OutcomeEditView.js'
 import AlignmentView from './AlignmentView.js'
 import CompetencyMatrixView from './CompetencyMatrixView.js'
@@ -502,7 +502,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={window.config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(
+            0,
+            renderer.project.id
+          )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>
@@ -521,7 +524,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={window.config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(
+            0,
+            renderer.project.id
+          )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>{gettext('Return to Editable Workflow')}</div>

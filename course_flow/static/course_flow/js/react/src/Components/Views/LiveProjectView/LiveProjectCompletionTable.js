@@ -2,7 +2,7 @@ import * as React from 'react'
 import { LiveProjectSection } from './LiveProjectSection.js'
 import { AssignmentViewSmall } from '../LiveAssignmentView'
 import * as Utility from '../../../UtilityFunctions.js'
-import { setAssignmentCompletion } from '../../../PostFunctions.js'
+import { setAssignmentCompletion } from '../../../XMLHTTP/PostFunctions.js'
 
 class LiveProjectCompletionTable extends LiveProjectSection {
   render() {

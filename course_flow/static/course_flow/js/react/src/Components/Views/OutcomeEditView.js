@@ -14,7 +14,7 @@ import {
   getSortedOutcomeNodesFromNodes
 } from '../../redux/FindState.js'
 import { moveOutcomeWorkflow } from '../../redux/Reducers.js'
-import { newOutcome, insertedAt } from '../../PostFunctions.js'
+import { newOutcome, insertedAt } from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 import * as OutcomeNode from '../components/OutcomeNode/outcomeNode.js'
 import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'

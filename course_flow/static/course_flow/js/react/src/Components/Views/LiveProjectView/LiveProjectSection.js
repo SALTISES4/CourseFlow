@@ -2,7 +2,7 @@ import * as React from 'react'
 import {
   getLiveProjectData,
   getLiveProjectDataStudent
-} from '../../../PostFunctions.js'
+} from '../../../XMLHTTP/PostFunctions.js'
 
 export class LiveProjectSection extends React.Component {
   constructor(props) {

@@ -10,7 +10,7 @@ import {
   setAssignmentCompletion,
   setWorkflowVisibility,
   updateLiveProjectValue
-} from '../../../PostFunctions.js'
+} from '../../../XMLHTTP/PostFunctions.js'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility.js'
 
 /**

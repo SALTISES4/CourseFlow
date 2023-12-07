@@ -15,7 +15,7 @@ import OutcomeNodeView from '../components/OutcomeNode.js'
 import { getNodeByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import { updateOutcomenodeDegree } from '../../PostFunctions.js'
+import { updateOutcomenodeDegree } from '../../XMLHTTP/PostFunctions.js'
 
 //Basic component to represent a Node
 class NodeView extends EditableComponentWithActions {

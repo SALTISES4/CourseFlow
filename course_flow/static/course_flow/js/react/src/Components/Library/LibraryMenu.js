@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { getLibrary } from '../../PostFunctions.js'
+import { getLibrary } from '../../XMLHTTP/PostFunctions.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
 /*******************************************************

@@ -4,7 +4,7 @@ import {
   getUsersForObject,
   getUserList,
   updateValueInstant
-} from '../../../../PostFunctions.js'
+} from '../../../../XMLHTTP/PostFunctions.js'
 import { WorkflowTitle } from '../../CommonComponents'
 import * as Constants from '../../../../Constants.js'
 import { TinyLoader } from '../../../../redux/helpers.js'

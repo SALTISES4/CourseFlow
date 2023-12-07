@@ -7,7 +7,7 @@ import {
   insertChild,
   insertSibling,
   restoreSelf
-} from '../../../PostFunctions.js'
+} from '../../../XMLHTTP/PostFunctions.js'
 import EditableComponentWithComments from './EditableComponentWithComments.js'
 
 //Extends the react component to add a few features that are used in a large number of components

@@ -5,7 +5,7 @@ import {
   DatePicker,
   SimpleWorkflow
 } from '../../components/CommonComponents'
-import { setAssignmentCompletion } from '../../../PostFunctions.js'
+import { setAssignmentCompletion } from '../../../XMLHTTP/PostFunctions.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
 import { WorkflowForMenu } from '../../Library'
 import LiveProjectMenu from "./LiveProjectMenu.js";

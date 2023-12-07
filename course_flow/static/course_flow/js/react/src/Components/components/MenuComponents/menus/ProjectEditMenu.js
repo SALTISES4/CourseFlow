@@ -5,7 +5,7 @@ import {
   addTerminology,
   deleteSelf,
   updateValueInstant
-} from '../../../../PostFunctions.js'
+} from '../../../../XMLHTTP/PostFunctions.js'
 import closeMessageBox from '../components/closeMessageBox.js'
 import { LiveProjectSettings } from '../../../Views/LiveProjectView'
 

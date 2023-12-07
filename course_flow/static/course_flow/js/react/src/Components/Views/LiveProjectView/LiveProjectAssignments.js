@@ -6,7 +6,7 @@ import {
   TitleText,
   WorkflowTitle
 } from '../../components/CommonComponents'
-import { getWorkflowNodes } from '../../../PostFunctions.js'
+import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 import {LiveProjectSection} from "./LiveProjectSection.js";
 

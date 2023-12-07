@@ -6,7 +6,7 @@ import {
   getOutcomeByID,
   getOutcomeOutcomeByID
 } from '../../redux/FindState.js'
-import { updateOutcomenodeDegree } from '../../PostFunctions.js'
+import { updateOutcomenodeDegree } from '../../XMLHTTP/PostFunctions.js'
 import * as OutcomeNode from './OutcomeNode/outcomeNode.js'
 import { SimpleOutcomeView } from '../Views/OutcomeView'
 

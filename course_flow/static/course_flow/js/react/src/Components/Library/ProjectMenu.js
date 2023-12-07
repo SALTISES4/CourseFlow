@@ -8,7 +8,7 @@ import {
   getWorkflowsForProject,
   makeProjectLive,
   restoreSelf
-} from '../../PostFunctions.js'
+} from '../../XMLHTTP/PostFunctions.js'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 import * as Utility from '../../UtilityFunctions.js'
 import LibraryMenu from './LibraryMenu.js'

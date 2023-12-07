@@ -4,7 +4,7 @@ import {
   TitleText,
   DatePicker
 } from '../../components/CommonComponents'
-import { setAssignmentCompletion } from '../../../PostFunctions.js'
+import { setAssignmentCompletion } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 import * as Utility from '../../../UtilityFunctions.js'
 
