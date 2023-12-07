@@ -4,11 +4,14 @@ import { connect } from 'react-redux'
 import {
   ActionButton,
   AutoLinkView,
-  EditableComponentWithActions,
-  NodePorts,
+  NodePorts
+} from '../components/CommonComponents'
+import { EditableComponentWithActions } from '../components/CommonComponents/Extended'
+import {
   NodeTitle,
   TitleText
-} from '../components/CommonComponents'
+} from '../components/CommonComponents/UIComponents'
+
 import NodeLinkView from './NodeLinkView.js'
 import { AssignmentBox } from './LiveAssignmentView'
 import OutcomeNodeView from '../components/OutcomeNode.js'

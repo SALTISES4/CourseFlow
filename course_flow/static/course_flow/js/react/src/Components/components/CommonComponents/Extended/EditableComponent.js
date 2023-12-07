@@ -1,12 +1,13 @@
 import * as React from 'react'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
 import * as reactDom from 'react-dom'
+import * as Constants from '../../../../Constants.js'
+import * as Utility from '../../../../UtilityFunctions.js'
 import {
   toggleStrategy,
   updateObjectSet
-} from '../../../XMLHTTP/PostFunctions.js'
-import { getLinkedWorkflowMenu } from '../../../XMLHTTP/postTemp.js'
+} from '../../../../XMLHTTP/PostFunctions.js'
+import { getLinkedWorkflowMenu } from '../../../../XMLHTTP/postTemp.js'
+// @components
 import Component from './Component.js'
 
 //Quill div for inputs, as a react component

@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
+import { getColumnByID } from '../../redux/FindState.js'
+import * as Constants from '../../Constants.js'
+// @components
 import {
   Component,
   EditableComponentWithActions
-} from '../components/CommonComponents'
-import { getColumnByID } from '../../redux/FindState.js'
-import * as Constants from '../../Constants.js'
-import * as Utility from '../../UtilityFunctions.js'
+} from '../components/CommonComponents/Extended'
 
 //Basic component representing a column
 class ColumnView extends EditableComponentWithActions {

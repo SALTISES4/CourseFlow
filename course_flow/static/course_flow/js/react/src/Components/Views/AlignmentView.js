@@ -1,14 +1,15 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   EditableComponentWithComments,
+} from '../components/CommonComponents/Extended'
+import {
   NodeTitle,
   TitleText,
   OutcomeTitle,
   getOutcomeTitle,
   WeekTitle
-} from '../components/CommonComponents'
+} from '../components/CommonComponents/UIComponents'
 import {
   getOutcomeByID,
   getOutcomeOutcomeByID,

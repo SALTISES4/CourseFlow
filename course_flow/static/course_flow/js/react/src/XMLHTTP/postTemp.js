@@ -1,5 +1,5 @@
 // REACT
-import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents.js'
+// import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents.js'
 import { DATA_ACTIONS } from './common.js'
 
 /**
@@ -7,26 +7,26 @@ import { DATA_ACTIONS } from './common.js'
  */
 function openLinkedWorkflowMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, 'linked_workflow_menu', updateFunction)
+    //   renderMessageBox(response, 'linked_workflow_menu', updateFunction)
   } else
     alert('Failed to find the parent project. Is this workflow in a project?')
 }
 
 function openAddedWorkflowMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, 'added_workflow_menu', updateFunction)
+    // renderMessageBox(response, 'added_workflow_menu', updateFunction)
   } else alert('Failed to find your workflows.')
 }
 
 function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, 'workflow_select_menu', updateFunction)
+    // renderMessageBox(response, 'workflow_select_menu', updateFunction)
   } else alert('Failed to find your workflows.')
 }
 
 function openTargetProjectMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, 'target_project_menu', updateFunction)
+    //  renderMessageBox(response, 'target_project_menu', updateFunction)
   } else alert('Failed to find potential projects.')
 }
 
@@ -48,7 +48,7 @@ export function getAddedWorkflowMenu(
     },
     (data) => {
       // @TODO call to react render
-      openAddedWorkflowMenu(data, updateFunction)
+      //   openAddedWorkflowMenu(data, updateFunction)
     }
   )
 }
@@ -72,7 +72,7 @@ export function getWorkflowSelectMenu(
     },
     (data) => {
       // @TODO call to react render
-      openWorkflowSelectMenu(data, updateFunction)
+      //  openWorkflowSelectMenu(data, updateFunction)
       if (receiptFunction) receiptFunction()
     }
   )
@@ -92,7 +92,7 @@ export function getTargetProjectMenu(
     (data) => {
       callBackFunction()
       // @TODO call to react render
-      openTargetProjectMenu(data, updateFunction)
+      // openTargetProjectMenu(data, updateFunction)
     }
   )
 }
@@ -111,7 +111,7 @@ export function getLinkedWorkflowMenu(
     (data) => {
       callBackFunction()
       // @TODO call to react render
-      openLinkedWorkflowMenu(data, updateFunction)
+      //  openLinkedWorkflowMenu(data, updateFunction)
     }
   )
 }

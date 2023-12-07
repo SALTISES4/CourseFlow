@@ -2,9 +2,12 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import {
   EditableComponentWithComments,
+} from '../components/CommonComponents/Extended'
+import {
   TitleText,
   NodeTitle
-} from '../components/CommonComponents'
+} from '../components/CommonComponents/UIComponents'
+
 import * as Constants from '../../Constants.js'
 import {
   getWeekWorkflowByID,

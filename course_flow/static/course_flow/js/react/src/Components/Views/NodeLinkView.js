@@ -2,9 +2,11 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import {
-  EditableComponentWithActions,
   NodeLinkSVG
 } from '../components/CommonComponents'
+import {
+  EditableComponentWithActions,
+} from '../components/CommonComponents/Extended'
 import { getNodeLinkByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 

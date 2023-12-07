@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import * as Constants from '../../Constants.js'
+import * as Constants from '../../../../Constants.js'
 import {
   deleteSelf,
   duplicateBaseItem,
@@ -8,20 +8,20 @@ import {
   getWorkflowsForProject,
   makeProjectLive,
   restoreSelf
-} from '../../XMLHTTP/PostFunctions.js'
-import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
-import * as Utility from '../../UtilityFunctions.js'
+} from '../../../../XMLHTTP/PostFunctions.js'
+// import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
+import * as Utility from '../../../../UtilityFunctions.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
-import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
-import { WorkflowTitle } from '../components/CommonComponents/Titles.js'
-import { CollapsibleText } from '../components/CommonComponents'
-import { LiveProjectOverview } from '../Views/LiveProjectView/LiveProjectOverview.js'
-import LiveProjectStudents from '../Views/LiveProjectView/LiveProjectStudents.js'
+// import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import { WorkflowTitle } from '../../CommonComponents/UIComponents/index.js'
+import { CollapsibleText } from '../../CommonComponents/UIComponents/index.js'
+import { LiveProjectOverview } from '../../../Views/LiveProjectView/LiveProjectOverview.js'
+import LiveProjectStudents from '../../../Views/LiveProjectView/LiveProjectStudents.js'
 import {
   LiveProjectAssignments,
   LiveProjectCompletionTable
-} from '../Views/LiveProjectView'
+} from '../../../Views/LiveProjectView/index.js'
 
 /*******************************************************
  * The project library menu
@@ -261,9 +261,10 @@ class ProjectMenu extends LibraryMenu {
         <div
           id="export-button"
           className="hover-shade"
-          onClick={() =>
-            renderMessageBox(this.state.data, 'export', closeMessageBox)
-          }
+          onClick={() => {
+            // @todo this can't have this dep, figure it out
+            //   renderMessageBox(this.state.data, 'export', closeMessageBox)
+          }}
         >
           <div>{gettext('Export')}</div>
         </div>

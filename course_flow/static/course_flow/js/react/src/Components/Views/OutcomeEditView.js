@@ -1,11 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithSorting,
-  OutcomeTitle
-} from '../components/CommonComponents'
-
+import { connect } from 'react-redux'
 import {
   getOutcomeNodeByID,
   getOutcomeByID,
@@ -16,6 +11,9 @@ import {
 import { moveOutcomeWorkflow } from '../../redux/Reducers.js'
 import { newOutcome, insertedAt } from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
+// @components
+import { OutcomeTitle } from '../components/CommonComponents/UIComponents'
+import { EditableComponentWithSorting } from '../components/CommonComponents/Extended'
 import * as OutcomeNode from '../components/OutcomeNode/outcomeNode.js'
 import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
 import { OutcomeBarOutcomeViewUnconnected } from './OutcomeView/OutcomeBarOutcomeView.js'

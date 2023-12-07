@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponent } from '../components/CommonComponents'
-import { WorkflowForMenu } from '../Library'
+import { EditableComponent } from '../components/CommonComponents/Extended'
+import { WorkflowForMenu } from '../components/MenuComponents/menus/index.js'
 import { OutcomeBarOutcomeView, OutcomeView } from './OutcomeView'
 import { getOutcomeByID } from '../../redux/FindState.js'
 import {

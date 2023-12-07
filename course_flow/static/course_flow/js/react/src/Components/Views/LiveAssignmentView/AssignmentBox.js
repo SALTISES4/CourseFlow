@@ -6,7 +6,7 @@ import * as Constants from '../../../Constants.js'
 import * as Utility from '../../../UtilityFunctions.js'
 
 import { AssignmentView } from './LiveAssignmentView.js'
-import { AssignmentTitle, DatePicker } from '../../components/CommonComponents'
+import { AssignmentTitle, DatePicker } from '../../components/CommonComponents/UIComponents'
 
 /**
  *

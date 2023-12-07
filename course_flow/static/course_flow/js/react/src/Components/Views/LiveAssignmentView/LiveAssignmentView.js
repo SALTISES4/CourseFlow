@@ -3,7 +3,7 @@ import {
   AssignmentTitle,
   TitleText,
   DatePicker
-} from '../../components/CommonComponents'
+} from '../../components/CommonComponents/UIComponents'
 import { setAssignmentCompletion } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 import * as Utility from '../../../UtilityFunctions.js'

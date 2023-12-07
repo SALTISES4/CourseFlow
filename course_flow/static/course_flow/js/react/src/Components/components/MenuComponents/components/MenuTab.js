@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '../../../Library'
+import { WorkflowForMenu } from '../menus/index.js'
 import { getAddedWorkflowMenu } from '../../../../XMLHTTP/postTemp.js'
 
 class MenuSection extends React.Component {

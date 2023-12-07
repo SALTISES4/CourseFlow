@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, ActionButton } from './CommonComponents'
+import { Component } from './CommonComponents/Extended'
+import { ActionButton } from './CommonComponents'
 import {
   getOutcomeNodeByID,
   getOutcomeByID,

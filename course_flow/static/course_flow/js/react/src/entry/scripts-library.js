@@ -11,7 +11,7 @@ import {
   ExploreMenu,
   ProjectMenu,
   HomeMenu
-} from '../Components/Library'
+} from '../Components/components/MenuComponents/menus/index.js'
 
 /*******************************************************
  * @LibraryRenderer

@@ -1,10 +1,12 @@
 import * as React from 'react'
 import { AssignmentView } from '../LiveAssignmentView'
 import {
-  ActionButton,
   NodeTitle,
   TitleText,
   WorkflowTitle
+} from '../../components/CommonComponents/UIComponents'
+import {
+  ActionButton,
 } from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'

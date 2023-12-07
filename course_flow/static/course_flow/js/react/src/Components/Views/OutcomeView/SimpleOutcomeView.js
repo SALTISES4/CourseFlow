@@ -1,9 +1,7 @@
 //Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
 import * as React from 'react'
-import {
-  EditableComponentWithComments,
-  OutcomeTitle
-} from '../../components/CommonComponents'
+import { EditableComponentWithComments } from '../../components/CommonComponents/Extended'
+import { OutcomeTitle } from '../../components/CommonComponents/UIComponents'
 import * as Utility from '../../../UtilityFunctions.js'
 import { SimpleOutcomeOutcomeView } from '../OutcomeOutcomeView.js'
 import { connect } from 'react-redux'

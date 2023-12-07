@@ -5,9 +5,10 @@ import {
   getUserList,
   updateValueInstant
 } from '../../../../XMLHTTP/PostFunctions.js'
-import { WorkflowTitle } from '../../CommonComponents'
 import * as Constants from '../../../../Constants.js'
+// @components
 import { TinyLoader } from '../../../../redux/helpers.js'
+import { WorkflowTitle } from '../../CommonComponents/UIComponents'
 
 class UserLabel extends React.Component {
   constructor(props) {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '../../../Library'
+import { WorkflowForMenu } from './index.js'
 import { setLinkedWorkflow } from '../../../../XMLHTTP/PostFunctions.js'
 import MenuTab from '../components/MenuTab.js'
 import closeMessageBox from '../components/closeMessageBox.js'

@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { ActionButton } from '../../components/CommonComponents'
 import {
-  ActionButton,
   Component,
-  EditableComponentWithSorting,
-  OutcomeTitle
-} from '../../components/CommonComponents'
+  EditableComponentWithSorting
+} from '../../components/CommonComponents/Extended'
+import { OutcomeTitle } from '../../components/CommonComponents/UIComponents'
 import OutcomeOutcomeView from '../OutcomeOutcomeView.js'
 import {
   getOutcomeByID,

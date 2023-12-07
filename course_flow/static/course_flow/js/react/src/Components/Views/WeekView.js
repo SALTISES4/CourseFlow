@@ -1,21 +1,17 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithSorting,
-  TitleText
-} from '../components/CommonComponents'
+import { connect } from 'react-redux'
+import { TitleText } from '../components/CommonComponents/UIComponents'
+import { EditableComponentWithSorting } from '../components/CommonComponents/Extended'
 import NodeWeekView from './NodeWeekView.js'
 import { NodeWeekComparisonView } from './NodeWeekView.js'
-import { getWeekByID, getNodeWeekByID } from '../../redux/FindState.js'
+import { getWeekByID } from '../../redux/FindState.js'
 import * as Constants from '../../Constants.js'
 import { columnChangeNode, moveNodeWeek } from '../../redux/Reducers.js'
 import {
-  toggleDrop,
   insertedAt,
   insertedAtInstant,
   columnChanged,
   addStrategy,
-  updateValueInstant
 } from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 

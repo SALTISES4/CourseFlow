@@ -1,19 +1,14 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, NodeOutcomeView } from '../components/CommonComponents'
+import { NodeOutcomeView } from '../components/CommonComponents'
+import { Component } from '../components/CommonComponents/Extended'
 import * as Constants from '../../Constants.js'
 import { TableOutcomeBase } from './OutcomeView'
 import {
   getSortedOutcomeIDFromOutcomeWorkflowSet,
-  getOutcomeByID,
-  getWeekWorkflowByID,
   getWeekByID,
-  getNodeWeekByID,
-  getNodeByID,
-  getOutcomeNodeByID,
-  getTableOutcomeNodeByID
+  getNodeByID
 } from '../../redux/FindState.js'
-import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js'
 import * as Utility from '../../UtilityFunctions.js'
 
 class CompetencyMatrixView extends React.Component {

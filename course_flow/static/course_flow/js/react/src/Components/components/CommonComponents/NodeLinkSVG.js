@@ -1,6 +1,6 @@
 import * as Utility from '../../../UtilityFunctions.js'
 import * as React from 'react'
-import Component from './Component.js'
+import Component from './Extended/Component.js'
 import * as Constants from '../../../Constants.js'
 import {
   add as mathadd,

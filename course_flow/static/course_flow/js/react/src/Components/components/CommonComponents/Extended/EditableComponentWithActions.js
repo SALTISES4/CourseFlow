@@ -1,13 +1,13 @@
 import * as React from 'react'
-import * as Constants from '../../../Constants.js'
-import ActionButton from './ActionButton.js'
+import * as Constants from '../../../../Constants.js'
+import ActionButton from '../ActionButton.js'
 import {
   deleteSelf,
   duplicateSelf,
   insertChild,
   insertSibling,
   restoreSelf
-} from '../../../XMLHTTP/PostFunctions.js'
+} from '../../../../XMLHTTP/PostFunctions.js'
 import EditableComponentWithComments from './EditableComponentWithComments.js'
 
 //Extends the react component to add a few features that are used in a large number of components

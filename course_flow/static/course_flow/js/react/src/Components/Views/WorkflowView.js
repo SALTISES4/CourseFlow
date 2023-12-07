@@ -2,12 +2,14 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import {
-  Component,
-  EditableComponentWithActions,
-  EditableComponentWithSorting,
   WorkflowTitle,
   CollapsibleText
-} from '../components/CommonComponents'
+} from '../components/CommonComponents/UIComponents'
+import {
+  Component,
+  EditableComponentWithActions,
+  EditableComponentWithSorting
+} from '../components/CommonComponents/Extended'
 import ColumnWorkflowView from './ColumnWorkflowView.js'
 import WeekWorkflowView from './WeekWorkflowView.js'
 import { NodeBarColumnWorkflow } from './ColumnWorkflowView.js'

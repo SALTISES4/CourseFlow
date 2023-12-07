@@ -3,8 +3,8 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '../../../Constants.js'
 import { getNodeByID } from '../../../redux/FindState.js'
-import { NodeTitle } from './Titles.js'
-import Component from './Component.js'
+import { NodeTitle } from './UIComponents/Titles.js'
+import Component from './Extended/Component.js'
 
 class NodeOutcomeViewUnconnected extends Component {
   constructor(props) {
