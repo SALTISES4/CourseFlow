@@ -292,7 +292,17 @@ def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
 @ajax_login_required
 @require_POST
 def json_api_post_mark_all_notifications_as_read(request):
-    request.user.notifications.filter(is_unread=True).update(is_unread=False)
+    post_data = json.loads(request.body)
+
+    if "notification_id" in post_data:
+        # if a notification_id is passed as post data
+        # then we're updating that specific notification object
+        notification_id = post_data["notification_id"]
+        request.user.notifications.filter(id=notification_id).update(is_unread=False)
+    else:
+        # otherwise, we're updating all the notifications to be read
+        request.user.notifications.filter(is_unread=True).update(is_unread=False)
+
     return JsonResponse(
         {
             "action": "posted"

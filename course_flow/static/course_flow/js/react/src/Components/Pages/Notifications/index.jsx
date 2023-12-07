@@ -18,6 +18,7 @@ import DotsIcon from '@mui/icons-material/MoreHoriz'
 
 import useApi from '../../../hooks/useApi'
 import { OuterContentWrap } from '../../../mui/helper'
+import { DATA_ACTIONS } from '../../../PostFunctions'
 
 const NotificationsWrap = styled(Box)({})
 
@@ -75,6 +76,29 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
     }
   }
 }))
+
+function API_POST(url = '', data = {}) {
+  if (!url) {
+    return Promise.reject('You need to specify an URL in for API_POST to run.')
+  }
+
+  return new Promise((res, rej) => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': root.getCsrfToken()
+      },
+      body: JSON.stringify(data)
+    })
+      // convert to JSON
+      .then((response) => response.json())
+      // and resolve the initial promise
+      .then((data) => res(data))
+      // otherwise reject if anything fishy is going on
+      .catch((err) => rej(err))
+  })
+}
 
 const NotificationsPage = () => {
   const [pagination, setPagination] = useState({
@@ -134,21 +158,28 @@ const NotificationsPage = () => {
     })
   }
 
-  // TODO: Implement mark as read action
   function onMarkAsReadClick() {
     const { notification } = pageState
-    console.log('onMarkAsReadClick', notification)
 
-    const updated = [...pageState.notifications]
-    const index = updated.findIndex((n) => n.id === notification.id)
-    updated[index].unread = false
-
-    setPageState({
-      ...pageState,
-      notifications: updated
+    // fire the post request
+    API_POST(config.json_api_paths.mark_all_notifications_as_read, {
+      notification_id: notification.id
     })
+      .then((data) => {
+        if (data.action === DATA_ACTIONS.POSTED) {
+          const updated = [...pageState.notifications]
+          const index = updated.findIndex((n) => n.id === notification.id)
+          updated[index].unread = false
 
-    handleMenuClose()
+          setPageState({
+            ...pageState,
+            notifications: updated
+          })
+
+          handleMenuClose()
+        }
+      })
+      .catch((err) => console.log('error -', err))
   }
 
   // TODO: Implement delete action
