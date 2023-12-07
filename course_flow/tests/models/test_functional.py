@@ -3545,11 +3545,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, ".panel-favourite"))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-test-id='panel-favourite']"))
         )
 
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, "[data-test-id='panel-favourite']")),
             2,
         )
 
@@ -3573,7 +3573,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
+            len(selenium.find_elements(By.CSS_SELECTOR, "[data-test-id='panel-favourite']")),
             0,
         )
         self.assertEqual(

@@ -660,14 +660,16 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getJump() {
     if (this.props.renderer.view_type != 'workflowview') return null
     let data = this.props.data
-    let nodebarweekworkflows = data.weekworkflow_set.map((weekworkflow) => (
-      <NodeBarWeekWorkflow
-        key={weekworkflow}
-        order={data.weekworkflow_set}
-        renderer={this.props.renderer}
-        objectID={weekworkflow}
-      />
-    ))
+    let nodebarweekworkflows = data.weekworkflow_set.map(
+      (weekworkflow, index) => (
+        <NodeBarWeekWorkflow
+          key={`weekworkflow-${index}`}
+          order={data.weekworkflow_set}
+          renderer={this.props.renderer}
+          objectID={weekworkflow}
+        />
+      )
+    )
     return (
       <div id="jump-to">
         <div className="hover-shade flex-middle">
@@ -774,18 +776,20 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
   render() {
     let data = this.props.data
     let renderer = this.props.renderer
-    var columnworkflows = data.columnworkflow_set.map((columnworkflow) => (
-      <ColumnWorkflowView
-        key={columnworkflow}
-        objectID={columnworkflow}
-        parentID={data.id}
-        renderer={renderer}
-      />
-    ))
-    var weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
+    var columnworkflows = data.columnworkflow_set.map(
+      (columnworkflow, index) => (
+        <ColumnWorkflowView
+          key={`columnworkflow-${index}`}
+          objectID={columnworkflow}
+          parentID={data.id}
+          renderer={renderer}
+        />
+      )
+    )
+    var weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => (
       <WeekWorkflowView
         condensed={data.condensed}
-        key={weekworkflow}
+        key={`weekworkflow-${index}`}
         objectID={weekworkflow}
         parentID={data.id}
         renderer={renderer}
@@ -1059,9 +1063,9 @@ class NodeBarUnconnected extends React.Component {
     let data = this.props.data
 
     var nodebarcolumnworkflows = data.columnworkflow_set.map(
-      (columnworkflow) => (
+      (columnworkflow, index) => (
         <NodeBarColumnWorkflow
-          key={columnworkflow}
+          key={`NodeBarColumnWorkflow-${index}`}
           renderer={this.props.renderer}
           objectID={columnworkflow}
         />
@@ -1072,7 +1076,7 @@ class NodeBarUnconnected extends React.Component {
       if (columns_present.indexOf(data.DEFAULT_COLUMNS[i]) < 0) {
         nodebarcolumnworkflows.push(
           <NodeBarColumnWorkflow
-            key={'default' + i}
+            key={`NodeBarColumnWorkflow-${i}`}
             renderer={this.props.renderer}
             columnType={data.DEFAULT_COLUMNS[i]}
           />
@@ -1081,7 +1085,7 @@ class NodeBarUnconnected extends React.Component {
     }
     nodebarcolumnworkflows.push(
       <NodeBarColumnWorkflow
-        key={'default' + i}
+        key={`NodeBarColumnWorkflow-last-${i}`}
         renderer={this.props.renderer}
         columnType={data.DEFAULT_CUSTOM_COLUMN}
       />
@@ -1376,25 +1380,28 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       )
         return null
       let parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow) => (
+        (parent_workflow, index) => (
           <WorkflowTitle
+            key={`WorkflowTitleParent-${index}`}
             data={parent_workflow}
-            class_name={'panel-favourite'}
+            test_id="panel-favourite"
           />
         )
       )
       let child_workflows = this.props.child_workflows.map(
         (child_workflow, index) => (
           <WorkflowTitle
-            key={index}
+            key={`WorkflowTitleChild-${index}`}
             data={child_workflow}
-            class_name={'panel-favourite'}
+            test_id="panel-favourite"
           />
         )
       )
       let return_val = [
-        <hr />,
-        <a className="panel-item">{gettext('Quick Navigation')}</a>
+        <hr key="br" />,
+        <a key="quick-nav" className="panel-item">
+          {gettext('Quick Navigation')}
+        </a>
       ]
       if (parent_workflows.length > 0)
         return_val.push(

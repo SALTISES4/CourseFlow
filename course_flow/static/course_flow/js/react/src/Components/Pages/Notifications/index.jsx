@@ -286,7 +286,7 @@ const NotificationsPage = () => {
               open={!!pageState.menuAnchor}
               onClose={handleMenuClose}
               MenuListProps={{
-                'aria-label': 'basic-button'
+                'aria-label': 'Notification options'
               }}
             >
               {pageState.notification?.unread && !pageState.allRead && (
