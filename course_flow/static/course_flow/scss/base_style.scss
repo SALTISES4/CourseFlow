@@ -713,10 +713,6 @@ h3.big-space {
   background: $color-white-green;
 }
 
-.panel-favourite.active {
-  background: $color-white-green;
-}
-
 .panel-item > img,
 .panel-item .material-symbols-rounded {
   margin-right: 10px;
@@ -732,18 +728,6 @@ h3.big-space {
 
 .panel-item img {
   width: 24px;
-}
-
-.panel-favourite {
-  padding: 3px;
-  font-size: 13px;
-  display: block;
-  margin-left: 22px;
-  margin-right: 20px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
 }
 
 .left-panel hr {

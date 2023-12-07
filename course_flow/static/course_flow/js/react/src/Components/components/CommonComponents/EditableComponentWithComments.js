@@ -12,6 +12,7 @@ import * as Utility from '../../../UtilityFunctions.js'
 import { reloadCommentsAction } from '../../../redux/Reducers.js'
 // @components
 import Component from './Component.js'
+import EditableComponent from './EditableComponent.js'
 import ActionButton from './ActionButton.js'
 
 /*******************************************************
