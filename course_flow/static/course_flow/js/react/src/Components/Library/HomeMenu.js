@@ -25,11 +25,19 @@ class HomeMenu extends React.Component {
    * Render
    *******************************************************/
   render() {
-    let projects = this.state.projects.map((project) => (
-      <WorkflowForMenu workflow_data={project} renderer={this.props.renderer} />
+    let projects = this.state.projects.map((project, index) => (
+      <WorkflowForMenu
+        key={`project-${index}`}
+        workflow_data={project}
+        renderer={this.props.renderer}
+      />
     ))
-    let favourites = this.state.favourites.map((project) => (
-      <WorkflowForMenu workflow_data={project} renderer={this.props.renderer} />
+    let favourites = this.state.favourites.map((project, index) => (
+      <WorkflowForMenu
+        key={`favourite-${index}`}
+        workflow_data={project}
+        renderer={this.props.renderer}
+      />
     ))
     let library_path = window.config.my_library_path
     if (!this.props.renderer.is_teacher)

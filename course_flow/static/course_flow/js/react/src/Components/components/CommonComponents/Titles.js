@@ -49,6 +49,7 @@ export class WorkflowTitle extends React.Component {
       return (
         <div
           className={this.props.class_name}
+          data-test-id={this.props.test_id}
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         />
@@ -59,6 +60,7 @@ export class WorkflowTitle extends React.Component {
           onClick={(evt) => evt.stopPropagation()}
           href={href}
           className={this.props.class_name}
+          data-test-id={this.props.test_id}
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         />
