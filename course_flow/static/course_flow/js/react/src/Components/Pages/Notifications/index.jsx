@@ -241,7 +241,9 @@ const NotificationsPage = () => {
         <>
           <NotificationsWrap>
             <NotificationsHeader>
-              <Typography variant="h1">Notifications</Typography>
+              <Typography variant="h1">
+                {COURSEFLOW_APP.strings.notifications}
+              </Typography>
               {apiData.unread > 0 && !pageState?.allRead && (
                 <MarkAsRead>
                   <Link
@@ -249,7 +251,7 @@ const NotificationsPage = () => {
                     underline="always"
                     onClick={onMarkAllAsReadClick}
                   >
-                    Mark all as read
+                    {COURSEFLOW_APP.strings.mark_all_as_read}
                   </Link>
                 </MarkAsRead>
               )}
@@ -271,7 +273,9 @@ const NotificationsPage = () => {
                     secondaryAction={
                       <IconButton
                         onClick={(e) => handleMenuOpen(e, n)}
-                        aria-label="show notifications menu"
+                        aria-label={
+                          COURSEFLOW_APP.strings.show_notifications_menu
+                        }
                         aria-haspopup="true"
                       >
                         <DotsIcon />
@@ -321,13 +325,17 @@ const NotificationsPage = () => {
               open={!!pageState.menuAnchor}
               onClose={handleMenuClose}
               MenuListProps={{
-                'aria-label': 'Notification options'
+                'aria-label': COURSEFLOW_APP.strings.notification_options
               }}
             >
               {pageState.notification?.unread && !pageState.allRead && (
-                <MenuItem onClick={onMarkAsReadClick}>Mark as read</MenuItem>
+                <MenuItem onClick={onMarkAsReadClick}>
+                  {COURSEFLOW_APP.strings.mark_as_read}
+                </MenuItem>
               )}
-              <MenuItem onClick={onDeleteClick}>Delete</MenuItem>
+              <MenuItem onClick={onDeleteClick}>
+                {COURSEFLOW_APP.strings.delete}
+              </MenuItem>
             </Menu>
           </NotificationsWrap>
 
@@ -344,9 +352,11 @@ const NotificationsPage = () => {
       ) : (
         <NotificationsWrap>
           <NotificationsHeader>
-            <Typography variant="h1">Notifications</Typography>
+            <Typography variant="h1">
+              {COURSEFLOW_APP.strings.notifications}
+            </Typography>
             <Typography sx={{ marginTop: 3 }}>
-              You have no notifications yet.
+              {COURSEFLOW_APP.strings.no_notifications_yet}
             </Typography>
           </NotificationsHeader>
         </NotificationsWrap>
