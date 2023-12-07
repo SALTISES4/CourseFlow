@@ -53,7 +53,7 @@ class OutcomeHorizontalLinkViewUnconnected extends Component {
     //Temporary confirmation; add better confirmation dialogue later
     if (
       window.confirm(
-        gettext('Are you sure you want to delete this ') +
+        window.gettext('Are you sure you want to delete this ') +
           Constants.get_verbose(
             this.props.data,
             this.objectType
@@ -84,7 +84,7 @@ class OutcomeHorizontalLinkViewUnconnected extends Component {
       <ActionButton
         button_icon={icon}
         button_class="delete-self-button"
-        titletext={gettext('Delete')}
+        titletext={window.gettext('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )
@@ -210,7 +210,7 @@ class OutcomeView extends EditableComponentWithSorting {
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
       confirm(
-        gettext(
+        window.gettext(
           "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
         )
       )
@@ -359,13 +359,13 @@ class OutcomeView extends EditableComponentWithSorting {
     if (data.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (data.is_dropped) droptext = gettext('hide')
+    if (data.is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
 
     if (
       !this.props.renderer.read_only &&
@@ -423,7 +423,7 @@ class OutcomeView extends EditableComponentWithSorting {
             className="outcome-create-child"
             onClick={this.insertChild.bind(this, data)}
           >
-            {gettext('+ Add New')}
+            {window.gettext('+ Add New')}
           </div>
         )}
         <div className="mouseover-actions">{mouseover_actions}</div>

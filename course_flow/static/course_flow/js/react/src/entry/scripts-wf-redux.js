@@ -186,7 +186,7 @@ export class WorkflowRenderer {
 
         if (!renderer.silent_connect_fail && !renderer.has_disconnected) {
           alert(
-            gettext(
+            window.gettext(
               'Unable to establish connection to the server, or connection has been lost.'
             )
           )

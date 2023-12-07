@@ -19,7 +19,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       <ActionButton
         button_icon={icon}
         button_class="delete-self-button"
-        titletext={gettext('Restore')}
+        titletext={window.gettext('Restore')}
         handleClick={this.restoreSelf.bind(this, data)}
       />
     )
@@ -44,7 +44,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       <ActionButton
         button_icon={icon}
         button_class="delete-self-button"
-        titletext={gettext('Delete')}
+        titletext={window.gettext('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )
@@ -58,12 +58,12 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       (this.objectType == 'week' || this.objectType == 'column') &&
       this.props.sibling_count < 2
     ) {
-      alert(gettext('You cannot delete the last ') + this.objectType)
+      alert(window.gettext('You cannot delete the last ') + this.objectType)
       return
     }
     if (
       window.confirm(
-        gettext('Are you sure you want to delete this ') +
+        window.gettext('Are you sure you want to delete this ') +
           Constants.get_verbose(
             this.props.data,
             this.objectType
@@ -89,7 +89,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       <ActionButton
         button_icon="duplicate.svg"
         button_class="duplicate-self-button"
-        titletext={gettext('Duplicate')}
+        titletext={window.gettext('Duplicate')}
         handleClick={this.duplicateSelf.bind(this, data)}
       />
     )
@@ -117,7 +117,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       <ActionButton
         button_icon="add_new.svg"
         button_class="insert-sibling-button"
-        titletext={gettext('Insert Below')}
+        titletext={window.gettext('Insert Below')}
         handleClick={this.insertSibling.bind(this, data)}
       />
     )
@@ -145,7 +145,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       <ActionButton
         button_icon="create_new_child.svg"
         button_class="insert-child-button"
-        titletext={gettext('Insert Child')}
+        titletext={window.gettext('Insert Child')}
         handleClick={this.insertChild.bind(this, data)}
       />
     )

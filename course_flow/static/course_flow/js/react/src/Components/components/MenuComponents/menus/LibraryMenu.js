@@ -36,7 +36,7 @@ class LibraryMenu extends React.Component {
         <div
           className="hover-shade"
           id="create-project-button"
-          title={gettext('Create project or strategy')}
+          title={window.gettext('Create project or strategy')}
           ref={this.createDiv}
         >
           <span className="material-symbols-rounded filled green">
@@ -48,7 +48,7 @@ class LibraryMenu extends React.Component {
               href={window.config.create_path.project}
               className="hover-shade"
             >
-              {gettext('New project')}
+              {window.gettext('New project')}
             </a>
             <hr />
             <a
@@ -56,14 +56,14 @@ class LibraryMenu extends React.Component {
               href={window.config.create_path.activity_strategy}
               className="hover-shade"
             >
-              {gettext('New activity strategy')}
+              {window.gettext('New activity strategy')}
             </a>
             <a
               id="course-strategy-create"
               href={window.config.create_path.course_strategy}
               className="hover-shade"
             >
-              {gettext('New course strategy')}
+              {window.gettext('New course strategy')}
             </a>
           </div>
         </div>
@@ -75,7 +75,7 @@ class LibraryMenu extends React.Component {
     let overflow_links = []
     overflow_links.push(
       <a id="import-old" className="hover-shade" href={window.config.get_paths.import}>
-        {gettext('Import from old CourseFlow')}
+        {window.gettext('Import from old CourseFlow')}
       </a>
     )
     return overflow_links

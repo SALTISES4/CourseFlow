@@ -17,7 +17,7 @@ class LiveProjectStudents extends LiveProjectSection {
         <div className="user-text">
           <div className="user-panel">
             <h4>Student Registration:</h4>
-            <p>{gettext('Student Registration Link: ')}</p>
+            <p>{window.gettext('Student Registration Link: ')}</p>
             <div>
               <img
                 id="copy-text"
@@ -37,7 +37,7 @@ class LiveProjectStudents extends LiveProjectSection {
                     $('#url-text').text(register_url)
                   }, 1000)
                 }}
-                title={gettext('Copy to clipboard')}
+                title={window.gettext('Copy to clipboard')}
                 src={window.config.icon_path + 'duplicate_clipboard.svg'}
               />
               <a id="url-text" className="selectable" href={register_url}>

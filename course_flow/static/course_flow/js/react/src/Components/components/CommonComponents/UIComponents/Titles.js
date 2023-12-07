@@ -30,10 +30,10 @@ export class WorkflowTitle extends React.Component {
     if (data.code) text = data.code + ' - ' + text
 
     if (text == null || text == '') {
-      text = gettext('Untitled')
+      text = window.gettext('Untitled')
     }
     if (data.url == 'noaccess' || data.url == 'nouser') {
-      text += gettext(' (no access)')
+      text += window.gettext(' (no access)')
     }
     if (data.deleted) {
       text += ' (deleted)'
@@ -90,7 +90,7 @@ export class NodeTitle extends React.Component {
     } else text = data.title
 
     if (text == null || text == '') {
-      text = gettext('Untitled')
+      text = window.gettext('Untitled')
     }
 
     return (
@@ -115,7 +115,7 @@ export class AssignmentTitle extends React.Component {
     } else text = data.task.title
 
     if (text == null || text == '') {
-      text = gettext('Untitled')
+      text = window.gettext('Untitled')
     }
     if (this.props.user_role == Constants.role_keys.teacher) {
       return (
@@ -144,7 +144,7 @@ export class OutcomeTitle extends React.Component {
     let data = this.props.data
     let text = data.title
     if (data.title == null || data.title == '') {
-      text = gettext('Untitled')
+      text = window.gettext('Untitled')
     }
 
     return (
@@ -160,7 +160,7 @@ export class OutcomeTitle extends React.Component {
 export function getOutcomeTitle(data, prefix) {
   let text = data.title
   if (data.title == null || data.title == '') {
-    text = gettext('Untitled')
+    text = window.gettext('Untitled')
   }
 
   return prefix + ' - ' + text

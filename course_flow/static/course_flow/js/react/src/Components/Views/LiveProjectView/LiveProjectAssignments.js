@@ -5,12 +5,10 @@ import {
   TitleText,
   WorkflowTitle
 } from '../../components/CommonComponents/UIComponents'
-import {
-  ActionButton,
-} from '../../components/CommonComponents'
+import { ActionButton } from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
-import {LiveProjectSection} from "./LiveProjectSection.js";
+import { LiveProjectSection } from './LiveProjectSection.js'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {
@@ -123,7 +121,7 @@ class AssignmentNode extends React.Component {
       <ActionButton
         button_icon="assignment.svg"
         button_class="duplicate-self-button"
-        titletext={gettext('Create Assignment')}
+        titletext={window.gettext('Create Assignment')}
         handleClick={this.createAssignment.bind(this, data)}
       />
     )
@@ -184,9 +182,9 @@ class LiveProjectAssignments extends LiveProjectSection {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Assigned Tasks')}</h3>
+        <h3>{window.gettext('Assigned Tasks')}</h3>
         <div>{assignments}</div>
-        <h3>{gettext('All Tasks')}</h3>
+        <h3>{window.gettext('All Tasks')}</h3>
         <div id="select-workflow" className="workflow-view-select">
           {workflow_options}
         </div>

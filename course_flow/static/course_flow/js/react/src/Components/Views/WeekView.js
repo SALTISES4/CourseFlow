@@ -282,7 +282,7 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected {
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
       confirm(
-        gettext(
+        window.gettext(
           "You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"
         )
       )

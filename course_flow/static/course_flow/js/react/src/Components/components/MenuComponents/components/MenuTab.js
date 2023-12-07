@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '../menus/index.js'
 import { getAddedWorkflowMenu } from '../../../../XMLHTTP/postTemp.js'
+import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 
 class MenuSection extends React.Component {
   constructor(props) {
@@ -46,12 +46,15 @@ class MenuSection extends React.Component {
       let adds
       {
         adds = types.map((this_type) => (
-          <a className="hover-shade" href={window.config.create_path[this_type]}>
-            {gettext('Create new ') + gettext(this_type)}
+          <a
+            className="hover-shade"
+            href={window.config.create_path[this_type]}
+          >
+            {window.gettext('Create new ') + window.gettext(this_type)}
           </a>
         ))
-        let import_text = gettext('Import ') + gettext(section_type)
-        if (is_strategy) import_text += gettext(' strategy')
+        let import_text = window.gettext('Import ') + window.gettext(section_type)
+        if (is_strategy) import_text += window.gettext(' strategy')
         adds.push(
           <a
             className="hover-shade"
@@ -90,7 +93,7 @@ class MenuSection extends React.Component {
               this.props.section_data.object_type +
               ' link-image'
             }
-            title={gettext('Add New')}
+            title={window.gettext('Add New')}
             src={window.config.icon_path + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>

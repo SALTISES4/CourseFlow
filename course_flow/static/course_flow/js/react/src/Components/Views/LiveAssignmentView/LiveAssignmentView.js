@@ -89,11 +89,11 @@ export class AssignmentView extends React.Component {
     if (this.state.is_dropped) css_class += ' dropped'
 
     let linkIcon
-    let linktext = gettext('Visit linked workflow')
+    let linktext = window.gettext('Visit linked workflow')
     let clickfunc = this.visitWorkflow.bind(this, node_data.linked_workflow)
     if (node_data.linked_workflow_data) {
       if (node_data.linked_workflow_data.deleted)
-        linktext = gettext('<Deleted Workflow>')
+        linktext = window.gettext('<Deleted Workflow>')
       if (node_data.linked_workflow_data.deleted) clickfunc = null
     }
     if (data.linked_workflow_access && node_data.linked_workflow)
@@ -104,7 +104,7 @@ export class AssignmentView extends React.Component {
         </div>
       )
     let parentLinkIcon
-    let parentlinktext = gettext('Visit containing workflow')
+    let parentlinktext = window.gettext('Visit containing workflow')
     let parentclickfunc = this.visitWorkflow.bind(this, data.parent_workflow_id)
     if (data.workflow_access && data.parent_workflow_id)
       parentLinkIcon = (
@@ -144,11 +144,11 @@ export class AssignmentView extends React.Component {
       if (data.single_completion && data.user_assignment.completed) {
         extra_data = [
           <div>
-            {gettext('Completed by ') +
+            {window.gettext('Completed by ') +
               Utility.getUserDisplay(
                 data.user_assignment.liveprojectuser.user
               ) +
-              gettext(' on ')}
+              window.gettext(' on ')}
             <DatePicker
               default_value={data.user_assignment.completed_on}
               disabled={true}
@@ -158,7 +158,7 @@ export class AssignmentView extends React.Component {
       }
       completion_data = (
         <div>
-          <label>{gettext('Completion')}: </label>
+          <label>{window.gettext('Completion')}: </label>
           <input
             type="checkbox"
             disabled={disabled}
@@ -184,7 +184,7 @@ export class AssignmentView extends React.Component {
         <div className="assignment-timing">
           <div>
             <div>
-              <label>{gettext('End Date')}: </label>
+              <label>{window.gettext('End Date')}: </label>
               <DatePicker
                 id="end_date"
                 default_value={data.end_date}
@@ -192,7 +192,7 @@ export class AssignmentView extends React.Component {
               />
             </div>
             <div>
-              <label>{gettext('Start Date')}: </label>
+              <label>{window.gettext('Start Date')}: </label>
               <DatePicker
                 id="start_date"
                 default_value={data.start_date}
@@ -207,7 +207,7 @@ export class AssignmentView extends React.Component {
         <div className="node-details">
           <TitleText
             text={data_override.description}
-            defaultText={gettext('No description given')}
+            defaultText={window.gettext('No description given')}
           />
         </div>
         <div

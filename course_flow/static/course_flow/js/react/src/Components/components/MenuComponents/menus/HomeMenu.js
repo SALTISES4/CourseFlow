@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getHome } from '../../../../XMLHTTP/PostFunctions.js'
-import WorkflowForMenu from './WorkflowForMenu.js'
+import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 
 class HomeMenu extends React.Component {
   constructor(props) {
@@ -48,9 +48,9 @@ class HomeMenu extends React.Component {
       project_box = (
         <div className="home-item">
           <div className="home-title-row">
-            <div className="home-item-title">{gettext('Recent projects')}</div>
+            <div className="home-item-title">{window.gettext('Recent projects')}</div>
             <a className="collapsed-text-show-more" href={library_path}>
-              {gettext('See all')}
+              {window.gettext('See all')}
             </a>
           </div>
           <div className="menu-grid">{projects}</div>
@@ -61,10 +61,10 @@ class HomeMenu extends React.Component {
         <div className="home-item">
           <div className="home-title-row">
             <div className="home-item-title">
-              {gettext('Recent classrooms')}
+              {window.gettext('Recent classrooms')}
             </div>
             <a className="collapsed-text-show-more" href={library_path}>
-              {gettext('See all')}
+              {window.gettext('See all')}
             </a>
           </div>
           <div className="menu-grid">{projects}</div>
@@ -77,12 +77,12 @@ class HomeMenu extends React.Component {
       favourite_box = (
         <div className="home-item">
           <div className="home-title-row">
-            <div className="home-item-title">{gettext('Favourites')}</div>
+            <div className="home-item-title">{window.gettext('Favourites')}</div>
             <a
               className="collapsed-text-show-more"
               href={window.config.my_favourites_path}
             >
-              {gettext('See all')}
+              {window.gettext('See all')}
             </a>
           </div>
           <div className="menu-grid">{favourites}</div>

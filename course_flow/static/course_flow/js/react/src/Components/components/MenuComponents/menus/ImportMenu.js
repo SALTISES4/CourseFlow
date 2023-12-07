@@ -13,7 +13,7 @@ class ImportMenu extends React.Component {
     setTimeout(() => {
       this.props.actionFunction()
       alert(
-        gettext(
+        window.gettext(
           'Your file has been submitted. Please wait while it is imported. You may close this message.'
         )
       )
@@ -26,9 +26,9 @@ class ImportMenu extends React.Component {
   render() {
     return (
       <div className="message-wrap">
-        <h2>{gettext('Import Files')}</h2>
+        <h2>{window.gettext('Import Files')}</h2>
         <p>
-          {gettext(
+          {window.gettext(
             'Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format.'
           )}
         </p>
@@ -74,7 +74,7 @@ class ImportMenu extends React.Component {
         </form>
         <iframe hidden name="redirect-iframe" id="redirect-iframe"></iframe>
         <p>
-          {gettext(
+          {window.gettext(
             'The uploading process may take some time. It is not recommended to continue editing until it is complete.'
           )}
         </p>

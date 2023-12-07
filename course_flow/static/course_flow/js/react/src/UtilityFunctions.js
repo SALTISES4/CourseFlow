@@ -2,10 +2,10 @@ import * as React from 'react'
 
 export function permission_translate() {
   return {
-    author: gettext('Owner'),
-    edit: gettext('Editor'),
-    comment: gettext('Commenter'),
-    view: gettext('Viewer')
+    author: window.gettext('Owner'),
+    edit: window.gettext('Editor'),
+    comment: window.gettext('Commenter'),
+    view: window.gettext('Viewer')
   }
 }
 

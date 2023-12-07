@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { WorkflowTitle } from '../../components/CommonComponents/UIComponents'
-import { WorkflowForMenu } from '../../components/MenuComponents/menus/index.js'
+import WorkflowForMenu from '../../components/CommonComponents/WorkflowForMenu.js'
 
 // @todo circular dependency, wait till merge
 class WorkflowVisibility extends WorkflowForMenu {
@@ -23,8 +23,8 @@ class WorkflowVisibility extends WorkflowForMenu {
             )
           }
         >
-          <option value="not_visible">{gettext('Not Visible')}</option>
-          <option value="visible">{gettext('Visible')}</option>
+          <option value="not_visible">{window.gettext('Not Visible')}</option>
+          <option value="visible">{window.gettext('Visible')}</option>
         </select>
       </div>
     )
@@ -39,9 +39,9 @@ class WorkflowVisibility extends WorkflowForMenu {
       'workflow-for-menu workflow-visibility hover-shade ' + data.type
     if (this.props.selected) css_class += ' selected'
 
-    let creation_text = gettext('Created')
+    let creation_text = window.gettext('Created')
     if (data.author && data.author !== 'None')
-      creation_text += ' ' + gettext('by') + ' ' + data.author
+      creation_text += ' ' + window.gettext('by') + ' ' + data.author
     creation_text += ' ' + data.created_on
 
     return (

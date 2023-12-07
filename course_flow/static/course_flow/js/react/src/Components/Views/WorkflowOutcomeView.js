@@ -34,11 +34,11 @@ class WorkflowOutcomeView extends React.Component {
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
       if (this.props.renderer.view_type === 'outcometable')
-        text = gettext(
+        text = window.gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
 
-      //else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
+      //else text = window.gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
       return <div className="emptytext">{text}</div>
     } else {
       let nodes

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { searchAllObjects } from '../../../../XMLHTTP/PostFunctions.js'
-import WorkflowForMenu from './WorkflowForMenu.js'
+import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
@@ -8,15 +8,15 @@ class ExploreFilter extends WorkflowFilter {
   constructor(props) {
     super(props)
     this.filters = [
-      { name: 'activity', display: gettext('Activity') },
-      { name: 'course', display: gettext('Course') },
-      { name: 'program', display: gettext('Program') },
-      { name: 'project', display: gettext('Project') }
+      { name: 'activity', display: window.gettext('Activity') },
+      { name: 'course', display: window.gettext('Course') },
+      { name: 'program', display: window.gettext('Program') },
+      { name: 'project', display: window.gettext('Project') }
     ]
     this.sorts = [
-      { name: 'relevance', display: gettext('Relevance') },
-      { name: 'title', display: gettext('A-Z') },
-      { name: 'created_on', display: gettext('Creation date') }
+      { name: 'relevance', display: window.gettext('Relevance') },
+      { name: 'title', display: window.gettext('A-Z') },
+      { name: 'created_on', display: window.gettext('Creation date') }
     ]
     this.state = {
       workflows: props.workflows,
@@ -57,7 +57,7 @@ class ExploreFilter extends WorkflowFilter {
     if (this.state.workflows === this.props.workflows)
       return (
         <p>
-          {gettext(
+          {window.gettext(
             "Enter a search term or filter then click 'search' to get started."
           )}
         </p>
@@ -134,17 +134,17 @@ class ExploreFilter extends WorkflowFilter {
 
       return [
         <p>
-          {gettext('Showing results')}{' '}
+          {window.gettext('Showing results')}{' '}
           {this.state.pages.results_per_page *
             (this.state.pages.current_page - 1) +
             1}
           -{this.state.pages.results_per_page * this.state.pages.current_page} (
-          {this.state.pages.total_results} {gettext('total results')})
+          {this.state.pages.total_results} {window.gettext('total results')})
         </p>,
         <div className="explore-page-buttons">{page_buttons}</div>
       ]
     } else {
-      return <p>{gettext('No results were found.')}</p>
+      return <p>{window.gettext('No results were found.')}</p>
     }
   }
 
@@ -166,7 +166,7 @@ class ExploreFilter extends WorkflowFilter {
           }
         >
           <span className="material-symbols-rounded">filter_alt</span>
-          <div>{gettext('Type')}</div>
+          <div>{window.gettext('Type')}</div>
         </div>
         <div className="create-dropdown">
           {this.filters.map((filter, i) => {
@@ -267,7 +267,7 @@ class ExploreFilter extends WorkflowFilter {
           }
         >
           <span className="material-symbols-rounded">science</span>
-          <div>{gettext('Discipline')}</div>
+          <div>{window.gettext('Discipline')}</div>
         </div>
         <div className="create-dropdown">
           {this.props.disciplines.map((discipline, i) => {
@@ -310,7 +310,7 @@ class ExploreFilter extends WorkflowFilter {
   getFromSaltise() {
     return (
       <div
-        title={gettext('Restrict results to content provided by SALTISE')}
+        title={window.gettext('Restrict results to content provided by SALTISE')}
         id="content-rich"
         className="hover-shade"
         onClick={() => {
@@ -322,7 +322,7 @@ class ExploreFilter extends WorkflowFilter {
         }}
       >
         <input type="checkbox" checked={this.state.from_saltise} />
-        <label>{gettext('SALTISE content')}</label>
+        <label>{window.gettext('SALTISE content')}</label>
       </div>
     )
   }
@@ -407,7 +407,7 @@ class ExploreFilter extends WorkflowFilter {
         <div className="flex-middle">
           <div id="workflow-search" ref={this.searchDOM}>
             <input
-              placeholder={gettext('Search the public library')}
+              placeholder={window.gettext('Search the public library')}
               onChange={debounce(this.searchChange.bind(this))}
               id="workflow-search-input"
               className="search-input"
@@ -419,7 +419,7 @@ class ExploreFilter extends WorkflowFilter {
             disabled={this.state.has_searched}
             onClick={this.doSearch.bind(this)}
           >
-            {gettext('Search')}
+            {window.gettext('Search')}
           </button>
         </div>
         <div className="workflow-filter-sort">

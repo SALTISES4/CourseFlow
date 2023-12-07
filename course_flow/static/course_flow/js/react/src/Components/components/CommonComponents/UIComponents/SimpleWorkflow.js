@@ -24,9 +24,9 @@ class SimpleWorkflow extends React.Component {
   getTypeIndicator() {
     let data = this.props.workflow_data
     let type = data.type
-    let type_text = gettext(type)
-    if (type == 'liveproject') type_text = gettext('classroom')
-    if (data.is_strategy) type_text += gettext(' strategy')
+    let type_text = window.gettext(type)
+    if (type == 'liveproject') type_text = window.gettext('classroom')
+    if (data.is_strategy) type_text += window.gettext(' strategy')
     return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
   }
 

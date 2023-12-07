@@ -97,8 +97,8 @@ class LiveAssignmentEdit extends React.Component {
     let data = this.state
     if (
       window.confirm(
-        gettext('Are you sure you want to delete this ') +
-          gettext('assignment') +
+        window.gettext('Are you sure you want to delete this ') +
+          window.gettext('assignment') +
           '?'
       )
     ) {
@@ -196,13 +196,13 @@ class LiveAssignmentEdit extends React.Component {
       if (!this.state.linked_workflow_access)
         warning = (
           <div className="warning">
-            {gettext(
+            {window.gettext(
               'Warning: the linked workflow is not visible to those in the classroom'
             )}
           </div>
         )
       linked_workflow = [
-        <h4>{gettext('Linked Workflow')}:</h4>,
+        <h4>{window.gettext('Linked Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
           workflow_data={this.state.task.linked_workflow_data}
@@ -219,13 +219,13 @@ class LiveAssignmentEdit extends React.Component {
       if (!this.state.workflow_access)
         warning = (
           <div className="warning">
-            {gettext(
+            {window.gettext(
               'Warning: the workflow the task appears in is not visible to those in the classroom'
             )}
           </div>
         )
       parent_workflow = [
-        <h4>{gettext('Task Workflow')}:</h4>,
+        <h4>{window.gettext('Task Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
           workflow_data={this.state.user_data.parent_workflow}
@@ -236,9 +236,9 @@ class LiveAssignmentEdit extends React.Component {
     }
     return (
       <div className="workflow-details">
-        <h3>{gettext('Configuration')}:</h3>
+        <h3>{window.gettext('Configuration')}:</h3>
         <div>
-          <label>{gettext('End Date')}: </label>
+          <label>{window.gettext('End Date')}: </label>
           <DatePicker
             id="end_date"
             default_value={data.end_date}
@@ -246,7 +246,7 @@ class LiveAssignmentEdit extends React.Component {
           />
         </div>
         <div>
-          <label>{gettext('Start Date')}: </label>
+          <label>{window.gettext('Start Date')}: </label>
           <DatePicker
             id="start_date"
             default_value={data.start_date}
@@ -256,11 +256,11 @@ class LiveAssignmentEdit extends React.Component {
         <div>
           <label
             htmlFor="single-completion"
-            title={gettext(
+            title={window.gettext(
               'Whether to mark the assignment as complete if any user has completed it.'
             )}
           >
-            {gettext(
+            {window.gettext(
               'Mark assignment as complete when a single user has completed it:'
             )}
           </label>
@@ -277,11 +277,11 @@ class LiveAssignmentEdit extends React.Component {
         <div>
           <label
             htmlFor="self-reporting"
-            title={gettext(
+            title={window.gettext(
               'Whether students can mark their own assignments as complete.'
             )}
           >
-            {gettext('Let students self-report their assignment completion:')}
+            {window.gettext('Let students self-report their assignment completion:')}
           </label>
           <input
             id="self-reporting"
@@ -298,37 +298,37 @@ class LiveAssignmentEdit extends React.Component {
             disabled={!this.state.has_changed}
             onClick={this.saveChanges.bind(this)}
           >
-            {gettext('Save Changes')}
+            {window.gettext('Save Changes')}
           </button>
         </div>
         <div>
-          <button onClick={this.delete.bind(this)}>{gettext('Delete')}</button>
+          <button onClick={this.delete.bind(this)}>{window.gettext('Delete')}</button>
         </div>
-        <h3>{gettext('Users')}:</h3>
+        <h3>{window.gettext('Users')}:</h3>
 
         <div>
           <div className="multi-select">
-            <h5>{gettext('Assigned Users')}</h5>
+            <h5>{window.gettext('Assigned Users')}</h5>
             <select id="users_chosen" multiple>
               {assigned_users}
             </select>
             <button id="remove-user" onClick={this.removeUser.bind(this)}>
               {' '}
-              {gettext('Remove')}{' '}
+              {window.gettext('Remove')}{' '}
             </button>
           </div>
           <div className="multi-select">
-            <h5>{gettext('Other Users')}</h5>
+            <h5>{window.gettext('Other Users')}</h5>
             <select id="users_all" multiple>
               {other_users}
             </select>
             <button id="add-user" onClick={this.addUser.bind(this)}>
               {' '}
-              {gettext('Add')}{' '}
+              {window.gettext('Add')}{' '}
             </button>
           </div>
         </div>
-        <h3>{gettext('Workflows')}:</h3>
+        <h3>{window.gettext('Workflows')}:</h3>
         {parent_workflow}
         {linked_workflow}
       </div>
@@ -398,11 +398,11 @@ class LiveAssignmentReport extends React.Component {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Completion')}:</h3>
+        <h3>{window.gettext('Completion')}:</h3>
         <table>
           {rows}
           <tr>
-            <td>{gettext('Total')}:</td>
+            <td>{window.gettext('Total')}:</td>
             <td>
               {total_completion}/{this.state.userassignments.length}
             </td>
@@ -424,8 +424,8 @@ class LiveAssignmentMenu extends React.Component {
    *******************************************************/
   getViewButtons() {
     return [
-      { type: 'edit', name: gettext('Edit') },
-      { type: 'report', name: gettext('Report') }
+      { type: 'edit', name: window.gettext('Edit') },
+      { type: 'report', name: window.gettext('Report') }
     ]
   }
 
@@ -496,7 +496,7 @@ class LiveAssignmentMenu extends React.Component {
               className="hover-shade no-underline"
             >
               <span className="material-symbols-rounded">arrow_back_ios</span>
-              <div>{gettext('Return to Classroom')}</div>
+              <div>{window.gettext('Return to Classroom')}</div>
             </a>,
             $('.titlebar .title')[0]
           )}

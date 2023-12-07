@@ -95,7 +95,7 @@ class CommentBox extends Component {
     let props = parent.props
     if (
       window.confirm(
-        gettext('Are you sure you want to permanently clear this comment?')
+        window.gettext('Are you sure you want to permanently clear this comment?')
       )
     ) {
       removeComment(
@@ -112,7 +112,7 @@ class CommentBox extends Component {
     let props = parent.props
     if (
       window.confirm(
-        gettext(
+        window.gettext(
           'Are you sure you want to permanently clear all comments from this object?'
         )
       )
@@ -216,7 +216,7 @@ class CommentBox extends Component {
               <div className="mouseover-actions">
                 <div
                   className="action-button"
-                  title={gettext('Delete Comment')}
+                  title={window.gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
                   <img src={window.config.icon_path + 'rubbish.svg'} />
@@ -231,7 +231,7 @@ class CommentBox extends Component {
     top_contents.push(
       <div
         className="hover-shade"
-        title={gettext('Close')}
+        title={window.gettext('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
         <img src={window.config.icon_path + 'close.svg'} />
@@ -241,16 +241,16 @@ class CommentBox extends Component {
       top_contents.push(
         <div
           className="hover-shade"
-          title={gettext('Clear All Comments')}
+          title={window.gettext('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
           <img src={window.config.icon_path + 'rubbish.svg'} />
         </div>
       )
 
-    let input_default = gettext('Add a comment')
+    let input_default = window.gettext('Add a comment')
     if (this.props.comments && this.props.comments.length > 0)
-      input_default = gettext('Reply')
+      input_default = window.gettext('Reply')
 
     let tag_box
     if (this.state.tagging) {
@@ -292,7 +292,7 @@ class CommentBox extends Component {
                 src={window.config.icon_path + 'add_new.svg'}
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
-                title={gettext('Submit')}
+                title={window.gettext('Submit')}
               />
             </div>
           )}
@@ -313,7 +313,7 @@ class EditableComponentWithComments extends EditableComponent {
       <ActionButton
         button_icon="comment_new.svg"
         button_class="comment-button"
-        titletext={gettext('Comments')}
+        titletext={window.gettext('Comments')}
         handleClick={this.commentClick.bind(this)}
       />,
       <CommentBox

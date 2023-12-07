@@ -1,3 +1,4 @@
+from course_flow.views.html import *
 from course_flow.views.html.project import *
 from course_flow.views.json_api.create_api import *
 from course_flow.views.json_api.delete_api import *

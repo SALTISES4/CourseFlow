@@ -220,7 +220,7 @@ class TableChildWorkflowHeaderUnconnected extends React.Component {
           <div className="horizontal-table-node">{node_title}</div>
           <div className="table-cell disabled">
             <div className="child-outcome">
-              {gettext('No outcomes or linked workflow')}
+              {window.gettext('No outcomes or linked workflow')}
             </div>
           </div>
         </div>

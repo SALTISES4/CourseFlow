@@ -19,7 +19,7 @@ import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
 import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
-import { WorkflowForMenu } from '../components/MenuComponents/menus/index.js'
+import WorkflowForMenu from '../components/CommonComponents/WorkflowForMenu.js'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component {
@@ -50,7 +50,7 @@ export class ComparisonView extends React.Component {
         <div
           id="share-button"
           className="hover-shade"
-          title={gettext('Sharing')}
+          title={window.gettext('Sharing')}
           onClick={renderMessageBox.bind(
             this,
             data,
@@ -63,10 +63,10 @@ export class ComparisonView extends React.Component {
       )
 
     let view_buttons = [
-      { type: 'workflowview', name: gettext('Workflow View'), disabled: [] },
+      { type: 'workflowview', name: window.gettext('Workflow View'), disabled: [] },
       {
         type: 'outcomeedit',
-        name: Utility.capWords(gettext('View') + ' outcomes'),
+        name: Utility.capWords(window.gettext('View') + ' outcomes'),
         disabled: []
       }
     ]
@@ -107,7 +107,7 @@ export class ComparisonView extends React.Component {
         >
           <div className="flex-middle">
             <span className="material-symbols-rounded filled">add_circle</span>
-            <div>{gettext('Load new workflow')}</div>
+            <div>{window.gettext('Load new workflow')}</div>
           </div>
         </button>
       </div>
@@ -143,7 +143,7 @@ export class ComparisonView extends React.Component {
     let data = this.props.data
     return (
       <div className="project-header">
-        <div>{gettext('Comparing workflows for:')}</div>
+        <div>{window.gettext('Comparing workflows for:')}</div>
         <WorkflowTitle
           data={data}
           no_hyperlink={true}
@@ -158,7 +158,7 @@ export class ComparisonView extends React.Component {
             <span className="green material-symbols-rounded">
               arrow_back_ios
             </span>
-            <div>{gettext('Return to project')}</div>
+            <div>{window.gettext('Return to project')}</div>
           </a>,
           $('.titlebar .title')[0]
         )}
@@ -536,7 +536,7 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected {
     if (
       type == 'outcomeworkflow' &&
       confirm(
-        gettext(
+        window.gettext(
           "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
         )
       )
@@ -603,7 +603,7 @@ class ViewBar extends React.Component {
     )
     return reactDom.createPortal(
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h4>{gettext('Object Sets') + ':'}</h4>
+        <h4>{window.gettext('Object Sets') + ':'}</h4>
         {sets}
       </div>,
       $('#view-bar')[0]

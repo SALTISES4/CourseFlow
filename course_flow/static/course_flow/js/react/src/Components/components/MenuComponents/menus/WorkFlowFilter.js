@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { searchAllObjects } from '../../../../XMLHTTP/PostFunctions.js'
 // @components
-import { Component } from '../../CommonComponents/Extended/index.js'
-import WorkflowForMenu from './WorkflowForMenu.js'
+import { Component } from '../../CommonComponents/Extended'
+import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
+import { WorkflowTitle } from '../../CommonComponents/UIComponents'
 
 /*******************************************************
 A container for workflow cards that allows searching and filtering
@@ -75,17 +76,17 @@ class WorkflowFilter extends Component {
       search_results: []
     }
     this.filters = [
-      { name: 'all', display: gettext('All') },
-      { name: 'owned', display: gettext('Owned') },
-      { name: 'shared', display: gettext('Shared') },
-      { name: 'favourite', display: gettext('My Favourites') },
-      { name: 'archived', display: gettext('Archived') }
+      { name: 'all', display: window.gettext('All') },
+      { name: 'owned', display: window.gettext('Owned') },
+      { name: 'shared', display: window.gettext('Shared') },
+      { name: 'favourite', display: window.gettext('My Favourites') },
+      { name: 'archived', display: window.gettext('Archived') }
     ]
     this.sorts = [
-      { name: 'last_viewed', display: gettext('Recent') },
-      { name: 'title', display: gettext('A-Z') },
-      { name: 'created_on', display: gettext('Creation date') },
-      { name: 'type', display: gettext('Type') }
+      { name: 'last_viewed', display: window.gettext('Recent') },
+      { name: 'title', display: window.gettext('A-Z') },
+      { name: 'created_on', display: window.gettext('Creation date') },
+      { name: 'type', display: window.gettext('Type') }
     ]
     let url_params = new URL(window.location.href).searchParams
     if (url_params.get('favourites') === 'true')
@@ -117,9 +118,9 @@ class WorkflowFilter extends Component {
    *******************************************************/
   getPlaceholder() {
     if (this.props.context === 'project') {
-      return gettext('Search the project')
+      return window.gettext('Search the project')
     } else {
-      return gettext('Search the library')
+      return window.gettext('Search the library')
     }
   }
 
@@ -358,11 +359,11 @@ class WorkflowFilter extends Component {
       this.state.search_filter.length > 0 &&
       this.state.search_results.length === 0
     ) {
-      search_results.push(<div>{gettext('No results found')}</div>)
+      search_results.push(<div>{window.gettext('No results found')}</div>)
     } else if (search_results.length === 10) {
       search_results.push(
         <div className="hover-shade" onClick={() => this.seeAll()}>
-          {gettext('+ See all')}
+          {window.gettext('+ See all')}
         </div>
       )
     }
@@ -376,7 +377,7 @@ class WorkflowFilter extends Component {
           >
             close
           </span>
-          {gettext('Search: ' + this.state.search_filter_lock)}
+          {window.gettext('Search: ' + this.state.search_filter_lock)}
         </div>
       )
     }

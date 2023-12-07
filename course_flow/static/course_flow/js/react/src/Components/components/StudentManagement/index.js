@@ -37,15 +37,15 @@ class UserLabel extends React.Component {
         permission_select = (
           <div className="permission-select">
             <select ref={this.select}>
-              <option value="student">{gettext('Student')}</option>
-              <option value="teacher">{gettext('Teacher')}</option>
+              <option value="student">{window.gettext('Student')}</option>
+              <option value="teacher">{window.gettext('Teacher')}</option>
             </select>
             <button
               onClick={() =>
                 this.props.addFunction($(this.select.current).val())
               }
             >
-              {gettext('Share')}
+              {window.gettext('Share')}
             </button>
           </div>
         )
@@ -53,9 +53,9 @@ class UserLabel extends React.Component {
         permission_select = (
           <div className="permission-select">
             <select value={this.props.type} onChange={this.onChange.bind(this)}>
-              <option value="student">{gettext('Student')}</option>
-              <option value="teacher">{gettext('Teacher')}</option>
-              <option value="none">{gettext('Remove user')}</option>
+              <option value="student">{window.gettext('Student')}</option>
+              <option value="teacher">{window.gettext('Teacher')}</option>
+              <option value="none">{window.gettext('Remove user')}</option>
             </select>
           </div>
         )
@@ -141,9 +141,9 @@ class UserAdd extends React.Component {
 
     return (
       <div className="user-add">
-        <h4>{gettext('Add A User')}:</h4>
+        <h4>{window.gettext('Add A User')}:</h4>
         <div>
-          {gettext(
+          {window.gettext(
             'Begin typing to search users. Select the desired user then click Share.'
           )}
         </div>
@@ -214,15 +214,15 @@ class StudentManagement extends React.Component {
 
     return (
       <div className="user-text">
-        <h3>{gettext('Student Management') + ':'}</h3>
-        <h4>{gettext('Owned By')}:</h4>
+        <h3>{window.gettext('Student Management') + ':'}</h3>
+        <h4>{window.gettext('Owned By')}:</h4>
         <div>{owner}</div>
         <div className="user-panel">
-          <h4>{gettext('Teachers')}:</h4>
+          <h4>{window.gettext('Teachers')}:</h4>
           <ul className="user-list">{teachers}</ul>
         </div>
         <div className="user-panel">
-          <h4>{gettext('Enrolled Users')}:</h4>
+          <h4>{window.gettext('Enrolled Users')}:</h4>
           <ul className="user-list">{students}</ul>
         </div>
         <UserAdd permissionChange={this.setUserPermission.bind(this)} />

@@ -52,7 +52,7 @@ class OutcomeNodeView extends Component {
       <ActionButton
         button_icon={icon}
         button_class="delete-self-button"
-        titletext={gettext('Delete')}
+        titletext={window.gettext('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )

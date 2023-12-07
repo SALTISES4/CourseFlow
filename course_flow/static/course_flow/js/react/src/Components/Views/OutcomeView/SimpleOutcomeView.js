@@ -69,13 +69,13 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments 
     if (this.state.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (this.state.is_dropped) droptext = gettext('hide')
+    if (this.state.is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
 
     if (this.props.renderer.view_comments) comments = this.addCommenting()
 

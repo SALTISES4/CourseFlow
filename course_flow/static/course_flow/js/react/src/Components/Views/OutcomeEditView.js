@@ -59,7 +59,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     if (outcomes.length == 0)
       outcomes = [
         <div className="emptytext">
-          {gettext(
+          {window.gettext(
             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
           )}
         </div>,
@@ -92,7 +92,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
             className="create-button"
             src={window.config.icon_path + 'add_new_white.svg'}
           />
-          <div>{gettext('Add new')}</div>
+          <div>{window.gettext('Add new')}</div>
         </div>
       )
     return add_new_outcome
@@ -220,13 +220,13 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected {
     else dropIcon = 'droptriangledown'
 
     let droptext
-    if (this.state.is_dropped) droptext = gettext('hide')
+    if (this.state.is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         children.length +
         ' ' +
-        ngettext('descendant', 'descendants', children.length)
+        nwindow.gettext('descendant', 'descendants', children.length)
 
     return (
       <div
@@ -325,16 +325,16 @@ class OutcomeBarUnconnected extends React.Component {
     ])
 
     if (outcomebaroutcomes.length == 0) {
-      outcomebaroutcomes = gettext(
+      outcomebaroutcomes = window.gettext(
         'Add outcomes to this workflow in by clicking the button below.'
       )
     }
     let edittext = Utility.capWords(
-      gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
+      window.gettext('Edit') + ' ' + window.gettext(this.props.workflow_type + ' outcomes')
     )
     return reactDom.createPortal(
       <div id="outcome-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{gettext('Outcomes')}</h3>
+        <h3 className="drag-and-drop">{window.gettext('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
         {!this.props.renderer.read_only && (
           <button
@@ -388,7 +388,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
     ])
 
     if (outcomebaroutcomes.length == 0) {
-      outcomebaroutcomes = gettext(
+      outcomebaroutcomes = window.gettext(
         "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
       )
     }
@@ -400,7 +400,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
           <span className="material-symbols-rounded filled small-inline red">
             error
           </span>
-          {gettext(
+          {window.gettext(
             'Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes.'
           )}
         </div>
@@ -410,7 +410,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
     return reactDom.createPortal(
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">
-          {gettext('Outcomes from Parent Workflow')}
+          {window.gettext('Outcomes from Parent Workflow')}
         </h3>
         <div className="outcome-bar-outcome-block">
           {multiple_parent_warning}

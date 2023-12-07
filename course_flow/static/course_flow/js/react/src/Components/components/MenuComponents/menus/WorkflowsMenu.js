@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { WorkflowForMenu } from './index.js'
 import { setLinkedWorkflow } from '../../../../XMLHTTP/PostFunctions.js'
 import MenuTab from '../components/MenuTab.js'
 import closeMessageBox from '../components/closeMessageBox.js'
+import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 
 /*
 Creates a set of sections (tabs) of workflow/project card grids.
@@ -55,9 +55,9 @@ class WorkflowsMenu extends React.Component {
       case 'linked_workflow_menu':
       case 'added_workflow_menu':
       case 'workflow_select_menu':
-        return <h2>{gettext('Select a workflow')}</h2>
+        return <h2>{window.gettext('Select a workflow')}</h2>
       case 'target_project_menu':
-        return <h2>{gettext('Select a project')}</h2>
+        return <h2>{window.gettext('Select a project')}</h2>
     }
     return null
   }
@@ -69,19 +69,19 @@ class WorkflowsMenu extends React.Component {
   getActions() {
     var actions = []
     if (this.props.type === 'linked_workflow_menu') {
-      var text = gettext('link to node')
+      var text = window.gettext('link to node')
       if (
         this.state.selected &&
         this.project_workflows.indexOf(this.state.selected) < 0
       )
-        text = gettext('Copy to Current Project and ') + text
+        text = window.gettext('Copy to Current Project and ') + text
       actions.push(
         <button
           id="set-linked-workflow-cancel"
           className="secondary-button"
           onClick={closeMessageBox}
         >
-          {gettext('Cancel')}
+          {window.gettext('Cancel')}
         </button>
       )
       actions.push(
@@ -97,7 +97,7 @@ class WorkflowsMenu extends React.Component {
             closeMessageBox()
           }}
         >
-          {gettext('Set to None')}
+          {window.gettext('Set to None')}
         </button>
       )
       actions.push(
@@ -123,14 +123,14 @@ class WorkflowsMenu extends React.Component {
     ) {
       var text
       if (this.props.type == 'added_workflow_menu') {
-        text = gettext('Select')
+        text = window.gettext('Select')
         if (
           this.state.selected &&
           this.project_workflows.indexOf(this.state.selected) < 0
         )
-          text = gettext('Copy to Current Project')
+          text = window.gettext('Copy to Current Project')
       } else {
-        text = gettext('Select')
+        text = window.gettext('Select')
       }
       actions.push(
         <button
@@ -138,7 +138,7 @@ class WorkflowsMenu extends React.Component {
           className="secondary-button"
           onClick={closeMessageBox}
         >
-          {gettext('Cancel')}
+          {window.gettext('Cancel')}
         </button>
       )
       actions.push(
@@ -161,7 +161,7 @@ class WorkflowsMenu extends React.Component {
           className="secondary-button"
           onClick={closeMessageBox}
         >
-          {gettext('Cancel')}
+          {window.gettext('Cancel')}
         </button>
       )
       actions.push(
@@ -174,7 +174,7 @@ class WorkflowsMenu extends React.Component {
             closeMessageBox()
           }}
         >
-          {gettext('Select project')}
+          {window.gettext('Select project')}
         </button>
       )
     }
@@ -220,7 +220,7 @@ class WorkflowsMenu extends React.Component {
     let current_project
     if (this.current_project) {
       current_project = [
-        <h4 className={'big-space'}>{gettext('Current project')}</h4>,
+        <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
         <div className="menu-grid">
           <WorkflowForMenu
             workflow_data={this.current_project}
@@ -233,7 +233,7 @@ class WorkflowsMenu extends React.Component {
         </div>,
         <hr className={'big-space'} />,
         <h4 className={'big-space'}>
-          {gettext('Or select from your projects')}
+          {window.gettext('Or select from your projects')}
         </h4>
       ]
     }

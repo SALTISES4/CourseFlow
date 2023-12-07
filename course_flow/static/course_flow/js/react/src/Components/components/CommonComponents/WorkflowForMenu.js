@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { WorkflowTitle } from '../../CommonComponents/UIComponents/index.js'
-import * as Utility from '../../../../UtilityFunctions.js'
+import { WorkflowTitle } from './UIComponents/index.js'
+import * as Utility from '../../../UtilityFunctions.js'
 import {
   setWorkflowVisibility,
   toggleFavourite
-} from '../../../../XMLHTTP/PostFunctions.js'
-import * as Constants from '../../../../Constants.js'
+} from '../../../XMLHTTP/PostFunctions.js'
+import * as Constants from '../../../Constants.js'
 
 /*******************************************************
  * A workflow card for a menu
@@ -30,9 +30,9 @@ class WorkflowForMenu extends React.Component {
   getTypeIndicator() {
     let data = this.props.workflow_data
     let type = data.type
-    let type_text = gettext(type)
-    if (type === 'liveproject') type_text = gettext('classroom')
-    if (data.is_strategy) type_text += gettext(' strategy')
+    let type_text = window.gettext(type)
+    if (type === 'liveproject') type_text = window.gettext('classroom')
+    if (data.is_strategy) type_text += window.gettext(' strategy')
     return (
       <div className={'workflow-type-indicator ' + type}>
         {Utility.capWords(type_text)}
@@ -62,7 +62,7 @@ class WorkflowForMenu extends React.Component {
         >
           <span
             className={'material-symbols-outlined' + fav_class}
-            title={gettext('Favourite')}
+            title={window.gettext('Favourite')}
           >
             star
           </span>
@@ -75,7 +75,7 @@ class WorkflowForMenu extends React.Component {
     )
       workflows.push(
         <div key="workflow-created-count" className="workflow-created">
-          {this.props.workflow_data.workflow_count + ' ' + gettext('workflows')}
+          {this.props.workflow_data.workflow_count + ' ' + window.gettext('workflows')}
         </div>
       )
     if (
@@ -91,11 +91,11 @@ class WorkflowForMenu extends React.Component {
         >
           <span
             className="material-symbols-rounded small-inline"
-            title={gettext('Live Classroom')}
+            title={window.gettext('Live Classroom')}
           >
             group
           </span>
-          {' ' + gettext('Live Classroom')}
+          {' ' + window.gettext('Live Classroom')}
         </div>
       )
     if (this.props.workflow_data.is_linked)
@@ -103,14 +103,14 @@ class WorkflowForMenu extends React.Component {
         <div
           key="workflow-created-warning"
           className="workflow-created linked-workflow-warning"
-          title={gettext(
+          title={window.gettext(
             'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
           )}
         >
           <span className="material-symbols-rounded red filled small-inline">
             error
           </span>
-          {' ' + gettext('Already in use')}
+          {' ' + window.gettext('Already in use')}
         </div>
       )
     return (
@@ -157,8 +157,8 @@ class WorkflowForMenu extends React.Component {
               )
             }
           >
-            <option value={'false'}>{gettext('Not Visible')}</option>
-            <option value={'true'}>{gettext('Visible')}</option>
+            <option value={'false'}>{window.gettext('Not Visible')}</option>
+            <option value={'true'}>{window.gettext('Visible')}</option>
           </select>
         </div>
       )
@@ -181,10 +181,10 @@ class WorkflowForMenu extends React.Component {
     let css_class = 'workflow-for-menu hover-shade ' + data.type
     if (this.props.selected) css_class += ' selected'
 
-    let creation_text = gettext('Created')
+    let creation_text = window.gettext('Created')
     if (data.author && data.author !== 'None')
-      creation_text += ' ' + gettext('by') + ' ' + data.author
-    creation_text += gettext(' on ') + data.created_on
+      creation_text += ' ' + window.gettext('by') + ' ' + data.author
+    creation_text += window.gettext(' on ') + data.created_on
     let description = data.description
     if (!description) description = ' '
 

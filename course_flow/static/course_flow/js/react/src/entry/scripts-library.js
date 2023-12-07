@@ -75,9 +75,13 @@ export class ExploreRenderer extends LibraryRenderer {
  */
 export class ProjectRenderer {
   constructor(data /*: Data*/) {
+
+    console.log(data);
+    console.log(JSON.parse(data.disciplines))
+
     this.read_only = true
     this.project_data = data.project_data
-    this.all_disciplines = data.disciplines
+    this.all_disciplines = JSON.parse(data.disciplines)
     this.user_role = data.user_role
     this.user_permission = data.user_permission
 

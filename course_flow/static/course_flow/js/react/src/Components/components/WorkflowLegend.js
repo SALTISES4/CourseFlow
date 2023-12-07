@@ -99,7 +99,7 @@ class WorkflowLegend extends React.Component {
   getSlider() {
     return reactDom.createPortal(
       [
-        <div>{gettext('Legend')}</div>,
+        <div>{window.gettext('Legend')}</div>,
         <Slider
           checked={this.state.show_legend}
           toggleAction={this.toggle.bind(this)}

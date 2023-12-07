@@ -152,7 +152,7 @@ class NodeView extends EditableComponentWithActions {
         key={0}
         button_icon="assignment.svg"
         button_class="assignment-button"
-        titletext={gettext('Show Assignment Info')}
+        titletext={window.gettext('Show Assignment Info')}
         handleClick={this.showAssignment.bind(this)}
       />,
       <AssignmentBox
@@ -292,7 +292,7 @@ class NodeView extends EditableComponentWithActions {
     if (data.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
     let linkIcon
-    let linktext = gettext('Visit workflow')
+    let linktext = window.gettext('Visit workflow')
     let clickfunc = this.doubleClick.bind(this)
     let link_class = 'linked-workflow'
     if (data.linked_workflow_data) {
@@ -300,11 +300,11 @@ class NodeView extends EditableComponentWithActions {
         data.linked_workflow_data.url == 'noaccess' ||
         data.linked_workflow_data.url == 'nouser'
       ) {
-        linktext = gettext('<Inaccessible>')
+        linktext = window.gettext('<Inaccessible>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else if (data.linked_workflow_data.deleted) {
-        linktext = gettext('<Deleted>')
+        linktext = window.gettext('<Deleted>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else {
@@ -375,7 +375,7 @@ class NodeView extends EditableComponentWithActions {
         <div className="node-details">
           <TitleText
             text={data_override.description}
-            defaultText={gettext('Click to edit')}
+            defaultText={window.gettext('Click to edit')}
           />
         </div>
         <div

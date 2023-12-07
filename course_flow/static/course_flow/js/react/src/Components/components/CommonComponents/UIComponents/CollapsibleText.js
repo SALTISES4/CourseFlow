@@ -27,10 +27,10 @@ class CollapsibleText extends Component {
     let css_class = ''
     if (this.props.css_class) css_class = this.props.css_class + ' '
     css_class += 'title-text collapsible-text'
-    let drop_text = gettext('show more')
+    let drop_text = window.gettext('show more')
     if (this.state.is_dropped) {
       css_class += ' dropped'
-      drop_text = gettext('show less')
+      drop_text = window.gettext('show less')
     }
     let overflow
     if (this.state.overflow)

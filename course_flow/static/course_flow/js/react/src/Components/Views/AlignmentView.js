@@ -108,7 +108,7 @@ class AlignmentView extends React.Component {
     }
 
     if (this.state.active == -1) {
-      view_buttons_outcomes = gettext(
+      view_buttons_outcomes = window.gettext(
         'No outcomes have been added yet. Use the Edit Outcomes menu to get started'
       )
     } else if (this.state.sort == 'outcome') {
@@ -144,9 +144,9 @@ class AlignmentView extends React.Component {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Filters')}:</h3>
+        <h3>{window.gettext('Filters')}:</h3>
         {view_buttons_outcomes}
-        <h4>{gettext('Sections')}:</h4>
+        <h4>{window.gettext('Sections')}:</h4>
         <div className="workflow-view-select hide-print">
           {view_buttons_terms}
         </div>
@@ -187,7 +187,7 @@ class AlignmentOutcomesBlock extends React.Component {
   render() {
     let data = this.props.data
     let titlestr = Utility.capWords(
-      gettext(this.props.workflow_type + ' outcome')
+      window.gettext(this.props.workflow_type + ' outcome')
     )
     return (
       <div className="alignment-block">
@@ -301,12 +301,12 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
             {Utility.capWords(
-              gettext(data.linked_workflow_data.type + ' outcomes')
-            ) + gettext(' From Linked Workflow')}
+              window.gettext(data.linked_workflow_data.type + ' outcomes')
+            ) + window.gettext(' From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
-            {gettext('Associated ') +
-              Utility.capWords(gettext(this.props.workflow.type + ' outcomes'))}
+            {window.gettext('Associated ') +
+              Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes'))}
           </div>
         </div>
       )
@@ -315,7 +315,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         if (this.props.child_outcomes == -1) {
           child_outcomes_header = (
             <div className="child-outcome child-outcome-header">
-              {gettext('... LOADING')}
+              {window.gettext('... LOADING')}
             </div>
           )
           this.props.renderer.childWorkflowDataNeeded(this.props.data.id)
@@ -323,13 +323,13 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
           if (data.linked_workflow_data.deleted) {
             child_outcomes_header = (
               <div className="child-outcome child-outcome-header">
-                {gettext('The linked workflow has been deleted.')}
+                {window.gettext('The linked workflow has been deleted.')}
               </div>
             )
           } else {
             child_outcomes_header = (
               <div className="child-outcome child-outcome-header">
-                {gettext(
+                {window.gettext(
                   'No outcomes have been added to the linked workflow. When added, they will appear here.'
                 )}
               </div>
@@ -339,7 +339,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       } else {
         child_outcomes_header = (
           <div className="child-outcome child-outcome-header">
-            {gettext(
+            {window.gettext(
               'No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.'
             )}
           </div>
@@ -391,8 +391,8 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     let outcomes_for_node = (
       <div>
         <div className="node-outcomes-header">
-          {Utility.capWords(gettext(this.props.workflow.type + ' outcomes')) +
-            gettext(' for node:')}
+          {Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes')) +
+            window.gettext(' for node:')}
         </div>
         {outcomenodes}
         {outcomeadder}
@@ -410,7 +410,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
             className="create-button"
             src={window.config.icon_path + 'add_new_white.svg'}
           />
-          <div>{gettext('Add new')}</div>
+          <div>{window.gettext('Add new')}</div>
         </div>
       )
     if (
@@ -427,7 +427,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: false })}
             >
-              {'-' + gettext('Hide Unused')}
+              {'-' + window.gettext('Hide Unused')}
             </div>
           </div>
         )
@@ -438,7 +438,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: true })}
             >
-              {'+' + gettext('Show All')}
+              {'+' + window.gettext('Show All')}
             </div>
           </div>
         )
@@ -558,7 +558,7 @@ class OutcomeAdder extends React.Component {
 
     return (
       <select className="outcome-adder" onChange={this.onChange.bind(this)}>
-        <option value={0}>{gettext('Add outcome')}</option>
+        <option value={0}>{window.gettext('Add outcome')}</option>
         {options}
       </select>
     )

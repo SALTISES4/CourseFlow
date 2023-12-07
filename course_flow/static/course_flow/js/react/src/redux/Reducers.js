@@ -556,7 +556,7 @@ export function columnReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
           return new_state
         }
@@ -831,7 +831,7 @@ export function weekReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
           return new_state
         }
@@ -1049,7 +1049,7 @@ export function nodeReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
           Utility.triggerHandlerEach($('.week .node'), 'component-updated')
           return new_state
@@ -1284,7 +1284,7 @@ export function nodelinkReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
           return new_state
         }
@@ -1440,7 +1440,7 @@ export function outcomeReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
         }
       }
@@ -1469,7 +1469,7 @@ export function outcomeReducer(state = [], action) {
           new_state[i] = {
             ...new_state[i],
             deleted: true,
-            deleted_on: gettext('This session')
+            deleted_on: window.gettext('This session')
           }
           return new_state
         }

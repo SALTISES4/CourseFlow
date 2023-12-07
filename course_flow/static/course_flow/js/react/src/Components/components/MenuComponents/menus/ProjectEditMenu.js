@@ -35,7 +35,7 @@ class ProjectEditMenu extends React.Component {
   deleteTerm(id) {
     if (
       window.confirm(
-        gettext('Are you sure you want to delete this ') + gettext('set') + '?'
+        window.gettext('Are you sure you want to delete this ') + window.gettext('set') + '?'
       )
     ) {
       let new_state_dict = this.state.object_sets.slice()
@@ -115,7 +115,7 @@ class ProjectEditMenu extends React.Component {
     var actions = []
     actions.push(
       <button className="secondary-button" onClick={closeMessageBox}>
-        {gettext('Cancel')}
+        {window.gettext('Cancel')}
       </button>
     )
     actions.push(
@@ -135,7 +135,7 @@ class ProjectEditMenu extends React.Component {
           closeMessageBox()
         }}
       >
-        {gettext('Save Changes')}
+        {window.gettext('Save Changes')}
       </button>
     )
     return actions
@@ -242,7 +242,7 @@ class ProjectEditMenu extends React.Component {
       this.setState({ published: false })
     let disabled_publish_text
     if (!published_enabled)
-      disabled_publish_text = gettext(
+      disabled_publish_text = window.gettext(
         'A title and at least one discipline is required for publishing.'
       )
     let add_term_css = 'material-symbols-rounded filled'
@@ -256,9 +256,9 @@ class ProjectEditMenu extends React.Component {
     }
     return (
       <div className="message-wrap">
-        <h2>{gettext('Edit project')}</h2>
+        <h2>{window.gettext('Edit project')}</h2>
         <div>
-          <h4>{gettext('Title')}</h4>
+          <h4>{window.gettext('Title')}</h4>
           <textarea
             autoComplete="off"
             id="project-title-input"
@@ -267,7 +267,7 @@ class ProjectEditMenu extends React.Component {
           />
         </div>
         <div>
-          <h4>{gettext('Description')}</h4>
+          <h4>{window.gettext('Description')}</h4>
           <textarea
             autoComplete="off"
             id="project-description-input"
@@ -276,7 +276,7 @@ class ProjectEditMenu extends React.Component {
           />
         </div>
         <div>
-          <h4>{gettext('Disciplines')}</h4>
+          <h4>{window.gettext('Disciplines')}</h4>
           <div className="flex-middle disciplines-div">{disciplines}</div>
           <input
             autoComplete="off"
@@ -285,7 +285,7 @@ class ProjectEditMenu extends React.Component {
           />
         </div>
         <div>
-          <h4>{gettext('Object sets')}</h4>
+          <h4>{window.gettext('Object sets')}</h4>
           <div className="workflow-created">
             {'Define categories for outcomes or nodes'}
           </div>
@@ -296,11 +296,11 @@ class ProjectEditMenu extends React.Component {
               value={this.state.selected_set}
               onChange={this.inputChanged.bind(this, 'selected_set')}
             >
-              <option value="none">{gettext('Select a type')}</option>
+              <option value="none">{window.gettext('Select a type')}</option>
               {set_options}
             </select>
             <input
-              placeholder={gettext('Set name')}
+              placeholder={window.gettext('Set name')}
               type="text"
               id="term-singular"
               maxLength="50"

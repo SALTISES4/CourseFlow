@@ -171,13 +171,13 @@ export class TableOutcomeViewUnconnected extends Component {
     else dropIcon = 'droptriangledown'
 
     let droptext
-    if (is_dropped) droptext = gettext('hide')
+    if (is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
 
     let comments
 

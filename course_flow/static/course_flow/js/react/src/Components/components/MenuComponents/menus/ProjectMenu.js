@@ -55,11 +55,11 @@ class ProjectMenu extends LibraryMenu {
    *******************************************************/
   getViewButtons() {
     return [
-      { type: 'workflows', name: gettext('Workflows') },
-      { type: 'overview', name: gettext('Classroom Overview') },
-      { type: 'students', name: gettext('Students') },
-      { type: 'assignments', name: gettext('Assignments') },
-      { type: 'completion_table', name: gettext('Completion Table') }
+      { type: 'workflows', name: window.gettext('Workflows') },
+      { type: 'overview', name: window.gettext('Classroom Overview') },
+      { type: 'students', name: window.gettext('Students') },
+      { type: 'assignments', name: window.gettext('Assignments') },
+      { type: 'completion_table', name: window.gettext('Completion Table') }
     ]
   }
 
@@ -163,7 +163,7 @@ class ProjectMenu extends LibraryMenu {
             className="hover-shade"
             href={window.config.update_path.liveproject.replace('0', data.id)}
           >
-            {gettext('View Classroom')}
+            {window.gettext('View Classroom')}
           </a>
         )
       } else {
@@ -173,7 +173,7 @@ class ProjectMenu extends LibraryMenu {
             className="hover-shade"
             onClick={this.makeLive.bind(this)}
           >
-            {gettext('Create Classroom')}
+            {window.gettext('Create Classroom')}
           </a>
         )
       }
@@ -182,7 +182,7 @@ class ProjectMenu extends LibraryMenu {
     let overflow_links = [liveproject]
     overflow_links.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
-        {gettext('Workflow comparison tool')}
+        {window.gettext('Workflow comparison tool')}
       </a>
     )
     overflow_links.push(<hr />)
@@ -199,23 +199,25 @@ class ProjectMenu extends LibraryMenu {
     if (!this.state.data.deleted) {
       return (
         <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
-          <div>{gettext('Archive project')}</div>
+          <div>{window.gettext('Archive project')}</div>
         </div>
       )
     }
     return [
       <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
-        <div>{gettext('Restore project')}</div>
+        <div>{window.gettext('Restore project')}</div>
       </div>,
       <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
-        <div>{gettext('Permanently delete project')}</div>
+        <div>{window.gettext('Permanently delete project')}</div>
       </div>
     ]
   }
 
   deleteProject() {
     if (
-      window.confirm(gettext('Are you sure you want to delete this project?'))
+      window.confirm(
+        window.gettext('Are you sure you want to delete this project?')
+      )
     ) {
       deleteSelf(this.props.data.id, 'project', true, () => {
         this.setState({ data: { ...this.props.data, deleted: true } })
@@ -226,7 +228,9 @@ class ProjectMenu extends LibraryMenu {
   deleteProjectHard() {
     if (
       window.confirm(
-        gettext('Are you sure you want to permanently delete this project?')
+        window.gettext(
+          'Are you sure you want to permanently delete this project?'
+        )
       )
     ) {
       deleteSelf(this.props.data.id, 'project', false, () => {
@@ -244,7 +248,7 @@ class ProjectMenu extends LibraryMenu {
   makeLive() {
     if (
       window.confirm(
-        gettext(
+        window.gettext(
           'Are you sure you want to create a live classroom for this project?'
         )
       )
@@ -262,11 +266,11 @@ class ProjectMenu extends LibraryMenu {
           id="export-button"
           className="hover-shade"
           onClick={() => {
-            // @todo this can't have this dep, figure it out
+            // @todo the renderMessageBox is causing a circ cep and needs to be refactored
             //   renderMessageBox(this.state.data, 'export', closeMessageBox)
           }}
         >
-          <div>{gettext('Export')}</div>
+          <div>{window.gettext('Export')}</div>
         </div>
       )
     }
@@ -295,7 +299,7 @@ class ProjectMenu extends LibraryMenu {
             )
           }}
         >
-          <div>{gettext('Copy to my library')}</div>
+          <div>{window.gettext('Copy to my library')}</div>
         </div>
       )
     }
@@ -319,25 +323,25 @@ class ProjectMenu extends LibraryMenu {
         />
         <div className="project-header-info">
           <div className="project-info-section project-members">
-            <h4>{gettext('Permissions')}</h4>
+            <h4>{window.gettext('Permissions')}</h4>
             {this.getUsers()}
           </div>
           <div className="project-other">
             <div className="project-info-section project-description">
-              <h4>{gettext('Description')}</h4>
+              <h4>{window.gettext('Description')}</h4>
               <CollapsibleText
                 text={data.description}
-                defaultText={gettext('No description')}
+                defaultText={window.gettext('No description')}
               />
             </div>
             <div className="project-info-section project-disciplines">
-              <h4>{gettext('Disciplines')}</h4>
+              <h4>{window.gettext('Disciplines')}</h4>
               {this.props.renderer.all_disciplines
                 .filter(
                   (discipline) => data.disciplines.indexOf(discipline.id) >= 0
                 )
                 .map((discipline) => discipline.title)
-                .join(', ') || gettext('None')}
+                .join(', ') || window.gettext('None')}
             </div>
           </div>
         </div>
@@ -362,7 +366,7 @@ class ProjectMenu extends LibraryMenu {
         <div className="user-name">
           {Utility.getUserTag('view')}
           <span className="material-symbols-rounded">public</span>{' '}
-          {gettext('All CourseFlow')}
+          {window.gettext('All CourseFlow')}
         </div>
       )
     }
@@ -397,7 +401,7 @@ class ProjectMenu extends LibraryMenu {
     if (users_group.length > 4) {
       users.push(
         <div className="workflow-created">
-          +{users_group.length - 4} {gettext('more')}
+          +{users_group.length - 4} {window.gettext('more')}
         </div>
       )
     }
@@ -407,7 +411,7 @@ class ProjectMenu extends LibraryMenu {
           className="user-name collapsed-text-show-more"
           onClick={this.openShareMenu.bind(this)}
         >
-          {gettext('Modify')}
+          {window.gettext('Modify')}
         </div>
       )
     return users
@@ -419,7 +423,7 @@ class ProjectMenu extends LibraryMenu {
         <div
           className="hover-shade"
           id="edit-project-button"
-          title={gettext('Edit Project')}
+          title={window.gettext('Edit Project')}
           onClick={this.openEditMenu.bind(this)}
         >
           <span className="material-symbols-rounded filled">edit</span>
@@ -430,15 +434,19 @@ class ProjectMenu extends LibraryMenu {
   }
 
   openEditMenu() {
-    renderMessageBox(
-      {
-        ...this.state.data,
-        all_disciplines: this.props.renderer.all_disciplines,
-        renderer: this.props.renderer
-      },
-      'project_edit_menu',
-      this.updateFunction.bind(this)
+    console.log(
+      "openEditMenu in procetmenu.js see function coment for why this doesn't work"
     )
+    // @todo the renderMessageBox is causing a circ cep and needs to be refactored
+    // renderMessageBox(
+    //   {
+    //     ...this.state.data,
+    //     all_disciplines: this.props.renderer.all_disciplines,
+    //     renderer: this.props.renderer
+    //   },
+    //   'project_edit_menu',
+    //   this.updateFunction.bind(this)
+    // )
   }
 
   getCreate() {
@@ -447,7 +455,7 @@ class ProjectMenu extends LibraryMenu {
         <div
           className="hover-shade"
           id="create-project-button"
-          title={gettext('Create workflow')}
+          title={window.gettext('Create workflow')}
           ref={this.createDiv}
         >
           <span className="material-symbols-rounded filled">add_circle</span>
@@ -457,21 +465,21 @@ class ProjectMenu extends LibraryMenu {
               href={create_path_this_project.activity}
               className="hover-shade"
             >
-              {gettext('New activity')}
+              {window.gettext('New activity')}
             </a>
             <a
               id="course-create-project"
               href={create_path_this_project.course}
               className="hover-shade"
             >
-              {gettext('New course')}
+              {window.gettext('New course')}
             </a>
             <a
               id="program-create-project"
               href={create_path_this_project.program}
               className="hover-shade"
             >
-              {gettext('New program')}
+              {window.gettext('New program')}
             </a>
           </div>
         </div>
@@ -497,7 +505,7 @@ class ProjectMenu extends LibraryMenu {
         <div
           className="hover-shade"
           id="share-button"
-          title={gettext('Sharing')}
+          title={window.gettext('Sharing')}
           onClick={this.openShareMenu.bind(this)}
         >
           <span className="material-symbols-rounded filled">person_add</span>
@@ -509,10 +517,10 @@ class ProjectMenu extends LibraryMenu {
   openShareMenu() {
     let component = this
     let data = this.state.data
-    renderMessageBox(data, 'share_menu', () => {
+    /*    renderMessageBox(data, 'share_menu', () => {
       closeMessageBox()
       component.getUserData()
-    })
+    })*/
   }
 
   updateWorkflow(id, new_values) {
