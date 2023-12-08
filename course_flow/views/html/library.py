@@ -4,4 +4,5 @@ from django.shortcuts import render
 
 @login_required
 def mylibrary_view(request):
-    return render(request, "course_flow/library.html")
+    context = {"title": "My Library", "path_id": "library"}
+    return render(request, "course_flow/react/library.html", context)

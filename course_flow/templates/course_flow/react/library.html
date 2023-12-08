@@ -1,0 +1,21 @@
+{% extends "course_flow/base.html" %}
+
+{% load static i18n %}
+
+{% block title %}{% trans title %} - CourseFlow{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+    window.addEventListener('load', () => {
+      waitUntilElementExists('.menubar').then((el) => {
+        el.classList.remove('hidden')
+      })
+    })
+  </script>
+
+{% endblock %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}

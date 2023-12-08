@@ -4,5 +4,5 @@ from django.shortcuts import render
 
 @login_required
 def home_view(request):
-    context = {"title": "Home", "view_id": "home"}
-    return render(request, "course_flow/unified/home.html", context)
+    context = {"title": "Home", "path_id": "home"}
+    return render(request, "course_flow/react/home.html", context)

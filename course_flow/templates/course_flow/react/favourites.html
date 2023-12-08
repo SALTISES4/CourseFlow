@@ -1,0 +1,27 @@
+{% extends "course_flow/base.html" %}
+
+{% load static i18n %}
+
+{% block title %}
+  {% trans title %} - CourseFlow
+{% endblock %}
+
+{% csrf_token %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+    /*******************************************************
+     * END JQUERY
+     *******************************************************/
+    $(".menubar").removeClass("hidden");
+
+    /*******************************************************
+     * END JQUERY
+     *******************************************************/
+  </script>
+{% endblock %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}

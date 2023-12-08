@@ -24,7 +24,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     # how are these fields being used?
     fields = ["title", "description", "published"]
 
-    template_name: str = "course_flow/unified/project_update.html"
+    template_name: str = "course_flow/react/project_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
@@ -47,12 +47,10 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             Discipline.objects.order_by("title"), many=True
         ).data
 
-        # todo, how to get the context data for current user id?
         context_data = {
             "project_data": project_data,
             "user_role": user_role,
             "user_permission": user_permission,
-            "title": title,
             "disciplines": disciplines,
             "user_id": current_user.id if current_user else 0,
         }
@@ -60,10 +58,59 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context["contextData"] = (
             JSONRenderer().render(context_data).decode("utf-8")
         )
+        context["path_id"] = "projectDetail"
+        context["title"] = title
 
         return context
 
 
+class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+    model = Project
+    fields: List[str] = ["title", "description", "published"]
+    template_name = "course_flow/react/comparison.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        current_user = self.request.user
+
+        project = self.object
+        is_strategy = False
+        user_permission = get_user_permission(project, current_user)
+        user_role = get_user_role(project, current_user)
+        public_view = False  # moved from template layer
+
+        context_data = {
+            "project_data": ProjectSerializerShallow(
+                project, context={"user": current_user}
+            ).data,
+            "is_strategy": is_strategy,
+            "user_permission": user_permission,
+            "user_role": user_role,
+            "public_view": public_view,
+            "user_name": current_user.username,
+            "user_id": current_user.id if current_user else 0,
+        }
+
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
+        )
+        context["path_id"] = "projectComparison"
+        context["title"] = "Project Comparison"
+
+        return context
+
+
+@login_required
+def myprojects_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_projects(request.user, True))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/myprojects.html", context)
+
+
+# HTTP FRAGMENT REQUEST
 class ProjectCreateView(
     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
 ):
@@ -88,41 +135,3 @@ class ProjectCreateView(
         return reverse(
             "course_flow:project-update", kwargs={"pk": self.object.pk}
         )
-
-
-class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Project
-    fields: List[str] = ["title", "description", "published"]
-    template_name = "course_flow/react/comparison.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        user = self.request.user
-        project = self.object
-        context["project_data"] = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(project, context={"user": user}).data
-            )
-            .decode("utf-8")
-        )
-        context["is_strategy"] = JSONRenderer().render(False).decode("utf-8")
-
-        user_permission = get_user_permission(project, user)
-        user_role = get_user_role(project, user)
-        context["user_permission"] = (
-            JSONRenderer().render(user_permission).decode("utf-8")
-        )
-        context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
-
-        return context
-
-
-@login_required
-def myprojects_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_projects(request.user, True))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/myprojects.html", context)

@@ -2,12 +2,16 @@
 
 {% load static i18n %} {% load course_flow_templatetags %}
 
-{% block title %}{% trans title %} - CourseFlow{% endblock %}
+{% block title %}
+  {% trans title %} - CourseFlow
+{% endblock %}
 
 {% csrf_token %}
 
 {% block scripts %}
   {{ block.super }}
-  {if
-  <script src="{% static 'course_flow/js/templates/home.js' %}"></script>
+{% endblock %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
 {% endblock %}
