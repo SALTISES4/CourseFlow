@@ -239,6 +239,7 @@ h3.big-space {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .right-panel-wrapper {
@@ -335,10 +336,6 @@ h3.big-space {
   align-items: center;
   background: $color-white-green;
   box-sizing: border-box;
-}
-
-.menubar.hidden {
-  display: none;
 }
 
 .workflow-title-bar {

@@ -176,7 +176,6 @@ export class WorkflowRenderer {
         if (!renderer.has_rendered) {
           renderer.connection_opened(true)
         } else {
-          renderer.create_connection_bar()
           renderer.attempt_reconnect()
         }
 
@@ -304,10 +303,6 @@ export class WorkflowRenderer {
       this.unread_comments = data_flat.unread_comments
       this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
       this.render($('#container'))
-
-      if (!this.always_static) {
-        this.create_connection_bar()
-      }
 
       this.clear_queue(data_flat.workflow.edit_count)
 
@@ -478,13 +473,6 @@ export class WorkflowRenderer {
       this.locks[object_type][object_id] = null
     }
   }
-
-  create_connection_bar() {
-    reactDom.render(
-      <ConnectionBar updateSocket={this.updateSocket} renderer={this} />,
-      $('#userbar')[0]
-    )
-  }
 }
 
 /****************************************
@@ -531,10 +519,6 @@ export class ComparisonRenderer {
         container[0]
       )
     }
-  }
-
-  create_connection_bar() {
-    reactDom.render(<ConnectionBar renderer={this} />, $('#userbar')[0])
   }
 }
 
@@ -600,17 +584,12 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
       }
       this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
       this.render(this.view_type)
-      this.create_connection_bar()
       this.clear_queue(data_flat.workflow.edit_count)
       loader.endLoad()
       if (reconnect) {
         this.attempt_reconnect()
       }
     })
-  }
-
-  create_connection_bar() {
-    return null
   }
 }
 

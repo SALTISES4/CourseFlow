@@ -15,6 +15,8 @@ export { default as SimpleWorkflow } from './SimpleWorkflow.js'
 export { default as NodePorts } from './NodePorts.js'
 export { default as AutoLinkView } from './AutoLinkView.js'
 export { default as Component } from './Component.js'
+export { default as MenuBar } from './MenuBar.js'
+export { default as RightSideBar } from './RightSideBar.js'
 export {
   WorkflowTitle,
   WeekTitle,

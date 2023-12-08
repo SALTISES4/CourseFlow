@@ -34,6 +34,10 @@ const makeActiveSidebar = function (id) {
 }
 
 const makeDropdown = (click_element) => {
+  if ($(click_element).hasClass('dropdown-ready')) return
+
+  $(click_element).addClass('dropdown-ready')
+
   let checkPosition = () => {
     const dropdown = $(click_element).children('.create-dropdown')
     let width = dropdown.outerWidth(true)
