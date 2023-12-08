@@ -38,7 +38,7 @@ import {
   duplicateBaseItem
 } from '../../PostFunctions.js'
 import OutcomeEditView from './OutcomeEditView.js'
-import AlignmentView from './AlignmentView.js'
+import { AlignmentView } from './AlignmentView'
 import CompetencyMatrixView from './CompetencyMatrixView.js'
 import GridView from './GridView.js'
 import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'

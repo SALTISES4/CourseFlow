@@ -478,3 +478,17 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   ]
   return categories
 }
+
+//Used in the Alignment View
+export const getDescendantOutcomes = (state, outcome, outcomes) => {
+  if (outcome.depth >= 2) return
+  let children = outcome.child_outcome_links
+    .map((id) => getOutcomeOutcomeByID(state, id))
+    .map(
+      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+    )
+  for (let i = 0; i < children.length; i++) {
+    outcomes.push(children[i].id)
+    getDescendantOutcomes(state, children[i], outcomes)
+  }
+}
