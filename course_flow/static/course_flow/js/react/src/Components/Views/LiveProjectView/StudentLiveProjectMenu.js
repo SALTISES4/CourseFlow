@@ -9,7 +9,7 @@ import {
 } from '../../components/CommonComponents/UIComponents'
 import { LiveProjectSection } from './LiveProjectSection.js'
 import LiveProjectMenu from './LiveProjectMenu.js'
-import WorkflowForMenu from "../../components/CommonComponents/WorkflowForMenu.js";
+import WorkflowForMenu from '../../components/CommonComponents/WorkflowForMenu.js'
 
 export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {
@@ -19,7 +19,9 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
       <SimpleWorkflow workflow_data={workflow} />
     ))
     if (workflows.length == 0)
-      workflows = window.gettext('No workflows have been made visible to students.')
+      workflows = window.gettext(
+        'No workflows have been made visible to students.'
+      )
 
     let assignments = this.state.data.assignments
       .filter((assignment) => assignment.user_assignment.completed == false)

@@ -15,7 +15,9 @@ export class LiveProjectOverview extends LiveProjectSection {
       <SimpleWorkflow workflow_data={workflow} />
     ))
     if (workflows.length == 0)
-      workflows = window.gettext('No workflows have been made visible to students.')
+      workflows = window.gettext(
+        'No workflows have been made visible to students.'
+      )
     let teachers = this.state.data.teachers.map((user) => (
       <tr>
         <td className="table-user">{Utility.getUserDisplay(user.user)}</td>

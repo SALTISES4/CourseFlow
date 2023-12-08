@@ -99,8 +99,6 @@ export class ExploreRenderer extends LibraryRenderer {
  */
 export class ProjectRenderer {
   constructor(data /*: ProjectViewDTO */) {
-
-
     this.read_only = true
     this.project_data = data.project_data
     this.all_disciplines = data.disciplines
@@ -125,7 +123,13 @@ export class ProjectRenderer {
   }
 
   getContents() {
-    return <ProjectMenu renderer={this} data={this.project_data} userid={this.userId} />
+    return (
+      <ProjectMenu
+        renderer={this}
+        data={this.project_data}
+        userid={this.userId}
+      />
+    )
   }
 }
 

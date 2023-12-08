@@ -84,7 +84,9 @@ class LiveProjectSettings extends LiveProjectSection {
               'Whether creating an assignment automatically adds all students to it.'
             )}
           >
-            {window.gettext('Assign new assignments to all students by default')}
+            {window.gettext(
+              'Assign new assignments to all students by default'
+            )}
           </label>
         </div>
         <div>

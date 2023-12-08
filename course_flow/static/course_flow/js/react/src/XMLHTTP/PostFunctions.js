@@ -12,7 +12,11 @@ All functions for API calls.
 export function fail_function(a, b, c, d) {
   if (typeof a === 'string') {
     alert(b)
-    alert(a + ' - ' + window.gettext('Something went wrong. Please reload the page.'))
+    alert(
+      a +
+        ' - ' +
+        window.gettext('Something went wrong. Please reload the page.')
+    )
   } else if (a && a.type === 'ajaxError') {
     if (b.status === 429) {
       alert(

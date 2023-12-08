@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  EditableComponentWithComments,
-} from '../components/CommonComponents/Extended'
+import { EditableComponentWithComments } from '../components/CommonComponents/Extended'
 import {
   NodeTitle,
   TitleText,
@@ -306,7 +304,9 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
           </div>
           <div className="half-width alignment-column">
             {window.gettext('Associated ') +
-              Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes'))}
+              Utility.capWords(
+                window.gettext(this.props.workflow.type + ' outcomes')
+              )}
           </div>
         </div>
       )
@@ -391,8 +391,9 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     let outcomes_for_node = (
       <div>
         <div className="node-outcomes-header">
-          {Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes')) +
-            window.gettext(' for node:')}
+          {Utility.capWords(
+            window.gettext(this.props.workflow.type + ' outcomes')
+          ) + window.gettext(' for node:')}
         </div>
         {outcomenodes}
         {outcomeadder}

@@ -365,7 +365,11 @@ class OutcomeView extends EditableComponentWithSorting {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     if (
       !this.props.renderer.read_only &&

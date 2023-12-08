@@ -421,7 +421,9 @@ export class ShareMenu extends React.Component {
                   {window.gettext('Copy embed code')}
                 </div>
                 <div className="public-link-description">
-                  {window.gettext('HTML code to embed the workflow in a site or page')}
+                  {window.gettext(
+                    'HTML code to embed the workflow in a site or page'
+                  )}
                 </div>
               </div>
             </div>
@@ -561,7 +563,9 @@ export class ShareMenu extends React.Component {
 
     let share_info
     if (data.type === 'project') {
-      share_info = window.gettext('Invite collaborators to project and its workflows')
+      share_info = window.gettext(
+        'Invite collaborators to project and its workflows'
+      )
     } else {
       share_info = window.gettext(
         'Invite collaborators to workflow and grant view permissions to the project'

@@ -35,7 +35,9 @@ class ProjectEditMenu extends React.Component {
   deleteTerm(id) {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this ') + window.gettext('set') + '?'
+        window.gettext('Are you sure you want to delete this ') +
+          window.gettext('set') +
+          '?'
       )
     ) {
       let new_state_dict = this.state.object_sets.slice()

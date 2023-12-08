@@ -131,7 +131,8 @@ class EditableComponent extends Component {
           onClick={(evt) => evt.stopPropagation()}
         >
           <h3>
-            {window.gettext('Edit ') + Constants.get_verbose(data, this.objectType)}
+            {window.gettext('Edit ') +
+              Constants.get_verbose(data, this.objectType)}
           </h3>
           {[
             'node',
@@ -319,7 +320,9 @@ class EditableComponent extends Component {
                 value={data.ponderation_practical}
                 onChange={this.inputChanged.bind(this, 'ponderation_practical')}
               />
-              <div className="half-width">{window.gettext('hrs. Practical')}</div>
+              <div className="half-width">
+                {window.gettext('hrs. Practical')}
+              </div>
               <input
                 disabled={override || read_only}
                 className="half-width"
@@ -332,7 +335,9 @@ class EditableComponent extends Component {
                   'ponderation_individual'
                 )}
               />
-              <div className="half-width">{window.gettext('hrs. Individual')}</div>
+              <div className="half-width">
+                {window.gettext('hrs. Individual')}
+              </div>
               <input
                 disabled={override || read_only}
                 className="half-width"
@@ -465,7 +470,9 @@ class EditableComponent extends Component {
                 </select>
               </div>
               <div>
-                <label htmlFor="condensed">{window.gettext('Condensed View')}</label>
+                <label htmlFor="condensed">
+                  {window.gettext('Condensed View')}
+                </label>
                 <input
                   disabled={read_only}
                   type="checkbox"
@@ -476,7 +483,9 @@ class EditableComponent extends Component {
               </div>
               {data.is_strategy && (
                 <div>
-                  <label htmlFor="is_published">{window.gettext('Published')}</label>
+                  <label htmlFor="is_published">
+                    {window.gettext('Published')}
+                  </label>
                   <input
                     disabled={read_only}
                     type="checkbox"
@@ -531,7 +540,8 @@ class EditableComponent extends Component {
   getDeleteForSidebar(read_only, no_delete, type, data) {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') return [null]
-      else return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
+      else
+        return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
     }
   }
 

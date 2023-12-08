@@ -330,7 +330,9 @@ class OutcomeBarUnconnected extends React.Component {
       )
     }
     let edittext = Utility.capWords(
-      window.gettext('Edit') + ' ' + window.gettext(this.props.workflow_type + ' outcomes')
+      window.gettext('Edit') +
+        ' ' +
+        window.gettext(this.props.workflow_type + ' outcomes')
     )
     return reactDom.createPortal(
       <div id="outcome-bar-workflow" className="right-panel-inner">

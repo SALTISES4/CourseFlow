@@ -339,7 +339,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   deleteWorkflow() {
     if (
-      window.confirm(window.gettext('Are you sure you want to delete this workflow?'))
+      window.confirm(
+        window.gettext('Are you sure you want to delete this workflow?')
+      )
     ) {
       deleteSelf(this.props.data.id, 'workflow', true, () => {})
     }
@@ -348,7 +350,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   deleteWorkflowHard() {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to permanently delete this workflow?')
+        window.gettext(
+          'Are you sure you want to permanently delete this workflow?'
+        )
       )
     ) {
       deleteSelf(this.props.data.id, 'workflow', false, () => {
@@ -464,7 +468,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let disabled
     if (this.props.data.importing) disabled = true
     let imports = [<hr />]
-    this.pushImport(imports, 'outcomes', window.gettext('Import Outcomes'), disabled)
+    this.pushImport(
+      imports,
+      'outcomes',
+      window.gettext('Import Outcomes'),
+      disabled
+    )
     this.pushImport(imports, 'nodes', window.gettext('Import Nodes'), disabled)
 
     return imports
@@ -593,7 +602,11 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (data.is_strategy) return workflow_content
 
     let view_buttons = [
-      { type: 'workflowview', name: window.gettext('Workflow View'), disabled: [] },
+      {
+        type: 'workflowview',
+        name: window.gettext('Workflow View'),
+        disabled: []
+      },
       {
         type: 'outcomeedit',
         name: Utility.capWords(
@@ -611,7 +624,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       {
         type: 'alignmentanalysis',
         name: Utility.capWords(
-          window.gettext(data.type + ' outcome') + ' ' + window.gettext('Analytics')
+          window.gettext(data.type + ' outcome') +
+            ' ' +
+            window.gettext('Analytics')
         ),
         disabled: ['activity']
       },
@@ -971,7 +986,9 @@ class ViewBarUnconnected extends React.Component {
               checked={table_type_value == 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_table">{window.gettext('Table Style')}</label>
+            <label htmlFor="table_type_table">
+              {window.gettext('Table Style')}
+            </label>
           </div>
           <div>
             <input
@@ -1252,7 +1269,9 @@ class RestoreBarItem extends Component {
         <div className="workflow-created">
           {window.gettext('Deleted') + ' ' + this.props.data.deleted_on}
         </div>
-        <button onClick={this.restore.bind(this)}>{window.gettext('Restore')}</button>
+        <button onClick={this.restore.bind(this)}>
+          {window.gettext('Restore')}
+        </button>
         <button onClick={this.delete.bind(this)}>
           {window.gettext('Permanently Delete')}
         </button>
@@ -1285,7 +1304,9 @@ class RestoreBarItem extends Component {
   delete() {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to permanently delete this object?')
+        window.gettext(
+          'Are you sure you want to permanently delete this object?'
+        )
       )
     ) {
       $(this.maindiv.current).children('button').attr('disabled', true)

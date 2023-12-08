@@ -75,7 +75,11 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments 
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     if (this.props.renderer.view_comments) comments = this.addCommenting()
 

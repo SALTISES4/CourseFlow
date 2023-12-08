@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  EditableComponentWithComments,
-} from '../components/CommonComponents/Extended'
+import { EditableComponentWithComments } from '../components/CommonComponents/Extended'
 import {
   TitleText,
   NodeTitle

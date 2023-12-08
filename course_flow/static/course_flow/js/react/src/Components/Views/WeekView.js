@@ -11,7 +11,7 @@ import {
   insertedAt,
   insertedAtInstant,
   columnChanged,
-  addStrategy,
+  addStrategy
 } from '../../XMLHTTP/PostFunctions.js'
 import * as Utility from '../../UtilityFunctions.js'
 

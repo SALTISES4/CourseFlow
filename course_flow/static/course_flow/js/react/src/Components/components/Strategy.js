@@ -4,7 +4,6 @@ import * as Constants from '../../Constants.js'
 import { Component } from './CommonComponents/Extended'
 import { getStrategyByID } from '../../redux/FindState.js'
 
-
 //Basic component to represent a Strategy
 class StrategyView extends Component {
   constructor(props) {

@@ -39,7 +39,8 @@ export class WorkflowTitle extends React.Component {
       text += ' (deleted)'
     }
     let href = data.url
-    if (!data.url) href = window.config.update_path[data.type].replace('0', data.id)
+    if (!data.url)
+      href = window.config.update_path[data.type].replace('0', data.id)
 
     if (
       this.props.no_hyperlink ||

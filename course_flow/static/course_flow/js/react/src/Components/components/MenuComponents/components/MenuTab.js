@@ -53,7 +53,8 @@ class MenuSection extends React.Component {
             {window.gettext('Create new ') + window.gettext(this_type)}
           </a>
         ))
-        let import_text = window.gettext('Import ') + window.gettext(section_type)
+        let import_text =
+          window.gettext('Import ') + window.gettext(section_type)
         if (is_strategy) import_text += window.gettext(' strategy')
         adds.push(
           <a

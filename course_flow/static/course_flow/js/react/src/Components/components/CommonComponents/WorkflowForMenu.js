@@ -75,7 +75,9 @@ class WorkflowForMenu extends React.Component {
     )
       workflows.push(
         <div key="workflow-created-count" className="workflow-created">
-          {this.props.workflow_data.workflow_count + ' ' + window.gettext('workflows')}
+          {this.props.workflow_data.workflow_count +
+            ' ' +
+            window.gettext('workflows')}
         </div>
       )
     if (

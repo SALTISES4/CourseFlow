@@ -9,7 +9,7 @@ import LiveProjectCompletionTable from './LiveProjectCompletionTable.js'
 import LiveProjectSettings from './LiveProjectSettings.js'
 import LiveProjectAssignments from './LiveProjectAssignments.js'
 import { setWorkflowVisibility } from '../../../XMLHTTP/PostFunctions.js'
-import WorkflowForMenu from "../../components/CommonComponents/WorkflowForMenu.js";
+import WorkflowForMenu from '../../components/CommonComponents/WorkflowForMenu.js'
 
 /**
  *

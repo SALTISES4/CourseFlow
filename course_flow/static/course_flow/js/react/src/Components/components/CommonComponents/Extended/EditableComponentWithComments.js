@@ -95,7 +95,9 @@ class CommentBox extends Component {
     let props = parent.props
     if (
       window.confirm(
-        window.gettext('Are you sure you want to permanently clear this comment?')
+        window.gettext(
+          'Are you sure you want to permanently clear this comment?'
+        )
       )
     ) {
       removeComment(

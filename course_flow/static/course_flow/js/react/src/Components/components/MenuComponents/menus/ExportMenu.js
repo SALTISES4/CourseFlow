@@ -41,7 +41,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label htmlFor="export_type">{window.gettext('Course Framework')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Course Framework')}
+        </label>
       ])
     if (type == 'project' || type == 'program')
       exports.push([
@@ -52,7 +54,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label htmlFor="export_type">{window.gettext('Competency Matrix')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Competency Matrix')}
+        </label>
       ])
 
     // brought from master branch
@@ -65,7 +69,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'sobec'}
         />,
-        <label htmlFor="export_type">{window.gettext('Sobec Validation')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Sobec Validation')}
+        </label>
       ])
 
     return exports

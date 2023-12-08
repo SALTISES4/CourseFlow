@@ -177,7 +177,11 @@ export class TableOutcomeViewUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     let comments
 

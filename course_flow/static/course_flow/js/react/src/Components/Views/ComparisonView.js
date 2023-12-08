@@ -63,7 +63,11 @@ export class ComparisonView extends React.Component {
       )
 
     let view_buttons = [
-      { type: 'workflowview', name: window.gettext('Workflow View'), disabled: [] },
+      {
+        type: 'workflowview',
+        name: window.gettext('Workflow View'),
+        disabled: []
+      },
       {
         type: 'outcomeedit',
         name: Utility.capWords(window.gettext('View') + ' outcomes'),

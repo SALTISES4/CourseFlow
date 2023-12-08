@@ -122,7 +122,9 @@ const Sidebar = () => {
     sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const [apiData, loading, error] = useApi(window.config.json_api_paths.get_sidebar)
+  const [apiData, loading, error] = useApi(
+    window.config.json_api_paths.get_sidebar
+  )
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -173,12 +175,16 @@ const Sidebar = () => {
                   component="a"
                   id="panel-my-library"
                   href={window.config.my_library_path}
-                  selected={window.location.pathname === window.config.my_library_path}
+                  selected={
+                    window.location.pathname === window.config.my_library_path
+                  }
                 >
                   <ListItemIcon>
                     <FolderCopyIcon />
                   </ListItemIcon>
-                  <ListItemText primary={window.COURSEFLOW_APP.strings.my_library} />
+                  <ListItemText
+                    primary={window.COURSEFLOW_APP.strings.my_library}
+                  />
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding dense>
@@ -186,12 +192,16 @@ const Sidebar = () => {
                   component="a"
                   id="panel-explore"
                   href={window.config.explore_path}
-                  selected={window.location.pathname === window.config.explore_path}
+                  selected={
+                    window.location.pathname === window.config.explore_path
+                  }
                 >
                   <ListItemIcon>
                     <SearchIcon />
                   </ListItemIcon>
-                  <ListItemText primary={window.COURSEFLOW_APP.strings.explore} />
+                  <ListItemText
+                    primary={window.COURSEFLOW_APP.strings.explore}
+                  />
                 </ListItemButton>
               </ListItem>
             </>
@@ -203,13 +213,16 @@ const Sidebar = () => {
                 id="panel-my-live-projects"
                 href={window.config.my_liveprojects_path}
                 selected={
-                  window.location.pathname === window.config.my_liveprojects_path
+                  window.location.pathname ===
+                  window.config.my_liveprojects_path
                 }
               >
                 <ListItemIcon>
                   <CalendarMonthIcon />
                 </ListItemIcon>
-                <ListItemText primary={window.COURSEFLOW_APP.strings.my_classrooms} />
+                <ListItemText
+                  primary={window.COURSEFLOW_APP.strings.my_classrooms}
+                />
               </ListItemButton>
             </ListItem>
           ) : null}
@@ -266,7 +279,9 @@ const Sidebar = () => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={window.COURSEFLOW_APP.strings.help_support} />
+              <ListItemText
+                primary={window.COURSEFLOW_APP.strings.help_support}
+              />
             </ListItemButton>
           </ListItem>
         </HelpLink>

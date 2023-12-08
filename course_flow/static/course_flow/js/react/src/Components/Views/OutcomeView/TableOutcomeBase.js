@@ -2,7 +2,9 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { Component } from '../../components/CommonComponents/Extended'
 import { getOutcomeByID } from '../../../redux/FindState.js'
-import TableOutcomeView, { TableOutcomeViewUnconnected } from './TableOutcomeView.js'
+import TableOutcomeView, {
+  TableOutcomeViewUnconnected
+} from './TableOutcomeView.js'
 
 class MatrixOutcomeViewUnconnected extends TableOutcomeViewUnconnected {
   toggleDrop() {

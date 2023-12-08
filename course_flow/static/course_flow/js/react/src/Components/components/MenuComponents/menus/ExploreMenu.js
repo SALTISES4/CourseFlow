@@ -310,7 +310,9 @@ class ExploreFilter extends WorkflowFilter {
   getFromSaltise() {
     return (
       <div
-        title={window.gettext('Restrict results to content provided by SALTISE')}
+        title={window.gettext(
+          'Restrict results to content provided by SALTISE'
+        )}
         id="content-rich"
         className="hover-shade"
         onClick={() => {

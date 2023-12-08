@@ -48,7 +48,9 @@ class HomeMenu extends React.Component {
       project_box = (
         <div className="home-item">
           <div className="home-title-row">
-            <div className="home-item-title">{window.gettext('Recent projects')}</div>
+            <div className="home-item-title">
+              {window.gettext('Recent projects')}
+            </div>
             <a className="collapsed-text-show-more" href={library_path}>
               {window.gettext('See all')}
             </a>
@@ -77,7 +79,9 @@ class HomeMenu extends React.Component {
       favourite_box = (
         <div className="home-item">
           <div className="home-title-row">
-            <div className="home-item-title">{window.gettext('Favourites')}</div>
+            <div className="home-item-title">
+              {window.gettext('Favourites')}
+            </div>
             <a
               className="collapsed-text-show-more"
               href={window.config.my_favourites_path}

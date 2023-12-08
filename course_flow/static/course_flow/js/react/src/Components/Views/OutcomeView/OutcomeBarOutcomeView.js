@@ -131,7 +131,11 @@ export class OutcomeBarOutcomeViewUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     return (
       <div

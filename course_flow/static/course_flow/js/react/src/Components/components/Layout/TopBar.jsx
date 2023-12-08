@@ -87,7 +87,9 @@ const TopBar = () => {
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
-  const [apiData, loading, error] = useApi(window.config.json_api_paths.get_top_bar)
+  const [apiData, loading, error] = useApi(
+    window.config.json_api_paths.get_top_bar
+  )
 
   if (loading || error) {
     return null
@@ -105,7 +107,9 @@ const TopBar = () => {
     setNotificationsMenuAnchorEl(event.currentTarget)
   }
 
-  const handleLogout = () => [window.location.replace(window.config.logout_path)]
+  const handleLogout = () => [
+    window.location.replace(window.config.logout_path)
+  ]
 
   const closeAllMenus = () => {
     setAnchorEl(null)

@@ -281,7 +281,9 @@ class LiveAssignmentEdit extends React.Component {
               'Whether students can mark their own assignments as complete.'
             )}
           >
-            {window.gettext('Let students self-report their assignment completion:')}
+            {window.gettext(
+              'Let students self-report their assignment completion:'
+            )}
           </label>
           <input
             id="self-reporting"
@@ -302,7 +304,9 @@ class LiveAssignmentEdit extends React.Component {
           </button>
         </div>
         <div>
-          <button onClick={this.delete.bind(this)}>{window.gettext('Delete')}</button>
+          <button onClick={this.delete.bind(this)}>
+            {window.gettext('Delete')}
+          </button>
         </div>
         <h3>{window.gettext('Users')}:</h3>
 

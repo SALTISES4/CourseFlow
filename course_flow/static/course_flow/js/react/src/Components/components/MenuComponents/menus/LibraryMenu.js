@@ -74,7 +74,11 @@ class LibraryMenu extends React.Component {
   getOverflowLinks() {
     let overflow_links = []
     overflow_links.push(
-      <a id="import-old" className="hover-shade" href={window.config.get_paths.import}>
+      <a
+        id="import-old"
+        className="hover-shade"
+        href={window.config.get_paths.import}
+      >
         {window.gettext('Import from old CourseFlow')}
       </a>
     )

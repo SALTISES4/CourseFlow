@@ -117,10 +117,14 @@ class CompetencyMatrixView extends React.Component {
             </div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{window.gettext('General Education')}</div>
+            <div className="outcome-head">
+              {window.gettext('General Education')}
+            </div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{window.gettext('Specific Education')}</div>
+            <div className="outcome-head">
+              {window.gettext('Specific Education')}
+            </div>
           </div>
           <div className="table-cell outcome-wrapper">
             <div className="outcome-head">{window.gettext('Total Hours')}</div>
@@ -137,7 +141,9 @@ class CompetencyMatrixView extends React.Component {
             <div className="outcome-head">{window.gettext('Practical')}</div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{window.gettext('Individual Work')}</div>
+            <div className="outcome-head">
+              {window.gettext('Individual Work')}
+            </div>
           </div>
           <div className="table-cell outcome-wrapper">
             <div className="outcome-head">{window.gettext('Total')}</div>
