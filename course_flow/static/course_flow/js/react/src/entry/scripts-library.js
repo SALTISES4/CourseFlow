@@ -63,27 +63,50 @@ export class ExploreRenderer extends LibraryRenderer {
 /*******************************************************
  * @ProjectRenderer
  *******************************************************/
+
 /**
- * type Data: {
- *  disciplines: Discipline[
- *  project_data: Project[]
- *  user_permission: num
- *  user_role: num
- *  user_id:
+ * export type ProjectViewDTO = {
+ *   project_data: {
+ *     deleted: boolean
+ *     deleted_on: string
+ *     id: number
+ *     title: string
+ *     description: string
+ *     author: string
+ *     author_id: number
+ *     published: boolean
+ *     created_on: string
+ *     last_modified: string
+ *     workflowproject_set: Array<number>
+ *     disciplines: Array<any>
+ *     type: string
+ *     object_sets: Array<any>
+ *     favourite: boolean
+ *     liveproject: any
+ *     object_permission: {
+ *       permission_type: number
+ *       last_viewed: string
+ *     }
+ *   }
+ *   user_role: number
+ *   user_permission: number
+ *   title: string
+ *   disciplines: Array<{
+ *     id: number
+ *     title: string
+ *   }>
  * }
- *
  */
 export class ProjectRenderer {
-  constructor(data /*: Data*/) {
+  constructor(data /*: ProjectViewDTO */) {
 
-    console.log(data);
-    console.log(JSON.parse(data.disciplines))
 
     this.read_only = true
     this.project_data = data.project_data
-    this.all_disciplines = JSON.parse(data.disciplines)
+    this.all_disciplines = data.disciplines
     this.user_role = data.user_role
     this.user_permission = data.user_permission
+    this.userId = data.user_id
 
     if (
       this.project_data.object_permission &&
@@ -102,7 +125,7 @@ export class ProjectRenderer {
   }
 
   getContents() {
-    return <ProjectMenu renderer={this} data={this.project_data} />
+    return <ProjectMenu renderer={this} data={this.project_data} userid={this.userId} />
   }
 }
 

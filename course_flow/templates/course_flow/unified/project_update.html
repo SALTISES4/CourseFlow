@@ -36,15 +36,7 @@
        course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
        program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
       }
-    const project_config = {
 
-
-      // project_data: {{project_data|safe}},
-      // disciplines: {{disciplines |safe}},
-      // user_role: {{user_role|safe}},
-      // user_permission: {{user_permission|safe}},
-      // user_id: {{ user.id | default:0}},
-    }
     /**
      *
      * disciplines: Discipline[
@@ -53,13 +45,11 @@
      * user_role: num
      *
      */
-    contextData  = {{contextData|safe}};
-    console.log('contextData');
-    console.log(contextData);
-
+    contextData  = {{ contextData | safe }};
+    console.log(contextData)
     contextData = {
       ...contextData,
-      user_id: {{ user.id | default:0}} // @todo figure out where this is from
+      user_id: {{ user.id | default:0}} // @todo, this shouldn't come from global, it should come from the view controller
     }
 
     window.addEventListener("load", function () {

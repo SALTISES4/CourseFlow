@@ -32,6 +32,7 @@ import {
 class ProjectMenu extends LibraryMenu {
   constructor(props) {
     super(props)
+    this.user_id = props.userId
     this.state = {
       data: props.data,
       view_type: 'workflows'
@@ -155,7 +156,7 @@ class ProjectMenu extends LibraryMenu {
   getOverflowLinks() {
     let data = this.state.data
     let liveproject
-    if (data.author_id === user_id) {
+    if (data.author_id === this.userId) {
       if (data.liveproject) {
         liveproject = (
           <a
@@ -188,7 +189,7 @@ class ProjectMenu extends LibraryMenu {
     overflow_links.push(<hr />)
     overflow_links.push(this.getExportButton())
     overflow_links.push(this.getCopyButton())
-    if (data.author_id === user_id) {
+    if (data.author_id === this.user_id) {
       overflow_links.push(<hr />)
       overflow_links.push(this.getDeleteProject())
     }
@@ -260,7 +261,7 @@ class ProjectMenu extends LibraryMenu {
   }
 
   getExportButton() {
-    if (user_id) {
+    if (this.user_id) {
       return (
         <div
           id="export-button"
@@ -278,7 +279,7 @@ class ProjectMenu extends LibraryMenu {
   }
 
   getCopyButton() {
-    if (user_id) {
+    if (this.user_id) {
       return (
         <div
           id="copy-button"

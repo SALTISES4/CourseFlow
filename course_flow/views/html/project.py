@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from django.conf import settings
@@ -29,51 +30,38 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
-        context["contextData"] = {}
 
-        # @todo template renders project_data: {{project_data|safe}},
-        context["contextData"]["project_data"] = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(
-                    project, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
+        project_data = ProjectSerializerShallow(
+            project, context={"user": self.request.user}
+        ).data
 
-        # @todo template renders disciplines: {{disciplines |safe}},
-        context["contextData"]["disciplines"] = (
-            JSONRenderer()
-            .render(
-                DisciplineSerializer(
-                    Discipline.objects.order_by("title"), many=True
-                ).data
-            )
-            .decode("utf-8")
-        )
-
-        # @todo template renders disciplines: {{user_role |safe}},
         if hasattr(project, "liveproject") and project.liveproject is not None:
-            context["contextData"]["user_role"] = (
-                JSONRenderer()
-                .render(get_user_role(project.liveproject, self.request.user))
-                .decode("utf-8")
-            )
+            user_role = get_user_role(project.liveproject, self.request.user)
         else:
-            context["contextData"]["user_role"] = (
-                JSONRenderer()
-                .render(LiveProjectUser.ROLE_NONE)
-                .decode("utf-8")
-            )
-        # @todo template renders disciplines:{{user_permission | safe}},
-        context["contextData"]["user_permission"] = (
-            JSONRenderer()
-            .render(get_user_permission(project, self.request.user))
-            .decode("utf-8")
+            user_role = LiveProjectUser.ROLE_NONE
+
+        user_permission = get_user_permission(project, self.request.user)
+        title = project.title
+
+        disciplines = DisciplineSerializer(
+            Discipline.objects.order_by("title"), many=True
+        ).data
+
+        # todo, how to get the context data for current user id?
+        context_data = {
+            "project_data": project_data,
+            "user_role": user_role,
+            "user_permission": user_permission,
+            "title": title,
+            "disciplines": disciplines,
+        }
+
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
         )
 
-        context["title"] = JSONRenderer().render(project.title).decode("utf-8")
+        print("self.request.user")
+        print(self.request.user)
 
         return context
 
