@@ -1,7 +1,7 @@
-import json
 from typing import List
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.urls import reverse
@@ -14,10 +14,9 @@ from course_flow.serializers import (
     ProjectSerializerShallow,
 )
 from course_flow.utils import get_user_permission, get_user_role
-from course_flow.views.views import (
-    CreateView_No_Autocomplete,
-    UserCanViewMixin,
-)
+from course_flow.view_utils import get_my_projects
+from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
+from course_flow.views.mixins import UserCanViewMixin
 
 
 class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
@@ -30,6 +29,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
+        current_user = self.request.user
 
         project_data = ProjectSerializerShallow(
             project, context={"user": self.request.user}
@@ -54,14 +54,12 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             "user_permission": user_permission,
             "title": title,
             "disciplines": disciplines,
+            "user_id": current_user.id if current_user else 0,
         }
 
         context["contextData"] = (
             JSONRenderer().render(context_data).decode("utf-8")
         )
-
-        print("self.request.user")
-        print(self.request.user)
 
         return context
 
@@ -118,3 +116,13 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
 
         return context
+
+
+@login_required
+def myprojects_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_projects(request.user, True))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/myprojects.html", context)

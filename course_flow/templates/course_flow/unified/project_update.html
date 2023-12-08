@@ -45,11 +45,10 @@
      * user_role: num
      *
      */
+    // user_id: {{ user.id | default:0}} // @todo, this shouldn't come from global, it should come from the view controller
     contextData  = {{ contextData | safe }};
-    console.log(contextData)
     contextData = {
       ...contextData,
-      user_id: {{ user.id | default:0}} // @todo, this shouldn't come from global, it should come from the view controller
     }
 
     window.addEventListener("load", function () {
