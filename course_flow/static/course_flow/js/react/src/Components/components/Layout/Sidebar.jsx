@@ -42,6 +42,7 @@ const Collapse = styled(Fab)(({ theme, collapsed }) => ({
   right: 0,
   top: '60px',
   transform: 'translateX(50%)',
+  transition: 'opacity 0.15s ease, visibility 0.15s ease',
   color: theme.palette.common.white,
   ...(collapsed && {
     backgroundColor: 'transparent',
@@ -63,6 +64,12 @@ const SidebarWrap = styled(Box)(({ theme, collapsed }) => ({
   ...(collapsed && {
     [`& .MuiPaper-root`]: {
       display: 'none'
+    }
+  }),
+  ...(!collapsed && {
+    '&:not(:hover) .MuiFab-root': {
+      opacity: 0,
+      visibility: 'hidden'
     }
   })
 }))
