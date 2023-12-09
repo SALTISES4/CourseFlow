@@ -6,10 +6,8 @@ import {
   EditableComponent,
   EditableComponentWithSorting
 } from '../components/CommonComponents/Extended'
-import {
-  WorkflowTitle,
-  RightSideBar
-} from '../components/CommonComponents/UIComponents'
+import { WorkflowTitle } from '../components/CommonComponents/UIComponents'
+import { RightSideBar } from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
 
 import {
@@ -128,7 +126,7 @@ export class ComparisonView extends React.Component {
     return (
       <div className="main-block">
         <div className="right-panel-wrapper">
-          <div class="body-wrapper">
+          <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               {this.getHeader()}
               <div className="workflow-view-select hide-print">

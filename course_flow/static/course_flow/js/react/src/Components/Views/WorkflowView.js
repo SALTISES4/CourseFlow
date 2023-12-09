@@ -3,15 +3,15 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import {
   WorkflowTitle,
-  CollapsibleText,
-  MenuBar,
-  RightSideBar
+  CollapsibleText
 } from '../components/CommonComponents/UIComponents'
 import {
   Component,
   EditableComponentWithActions,
   EditableComponentWithSorting
 } from '../components/CommonComponents/Extended'
+import { MenuBar, RightSideBar } from '../components/CommonComponents'
+
 import ColumnWorkflowView from './ColumnWorkflowView.js'
 import WeekWorkflowView from './WeekWorkflowView.js'
 import { NodeBarColumnWorkflow } from './ColumnWorkflowView.js'

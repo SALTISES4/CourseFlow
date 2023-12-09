@@ -26,8 +26,6 @@ import { SelectionManager, TinyLoader } from '../redux/helpers.js'
 import { Enum } from '../UtilityFunctions.js'
 import WorkflowLoader from '../Components/components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
-export { fail_function } from '../XMLHTTP/PostFunctions.js'
-
 const DATA_TYPE = Enum({
   OUTCOME: 'workflow_action',
   LOCK_UPDATE: 'lock_update',

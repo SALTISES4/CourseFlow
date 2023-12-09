@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { getLibrary } from '../../../../XMLHTTP/PostFunctions.js'
 import WorkflowFilter from './WorkFlowFilter.js'
-import { MenuBar } from '../components/CommonComponents/UIComponents'
+import { MenuBar } from '../../CommonComponents'
 
 /*******************************************************
  * The main library menu

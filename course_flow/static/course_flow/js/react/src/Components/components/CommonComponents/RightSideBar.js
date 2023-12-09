@@ -7,7 +7,7 @@ import { NodeBar, ViewBar, RestoreBar } from '../../Views/WorkflowView.js'
 import { ComparisonViewBar } from '../../Views/ComparisonView.js'
 import { OutcomeBar, ParentOutcomeBar } from '../../Views/OutcomeEditView.js'
 
-export default class extends React.Component {
+class RightSideBar extends React.Component {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -82,22 +82,22 @@ export default class extends React.Component {
   render() {
     let renderer = this.props.renderer
     return (
-      <div id="sidebar" class="side-bar hide-print">
+      <div id="sidebar" className="side-bar hide-print">
         <ul>
-          <li class="hover-shade">
+          <li className="hover-shade">
             <a href="#edit-menu">
               <span
-                class="material-symbols-rounded filled"
+                className="material-symbols-rounded filled"
                 title={gettext('Edit')}
               >
                 edit
               </span>
             </a>
           </li>
-          <li class="hover-shade">
+          <li className="hover-shade">
             <a href="#node-bar">
               <span
-                class="material-symbols-rounded filled"
+                className="material-symbols-rounded filled"
                 title={gettext('Add')}
               >
                 add_circle
@@ -107,20 +107,20 @@ export default class extends React.Component {
 
           {!renderer.is_strategy && (
             <>
-              <li class="hover-shade">
+              <li className="hover-shade">
                 <a href="#outcome-bar">
                   <span
-                    class="material-symbols-rounded filled"
+                    className="material-symbols-rounded filled"
                     title={gettext('Outcomes')}
                   >
                     spoke
                   </span>
                 </a>
               </li>
-              <li class="hover-shade">
+              <li className="hover-shade">
                 <a href="#view-bar">
                   <span
-                    class="material-symbols-rounded filled"
+                    className="material-symbols-rounded filled"
                     title={gettext('View Options')}
                   >
                     remove_red_eye
@@ -130,10 +130,10 @@ export default class extends React.Component {
             </>
           )}
 
-          <li class="hover-shade">
+          <li className="hover-shade">
             <a href="#restore-bar">
               <span
-                class="material-symbols-rounded filled"
+                className="material-symbols-rounded filled"
                 title={gettext('Restore Deleted')}
               >
                 restore_from_trash
@@ -141,29 +141,31 @@ export default class extends React.Component {
             </a>
           </li>
         </ul>
-        <div id="edit-menu" class="right-panel-container"></div>
-        <div id="node-bar" class="right-panel-container">
+        <div id="edit-menu" className="right-panel-container"></div>
+        <div id="node-bar" className="right-panel-container">
           {this.getNodeBar()}
         </div>
         {!this.props.renderer.is_strategy && (
           <>
-            <div id="outcome-bar" class="right-panel-container">
+            <div id="outcome-bar" className="right-panel-container">
               {this.getOutcomeBar()}
             </div>
-            <div id="view-bar" class="right-panel-container">
+            <div id="view-bar" className="right-panel-container">
               {this.getViewBar()}
             </div>
           </>
         )}
         {!renderer.read_only && (
-          <div id="restore-bar" class="right-panel-container">
+          <div id="restore-bar" className="right-panel-container">
             {this.getRestoreBar()}
           </div>
         )}
-        <div class="window-close-button" id="side-bar-close-button">
-          <span class="material-symbols-rounded green">arrow_forward</span>
+        <div className="window-close-button" id="side-bar-close-button">
+          <span className="material-symbols-rounded green">arrow_forward</span>
         </div>
       </div>
     )
   }
 }
+
+export default RightSideBar
