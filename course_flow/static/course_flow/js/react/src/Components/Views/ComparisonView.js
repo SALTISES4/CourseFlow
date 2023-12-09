@@ -194,6 +194,8 @@ export class ComparisonView extends React.Component {
 
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
+
+    // @todo take out of render prop
     this.props.renderer.selection_manager.changeSelection(null, null)
     let disabled_tabs = []
     for (let i = 0; i < 4; i++)
@@ -208,9 +210,11 @@ export class ComparisonView extends React.Component {
   }
 
   changeView(type) {
+    // @todo take out of render prop
     this.props.renderer.selection_manager.changeSelection(null, null)
 
     // ?? pass in the parent renderer container as its own new container, how is this working?
+    // @todo take out of render prop
     this.props.renderer.render(this.props.renderer.container, type)
   }
 
@@ -307,6 +311,9 @@ class WorkflowComparisonRendererComponent extends Component {
 
     getWorkflowContext(this.props.workflowID, (context_response_data) => {
       let context_data = context_response_data.data_package
+
+      // @todo this will need to be unpacked, type unified with parent and called into parent
+      // is there a reason #workflow-inner-wrapper is a real dom element?
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,
         JSON.parse(context_data.data_package),
@@ -496,6 +503,8 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type == 'weekworkflow') {
+
+      // @todo take out of render prop
       this.props.renderer.micro_update(
         moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
@@ -546,6 +555,7 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected {
       )
     ) {
       insertedAt(
+        // @todo take out of render prop
         this.props.renderer,
         null,
         'outcome',
