@@ -6,7 +6,10 @@ import {
   EditableComponent,
   EditableComponentWithSorting
 } from '../components/CommonComponents/Extended'
-import { WorkflowTitle,  RightSideBar } from '../components/CommonComponents/UIComponents'
+import {
+  WorkflowTitle,
+  RightSideBar
+} from '../components/CommonComponents/UIComponents'
 import * as Utility from '../../UtilityFunctions.js'
 
 import {
@@ -509,7 +512,6 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type == 'weekworkflow') {
-
       // @todo take out of render prop
       this.props.renderer.micro_update(
         moveWeekWorkflow(id, new_position, new_parent, child_id)

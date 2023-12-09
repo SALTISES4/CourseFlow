@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import {
   WorkflowTitle,
   CollapsibleText,
-    MenuBar,
+  MenuBar,
   RightSideBar
 } from '../components/CommonComponents/UIComponents'
 import {
