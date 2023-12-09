@@ -12,6 +12,7 @@ import {
   updateLiveProjectValue
 } from '../../../XMLHTTP/PostFunctions.js'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility.js'
+import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 /**
  *
@@ -353,7 +354,7 @@ class LiveAssignmentReport extends React.Component {
    * FUNCTIONS
    *******************************************************/
   defaultRender() {
-    return <window.renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 
   updateCompletion(id, completed) {

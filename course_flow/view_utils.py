@@ -69,6 +69,7 @@ def get_workflow_context_data(workflow, context, user):
     data_package[
         "strategy_classification_choices"
     ] = strategy_classification_choices
+
     if not workflow.is_strategy:
         data_package["project"] = parent_project
     context["is_strategy"] = (
@@ -79,6 +80,7 @@ def get_workflow_context_data(workflow, context, user):
     )
     user_permission = get_user_permission(workflow, user)
     user_role = get_user_role(workflow, user)
+
     context["user_permission"] = (
         JSONRenderer().render(user_permission).decode("utf-8")
     )

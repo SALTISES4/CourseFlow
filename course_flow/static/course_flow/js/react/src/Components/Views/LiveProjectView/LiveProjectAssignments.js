@@ -9,6 +9,7 @@ import { ActionButton } from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
+import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
   }
 
   defaultRender() {
-    return <window.renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 
   /*******************************************************

@@ -4,6 +4,7 @@ import { searchAllObjects } from '../../../../XMLHTTP/PostFunctions.js'
 import { Component } from '../../CommonComponents/Extended'
 import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 import { WorkflowTitle } from '../../CommonComponents/UIComponents'
+import WorkflowLoader from '../../CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 /*******************************************************
 A container for workflow cards that allows searching and filtering
@@ -326,7 +327,7 @@ class WorkflowFilter extends Component {
   }
 
   defaultRender() {
-    return <window.renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 
   /*******************************************************

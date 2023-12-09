@@ -323,6 +323,7 @@ class WorkflowComparisonRendererComponent extends Component {
 
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
+      // this needs to be imported directly but that would cuase Circ D.
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,
         JSON.parse(context_data.data_package),

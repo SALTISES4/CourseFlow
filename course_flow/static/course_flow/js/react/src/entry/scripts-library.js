@@ -47,11 +47,11 @@ export class FavouritesRenderer extends LibraryRenderer {
  *  initial_pages: any
  *******************************************************/
 export class ExploreRenderer extends LibraryRenderer {
-  constructor(data) {
-    super(data)
-    this.disciplines = data.props.disciplines
-    this.initial_workflows = data.props.initial_workflows
-    this.initial_pages = data.props.initial_pages
+  constructor(props) {
+    super(props)
+    this.disciplines = this.props.disciplines
+    this.initial_workflows = this.props.initial_workflows
+    this.initial_pages = this.props.initial_pages
     this.tiny_loader = new TinyLoader($('body')[0])
   }
 
@@ -98,15 +98,15 @@ export class ExploreRenderer extends LibraryRenderer {
  * }
  */
 export class ProjectRenderer extends React.Component {
-  constructor(data /*: ProjectViewDTO */) {
-    super(data)
+  constructor(props /*: ProjectViewDTO */) {
+    super(props)
 
     this.read_only = true
-    this.project_data = data.props.project_data
-    this.all_disciplines = data.props.disciplines
-    this.user_role = data.props.user_role
-    this.user_permission = data.props.user_permission
-    this.userId = data.props.user_id
+    this.project_data = this.props.project_data
+    this.all_disciplines = this.props.disciplines
+    this.user_role = this.props.user_role
+    this.user_permission = this.props.user_permission
+    this.userId = this.props.user_id
 
     if (
       this.project_data.object_permission &&
@@ -139,9 +139,9 @@ export class ProjectRenderer extends React.Component {
  * @HomeRenderer
  *******************************************************/
 export class HomeRenderer extends React.Component {
-  constructor(data) {
-    super(data)
-    this.is_teacher = data.props.is_teacher
+  constructor(props) {
+    super(props)
+    this.is_teacher = this.props.is_teacher
   }
 
   render() {

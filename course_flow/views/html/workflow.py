@@ -4,6 +4,7 @@ from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer
 
 from course_flow.models import Workflow
+from course_flow.utils import get_user_permission, get_user_role
 from course_flow.view_utils import get_workflow_context_data
 from course_flow.views.mixins import (
     ContentPublicViewMixin,
@@ -25,13 +26,30 @@ class WorkflowDetailView(
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
+        current_user = self.request.user
         workflow = self.get_object()
+        user_permission = get_user_permission(workflow, current_user)
+        user_role = get_user_role(workflow, current_user)
 
         context = get_workflow_context_data(
             workflow, context, self.request.user
         )
-        context["public_view"] = JSONRenderer().render(False).decode("utf-8")
 
+        context_data = {
+            "public_view": False,
+            "user_id": current_user.id if current_user else 0,
+            "user_name": current_user.username,
+            "user_role": user_role if user_role else 0,
+            "user_permission": user_permission,
+            "workflow_data_package": context.data_package,
+            "workflow_type": workflow.type,
+            "workflow_model_id": workflow.id,
+        }
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
+        )
+        context["path_id"] = "workflowDetailView"
+        context["title"] = workflow.title
         return context
 
 
@@ -50,11 +68,27 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
+        current_user = self.request.user
         workflow = self.get_object()
+        user_permission = get_user_permission(workflow, current_user)
+        user_role = get_user_role(workflow, current_user)
 
-        context = get_workflow_context_data(
-            workflow, context, self.request.user
+        context = get_workflow_context_data(workflow, context, current_user)
+        context_data = {
+            "public_view": True,
+            "user_id": current_user.id if current_user else 0,
+            "user_name": current_user.username,
+            "user_role": user_role if user_role else 0,
+            "user_permission": user_permission,
+            "workflow_data_package": context.data_package,
+            "workflow_type": workflow.type,
+            "workflow_model_id": workflow.id,
+        }
+
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
         )
-        context["public_view"] = JSONRenderer().render(True).decode("utf-8")
+        context["path_id"] = "workflowDetailView"
+        context["title"] = workflow.title
 
         return context

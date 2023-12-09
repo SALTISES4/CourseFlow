@@ -23,6 +23,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
+import { createNew } from '../../../XMLHTTP/postTemp.js'
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
@@ -120,13 +121,13 @@ const TopBar = () => {
   const handleCreateClick = (type) => {
     switch (type) {
       case 'program':
-        window.renderers.CreateNew(window.config.create_path.program)
+        createNew(window.config.create_path.program)
         break
       case 'activity':
-        window.renderers.CreateNew(window.config.create_path.activity)
+        createNew(window.config.create_path.activity)
         break
       case 'course':
-        window.renderers.CreateNew(window.config.create_path.course)
+        createNew(window.config.create_path.course)
         break
     }
 

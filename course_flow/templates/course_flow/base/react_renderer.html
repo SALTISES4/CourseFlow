@@ -2,8 +2,8 @@
 
   const path_id = "{{ path_id }}";
   const DTOcontextData = {{ contextData | safe }};
-  let switch_renderer
   let contextData
+  let makeActiveSidebarID = null
 
 
   switch (path_id) {
@@ -15,52 +15,36 @@
         course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
         program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
       }
-      window.addEventListener("load", function () {
-        $(".menubar").removeClass("hidden");
-        makeActiveSidebar("#project" + contextData.project_data.id);
-      });
-    }
+      makeActiveSidebarID = "#project" + contextData.project_data.id
       break;
-
-
+    }
     case 'favorites': {
-      $(".menubar").removeClass("hidden");
-      window.addEventListener("load", function () {
-        makeActiveSidebar("#my-favourites");
-      });
-    }
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#my-favourites"
       break;
-
-    case 'library': {// const {user_id} = window.COURSEFLOW_APP.home
-      // switch_renderer = new window.library_renderers.LibraryRenderer()
-      window.addEventListener('load', () => {
-        makeActiveSidebar('#panel-my-library')
-        waitUntilElementExists('.menubar').then((el) => {
-          el.classList.remove('hidden')
-        })
-      })
     }
+    case 'library': {
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#panel-my-library'
       break;
+    }
 
     case 'home': {
-      window.addEventListener('load', () => {
-        makeActiveSidebar('#panel-home')
-      })
-    }
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#panel-home'
       break;
+    }
 
 
     case 'explore': {
-      window.addEventListener("load", function () {
-        makeActiveSidebar("#panel-explore");
-      });
-    }
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#panel-explore"
       break;
+    }
     /*******************************************************
      * REDUX STUFF
      *******************************************************/
     case 'projectComparison': {
-
       //  @todo these don't seem to be used
       // window.workflow_paths = {
       //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
@@ -68,36 +52,25 @@
       //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
       //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
       // }
+      contextData = DTOcontextData
+      break;
+    }
+    case "my_live_projects": {
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#panel-my-live-projects"
+      break;
+    }
+    case "workflowDetailView": {
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#workflow' + contextData.workflow_model_id
+      break;
+    }
 
-      /**
-       * @todo for myColour, changeFieldID decide whether these should go in
-       * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
-       */
-      contextData = {
-        ...DTOcontextData,
-        myColour: 'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
-        changeFieldID: Math.floor(Math.random() * 10000)
-      }
-      switch_renderer = new window.renderers.ComparisonRenderer(contextData);
-    }
-      break;
-    case 'workflowUpdate': {
-    }
-      break;
-    case 'myLiveProjects': {
-    }
-      break;
-    case 'liveProjects': {
-    }
-      break;
-    case 'liveAssignment': {
-    }
-      break;
   }
 
   window.addEventListener("load", function () {
-    switch_renderer && switch_renderer.render($("#container"));
-    $(document).ajaxError(window.renderers.fail_function);
+    $(document).ajaxError(window.fail_function);
+    makeActiveSidebarID && makeActiveSidebar(makeActiveSidebarID)
   });
 
 

@@ -8,41 +8,6 @@ All functions for API calls.
 // @todo intermixed calls to DOM via jQuery
 */
 
-// JQUERY
-export function fail_function(a, b, c, d) {
-  if (typeof a === 'string') {
-    alert(b)
-    alert(
-      a +
-        ' - ' +
-        window.gettext('Something went wrong. Please reload the page.')
-    )
-  } else if (a && a.type === 'ajaxError') {
-    if (b.status === 429) {
-      alert(
-        window.gettext(
-          'Too many requests from your IP address. Please wait and try again later.'
-        )
-      )
-    } else if (b.status === 403 || b.status === 401 || b.status === 500) {
-      alert(b.status + ' ' + window.gettext('error at ') + ' ' + c.url)
-    } else
-      alert(
-        a +
-          b.status +
-          c +
-          window.gettext('final Something went wrong. Please reload the page.')
-      )
-  } else {
-    alert(
-      a +
-        b.status +
-        c +
-        window.gettext('final Something went wrong. Please reload the page.')
-    )
-  }
-}
-
 //get the workflow's context data
 export function getWorkflowContext(
   workflowPk,
@@ -53,10 +18,10 @@ export function getWorkflowContext(
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -71,7 +36,7 @@ export function setLinkedWorkflow(
     workflowPk: workflow_id
   }).done(function (data) {
     if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-    else fail_function(data.action)
+    else window.fail_function(data.action)
   })
 }
 
@@ -115,11 +80,11 @@ export function updateValue(
       $.post(window.config.post_paths.update_value, post_object).done(
         function (data) {
           if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-          else fail_function(data.action)
+          else window.fail_function(data.action)
         }
       )
     } catch (err) {
-      fail_function()
+      window.fail_function()
     }
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
@@ -139,10 +104,10 @@ export function updateValueInstant(
       data: JSON.stringify(json)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -190,10 +155,10 @@ export function newNode(
       columnType: JSON.stringify(column_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -209,10 +174,10 @@ export function newOutcome(
       objectsetPk: JSON.stringify(object_set_id)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -233,10 +198,10 @@ export function newNodeLink(
       targetPort: JSON.stringify(target_port)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -255,10 +220,10 @@ export function addStrategy(
       objectType: JSON.stringify('workflow')
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 //Turn a week into a strategy or vice versa
@@ -273,10 +238,10 @@ export function toggleStrategy(
       is_strategy: JSON.stringify(is_strategy)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -297,10 +262,10 @@ export function deleteSelf(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -317,10 +282,10 @@ export function deleteSelfLive(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -337,10 +302,10 @@ export function restoreSelf(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -358,10 +323,10 @@ export function removeComment(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -377,10 +342,10 @@ export function removeAllComments(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -398,10 +363,10 @@ export function updateOutcomenodeDegree(
       degree: JSON.stringify(value)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -423,10 +388,10 @@ export function duplicateSelf(
       throughType: JSON.stringify(throughType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 //Causes the specified object to insert a sibling after itself
@@ -447,10 +412,10 @@ export function insertSibling(
       throughType: JSON.stringify(throughType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -466,10 +431,10 @@ export function insertChild(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -535,13 +500,13 @@ export function dragAction(
     $.post(window.config.post_paths.inserted_at, action_data).done(
       function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else fail_function(data.action)
+        else window.fail_function(data.action)
         $('.ui-draggable').draggable('enable')
         renderer.tiny_loader.endLoad()
       }
     )
   } catch (err) {
-    fail_function('The item failed to be inserted.')
+    window.fail_function('The item failed to be inserted.')
     console.log(err)
   }
 }
@@ -571,12 +536,12 @@ export function insertedAtInstant(
       allowDifferent: JSON.stringify(true)
     }).done(function (data) {
       if (data.action === 'posted') callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
       $('.ui-draggable').draggable('enable')
       renderer.tiny_loader.endLoad()
     })
   } catch (err) {
-    fail_function('The item failed to be inserted.')
+    window.fail_function('The item failed to be inserted.')
     console.log(err)
   }
 }
@@ -595,10 +560,10 @@ export function updateOutcomehorizontallinkDegree(
       degree: JSON.stringify(degree)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -616,10 +581,10 @@ export function toggleFavourite(
       favourite: JSON.stringify(favourite)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -636,7 +601,7 @@ export function duplicateBaseItem(
         projectPk: JSON.stringify(itemPk)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else fail_function(data.action)
+        else window.fail_function(data.action)
       })
     } else if (objectType === OBJECT_TYPE.OUTCOME) {
       $.post(window.config.post_paths.duplicate_outcome_ajax, {
@@ -644,14 +609,14 @@ export function duplicateBaseItem(
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else fail_function(data.action)
+        else window.fail_function(data.action)
       })
     } else if (!projectID && projectID !== 0) {
       $.post(window.config.post_paths.duplicate_strategy_ajax, {
         workflowPk: JSON.stringify(itemPk)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else fail_function(data.action)
+        else window.fail_function(data.action)
       })
     } else {
       $.post(window.config.post_paths.duplicate_workflow_ajax, {
@@ -659,11 +624,11 @@ export function duplicateBaseItem(
         projectPk: JSON.stringify(projectID)
       }).done(function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else fail_function(data.action)
+        else window.fail_function(data.action)
       })
     }
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -677,10 +642,10 @@ export function getWorkflowData(
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -694,10 +659,10 @@ export function getWorkflowParentData(
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -711,10 +676,10 @@ export function getWorkflowChildData(
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -728,10 +693,10 @@ export function getPublicWorkflowData(
       window.config.get_paths.get_public_workflow_data.replace('0', workflowPk)
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -748,10 +713,10 @@ export function getPublicWorkflowParentData(
       )
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -768,10 +733,10 @@ export function getPublicWorkflowChildData(
       )
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -784,7 +749,7 @@ export function getDisciplines(
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -804,10 +769,10 @@ export function setUserPermission(
       permission_type: JSON.stringify(permission_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.error)
+      else window.fail_function(data.error)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -825,10 +790,10 @@ export function setLiveProjectRole(
       role_type: JSON.stringify(permission_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.error)
+      else window.fail_function(data.error)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -846,10 +811,10 @@ export function getUsersForObject(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 //Get the list of users for a liveproject
@@ -862,10 +827,10 @@ export function getUsersForLiveProject(
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -879,10 +844,10 @@ export function getUserList(
       filter: JSON.stringify(filter)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -898,10 +863,10 @@ export function getCommentsForObject(
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -919,10 +884,10 @@ export function addComment(
       text: JSON.stringify(text)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -942,10 +907,10 @@ export function addTerminology(
       translation_plural: JSON.stringify(translation_plural)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -965,10 +930,10 @@ export function updateObjectSet(
       add: JSON.stringify(add)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -982,10 +947,10 @@ export function getParentWorkflowInfo(
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1002,10 +967,10 @@ export function getPublicParentWorkflowInfo(
       )
     ).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1023,10 +988,10 @@ export function getExport(
       exportType: JSON.stringify(exportType)
     }).done(function (data, status, xhr) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1040,10 +1005,10 @@ export function makeProjectLive(
       projectPk: JSON.stringify(projectPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1061,10 +1026,10 @@ export function setWorkflowVisibility(
       visible: JSON.stringify(visible)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1080,10 +1045,10 @@ export function getLiveProjectData(
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1099,10 +1064,10 @@ export function getLiveProjectDataStudent(
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1118,10 +1083,10 @@ export function getAssignmentData(
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1137,10 +1102,10 @@ export function getAssignmentDataStudent(
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1154,10 +1119,10 @@ export function getWorkflowNodes(
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1173,10 +1138,10 @@ export function createAssignment(
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1194,10 +1159,10 @@ export function addUsersToAssignment(
       add: JSON.stringify(add)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1214,10 +1179,10 @@ export function updateLiveProjectValue(
       data: JSON.stringify(json)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1232,10 +1197,10 @@ export function setAssignmentCompletion(
       completed: JSON.stringify(completed)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1248,10 +1213,10 @@ export function getAssignmentsForNode(
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else fail_function(data.action)
+      else window.fail_function(data.action)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1262,7 +1227,7 @@ export function getLibrary(callBackFunction = () => console.log('success')) {
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1273,7 +1238,7 @@ export function getFavourites(callBackFunction = () => console.log('success')) {
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1284,7 +1249,7 @@ export function getHome(callBackFunction = () => console.log('success')) {
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1300,7 +1265,7 @@ export function getWorkflowsForProject(
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }
 
@@ -1318,6 +1283,6 @@ export function searchAllObjects(
       callBackFunction(data)
     })
   } catch (err) {
-    fail_function()
+    window.fail_function()
   }
 }

@@ -20,7 +20,7 @@
     // @todo we should not be hardcoding this
     window.process = {
       env: {
-       //  NODE_ENV: "production"
+        //  NODE_ENV: "production"
       }
     };
   </script>
@@ -32,48 +32,48 @@
 </head>
 
 <body id="site">
-  <div class="main-wrapper">
-    {% include 'course_flow/base/left_panel.html' %}
+<div class="main-wrapper">
+  {% include 'course_flow/base/left_panel.html' %}
 
-    {% comment %}
+  {% comment %}
       @todo see https://course-flow.atlassian.net/browse/COUR-246
     {% endcomment %}
-    <div id="react-portal-left-panel-extra"></div>
+  <div id="react-portal-left-panel-extra"></div>
 
-    <div class="main-block">
-      <div data-component="topbar"></div>
+  <div class="main-block">
+    <div data-component="topbar"></div>
 
-      {% comment %}
+    {% comment %}
         TODO: Convert to React, making sure not to break createPortal calls
       {% endcomment %}
-      <div class="topnav hide-print">
-        <div class="titlebar">
-          <div class="title"></div>
-        </div>
-        <div id="update-notifications"></div>
-        <div class="menubar hidden">
-          <div id="floatbar" class="floatbar">
-            <div id="visible-icons"></div>
-            <div id="overflow-options">
-              <span class="hover-shade green material-symbols-rounded">more_horiz</span>
-              <div id="overflow-links" class="create-dropdown"></div>
-            </div>
-          </div>
-          <div id="userbar" class="floatbar"></div>
-          <div id="viewbar" class="floatbar"></div>
-        </div>
+    <div class="topnav hide-print">
+      <div class="titlebar">
+        <div class="title"></div>
       </div>
+      <div id="update-notifications"></div>
+      <div class="menubar hidden">
+        <div id="floatbar" class="floatbar">
+          <div id="visible-icons"></div>
+          <div id="overflow-options">
+            <span class="hover-shade green material-symbols-rounded">more_horiz</span>
+            <div id="overflow-links" class="create-dropdown"></div>
+          </div>
+        </div>
+        <div id="userbar" class="floatbar"></div>
+        <div id="viewbar" class="floatbar"></div>
+      </div>
+    </div>
 
-      <div class="right-panel-wrapper">
-        <div id="container" class="body-wrapper">
-          {% block container %} {% endblock %}
-        </div>
-        <div id="sidebar-container">
-          {% block sidebar_container %}{% endblock %}
-        </div>
+    <div class="right-panel-wrapper">
+      <div id="container" class="body-wrapper">
+        {% block container %} {% endblock %}
+      </div>
+      <div id="sidebar-container">
+        {% block sidebar_container %}{% endblock %}
       </div>
     </div>
   </div>
+</div>
 
 <div id="popup-container"></div>
 {% block body %} {% endblock %}
@@ -91,10 +91,9 @@
 
 {% block read_only_scripts %} {% endblock %}
 
+{% block react_scripts %} {% endblock %}
 {% block scripts %}
   <script src="{% static 'course_flow/js/templates/base.js' %}"></script>
 {% endblock %}
-
-{% block react_scripts %} {% endblock %}
 
 </html>

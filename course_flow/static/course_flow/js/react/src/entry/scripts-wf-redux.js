@@ -19,14 +19,12 @@ import {
   getPublicWorkflowChildData,
   updateValue
 } from '../XMLHTTP/PostFunctions.js'
-import { getTargetProjectMenu } from '../XMLHTTP/postTemp.js'
-
-import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '../UtilityFunctions.js'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
 import { Enum } from '../UtilityFunctions.js'
+import WorkflowLoader from '../Components/components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 export { fail_function } from '../XMLHTTP/PostFunctions.js'
 
@@ -42,20 +40,20 @@ const DATA_TYPE = Enum({
 /****************************************
  *
  * ****************************************/
-export class WorkflowGridRenderer {
-  constructor(data_package) {
-    this.initial_data = data_package
-    this.store = createStore(Reducers.gridMenuReducer, data_package)
+export class WorkflowGridRenderer extends React.Component {
+  constructor(props) {
+    super(props)
+    // this.props.initial_data = data.props.data_package
+    this.store = createStore(Reducers.gridMenuReducer, this.props.data_package) // is this supposde to be this.initial_data  ?
   }
 
-  render(container) {
+  render() {
     this.container = container
 
-    reactDom.render(
+    return (
       <Provider store={this.store}>
         <WorkflowGridMenu />
-      </Provider>,
-      container[0]
+      </Provider>
     )
   }
 }
@@ -64,62 +62,67 @@ export class WorkflowGridRenderer {
  *
  * ****************************************/
 export class WorkflowRenderer {
-  constructor(workflowID, data_package) {
-    this.workflowID = workflowID
-    makeActiveSidebar('#workflow' + this.workflowID)
+  constructor(props) {
     this.message_queue = []
     this.messages_queued = true
-    this.column_choices = data_package.column_choices
-    this.context_choices = data_package.context_choices
-    this.task_choices = data_package.task_choices
-    this.time_choices = data_package.time_choices
-    this.outcome_type_choices = data_package.outcome_type_choices
-    this.outcome_sort_choices = data_package.outcome_sort_choices
+
+    this.public_view = props.public_view
+    this.workflowID = props.workflow_model_id
+    // Data package
+    this.column_choices = props.data_package.column_choices
+    this.context_choices = props.data_package.context_choices
+    this.task_choices = props.data_package.task_choices
+    this.time_choices = props.data_package.time_choices
+    this.outcome_type_choices = props.data_package.outcome_type_choices
+    this.outcome_sort_choices = props.data_package.outcome_sort_choices
     this.strategy_classification_choices =
-      data_package.strategy_classification_choices
-    this.is_strategy = data_package.is_strategy
-    this.project = data_package.project
-    this.user_permission = user_permission
+      props.data_package.strategy_classification_choices
+    this.is_strategy = props.data_package.is_strategy
+    this.project = props.data_package.project
+    this.user_permission = props.user_permission
+    this.user_role = props.user_role
+
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    try {
-      this.user_role = user_role
-    } catch (err) {
-      this.user_role = Constants.role_keys['none']
+    switch (data.user_permission) {
+      case Constants.permission_keys['view']:
+        this.can_view = true
+        break
+
+      case Constants.permission_keys['comment']:
+        this.view_comments = true
+        this.add_comments = true
+        this.can_view = true
+        break
+
+      case Constants.permission_keys['edit']:
+        this.read_only = false
+        this.view_comments = true
+        this.add_comments = true
+        this.can_view = true
+        break
+
+      // No default case needed here if these are the only options
     }
 
-    this.public_view = public_view
-    this.read_only = true
+    switch (data.user_role) {
+      case Constants.role_keys['none']:
+        // nuclear fusion logic here
+        break
 
-    if (this.public_view) {
-      this.always_static = true
-    }
+      case Constants.role_keys['student']:
+        this.is_student = true
+        this.show_assignments = true
+        break
 
-    if (this.user_permission === Constants.permission_keys['none']) {
-      this.always_static = true
-    } else if (this.user_permission === Constants.permission_keys['view']) {
-      this.can_view = true
-    } else if (this.user_permission === Constants.permission_keys['comment']) {
-      this.view_comments = true
-      this.add_comments = true
-      this.can_view = true
-    } else if (this.user_permission === Constants.permission_keys['edit']) {
-      this.read_only = false
-      this.view_comments = true
-      this.add_comments = true
-      this.can_view = true
-    }
+      case Constants.role_keys['teacher']:
+        this.is_teacher = true
+        this.show_assignments = true
+        break
 
-    if (this.user_role === Constants.role_keys['none']) {
-      // nuclear fusion
-    } else if (this.user_role === Constants.role_keys['student']) {
-      this.is_student = true
-      this.show_assignments = true
-    } else if (this.user_role === Constants.role_keys['teacher']) {
-      this.is_teacher = true
-      this.show_assignments = true
+      // No default case needed here if these are the only options
     }
 
     if (this.public_view) {
@@ -519,9 +522,9 @@ export class WorkflowRenderer {
  * }
  */
 export class ComparisonRenderer {
-  constructor(data) {
-    this.project_data = data.project_data
-    this.user_permission = data.user_permission
+  constructor(props) {
+    this.project_data = props.data.project_data
+    this.user_permission = props.user_permission
     makeActiveSidebar('#project' + this.project_data.id)
   }
 
@@ -638,30 +641,5 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
         this.attempt_reconnect()
       }
     })
-  }
-}
-
-export function CreateNew(create_url) {
-  let tiny_loader = new TinyLoader($('body')[0])
-  tiny_loader.startLoad()
-  getTargetProjectMenu(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location = create_url.replace(
-          '/0/',
-          '/' + response_data.parentID + '/'
-        )
-      }
-    },
-    () => {
-      tiny_loader.endLoad()
-    }
-  )
-}
-
-export class WorkflowLoader extends Component {
-  render() {
-    return <div className="load-screen" />
   }
 }

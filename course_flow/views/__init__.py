@@ -27,5 +27,3 @@ from course_flow.views.json_api.search_api import *
 from course_flow.views.json_api.sharing_api import *
 from course_flow.views.json_api.update_api import *
 from course_flow.views.json_api.workflow_api import *
-
-from .views import *

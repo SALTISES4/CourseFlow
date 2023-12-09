@@ -84,11 +84,18 @@ def get_my_live_projects(user):
 
 @login_required
 def my_live_projects_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_live_projects(request.user))
-        .decode("utf-8")
+    current_user = request.user
+    context = {}
+    context_data = {
+        "user_id": current_user.id if current_user else 0,
+        "project_data_package": get_my_live_projects(request.user),
     }
+
+    context["contextData"] = (
+        JSONRenderer().render(context_data).decode("utf-8")
+    )
+    context["path_id"] = "my_live_projects"
+    context["title"] = "My Live Projects"
     return render(request, "course_flow/react/my_live_projects.html", context)
 
 

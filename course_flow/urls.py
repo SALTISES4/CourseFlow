@@ -150,7 +150,7 @@ def course_flow_patterns():
         ),
         path(
             "workflow/node-link/new",
-            views.json_api.create_api.json_api_post_new_node_link,
+            views.json_api.create_api.json_api_post_new_node,
             name="json-api-post-new-node-link",
         ),
         path(
@@ -326,7 +326,7 @@ def course_flow_patterns():
         ),
         path(
             "user/mark-all-as-read/",
-            views.json_api.sharing_api.json_api_post_mark_all_as_read,
+            views.json_api.sharing_api.json_api_post_mark_all_notifications_as_read,
             name="json-api-post-mark-all-notifications-as-read",
         ),
         path(

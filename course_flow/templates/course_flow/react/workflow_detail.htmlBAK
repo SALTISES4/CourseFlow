@@ -1,7 +1,0 @@
-{% extends "course_flow/react/workflow_update.html" %}
-
-{% block read_only_scripts %}
-<script nonce="{{request.csp_nonce}}">
-    const read_only=true;
-</script>
-{% endblock%}

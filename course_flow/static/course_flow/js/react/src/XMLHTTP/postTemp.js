@@ -1,6 +1,7 @@
 // REACT
 // import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents.js'
 import { DATA_ACTIONS } from './common.js'
+import { TinyLoader } from '../redux/helpers.js'
 
 /**
  *
@@ -112,6 +113,26 @@ export function getLinkedWorkflowMenu(
       callBackFunction()
       // @TODO call to react render
       //  openLinkedWorkflowMenu(data, updateFunction)
+    }
+  )
+}
+
+// not sure where this lives yet
+export function createNew(create_url) {
+  let tiny_loader = new TinyLoader($('body')[0])
+  tiny_loader.startLoad()
+  getTargetProjectMenu(
+    -1,
+    (response_data) => {
+      if (response_data.parentID !== null) {
+        window.location = create_url.replace(
+          '/0/',
+          '/' + response_data.parentID + '/'
+        )
+      }
+    },
+    () => {
+      tiny_loader.endLoad()
     }
   )
 }

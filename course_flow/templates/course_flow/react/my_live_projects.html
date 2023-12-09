@@ -4,7 +4,7 @@
 <!-- -->
 {% block header %} {% endblock %}
 <!-- -->
-{% block title %}{% trans "My Classrooms" %} - CourseFlow{% endblock %}
+{% block title %}{% trans title %} - CourseFlow{% endblock %}
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
@@ -17,20 +17,5 @@
 {% csrf_token %}
 <!-- -->
 {% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
 
-  const data_package = {{project_data_package|safe}}
-
-  var home_renderer;
-  const user_id = {{ user.id }};
-  const read_only=false;
-  window.addEventListener("load",function(){
-      home_renderer = new renderers.WorkflowGridRenderer(data_package);
-      $(document).ajaxError(renderers.fail_function);
-      home_renderer.render($("#container"));
-      makeActiveSidebar("#panel-my-live-projects");
-  });
-
-
-</script>
 {% endblock %}

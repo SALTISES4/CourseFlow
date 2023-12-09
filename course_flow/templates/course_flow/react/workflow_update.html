@@ -6,8 +6,8 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}
-  {% if object.title != "" %}
-    {{ object.title }}
+  {% if title != "" %}
+    {{ title }}
   {% else %}
     {% trans "Untitled" %}
   {% endif %}
@@ -16,7 +16,7 @@
 
 {% block body %}
 
-  
+
 {% endblock %}
 
 {% csrf_token %}
@@ -25,44 +25,9 @@
   {{ block.super }}
   <script nonce="{{ request.csp_nonce }}">
 
-    const workflow_paths = {
-      activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      course: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      program: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
-    }
-
-    
-
-    const public_view = {{public_view|safe}};
-    const user_permission =
-    {{user_permission|safe}}
-    const user_role = {{user_role|safe}}
-
-      jQuery('<div>', {
-        class: 'load-screen'
-      }).appendTo("#container");
-    
-
-
-    const user_id = {{ user.id |default:0}};
-    const workflow_model_id = {{ object.id }};
-    const workflow_type = "{{ object.type }}";
-    const user_name = "{{ user.username |default:""}}";
-
-    workflow_data_package =
-    {{data_package|safe}}
-
-    var workflow_renderer;
-    const myColour = 'hsl(' + (((user_id * 5) % 360) + 1) + ',50%,50%)';
-
-    const changeFieldID = Math.floor(Math.random() * 10000);
-
-    window.addEventListener("load", function () {
-      workflow_renderer = new renderers.WorkflowRenderer(workflow_model_id, workflow_data_package);
-      workflow_renderer.connect();
-      $(document).ajaxError(renderers.fail_function);
-    });
+    jQuery('<div>', {
+      class: 'load-screen'
+    }).appendTo("#container");
   </script>
 
 {% endblock %}

@@ -5,7 +5,7 @@
 {% block header %}{% endblock %}
 <!-- -->
 {% block title %}
-  {%if title != "" %}
+  {% if title != "" %}
     {{ title }}
   {% else %}
     {% trans "Untitled" %}
@@ -16,7 +16,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<!-- -->
+  <!-- -->
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
@@ -27,11 +27,11 @@
 
 {% endblock %}
 <!-- -->
-{% block scripts %} {{ block.super }}
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}
 
-<script nonce="{{request.csp_nonce}}">
-  // if context
-  if(contextData.user_role>0)$(".menubar").removeClass("hidden");
-</script>
+{% block scripts %}
+  {{ block.super }}
 
 {% endblock %}

@@ -29,13 +29,24 @@ const cache = createCache({
   nonce: document.querySelector('#script-redesign').nonce
 })
 
-import { LibraryRenderer } from './scripts-library.js'
-import { ProjectRenderer } from './scripts-library.js'
-import { FavouritesRenderer } from './scripts-library.js'
-import { HomeRenderer } from './scripts-library.js'
-import { ExploreRenderer } from './scripts-library.js'
-import { LiveAssignmentRenderer } from './scripts-live.js'
-import { LiveProjectRenderer } from './scripts-live.js'
+// LIBRARY
+import {
+  HomeRenderer,
+  ExploreRenderer,
+  FavouritesRenderer,
+  ProjectRenderer,
+  LibraryRenderer
+} from './scripts-library.js'
+
+// LIVE
+import { LiveAssignmentRenderer, LiveProjectRenderer } from './scripts-live.js'
+// REDUX
+import {
+  ComparisonRenderer,
+  WorkflowComparisonRenderer,
+  WorkflowGridRenderer,
+  WorkflowRenderer
+} from './scripts-wf-redux.js'
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
@@ -61,7 +72,7 @@ function renderComponents(components) {
 const LibraryComponent = () => {
   switch (window.path_id) {
     case 'projectDetail':
-      return <ProjectRenderer props={window.contextData} />
+      return <ProjectRenderer {...window.contextData} />
     case 'favorites':
       return <FavouritesRenderer />
     case 'library':
@@ -69,41 +80,50 @@ const LibraryComponent = () => {
       // contextData and pass that to LibraryRenderer
       return <LibraryRenderer />
     case 'home':
-      return <HomeRenderer props={window.contextData} />
+      return <HomeRenderer {...window.contextData} />
     case 'explore':
-      return <ExploreRenderer props={window.contextData} />
+      return <ExploreRenderer {...window.contextData} />
   }
 }
 
 const LiveComponent = () => {
   switch (window.path_id) {
     case 'assignmentDetail':
-      return <LiveAssignmentRenderer props={window.contextData} />
+      return <LiveAssignmentRenderer {...window.contextData} />
     case 'myLiveProjects':
-      return <LiveProjectRenderer props={window.contextData} />
+      return <LiveProjectRenderer {...window.contextData} />
   }
 }
 
 const ReduxComponent = () => {
   switch (window.path_id) {
     case 'projectComparison':
-      // not sure, is redux
-
+      /**
+       * @todo for myColour, changeFieldID decide whether these should go in
+       * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
+       */
       const thisContextData = {
         ...window.contextData,
         myColour:
           'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
-    // return  <ComparisonRenderer props={contextData} />
-    case 'workflowUpdate':
-      break
-    case 'myLiveProjects':
-      break
-    case 'liveProjects':
-      break
-    case 'liveAssignment':
-      break
+      // not sure yet because the render method is taking arguments
+      return <ComparisonRenderer {...thisContextData} />
+    case 'workflowDetailView': {
+      // not sure yet because the render method is taking arguments
+      const thisContextData = {
+        ...window.contextData,
+        myColour:
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+      const workflow_renderer = new WorkflowRenderer(thisContextData)
+      workflow_renderer.connect()
+      return null
+    }
+    case 'my_live_projects':
+      return <WorkflowGridRenderer {...window.contextData} />
   }
 }
 
@@ -117,6 +137,11 @@ window.addEventListener('load', () => {
     },
     {
       component: <LiveComponent />,
+      target: '#container',
+      styles: null
+    },
+    {
+      component: <ReduxComponent />,
       target: '#container',
       styles: null
     },

@@ -3,6 +3,7 @@ import {
   getLiveProjectData,
   getLiveProjectDataStudent
 } from '../../../XMLHTTP/PostFunctions.js'
+import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 export class LiveProjectSection extends React.Component {
   constructor(props) {
@@ -28,7 +29,6 @@ export class LiveProjectSection extends React.Component {
   }
 
   defaultRender() {
-    // @todo undefined scope error
-    return <window.renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 }
