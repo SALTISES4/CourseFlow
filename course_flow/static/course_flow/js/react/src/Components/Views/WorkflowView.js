@@ -6,7 +6,9 @@ import {
   EditableComponentWithActions,
   EditableComponentWithSorting,
   WorkflowTitle,
-  CollapsibleText
+  CollapsibleText,
+  MenuBar,
+  RightSideBar
 } from '../components/CommonComponents'
 import ColumnWorkflowView from './ColumnWorkflowView.js'
 import WeekWorkflowView from './WeekWorkflowView.js'
@@ -21,6 +23,7 @@ import {
   moveWeekWorkflow,
   toggleObjectSet
 } from '../../redux/Reducers.js'
+import { ConnectionBar } from '../../ConnectedUsers.js'
 import { OutcomeBar } from './OutcomeEditView.js'
 import StrategyView from '../components/Strategy.js'
 import WorkflowOutcomeView from './WorkflowOutcomeView.js'
@@ -53,36 +56,49 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   render() {
     let renderer = this.props.renderer
     let data = this.props.data
+    let visible_buttons = (() => {
+      return [this.getEdit(), this.getShare()]
+    }).bind(this)
+    let overflow_links = this.getOverflowLinks.bind(this)
+    let viewbar = (() => {
+      return [this.getJump(), this.getExpand()]
+    }).bind(this)
+    let userbar
+    if (!renderer.always_static)
+      userbar = (() => (
+        <ConnectionBar
+          updateSocket={renderer.updateSocket}
+          renderer={renderer}
+        />
+      )).bind(this)
 
     return (
-      <div id="workflow-wrapper" className="workflow-wrapper">
-        {this.getHeader()}
-        {reactDom.createPortal(
-          this.getOverflowLinks(),
-          $('#overflow-links')[0]
-        )}
-        {reactDom.createPortal(this.getEdit(), $('#visible-icons')[0])}
-        {reactDom.createPortal(this.getShare(), $('#visible-icons')[0])}
-        {reactDom.createPortal(
-          [this.getJump(), this.getExpand()],
-          $('#viewbar')[0]
-        )}
-        {this.addEditable(data)}
+      <div className="main-block">
+        <MenuBar
+          overflow_links={overflow_links}
+          visible_buttons={visible_buttons}
+          viewbar={viewbar}
+          userbar={userbar}
+        />
+        <div className="right-panel-wrapper">
+          <div class="body-wrapper">
+            <div id="workflow-wrapper" className="workflow-wrapper">
+              {this.getHeader()}
+              {this.addEditable(data)}
 
-        <div className="workflow-container">{this.getWorkflowContent()}</div>
-        {
-          <NodeBar
-            view_type={renderer.view_type}
+              <div className="workflow-container">
+                {this.getWorkflowContent()}
+              </div>
+              {this.getReturnLinks()}
+              {this.getParentWorkflowIndicator()}
+            </div>
+          </div>
+          <RightSideBar
+            context="workflow"
             renderer={this.props.renderer}
+            data={data}
           />
-        }
-        {!data.is_strategy && <OutcomeBar renderer={this.props.renderer} />}
-        {!renderer.read_only && <RestoreBar renderer={this.props.renderer} />}
-        {!data.is_strategy && (
-          <ViewBar data={data} renderer={this.props.renderer} />
-        )}
-        {this.getReturnLinks()}
-        {this.getParentWorkflowIndicator()}
+        </div>
       </div>
     )
   }
@@ -1015,15 +1031,14 @@ class ViewBarUnconnected extends React.Component {
       </div>
     )
 
-    return reactDom.createPortal(
+    return (
       <div id="node-bar-workflow" className="right-panel-inner">
         <h3>{gettext('View options')}</h3>
         <hr />
         {sort_block}
         <h4>{gettext('Object Sets')}</h4>
         {sets}
-      </div>,
-      $('#view-bar')[0]
+      </div>
     )
   }
 
@@ -1105,7 +1120,7 @@ class NodeBarUnconnected extends React.Component {
       <StrategyView key={strategy.id} objectID={strategy.id} data={strategy} />
     ))
 
-    return reactDom.createPortal(
+    return (
       <div id="node-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">{gettext('Add to workflow')}</h3>
         <hr />
@@ -1119,8 +1134,7 @@ class NodeBarUnconnected extends React.Component {
             {saltise_strategies}
           </div>
         ]}
-      </div>,
-      $('#node-bar')[0]
+      </div>
     )
   }
 }
@@ -1180,7 +1194,7 @@ class RestoreBarUnconnected extends React.Component {
       />
     ))
 
-    return reactDom.createPortal(
+    return (
       <div id="restore-bar-workflow" className="right-panel-inner">
         <h3>{gettext('Restore items')}</h3>
         <hr />
@@ -1198,8 +1212,7 @@ class RestoreBarUnconnected extends React.Component {
         <hr />
         <h4>{gettext('Node Links')}</h4>
         <div className="node-bar-column-block">{nodelinks}</div>
-      </div>,
-      $('#restore-bar')[0]
+      </div>
     )
   }
 

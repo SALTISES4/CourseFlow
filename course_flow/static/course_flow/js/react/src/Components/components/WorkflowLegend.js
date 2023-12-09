@@ -24,7 +24,8 @@ class WorkflowLegend extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      show_legend: JSON.parse(localStorage.getItem('show_legend'))
+      show_legend: JSON.parse(localStorage.getItem('show_legend')),
+      show_slider: false
     }
   }
 
@@ -97,20 +98,24 @@ class WorkflowLegend extends React.Component {
   }
 
   getSlider() {
-    return reactDom.createPortal(
-      [
-        <div>{gettext('Legend')}</div>,
-        <Slider
-          checked={this.state.show_legend}
-          toggleAction={this.toggle.bind(this)}
-        />
-      ],
-      $('#viewbar')[0]
-    )
+    if (this.state.show_slider) {
+      return reactDom.createPortal(
+        [
+          <div>{gettext('Legend')}</div>,
+          <Slider
+            checked={this.state.show_legend}
+            toggleAction={this.toggle.bind(this)}
+          />
+        ],
+        $('#viewbar')[0]
+      )
+    }
+    return null
   }
 
   componentDidMount() {
     $('.workflow-legend').draggable()
+    this.setState({ show_slider: true })
   }
 }
 const mapStateToProps = (state) => {

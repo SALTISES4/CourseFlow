@@ -8,7 +8,7 @@ import {
 import { setAssignmentCompletion } from '../../../PostFunctions.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
 import { WorkflowForMenu } from '../../Library'
-import LiveProjectMenu from "./LiveProjectMenu.js";
+import LiveProjectMenu from './LiveProjectMenu.js'
 
 export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {

@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load course_flow_templatetags %}
+<div class="main-block">
+  <div data-component="topbar"></div>
+
+  {% comment %}
+    TODO: Convert to React, making sure not to break createPortal calls
+  {% endcomment %}
+  <div class="topnav hide-print">
+    <div class="titlebar">
+      <div class="title"></div>
+    </div>
+    <div id="update-notifications"></div>
+  </div>
+
+  <div id="container" class="body-wrapper"></div>
+</div>

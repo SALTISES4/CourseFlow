@@ -5,7 +5,8 @@ import {
   Component,
   EditableComponent,
   EditableComponentWithSorting,
-  WorkflowTitle
+  WorkflowTitle,
+  RightSideBar
 } from '../components/CommonComponents'
 import * as Utility from '../../UtilityFunctions.js'
 
@@ -15,6 +16,8 @@ import {
   insertedAt,
   insertedAtInstant
 } from '../../PostFunctions.js'
+import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
+import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 import { WeekWorkflowComparisonView } from './WeekWorkflowView.js'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.js'
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
@@ -119,20 +122,26 @@ export class ComparisonView extends React.Component {
     }
 
     return (
-      <div id="workflow-wrapper" className="workflow-wrapper">
-        {this.getHeader()}
-        <div className="workflow-view-select hide-print">
-          {view_buttons_sorted}
-        </div>
-        <div className="workflow-container comparison-view">
-          {reactDom.createPortal(share, $('#visible-icons')[0])}
-          <div className="workflow-array">{workflow_content}</div>
-          {add_button}
-
-          <ViewBar
+      <div className="main-block">
+        <div className="right-panel-wrapper">
+          <div class="body-wrapper">
+            <div id="workflow-wrapper" className="workflow-wrapper">
+              {this.getHeader()}
+              <div className="workflow-view-select hide-print">
+                {view_buttons_sorted}
+              </div>
+              <div className="workflow-container comparison-view">
+                <div className="workflow-array">{workflow_content}</div>
+                {add_button}
+              </div>
+            </div>
+          </div>
+          <RightSideBar
+            context="comparison"
+            renderer={this.props.renderer}
+            data={data}
             toggleObjectSet={this.toggleObjectSet.bind(this)}
             object_sets={this.state.object_sets}
-            renderer={this.props.renderer}
           />
         </div>
       </div>
@@ -575,7 +584,7 @@ export const OutcomeComparisonView = connect(
   null
 )(OutcomeComparisonViewUnconnected)
 
-class ViewBar extends React.Component {
+export class ComparisonViewBar extends React.Component {
   render() {
     let sets = (
       <div className="node-bar-sort-block">
@@ -601,12 +610,11 @@ class ViewBar extends React.Component {
           ))}
       </div>
     )
-    return reactDom.createPortal(
+    return (
       <div id="node-bar-workflow" className="right-panel-inner">
         <h4>{gettext('Object Sets') + ':'}</h4>
         {sets}
-      </div>,
-      $('#view-bar')[0]
+      </div>
     )
   }
 

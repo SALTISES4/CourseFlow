@@ -12,7 +12,6 @@
   {{ block.super }}
   <script nonce="{{ request.csp_nonce }}">
 
-    $(".menubar").removeClass("hidden");
     const user_id = {{ user.id }};
 
 //    var library_renderer;

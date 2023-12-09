@@ -75,7 +75,6 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       >
         <div className="outcome-edit" ref={this.maindiv}>
           {outcomes}
-          {this.getParentOutcomeBar()}
         </div>
       </div>
     )
@@ -98,10 +97,6 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
         </div>
       )
     return add_new_outcome
-  }
-
-  getParentOutcomeBar() {
-    return <ParentOutcomeBar renderer={this.props.renderer} />
   }
 
   componentDidMount() {
@@ -334,7 +329,7 @@ class OutcomeBarUnconnected extends React.Component {
     let edittext = Utility.capWords(
       gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
     )
-    return reactDom.createPortal(
+    return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">{gettext('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
@@ -348,8 +343,7 @@ class OutcomeBarUnconnected extends React.Component {
           </button>
         )}
         <hr />
-      </div>,
-      $('#outcome-bar')[0]
+      </div>
     )
   }
 
@@ -409,7 +403,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
       )
     }
 
-    return reactDom.createPortal(
+    return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">
           {gettext('Outcomes from Parent Workflow')}
@@ -418,8 +412,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
           {multiple_parent_warning}
           {outcomebaroutcomes}
         </div>
-      </div>,
-      $('#outcome-bar')[0]
+      </div>
     )
   }
 }
