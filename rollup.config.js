@@ -100,26 +100,26 @@ export default [
     },
     plugins: bundlePlugins
   },
-  {
-    input: `${bundleEntry}scripts-live.js`,
-    output: {
-      file: `${bundleRoot}scripts-live.min.js`,
-      name: 'live_renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
-  {
-    input: `${bundleEntry}scripts-library.js`,
-    output: {
-      file: `${bundleRoot}scripts-library.min.js`,
-      name: 'library_renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
+  // {
+  //   input: `${bundleEntry}scripts-live.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-live.min.js`,
+  //     name: 'live_renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
+  // {
+  //   input: `${bundleEntry}scripts-library.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-library.min.js`,
+  //     name: 'library_renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
   {
     input: `${bundleEntry}scripts-redesign.js`,
     output: {

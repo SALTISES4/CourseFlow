@@ -1,30 +1,65 @@
 <script nonce="{{ request.csp_nonce }}">
 
+  const path_id = "{{ path_id }}";
   const DTOcontextData = {{ contextData | safe }};
-  let switch_renderer;
+  let switch_renderer
+  let contextData
+
 
   switch (path_id) {
-    case 'projectComparison': {
+    case 'projectDetail': {
 
-      const contextData = DTOcontextData
+      contextData = DTOcontextData
       window.create_path_this_project = {
         activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
         course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
         program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
       }
-
-      /**
-       * see class ProjectRenderer for DTO shape
-       */
-      switch_renderer = new window.library_renderers.ProjectRenderer(contextData);
-
       window.addEventListener("load", function () {
+        $(".menubar").removeClass("hidden");
         makeActiveSidebar("#project" + contextData.project_data.id);
       });
     }
       break;
 
-    case 'projectDetail': {
+
+    case 'favorites': {
+      $(".menubar").removeClass("hidden");
+      window.addEventListener("load", function () {
+        makeActiveSidebar("#my-favourites");
+      });
+    }
+      break;
+
+    case 'library': {// const {user_id} = window.COURSEFLOW_APP.home
+      // switch_renderer = new window.library_renderers.LibraryRenderer()
+      window.addEventListener('load', () => {
+        makeActiveSidebar('#panel-my-library')
+        waitUntilElementExists('.menubar').then((el) => {
+          el.classList.remove('hidden')
+        })
+      })
+    }
+      break;
+
+    case 'home': {
+      window.addEventListener('load', () => {
+        makeActiveSidebar('#panel-home')
+      })
+    }
+      break;
+
+
+    case 'explore': {
+      window.addEventListener("load", function () {
+        makeActiveSidebar("#panel-explore");
+      });
+    }
+      break;
+    /*******************************************************
+     * REDUX STUFF
+     *******************************************************/
+    case 'projectComparison': {
 
       //  @todo these don't seem to be used
       // window.workflow_paths = {
@@ -38,46 +73,12 @@
        * @todo for myColour, changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
        */
-      const contextData = {
+      contextData = {
         ...DTOcontextData,
         myColour: 'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       switch_renderer = new window.renderers.ComparisonRenderer(contextData);
-    }
-      break;
-
-    case 'favorites': {
-      switch_renderer = new library_renderers.FavouritesRenderer();
-
-      window.addEventListener("load", function () {
-        makeActiveSidebar("#my-favourites");
-      });
-    }
-      break;
-
-    case 'library': {// const {user_id} = window.COURSEFLOW_APP.home
-      // if this complains aboutuser_id add it to
-      // contextData and pass that to LibraryRenderer
-      switch_renderer = new window.library_renderers.LibraryRenderer()
-      window.addEventListener('load', () => {
-        makeActiveSidebar('#panel-my-library')
-      })
-    }
-      break;
-
-    case 'home': {
-      switch_renderer = new window.library_renderers.HomeRenderer(
-        window.window.COURSEFLOW_APP.home.is_teacher
-      )
-      window.addEventListener('load', () => {
-        makeActiveSidebar('#panel-home')
-      })
-    }
-      break;
-
-
-    case 'explore': {
     }
       break;
     case 'workflowUpdate': {
@@ -94,9 +95,8 @@
       break;
   }
 
-
   window.addEventListener("load", function () {
-    switch_renderer.render($("#container"));
+    switch_renderer && switch_renderer.render($("#container"));
     $(document).ajaxError(window.renderers.fail_function);
   });
 

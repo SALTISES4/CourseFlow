@@ -8,28 +8,14 @@
 
 {% csrf_token %}
 
+
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}
+
 {% block scripts %}
   {{ block.super }}
-
-  <script nonce="{{ request.csp_nonce }}">
-
-    const explorer_config = {
-      // user_id: {{ user.id }},
-      initial_workflows: {{initial_workflows|safe}},
-      initial_pages: {{initial_pages|safe}},
-      disciplines_list: {{disciplines|safe}},
-    }
-
-    window.addEventListener("load", function () {
-      const explore_renderer = new window.library_renderers.ExploreRenderer(
-        explorer_config.disciplines_list,
-        explorer_config.initial_workflows,
-        explorer_config.initial_pages
-      );
-      $(document).ajaxError(window.renderers.fail_function);
-      explore_renderer.render($("#container"));
-      makeActiveSidebar("#panel-explore");
-    });
-  </script>
-
 {% endblock %}
+
+

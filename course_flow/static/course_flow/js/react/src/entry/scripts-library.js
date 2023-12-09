@@ -1,7 +1,6 @@
 /**
  * Individual Page/View React Renderers
  */
-import * as reactDom from 'react-dom'
 import * as React from 'react'
 import * as Constants from '../Constants.js'
 import { TinyLoader } from '../redux/helpers.js'
@@ -16,14 +15,15 @@ import {
 /*******************************************************
  * @LibraryRenderer
  *******************************************************/
-export class LibraryRenderer {
-  constructor() {}
+export class LibraryRenderer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
-
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {
@@ -47,11 +47,11 @@ export class FavouritesRenderer extends LibraryRenderer {
  *  initial_pages: any
  *******************************************************/
 export class ExploreRenderer extends LibraryRenderer {
-  constructor(disciplines, initial_workflows = [], initial_pages = {}) {
-    super()
-    this.disciplines = disciplines
-    this.initial_workflows = initial_workflows
-    this.initial_pages = initial_pages
+  constructor(data) {
+    super(data)
+    this.disciplines = data.props.disciplines
+    this.initial_workflows = data.props.initial_workflows
+    this.initial_pages = data.props.initial_pages
     this.tiny_loader = new TinyLoader($('body')[0])
   }
 
@@ -97,14 +97,16 @@ export class ExploreRenderer extends LibraryRenderer {
  *   }>
  * }
  */
-export class ProjectRenderer {
+export class ProjectRenderer extends React.Component {
   constructor(data /*: ProjectViewDTO */) {
+    super(data)
+
     this.read_only = true
-    this.project_data = data.project_data
-    this.all_disciplines = data.disciplines
-    this.user_role = data.user_role
-    this.user_permission = data.user_permission
-    this.userId = data.user_id
+    this.project_data = data.props.project_data
+    this.all_disciplines = data.props.disciplines
+    this.user_role = data.props.user_role
+    this.user_permission = data.props.user_permission
+    this.userId = data.props.user_id
 
     if (
       this.project_data.object_permission &&
@@ -115,11 +117,11 @@ export class ProjectRenderer {
     }
   }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {
@@ -136,16 +138,17 @@ export class ProjectRenderer {
 /*******************************************************
  * @HomeRenderer
  *******************************************************/
-export class HomeRenderer {
-  constructor(is_teacher) {
-    this.is_teacher = is_teacher
+export class HomeRenderer extends React.Component {
+  constructor(data) {
+    super(data)
+    this.is_teacher = data.props.is_teacher
   }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {

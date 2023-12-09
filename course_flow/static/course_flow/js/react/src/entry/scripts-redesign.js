@@ -26,6 +26,14 @@ const cache = createCache({
   nonce: document.querySelector('#script-redesign').nonce
 })
 
+import { LibraryRenderer } from './scripts-library.js'
+import { ProjectRenderer } from './scripts-library.js'
+import { FavouritesRenderer } from './scripts-library.js'
+import { HomeRenderer } from './scripts-library.js'
+import { ExploreRenderer } from './scripts-library.js'
+import { LiveAssignmentRenderer } from './scripts-live.js'
+import { LiveProjectRenderer } from './scripts-live.js'
+
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
 // progressively adding partials into the existing templates
@@ -45,9 +53,70 @@ function renderComponents(components) {
   })
 }
 
+// window.contextData
+// set in python views and prepped in react_renderer.html
+const LibraryComponent = () => {
+  switch (window.path_id) {
+    case 'projectDetail':
+      return <ProjectRenderer props={window.contextData} />
+    case 'favorites':
+      return <FavouritesRenderer />
+    case 'library':
+      // if this complains about user_id add it to
+      // contextData and pass that to LibraryRenderer
+      return <LibraryRenderer />
+    case 'home':
+      return <HomeRenderer props={window.contextData} />
+    case 'explore':
+      return <ExploreRenderer props={window.contextData} />
+  }
+}
+
+const LiveComponent = () => {
+  switch (window.path_id) {
+    case 'assignmentDetail':
+      return <LiveAssignmentRenderer props={window.contextData} />
+    case 'myLiveProjects':
+      return <LiveProjectRenderer props={window.contextData} />
+  }
+}
+
+const ReduxComponent = () => {
+  switch (window.path_id) {
+    case 'projectComparison':
+      // not sure, is redux
+
+      const thisContextData = {
+        ...window.contextData,
+        myColour:
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+    // return  <ComparisonRenderer props={contextData} />
+    case 'workflowUpdate':
+      break
+    case 'myLiveProjects':
+      break
+    case 'liveProjects':
+      break
+    case 'liveAssignment':
+      break
+  }
+}
+
 // Register all the components that we're loading ourselves on load
 window.addEventListener('load', () => {
   renderComponents([
+    {
+      component: <LibraryComponent />,
+      target: '#container',
+      styles: null
+    },
+    {
+      component: <LiveComponent />,
+      target: '#container',
+      styles: null
+    },
     {
       component: <Sidebar />,
       target: '.main-wrapper [data-component="sidebar"]',

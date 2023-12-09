@@ -438,6 +438,10 @@ class ExploreFilter extends WorkflowFilter {
   }
 }
 
+// @todo fix consitent props drilling
+// this.props.disciplines
+//  this.props.renderer.initial_workflows
+// etc
 class ExploreMenu extends LibraryMenu {
   render() {
     return (

@@ -19,27 +19,35 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/react/explore.html"
 
     def get_context_data(self):
+        current_user = self.request.user
+        context = {}
+
         initial_workflows, pages = get_explore_objects(
-            self.request.user,
+            current_user,
             "",
             20,
             True,
             {"sort": "created_on", "sort_reversed": True},
         )
-        return {
-            "initial_workflows": JSONRenderer()
-            .render(
+
+        context_data = {
+            "initial_workflows": (
                 InfoBoxSerializer(
                     initial_workflows,
                     context={"user": self.request.user},
                     many=True,
                 ).data
-            )
-            .decode("utf-8"),
-            "initial_pages": JSONRenderer().render(pages).decode("utf-8"),
-            "disciplines": JSONRenderer()
-            .render(
-                DisciplineSerializer(Discipline.objects.all(), many=True).data
-            )
-            .decode("utf-8"),
+            ),
+            "initial_pages": pages,
+            "disciplines": DisciplineSerializer(
+                Discipline.objects.all(), many=True
+            ).data,
+            "user_id": current_user.id if current_user else 0,
         }
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
+        )
+        context["path_id"] = "explore"
+        context["title"] = "Explore"
+
+        return context

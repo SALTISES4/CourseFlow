@@ -10,9 +10,12 @@ import WorkflowFilter from './WorkFlowFilter.js'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 class LibraryMenu extends React.Component {
-  constructor(props) {
-    super(props)
+  constructor(data) {
+    super(data)
     this.state = {}
+    this.read_only = this.data.props.renderer.read_only
+    this.renderer = this.data.props.renderer
+
     this.createDiv = React.createRef()
   }
 
@@ -31,7 +34,7 @@ class LibraryMenu extends React.Component {
    *******************************************************/
   getCreate() {
     let create
-    if (!this.props.renderer.read_only)
+    if (!this.read_only)
       create = (
         <div
           className="hover-shade"
@@ -100,7 +103,7 @@ class LibraryMenu extends React.Component {
           document.getElementById('overflow-links')
         )}
         <WorkflowFilter
-          renderer={this.props.renderer}
+          renderer={this.renderer}
           workflows={this.state.project_data}
           context="library"
         />

@@ -20,32 +20,26 @@ class AssignmentDetailView(
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         assignment = self.object
+        current_user = self.request.user
+
         liveproject = assignment.liveproject
-        context["assignment_data"] = (
-            JSONRenderer()
-            .render(
-                LiveAssignmentSerializer(
-                    assignment, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
+
+        context_data = {
+            "user_role": LiveProjectUser.objects.get(
+                user=self.request.user, liveproject=liveproject
+            ).role_type,
+            "live_project_data": LiveProjectSerializer(
+                liveproject, context={"user": self.request.user}
+            ).data,
+            "assignment_data": LiveAssignmentSerializer(
+                assignment, context={"user": self.request.user}
+            ).data,
+            "user_id": current_user.id if current_user else 0,
+        }
+
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
         )
-        context["live_project_data"] = (
-            JSONRenderer()
-            .render(
-                LiveProjectSerializer(
-                    liveproject, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
-        context["user_role"] = (
-            JSONRenderer()
-            .render(
-                LiveProjectUser.objects.get(
-                    user=self.request.user, liveproject=liveproject
-                ).role_type
-            )
-            .decode("utf-8")
-        )
+        context["path_id"] = "assignmentDetail"
+        context["title"] = assignment.title
         return context

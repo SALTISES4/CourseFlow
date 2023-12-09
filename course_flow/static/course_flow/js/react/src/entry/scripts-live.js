@@ -14,19 +14,21 @@ import { TinyLoader } from '../redux/helpers.js'
 /*******************************************************
  * @LiveProjectRenderer
  *******************************************************/
-export class LiveProjectRenderer {
-  constructor(live_project_data, project_data) {
-    this.live_project_data = live_project_data
-    this.project_data = project_data
-    this.user_role = user_role
-    this.user_permission = user_permission
+export class LiveProjectRenderer extends React.Component {
+  constructor(data) {
+    super(data)
+    this.live_project_data = this.data.props.live_project_data
+    this.project_data = this.data.props.project_data
+    this.user_role = this.data.props.user_role
+    this.user_permission = this.data.props.user_permission
   }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    reactDom.render(this.getContents(), container[0])
+    // return this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {

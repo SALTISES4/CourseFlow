@@ -27,16 +27,12 @@
 
 {% endblock %}
 <!-- -->
-{% block scripts %} {{ block.super }}
-  <script nonce="{{ request.csp_nonce }}">
-    /*******************************************************
-     * END JQUERY
-     *******************************************************/
-    $(".menubar").removeClass("hidden");
-    /*******************************************************
-     * END JQUERY
-     *******************************************************/
-  </script>
 
-
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
 {% endblock %}
+
+{% block scripts %} {{ block.super }}
+{% endblock %}
+
+

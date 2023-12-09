@@ -101,36 +101,25 @@ class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
         liveproject = project.liveproject
-        context["live_project_data"] = (
-            JSONRenderer()
-            .render(
-                LiveProjectSerializer(
-                    liveproject, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
+        current_user = self.request.user
+
+        context_data = {
+            "live_project_data": LiveProjectSerializer(
+                liveproject, context={"user": self.request.user}
+            ).data,
+            "project_data": ProjectSerializerShallow(
+                project, context={"user": self.request.user}
+            ).data,
+            "user_role": LiveProjectUser.objects.get(
+                user=self.request.user, liveproject=liveproject
+            ).role_type,
+            "user_permission": get_user_permission(project, self.request.user),
+            "user_id": current_user.id if current_user else 0,
+        }
+
+        context["contextData"] = (
+            JSONRenderer().render(context_data).decode("utf-8")
         )
-        context["project_data"] = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(
-                    project, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
-        context["user_role"] = (
-            JSONRenderer()
-            .render(
-                LiveProjectUser.objects.get(
-                    user=self.request.user, liveproject=liveproject
-                ).role_type
-            )
-            .decode("utf-8")
-        )
-        context["user_permission"] = (
-            JSONRenderer()
-            .render(get_user_permission(project, self.request.user))
-            .decode("utf-8")
-        )
+        context["path_id"] = "liveProjectDetail"
+        context["title"] = project.title
         return context

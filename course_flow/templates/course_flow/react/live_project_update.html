@@ -5,8 +5,8 @@
 {% block header %}{% endblock %}
 <!-- -->
 {% block title %}
-  {%if object.title != "" %}
-    {{ object.title }}
+  {%if title != "" %}
+    {{ title }}
   {% else %}
     {% trans "Untitled" %}
   {% endif %}
@@ -30,21 +30,8 @@
 {% block scripts %} {{ block.super }}
 
 <script nonce="{{request.csp_nonce}}">
-
-  const project_data= {{project_data|safe}};
-  const live_project_data= {{live_project_data|safe}};
-  const user_role = {{user_role|safe}};
-  const user_permission = {{user_permission|safe}};
-  var live_project_renderer;
-
-  if(user_role>0)$(".menubar").removeClass("hidden");
-  const user_id = {{ user.id }};
-
-  window.addEventListener("load",function(){
-      live_project_renderer = new live_renderers.LiveProjectRenderer(live_project_data,project_data);
-      $(document).ajaxError(renderers.fail_function);
-      live_project_renderer.render($("#container"));
-  });
+  // if context
+  if(contextData.user_role>0)$(".menubar").removeClass("hidden");
 </script>
 
 {% endblock %}
