@@ -40,7 +40,7 @@ export function fail_function(a, b, c, d) {
   }
 }
 
-const DATA_ACTIONS = Enum({
+export const DATA_ACTIONS = Enum({
   POSTED: 'posted'
 })
 
