@@ -3,9 +3,11 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.humanize.templatetags import humanize
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -242,8 +244,87 @@ def json_api_post_get_user_list(request: HttpRequest) -> JsonResponse:
     )
 
 
+# Create a JSON response for the Notifications page
+@ajax_login_required
+def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
+    user = request.user
+
+    # get total count of unread notifications
+    unread = user.notifications.filter(is_unread=True).count()
+
+    # prepare notification data to be consumed by the frontend
+    prepared_notifications = []
+    for notification in user.notifications.all():
+        if notification.content_object.type == "project":
+            url = reverse(
+                "course_flow:project-update",
+                kwargs={"pk": notification.content_object.pk},
+            )
+        else:
+            url = reverse(
+                "course_flow:workflow-update",
+                kwargs={"pk": notification.content_object.pk},
+            )
+
+        source_user = UserSerializer(notification.source_user).data
+
+        prepared_notifications.append(
+            {
+                "id": notification.id,
+                "unread": notification.is_unread,
+                "url": url,
+                # TODO: Update notification text to omit the user's name
+                # since now it's a separate 'from' field
+                "date": humanize.naturaltime(notification.created_on),
+                "text": notification.text,
+                "from": f"{source_user['first_name']} {source_user['last_name']}",
+            }
+        )
+
+    return JsonResponse(
+        {
+            "notifications": prepared_notifications,
+            "unread": unread,
+        }
+    )
+
+
 @ajax_login_required
 @require_POST
-def json_api_post_mark_all_as_read(request):
-    request.user.notifications.filter(is_unread=True).update(is_unread=False)
-    return JsonResponse({"action": "posted"})
+def json_api_post_mark_all_notifications_as_read(request):
+    post_data = json.loads(request.body)
+
+    if "notification_id" in post_data:
+        # if a notification_id is passed as post data
+        # then we're updating that specific notification object
+        notification_id = post_data["notification_id"]
+        request.user.notifications.filter(id=notification_id).update(is_unread=False)
+    else:
+        # otherwise, we're updating all the notifications to be read
+        request.user.notifications.filter(is_unread=True).update(is_unread=False)
+
+    return JsonResponse(
+        {
+            "action": "posted"
+        }
+    )
+
+
+@ajax_login_required
+@require_POST
+def json_api_post_delete_notification(request):
+    post_data = json.loads(request.body)
+    if "notification_id" in post_data:
+        notification_id = post_data["notification_id"]
+        request.user.notifications.filter(id=notification_id).delete()
+        return JsonResponse(
+            {
+                "action": "posted"
+            }
+        )
+
+    return JsonResponse(
+        {
+            "action": "error"
+        }
+    )
