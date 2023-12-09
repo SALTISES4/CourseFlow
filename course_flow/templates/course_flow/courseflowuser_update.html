@@ -27,10 +27,5 @@
   <script nonce="{{ request.csp_nonce }}">
     $("#create").detach().appendTo("#container");
     $("form input").on("input", () => $("#save-button").attr("disabled", false));
-    $("#mark-all-as-read").on("click", () => {
-      $.post("{% url 'course_flow:json-api-post-mark-all-as-read' %}", {}, () => {
-        window.location = window.location;
-      });
-    });
   </script>
 {% endblock %}

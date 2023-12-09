@@ -325,9 +325,14 @@ def course_flow_patterns():
             name="json-api-post-get-user-list",
         ),
         path(
-            "user/mark-all-as-read/",
-            views.sharing_api.json_api_post_mark_all_as_read,
-            name="json-api-post-mark-all-as-read",
+            "user/mark-all-notifications-as-read/",
+            views.sharing_api.json_api_post_mark_all_notifications_as_read,
+            name="json-api-post-mark-all-notifications-as-read",
+        ),
+        path(
+            "user/delete-notification/",
+            views.sharing_api.json_api_post_delete_notification,
+            name="json-api-post-delete-notification",
         ),
         # Register search JSON routes
         path(
@@ -386,6 +391,11 @@ def course_flow_patterns():
             "json-api-get-sidebar/",
             views.menu_api.json_api_get_sidebar,
             name="json-api-get-sidebar",
+        ),
+        path(
+            "json-api-get-notifications-page/",
+            views.sharing_api.json_api_get_notifications_page,
+            name="json-api-get-notifications-page",
         ),
         path(
             "mylibrary/get-projects/",
