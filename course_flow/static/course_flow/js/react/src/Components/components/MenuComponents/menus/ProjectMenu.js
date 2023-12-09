@@ -543,26 +543,23 @@ class ProjectMenu extends LibraryMenu {
    * RENDER
    *******************************************************/
   render() {
+    let visible_buttons = (() => [
+      this.getEdit(),
+      this.getCreate(),
+      this.getShare()
+    ]).bind(this)
+    let overflow_links = this.getOverflowLinks.bind(this)
+
     return (
-      <div className="project-menu">
-        {this.getHeader()}
-        {this.getContent()}
-        {reactDom.createPortal(
-          this.getOverflowLinks(),
-          document.getElementById('overflow-links')
-        )}
-        {reactDom.createPortal(
-          this.getEdit(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getCreate(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getShare(),
-          document.getElementById('visible-icons')
-        )}
+      <div class="main-block">
+        <MenuBar
+          overflow_links={overflow_links}
+          visible_buttons={visible_buttons}
+        />
+        <div className="project-menu">
+          {this.getHeader()}
+          {this.getContent()}
+        </div>
       </div>
     )
   }

@@ -21,6 +21,7 @@ const plugins = {
     plugins: [autoprefixer]
   }),
   nodeResolve: nodeResolve({
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['browser', 'module', 'main']
   }),
   babel: babel({

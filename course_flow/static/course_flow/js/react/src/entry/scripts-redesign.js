@@ -14,6 +14,9 @@ import theme from '../mui/theme.js'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
+// pages/views/templates
+import NotificationsPage from '../Components/Pages/Notifications'
+
 // components
 import Sidebar, {
   SidebarRootStyles
@@ -119,12 +122,16 @@ window.addEventListener('load', () => {
     },
     {
       component: <Sidebar />,
-      target: '.main-wrapper [data-component="sidebar"]',
+      target: '[data-component="sidebar"]',
       styles: SidebarRootStyles
     },
     {
       component: <TopBar />,
-      target: '.main-wrapper [data-component="topbar"]'
+      target: '[data-component="topbar"]'
+    },
+    {
+      component: <NotificationsPage />,
+      target: '[data-component="notifications-page"]'
     }
   ])
 })

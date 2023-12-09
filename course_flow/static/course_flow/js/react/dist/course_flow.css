@@ -2250,7 +2250,8 @@ h3.big-space {
   flex-grow: 1;
   overflow: hidden;
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  height: 100%; }
 
 .right-panel-wrapper {
   flex-grow: 1;
@@ -2322,9 +2323,6 @@ h3.big-space {
   align-items: center;
   background: #eefff8;
   box-sizing: border-box; }
-
-.menubar.hidden {
-  display: none; }
 
 .workflow-title-bar {
   display: inline-block;

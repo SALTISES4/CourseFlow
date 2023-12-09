@@ -123,6 +123,9 @@
     json_api_paths: {
       get_top_bar: "{% url 'course_flow:json-api-get-top-bar' %}",
       get_sidebar: "{% url 'course_flow:json-api-get-sidebar' %}",
+      get_notifications_page: "{% url 'course_flow:json-api-get-notifications-page' %}",
+      mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",
+      delete_notification: "{% url 'course_flow:json-api-post-delete-notification' %}",
     },
   }
 
@@ -161,6 +164,12 @@
       program: "{% trans 'Program' %}",
       course: "{% trans 'Course' %}",
       activity: "{% trans 'Activity' %}",
+      delete: "{% trans 'Delete' %}",
+      show_notifications_menu: "{% trans 'Show notifications menu' %}",
+      notification_options: "{% trans 'Notification options' %}",
+      mark_as_read: "{% trans 'Mark as read' %}",
+      mark_all_as_read: "{% trans 'Mark all as read' %}",
+      no_notifications_yet: "{% trans 'You have no notifications yet.' %}",
     }
   }
 </script>

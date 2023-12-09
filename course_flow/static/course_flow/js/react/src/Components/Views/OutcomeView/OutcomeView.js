@@ -172,7 +172,7 @@ class OutcomeView extends EditableComponentWithSorting {
   }
 
   /*******************************************************
-   * FUNCTOINS
+   * FUNCTIONS
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
