@@ -17,12 +17,7 @@ export class ConnectionBar extends React.Component {
 
 
 
-
-
-
-
   
-
 
   render() {
     if (this.props.updateSocket.readyState === 1) {
