@@ -13,6 +13,10 @@ export class ConnectionBar extends React.Component {
     }
   }
 
+
+
+
+  
   render() {
     if (this.props.updateSocket.readyState === 1) {
       let users = this.state.connected_users.map((user) => (
