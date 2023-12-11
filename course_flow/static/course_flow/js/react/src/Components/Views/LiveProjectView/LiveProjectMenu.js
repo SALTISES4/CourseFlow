@@ -126,6 +126,8 @@ class LiveProjectMenu extends React.Component {
     switch (this.state.view_type) {
       case 'overview':
         return (
+          // @todo renderer IS used in this component
+          // but only user_role, how is that different from getRole?
           <LiveProjectOverview
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -135,8 +137,9 @@ class LiveProjectMenu extends React.Component {
         )
       case 'students':
         return (
+          // @todo  renderer NOT used in this component
           <LiveProjectStudents
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             liveproject={this.state.liveproject}
             objectID={this.props.project.id}
@@ -145,6 +148,7 @@ class LiveProjectMenu extends React.Component {
         )
       case 'assignments':
         return (
+          // @todo  renderer IS used in this component
           <LiveProjectAssignments
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -154,8 +158,9 @@ class LiveProjectMenu extends React.Component {
         )
       case 'workflows':
         return (
+          // @todo  renderer NOT used in this component
           <LiveProjectWorkflows
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.props.project.id}
             view_type={this.state.view_type}
@@ -163,6 +168,7 @@ class LiveProjectMenu extends React.Component {
         )
       case 'completion_table':
         return (
+          //@todo   renderer IS used in this component
           <LiveProjectCompletionTable
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -172,9 +178,10 @@ class LiveProjectMenu extends React.Component {
         )
       case 'settings':
         return (
+          // @todo renderer NOT used in this component
           <LiveProjectSettings
             updateLiveProject={this.updateFunction.bind(this)}
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             liveproject={this.state.liveproject}
             objectID={this.props.project.id}

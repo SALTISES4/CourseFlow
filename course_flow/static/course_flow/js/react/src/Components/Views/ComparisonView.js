@@ -21,6 +21,8 @@ import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../redux/FindState.j
 import { OutcomeEditViewUnconnected } from './OutcomeEditView.js'
 import { toggleObjectSet, moveWeekWorkflow } from '../../redux/Reducers.js'
 import WorkflowForMenu from '../components/CommonComponents/WorkflowForMenu.js'
+import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component {

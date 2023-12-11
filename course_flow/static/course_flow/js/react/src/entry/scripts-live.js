@@ -2,7 +2,6 @@
  * @TODO why is this different than scripts-library.js
  */
 import React from 'react'
-import * as reactDom from 'react-dom'
 import {
   LiveProjectMenu,
   StudentLiveProjectMenu
@@ -32,7 +31,7 @@ export class LiveProjectRenderer extends React.Component {
   }
 
   getContents() {
-    return user_role === 2 ? (
+    return this.user_role === 2 ? (
       <LiveProjectMenu
         renderer={this} // @todo tighten this interface
         project={this.project_data}
@@ -40,7 +39,7 @@ export class LiveProjectRenderer extends React.Component {
       />
     ) : (
       <StudentLiveProjectMenu
-        renderer={this} // @todo tighten this interface
+        // renderer={this} // @todo tighten this interface
         project={this.project_data}
         liveproject={this.live_project_data}
       />

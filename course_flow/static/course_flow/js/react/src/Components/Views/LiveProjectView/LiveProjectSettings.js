@@ -40,7 +40,6 @@ class LiveProjectSettings extends LiveProjectSection {
    *******************************************************/
   render() {
     if (!this.state.data) return this.defaultRender()
-    console.log(this.state)
     let data = this.state.data.liveproject
     let changeField = this.changeField.bind(this)
 

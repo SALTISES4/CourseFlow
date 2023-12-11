@@ -4,6 +4,9 @@ import WorkflowForMenu from '../../CommonComponents/WorkflowForMenu.js'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
+// from renderer:
+//   initial_pages
+//   tiny loader
 class ExploreFilter extends WorkflowFilter {
   constructor(props) {
     super(props)
@@ -447,6 +450,9 @@ class ExploreMenu extends LibraryMenu {
     return (
       <div className="project-menu">
         <ExploreFilter
+          // @todo from renderer:
+          // initial_pages
+          // tiny loader
           disciplines={this.props.disciplines}
           renderer={this.props.renderer}
           workflows={this.props.renderer.initial_workflows}

@@ -11,6 +11,7 @@ import { LiveProjectSection } from './LiveProjectSection.js'
 import LiveProjectMenu from './LiveProjectMenu.js'
 import WorkflowForMenu from '../../components/CommonComponents/WorkflowForMenu.js'
 
+// LiveProjectSection does not use renderer
 export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
@@ -97,11 +98,13 @@ class StudentLiveProjectAssignments extends LiveProjectSection {
     if (!this.state.data) return this.defaultRender()
     let assignments_past = this.state.data.assignments_past.map(
       (assignment) => (
+        // @todo renderer IS used in this component
         <AssignmentView renderer={this.props.renderer} data={assignment} />
       )
     )
     let assignments_upcoming = this.state.data.assignments_upcoming.map(
       (assignment) => (
+        // @todo renderer IS used in this component
         <AssignmentView renderer={this.props.renderer} data={assignment} />
       )
     )
@@ -138,6 +141,7 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
     switch (this.state.view_type) {
       case 'overview':
         return (
+          // @todo renderer IS used in this component
           <StudentLiveProjectOverview
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -147,6 +151,7 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
         )
       case 'assignments':
         return (
+          // @todo renderer IS used in this component
           <StudentLiveProjectAssignments
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -156,8 +161,9 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
         )
       case 'workflows':
         return (
+          // @todo renderer NOT used in this component
           <StudentLiveProjectWorkflows
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.props.project.id}
             view_type={this.state.view_type}
