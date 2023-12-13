@@ -27,7 +27,9 @@ import {
 } from '../../redux/Reducers.js'
 import { ConnectionBar } from '../../ConnectedUsers.js'
 import { OutcomeBar } from './OutcomeEditView.js'
-import StrategyView from '../components/Strategy.js'
+// import StrategyView from '../components/Strategy.js'
+import StrategyView from '@cfmodule/Strategy.js'
+
 import WorkflowOutcomeView from './WorkflowOutcomeView.js'
 import WorkflowLegend from '../components/WorkflowLegend.js'
 import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js'

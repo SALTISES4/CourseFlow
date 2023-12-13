@@ -108,6 +108,25 @@ class ProjectMenu extends LibraryMenu {
             role={this.getRole()}
             objectID={this.state.data.id}
             view_type={this.state.view_type}
+            varb={varb}
+            varc={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
+            vard={varc}
           />
         )
         break
