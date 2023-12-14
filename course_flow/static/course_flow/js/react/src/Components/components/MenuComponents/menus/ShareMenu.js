@@ -8,7 +8,6 @@ import {
 import { WorkflowTitle } from '@cfCommonComponents'
 import * as Constants from '@cfConstants'
 import { TinyLoader } from '../../../../redux/helpers.js'
-import { WorkflowTitle } from '../../CommonComponents/UIComponents'
 
 class UserLabel extends React.Component {
   constructor(props) {

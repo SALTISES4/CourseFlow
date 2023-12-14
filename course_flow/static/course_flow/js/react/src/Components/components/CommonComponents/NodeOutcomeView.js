@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { getNodeByID } from '@cfFindState'
-import { NodeTitle } from './Titles.js'
+import { NodeTitle } from '@cfUIComponents/Titles.js'
 import Component from './Component.js'
 
 class NodeOutcomeViewUnconnected extends Component {

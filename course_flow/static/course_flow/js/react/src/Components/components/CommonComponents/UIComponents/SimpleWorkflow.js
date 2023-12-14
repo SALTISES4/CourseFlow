@@ -1,6 +1,6 @@
 // Only used in classroom view. Should be removed/replaced.
 import * as React from 'react'
-import { WorkflowTitle } from './Titles.js'
+import { WorkflowTitle } from '@cfUIComponents/Titles.js'
 
 class SimpleWorkflow extends React.Component {
   constructor(props) {

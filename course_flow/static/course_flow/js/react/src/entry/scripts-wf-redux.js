@@ -1,32 +1,28 @@
-import React, { Component } from 'react'
+import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
 import { WorkflowBaseView } from '../Components/Views/WorkflowBaseView.js'
 import { WorkflowBase as WorkflowComparisonBaseView } from '../Components/Views/ComparisonView'
 import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
-import {
-  ComparisonView,
-  WorkflowBase
-} from '../Components/Views/ComparisonView'
+import { ComparisonView } from '../Components/Views/ComparisonView'
 import * as Constants from '@cfConstants'
 import * as Reducers from '@cfReducers'
 import {
-  getTargetProjectMenu,
   getWorkflowData,
   getWorkflowParentData,
   getWorkflowChildData,
   getPublicWorkflowData,
   getPublicWorkflowParentData,
   getPublicWorkflowChildData,
-  updateValue
-} from '../XMLHTTP/PostFunctions.js'
+  updateValue,
+  fail_function
+} from '@cfPostFunctions'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '@cfUtility'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
-import { Enum } from '../UtilityFunctions.js'
-export { fail_function } from '@cfPostFunctions'
+import WorkflowLoader from '../Components/components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 const DATA_TYPE = Utility.Enum({
   OUTCOME: 'workflow_action',
@@ -531,7 +527,9 @@ export class ComparisonRenderer {
   render(container, view_type = 'workflowview') {
     this.container = container
     this.view_type = view_type
+
     reactDom.render(<WorkflowLoader />, container[0])
+
     this.tiny_loader = new TinyLoader($('body')[0])
 
     switch (this.user_permission) {

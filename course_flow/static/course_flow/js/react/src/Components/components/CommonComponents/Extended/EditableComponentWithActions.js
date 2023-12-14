@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import ActionButton from './ActionButton.js'
+import ActionButton from '@cfCommonComponents/ActionButton.js'
 import {
   deleteSelf,
   duplicateSelf,

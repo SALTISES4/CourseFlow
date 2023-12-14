@@ -8,11 +8,6 @@ import {
 import { ActionButton } from '../../components/CommonComponents'
 import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
 import * as Constants from '../../../Constants.js'
-} from '@cfCommonComponents'
-import { getWorkflowNodes } from '@cfPostFunctions'
-import * as Constants from '@cfConstants'
-import { LiveProjectSection } from './LiveProjectSection.js'
-import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {

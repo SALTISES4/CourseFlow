@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { searchAllObjects } from '@cfPostFunctions'
-import WorkflowForMenu from './WorkflowForMenu.js'
+import WorkflowForMenu from '@cfCommonComponents'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 

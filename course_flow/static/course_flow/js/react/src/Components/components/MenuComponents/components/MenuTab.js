@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { WorkflowForMenu } from '@cfLibrary'
 import { getAddedWorkflowMenu } from '@cfPostFunctions'
-import * as reactDom from 'react-dom'
 
 class MenuSection extends React.Component {
   constructor(props) {
