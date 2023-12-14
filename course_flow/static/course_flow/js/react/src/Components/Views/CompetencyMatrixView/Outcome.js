@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '../../components/CommonComponents'
-import { getOutcomeByID } from '../../../redux/FindState.js'
+import { Component } from '@cfCommonComponents'
+import { getOutcomeByID } from '@cfFindState'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '../OutcomeTableView'
 import * as OutcomeNode from '../../components/OutcomeNode/outcomeNode.js'
 

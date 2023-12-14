@@ -6,13 +6,13 @@ import {
   TitleText,
   OutcomeTitle,
   WeekTitle
-} from '../../components/CommonComponents'
+} from '@cfCommonComponents'
 import {
   getOutcomeByID,
   getWeekByID,
   getSortedOutcomesFromOutcomeWorkflowSet
-} from '../../../redux/FindState.js'
-import * as Utility from '../../../UtilityFunctions.js'
+} from '@cfFindState'
+import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock.js'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock.js'
 

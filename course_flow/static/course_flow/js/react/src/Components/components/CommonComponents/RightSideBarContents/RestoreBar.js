@@ -1,10 +1,6 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import {
-  restoreSelf,
-  deleteSelf,
-  toggleDrop
-} from '../../../../PostFunctions.js'
+import { restoreSelf, deleteSelf, toggleDrop } from '@cfPostFunctions'
 import Component from '../Component.js'
 
 /**

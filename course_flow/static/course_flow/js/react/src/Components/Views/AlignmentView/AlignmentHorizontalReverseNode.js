@@ -1,15 +1,12 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithComments,
-  NodeTitle
-} from '../../components/CommonComponents'
-import { getChildWorkflowByID } from '../../../redux/FindState.js'
+import { EditableComponentWithComments, NodeTitle } from '@cfCommonComponents'
+import { getChildWorkflowByID } from '@cfFindState'
 import OutcomeNodeView from '../../components/OutcomeNode.js'
-import { newOutcome, updateOutcomenodeDegree } from '../../../PostFunctions.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import * as Constants from '../../../Constants.js'
+import { newOutcome, updateOutcomenodeDegree } from '@cfPostFunctions'
+import * as Utility from '@cfUtility'
+import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome.js'
 import OutcomeAdder from './OutcomeAdder.js'
 

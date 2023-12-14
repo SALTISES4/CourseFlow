@@ -1,15 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  EditableComponentWithComments,
-  TitleText
-} from '../../components/CommonComponents'
+import { EditableComponentWithComments, TitleText } from '@cfCommonComponents'
 
-import { getWeekByID } from '../../../redux/FindState.js'
-import { getNodeByID } from '../../../redux/FindState.js'
+import { getWeekByID, getNodeByID } from '@cfFindState'
 import GridNode from './GridNode.js'
 
-import * as Utility from '../../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 /**
  * A block representing a term in the grid view
  */

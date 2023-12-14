@@ -5,20 +5,17 @@ import {
   Component,
   EditableComponentWithSorting,
   OutcomeTitle
-} from '../../components/CommonComponents'
+} from '@cfCommonComponents'
 import OutcomeOutcome from './OutcomeOutcome.js'
-import {
-  getOutcomeByID,
-  getOutcomeHorizontalLinkByID
-} from '../../../redux/FindState.js'
-import { moveOutcomeOutcome } from '../../../redux/Reducers.js'
+import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
+import { moveOutcomeOutcome } from '@cfReducers'
 import {
   updateOutcomehorizontallinkDegree,
   insertedAt,
   insertedAtInstant
-} from '../../../PostFunctions.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import * as Constants from '../../../Constants.js'
+} from '@cfPostFunctions'
+import * as Utility from '@cfUtility'
+import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome.js'
 
 /**

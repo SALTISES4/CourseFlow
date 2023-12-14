@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { getWeekByID } from '../../../redux/FindState.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import { Component } from '../../components/CommonComponents'
+import { getWeekByID } from '@cfFindState'
+import * as Utility from '@cfUtility'
+import { Component } from '@cfCommonComponents'
 
 /**
  * A block for a term in the competency matrix view. This shows

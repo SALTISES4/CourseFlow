@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  NodeTitle,
-  EditableComponentWithComments
-} from '../../components/CommonComponents'
-import { getNodeByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
+import { NodeTitle, EditableComponentWithComments } from '@cfCommonComponents'
+import { getNodeByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
 
 /**
  * A node in the grid view

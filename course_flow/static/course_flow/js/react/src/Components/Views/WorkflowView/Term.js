@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import { TitleText } from '../../components/CommonComponents'
+import { TitleText } from '@cfCommonComponents'
 import { WeekUnconnected } from './Week.js'
 import NodeWeek from './NodeWeek.js'
-import { getTermByID } from '../../../redux/FindState.js'
+import { getTermByID } from '@cfFindState'
 
 /**
  * The term variation of a week, used in the program level or in the

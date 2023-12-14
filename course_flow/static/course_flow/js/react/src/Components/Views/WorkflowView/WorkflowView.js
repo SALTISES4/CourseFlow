@@ -5,18 +5,18 @@ import {
   EditableComponentWithSorting,
   MenuBar,
   RightSideBar
-} from '../../components/CommonComponents'
+} from '@cfCommonComponents'
 import ColumnWorkflow from './ColumnWorkflow.js'
 import WeekWorkflow from './WeekWorkflow.js'
 import { renderMessageBox } from '../../components/MenuComponents/MenuComponents.js'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
 import {
   changeField,
   moveColumnWorkflow,
   moveWeekWorkflow,
   toggleObjectSet
-} from '../../../redux/Reducers.js'
+} from '@cfReducers'
 import { ConnectionBar } from '../../../ConnectedUsers.js'
 import WorkflowLegend from '../../components/WorkflowLegend.js'
 import {
@@ -29,7 +29,7 @@ import {
   getUsersForObject,
   getTargetProjectMenu,
   duplicateBaseItem
-} from '../../../PostFunctions.js'
+} from '@cfPostFunctions'
 import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox.js'
 
 /**

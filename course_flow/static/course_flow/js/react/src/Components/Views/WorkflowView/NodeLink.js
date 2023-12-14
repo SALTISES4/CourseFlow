@@ -1,12 +1,9 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  EditableComponentWithActions,
-  NodeLinkSVG
-} from '../../components/CommonComponents'
-import { getNodeLinkByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
+import { EditableComponentWithActions, NodeLinkSVG } from '@cfCommonComponents'
+import { getNodeLinkByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
 
 /**
  * The arrow manually drawn between two nodes (as opposed to the

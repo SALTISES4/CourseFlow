@@ -1,20 +1,13 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  WorkflowTitle,
-  Component,
-  RightSideBar
-} from '../../components/CommonComponents'
-import * as Utility from '../../../UtilityFunctions.js'
+import { WorkflowTitle, Component, RightSideBar } from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 
-import {
-  getWorkflowSelectMenu,
-  getWorkflowContext
-} from '../../../PostFunctions.js'
+import { getWorkflowSelectMenu, getWorkflowContext } from '@cfPostFunctions'
 import { renderMessageBox } from '../../components/MenuComponents/MenuComponents.js'
 import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox.js'
-import { toggleObjectSet } from '../../../redux/Reducers.js'
+import { toggleObjectSet } from '@cfReducers'
 
 /**
  * Creates a sort of container for the workflows you want to compare,

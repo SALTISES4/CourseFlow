@@ -1,11 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithComments,
-  TitleText
-} from '../../components/CommonComponents'
-import * as Utility from '../../../UtilityFunctions.js'
+import { EditableComponentWithComments, TitleText } from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode.js'
 
 /**

@@ -33,11 +33,13 @@ const plugins = {
             '@cfModule':'./course_flow/static/course_flow/js/react/src',
             '@cfComponents':'./course_flow/static/course_flow/js/react/src/Components/components',
             '@cfViews':'./course_flow/static/course_flow/js/react/src/Components/Views',
-            '@cfCommon':'./course_flow/static/course_flow/js/react/src/Components/CommonComponents',
+            '@cfLibrary':'./course_flow/static/course_flow/js/react/src/Components/Library',
+            '@cfCommonComponents':'./course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
             '@cfFindState':'./course_flow/static/course_flow/js/react/src/redux/FindState.js',
             '@cfReducers':'./course_flow/static/course_flow/js/react/src/redux/Reducers.js',
             '@cfUtility':'./course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
             '@cfConstants':'./course_flow/static/course_flow/js/react/src/Constants.js',
+            '@cfPostFunctions':'./course_flow/static/course_flow/js/react/src/PostFunctions.js',
           }
         }
       ]

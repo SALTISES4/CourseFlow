@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import Column from './Column.js'
-import { getColumnWorkflowByID } from '../../../redux/FindState.js'
+import { getColumnWorkflowByID } from '@cfFindState'
 
 /**
  * Represents the column-workflow throughmodel

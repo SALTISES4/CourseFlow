@@ -3,11 +3,11 @@ import * as React from 'react'
 import {
   EditableComponentWithComments,
   OutcomeTitle
-} from '../../components/CommonComponents'
-import * as Utility from '../../../UtilityFunctions.js'
+} from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome.js'
 import { connect } from 'react-redux'
-import { getOutcomeByID } from '../../../redux/FindState.js'
+import { getOutcomeByID } from '@cfFindState'
 
 /**
  * A simple outcome block without any action buttons for displaying

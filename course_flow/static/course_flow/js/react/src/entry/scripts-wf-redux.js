@@ -9,8 +9,8 @@ import {
   ComparisonView,
   WorkflowBase
 } from '../Components/Views/ComparisonView'
-import * as Constants from '../Constants.js'
-import * as Reducers from '../redux/Reducers.js'
+import * as Constants from '@cfConstants'
+import * as Reducers from '@cfReducers'
 import {
   getTargetProjectMenu,
   getWorkflowData,
@@ -24,13 +24,12 @@ import {
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
-import * as Utility from '../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
-import { Enum } from '../UtilityFunctions.js'
 
-export { fail_function } from '../PostFunctions.js'
+export { fail_function } from '@cfPostFunctions'
 
-const DATA_TYPE = Enum({
+const DATA_TYPE = Utility.Enum({
   OUTCOME: 'workflow_action',
   LOCK_UPDATE: 'lock_update',
   CONNECTION_UPDATE: 'connection_update',

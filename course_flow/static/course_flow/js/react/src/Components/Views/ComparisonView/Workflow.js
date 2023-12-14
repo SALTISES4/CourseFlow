@@ -1,12 +1,12 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponentWithSorting } from '../../components/CommonComponents'
-import * as Utility from '../../../UtilityFunctions.js'
+import { EditableComponentWithSorting } from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 
-import { insertedAt } from '../../../PostFunctions.js'
+import { insertedAt } from '@cfPostFunctions'
 import WeekWorkflow from './WeekWorkflow.js'
-import { moveWeekWorkflow } from '../../../redux/Reducers.js'
+import { moveWeekWorkflow } from '@cfReducers'
 
 //Basic component representing the workflow
 class WorkflowUnconnected extends EditableComponentWithSorting {

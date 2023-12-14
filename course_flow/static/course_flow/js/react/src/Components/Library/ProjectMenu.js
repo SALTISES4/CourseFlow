@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import * as Constants from '../../Constants.js'
+import * as Constants from '@cfConstants'
 import {
   deleteSelf,
   duplicateBaseItem,
@@ -8,14 +8,14 @@ import {
   getWorkflowsForProject,
   makeProjectLive,
   restoreSelf
-} from '../../PostFunctions.js'
+} from '@cfPostFunctions'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
-import * as Utility from '../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
-import { WorkflowTitle } from '../components/CommonComponents/Titles.js'
-import { CollapsibleText, MenuBar } from '../components/CommonComponents'
+import { WorkflowTitle } from '@cfCommonComponents/Titles.js'
+import { CollapsibleText, MenuBar } from '@cfCommonComponents'
 import { LiveProjectOverview } from '../Views/LiveProjectView/LiveProjectOverview.js'
 import LiveProjectStudents from '../Views/LiveProjectView/LiveProjectStudents.js'
 import {

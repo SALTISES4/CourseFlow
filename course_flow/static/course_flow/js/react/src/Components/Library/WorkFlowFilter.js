@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Component } from '../components/CommonComponents'
-import { searchAllObjects } from '../../PostFunctions.js'
+import { searchAllObjects } from '@cfPostFunctions'
 import WorkflowForMenu from './WorkflowForMenu.js'
 
 /*******************************************************

@@ -6,10 +6,10 @@ import {
   getUsersForObject,
   removeAllComments,
   removeComment
-} from '../../../PostFunctions.js'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import { reloadCommentsAction } from '../../../redux/Reducers.js'
+} from '@cfPostFunctions'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
+import { reloadCommentsAction } from '@cfReducers'
 // @components
 import Component from './Component.js'
 import EditableComponent from './EditableComponent.js'

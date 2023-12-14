@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import * as OutcomeNode from '../../OutcomeNode/outcomeNode.js'
 
-import { getSortedOutcomeNodesFromNodes } from '../../../../redux/FindState.js'
+import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome.js'
 
 /**

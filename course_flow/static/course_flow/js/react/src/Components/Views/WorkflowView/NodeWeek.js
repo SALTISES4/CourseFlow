@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import Node from './Node.js'
-import { getNodeWeekByID } from '../../../redux/FindState.js'
-import {} from '../../../redux/Reducers.js'
+import { getNodeWeekByID } from '@cfFindState'
 
 /**
  * Represents the node-week throughmodel

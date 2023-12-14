@@ -1,12 +1,9 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import {
-  Component,
-  EditableComponentWithActions
-} from '../../components/CommonComponents'
-import { getColumnByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
+import { Component, EditableComponentWithActions } from '@cfCommonComponents'
+import { getColumnByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
 
 /**
  * The column in a workflow.

@@ -9,12 +9,12 @@ import {
   MenuBar,
   RightSideBar,
   TitleText
-} from '../components/CommonComponents'
+} from '@cfCommonComponents'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
-import * as Constants from '../../Constants.js'
-import * as Utility from '../../UtilityFunctions.js'
-import { ConnectionBar } from '../../ConnectedUsers.js'
-import { getWeekWorkflowByID, getWeekByID } from '../../redux/FindState.js'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
+import { ConnectionBar } from '@cfModule/ConnectedUsers.js'
+import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import {
   getParentWorkflowInfo,
   getPublicParentWorkflowInfo,
@@ -25,7 +25,7 @@ import {
   getUsersForObject,
   getTargetProjectMenu,
   duplicateBaseItem
-} from '../../PostFunctions.js'
+} from '@cfPostFunctions'
 import { WorkflowView } from './WorkflowView'
 import { OutcomeEditView } from './OutcomeEditView'
 import { AlignmentView } from './AlignmentView'

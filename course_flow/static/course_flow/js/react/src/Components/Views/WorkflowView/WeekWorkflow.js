@@ -2,8 +2,8 @@ import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import Week from './Week.js'
 import Term from './Term.js'
-import { getWeekWorkflowByID } from '../../../redux/FindState.js'
-import { Component } from '../../components/CommonComponents'
+import { getWeekWorkflowByID } from '@cfFindState'
+import { Component } from '@cfCommonComponents'
 
 /**
  * The week-workflow throughmodel representation

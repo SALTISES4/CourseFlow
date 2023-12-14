@@ -5,9 +5,9 @@ import {
   TitleText
 } from '../../components/CommonComponents'
 import NodeWeek from './NodeWeek.js'
-import { getWeekByID, getNodeWeekByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
-import { columnChangeNode, moveNodeWeek } from '../../../redux/Reducers.js'
+import { getWeekByID, getNodeWeekByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
+import { columnChangeNode, moveNodeWeek } from '@cfReducers'
 import {
   toggleDrop,
   insertedAt,
@@ -15,8 +15,8 @@ import {
   columnChanged,
   addStrategy,
   updateValueInstant
-} from '../../../PostFunctions.js'
-import * as Utility from '../../../UtilityFunctions.js'
+} from '@cfPostFunctions'
+import * as Utility from '@cfUtility'
 
 /**
  * Renders a standard 'week-style' block of nodes, wherein the

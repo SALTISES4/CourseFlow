@@ -5,8 +5,8 @@ import {
   getOutcomeNodeByID,
   getOutcomeByID,
   getOutcomeOutcomeByID
-} from '../../redux/FindState.js'
-import { updateOutcomenodeDegree } from '../../PostFunctions.js'
+} from '@cfFindState'
+import { updateOutcomenodeDegree } from '@cfPostFunctions'
 import * as OutcomeNode from './OutcomeNode/outcomeNode.js'
 import { SimpleOutcome } from '../Views/OutcomeEditView'
 

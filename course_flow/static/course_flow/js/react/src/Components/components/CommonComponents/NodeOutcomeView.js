@@ -1,8 +1,8 @@
 //Basic component to represent a node in the outcomes table
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Constants from '../../../Constants.js'
-import { getNodeByID } from '../../../redux/FindState.js'
+import * as Constants from '@cfConstants'
+import { getNodeByID } from '@cfFindState'
 import { NodeTitle } from './Titles.js'
 import Component from './Component.js'
 

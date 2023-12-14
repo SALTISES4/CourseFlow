@@ -7,12 +7,12 @@ import {
   NodePorts,
   NodeTitle,
   TitleText
-} from '../../components/CommonComponents'
+} from '@cfCommonComponents'
 import OutcomeNodeView from '../../components/OutcomeNode.js'
-import { getNodeByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import { updateOutcomenodeDegree } from '../../../PostFunctions.js'
+import { getNodeByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
+import { updateOutcomenodeDegree } from '@cfPostFunctions'
 
 /**
  * Represents the node in the comparison view

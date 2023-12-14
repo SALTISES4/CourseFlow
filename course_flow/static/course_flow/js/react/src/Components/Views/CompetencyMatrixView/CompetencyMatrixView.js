@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, NodeOutcomeView } from '../../components/CommonComponents'
-import * as Constants from '../../../Constants.js'
+import { Component, NodeOutcomeView } from '@cfCommonComponents'
+import * as Constants from '@cfConstants'
 import { OutcomeBase } from '../OutcomeTableView'
 import {
   getSortedOutcomeIDFromOutcomeWorkflowSet,
@@ -12,11 +12,11 @@ import {
   getNodeByID,
   getOutcomeNodeByID,
   getTableOutcomeNodeByID
-} from '../../../redux/FindState.js'
+} from '@cfFindState'
 import MatrixWeek from './MatrixWeek.js'
 import MatrixNode from './MatrixNode.js'
 import { WorkflowOutcomeLegend } from '../../components/WorkflowLegend.js'
-import * as Utility from '../../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 
 /**
  * The component for the competency matrix view of the

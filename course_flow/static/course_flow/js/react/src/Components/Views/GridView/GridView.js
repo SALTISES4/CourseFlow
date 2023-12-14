@@ -4,15 +4,11 @@ import {
   EditableComponentWithComments,
   TitleText,
   NodeTitle
-} from '../../components/CommonComponents'
-import * as Constants from '../../../Constants.js'
-import {
-  getWeekWorkflowByID,
-  getWeekByID,
-  getNodeByID
-} from '../../../redux/FindState.js'
+} from '@cfCommonComponents'
+import * as Constants from '@cfConstants'
+import { getWeekWorkflowByID, getWeekByID, getNodeByID } from '@cfFindState'
 import GridWeek from './GridWeek.js'
-import * as Utility from '../../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 
 /**
  * Creates a grid with just nodes by week and their times

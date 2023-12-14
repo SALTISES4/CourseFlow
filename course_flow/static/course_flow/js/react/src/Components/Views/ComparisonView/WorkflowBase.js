@@ -1,10 +1,10 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponent } from '../../components/CommonComponents'
+import { EditableComponent } from '@cfCommonComponents'
 
-import { toggleObjectSet } from '../../../redux/Reducers.js'
-import { WorkflowForMenu } from '../../Library'
+import { toggleObjectSet } from '@cfReducers'
+import { WorkflowForMenu } from '@cfLibrary'
 import OutcomeEdit from './OutcomeEdit.js'
 import Workflow from './Workflow.js'
 

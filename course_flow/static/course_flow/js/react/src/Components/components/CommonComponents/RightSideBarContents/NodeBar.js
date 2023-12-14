@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import * as Constants from '../../../../Constants.js'
+import * as Constants from '@cfConstants'
 import Component from '../Component.js'
 import {
   getColumnWorkflowByID,
   getColumnByID,
   getStrategyByID
-} from '../../../../redux/FindState.js'
+} from '@cfFindState'
 
 /**
  * The component for the right sidebar's tab in which

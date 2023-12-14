@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
-import { changeField, toggleObjectSet } from '../../../../redux/Reducers.js'
+import { changeField, toggleObjectSet } from '@cfReducers'
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets

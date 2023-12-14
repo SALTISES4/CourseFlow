@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Provider, connect } from 'react-redux'
 import { Outcome } from './Outcome.js'
-import { getOutcomeWorkflowByID } from '../../redux/FindState.js'
+import { getOutcomeWorkflowByID } from '@cfFindState'
 
 /**
  * OutcomeWorkflow for the tables.

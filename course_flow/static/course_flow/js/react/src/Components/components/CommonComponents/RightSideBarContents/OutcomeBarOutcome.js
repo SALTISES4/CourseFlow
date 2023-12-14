@@ -1,11 +1,8 @@
 import * as React from 'react'
-import {
-  getOutcomeByID,
-  getOutcomeOutcomeByID
-} from '../../../../redux/FindState.js'
+import { getOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '../../../components/CommonComponents'
-import * as Utility from '../../../../UtilityFunctions.js'
+import { Component, OutcomeTitle } from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 
 /**
  * Basic component representing an outcome in the outcome bar

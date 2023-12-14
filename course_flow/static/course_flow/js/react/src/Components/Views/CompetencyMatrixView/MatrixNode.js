@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getNodeByID } from '../../../redux/FindState.js'
-import * as Constants from '../../../Constants.js'
-import { Component } from '../../components/CommonComponents'
+import { getNodeByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
+import { Component } from '@cfCommonComponents'
 
 /**
  * The nodes (specifically the time data) in the matrix view

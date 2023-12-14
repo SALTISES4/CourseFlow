@@ -2,12 +2,9 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 
-import {
-  getOutcomeByID,
-  getOutcomeOutcomeByID
-} from '../../../../redux/FindState.js'
+import { getOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
 import { OutcomeBarOutcomeUnconnected } from './OutcomeBarOutcome.js'
-import { Component, OutcomeTitle } from '../../../components/CommonComponents'
+import { Component, OutcomeTitle } from '@cfCommonComponents'
 
 /**
  * Used for the parent outcome bar.

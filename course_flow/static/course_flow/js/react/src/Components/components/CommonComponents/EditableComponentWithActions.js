@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as Constants from '../../../Constants.js'
+import * as Constants from '@cfConstants'
 import ActionButton from './ActionButton.js'
 import {
   deleteSelf,
@@ -7,7 +7,7 @@ import {
   insertChild,
   insertSibling,
   restoreSelf
-} from '../../../PostFunctions.js'
+} from '@cfPostFunctions'
 import EditableComponentWithComments from './EditableComponentWithComments.js'
 
 //Extends the react component to add a few features that are used in a large number of components

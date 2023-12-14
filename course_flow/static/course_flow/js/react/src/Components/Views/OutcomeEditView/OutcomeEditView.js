@@ -1,10 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithSorting,
-  OutcomeTitle
-} from '../../components/CommonComponents'
+import { EditableComponentWithSorting, OutcomeTitle } from '@cfCommonComponents'
 
 import {
   getOutcomeNodeByID,
@@ -12,10 +9,10 @@ import {
   getOutcomeOutcomeByID,
   getSortedOutcomesFromOutcomeWorkflowSet,
   getSortedOutcomeNodesFromNodes
-} from '../../../redux/FindState.js'
-import { moveOutcomeWorkflow } from '../../../redux/Reducers.js'
-import { newOutcome, insertedAt } from '../../../PostFunctions.js'
-import * as Utility from '../../../UtilityFunctions.js'
+} from '@cfFindState'
+import { moveOutcomeWorkflow } from '@cfReducers'
+import { newOutcome, insertedAt } from '@cfPostFunctions'
+import * as Utility from '@cfUtility'
 import * as OutcomeNode from '../../components/OutcomeNode/outcomeNode.js'
 import Outcome from './Outcome.js'
 

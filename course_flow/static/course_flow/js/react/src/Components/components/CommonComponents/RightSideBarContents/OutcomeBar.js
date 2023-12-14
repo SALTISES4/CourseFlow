@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import * as Utility from '../../../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 import OutcomeBarOutcome from './OutcomeBarOutcome.js'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../../../redux/FindState.js'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 
 /**
  * The outcomes tab of the right sidebar (which can be either this

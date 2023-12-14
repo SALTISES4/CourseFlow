@@ -2,8 +2,8 @@ import React from 'react'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   getTableOutcomeNodeByID
-} from '../../../redux/FindState.js'
-import { filterThenSortByID } from '../../../UtilityFunctions.js'
+} from '@cfFindState'
+import { filterThenSortByID } from '@cfUtility'
 
 /**
  * THIS IS NOT BEING USED

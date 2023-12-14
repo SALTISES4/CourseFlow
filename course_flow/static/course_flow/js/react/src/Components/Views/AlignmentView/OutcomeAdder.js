@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import { getOutcomeTitle, WeekTitle } from '../../components/CommonComponents'
-import { getOutcomeByID } from '../../../redux/FindState.js'
+import { getOutcomeTitle, WeekTitle } from '@cfCommonComponents'
+import { getOutcomeByID } from '@cfFindState'
 
 /**
  * A small module to add missing outcomes in the alignment view to a node

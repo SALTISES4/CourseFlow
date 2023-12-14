@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Utility from '../../../UtilityFunctions.js'
-import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../../redux/FindState.js'
-import { NodeOutcomeView } from '../../components/CommonComponents'
+import * as Utility from '@cfUtility'
+import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
+import { NodeOutcomeView } from '@cfCommonComponents'
 import OutcomeBase from './OutcomeBase.js'
 import { WorkflowOutcomeLegend } from '../../components/WorkflowLegend.js'
 

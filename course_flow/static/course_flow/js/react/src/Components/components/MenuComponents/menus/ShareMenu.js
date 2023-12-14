@@ -4,9 +4,9 @@ import {
   getUsersForObject,
   getUserList,
   updateValueInstant
-} from '../../../../PostFunctions.js'
-import { WorkflowTitle } from '../../CommonComponents'
-import * as Constants from '../../../../Constants.js'
+} from '@cfPostFunctions'
+import { WorkflowTitle } from '@cfCommonComponents'
+import * as Constants from '@cfConstants'
 import { TinyLoader } from '../../../../redux/helpers.js'
 
 class UserLabel extends React.Component {
