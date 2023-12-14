@@ -189,7 +189,8 @@ h3.big-space {
   flex-grow: 1;
   overflow: hidden;
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  height: 100%; }
 
 .right-panel-wrapper {
   flex-grow: 1;
@@ -261,9 +262,6 @@ h3.big-space {
   align-items: center;
   background: #eefff8;
   box-sizing: border-box; }
-
-.menubar.hidden {
-  display: none; }
 
 .workflow-title-bar {
   display: inline-block;
@@ -563,9 +561,6 @@ h3.big-space {
 .panel-item.active {
   background: #eefff8; }
 
-.panel-favourite.active {
-  background: #eefff8; }
-
 .panel-item > img,
 .panel-item .material-symbols-rounded {
   margin-right: 10px; }
@@ -575,17 +570,6 @@ h3.big-space {
 
 .panel-item img {
   width: 24px; }
-
-.panel-favourite {
-  padding: 3px;
-  font-size: 13px;
-  display: block;
-  margin-left: 22px;
-  margin-right: 20px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical; }
 
 .left-panel hr {
   margin-bottom: 20px;

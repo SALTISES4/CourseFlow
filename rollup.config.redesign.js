@@ -25,7 +25,22 @@ const plugins = {
     exclude: ['node_modules/**'],
     plugins: [
       '@babel/plugin-transform-class-properties',
-      '@babel/plugin-transform-react-jsx'
+      '@babel/plugin-transform-react-jsx',
+      [
+        'babel-plugin-module-resolver',
+        {
+          alias:{
+            '@cfModule':'./course_flow/static/course_flow/js/react/src',
+            '@cfComponents':'./course_flow/static/course_flow/js/react/src/Components/components',
+            '@cfViews':'./course_flow/static/course_flow/js/react/src/Components/Views',
+            '@cfCommon':'./course_flow/static/course_flow/js/react/src/Components/CommonComponents',
+            '@cfFindState':'./course_flow/static/course_flow/js/react/src/redux/FindState.js',
+            '@cfReducers':'./course_flow/static/course_flow/js/react/src/redux/Reducers.js',
+            '@cfUtility':'./course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
+            '@cfConstants':'./course_flow/static/course_flow/js/react/src/Constants.js',
+          }
+        }
+      ]
     ],
     presets: [
       '@babel/preset-flow',

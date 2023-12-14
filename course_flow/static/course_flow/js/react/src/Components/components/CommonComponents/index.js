@@ -13,8 +13,10 @@ export { default as Slider } from './Slider.js'
 export { default as NodeOutcomeView } from './NodeOutcomeView.js'
 export { default as SimpleWorkflow } from './SimpleWorkflow.js'
 export { default as NodePorts } from './NodePorts.js'
-export { default as AutoLinkView } from './AutoLinkView.js'
+export { default as AutoLink } from './AutoLink.js'
 export { default as Component } from './Component.js'
+export { default as MenuBar } from './MenuBar.js'
+export { default as RightSideBar } from './RightSideBarContents/RightSideBar.js'
 export {
   WorkflowTitle,
   WeekTitle,

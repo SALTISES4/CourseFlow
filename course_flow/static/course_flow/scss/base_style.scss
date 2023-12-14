@@ -239,6 +239,7 @@ h3.big-space {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .right-panel-wrapper {
@@ -335,10 +336,6 @@ h3.big-space {
   align-items: center;
   background: $color-white-green;
   box-sizing: border-box;
-}
-
-.menubar.hidden {
-  display: none;
 }
 
 .workflow-title-bar {
@@ -713,10 +710,6 @@ h3.big-space {
   background: $color-white-green;
 }
 
-.panel-favourite.active {
-  background: $color-white-green;
-}
-
 .panel-item > img,
 .panel-item .material-symbols-rounded {
   margin-right: 10px;
@@ -732,18 +725,6 @@ h3.big-space {
 
 .panel-item img {
   width: 24px;
-}
-
-.panel-favourite {
-  padding: 3px;
-  font-size: 13px;
-  display: block;
-  margin-left: 22px;
-  margin-right: 20px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
 }
 
 .left-panel hr {

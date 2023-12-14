@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import { OutcomeView } from '../OutcomeView'
+import { Outcome } from '../OutcomeEditView'
 import { updateOutcomehorizontallinkDegree } from '../../../PostFunctions.js'
 import * as Utility from '../../../UtilityFunctions.js'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome.js'
@@ -67,7 +67,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     return (
       <div className="child-outcome">
         <div className="half-width alignment-column">
-          <OutcomeView
+          <Outcome
             objectID={data.id}
             comments={true}
             edit={true}

@@ -11,7 +11,7 @@
 
 {% block body %}
 
-  <div id="sidebar" class="side-bar hide-print">
+  <!-- <div id="sidebar" class="side-bar hide-print">
     <ul>
       <li class="hover-shade">
         <a href="#edit-menu"
@@ -52,7 +52,7 @@
     <div class="window-close-button" id="side-bar-close-button">
       <img src="{% static 'course_flow/img/images_svg/close.svg' %}"/>
     </div>
-  </div>
+  </div> -->
 
   {{ is_strategy }}
 {% endblock %}
@@ -70,21 +70,21 @@
       workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
     }
 
-    $("#sidebar").detach().appendTo("#sidebar-container");
+    // $("#sidebar").detach().appendTo("#sidebar-container");
 
-    $("#sidebar").tabs({
-      active: 1,
-      disabled: [0],
-      collapsible: true,
-      activate: (evt, ui) => {
-        if (ui.oldTab.length === 0) $("#sidebar").removeClass("collapsed");
-        else if (ui.newTab.length === 0) $("#sidebar").addClass("collapsed");
-      }
-    });
+    // $("#sidebar").tabs({
+    //   active: 1,
+    //   disabled: [0],
+    //   collapsible: true,
+    //   activate: (evt, ui) => {
+    //     if (ui.oldTab.length === 0) $("#sidebar").removeClass("collapsed");
+    //     else if (ui.newTab.length === 0) $("#sidebar").addClass("collapsed");
+    //   }
+    // });
 
-    $("#sidebar").on("dblclick mousedown", (evt) => {
-      evt.stopPropagation();
-    });
+    // $("#sidebar").on("dblclick mousedown", (evt) => {
+    //   evt.stopPropagation();
+    // });
 
     jQuery('<div>', {
       class: 'load-screen'
@@ -93,10 +93,10 @@
 
     const user_permission = {{user_permission|safe}}
 
-      $("#side-bar-close-button").on("click", () => {
-        $("#sidebar").addClass("collapsed");
-        $("#sidebar").tabs("option", "active", false);
-      });
+      // $("#side-bar-close-button").on("click", () => {
+      //   $("#sidebar").addClass("collapsed");
+      //   $("#sidebar").tabs("option", "active", false);
+      // });
 
 
     const user_id = {{ user.id }};

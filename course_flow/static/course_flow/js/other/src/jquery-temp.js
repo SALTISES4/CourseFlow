@@ -40,7 +40,6 @@ const makeDropdown = (click_element) => {
 }
 
 // @todo should not be inline
-makeDropdown('#overflow-options', '#overflow-links')
 makeDropdown('#account-options', '#account-links')
 makeDropdown('#notifications', '#notifications-dropdown')
 makeDropdown('#create-options', '#create-links')

@@ -8,7 +8,7 @@ import {
 } from '../../redux/FindState.js'
 import { updateOutcomenodeDegree } from '../../PostFunctions.js'
 import * as OutcomeNode from './OutcomeNode/outcomeNode.js'
-import { SimpleOutcomeView } from '../Views/OutcomeView'
+import { SimpleOutcome } from '../Views/OutcomeEditView'
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends Component {
@@ -31,7 +31,7 @@ class OutcomeNodeView extends Component {
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
         )}
         {OutcomeNode.getCompletionImg(data.degree, this.props.outcomes_type)}
-        <SimpleOutcomeView
+        <SimpleOutcome
           checkHidden={this.checkHidden.bind(this)}
           comments={true}
           edit={true}

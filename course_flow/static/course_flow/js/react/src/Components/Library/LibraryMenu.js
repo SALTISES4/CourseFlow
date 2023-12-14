@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { getLibrary } from '../../PostFunctions.js'
 import WorkflowFilter from './WorkFlowFilter.js'
+import { MenuBar } from '../components/CommonComponents'
 
 /*******************************************************
  * The main library menu
@@ -85,21 +86,22 @@ class LibraryMenu extends React.Component {
    * RENDER
    *******************************************************/
   render() {
+    let visible_buttons = this.getCreate.bind(this)
+    let overflow_links = this.getOverflowLinks.bind(this)
+
     return (
-      <div className="project-menu">
-        {reactDom.createPortal(
-          this.getCreate(),
-          document.getElementById('visible-icons')
-        )}
-        {reactDom.createPortal(
-          this.getOverflowLinks(),
-          document.getElementById('overflow-links')
-        )}
-        <WorkflowFilter
-          renderer={this.props.renderer}
-          workflows={this.state.project_data}
-          context="library"
+      <div class="main-block">
+        <MenuBar
+          overflow_links={overflow_links}
+          visible_buttons={visible_buttons}
         />
+        <div className="project-menu">
+          <WorkflowFilter
+            renderer={this.props.renderer}
+            workflows={this.state.project_data}
+            context="library"
+          />
+        </div>
       </div>
     )
   }

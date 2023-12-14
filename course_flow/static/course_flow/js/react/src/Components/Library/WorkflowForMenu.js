@@ -44,6 +44,7 @@ class WorkflowForMenu extends React.Component {
     if (this.props.workflow_data.type !== 'liveproject')
       buttons.push(
         <div
+          key="btn-workflow-toggle-favourite"
           className="workflow-toggle-favourite hover-shade"
           onClick={(evt) => {
             toggleFavourite(
@@ -70,7 +71,7 @@ class WorkflowForMenu extends React.Component {
       !(this.props.workflow_data.workflow_count == null)
     )
       workflows.push(
-        <div className="workflow-created">
+        <div key="workflow-created-count" className="workflow-created">
           {this.props.workflow_data.workflow_count + ' ' + gettext('workflows')}
         </div>
       )
@@ -81,7 +82,10 @@ class WorkflowForMenu extends React.Component {
         Constants.role_keys['none']
     )
       workflows.push(
-        <div className="workflow-created workflow-live-classroom">
+        <div
+          key="workflow-created-group"
+          className="workflow-created workflow-live-classroom"
+        >
           <span
             className="material-symbols-rounded small-inline"
             title={gettext('Live Classroom')}
@@ -94,6 +98,7 @@ class WorkflowForMenu extends React.Component {
     if (this.props.workflow_data.is_linked)
       workflows.push(
         <div
+          key="workflow-created-warning"
           className="workflow-created linked-workflow-warning"
           title={gettext(
             'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
