@@ -10,6 +10,7 @@ import Radio from '@mui/material/Radio'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
+import { API_POST } from '../../../PostFunctions'
 import { OuterContentWrap } from '../../../mui/helper'
 
 const PageTitle = styled(Box)(({ theme }) => ({
@@ -38,6 +39,28 @@ const ProfileSettingsPage = () => {
       setFormFields(apiData.fields)
     }
   }, [loading])
+
+  function onFormSubmit() {
+    const formData = {}
+    formFields.map((field) => (formData[field.name] = field.value))
+
+    API_POST(config.json_api_paths.update_profile, formData).then(
+      (response) => {
+        console.log(
+          'API_POST\n',
+          formData,
+          '\nto\n',
+          config.json_api_paths.update_profile,
+          '\ngot\n',
+          response
+        )
+
+        // and if successful, dispatch the action to update local state
+        // TODO: implement some kind of success message notification
+        alert('User details updated!')
+      }
+    )
+  }
 
   if (loading || error || !formFields) {
     return null
@@ -109,7 +132,7 @@ const ProfileSettingsPage = () => {
       <FormWrap component="form" noValidate autoComplete="off">
         {inputFields}
         <Box>
-          <Button variant="contained">
+          <Button variant="contained" onClick={onFormSubmit}>
             {COURSEFLOW_APP.strings.update_profile}
           </Button>
         </Box>

@@ -49,6 +49,42 @@ const OBJECT_TYPE = Enum({
   PROJECT: 'project'
 })
 
+// Uses Fetch to POST data to a corresponding URL and
+// interact with our "API" endpoints that fetch JSON data.
+// Returns a Promise that can be then chained upon/consumed
+// Rejects if the 'action' in JSON response hasn't 'posted'
+// which can be caught and acted upon for error handling
+export function API_POST(url = '', data = {}) {
+  if (!url) {
+    return Promise.reject('You need to specify an URL in for API_POST to run.')
+  }
+
+  return new Promise((res, rej) => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'root' comes from the csrf-setup script
+        'X-CSRFToken': root.getCsrfToken()
+      },
+      body: JSON.stringify(data)
+    })
+      // convert to JSON
+      .then((response) => response.json())
+      .then((data) => {
+        // and if the action successfully posted, resolve the initial promise
+        if (data.action === DATA_ACTIONS.POSTED) {
+          res(data)
+        } else {
+          // otherwise reject with some potentially helpful info
+          rej(url, 'API_POST failed with response', data)
+        }
+      })
+      // and finally reject if anything fishy is going on
+      .catch((err) => rej(err))
+  })
+}
+
 //Get a list of possible workflows we can add to this project
 export function getAddedWorkflowMenu(
   projectPk,
