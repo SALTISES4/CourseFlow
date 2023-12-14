@@ -10,6 +10,7 @@ export { default as EditableComponentWithComments } from './EditableComponentWit
 export { default as EditableComponentWithSorting } from './EditableComponentWithSorting.js'
 export { default as NodeLinkSVG } from './NodeLinkSVG.js'
 export { default as Slider } from './Slider.js'
+export { default as LegendLine } from './LegendLine.js'
 export { default as NodeOutcomeView } from './NodeOutcomeView.js'
 export { default as SimpleWorkflow } from './SimpleWorkflow.js'
 export { default as NodePorts } from './NodePorts.js'

@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import { EditableComponentWithComments, NodeTitle } from '@cfCommonComponents'
 import { getChildWorkflowByID } from '@cfFindState'
-import OutcomeNodeView from '../../components/OutcomeNode.js'
+import { OutcomeNode } from '../WorkflowView'
 import { newOutcome, updateOutcomenodeDegree } from '@cfPostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
@@ -118,7 +118,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
 
     //if child outcomes are restricted, we need a show all button that expands to show all of them instead. Otherwise we only need to show the outcomes currently attached to the node.
     let outcomenodes = this.props.outcomenodes.map((outcomenode) => (
-      <OutcomeNodeView
+      <OutcomeNode
         key={outcomenode.id}
         objectID={outcomenode.id}
         renderer={this.props.renderer}

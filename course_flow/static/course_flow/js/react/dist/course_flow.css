@@ -939,13 +939,14 @@ h3.big-space {
   margin-left: 20px; }
 
 .project-menu {
-  min-height: 100%;
   width: -moz-fit-content;
   width: fit-content;
   background: #fff;
   padding: 50px;
   box-sizing: border-box;
-  width: 100%; }
+  width: 100%;
+  overflow-y: auto;
+  flex-grow: 1; }
 
 .project-menu .menu-grid {
   overflow-y: auto; }

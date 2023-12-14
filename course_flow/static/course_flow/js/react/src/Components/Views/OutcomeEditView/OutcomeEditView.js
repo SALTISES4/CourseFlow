@@ -13,7 +13,6 @@ import {
 import { moveOutcomeWorkflow } from '@cfReducers'
 import { newOutcome, insertedAt } from '@cfPostFunctions'
 import * as Utility from '@cfUtility'
-import * as OutcomeNode from '../../components/OutcomeNode/outcomeNode.js'
 import Outcome from './Outcome.js'
 
 /**

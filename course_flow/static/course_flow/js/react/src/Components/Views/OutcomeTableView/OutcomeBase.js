@@ -4,8 +4,7 @@ import { Component } from '@cfCommonComponents'
 import { getOutcomeByID } from '@cfFindState'
 import TableOutcome from './Outcome.js'
 import { Outcome as MatrixOutcome } from '../CompetencyMatrixView'
-import * as OutcomeNode from '../../components/OutcomeNode/outcomeNode.js'
-
+import * as Utility from '@cfUtility'
 /**
  * The base representation of an outcome line in a table,
  * regardless of the orientation of the table
@@ -38,7 +37,7 @@ class OutcomeBaseUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let outcome_tree = OutcomeNode.createOutcomeNodeBranch(
+    let outcome_tree = Utility.createOutcomeNodeBranch(
       this.props,
       this.props.objectID,
       this.props.nodecategory

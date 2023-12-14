@@ -18,7 +18,7 @@ import {
   toggleObjectSet
 } from '@cfReducers'
 import { ConnectionBar } from '../../../ConnectedUsers.js'
-import WorkflowLegend from '../../components/WorkflowLegend.js'
+import WorkflowLegend from './WorkflowLegend.js'
 import {
   getParentWorkflowInfo,
   getPublicParentWorkflowInfo,

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { Component } from '@cfCommonComponents'
 import { getOutcomeByID } from '@cfFindState'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '../OutcomeTableView'
-import * as OutcomeNode from '../../components/OutcomeNode/outcomeNode.js'
 
 /**
  * The block for an outcome in the competency matrix

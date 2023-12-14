@@ -4,7 +4,7 @@ import * as Utility from '@cfUtility'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { NodeOutcomeView } from '@cfCommonComponents'
 import OutcomeBase from './OutcomeBase.js'
-import { WorkflowOutcomeLegend } from '../../components/WorkflowLegend.js'
+import OutcomeLegend from './OutcomeLegend.js'
 
 /**
  * The outcome table.
@@ -196,7 +196,7 @@ class OutcomeTableView extends React.Component {
 
       return (
         <div className="workflow-details">
-          <WorkflowOutcomeLegend
+          <OutcomeLegend
             renderer={this.props.renderer}
             outcomes_type={this.props.outcomes_type}
           />

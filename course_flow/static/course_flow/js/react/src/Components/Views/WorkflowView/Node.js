@@ -11,7 +11,7 @@ import {
 } from '@cfCommonComponents'
 import NodeLink from './NodeLink.js'
 import AssignmentBox from './AssignmentBox'
-import OutcomeNodeView from '../../components/OutcomeNode.js'
+import OutcomeNode from './OutcomeNode.js'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
@@ -223,7 +223,7 @@ class Node extends EditableComponentWithActions {
           style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
           {data.outcomenode_unique_set.map((outcomenode) => (
-            <OutcomeNodeView
+            <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
               renderer={renderer}

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import OutcomeNodeView from '../../components/OutcomeNode.js'
+import { OutcomeNode } from '../WorkflowView'
 import { updateOutcomehorizontallinkDegree } from '@cfPostFunctions'
 
 /**
@@ -18,7 +18,7 @@ export default class extends React.Component {
     let props = this.props
     return (
       <div className="alignment-row">
-        <OutcomeNodeView
+        <OutcomeNode
           objectID={data.id}
           renderer={this.props.renderer}
           deleteSelfOverride={() => {

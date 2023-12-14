@@ -8,7 +8,7 @@ import {
   NodeTitle,
   TitleText
 } from '@cfCommonComponents'
-import OutcomeNodeView from '../../components/OutcomeNode.js'
+import { OutcomeNode } from '../WorkflowView'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
@@ -54,7 +54,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
           style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
           {data.outcomenode_unique_set.map((outcomenode) => (
-            <OutcomeNodeView
+            <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
               renderer={renderer}

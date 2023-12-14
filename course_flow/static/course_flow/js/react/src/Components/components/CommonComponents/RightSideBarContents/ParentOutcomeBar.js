@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider, connect } from 'react-redux'
-import * as OutcomeNode from '../../OutcomeNode/outcomeNode.js'
+import * as Utility from '@cfUtility'
 
 import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome.js'
@@ -23,7 +23,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
         <h4>{category.objectset.title}</h4>
         {category.outcomes.map((outcome) => (
           <div className="parent-outcome-node">
-            {OutcomeNode.getCompletionImg(outcome.degree, 1)}
+            {Utility.getCompletionImg(outcome.degree, 1)}
             <ParentOutcome
               key={outcome.id}
               objectID={outcome.id}

@@ -15,7 +15,7 @@ import {
 } from '@cfFindState'
 import MatrixWeek from './MatrixWeek.js'
 import MatrixNode from './MatrixNode.js'
-import { WorkflowOutcomeLegend } from '../../components/WorkflowLegend.js'
+import { OutcomeLegend } from '@cfViews/OutcomeTableView'
 import * as Utility from '@cfUtility'
 
 /**
@@ -308,7 +308,7 @@ class CompetencyMatrixView extends React.Component {
       )
       return (
         <div className="workflow-details">
-          <WorkflowOutcomeLegend
+          <OutcomeLegend
             renderer={this.props.renderer}
             outcomes_type={this.props.outcomes_type}
           />
