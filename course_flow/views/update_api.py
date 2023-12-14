@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
+from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 
 from course_flow import redux_actions as actions
@@ -670,8 +671,10 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
 #     def get_success_url(self):
 #         return reverse("course_flow:user-update")
 
+# TODO: Implement the missing functionality
 @login_required
 def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
+    user = request.user
     # on POST, update one (or more) settings to the new value
     if request.method == "POST":
         return JsonResponse(
@@ -687,20 +690,23 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
             "fields": [
                 {
                     "name": "first_name",
+                    "label": _("First name"),
                     "type": "text",
-                    "value": "First name here"
+                    "value": user.first_name
                 },
                 {
                     "name": "last_name",
+                    "label": _("Last name"),
                     "type": "text",
-                    "value": "Last name"
+                    "value": user.last_name
                 },
                 {
                     "name": "language",
+                    "label": _("Language preferences"),
                     "type": "radio",
                     "options": [
-                        { "label": "English", "value": "en" },
-                        { "label": "French", "value": "fr" }
+                        { "label": _("English"), "value": "en" },
+                        { "label": _("French"), "value": "fr" }
                     ],
                     "value": "en"
                 },

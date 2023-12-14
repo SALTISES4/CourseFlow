@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
@@ -22,14 +22,81 @@ const PageTitle = styled(Box)(({ theme }) => ({
   }
 }))
 
+const FormWrap = styled(Box)({
+  '& .MuiFormControl-root': {
+    width: '100%'
+  }
+})
+
 const ProfileSettingsPage = () => {
+  const [formFields, setFormFields] = useState(null)
   const [apiData, loading, error] = useApi(config.json_api_paths.update_profile)
 
-  if (loading || error) {
+  // after the apiData is loaded in, set it as state so it can be used internally
+  useEffect(() => {
+    if (!loading) {
+      setFormFields(apiData.fields)
+    }
+  }, [loading])
+
+  if (loading || error || !formFields) {
     return null
   }
 
-  console.log('apiData', apiData)
+  // loop through all the fields and generate appropriate MUI input element
+  const inputFields = formFields.map((field, idx) => {
+    switch (field.type) {
+      case 'text':
+        return (
+          <Box key={idx} sx={{ mb: 4 }}>
+            <FormControl>
+              <TextField
+                required
+                variant="standard"
+                name={field.name}
+                label={field.label}
+                value={field.value}
+                onChange={(e) => {
+                  const newFieldsState = [...formFields]
+                  newFieldsState[idx].value = e.target.value
+                  setFormFields(newFieldsState)
+                }}
+              />
+            </FormControl>
+          </Box>
+        )
+      case 'radio':
+        return (
+          <Box key={idx} sx={{ mb: 8 }}>
+            <FormControl>
+              <FormLabel id={`radio-label-{idx}`}>{field.label}</FormLabel>
+              <RadioGroup
+                aria-labelledby={`radio-label-{idx}`}
+                value={field.value}
+                name={field.name}
+                onChange={(e) => {
+                  const newFieldsState = [...formFields]
+                  newFieldsState[idx].value = e.target.value
+                  setFormFields(newFieldsState)
+                }}
+              >
+                {field.options.map((option, idy) => (
+                  <FormControlLabel
+                    key={idy}
+                    value={option.value}
+                    label={option.label}
+                    control={<Radio />}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </Box>
+        )
+    }
+
+    // for any unsupported input types, we just return nothing
+    return
+  })
 
   return (
     <OuterContentWrap narrow>
@@ -39,51 +106,14 @@ const ProfileSettingsPage = () => {
         </Typography>
       </PageTitle>
 
-      <Box component="form" noValidate autoComplete="off">
-        <div>
-          <FormControl>
-            <TextField
-              required
-              label="First name"
-              variant="standard"
-              value="John"
-            />
-          </FormControl>
-        </div>
-
-        <div>
-          <FormControl>
-            <TextField
-              required
-              label="Last name"
-              variant="standard"
-              value="Doe"
-            />
-          </FormControl>
-        </div>
-
-        <div>
-          <FormControl>
-            <FormLabel id="language-label">Language preferences</FormLabel>
-            <RadioGroup
-              aria-labelledby="language-label"
-              defaultValue="en"
-              name="language"
-            >
-              <FormControlLabel
-                value="en"
-                control={<Radio />}
-                label="English"
-              />
-              <FormControlLabel value="fr" control={<Radio />} label="French" />
-            </RadioGroup>
-          </FormControl>
-        </div>
-
-        <div>
-          <Button variant="contained">Update profile</Button>
-        </div>
-      </Box>
+      <FormWrap component="form" noValidate autoComplete="off">
+        {inputFields}
+        <Box>
+          <Button variant="contained">
+            {COURSEFLOW_APP.strings.update_profile}
+          </Button>
+        </Box>
+      </FormWrap>
     </OuterContentWrap>
   )
 }
