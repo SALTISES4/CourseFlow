@@ -10,6 +10,7 @@ import { LiveProjectSection } from './LiveProjectSection.js'
 import { WorkflowForMenu } from '@cfLibrary'
 import LiveProjectMenu from './LiveProjectMenu.js'
 
+// LiveProjectSection does not use renderer
 export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
@@ -18,7 +19,9 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
       <SimpleWorkflow workflow_data={workflow} />
     ))
     if (workflows.length == 0)
-      workflows = gettext('No workflows have been made visible to students.')
+      workflows = window.gettext(
+        'No workflows have been made visible to students.'
+      )
 
     let assignments = this.state.data.assignments
       .filter((assignment) => assignment.user_assignment.completed == false)
@@ -48,16 +51,16 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Your Incomplete Assignments')}:</h3>
+        <h3>{window.gettext('Your Incomplete Assignments')}:</h3>
         <table className="overview-table">
           <tr>
-            <th>{gettext('Assignment')}</th>
-            <th>{gettext('Completion')}</th>
-            <th>{gettext('End Date')}</th>
+            <th>{window.gettext('Assignment')}</th>
+            <th>{window.gettext('Completion')}</th>
+            <th>{window.gettext('End Date')}</th>
           </tr>
           {assignments}
         </table>
-        <h3>{gettext('Visible Workflows')}:</h3>
+        <h3>{window.gettext('Visible Workflows')}:</h3>
         <div className="menu-grid">{workflows}</div>
       </div>
     )
@@ -79,7 +82,7 @@ class StudentLiveProjectWorkflows extends LiveProjectSection {
     ))
     return (
       <div className="workflow-details">
-        <h3>{gettext('Workflows')}</h3>
+        <h3>{window.gettext('Workflows')}</h3>
         <div className="menu-grid">{workflows_added}</div>
       </div>
     )
@@ -94,21 +97,23 @@ class StudentLiveProjectAssignments extends LiveProjectSection {
     if (!this.state.data) return this.defaultRender()
     let assignments_past = this.state.data.assignments_past.map(
       (assignment) => (
+        // @todo renderer IS used in this component
         <AssignmentView renderer={this.props.renderer} data={assignment} />
       )
     )
     let assignments_upcoming = this.state.data.assignments_upcoming.map(
       (assignment) => (
+        // @todo renderer IS used in this component
         <AssignmentView renderer={this.props.renderer} data={assignment} />
       )
     )
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Your Tasks')}:</h3>
-        <h4>{gettext('Upcoming')}:</h4>
+        <h3>{window.gettext('Your Tasks')}:</h3>
+        <h4>{window.gettext('Upcoming')}:</h4>
         <div>{assignments_upcoming}</div>
-        <h4>{gettext('Past')}:</h4>
+        <h4>{window.gettext('Past')}:</h4>
         <div>{assignments_past}</div>
       </div>
     )
@@ -121,9 +126,9 @@ class StudentLiveProjectAssignments extends LiveProjectSection {
 class StudentLiveProjectMenu extends LiveProjectMenu {
   getViewButtons() {
     return [
-      { type: 'overview', name: gettext('Classroom Overview') },
-      { type: 'assignments', name: gettext('My Assignments') },
-      { type: 'workflows', name: gettext('My Workflows') }
+      { type: 'overview', name: window.gettext('Classroom Overview') },
+      { type: 'assignments', name: window.gettext('My Assignments') },
+      { type: 'workflows', name: window.gettext('My Workflows') }
     ]
   }
 
@@ -135,6 +140,7 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
     switch (this.state.view_type) {
       case 'overview':
         return (
+          // @todo renderer IS used in this component
           <StudentLiveProjectOverview
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -144,6 +150,7 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
         )
       case 'assignments':
         return (
+          // @todo renderer IS used in this component
           <StudentLiveProjectAssignments
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -153,8 +160,9 @@ class StudentLiveProjectMenu extends LiveProjectMenu {
         )
       case 'workflows':
         return (
+          // @todo renderer NOT used in this component
           <StudentLiveProjectWorkflows
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.props.project.id}
             view_type={this.state.view_type}

@@ -29,6 +29,25 @@ const cache = createCache({
   nonce: document.querySelector('#script-redesign').nonce
 })
 
+// LIBRARY
+import {
+  HomeRenderer,
+  ExploreRenderer,
+  FavouritesRenderer,
+  ProjectRenderer,
+  LibraryRenderer
+} from './scripts-library.js'
+
+// LIVE
+import { LiveAssignmentRenderer, LiveProjectRenderer } from './scripts-live.js'
+// REDUX
+import {
+  ComparisonRenderer,
+  WorkflowComparisonRenderer,
+  WorkflowGridRenderer,
+  WorkflowRenderer
+} from './scripts-wf-redux.js'
+
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
 // progressively adding partials into the existing templates
@@ -48,9 +67,84 @@ function renderComponents(components) {
   })
 }
 
+// window.contextData
+// set in python views and prepped in react_renderer.html
+const LibraryComponent = () => {
+  switch (window.path_id) {
+    case 'projectDetail':
+      return <ProjectRenderer {...window.contextData} />
+    case 'favorites':
+      return <FavouritesRenderer />
+    case 'library':
+      // if this complains about user_id add it to
+      // contextData and pass that to LibraryRenderer
+      return <LibraryRenderer />
+    case 'home':
+      return <HomeRenderer {...window.contextData} />
+    case 'explore':
+      return <ExploreRenderer {...window.contextData} />
+  }
+}
+
+const LiveComponent = () => {
+  switch (window.path_id) {
+    case 'assignmentDetail':
+      return <LiveAssignmentRenderer {...window.contextData} />
+    case 'myLiveProjects':
+      return <LiveProjectRenderer {...window.contextData} />
+  }
+}
+
+const ReduxComponent = () => {
+  switch (window.path_id) {
+    case 'projectComparison':
+      /**
+       * @todo for myColour, changeFieldID decide whether these should go in
+       * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
+       */
+      const thisContextData = {
+        ...window.contextData,
+        myColour:
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+      // not sure yet because the render method is taking arguments
+      return <ComparisonRenderer {...thisContextData} />
+    case 'workflowDetailView': {
+      // not sure yet because the render method is taking arguments
+      const thisContextData = {
+        ...window.contextData,
+        myColour:
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+      const workflow_renderer = new WorkflowRenderer(thisContextData)
+      workflow_renderer.connect()
+      return null
+    }
+    case 'my_live_projects':
+      return <WorkflowGridRenderer {...window.contextData} />
+  }
+}
+
 // Register all the components that we're loading ourselves on load
 window.addEventListener('load', () => {
   renderComponents([
+    {
+      component: <LibraryComponent />,
+      target: '#container',
+      styles: null
+    },
+    {
+      component: <LiveComponent />,
+      target: '#container',
+      styles: null
+    },
+    {
+      component: <ReduxComponent />,
+      target: '#container',
+      styles: null
+    },
     {
       component: <Sidebar />,
       target: '[data-component="sidebar"]',

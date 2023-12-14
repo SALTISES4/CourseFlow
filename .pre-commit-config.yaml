@@ -47,5 +47,4 @@ repos:
         language: system
         entry: bash -c 'yarn prettier || true' --
         always_run: true
-        exclude: ".*"
         verbose: true

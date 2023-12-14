@@ -45,7 +45,7 @@ class UserLabel extends React.Component {
                 this.props.addFunction($(this.select.current).val())
               }
             >
-              {gettext('Share')}
+              {window.gettext('Share')}
             </button>
           </div>
         )

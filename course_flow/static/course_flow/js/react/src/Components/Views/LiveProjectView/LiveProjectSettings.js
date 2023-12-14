@@ -40,13 +40,12 @@ class LiveProjectSettings extends LiveProjectSection {
    *******************************************************/
   render() {
     if (!this.state.data) return this.defaultRender()
-    console.log(this.state)
     let data = this.state.data.liveproject
     let changeField = this.changeField.bind(this)
 
     return (
       <div className="workflow-details">
-        <h4>{gettext('Classroom configuration')}:</h4>
+        <h4>{window.gettext('Classroom configuration')}:</h4>
         <div>
           <input
             id="default-single-completion"
@@ -59,11 +58,11 @@ class LiveProjectSettings extends LiveProjectSection {
           />
           <label
             htmlFor="default-signle-completion"
-            title={gettext(
+            title={window.gettext(
               'Whether to mark the assignment as complete if any user has completed it.'
             )}
           >
-            {gettext(
+            {window.gettext(
               'By default, mark assignments as complete when a single user has completed them'
             )}
           </label>
@@ -80,11 +79,13 @@ class LiveProjectSettings extends LiveProjectSection {
           />
           <label
             htmlFor="default-assign-to-all"
-            title={gettext(
+            title={window.gettext(
               'Whether creating an assignment automatically adds all students to it.'
             )}
           >
-            {gettext('Assign new assignments to all students by default')}
+            {window.gettext(
+              'Assign new assignments to all students by default'
+            )}
           </label>
         </div>
         <div>
@@ -99,11 +100,11 @@ class LiveProjectSettings extends LiveProjectSection {
           />
           <label
             htmlFor="default-self-reporting"
-            title={gettext(
+            title={window.gettext(
               'Whether students can mark their own assignments as complete.'
             )}
           >
-            {gettext(
+            {window.gettext(
               'Let students self-report their assignment completion by default'
             )}
           </label>
@@ -120,11 +121,11 @@ class LiveProjectSettings extends LiveProjectSection {
           />
           <label
             htmlFor="default-all-workflows-visible"
-            title={gettext(
+            title={window.gettext(
               'Whether all workflows in the project will be visible to students by default.'
             )}
           >
-            {gettext('All Workflows Visible To Students')}
+            {window.gettext('All Workflows Visible To Students')}
           </label>
         </div>
         <div>
@@ -133,7 +134,7 @@ class LiveProjectSettings extends LiveProjectSection {
             disabled={!this.state.has_changed}
             onClick={this.saveChanges.bind(this)}
           >
-            {gettext('Save classroom changes')}
+            {window.gettext('Save classroom changes')}
           </button>
         </div>
       </div>

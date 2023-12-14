@@ -129,7 +129,9 @@ const Sidebar = () => {
     sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const [apiData, loading, error] = useApi(config.json_api_paths.get_sidebar)
+  const [apiData, loading, error] = useApi(
+    window.config.json_api_paths.get_sidebar
+  )
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -164,13 +166,13 @@ const Sidebar = () => {
             <ListItemButton
               component="a"
               id="panel-home"
-              href={config.home_path}
-              selected={window.location.pathname === config.home_path}
+              href={window.config.home_path}
+              selected={window.location.pathname === window.config.home_path}
             >
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={COURSEFLOW_APP.strings.home} />
+              <ListItemText primary={window.COURSEFLOW_APP.strings.home} />
             </ListItemButton>
           </ListItem>
           {apiData.is_teacher ? (
@@ -179,26 +181,34 @@ const Sidebar = () => {
                 <ListItemButton
                   component="a"
                   id="panel-my-library"
-                  href={config.my_library_path}
-                  selected={window.location.pathname === config.my_library_path}
+                  href={window.config.my_library_path}
+                  selected={
+                    window.location.pathname === window.config.my_library_path
+                  }
                 >
                   <ListItemIcon>
                     <FolderCopyIcon />
                   </ListItemIcon>
-                  <ListItemText primary={COURSEFLOW_APP.strings.my_library} />
+                  <ListItemText
+                    primary={window.COURSEFLOW_APP.strings.my_library}
+                  />
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
                   id="panel-explore"
-                  href={config.explore_path}
-                  selected={window.location.pathname === config.explore_path}
+                  href={window.config.explore_path}
+                  selected={
+                    window.location.pathname === window.config.explore_path
+                  }
                 >
                   <ListItemIcon>
                     <SearchIcon />
                   </ListItemIcon>
-                  <ListItemText primary={COURSEFLOW_APP.strings.explore} />
+                  <ListItemText
+                    primary={window.COURSEFLOW_APP.strings.explore}
+                  />
                 </ListItemButton>
               </ListItem>
             </>
@@ -208,15 +218,18 @@ const Sidebar = () => {
               <ListItemButton
                 component="a"
                 id="panel-my-live-projects"
-                href={config.my_liveprojects_path}
+                href={window.config.my_liveprojects_path}
                 selected={
-                  window.location.pathname === config.my_liveprojects_path
+                  window.location.pathname ===
+                  window.config.my_liveprojects_path
                 }
               >
                 <ListItemIcon>
                   <CalendarMonthIcon />
                 </ListItemIcon>
-                <ListItemText primary={COURSEFLOW_APP.strings.my_classrooms} />
+                <ListItemText
+                  primary={window.COURSEFLOW_APP.strings.my_classrooms}
+                />
               </ListItemButton>
             </ListItem>
           ) : null}
@@ -227,7 +240,7 @@ const Sidebar = () => {
             <Divider />
             <FavouritesWrap>
               <FavouritesLabel variant="body1">
-                {COURSEFLOW_APP.strings.favourites}
+                {window.COURSEFLOW_APP.strings.favourites}
               </FavouritesLabel>
               <List>
                 {apiData.favourites.map((favourite, id) => (
@@ -247,12 +260,12 @@ const Sidebar = () => {
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
                       component="a"
-                      href={config.my_favourites_path}
+                      href={window.config.my_favourites_path}
                     >
                       <ListItemText
                         primary={
-                          <SeeAllLink href={config.my_favourites_path}>
-                            {COURSEFLOW_APP.strings.view_all}
+                          <SeeAllLink href={window.config.my_favourites_path}>
+                            {window.COURSEFLOW_APP.strings.view_all}
                           </SeeAllLink>
                         }
                       />
@@ -273,7 +286,9 @@ const Sidebar = () => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={COURSEFLOW_APP.strings.help_support} />
+              <ListItemText
+                primary={window.COURSEFLOW_APP.strings.help_support}
+              />
             </ListItemButton>
           </ListItem>
         </HelpLink>

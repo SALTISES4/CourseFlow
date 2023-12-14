@@ -1,0 +1,28 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% trans "New Classroom" %} - CourseFlow{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+<div class="body-wrapper">
+    <div class="workflow-create-wrapper">
+    <h1>
+      {% trans 'Create a live project.' %}
+    </h1>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <input id="save-button" type="submit" value="Save" />
+    </form>
+    </div>
+</div>
+{% endblock %}
+{% csrf_token %}
+
+{% block scripts %}
+   {{ block.super }}
+{% endblock %}

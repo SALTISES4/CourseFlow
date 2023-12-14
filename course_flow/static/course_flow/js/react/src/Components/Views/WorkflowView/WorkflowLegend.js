@@ -110,7 +110,7 @@ class WorkflowLegendUnconnected extends React.Component {
           </div>
         )}
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={window.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

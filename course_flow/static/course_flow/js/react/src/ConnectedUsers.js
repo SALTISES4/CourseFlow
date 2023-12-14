@@ -31,7 +31,7 @@ export class ConnectionBar extends React.Component {
     } else if (this.props.updateSocket.readyState === 3) {
       return (
         <div className="users-box connection-failed">
-          {gettext('Not Connected')}
+          {window.gettext('Not Connected')}
         </div>
       )
     }

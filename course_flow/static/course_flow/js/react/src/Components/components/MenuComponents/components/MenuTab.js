@@ -40,19 +40,23 @@ class MenuSection extends React.Component {
     if (this.props.replacement_text) objects = this.props.replacement_text
 
     let add_button
-    if (config.create_path && this.props.add) {
+    if (window.config.create_path && this.props.add) {
       let types
       if (section_type === 'workflow') types = ['program', 'course', 'activity']
       else types = [section_type]
       let adds
       {
         adds = types.map((this_type) => (
-          <a className="hover-shade" href={config.create_path[this_type]}>
-            {gettext('Create new ') + gettext(this_type)}
+          <a
+            className="hover-shade"
+            href={window.config.create_path[this_type]}
+          >
+            {window.gettext('Create new ') + window.gettext(this_type)}
           </a>
         ))
-        let import_text = gettext('Import ') + gettext(section_type)
-        if (is_strategy) import_text += gettext(' strategy')
+        let import_text =
+          window.gettext('Import ') + window.gettext(section_type)
+        if (is_strategy) import_text += window.gettext(' strategy')
         adds.push(
           <a
             className="hover-shade"
@@ -91,8 +95,8 @@ class MenuSection extends React.Component {
               this.props.section_data.object_type +
               ' link-image'
             }
-            title={gettext('Add New')}
-            src={config.icon_path + 'add_new_white.svg'}
+            title={window.gettext('Add New')}
+            src={window.config.icon_path + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

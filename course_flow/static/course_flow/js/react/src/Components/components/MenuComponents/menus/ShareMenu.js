@@ -8,6 +8,7 @@ import {
 import { WorkflowTitle } from '@cfCommonComponents'
 import * as Constants from '@cfConstants'
 import { TinyLoader } from '../../../../redux/helpers.js'
+import { WorkflowTitle } from '../../CommonComponents/UIComponents'
 
 class UserLabel extends React.Component {
   constructor(props) {
@@ -50,10 +51,10 @@ class UserLabel extends React.Component {
           <div className="flex-middle">
             <div className="permission-select">
               <select ref={this.select} disabled={disabled}>
-                <option value="edit">{gettext('Can edit')}</option>
-                <option value="comment">{gettext('Can comment')}</option>
-                <option value="view">{gettext('Can view')}</option>
-                {/*<option value="student">{gettext("Student")}</option>*/}
+                <option value="edit">{window.gettext('Can edit')}</option>
+                <option value="comment">{window.gettext('Can comment')}</option>
+                <option value="view">{window.gettext('Can view')}</option>
+                {/*<option value="student">{window.gettext("Student")}</option>*/}
               </select>
             </div>
             <button
@@ -62,7 +63,7 @@ class UserLabel extends React.Component {
                 this.props.addFunction($(this.select.current).val())
               }
             >
-              {gettext('Share')}
+              {window.gettext('Share')}
             </button>
           </div>
         )
@@ -74,11 +75,11 @@ class UserLabel extends React.Component {
               disabled={disabled}
               onChange={this.onChange.bind(this)}
             >
-              <option value="edit">{gettext('Can edit')}</option>
-              <option value="comment">{gettext('Can comment')}</option>
-              <option value="view">{gettext('Can view')}</option>
-              {/*<option value="student">{gettext("Student")}</option>*/}
-              <option value="none">{gettext('Remove user')}</option>
+              <option value="edit">{window.gettext('Can edit')}</option>
+              <option value="comment">{window.gettext('Can comment')}</option>
+              <option value="view">{window.gettext('Can view')}</option>
+              {/*<option value="student">{window.gettext("Student")}</option>*/}
+              <option value="none">{window.gettext('Remove user')}</option>
             </select>
           </div>
         )
@@ -167,7 +168,7 @@ class UserAdd extends React.Component {
           <input
             className="search-input"
             ref={this.input}
-            placeholder={gettext('Begin typing to search users')}
+            placeholder={window.gettext('Begin typing to search users')}
           />
           <span className="material-symbols-rounded">search</span>
         </div>
@@ -229,15 +230,15 @@ export class ShareMenu extends React.Component {
         public_disabled |= data.disciplines.length == 0
       if (!public_disabled && !published) public_class += ' hover-shade'
       if (public_disabled) public_class += ' disabled'
-      let public_text = gettext('Any CourseFlow teacher can view')
+      let public_text = window.gettext('Any CourseFlow teacher can view')
       let disabled_indicator
       if (public_disabled) {
         let disabled_text
         if (data.type == 'project')
-          disabled_text = gettext(
+          disabled_text = window.gettext(
             'Title and disciplines are required to publish.'
           )
-        else disabled_text = gettext('Title is required to publish.')
+        else disabled_text = window.gettext('Title is required to publish.')
         disabled_indicator = (
           <div className="warning flex-middle">
             <span className="material-symbols-rounded red">block</span>
@@ -254,7 +255,7 @@ export class ShareMenu extends React.Component {
           >
             <span className="material-symbols-rounded">public</span>
             <div className="big-button-title">
-              {gettext('Public to CourseFlow')}
+              {window.gettext('Public to CourseFlow')}
             </div>
             <div className="big-button-description">{public_text}</div>
           </div>
@@ -265,9 +266,9 @@ export class ShareMenu extends React.Component {
             <span className="material-symbols-rounded filled">
               visibility_off
             </span>
-            <div className="big-button-title">{gettext('Private')}</div>
+            <div className="big-button-title">{window.gettext('Private')}</div>
             <div className="big-button-description">
-              {gettext('Only added collaborators can view')}
+              {window.gettext('Only added collaborators can view')}
             </div>
           </div>
         </div>,
@@ -281,10 +282,10 @@ export class ShareMenu extends React.Component {
             <div className="big-button active">
               <span className="material-symbols-rounded">public</span>
               <div className="big-button-title">
-                {gettext('Project public to CourseFlow')}
+                {window.gettext('Project public to CourseFlow')}
               </div>
               <div className="big-button-description">
-                {gettext('Any CourseFlow teacher can view')}
+                {window.gettext('Any CourseFlow teacher can view')}
               </div>
             </div>
           </div>
@@ -297,10 +298,10 @@ export class ShareMenu extends React.Component {
                 visibility_off
               </span>
               <div className="big-button-title">
-                {gettext('Project is private')}
+                {window.gettext('Project is private')}
               </div>
               <div className="big-button-description">
-                {gettext('Only added collaborators can view')}
+                {window.gettext('Only added collaborators can view')}
               </div>
             </div>
           </div>
@@ -314,7 +315,7 @@ export class ShareMenu extends React.Component {
     let public_link =
       'https://' +
       window.location.host +
-      config.public_update_path['workflow'].replace('0', data.id)
+      window.config.public_update_path['workflow'].replace('0', data.id)
 
     if (data.type !== 'project') {
       let public_view = this.state.public_view
@@ -329,10 +330,10 @@ export class ShareMenu extends React.Component {
             </div>
             <div>
               <div className="public-link-text">
-                {gettext('Generate a public link')}
+                {window.gettext('Generate a public link')}
               </div>
               <div className="public-link-description">
-                {gettext(
+                {window.gettext(
                   'Anyone with the link will be able to view the workflow'
                 )}
               </div>
@@ -374,10 +375,10 @@ export class ShareMenu extends React.Component {
               </div>
               <div>
                 <div className="copy-link-text">
-                  {gettext('Copy public link')}
+                  {window.gettext('Copy public link')}
                 </div>
                 <div className="public-link-description">
-                  {gettext('Anyone with the link can view the workflow')}
+                  {window.gettext('Anyone with the link can view the workflow')}
                 </div>
               </div>
             </div>
@@ -417,10 +418,12 @@ export class ShareMenu extends React.Component {
               </div>
               <div>
                 <div className="copy-link-text">
-                  {gettext('Copy embed code')}
+                  {window.gettext('Copy embed code')}
                 </div>
                 <div className="public-link-description">
-                  {gettext('HTML code to embed the workflow in a site or page')}
+                  {window.gettext(
+                    'HTML code to embed the workflow in a site or page'
+                  )}
                 </div>
               </div>
             </div>
@@ -434,7 +437,7 @@ export class ShareMenu extends React.Component {
             </div>
             <div>
               <div className="public-link-text">
-                {gettext('Remove public link')}
+                {window.gettext('Remove public link')}
               </div>
             </div>
           </div>
@@ -446,7 +449,7 @@ export class ShareMenu extends React.Component {
     if (public_view) {
       if (
         window.confirm(
-          gettext(
+          window.gettext(
             'Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow.'
           )
         )
@@ -478,7 +481,7 @@ export class ShareMenu extends React.Component {
     if (
       !published ||
       window.confirm(
-        gettext(
+        window.gettext(
           'Are you sure you want to publish this project, making it fully visible to anyone with an account?'
         )
       )
@@ -560,9 +563,11 @@ export class ShareMenu extends React.Component {
 
     let share_info
     if (data.type === 'project') {
-      share_info = gettext('Invite collaborators to project and its workflows')
+      share_info = window.gettext(
+        'Invite collaborators to project and its workflows'
+      )
     } else {
-      share_info = gettext(
+      share_info = window.gettext(
         'Invite collaborators to workflow and grant view permissions to the project'
       )
     }
@@ -576,7 +581,7 @@ export class ShareMenu extends React.Component {
       shared_with = [
         <hr />,
         <div className="user-panel">
-          <p>{gettext('Shared With')}:</p>
+          <p>{window.gettext('Shared With')}:</p>
           <ul className="user-list">
             {editors}
             {commentors}
@@ -590,7 +595,7 @@ export class ShareMenu extends React.Component {
     return (
       <div className="message-wrap user-text">
         <h2>
-          {gettext('Share') + ' ' + gettext(data.type) + ' '}
+          {window.gettext('Share') + ' ' + window.gettext(data.type) + ' '}
           <WorkflowTitle
             no_hyperlink={true}
             data={this.props.data}
@@ -599,7 +604,7 @@ export class ShareMenu extends React.Component {
         </h2>
         {this.getPublication()}
         <hr />
-        <p>{gettext('Owned By')}:</p>
+        <p>{window.gettext('Owned By')}:</p>
         <div>{owner}</div>
         <hr />
         <UserAdd
@@ -618,7 +623,7 @@ export class ShareMenu extends React.Component {
             className="secondary-button"
             onClick={this.props.actionFunction}
           >
-            {gettext('Close')}
+            {window.gettext('Close')}
           </button>
         </div>
       </div>

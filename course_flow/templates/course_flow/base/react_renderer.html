@@ -1,0 +1,77 @@
+<script nonce="{{ request.csp_nonce }}">
+
+  const path_id = "{{ path_id }}";
+  const DTOcontextData = {{ contextData | safe }};
+  let contextData
+  let makeActiveSidebarID = null
+
+
+  switch (path_id) {
+    case 'projectDetail': {
+
+      contextData = DTOcontextData
+      window.create_path_this_project = {
+        activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
+        course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
+        program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
+      }
+      makeActiveSidebarID = "#project" + contextData.project_data.id
+      break;
+    }
+    case 'favorites': {
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#my-favourites"
+      break;
+    }
+    case 'library': {
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#panel-my-library'
+      break;
+    }
+
+    case 'home': {
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#panel-home'
+      break;
+    }
+
+
+    case 'explore': {
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#panel-explore"
+      break;
+    }
+    /*******************************************************
+     * REDUX STUFF
+     *******************************************************/
+    case 'projectComparison': {
+      //  @todo these don't seem to be used
+      // window.workflow_paths = {
+      //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      //  course: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
+      // }
+      contextData = DTOcontextData
+      break;
+    }
+    case "my_live_projects": {
+      contextData = DTOcontextData
+      makeActiveSidebarID = "#panel-my-live-projects"
+      break;
+    }
+    case "workflowDetailView": {
+      contextData = DTOcontextData
+      makeActiveSidebarID = '#workflow' + contextData.workflow_model_id
+      break;
+    }
+
+  }
+
+  window.addEventListener("load", function () {
+    $(document).ajaxError(window.fail_function);
+    makeActiveSidebarID && makeActiveSidebar(makeActiveSidebarID)
+  });
+
+
+</script>

@@ -40,11 +40,11 @@ class AssignmentForNode extends AssignmentView {
       if (data.single_completion && data.user_assignment.completed) {
         extra_data = [
           <div>
-            {gettext('Completed by ') +
+            {window.gettext('Completed by ') +
               Utility.getUserDisplay(
                 data.user_assignment.liveprojectuser.user
               ) +
-              gettext(' on ')}
+              window.gettext(' on ')}
             <DatePicker
               default_value={data.user_assignment.completed_on}
               disabled={true}
@@ -54,7 +54,7 @@ class AssignmentForNode extends AssignmentView {
       }
       completion_data = (
         <div>
-          <label>{gettext('Completion')}: </label>
+          <label>{window.gettext('Completion')}: </label>
           <input
             type="checkbox"
             disabled={disabled}
@@ -66,7 +66,7 @@ class AssignmentForNode extends AssignmentView {
       )
     } else if (data.completion_info) {
       completion_data = (
-        <div>{gettext('Completion') + ': ' + data.completion_info}</div>
+        <div>{window.gettext('Completion') + ': ' + data.completion_info}</div>
       )
     }
 
@@ -81,7 +81,7 @@ class AssignmentForNode extends AssignmentView {
         <div className="assignment-timing">
           <div>
             <div>
-              <label>{gettext('End Date')}: </label>
+              <label>{window.gettext('End Date')}: </label>
               <DatePicker
                 id="end_date"
                 default_value={data.end_date}
@@ -89,7 +89,7 @@ class AssignmentForNode extends AssignmentView {
               />
             </div>
             <div>
-              <label>{gettext('Start Date')}: </label>
+              <label>{window.gettext('Start Date')}: </label>
               <DatePicker
                 id="start_date"
                 default_value={data.start_date}
@@ -178,7 +178,7 @@ class AssignmentBox extends React.Component {
           className="comment-indicator hover-shade"
           onClick={this.props.parent.showAssignment.bind(this.props.parent)}
         >
-          <img src={config.icon_path + 'assignment.svg'} />
+          <img src={window.config.icon_path + 'assignment.svg'} />
         </div>,
         $(this.props.parent.maindiv.current)
           .children('.side-actions')
@@ -193,39 +193,39 @@ class AssignmentBox extends React.Component {
     top_contents.push(
       <div
         className="close-button hover-shade"
-        title={gettext('Close')}
+        title={window.gettext('Close')}
         onClick={this.props.parent.showAssignment.bind(this.props.parent)}
       >
-        <img src={config.icon_path + 'close.svg'} />
+        <img src={window.config.icon_path + 'close.svg'} />
       </div>
     )
     if (this.props.renderer.is_teacher) {
       top_contents.push(
         <div
           className="create-assignment hover-shade"
-          title={gettext('Create New')}
+          title={window.gettext('Create New')}
           onClick={this.createAssignment.bind(this)}
         >
-          <img src={config.icon_path + 'add_new.svg'} />
+          <img src={window.config.icon_path + 'add_new.svg'} />
         </div>
       )
     }
     if (!this.props.has_assignment) {
-      top_contents.push(<div>{gettext('Not yet assigned')}</div>)
+      top_contents.push(<div>{window.gettext('Not yet assigned')}</div>)
     }
 
     let my_assignments = this.state.my_assignments.map((assignment) => (
       <AssignmentForNode data={assignment} renderer={this.props.renderer} />
     ))
     if (my_assignments.length > 0)
-      my_assignments.unshift(<h4>{gettext('My Assignments')}</h4>)
+      my_assignments.unshift(<h4>{window.gettext('My Assignments')}</h4>)
     let all_assignments
     if (this.props.renderer.is_teacher) {
       all_assignments = this.state.all_assignments.map((assignment) => (
         <AssignmentForNode data={assignment} renderer={this.props.renderer} />
       ))
       if (all_assignments.length > 0)
-        all_assignments.unshift(<h4>{gettext('All Assignments')}</h4>)
+        all_assignments.unshift(<h4>{window.gettext('All Assignments')}</h4>)
       if (my_assignments.length > 0 && all_assignments.length > 0)
         all_assignments.unshift(<hr />)
     }

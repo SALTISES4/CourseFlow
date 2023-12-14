@@ -2335,8 +2335,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         title_text = selenium.find_elements(
-            By.CSS_SELECTOR,
-            ".week .title-text"
+            By.CSS_SELECTOR, ".week .title-text"
         )[0]
 
         assert title_text.text == "Term 1"
@@ -2749,7 +2748,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         self.assertEqual(len(created_by_buttons), 4)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR,".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
         has_loading_finished()
         count_pagination_and_elements()
@@ -3545,11 +3544,17 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-test-id='panel-favourite']"))
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, "[data-test-id='panel-favourite']")
+            )
         )
 
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, "[data-test-id='panel-favourite']")),
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "[data-test-id='panel-favourite']"
+                )
+            ),
             2,
         )
 
@@ -3573,7 +3578,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, "[data-test-id='panel-favourite']")),
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "[data-test-id='panel-favourite']"
+                )
+            ),
             0,
         )
         self.assertEqual(

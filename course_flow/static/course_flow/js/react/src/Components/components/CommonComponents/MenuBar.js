@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 
-export default class extends React.Component {
+class MenuBar extends React.Component {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -60,3 +60,4 @@ export default class extends React.Component {
     )
   }
 }
+export default MenuBar

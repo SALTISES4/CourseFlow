@@ -169,11 +169,11 @@ class CompetencyMatrixView extends React.Component {
     if (outcomes_sorted.length == 0 || !has_nodes) {
       let text
       if (this.props.renderer.view_type == 'outcometable')
-        text = gettext(
+        text = window.gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
       else
-        text = gettext(
+        text = window.gettext(
           "This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes."
         )
       return <div className="emptytext">{text}</div>
@@ -241,37 +241,43 @@ class CompetencyMatrixView extends React.Component {
         <div className="matrix-time-row">
           <div className="table-cell outcome-wrapper">
             <div className="outcome-head">
-              <h4>{gettext('Hours')}</h4>
+              <h4>{window.gettext('Hours')}</h4>
             </div>
-          </div>
-          <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('General Education')}</div>
-          </div>
-          <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Specific Education')}</div>
-          </div>
-          <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Total Hours')}</div>
           </div>
           <div className="table-cell outcome-wrapper">
             <div className="outcome-head">
-              <h4>{gettext('Ponderation')}</h4>
+              {window.gettext('General Education')}
             </div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Theory')}</div>
+            <div className="outcome-head">
+              {window.gettext('Specific Education')}
+            </div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Practical')}</div>
+            <div className="outcome-head">{window.gettext('Total Hours')}</div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Individual Work')}</div>
+            <div className="outcome-head">
+              <h4>{window.gettext('Ponderation')}</h4>
+            </div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Total')}</div>
+            <div className="outcome-head">{window.gettext('Theory')}</div>
           </div>
           <div className="table-cell outcome-wrapper">
-            <div className="outcome-head">{gettext('Credits')}</div>
+            <div className="outcome-head">{window.gettext('Practical')}</div>
+          </div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">
+              {window.gettext('Individual Work')}
+            </div>
+          </div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{window.gettext('Total')}</div>
+          </div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{window.gettext('Credits')}</div>
           </div>
         </div>
       )

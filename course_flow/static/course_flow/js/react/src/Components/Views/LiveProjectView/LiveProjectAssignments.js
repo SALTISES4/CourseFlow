@@ -1,14 +1,18 @@
 import * as React from 'react'
 import { AssignmentView } from '../LiveAssignmentView'
 import {
-  ActionButton,
   NodeTitle,
   TitleText,
   WorkflowTitle
+} from '../../components/CommonComponents/UIComponents'
+import { ActionButton } from '../../components/CommonComponents'
+import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
+import * as Constants from '../../../Constants.js'
 } from '@cfCommonComponents'
 import { getWorkflowNodes } from '@cfPostFunctions'
 import * as Constants from '@cfConstants'
 import { LiveProjectSection } from './LiveProjectSection.js'
+import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {
@@ -40,8 +44,7 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
   }
 
   defaultRender() {
-    // @todo undefined scope error
-    return <renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 
   /*******************************************************
@@ -80,7 +83,7 @@ class AssignmentNode extends React.Component {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -95,7 +98,7 @@ class AssignmentNode extends React.Component {
             ).name
           }
           src={
-            config.icon_path +
+            window.config.icon_path +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }
@@ -122,7 +125,7 @@ class AssignmentNode extends React.Component {
       <ActionButton
         button_icon="assignment.svg"
         button_class="duplicate-self-button"
-        titletext={gettext('Create Assignment')}
+        titletext={window.gettext('Create Assignment')}
         handleClick={this.createAssignment.bind(this, data)}
       />
     )
@@ -136,7 +139,7 @@ class AssignmentNode extends React.Component {
       props.renderer.project_data.id,
       (response_data) => {
         props.renderer.tiny_loader.endLoad()
-        window.location = config.update_path.liveassignment.replace(
+        window.location = window.config.update_path.liveassignment.replace(
           '0',
           response_data.assignmentPk
         )
@@ -183,9 +186,9 @@ class LiveProjectAssignments extends LiveProjectSection {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Assigned Tasks')}</h3>
+        <h3>{window.gettext('Assigned Tasks')}</h3>
         <div>{assignments}</div>
-        <h3>{gettext('All Tasks')}</h3>
+        <h3>{window.gettext('All Tasks')}</h3>
         <div id="select-workflow" className="workflow-view-select">
           {workflow_options}
         </div>

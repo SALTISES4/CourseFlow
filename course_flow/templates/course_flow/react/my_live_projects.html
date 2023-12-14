@@ -1,0 +1,21 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %} {% endblock %}
+<!-- -->
+{% block title %}{% trans title %} - CourseFlow{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %} {{ block.super }}
+
+{% endblock %}

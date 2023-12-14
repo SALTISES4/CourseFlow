@@ -1,7 +1,6 @@
 /**
  * Individual Page/View React Renderers
  */
-import * as reactDom from 'react-dom'
 import * as React from 'react'
 import * as Constants from '../Constants.js'
 import { TinyLoader } from '../redux/helpers.js'
@@ -11,19 +10,20 @@ import {
   ExploreMenu,
   ProjectMenu,
   HomeMenu
-} from '../Components/Library'
+} from '../Components/components/MenuComponents/menus/index.js'
 
 /*******************************************************
  * @LibraryRenderer
  *******************************************************/
-export class LibraryRenderer {
-  constructor() {}
+export class LibraryRenderer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
-
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {
@@ -42,13 +42,16 @@ export class FavouritesRenderer extends LibraryRenderer {
 
 /*******************************************************
  * @ExploreRenderer
+ *  disciplines: any
+ *  initial_workflows: any[]
+ *  initial_pages: any
  *******************************************************/
 export class ExploreRenderer extends LibraryRenderer {
-  constructor(disciplines, initial_workflows = [], initial_pages = {}) {
-    super()
-    this.disciplines = disciplines
-    this.initial_workflows = initial_workflows
-    this.initial_pages = initial_pages
+  constructor(props) {
+    super(props)
+    this.disciplines = this.props.disciplines
+    this.initial_workflows = this.props.initial_workflows
+    this.initial_pages = this.props.initial_pages
     this.tiny_loader = new TinyLoader($('body')[0])
   }
 
@@ -60,49 +63,92 @@ export class ExploreRenderer extends LibraryRenderer {
 /*******************************************************
  * @ProjectRenderer
  *******************************************************/
-export class ProjectRenderer {
-  constructor(project_data, disciplines) {
-    this.project_data = project_data
-    this.all_disciplines = disciplines
+
+/**
+ * export type ProjectViewDTO = {
+ *   project_data: {
+ *     deleted: boolean
+ *     deleted_on: string
+ *     id: number
+ *     title: string
+ *     description: string
+ *     author: string
+ *     author_id: number
+ *     published: boolean
+ *     created_on: string
+ *     last_modified: string
+ *     workflowproject_set: Array<number>
+ *     disciplines: Array<any>
+ *     type: string
+ *     object_sets: Array<any>
+ *     favourite: boolean
+ *     liveproject: any
+ *     object_permission: {
+ *       permission_type: number
+ *       last_viewed: string
+ *     }
+ *   }
+ *   user_role: number
+ *   user_permission: number
+ *   title: string
+ *   disciplines: Array<{
+ *     id: number
+ *     title: string
+ *   }>
+ * }
+ */
+export class ProjectRenderer extends React.Component {
+  constructor(props /*: ProjectViewDTO */) {
+    super(props)
+
     this.read_only = true
+    this.project_data = this.props.project_data
+    this.all_disciplines = this.props.disciplines
+    this.user_role = this.props.user_role
+    this.user_permission = this.props.user_permission
+    this.userId = this.props.user_id
 
     if (
-      project_data.object_permission &&
-      project_data.object_permission.permission_type ===
+      this.project_data.object_permission &&
+      this.project_data.object_permission.permission_type ===
         Constants.permission_keys['edit']
     ) {
       this.read_only = false
     }
-
-    this.user_role = user_role
-    this.user_permission = user_permission
   }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {
-    return <ProjectMenu renderer={this} data={this.project_data} />
+    return (
+      <ProjectMenu
+        renderer={this}
+        data={this.project_data}
+        userid={this.userId}
+      />
+    )
   }
 }
 
 /*******************************************************
  * @HomeRenderer
  *******************************************************/
-export class HomeRenderer {
-  constructor(is_teacher) {
-    this.is_teacher = is_teacher
+export class HomeRenderer extends React.Component {
+  constructor(props) {
+    super(props)
+    this.is_teacher = this.props.is_teacher
   }
 
-  render(container) {
+  render() {
     this.container = container
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    reactDom.render(this.getContents(), container[0])
+    return this.getContents()
   }
 
   getContents() {

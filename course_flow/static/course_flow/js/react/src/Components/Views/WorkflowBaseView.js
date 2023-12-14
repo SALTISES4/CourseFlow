@@ -107,15 +107,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         </div>
         <div className="project-header-info">
           <div className="project-info-section project-members">
-            <h4>{gettext('Permissions')}</h4>
+            <h4>{window.gettext('Permissions')}</h4>
             {this.getUsers()}
           </div>
           <div className="project-other">
             <div className="project-info-section project-description">
-              <h4>{gettext('Description')}</h4>
+              <h4>{window.gettext('Description')}</h4>
               <CollapsibleText
                 text={data.description}
-                defaultText={gettext('No description')}
+                defaultText={window.gettext('No description')}
               />
             </div>
           </div>
@@ -126,8 +126,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   getTypeIndicator() {
     let data = this.props.data
-    let type_text = gettext(data.type)
-    if (data.is_strategy) type_text += gettext(' strategy')
+    let type_text = window.gettext(data.type)
+    if (data.is_strategy) type_text += window.gettext(' strategy')
     return (
       <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>
     )
@@ -145,7 +145,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <div className="user-name">
           {Utility.getUserTag('view')}
           <span className="material-symbols-rounded">public</span>{' '}
-          {gettext('All CourseFlow')}
+          {window.gettext('All CourseFlow')}
         </div>
       )
     }
@@ -183,7 +183,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (users_group.length > 4) {
       users.push(
         <div className="workflow-created">
-          +{users_group.length - 4} {gettext('more')}
+          +{users_group.length - 4} {window.gettext('more')}
         </div>
       )
     }
@@ -193,7 +193,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           className="user-name collapsed-text-show-more"
           onClick={this.openShareMenu.bind(this)}
         >
-          {gettext('Modify')}
+          {window.gettext('Modify')}
         </div>
       )
     return users
@@ -206,7 +206,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <div
           className="hover-shade"
           id="edit-project-button"
-          title={gettext('Edit Workflow')}
+          title={window.gettext('Edit Workflow')}
           onClick={this.openEditMenu.bind(this)}
         >
           <span className="material-symbols-rounded filled">edit</span>
@@ -226,7 +226,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <div
           className="hover-shade"
           id="share-button"
-          title={gettext('Sharing')}
+          title={window.gettext('Sharing')}
           onClick={this.openShareMenu.bind(this)}
         >
           <span className="material-symbols-rounded filled">person_add</span>
@@ -277,7 +277,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           className="hover-shade"
           onClick={this.deleteWorkflow.bind(this)}
         >
-          <div>{gettext('Archive workflow')}</div>
+          <div>{window.gettext('Archive workflow')}</div>
         </div>
       ]
     else
@@ -288,21 +288,23 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           className="hover-shade"
           onClick={this.restoreWorkflow.bind(this)}
         >
-          <div>{gettext('Restore workflow')}</div>
+          <div>{window.gettext('Restore workflow')}</div>
         </div>,
         <div
           id="permanently-delete-workflow"
           className="hover-shade"
           onClick={this.deleteWorkflowHard.bind(this)}
         >
-          <div>{gettext('Permanently delete workflow')}</div>
+          <div>{window.gettext('Permanently delete workflow')}</div>
         </div>
       ]
   }
 
   deleteWorkflow() {
     if (
-      window.confirm(gettext('Are you sure you want to delete this workflow?'))
+      window.confirm(
+        window.gettext('Are you sure you want to delete this workflow?')
+      )
     ) {
       deleteSelf(this.props.data.id, 'workflow', true, () => {})
     }
@@ -311,11 +313,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   deleteWorkflowHard() {
     if (
       window.confirm(
-        gettext('Are you sure you want to permanently delete this workflow?')
+        window.gettext(
+          'Are you sure you want to permanently delete this workflow?'
+        )
       )
     ) {
       deleteSelf(this.props.data.id, 'workflow', false, () => {
-        window.location = config.update_path['project'].replace(
+        window.location = window.config.update_path['project'].replace(
           0,
           renderer.project.id
         )
@@ -343,7 +347,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           )
         }
       >
-        <div>{gettext('Export')}</div>
+        <div>{window.gettext('Export')}</div>
       </div>
     )
     return export_button
@@ -365,7 +369,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = config.update_path[
+                window.location = window.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -380,7 +384,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
                   response_data.parentID,
                   (response_data) => {
                     loader.endLoad()
-                    window.location = config.update_path[
+                    window.location = window.config.update_path[
                       response_data.new_item.type
                     ].replace('0', response_data.new_item.id)
                   }
@@ -390,7 +394,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           }
         }}
       >
-        <div>{gettext('Copy to my library')}</div>
+        <div>{window.gettext('Copy to my library')}</div>
       </div>
     ]
     if (
@@ -409,14 +413,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               this.props.renderer.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = config.update_path[
+                window.location = window.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
             )
           }}
         >
-          <div>{gettext('Copy into current project')}</div>
+          <div>{window.gettext('Copy into current project')}</div>
         </div>
       )
     return export_button
@@ -427,8 +431,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let disabled
     if (this.props.data.importing) disabled = true
     let imports = [<hr />]
-    this.pushImport(imports, 'outcomes', gettext('Import Outcomes'), disabled)
-    this.pushImport(imports, 'nodes', gettext('Import Nodes'), disabled)
+    this.pushImport(
+      imports,
+      'outcomes',
+      window.gettext('Import Outcomes'),
+      disabled
+    )
+    this.pushImport(imports, 'nodes', window.gettext('Import Nodes'), disabled)
 
     return imports
   }
@@ -467,11 +476,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(
+            0,
+            renderer.project.id
+          )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>
-            {gettext('Return to')}{' '}
+            {window.gettext('Return to')}{' '}
             <WorkflowTitle
               class_name="inline"
               no_hyperlink={true}
@@ -486,10 +498,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={config.update_path['project'].replace(0, renderer.project.id)}
+          href={window.config.update_path['project'].replace(
+            0,
+            renderer.project.id
+          )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
-          <div>{gettext('Return to Editable Workflow')}</div>
+          <div>{window.gettext('Return to Editable Workflow')}</div>
         </a>
       )
     }
@@ -543,31 +558,37 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (data.is_strategy) return workflow_content
 
     let view_buttons = [
-      { type: 'workflowview', name: gettext('Workflow View'), disabled: [] },
+      {
+        type: 'workflowview',
+        name: window.gettext('Workflow View'),
+        disabled: []
+      },
       {
         type: 'outcomeedit',
         name: Utility.capWords(
-          gettext('View') + ' ' + gettext(data.type + ' outcomes')
+          window.gettext('View') + ' ' + window.gettext(data.type + ' outcomes')
         ),
         disabled: []
       },
       {
         type: 'outcometable',
         name: Utility.capWords(
-          gettext(data.type + ' outcome') + ' ' + gettext('Table')
+          window.gettext(data.type + ' outcome') + ' ' + window.gettext('Table')
         ),
         disabled: []
       },
       {
         type: 'alignmentanalysis',
         name: Utility.capWords(
-          gettext(data.type + ' outcome') + ' ' + gettext('Analytics')
+          window.gettext(data.type + ' outcome') +
+            ' ' +
+            window.gettext('Analytics')
         ),
         disabled: ['activity']
       },
       {
         type: 'grid',
-        name: gettext('Grid View'),
+        name: window.gettext('Grid View'),
         disabled: ['activity', 'course']
       }
     ]
@@ -593,7 +614,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         className="hover-shade other-views"
         onClick={() => $('.views-dropdown')[0].classList.toggle('toggled')}
       >
-        {gettext('Other Views')}
+        {window.gettext('Other Views')}
         <div className="views-dropdown">{view_buttons.slice(2)}</div>
       </div>
     )
@@ -634,7 +655,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           <span className="green material-symbols-rounded">
             keyboard_double_arrow_down
           </span>
-          <div>{gettext('Jump to')}</div>
+          <div>{window.gettext('Jump to')}</div>
         </div>
         <div className="create-dropdown">{nodebarweekworkflows}</div>
       </div>
@@ -646,7 +667,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       <div id="expand-collapse-all">
         <div className="hover-shade flex-middle">
           <span className="green material-symbols-rounded">zoom_out_map</span>
-          <div>{gettext('Expand/Collapse')}</div>
+          <div>{window.gettext('Expand/Collapse')}</div>
         </div>
         <div className="create-dropdown">
           <div
@@ -654,14 +675,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             onClick={this.expandAll.bind(this, 'week')}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
-            <div>{gettext('Expand all weeks')}</div>
+            <div>{window.gettext('Expand all weeks')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'week')}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
-            <div>{gettext('Collapse all weeks')}</div>
+            <div>{window.gettext('Collapse all weeks')}</div>
           </div>
           <hr />
           <div
@@ -669,14 +690,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             onClick={this.expandAll.bind(this, 'node')}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
-            <div>{gettext('Expand all nodes')}</div>
+            <div>{window.gettext('Expand all nodes')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'node')}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
-            <div>{gettext('Collapse all nodes')}</div>
+            <div>{window.gettext('Collapse all nodes')}</div>
           </div>
           <hr />
           <div
@@ -684,14 +705,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             onClick={this.expandAll.bind(this, 'outcome')}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
-            <div>{gettext('Expand all outcomes')}</div>
+            <div>{window.gettext('Expand all outcomes')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'outcome')}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
-            <div>{gettext('Collapse all outcomes')}</div>
+            <div>{window.gettext('Collapse all outcomes')}</div>
           </div>
         </div>
       </div>
@@ -875,17 +896,17 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       let return_val = [
         <hr key="br" />,
         <a key="quick-nav" className="panel-item">
-          {gettext('Quick Navigation')}
+          {window.gettext('Quick Navigation')}
         </a>
       ]
       if (parent_workflows.length > 0)
         return_val.push(
-          <a className="panel-item">{gettext('Used in:')}</a>,
+          <a className="panel-item">{window.gettext('Used in:')}</a>,
           ...parent_workflows
         )
       if (child_workflows.length > 0)
         return_val.push(
-          <a className="panel-item">{gettext('Workflows Used:')}</a>,
+          <a className="panel-item">{window.gettext('Workflows Used:')}</a>,
           ...child_workflows
         )
       // return reactDom.createPortal(return_val, $('.left-panel-extra')[0])

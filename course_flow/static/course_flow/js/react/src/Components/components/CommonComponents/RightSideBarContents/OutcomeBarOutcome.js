@@ -123,13 +123,17 @@ export class OutcomeBarOutcomeUnconnected extends Component {
     if (this.state.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (this.state.is_dropped) droptext = gettext('hide')
+    if (this.state.is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     return (
       <div
@@ -157,7 +161,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img src={config.icon_path + dropIcon + '.svg'} />
+              <img src={window.config.icon_path + dropIcon + '.svg'} />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

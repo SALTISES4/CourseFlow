@@ -18,7 +18,7 @@ import DotsIcon from '@mui/icons-material/MoreHoriz'
 
 import useApi from '../../../hooks/useApi'
 import { OuterContentWrap } from '../../../mui/helper'
-import { DATA_ACTIONS } from '../../../PostFunctions'
+import { DATA_ACTIONS } from '../../../XMLHTTP/common'
 
 const NotificationsWrap = styled(Box)({})
 
