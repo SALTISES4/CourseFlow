@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
+from django.contrib.auth.decorators import login_required
 
 from course_flow import redux_actions as actions
 from course_flow.decorators import (
@@ -644,7 +645,68 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
     except ValidationError:
         response["action"] = "error"
 
-    return JsonResponse(response)
+
+# TODO: Remove after migrating functionality into
+# json_api_get_post_profile_settings method below
+# class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+#     model = CourseFlowUser
+#     fields = ["first_name", "last_name", "notifications"]
+#     template_name = "course_flow/profile-settings.html"
+
+#     def test_func(self):
+#         user = self.request.user
+#         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
+#         if courseflow_user is None:
+#             courseflow_user = CourseFlowUser.objects.create(
+#                 first_name=user.first_name, last_name=user.last_name, user=user
+#             )
+#         self.kwargs["pk"] = courseflow_user.pk
+#         return True
+
+#     def get_form(self, *args, **kwargs):
+#         form = super(UpdateView, self).get_form()
+#         return form
+
+#     def get_success_url(self):
+#         return reverse("course_flow:user-update")
+
+@login_required
+def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
+    # on POST, update one (or more) settings to the new value
+    if request.method == "POST":
+        return JsonResponse(
+            {
+                "action": "posted"
+            }
+        )
+
+    # otherwise, the method is GET in which case we're simply returning
+    # the JSON for all the inputs for the Profile Settings page
+    return JsonResponse(
+        {
+            "fields": [
+                {
+                    "name": "first_name",
+                    "type": "text",
+                    "value": "First name here"
+                },
+                {
+                    "name": "last_name",
+                    "type": "text",
+                    "value": "Last name"
+                },
+                {
+                    "name": "language",
+                    "type": "radio",
+                    "options": [
+                        { "label": "English", "value": "en" },
+                        { "label": "French", "value": "fr" }
+                    ],
+                    "value": "en"
+                },
+            ]
+        }
+    )
 
 
 # A helper function to set the linked workflow.

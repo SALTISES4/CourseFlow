@@ -76,7 +76,7 @@ def course_flow_patterns():
         ),
         path(
             "user/update/",
-            views.UserUpdateView.as_view(),
+            views.UserUpdateView,
             name="user-update",
         ),
         path(
@@ -128,6 +128,11 @@ def course_flow_patterns():
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
         # Register create JSON routes
+        path(
+            "json-api-get-post-update-profile-settings/",
+            views.update_api.json_api_get_post_profile_settings,
+            name="json-api-get-post-update-profile-settings",
+        ),
         path(
             "comments/add/",
             views.create_api.json_api_post_add_comment,
