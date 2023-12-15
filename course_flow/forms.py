@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext as _
 
 
 class RegistrationForm(UserCreationForm):
@@ -18,3 +19,18 @@ class RegistrationForm(UserCreationForm):
             "password1",
             "password2",
         )
+
+
+class ProfileSettings(forms.Form):
+    first_name = forms.CharField(label=_("First name"), max_length=30)
+    last_name = forms.CharField(label=_("Last name"), max_length=30)
+
+    LANG_CHOICES = [
+        ("en", _("English")),
+        ("fr", _("French")),
+    ]
+
+    language = forms.ChoiceField(
+        choices=LANG_CHOICES,
+        widget=forms.RadioSelect(),
+    )

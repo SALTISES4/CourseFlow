@@ -46,6 +46,7 @@ from course_flow.serializers import (
     RefreshSerializerOutcome,
     serializer_lookups_shallow,
 )
+from course_flow.forms import ProfileSettings
 from course_flow.utils import (
     check_possible_parent,
     get_all_outcomes_for_outcome,
@@ -671,20 +672,35 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
 #     def get_success_url(self):
 #         return reverse("course_flow:user-update")
 
-# TODO: Implement the missing functionality
 @login_required
 def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     user = request.user
     # on POST, update one (or more) settings to the new value
     if request.method == "POST":
+        form = ProfileSettings(json.loads(request.body))
+        if form.is_valid():
+            # TODO: Update the values
+            # form.save()
+            # first_name = form.cleaned_data.get("first_name")
+            # last_name = form.cleaned_data.get("last_name")
+            # language = form.cleaned_data.get("language")
+            return JsonResponse(
+                {
+                    "action": "posted"
+                }
+            )
+
+        # if the form is invalid, return the errors so UI can present validation
         return JsonResponse(
             {
-                "action": "posted"
+                "action": "error",
+                "errors": form.errors
             }
         )
 
     # otherwise, the method is GET in which case we're simply returning
     # the JSON for all the inputs for the Profile Settings page
+    # TODO: serialize ProfileSettings form fields instead of doing it manually
     return JsonResponse(
         {
             "fields": [
