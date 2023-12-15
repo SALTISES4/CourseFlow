@@ -684,35 +684,27 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
         # if the form is valid, save it and return a success response
         if form.is_valid():
             form.save()
-            return JsonResponse(
-                {
-                    "action": "posted"
-                }
-            )
+            return JsonResponse({
+                "action": "posted"
+            })
 
         # otherwise, return the errors so UI can display errors accordingly
-        return JsonResponse(
-            {
-                "action": "error",
-                "errors": form.errors
-            }
-        )
+        return JsonResponse({
+            "action": "error",
+            "errors": form.errors
+        })
 
     # otherwise, the method is GET in which case we're simply returning
     # the JSON for all the inputs for the Profile Settings page (form)
-    profile_form = ProfileSettings(
-        {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "language": user.language
-        }
-    )
+    profile_form = ProfileSettings({
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "language": user.language
+    })
 
-    return JsonResponse(
-        {
-            "fields": FormFieldsSerializer(profile_form).prepare_fields()
-        }
-    )
+    return JsonResponse({
+        "fields": FormFieldsSerializer(profile_form).prepare_fields()
+    })
 
 
 # A helper function to set the linked workflow.
