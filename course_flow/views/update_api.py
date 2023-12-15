@@ -45,6 +45,7 @@ from course_flow.serializers import (
     RefreshSerializerNode,
     RefreshSerializerOutcome,
     serializer_lookups_shallow,
+    FormFieldsSerializer
 )
 from course_flow.forms import ProfileSettings
 from course_flow.utils import (
@@ -675,22 +676,20 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
 @login_required
 def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     user = request.user
-    # on POST, update one (or more) settings to the new value
     if request.method == "POST":
-        form = ProfileSettings(json.loads(request.body))
+        # on POST, instantiate the form with the JSON params and the model instance
+        form = ProfileSettings(json.loads(request.body), instance=user)
+
+        # if the form is valid, save it and return a success response
         if form.is_valid():
-            # TODO: Update the values
-            # form.save()
-            # first_name = form.cleaned_data.get("first_name")
-            # last_name = form.cleaned_data.get("last_name")
-            # language = form.cleaned_data.get("language")
+            form.save()
             return JsonResponse(
                 {
                     "action": "posted"
                 }
             )
 
-        # if the form is invalid, return the errors so UI can present validation
+        # otherwise, return the errors so UI can display errors accordingly
         return JsonResponse(
             {
                 "action": "error",
@@ -701,32 +700,33 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     # otherwise, the method is GET in which case we're simply returning
     # the JSON for all the inputs for the Profile Settings page
     # TODO: serialize ProfileSettings form fields instead of doing it manually
+    profile_form = ProfileSettings(
+        {
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+    )
+
+    print(json.dumps(
+        FormFieldsSerializer(profile_form).prepare_fields(),
+        indent=4
+    ))
+
     return JsonResponse(
         {
-            "fields": [
-                {
-                    "name": "first_name",
-                    "label": _("First name"),
-                    "type": "text",
-                    "value": user.first_name
-                },
-                {
-                    "name": "last_name",
-                    "label": _("Last name"),
-                    "type": "text",
-                    "value": user.last_name
-                },
-                {
-                    "name": "language",
-                    "label": _("Language preferences"),
-                    "type": "radio",
-                    "options": [
-                        { "label": _("English"), "value": "en" },
-                        { "label": _("French"), "value": "fr" }
-                    ],
-                    "value": "en"
-                },
-            ]
+            "fields": FormFieldsSerializer(profile_form).prepare_fields()
+            # TODO: this is the example of a select/radio input that is yet
+            # to be added into hte FormFieldsSerializer's prepare_fields method
+            # {
+            #     "name": "language",
+            #     "label": _("Language preferences"),
+            #     "type": "radio",
+            #     "options": [
+            #         { "label": _("English"), "value": "en" },
+            #         { "label": _("French"), "value": "fr" }
+            #     ],
+            #     "value": "en"
+            # },
         }
     )
 
