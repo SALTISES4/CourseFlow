@@ -4,10 +4,10 @@ import {
   AssignmentTitle,
   DatePicker,
   SimpleWorkflow
-} from '../../components/CommonComponents'
-import { setAssignmentCompletion } from '../../../PostFunctions.js'
+} from '@cfCommonComponents'
+import { setAssignmentCompletion } from '@cfPostFunctions'
 import { LiveProjectSection } from './LiveProjectSection.js'
-import { WorkflowForMenu } from '../../Library'
+import { WorkflowForMenu } from '@cfLibrary'
 import LiveProjectMenu from './LiveProjectMenu.js'
 
 export class StudentLiveProjectOverview extends LiveProjectSection {

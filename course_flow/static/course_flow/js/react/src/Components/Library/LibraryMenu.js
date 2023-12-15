@@ -1,8 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { getLibrary } from '../../PostFunctions.js'
+import { getLibrary } from '@cfPostFunctions'
 import WorkflowFilter from './WorkFlowFilter.js'
-import { MenuBar } from '../components/CommonComponents'
+import { MenuBar } from '@cfCommonComponents'
 
 /*******************************************************
  * The main library menu

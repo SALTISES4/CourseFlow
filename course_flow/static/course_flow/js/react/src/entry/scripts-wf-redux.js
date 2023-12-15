@@ -2,14 +2,15 @@ import React, { Component } from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
-import { WorkflowBaseView } from '../Components/Views/WorkflowView.js'
+import { WorkflowBaseView } from '../Components/Views/WorkflowBaseView.js'
+import { WorkflowBase as WorkflowComparisonBaseView } from '../Components/Views/ComparisonView'
 import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
 import {
   ComparisonView,
-  WorkflowComparisonBaseView
-} from '../Components/Views/ComparisonView.js'
-import * as Constants from '../Constants.js'
-import * as Reducers from '../redux/Reducers.js'
+  WorkflowBase
+} from '../Components/Views/ComparisonView'
+import * as Constants from '@cfConstants'
+import * as Reducers from '@cfReducers'
 import {
   getTargetProjectMenu,
   getWorkflowData,
@@ -23,13 +24,12 @@ import {
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
-import * as Utility from '../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 import { SelectionManager, TinyLoader } from '../redux/helpers.js'
-import { Enum } from '../UtilityFunctions.js'
 
-export { fail_function } from '../PostFunctions.js'
+export { fail_function } from '@cfPostFunctions'
 
-const DATA_TYPE = Enum({
+const DATA_TYPE = Utility.Enum({
   OUTCOME: 'workflow_action',
   LOCK_UPDATE: 'lock_update',
   CONNECTION_UPDATE: 'connection_update',

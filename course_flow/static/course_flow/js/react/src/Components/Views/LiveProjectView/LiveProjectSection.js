@@ -1,8 +1,5 @@
 import * as React from 'react'
-import {
-  getLiveProjectData,
-  getLiveProjectDataStudent
-} from '../../../PostFunctions.js'
+import { getLiveProjectData, getLiveProjectDataStudent } from '@cfPostFunctions'
 
 export class LiveProjectSection extends React.Component {
   constructor(props) {

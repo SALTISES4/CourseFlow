@@ -1,13 +1,13 @@
 import * as React from 'react'
-import * as Utility from '../../../../UtilityFunctions.js'
-import * as Constants from '../../../../Constants.js'
+import * as Utility from '@cfUtility'
+import * as Constants from '@cfConstants'
 import {
   addTerminology,
   deleteSelf,
   updateValueInstant
-} from '../../../../PostFunctions.js'
+} from '@cfPostFunctions'
 import closeMessageBox from '../components/closeMessageBox.js'
-import { LiveProjectSettings } from '../../../Views/LiveProjectView'
+import { LiveProjectSettings } from '@cfViews/LiveProjectView'
 
 /*
 The menu for editing a project.
