@@ -77,11 +77,13 @@ export function API_POST(url = '', data = {}) {
           res(data)
         } else {
           // otherwise reject with some potentially helpful info
-          rej(url, 'API_POST failed with response', data)
+          rej({ error: 'API_POST failed', url, data })
         }
       })
       // and finally reject if anything fishy is going on
-      .catch((err) => rej(err))
+      .catch((err) => {
+        rej({ error: 'API_POST failed', originalError: err })
+      })
   })
 }
 
