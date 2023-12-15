@@ -22,6 +22,7 @@ from course_flow.duplication_functions import (
 )
 from course_flow.models import (
     Column,
+    CourseFlowUser,
     Favourite,
     Node,
     ObjectSet,
@@ -675,7 +676,7 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
 
 @login_required
 def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
-    user = request.user
+    user = CourseFlowUser.objects.filter(user=request.user).first()
     if request.method == "POST":
         # on POST, instantiate the form with the JSON params and the model instance
         form = ProfileSettings(json.loads(request.body), instance=user)
@@ -698,35 +699,18 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
         )
 
     # otherwise, the method is GET in which case we're simply returning
-    # the JSON for all the inputs for the Profile Settings page
-    # TODO: serialize ProfileSettings form fields instead of doing it manually
+    # the JSON for all the inputs for the Profile Settings page (form)
     profile_form = ProfileSettings(
         {
             "first_name": user.first_name,
-            "last_name": user.last_name
+            "last_name": user.last_name,
+            "language": user.language
         }
     )
-
-    print(json.dumps(
-        FormFieldsSerializer(profile_form).prepare_fields(),
-        indent=4
-    ))
 
     return JsonResponse(
         {
             "fields": FormFieldsSerializer(profile_form).prepare_fields()
-            # TODO: this is the example of a select/radio input that is yet
-            # to be added into hte FormFieldsSerializer's prepare_fields method
-            # {
-            #     "name": "language",
-            #     "label": _("Language preferences"),
-            #     "type": "radio",
-            #     "options": [
-            #         { "label": _("English"), "value": "en" },
-            #         { "label": _("French"), "value": "fr" }
-            #     ],
-            #     "value": "en"
-            # },
         }
     )
 
