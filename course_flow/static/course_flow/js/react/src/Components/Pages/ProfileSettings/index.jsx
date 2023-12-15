@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import FormHelperText from '@mui/material/FormHelperText'
 import TextField from '@mui/material/TextField'
 import FormLabel from '@mui/material/FormLabel'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -30,6 +31,7 @@ const FormWrap = styled(Box)({
 })
 
 const ProfileSettingsPage = () => {
+  const [errors, setErrors] = useState({})
   const [formFields, setFormFields] = useState(null)
   const [apiData, loading, error] = useApi(config.json_api_paths.update_profile)
 
@@ -44,8 +46,8 @@ const ProfileSettingsPage = () => {
     const formData = {}
     formFields.map((field) => (formData[field.name] = field.value))
 
-    API_POST(config.json_api_paths.update_profile, formData).then(
-      (response) => {
+    API_POST(config.json_api_paths.update_profile, formData)
+      .then((response) => {
         console.log(
           'API_POST\n',
           formData,
@@ -58,8 +60,10 @@ const ProfileSettingsPage = () => {
         // and if successful, dispatch the action to update local state
         // TODO: implement some kind of success message notification
         alert('User details updated!')
-      }
-    )
+      })
+      .catch((error) => {
+        setErrors(error.data.errors)
+      })
   }
 
   if (loading || error || !formFields) {
@@ -68,6 +72,9 @@ const ProfileSettingsPage = () => {
 
   // loop through all the fields and generate appropriate MUI input element
   const inputFields = formFields.map((field, idx) => {
+    const hasError = errors[field.name]
+    const errorText = hasError && errors[field.name][0]
+
     switch (field.type) {
       case 'text':
         return (
@@ -79,9 +86,12 @@ const ProfileSettingsPage = () => {
                 name={field.name}
                 label={field.label}
                 value={field.value}
+                error={hasError}
+                helperText={errorText}
                 onChange={(e) => {
                   const newFieldsState = [...formFields]
                   newFieldsState[idx].value = e.target.value
+                  setErrors({ ...errors, [field.name]: null })
                   setFormFields(newFieldsState)
                 }}
               />
@@ -91,7 +101,7 @@ const ProfileSettingsPage = () => {
       case 'radio':
         return (
           <Box key={idx} sx={{ mb: 8 }}>
-            <FormControl>
+            <FormControl error={hasError}>
               <FormLabel id={`radio-label-{idx}`}>{field.label}</FormLabel>
               <RadioGroup
                 aria-labelledby={`radio-label-{idx}`}
@@ -100,6 +110,7 @@ const ProfileSettingsPage = () => {
                 onChange={(e) => {
                   const newFieldsState = [...formFields]
                   newFieldsState[idx].value = e.target.value
+                  setErrors({ ...errors, [field.name]: null })
                   setFormFields(newFieldsState)
                 }}
               >
@@ -112,6 +123,7 @@ const ProfileSettingsPage = () => {
                   />
                 ))}
               </RadioGroup>
+              {errorText && <FormHelperText>{errorText}</FormHelperText>}
             </FormControl>
           </Box>
         )
