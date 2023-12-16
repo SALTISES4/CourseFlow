@@ -70,9 +70,9 @@ function renderComponents(components) {
 // window.contextData
 // set in python views and prepped in react_renderer.html
 const LibraryComponent = () => {
-  switch (window.path_id) {
+  switch (cf.path_id) {
     case 'projectDetail':
-      return <ProjectRenderer {...window.contextData} />
+      return <ProjectRenderer {...cf.contextData} />
     case 'favorites':
       return <FavouritesRenderer />
     case 'library':
@@ -80,23 +80,23 @@ const LibraryComponent = () => {
       // contextData and pass that to LibraryRenderer
       return <LibraryRenderer />
     case 'home':
-      return <HomeRenderer {...window.contextData} />
+      return <HomeRenderer {...cf.contextData} />
     case 'explore':
-      return <ExploreRenderer {...window.contextData} />
+      return <ExploreRenderer {...cf.contextData} />
   }
 }
 
 const LiveComponent = () => {
-  switch (window.path_id) {
+  switch (cf.path_id) {
     case 'assignmentDetail':
-      return <LiveAssignmentRenderer {...window.contextData} />
+      return <LiveAssignmentRenderer {...cf.contextData} />
     case 'myLiveProjects':
-      return <LiveProjectRenderer {...window.contextData} />
+      return <LiveProjectRenderer {...cf.contextData} />
   }
 }
 
 const ReduxComponent = () => {
-  switch (window.path_id) {
+  switch (cf.path_id) {
     case 'projectComparison':
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
@@ -135,16 +135,16 @@ window.addEventListener('load', () => {
       target: '#container',
       styles: null
     },
-    {
-      component: <LiveComponent />,
-      target: '#container',
-      styles: null
-    },
-    {
-      component: <ReduxComponent />,
-      target: '#container',
-      styles: null
-    },
+    // {
+    //   component: <LiveComponent />,
+    //   target: '#container',
+    //   styles: null
+    // },
+    // {
+    //   component: <ReduxComponent />,
+    //   target: '#container',
+    //   styles: null
+    // },
     {
       component: <Sidebar />,
       target: '[data-component="sidebar"]',

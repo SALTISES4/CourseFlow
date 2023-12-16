@@ -32,6 +32,6 @@ System.config({
     '@cfConstants':
       './course_flow/static/course_flow/js/react/src/Constants.js',
     '@XMLHTTP/*': './course_flow/static/course_flow/js/react/src/XMLHTTP/*',
-    '@redux/*': './course_flow/static/course_flow/js/react/src/redux/*'
+    '@cfRedux/*': './course_flow/static/course_flow/js/react/src/redux/*'
   }
 })

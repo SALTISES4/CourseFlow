@@ -12,7 +12,7 @@ class ProgramCreateView(
 ):
     model = Program
     fields = ["title", "description"]
-    template_name = "course_flow/workflow_create.html"
+    template_name = "course_flow/html/workflow_create.html"
 
     def workflow_type(self):
         return "program"

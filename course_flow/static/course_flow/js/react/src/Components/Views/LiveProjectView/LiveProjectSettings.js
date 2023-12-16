@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { updateLiveProjectValue } from '@XMLHTTP/PostFunctions'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 
 class LiveProjectSettings extends LiveProjectSection {
   constructor(props) {

@@ -14,7 +14,7 @@ class CourseCreateView(
 ):
     model = Course
     fields = ["title", "description"]
-    template_name = "course_flow/workflow_create.html"
+    template_name = "course_flow/html/workflow_create.html"
 
     # this should be explicity defined as a getter, or a field prop
     def workflow_type(self):
@@ -38,7 +38,7 @@ class CourseStrategyCreateView(
 ):
     model = Course
     fields = ["title", "description"]
-    template_name = "course_flow/workflow_create.html"
+    template_name = "course_flow/html/workflow_create.html"
 
     def workflow_type(self):
         return "course"

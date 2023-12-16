@@ -1,6 +1,6 @@
 import * as React from 'react'
 // @local
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 // @components
 import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
 import * as Utility from '@cfUtility'

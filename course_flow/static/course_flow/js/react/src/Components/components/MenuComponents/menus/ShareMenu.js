@@ -7,7 +7,7 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '@redux/helpers'
+import { TinyLoader } from '@cfRedux/helpers'
 
 class UserLabel extends React.Component {
   constructor(props) {

@@ -2,12 +2,6 @@ import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
-import { WorkflowBaseView } from '@cfViews/WorkflowBaseView.js'
-import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews//ComparisonView'
-import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
-import { ComparisonView } from '@cfViews//ComparisonView'
-import * as Constants from '@cfConstants'
-import * as Reducers from '@cfReducers'
 import {
   getWorkflowData,
   getWorkflowParentData,
@@ -17,11 +11,19 @@ import {
   getPublicWorkflowChildData,
   updateValue
 } from '@XMLHTTP/PostFunctions'
+import * as Utility from '@cfUtility'
+import * as Constants from '@cfConstants'
+import * as Reducers from '@cfRedux/Reducers'
+// @components
+import { WorkflowBaseView } from '@cfViews/WorkflowBaseView.js'
+import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonView'
+import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
+import { ComparisonView } from '@cfViews/ComparisonView'
+import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+// @style
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
-import * as Utility from '@cfUtility'
-import { SelectionManager, TinyLoader } from '../redux/helpers.js'
-import WorkflowLoader from '../Components/components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 const DATA_TYPE = Utility.Enum({
   OUTCOME: 'workflow_action',

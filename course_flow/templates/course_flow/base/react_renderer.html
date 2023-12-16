@@ -1,43 +1,45 @@
 <script nonce="{{ request.csp_nonce }}">
 
-  const path_id = "{{ path_id }}";
-  const DTOcontextData = {{ contextData | safe }};
+  cf.path_id = "{{ path_id }}";
+  const DTOContextData = {{ contextData | safe }};
   let contextData
   let makeActiveSidebarID = null
 
 
-  switch (path_id) {
+  switch (cf.path_id) {
     case 'projectDetail': {
 
-      contextData = DTOcontextData
-      window.create_path_this_project = {
-        activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
-        course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
-        program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
-      }
+      cf.contextData = DTOContextData
+      {% if object %}
+        window.create_path_this_project = {
+          activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
+          course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
+          program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
+        }
+      {% endif %}
       makeActiveSidebarID = "#project" + contextData.project_data.id
       break;
     }
     case 'favorites': {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = "#my-favourites"
       break;
     }
     case 'library': {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = '#panel-my-library'
       break;
     }
 
     case 'home': {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = '#panel-home'
       break;
     }
 
 
     case 'explore': {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = "#panel-explore"
       break;
     }
@@ -46,26 +48,27 @@
      *******************************************************/
     case 'projectComparison': {
       //  @todo these don't seem to be used
+      {% if object %}
       // window.workflow_paths = {
       //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
       //  course: '{% url "course_flow:workflow-update" pk=object.pk %}',
       //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
       //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
       // }
-      contextData = DTOcontextData
+      {% endif  %}
+      cf.contextData = DTOContextData
       break;
     }
     case "my_live_projects": {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = "#panel-my-live-projects"
       break;
     }
     case "workflowDetailView": {
-      contextData = DTOcontextData
+      cf.contextData = DTOContextData
       makeActiveSidebarID = '#workflow' + contextData.workflow_model_id
       break;
     }
-
   }
 
   window.addEventListener("load", function () {

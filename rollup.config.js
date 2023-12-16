@@ -58,8 +58,7 @@ const plugins = {
               './course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
             '@cfConstants':
               './course_flow/static/course_flow/js/react/src/Constants.js',
-            '@XMLHTTP/*':
-              './course_flow/static/course_flow/js/react/src/XMLHTTP/*'
+            '@XMLHTTP': './course_flow/static/course_flow/js/react/src/XMLHTTP'
           }
         }
       ]

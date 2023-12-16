@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 
 import WorkflowVisibility from './WorkflowVisibility.js'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
 import { WorkflowForMenu } from '@cfCommonComponents'

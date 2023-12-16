@@ -9,6 +9,7 @@ import {
   WorkflowTitle
 } from '@cfCommonComponents/UIComponents'
 import ActionButton from '@cfUIComponents/ActionButton.js'
+import LiveProjectSection from './LiveProjectSection'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {

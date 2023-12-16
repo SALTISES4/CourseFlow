@@ -12,7 +12,7 @@ from course_flow.models import CourseFlowUser, Notification
 class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CourseFlowUser
     fields = ["first_name", "last_name", "notifications"]
-    template_name = "course_flow/courseflowuser_update.html"
+    template_name = "course_flow/html/courseflowuser_update.html"
 
     def test_func(self):
         user = self.request.user

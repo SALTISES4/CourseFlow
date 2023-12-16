@@ -5,7 +5,7 @@ import {
   getUserList
 } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '@redux/helpers'
+import { TinyLoader } from '@cfRedux/helpers'
 
 class UserLabel extends React.Component {
   constructor(props) {

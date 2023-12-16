@@ -5,7 +5,7 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
-export class LiveProjectSection extends React.Component {
+class LiveProjectSection extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -32,3 +32,5 @@ export class LiveProjectSection extends React.Component {
     return <WorkflowLoader />
   }
 }
+
+export default LiveProjectSection

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { AssignmentView } from '../LiveAssignmentView'
 import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
 import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 import { WorkflowForMenu } from '@cfCommonComponents'
 import LiveProjectMenu from './LiveProjectMenu.js'
 
