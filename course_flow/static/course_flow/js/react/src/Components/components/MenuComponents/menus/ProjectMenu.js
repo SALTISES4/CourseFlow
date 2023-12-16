@@ -49,7 +49,7 @@ class ProjectMenu extends LibraryMenu {
       component.setState({ workflow_data: data.data_package })
     })
     this.getUserData()
-    window.makeDropdown($(this.createDiv.current))
+    COURSEFLOW_APP.makeDropdown($(this.createDiv.current))
   }
 
   /*******************************************************
@@ -163,7 +163,10 @@ class ProjectMenu extends LibraryMenu {
           <a
             id="live-project"
             className="hover-shade"
-            href={window.config.update_path.liveproject.replace('0', data.id)}
+            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
+              '0',
+              data.id
+            )}
           >
             {window.gettext('View Classroom')}
           </a>
@@ -236,7 +239,7 @@ class ProjectMenu extends LibraryMenu {
       )
     ) {
       deleteSelf(this.props.data.id, 'project', false, () => {
-        window.location = window.config.home_path
+        window.location = COURSEFLOW_APP.config.home_path
       })
     }
   }
@@ -294,7 +297,7 @@ class ProjectMenu extends LibraryMenu {
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = window.config.update_path[
+                window.location = COURSEFLOW_APP.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }

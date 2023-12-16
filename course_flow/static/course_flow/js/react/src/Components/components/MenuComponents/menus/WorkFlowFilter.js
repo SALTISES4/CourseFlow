@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Component } from '@cfParentComponents'
 import { searchAllObjects } from '@XMLHTTP/PostFunctions'
 import { WorkflowForMenu } from '@cfCommonComponents'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 
 /*******************************************************
 A container for workflow cards that allows searching and filtering
@@ -101,9 +102,9 @@ class WorkflowFilter extends Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    window.makeDropdown(this.filterDOM.current)
-    window.makeDropdown(this.sortDOM.current)
-    window.makeDropdown(this.searchDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.filterDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.sortDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.searchDOM.current)
   }
 
   componentDidUpdate(prevProps, prevState) {

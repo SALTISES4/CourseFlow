@@ -38,6 +38,8 @@ const makeDropdown = (click_element) => {
       $(click_element).children('.create-dropdown').removeClass('active')
   })
 }
+// @temp add to our global object scope
+COURSEFLOW_APP.makeDropdown = makeDropdown
 
 // @todo should not be inline
 makeDropdown('#account-options', '#account-links')

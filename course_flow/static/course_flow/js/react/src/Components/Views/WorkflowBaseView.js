@@ -47,8 +47,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   componentDidMount() {
     this.getUserData()
     this.updateTabs()
-    window.makeDropdown('#jump-to')
-    window.makeDropdown('#expand-collapse-all')
+    COURSEFLOW_APP.makeDropdown('#jump-to')
+    COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
   }
 
   componentDidUpdate(prev_props) {}
@@ -314,7 +314,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       )
     ) {
       deleteSelf(this.props.data.id, 'workflow', false, () => {
-        window.location = window.config.update_path['project'].replace(
+        window.location = COURSEFLOW_APP.config.update_path['project'].replace(
           0,
           renderer.project.id
         )
@@ -364,7 +364,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = window.config.update_path[
+                window.location = COURSEFLOW_APP.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -379,7 +379,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
                   response_data.parentID,
                   (response_data) => {
                     loader.endLoad()
-                    window.location = window.config.update_path[
+                    window.location = COURSEFLOW_APP.config.update_path[
                       response_data.new_item.type
                     ].replace('0', response_data.new_item.id)
                   }
@@ -408,7 +408,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
               this.props.renderer.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = window.config.update_path[
+                window.location = COURSEFLOW_APP.config.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -471,7 +471,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={window.config.update_path['project'].replace(
+          href={COURSEFLOW_APP.config.update_path['project'].replace(
             0,
             renderer.project.id
           )}
@@ -493,7 +493,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={window.config.update_path['project'].replace(
+          href={COURSEFLOW_APP.config.update_path['project'].replace(
             0,
             renderer.project.id
           )}

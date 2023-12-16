@@ -207,7 +207,7 @@ class LiveProjectMenu extends React.Component {
         <a
           id="project"
           className="hover-shade"
-          href={window.config.update_path.project.replace('0', data.id)}
+          href={COURSEFLOW_APP.config.update_path.project.replace('0', data.id)}
         >
           {window.gettext('Edit Project')}
         </a>

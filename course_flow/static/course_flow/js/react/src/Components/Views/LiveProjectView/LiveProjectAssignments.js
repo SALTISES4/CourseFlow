@@ -80,7 +80,7 @@ class AssignmentNode extends React.Component {
             ).name
           }
           src={
-            window.config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -95,7 +95,7 @@ class AssignmentNode extends React.Component {
             ).name
           }
           src={
-            window.config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }
@@ -136,10 +136,11 @@ class AssignmentNode extends React.Component {
       props.renderer.project_data.id,
       (response_data) => {
         props.renderer.tiny_loader.endLoad()
-        window.location = window.config.update_path.liveassignment.replace(
-          '0',
-          response_data.assignmentPk
-        )
+        window.location =
+          COURSEFLOW_APP.config.update_path.liveassignment.replace(
+            '0',
+            response_data.assignmentPk
+          )
       }
     )
   }

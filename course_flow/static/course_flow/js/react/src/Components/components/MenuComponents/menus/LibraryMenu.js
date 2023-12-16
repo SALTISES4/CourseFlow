@@ -10,11 +10,11 @@ import { MenuBar } from '@cfCommonComponents'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 class LibraryMenu extends React.Component {
-  constructor(data) {
-    super(data)
+  constructor(props) {
+    super(props)
     this.state = {}
-    this.read_only = this.data.props.renderer.read_only
-    this.renderer = this.data.props.renderer
+    this.read_only = this.props.renderer.read_only
+    this.renderer = this.props.renderer
 
     this.createDiv = React.createRef()
   }
@@ -26,7 +26,7 @@ class LibraryMenu extends React.Component {
     getLibrary((data) => {
       this.setState({ project_data: data.data_package })
     })
-    window.makeDropdown(this.createDiv.current)
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current)
   }
 
   /*******************************************************
@@ -48,7 +48,7 @@ class LibraryMenu extends React.Component {
           <div id="create-links-project" className="create-dropdown">
             <a
               id="project-create-library"
-              href={window.config.create_path.project}
+              href={COURSEFLOW_APP.config.create_path.project}
               className="hover-shade"
             >
               {window.gettext('New project')}
@@ -56,14 +56,14 @@ class LibraryMenu extends React.Component {
             <hr />
             <a
               id="activity-strategy-create"
-              href={window.config.create_path.activity_strategy}
+              href={COURSEFLOW_APP.config.create_path.activity_strategy}
               className="hover-shade"
             >
               {window.gettext('New activity strategy')}
             </a>
             <a
               id="course-strategy-create"
-              href={window.config.create_path.course_strategy}
+              href={COURSEFLOW_APP.config.create_path.course_strategy}
               className="hover-shade"
             >
               {window.gettext('New course strategy')}
@@ -80,7 +80,7 @@ class LibraryMenu extends React.Component {
       <a
         id="import-old"
         className="hover-shade"
-        href={window.config.get_paths.import}
+        href={COURSEFLOW_APP.config.get_paths.import}
       >
         {window.gettext('Import from old CourseFlow')}
       </a>

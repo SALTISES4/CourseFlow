@@ -33,6 +33,9 @@ const makeActiveSidebar = function (id) {
   $(id).addClass('active')
 }
 
+/*******************************************************
+ * makeDropdown
+ *******************************************************/
 const makeDropdown = (click_element) => {
   if ($(click_element).hasClass('dropdown-ready')) return
 
@@ -65,6 +68,10 @@ const makeDropdown = (click_element) => {
   // check_position();
   // window.addEventListener("resize",check_position);
 }
+COURSEFLOW_APP.makeDropdown = makeDropdown
+/*******************************************************
+ *  // makeDropdown
+ *******************************************************/
 
 // reload if we got here using forward or back button
 if (
@@ -89,12 +96,12 @@ $(window).on('load', () => {
     makeDropdown(el, '#create-links')
   })
 
-  if (window.COURSEFLOW_APP.show_notification_request) {
+  if (COURSEFLOW_APP.show_notification_request) {
     const confirmNotifications = window.confirm(
-      window.COURSEFLOW_APP.strings.confirm_email_updates
+      COURSEFLOW_APP.strings.confirm_email_updates
     )
 
-    $.post(window.config.post_paths.select_notifications, {
+    $.post(COURSEFLOW_APP.config.post_paths.select_notifications, {
       notifications: JSON.stringify(!!confirmNotifications)
     })
   }

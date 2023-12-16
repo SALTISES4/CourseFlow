@@ -19,7 +19,7 @@ class ActionButton extends React.Component {
         title={this.props.titletext}
         onClick={this.handleClick}
       >
-        <img src={window.config.icon_path + this.props.button_icon} />
+        <img src={COURSEFLOW_APP.config.icon_path + this.props.button_icon} />
       </div>
     )
   }

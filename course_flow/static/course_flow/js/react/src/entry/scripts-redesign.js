@@ -70,9 +70,9 @@ function renderComponents(components) {
 // window.contextData
 // set in python views and prepped in react_renderer.html
 const LibraryComponent = () => {
-  switch (cf.path_id) {
+  switch (COURSEFLOW_APP.path_id) {
     case 'projectDetail':
-      return <ProjectRenderer {...cf.contextData} />
+      return <ProjectRenderer {...COURSEFLOW_APP.contextData} />
     case 'favorites':
       return <FavouritesRenderer />
     case 'library':
@@ -80,30 +80,30 @@ const LibraryComponent = () => {
       // contextData and pass that to LibraryRenderer
       return <LibraryRenderer />
     case 'home':
-      return <HomeRenderer {...cf.contextData} />
+      return <HomeRenderer {...COURSEFLOW_APP.contextData} />
     case 'explore':
-      return <ExploreRenderer {...cf.contextData} />
+      return <ExploreRenderer {...COURSEFLOW_APP.contextData} />
   }
 }
 
 const LiveComponent = () => {
-  switch (cf.path_id) {
+  switch (COURSEFLOW_APP.path_id) {
     case 'assignmentDetail':
-      return <LiveAssignmentRenderer {...cf.contextData} />
+      return <LiveAssignmentRenderer {...COURSEFLOW_APP.contextData} />
     case 'myLiveProjects':
-      return <LiveProjectRenderer {...cf.contextData} />
+      return <LiveProjectRenderer {...COURSEFLOW_APP.contextData} />
   }
 }
 
 const ReduxComponent = () => {
-  switch (cf.path_id) {
+  switch (COURSEFLOW_APP.path_id) {
     case 'projectComparison':
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
        */
       const thisContextData = {
-        ...window.contextData,
+        ...COURSEFLOW_APP.contextData,
         myColour:
           'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
@@ -113,7 +113,7 @@ const ReduxComponent = () => {
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
       const thisContextData = {
-        ...window.contextData,
+        ...COURSEFLOW_APP.contextData,
         myColour:
           'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)

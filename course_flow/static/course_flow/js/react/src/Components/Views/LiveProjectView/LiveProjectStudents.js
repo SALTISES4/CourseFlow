@@ -9,7 +9,7 @@ class LiveProjectStudents extends LiveProjectSection {
 
     let register_link
     if (liveproject && liveproject.registration_hash) {
-      let register_url = window.config.registration_path.replace(
+      let register_url = COURSEFLOW_APP.config.registration_path.replace(
         'project_hash',
         liveproject.registration_hash
       )
@@ -26,19 +26,22 @@ class LiveProjectStudents extends LiveProjectSection {
                   navigator.clipboard.writeText(register_url)
                   $('#copy-text').attr(
                     'src',
-                    window.config.icon_path + 'duplicate_checked.svg'
+                    COURSEFLOW_APP.config.icon_path + 'duplicate_checked.svg'
                   )
                   $('#url-text').text('Copied to Clipboard')
                   setTimeout(() => {
                     $('#copy-text').attr(
                       'src',
-                      window.config.icon_path + 'duplicate_clipboard.svg'
+                      COURSEFLOW_APP.config.icon_path +
+                        'duplicate_clipboard.svg'
                     )
                     $('#url-text').text(register_url)
                   }, 1000)
                 }}
                 title={window.gettext('Copy to clipboard')}
-                src={window.config.icon_path + 'duplicate_clipboard.svg'}
+                src={
+                  COURSEFLOW_APP.config.icon_path + 'duplicate_clipboard.svg'
+                }
               />
               <a id="url-text" className="selectable" href={register_url}>
                 {register_url}

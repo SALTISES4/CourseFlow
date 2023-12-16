@@ -3,7 +3,7 @@ import {
   getLiveProjectData,
   getLiveProjectDataStudent
 } from '@XMLHTTP/PostFunctions'
-import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 
 class LiveProjectSection extends React.Component {
   constructor(props) {

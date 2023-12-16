@@ -23,7 +23,7 @@ class MenuBar extends React.Component {
    * FUNCTIONS
    *******************************************************/
   dropdownOverflow() {
-    window.makeDropdown('#overflow-options', '#overflow-links')
+    COURSEFLOW_APP.makeDropdown('#overflow-options', '#overflow-links')
   }
 
   /*******************************************************
@@ -31,13 +31,17 @@ class MenuBar extends React.Component {
    *******************************************************/
   render() {
     let overflow_links
-    if (this.props.overflow_links) overflow_links = this.props.overflow_links()
     let visible_buttons
-    if (this.props.visible_buttons)
-      visible_buttons = this.props.visible_buttons()
     let viewbar
-    if (this.props.viewbar) viewbar = this.props.viewbar()
     let userbar
+
+    if (this.props.overflow_links) {
+      overflow_links = this.props.overflow_links()
+    }
+    if (this.props.visible_buttons) {
+      visible_buttons = this.props.visible_buttons()
+    }
+    if (this.props.viewbar) viewbar = this.props.viewbar()
     if (this.props.userbar) userbar = this.props.userbar()
 
     return (

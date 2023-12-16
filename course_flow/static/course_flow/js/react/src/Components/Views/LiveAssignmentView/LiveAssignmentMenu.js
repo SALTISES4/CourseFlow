@@ -12,7 +12,7 @@ import {
   updateLiveProjectValue
 } from '@XMLHTTP/PostFunctions'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility.js'
-import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 
 /**
  *
@@ -104,7 +104,7 @@ class LiveAssignmentEdit extends React.Component {
       )
     ) {
       deleteSelfLive(data.id, 'liveassignment', (response_data) => {
-        window.location = window.config.update_path.liveproject.replace(
+        window.location = COURSEFLOW_APP.config.update_path.liveproject.replace(
           '0',
           data.liveproject
         )
@@ -494,7 +494,7 @@ class LiveAssignmentMenu extends React.Component {
           {reactDom.createPortal(
             <a
               id="live-project-return"
-              href={window.config.update_path['liveproject'].replace(
+              href={COURSEFLOW_APP.config.update_path['liveproject'].replace(
                 0,
                 liveproject.pk
               )}

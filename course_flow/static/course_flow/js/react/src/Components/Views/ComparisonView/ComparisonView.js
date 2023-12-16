@@ -176,7 +176,7 @@ class ComparisonView extends React.Component {
             closeMessageBox
           )}
         >
-          <img src={window.config.icon_path + 'add_person.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
         </div>
       )
 

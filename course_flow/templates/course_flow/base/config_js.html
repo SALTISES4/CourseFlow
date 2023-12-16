@@ -2,7 +2,8 @@
 {% load course_flow_templatetags %}
 
 <script nonce="{{ request.csp_nonce }}">
-  window.config = {
+
+  COURSEFLOW_APP.config = {
     post_paths: {
       get_possible_linked_workflows:
         "{% url 'course_flow:json-api-post-get-possible-linked-workflows' %}",
@@ -132,44 +133,42 @@
 
   // NOTE: This is the place where we keep all variables
   // injected by Django to be consumed by React
-  window.COURSEFLOW_APP = {
-    show_notification_request: {{ show_notification_request }},
-    update_notifications: {{ update_notifications|safe }},
+  COURSEFLOW_APP.show_notification_request = {{ show_notification_request }};
+  COURSEFLOW_APP.update_notifications = {{ update_notifications|safe }};
 
-    home: {
-      user_id: {% firstof user.id -1 %},
-      is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
-    },
+  COURSEFLOW_APP.home = {
+    user_id: {% firstof user.id -1 %},
+    is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
+  };
 
-    // common strings used across the app
-    strings: {
-      confirm_email_updates:
-        "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
-      unsupported_device:
-        "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}",
-      notifications: "{% trans 'Notifications' %}",
-      home: "{% trans 'Home' %}",
-      my_library: "{% trans 'My library' %}",
-      explore: "{% trans 'Explore' %}",
-      my_classrooms: "{% trans 'My classrooms' %}",
-      favourites: "{% trans 'Favourites' %}",
-      see_all: "{% trans 'See all' %}",
-      view_all: "{% trans 'View all' %}",
-      help_support: "{% trans 'Help and Support' %}",
-      password_reset: "{% trans 'Password reset' %}",
-      notification_settings: "{% trans 'Notification settings' %}",
-      sign_out: "{% trans 'Sign out' %}",
-      profile: "{% trans 'Profile' %}",
-      project: "{% trans 'Project' %}",
-      program: "{% trans 'Program' %}",
-      course: "{% trans 'Course' %}",
-      activity: "{% trans 'Activity' %}",
-      delete: "{% trans 'Delete' %}",
-      show_notifications_menu: "{% trans 'Show notifications menu' %}",
-      notification_options: "{% trans 'Notification options' %}",
-      mark_as_read: "{% trans 'Mark as read' %}",
-      mark_all_as_read: "{% trans 'Mark all as read' %}",
-      no_notifications_yet: "{% trans 'You have no notifications yet.' %}",
-    }
+  // common strings used across the app
+  COURSEFLOW_APP.strings = {
+    confirm_email_updates:
+      "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
+    unsupported_device:
+      "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}",
+    notifications: "{% trans 'Notifications' %}",
+    home: "{% trans 'Home' %}",
+    my_library: "{% trans 'My library' %}",
+    explore: "{% trans 'Explore' %}",
+    my_classrooms: "{% trans 'My classrooms' %}",
+    favourites: "{% trans 'Favourites' %}",
+    see_all: "{% trans 'See all' %}",
+    view_all: "{% trans 'View all' %}",
+    help_support: "{% trans 'Help and Support' %}",
+    password_reset: "{% trans 'Password reset' %}",
+    notification_settings: "{% trans 'Notification settings' %}",
+    sign_out: "{% trans 'Sign out' %}",
+    profile: "{% trans 'Profile' %}",
+    project: "{% trans 'Project' %}",
+    program: "{% trans 'Program' %}",
+    course: "{% trans 'Course' %}",
+    activity: "{% trans 'Activity' %}",
+    delete: "{% trans 'Delete' %}",
+    show_notifications_menu: "{% trans 'Show notifications menu' %}",
+    notification_options: "{% trans 'Notification options' %}",
+    mark_as_read: "{% trans 'Mark as read' %}",
+    mark_all_as_read: "{% trans 'Mark all as read' %}",
+    no_notifications_yet: "{% trans 'You have no notifications yet.' %}",
   }
 </script>

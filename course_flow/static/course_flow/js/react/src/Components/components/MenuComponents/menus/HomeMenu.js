@@ -39,9 +39,9 @@ class HomeMenu extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let library_path = window.config.my_library_path
+    let library_path = COURSEFLOW_APP.config.my_library_path
     if (!this.props.renderer.is_teacher)
-      library_path = window.config.my_liveprojects_path
+      library_path = COURSEFLOW_APP.config.my_liveprojects_path
 
     let project_box
     if (this.props.renderer.is_teacher) {
@@ -84,7 +84,7 @@ class HomeMenu extends React.Component {
             </div>
             <a
               className="collapsed-text-show-more"
-              href={window.config.my_favourites_path}
+              href={COURSEFLOW_APP.config.my_favourites_path}
             >
               {window.gettext('See all')}
             </a>

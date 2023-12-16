@@ -40,7 +40,7 @@ export function getAddedWorkflowMenu(
   updateFunction
 ) {
   $.post(
-    window.config.post_paths.get_possible_added_workflows,
+    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
     {
       projectPk: JSON.stringify(projectPk),
       type_filter: JSON.stringify(type_filter),
@@ -64,7 +64,7 @@ export function getWorkflowSelectMenu(
   receiptFunction
 ) {
   $.post(
-    window.config.post_paths.get_possible_added_workflows,
+    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
     {
       projectPk: JSON.stringify(projectPk),
       type_filter: JSON.stringify(type_filter),
@@ -86,7 +86,7 @@ export function getTargetProjectMenu(
   callBackFunction = () => console.log('success')
 ) {
   $.post(
-    window.config.post_paths.get_target_projects,
+    COURSEFLOW_APP.config.post_paths.get_target_projects,
     {
       workflowPk: JSON.stringify(workflowPk)
     },
@@ -105,7 +105,7 @@ export function getLinkedWorkflowMenu(
   callBackFunction = () => console.log('success')
 ) {
   $.post(
-    window.config.post_paths.get_possible_linked_workflows,
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },

@@ -42,7 +42,7 @@ class ExploreFilter extends WorkflowFilter {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    window.makeDropdown(this.disciplineDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.disciplineDOM.current)
     super.componentDidMount()
   }
 

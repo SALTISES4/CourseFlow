@@ -258,7 +258,7 @@ class Node extends EditableComponentWithActions {
               ).name
             }
             src={
-              window.config.icon_path +
+              COURSEFLOW_APP.config.icon_path +
               Constants.context_keys[data.context_classification] +
               '.svg'
             }
@@ -275,7 +275,7 @@ class Node extends EditableComponentWithActions {
               ).name
             }
             src={
-              window.config.icon_path +
+              COURSEFLOW_APP.config.icon_path +
               Constants.task_keys[data.task_classification] +
               '.svg'
             }
@@ -309,7 +309,7 @@ class Node extends EditableComponentWithActions {
     if (data.linked_workflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
-          <img src={window.config.icon_path + 'wflink.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -378,7 +378,7 @@ class Node extends EditableComponentWithActions {
         >
           <div className="node-drop-side node-drop-left">{dropText}</div>
           <div className="node-drop-middle">
-            <img src={window.config.icon_path + dropIcon + '.svg'} />
+            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
           </div>
           <div className="node-drop-side node-drop-right">
             <div className="node-drop-time">

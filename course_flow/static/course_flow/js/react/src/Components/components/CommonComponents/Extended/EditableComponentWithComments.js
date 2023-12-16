@@ -181,7 +181,7 @@ class CommentBox extends Component {
           className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
-          <img src={window.config.icon_path + 'comment_new.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'comment_new.svg'} />
         </div>,
         render_div
       )
@@ -221,7 +221,7 @@ class CommentBox extends Component {
                   title={window.gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
-                  <img src={window.config.icon_path + 'rubbish.svg'} />
+                  <img src={COURSEFLOW_APP.config.icon_path + 'rubbish.svg'} />
                 </div>
               </div>
             )}
@@ -236,7 +236,7 @@ class CommentBox extends Component {
         title={window.gettext('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
-        <img src={window.config.icon_path + 'close.svg'} />
+        <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
       </div>
     )
     if (!this.props.renderer.read_only && comments.length > 1)
@@ -246,7 +246,7 @@ class CommentBox extends Component {
           title={window.gettext('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
-          <img src={window.config.icon_path + 'rubbish.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'rubbish.svg'} />
         </div>
       )
 
@@ -291,7 +291,7 @@ class CommentBox extends Component {
               />
               <img
                 ref={this.submit}
-                src={window.config.icon_path + 'add_new.svg'}
+                src={COURSEFLOW_APP.config.icon_path + 'add_new.svg'}
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
                 title={window.gettext('Submit')}

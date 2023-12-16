@@ -89,7 +89,7 @@ const TopBar = () => {
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
   const [apiData, loading, error] = useApi(
-    window.config.json_api_paths.get_top_bar
+    COURSEFLOW_APP.config.json_api_paths.get_top_bar
   )
 
   if (loading || error) {
@@ -109,7 +109,7 @@ const TopBar = () => {
   }
 
   const handleLogout = () => [
-    window.location.replace(window.config.logout_path)
+    window.location.replace(COURSEFLOW_APP.config.logout_path)
   ]
 
   const closeAllMenus = () => {
@@ -121,13 +121,13 @@ const TopBar = () => {
   const handleCreateClick = (type) => {
     switch (type) {
       case 'program':
-        createNew(window.config.create_path.program)
+        createNew(COURSEFLOW_APP.config.create_path.program)
         break
       case 'activity':
-        createNew(window.config.create_path.activity)
+        createNew(COURSEFLOW_APP.config.create_path.activity)
         break
       case 'course':
-        createNew(window.config.create_path.course)
+        createNew(COURSEFLOW_APP.config.create_path.course)
         break
     }
 
@@ -151,16 +151,16 @@ const TopBar = () => {
       onClose={closeAllMenus}
     >
       <MenuItem component="a" href={apiData.menus.add.projectUrl}>
-        {window.COURSEFLOW_APP.strings.project}
+        {COURSEFLOW_APP.strings.project}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick('program')}>
-        {window.COURSEFLOW_APP.strings.program}
+        {COURSEFLOW_APP.strings.program}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick('course')}>
-        {window.COURSEFLOW_APP.strings.course}
+        {COURSEFLOW_APP.strings.course}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick('activity')}>
-        {window.COURSEFLOW_APP.strings.activity}
+        {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
   )
@@ -183,10 +183,10 @@ const TopBar = () => {
     >
       <NotificationsHeader>
         <Typography variant="h5">
-          {window.COURSEFLOW_APP.strings.notifications}
+          {COURSEFLOW_APP.strings.notifications}
         </Typography>
         <Link href={apiData.notifications.url} underline="always">
-          {window.COURSEFLOW_APP.strings.see_all}
+          {COURSEFLOW_APP.strings.see_all}
         </Link>
       </NotificationsHeader>
 
@@ -245,20 +245,20 @@ const TopBar = () => {
       onClose={closeAllMenus}
     >
       <MenuItem component="a" href={apiData.menus.account.profileUrl}>
-        {window.COURSEFLOW_APP.strings.profile}
+        {COURSEFLOW_APP.strings.profile}
       </MenuItem>
       <MenuItem component="a" href={apiData.menus.account.resetPasswordUrl}>
-        {window.COURSEFLOW_APP.strings.password_reset}
+        {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={apiData.menus.account.profileUrl}>
-        {window.COURSEFLOW_APP.strings.notification_settings}
+        {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />
       <MenuItem component="a" href={apiData.menus.account.daliteUrl}>
         Go to {apiData.menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
-        <LogoutIcon /> {window.COURSEFLOW_APP.strings.sign_out}
+        <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
       </MenuItem>
     </StyledMenu>
   )

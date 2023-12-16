@@ -12,7 +12,7 @@ class FavouritesMenu extends LibraryMenu {
     getFavourites((data) => {
       component.setState({ project_data: data.data_package })
     })
-    window.makeDropdown(this.createDiv.current)
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current)
   }
 
   /*******************************************************
