@@ -85,7 +85,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -100,7 +100,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }

@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import DetailView
@@ -41,7 +43,7 @@ class WorkflowDetailView(
             "user_name": current_user.username,
             "user_role": user_role if user_role else 0,
             "user_permission": user_permission,
-            "workflow_data_package": context.data_package,
+            "workflow_data_package": context.get("data_package"),
             "workflow_type": workflow.type,
             "workflow_model_id": workflow.id,
         }

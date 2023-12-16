@@ -60,30 +60,44 @@ export class WorkflowGridRenderer extends React.Component {
  * ****************************************/
 export class WorkflowRenderer {
   constructor(props) {
+    const {
+      column_choices,
+      context_choices,
+      task_choices,
+      time_choices,
+      outcome_type_choices,
+      outcome_sort_choices,
+      strategy_classification_choices,
+      is_strategy,
+      project
+    } = props.workflow_data_package
+
     this.message_queue = []
     this.messages_queued = true
 
     this.public_view = props.public_view
     this.workflowID = props.workflow_model_id
+
     // Data package
-    this.column_choices = props.data_package.column_choices
-    this.context_choices = props.data_package.context_choices
-    this.task_choices = props.data_package.task_choices
-    this.time_choices = props.data_package.time_choices
-    this.outcome_type_choices = props.data_package.outcome_type_choices
-    this.outcome_sort_choices = props.data_package.outcome_sort_choices
-    this.strategy_classification_choices =
-      props.data_package.strategy_classification_choices
-    this.is_strategy = props.data_package.is_strategy
-    this.project = props.data_package.project
+    this.column_choices = column_choices
+    this.context_choices = context_choices
+    this.task_choices = task_choices
+    this.time_choices = time_choices
+    this.outcome_type_choices = outcome_type_choices
+    this.outcome_sort_choices = outcome_sort_choices
+    this.strategy_classification_choices = strategy_classification_choices
+    this.is_strategy = is_strategy
+    this.project = project
+
     this.user_permission = props.user_permission
     this.user_role = props.user_role
+    this.user_id = props.user_id
 
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    switch (data.user_permission) {
+    switch (props.user_permission) {
       case Constants.permission_keys['view']:
         this.can_view = true
         break
@@ -104,7 +118,7 @@ export class WorkflowRenderer {
       // No default case needed here if these are the only options
     }
 
-    switch (data.user_role) {
+    switch (props.user_role) {
       case Constants.role_keys['none']:
         // nuclear fusion logic here
         break

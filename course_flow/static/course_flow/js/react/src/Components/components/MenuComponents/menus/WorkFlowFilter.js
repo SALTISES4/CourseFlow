@@ -3,6 +3,7 @@ import { Component } from '@cfParentComponents'
 import { searchAllObjects } from '@XMLHTTP/PostFunctions'
 import { WorkflowForMenu } from '@cfCommonComponents'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+import { WorkflowTitle } from '@cfUIComponents'
 
 /*******************************************************
 A container for workflow cards that allows searching and filtering

@@ -230,7 +230,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
         >
           <div className="node-drop-side node-drop-left"></div>
           <div className="node-drop-middle">
-            <img src={config.icon_path + dropIcon + '.svg'} />
+            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
           </div>
           <div className="node-drop-side node-drop-right"></div>
         </div>
@@ -247,7 +247,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
                     ).name
                   }
                   src={
-                    config.icon_path +
+                    COURSEFLOW_APP.config.icon_path +
                     Constants.strategy_keys[data.strategy_classification] +
                     '.svg'
                   }

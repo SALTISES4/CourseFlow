@@ -65,8 +65,13 @@
       break;
     }
     case "workflowDetailView": {
-      COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = '#workflow' + contextData.workflow_model_id
+      COURSEFLOW_APP.contextData = {
+        ...DTOContextData,
+        myColour:
+          'hsl(' + (((DTOContextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+      makeActiveSidebarID = '#workflow' + COURSEFLOW_APP.contextData.workflow_model_id
       break;
     }
   }

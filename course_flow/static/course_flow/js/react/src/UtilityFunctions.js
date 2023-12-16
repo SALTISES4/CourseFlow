@@ -390,7 +390,7 @@ export function getCompletionImg(completion_status, outcomes_type) {
     return (
       <img
         className="self-completed"
-        src={config.icon_path + 'solid_check.svg'}
+        src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
       />
     )
   }

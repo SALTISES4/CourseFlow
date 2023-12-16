@@ -21,6 +21,10 @@
 
 {% csrf_token %}
 
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}
+
 {% block scripts %}
   {{ block.super }}
   <script nonce="{{ request.csp_nonce }}">

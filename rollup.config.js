@@ -116,16 +116,16 @@ export default [
     },
     plugins: bundlePlugins
   },
-  {
-    input: `${bundleEntry}scripts-wf-redux.js`,
-    output: {
-      file: `${bundleRoot}scripts-wf-redux.min.js`,
-      name: 'renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
+  // {
+  //   input: `${bundleEntry}scripts-wf-redux.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-wf-redux.min.js`,
+  //     name: 'renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
   // {
   //   input: `${bundleEntry}scripts-live.js`,
   //   output: {

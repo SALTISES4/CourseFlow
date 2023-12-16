@@ -26,7 +26,7 @@ class Column extends EditableComponentWithActions {
     return (
       <img
         src={
-          config.icon_path +
+          COURSEFLOW_APP.config.icon_path +
           Constants.default_column_settings[this.props.data.column_type].icon +
           '.svg'
         }

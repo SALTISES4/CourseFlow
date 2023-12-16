@@ -7,7 +7,9 @@ class LegendLine extends React.Component {
   render() {
     let icon
     if (this.props.icon)
-      icon = <img src={config.icon_path + this.props.icon + '.svg'} />
+      icon = (
+        <img src={COURSEFLOW_APP.config.icon_path + this.props.icon + '.svg'} />
+      )
     else icon = <div className={this.props.divclass}>{this.props.div}</div>
     return (
       <div className="legend-line">

@@ -7,6 +7,11 @@ export class ConnectionBar extends React.Component {
   constructor(props) {
     super(props)
     this.state = { connected_users: [] }
+
+    this.user_id = props.renderer.user_id
+    this.user_id = props.renderer.user_name
+    this.user_id = props.renderer.myColour
+
     let connection_bar = this
     props.renderer.connection_update_received = (user_data) => {
       connection_bar.connection_update_received(user_data)
@@ -56,9 +61,9 @@ export class ConnectionBar extends React.Component {
         JSON.stringify({
           type: 'connection_update',
           user_data: {
-            user_id: user_id,
-            user_name: user_name,
-            user_colour: myColour,
+            user_id: this.user_id,
+            user_name: this.user_name,
+            user_colour: this.myColour,
             connected: connected
           }
         })
@@ -115,6 +120,8 @@ export class ConnectionBar extends React.Component {
 export class ConnectedUser extends React.Component {
   render() {
     let data = this.props.user_data
+    console.log('this.props.user_data')
+    console.log(this.props.user_data)
     return (
       <div
         className="user-indicator"

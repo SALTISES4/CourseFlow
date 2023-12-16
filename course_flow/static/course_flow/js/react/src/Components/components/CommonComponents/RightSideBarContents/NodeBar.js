@@ -303,7 +303,7 @@ class StrategyUnconnected extends Component {
       strategy_icon = (
         <img
           src={
-            config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.strategy_keys[data.strategy_icon] +
             '.svg'
           }

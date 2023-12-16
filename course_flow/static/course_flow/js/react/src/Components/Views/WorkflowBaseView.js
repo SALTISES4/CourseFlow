@@ -62,6 +62,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let disabled_tabs = []
     for (let i = 0; i <= 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
+
+    /*******************************************************
+     * JQUERY
+     *******************************************************/
     $('#sidebar').tabs({ disabled: false })
     let current_tab = $('#sidebar').tabs('option', 'active')
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
@@ -70,6 +74,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     }
     if (this.props.renderer.read_only) disabled_tabs.push(5)
     $('#sidebar').tabs({ disabled: disabled_tabs })
+    /*******************************************************
+     * // JQUERY
+     *******************************************************/
   }
 
   changeView(type) {
@@ -327,7 +334,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getExportButton() {
-    if (this.props.renderer.public_view && !user_id) return null
+    if (this.props.renderer.public_view && !this.props.renderer.user_id)
+      return null
     if (this.props.renderer.is_student && !this.props.renderer.can_view)
       return null
     let export_button = (
@@ -349,7 +357,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getCopyButton() {
-    if (!user_id) return null
+    if (!this.props.renderer.user_id) return null
     let export_button = [
       <div
         id="copy-button"
@@ -999,8 +1007,8 @@ export class JumpToWeekViewUnconnected extends React.Component {
     let default_text
     if (!renderer.is_strategy)
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
-    let src = config.icon_path + 'plus.svg'
-    if (data.is_dropped) src = config.icon_path + 'minus.svg'
+    let src = COURSEFLOW_APP.config.icon_path + 'plus.svg'
+    if (data.is_dropped) src = COURSEFLOW_APP.config.icon_path + 'minus.svg'
     return (
       <div className="hover-shade" onClick={this.jumpTo.bind(this)}>
         <TitleText text={data.title} defaultText={default_text} />

@@ -67,36 +67,50 @@ function renderComponents(components) {
   })
 }
 
-// window.contextData
+/*
+  home:  course-flow/home/
+  library:  course-flow/mylibrary/
+  explore:  course-flow/explore/
+  projectDetail:  course-flow/project/1/
+
+  my_live_projects:
+  workflowDetailView:
+  projectComparison:
+ */
+
+// contextData
 // set in python views and prepped in react_renderer.html
-const LibraryComponent = () => {
+console.log('current path')
+console.log(COURSEFLOW_APP.path_id)
+const AppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
-    case 'projectDetail':
-      return <ProjectRenderer {...COURSEFLOW_APP.contextData} />
+    /*******************************************************
+     * LIBRARY
+     *******************************************************/
+    case 'home':
+      return <HomeRenderer {...COURSEFLOW_APP.contextData} />
     case 'favorites':
       return <FavouritesRenderer />
     case 'library':
       // if this complains about user_id add it to
       // contextData and pass that to LibraryRenderer
       return <LibraryRenderer />
-    case 'home':
-      return <HomeRenderer {...COURSEFLOW_APP.contextData} />
     case 'explore':
       return <ExploreRenderer {...COURSEFLOW_APP.contextData} />
-  }
-}
+    case 'projectDetail':
+      return <ProjectRenderer {...COURSEFLOW_APP.contextData} />
 
-const LiveComponent = () => {
-  switch (COURSEFLOW_APP.path_id) {
+    /*******************************************************
+     * LIVE
+     *******************************************************/
     case 'assignmentDetail':
       return <LiveAssignmentRenderer {...COURSEFLOW_APP.contextData} />
     case 'myLiveProjects':
       return <LiveProjectRenderer {...COURSEFLOW_APP.contextData} />
-  }
-}
 
-const ReduxComponent = () => {
-  switch (COURSEFLOW_APP.path_id) {
+    /*******************************************************
+     * REDUX
+     *******************************************************/
     case 'projectComparison':
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
@@ -112,39 +126,19 @@ const ReduxComponent = () => {
       return <ComparisonRenderer {...thisContextData} />
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
-      const thisContextData = {
-        ...COURSEFLOW_APP.contextData,
-        myColour:
-          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
-        changeFieldID: Math.floor(Math.random() * 10000)
-      }
-      const workflow_renderer = new WorkflowRenderer(thisContextData)
+      const workflow_renderer = new WorkflowRenderer(COURSEFLOW_APP.contextData)
       workflow_renderer.connect()
       return null
     }
     case 'my_live_projects':
       return <WorkflowGridRenderer {...window.contextData} />
   }
+  return null
 }
 
 // Register all the components that we're loading ourselves on load
 window.addEventListener('load', () => {
-  renderComponents([
-    {
-      component: <LibraryComponent />,
-      target: '#container',
-      styles: null
-    },
-    // {
-    //   component: <LiveComponent />,
-    //   target: '#container',
-    //   styles: null
-    // },
-    // {
-    //   component: <ReduxComponent />,
-    //   target: '#container',
-    //   styles: null
-    // },
+  const componentsToRender = [
     {
       component: <Sidebar />,
       target: '[data-component="sidebar"]',
@@ -157,6 +151,12 @@ window.addEventListener('load', () => {
     {
       component: <NotificationsPage />,
       target: '[data-component="notifications-page"]'
+    },
+    {
+      component: <AppComponent />,
+      target: '#container'
     }
-  ])
+  ]
+
+  renderComponents(componentsToRender)
 })
