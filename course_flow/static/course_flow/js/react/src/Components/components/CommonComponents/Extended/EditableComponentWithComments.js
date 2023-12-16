@@ -6,14 +6,14 @@ import {
   getUsersForObject,
   removeAllComments,
   removeComment
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { reloadCommentsAction } from '@cfReducers'
 // @components
 import Component from './Component.js'
-import ActionButton from '../ActionButton.js'
-import EditableComponent from './EditableComponent.js'
+import ActionButton from '@cfUIComponents/ActionButton.js'
+import EditableComponent from '@cfParentComponents/EditableComponent'
 
 /*******************************************************
  * @CommentBox

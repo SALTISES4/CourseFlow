@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import { Outcome } from './Outcome.js'
+import { connect } from 'react-redux'
 import { getOutcomeWorkflowByID } from '@cfFindState'
 
 /**

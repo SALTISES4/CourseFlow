@@ -1,13 +1,13 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import ActionButton from '@cfCommonComponents/ActionButton.js'
+import ActionButton from '@cfUIComponents/ActionButton.js'
 import {
   deleteSelf,
   duplicateSelf,
   insertChild,
   insertSibling,
   restoreSelf
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import EditableComponentWithComments from './EditableComponentWithComments.js'
 
 //Extends the react component to add a few features that are used in a large number of components

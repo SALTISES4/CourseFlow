@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { updateLiveProjectValue } from '@cfPostFunctions'
+import { updateLiveProjectValue } from '@XMLHTTP/PostFunctions'
 import { LiveProjectSection } from './LiveProjectSection.js'
 
 class LiveProjectSettings extends LiveProjectSection {

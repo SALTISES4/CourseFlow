@@ -1,18 +1,11 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  ActionButton,
-  EditableComponentWithActions,
-  NodePorts,
-  NodeTitle,
-  TitleText
-} from '@cfCommonComponents'
+import { EditableComponentWithActions } from '@cfParentComponents'
+import { NodeTitle, TitleText } from '@cfUIComponents'
 import { OutcomeNode } from '../WorkflowView'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
 
 /**
  * Represents the node in the comparison view

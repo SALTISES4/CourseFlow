@@ -5,11 +5,11 @@ import WorkflowVisibility from './WorkflowVisibility.js'
 import { LiveProjectSection } from './LiveProjectSection.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
-import { WorkflowForMenu } from '@cfLibrary'
+import { WorkflowForMenu } from '@cfCommonComponents'
 import LiveProjectCompletionTable from './LiveProjectCompletionTable.js'
 import LiveProjectSettings from './LiveProjectSettings.js'
 import LiveProjectAssignments from './LiveProjectAssignments.js'
-import { setWorkflowVisibility } from '../../../XMLHTTP/PostFunctions.js'
+import { setWorkflowVisibility } from '@XMLHTTP/PostFunctions.js'
 
 /**
  *

@@ -20,7 +20,7 @@ class MenuBar extends React.Component {
    * FUNCTIONS
    *******************************************************/
   dropdownOverflow() {
-    makeDropdown('#overflow-options', '#overflow-links')
+    window.makeDropdown('#overflow-options', '#overflow-links')
   }
 
   /*******************************************************

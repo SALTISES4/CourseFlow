@@ -17,7 +17,7 @@ import {
   getPublicWorkflowChildData,
   updateValue,
   fail_function
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 import * as Utility from '@cfUtility'

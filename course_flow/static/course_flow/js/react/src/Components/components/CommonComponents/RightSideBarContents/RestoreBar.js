@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import { restoreSelf, deleteSelf, toggleDrop } from '@cfPostFunctions'
-import Component from '../Component.js'
+import { connect } from 'react-redux'
+import { restoreSelf, deleteSelf } from '@XMLHTTP/PostFunctions'
+import Component from '@cfParentComponents/Component'
 
 /**
  * The delete/restore tab of the right sidebar in the workflow view.

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { searchAllObjects } from '@cfPostFunctions'
-import WorkflowForMenu from '@cfCommonComponents'
+import { searchAllObjects } from '@XMLHTTP/PostFunctions'
+import { WorkflowForMenu } from '@cfCommonComponents'
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
 
@@ -42,7 +42,7 @@ class ExploreFilter extends WorkflowFilter {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    makeDropdown(this.disciplineDOM.current)
+    window.makeDropdown(this.disciplineDOM.current)
     super.componentDidMount()
   }
 

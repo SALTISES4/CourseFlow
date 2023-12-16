@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import { TitleText } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { TitleText } from '@cfUIComponents'
 import { WeekUnconnected } from './Week.js'
 import NodeWeek from './NodeWeek.js'
 import { getTermByID } from '@cfFindState'

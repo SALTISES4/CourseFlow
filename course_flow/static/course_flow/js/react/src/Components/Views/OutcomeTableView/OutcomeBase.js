@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '@cfCommonComponents'
-import { getOutcomeByID } from '@cfFindState'
+import { Component } from '@cfParentComponents'
 import TableOutcome from './Outcome.js'
 import { Outcome as MatrixOutcome } from '../CompetencyMatrixView'
 import * as Utility from '@cfUtility'

@@ -1,13 +1,14 @@
 import * as React from 'react'
+import { getWorkflowNodes } from '@XMLHTTP/PostFunctions'
+import * as Constants from '../../../Constants.js'
+// @components
 import { AssignmentView } from '../LiveAssignmentView'
 import {
   NodeTitle,
   TitleText,
   WorkflowTitle
-} from '../../components/CommonComponents/UIComponents'
-import { ActionButton } from '../../components/CommonComponents'
-import { getWorkflowNodes } from '../../../XMLHTTP/PostFunctions.js'
-import * as Constants from '../../../Constants.js'
+} from '@cfCommonComponents/UIComponents'
+import ActionButton from '@cfUIComponents/ActionButton.js'
 
 class AssignmentWorkflowNodesDisplay extends React.Component {
   constructor(props) {

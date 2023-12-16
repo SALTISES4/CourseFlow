@@ -1,22 +1,13 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import {
-  EditableComponentWithSorting,
-  TitleText
-} from '../../components/CommonComponents'
-import NodeWeek from './NodeWeek.js'
-import { getWeekByID, getNodeWeekByID } from '@cfFindState'
-import * as Constants from '@cfConstants'
-import { columnChangeNode, moveNodeWeek } from '@cfReducers'
-import {
-  toggleDrop,
-  insertedAt,
-  insertedAtInstant,
-  columnChanged,
-  addStrategy,
-  updateValueInstant
-} from '@cfPostFunctions'
+import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
+import { getWeekByID } from '@cfFindState'
+import * as Constants from '@cfConstants'
+import { insertedAt, columnChanged, addStrategy } from '@XMLHTTP/PostFunctions'
+import { columnChangeNode, moveNodeWeek } from '@cfReducers'
+import { EditableComponentWithSorting } from '@cfCommonComponents'
+import { TitleText } from '@cfUIComponents'
+import NodeWeek from './NodeWeek.js'
 
 /**
  * Renders a standard 'week-style' block of nodes, wherein the

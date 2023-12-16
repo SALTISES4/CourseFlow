@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { getWeekByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
-import { Component } from '@cfCommonComponents'
+import { Component } from '@cfParentComponents'
 
 /**
  * A block for a term in the competency matrix view. This shows

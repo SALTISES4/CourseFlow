@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 
 /**
  * The view tab for the right side bar is a bit

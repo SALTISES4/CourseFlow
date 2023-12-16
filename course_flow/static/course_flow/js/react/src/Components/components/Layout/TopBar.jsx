@@ -23,7 +23,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
-import { createNew } from '../../../XMLHTTP/postTemp.js'
+import { createNew } from '@XMLHTTP/postTemp.js'
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {

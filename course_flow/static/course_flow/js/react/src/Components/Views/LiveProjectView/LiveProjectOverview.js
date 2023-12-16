@@ -1,10 +1,8 @@
 import * as React from 'react'
+// @local
 import { LiveProjectSection } from './LiveProjectSection.js'
-import {
-  AssignmentTitle,
-  DatePicker,
-  SimpleWorkflow
-} from '@cfCommonComponents'
+// @components
+import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
 
 export class LiveProjectOverview extends LiveProjectSection {

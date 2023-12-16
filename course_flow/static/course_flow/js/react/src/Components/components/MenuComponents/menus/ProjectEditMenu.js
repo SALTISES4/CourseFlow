@@ -5,7 +5,7 @@ import {
   addTerminology,
   deleteSelf,
   updateValueInstant
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import closeMessageBox from '../components/closeMessageBox.js'
 import { LiveProjectSettings } from '@cfViews/LiveProjectView'
 

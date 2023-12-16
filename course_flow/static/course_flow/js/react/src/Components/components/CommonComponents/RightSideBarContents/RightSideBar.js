@@ -1,7 +1,3 @@
-/**
- * Creates the right-hand panel with edit, view, etc for workflows,
- * including the comparison view.
- */
 import * as React from 'react'
 import NodeBar from './NodeBar.js'
 import ViewBar from './ViewBar.js'
@@ -9,6 +5,11 @@ import RestoreBar from './RestoreBar.js'
 import OutcomeBar from './OutcomeBar.js'
 import ParentOutcomeBar from './ParentOutcomeBar.js'
 import ComparisonViewBar from './ComparisonViewBar.js'
+
+/**
+ * Creates the right-hand panel with edit, view, etc for workflows,
+ * including the comparison view.
+ */
 
 class RightSideBar extends React.Component {
   /*******************************************************

@@ -1,9 +1,8 @@
-import * as Redux from 'redux'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Constants from '@cfConstants'
-import { Provider, connect } from 'react-redux'
-import { Slider, LegendLine } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { Slider, LegendLine } from '@cfUIComponents'
 
 class WorkflowLegendUnconnected extends React.Component {
   constructor(props) {

@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { AssignmentTitle, TitleText, DatePicker } from '@cfCommonComponents'
-import { setAssignmentCompletion } from '@cfPostFunctions'
+import { AssignmentTitle, TitleText, DatePicker } from '@cfUIComponents'
+import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 

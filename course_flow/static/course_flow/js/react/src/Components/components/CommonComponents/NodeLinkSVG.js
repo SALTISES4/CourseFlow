@@ -1,6 +1,6 @@
 import * as Utility from '@cfUtility'
 import * as React from 'react'
-import Component from './Component.js'
+import { Component } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
 import {
   add as mathadd,

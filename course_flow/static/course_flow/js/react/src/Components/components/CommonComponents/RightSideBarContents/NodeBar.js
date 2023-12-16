@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
-import Component from '../Component.js'
+import Component from '@cfParentComponents/Component'
 import {
   getColumnWorkflowByID,
   getColumnByID,

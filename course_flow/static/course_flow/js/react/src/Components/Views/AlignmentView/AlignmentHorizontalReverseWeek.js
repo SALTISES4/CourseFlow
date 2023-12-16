@@ -1,7 +1,7 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { EditableComponentWithComments, TitleText } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { EditableComponentWithComments } from '@cfParentComponents'
+import { TitleText } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode.js'
 

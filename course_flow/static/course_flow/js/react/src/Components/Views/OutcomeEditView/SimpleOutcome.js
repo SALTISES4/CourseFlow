@@ -1,13 +1,14 @@
-//Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
 import * as React from 'react'
-import {
-  EditableComponentWithComments,
-  OutcomeTitle
-} from '@cfCommonComponents'
-import * as Utility from '@cfUtility'
-import SimpleOutcomeOutcome from './SimpleOutcomeOutcome.js'
 import { connect } from 'react-redux'
 import { getOutcomeByID } from '@cfFindState'
+import * as Utility from '@cfUtility'
+import { EditableComponentWithComments } from '@cfParentComponents'
+import { OutcomeTitle } from '@cfUIComponents'
+import SimpleOutcomeOutcome from './SimpleOutcomeOutcome.js'
+
+/**
+ *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
+ */
 
 /**
  * A simple outcome block without any action buttons for displaying

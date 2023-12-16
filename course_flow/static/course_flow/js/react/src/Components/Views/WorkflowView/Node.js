@@ -1,21 +1,16 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  ActionButton,
-  AutoLink,
-  EditableComponentWithActions,
-  NodePorts,
-  NodeTitle,
-  TitleText
-} from '@cfCommonComponents'
+import { NodeTitle, TitleText } from '@cfUIComponents'
+import { ActionButton, AutoLink, NodePorts } from '@cfCommonComponents'
+import { EditableComponentWithActions } from '@cfCParentComponents'
 import NodeLink from './NodeLink.js'
 import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode.js'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 
 /**
  * Represents the node in the workflow view

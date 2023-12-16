@@ -1,5 +1,8 @@
 import * as React from 'react'
-import { getLiveProjectData, getLiveProjectDataStudent } from '@cfPostFunctions'
+import {
+  getLiveProjectData,
+  getLiveProjectDataStudent
+} from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 
 export class LiveProjectSection extends React.Component {

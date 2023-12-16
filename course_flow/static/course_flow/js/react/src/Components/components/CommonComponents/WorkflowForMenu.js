@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { WorkflowTitle } from '@cfCommonComponents'
+import { WorkflowTitle } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
-import { setWorkflowVisibility, toggleFavourite } from '@cfPostFunctions'
+import { setWorkflowVisibility, toggleFavourite } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 
 /*******************************************************

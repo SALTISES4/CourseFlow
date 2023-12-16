@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '@cfLibrary'
-import { setLinkedWorkflow } from '@cfPostFunctions'
+import { WorkflowForMenu } from '@cfCommonComponents'
+import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
 import MenuTab from '../components/MenuTab.js'
 import closeMessageBox from '../components/closeMessageBox.js'
 

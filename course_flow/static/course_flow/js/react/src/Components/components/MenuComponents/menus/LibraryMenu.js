@@ -1,6 +1,5 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { getLibrary } from '@cfPostFunctions'
+import { getLibrary } from '@XMLHTTP/PostFunctions'
 import WorkflowFilter from './WorkFlowFilter.js'
 import { MenuBar } from '@cfCommonComponents'
 
@@ -27,7 +26,7 @@ class LibraryMenu extends React.Component {
     getLibrary((data) => {
       this.setState({ project_data: data.data_package })
     })
-    makeDropdown(this.createDiv.current)
+    window.makeDropdown(this.createDiv.current)
   }
 
   /*******************************************************

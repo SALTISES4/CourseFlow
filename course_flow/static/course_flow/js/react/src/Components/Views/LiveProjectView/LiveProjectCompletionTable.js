@@ -1,8 +1,9 @@
 import * as React from 'react'
+import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+// @components
 import { LiveProjectSection } from './LiveProjectSection.js'
 import { AssignmentViewSmall } from '../LiveAssignmentView'
 import * as Utility from '@cfUtility'
-import { setAssignmentCompletion } from '@cfPostFunctions'
 
 class LiveProjectCompletionTable extends LiveProjectSection {
   render() {

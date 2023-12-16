@@ -1,6 +1,12 @@
-// Creates a datetime picker using flatpickr
 import * as React from 'react'
 
+/**
+ * /Creates a datetime picker using flatpickr
+ */
+
+/**
+ *
+ */
 class DatePicker extends React.Component {
   constructor(props) {
     super(props)

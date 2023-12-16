@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getFavourites } from '@cfPostFunctions'
+import { getFavourites } from '@XMLHTTP/PostFunctions'
 import WorkflowFilter from './WorkFlowFilter.js'
 import LibraryMenu from './LibraryMenu.js'
 
@@ -12,7 +12,7 @@ class FavouritesMenu extends LibraryMenu {
     getFavourites((data) => {
       component.setState({ project_data: data.data_package })
     })
-    makeDropdown(this.createDiv.current)
+    window.makeDropdown(this.createDiv.current)
   }
 
   /*******************************************************

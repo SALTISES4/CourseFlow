@@ -1,6 +1,6 @@
 // A block of collapsible text.
 import * as React from 'react'
-import Component from '../Extended/Component.js'
+import Component from '@cfParentComponents/Component'
 
 class CollapsibleText extends Component {
   componentDidMount() {

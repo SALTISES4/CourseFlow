@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  ActionButton,
-  Component,
-  EditableComponentWithSorting,
-  OutcomeTitle
-} from '@cfCommonComponents'
+// @components
+import { ActionButton } from '@cfCommonComponents'
+import { OutcomeTitle } from '@cfUIComponents'
+import { Component } from '@cfParentComponents'
+import { EditableComponentWithSorting } from '@cfCommonComponents'
 import OutcomeOutcome from './OutcomeOutcome.js'
 import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
 import { moveOutcomeOutcome } from '@cfReducers'
@@ -13,7 +12,7 @@ import {
   updateOutcomehorizontallinkDegree,
   insertedAt,
   insertedAtInstant
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome.js'

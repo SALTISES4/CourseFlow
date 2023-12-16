@@ -1,15 +1,10 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  Component,
-  EditableComponentWithActions,
-  WorkflowTitle,
-  CollapsibleText,
-  MenuBar,
-  RightSideBar,
-  TitleText
-} from '@cfCommonComponents'
+import { EditableComponentWithActions } from '@cfParentComponents'
+import { MenuBar } from '@cfCommonComponents'
+import { CollapsibleText, WorkflowTitle, TitleText } from '@cfUIComponents'
+import RightSideBar from '@cfCommonComponents/RightSideBarContents/RightSideBar'
 import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
@@ -18,14 +13,14 @@ import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import {
   getParentWorkflowInfo,
   getPublicParentWorkflowInfo,
-  insertedAt,
   restoreSelf,
   deleteSelf,
   toggleDrop,
   getUsersForObject,
-  getTargetProjectMenu,
   duplicateBaseItem
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
+import { getTargetProjectMenu } from '@XMLHTTP/PostTemp'
+
 import { WorkflowView } from './WorkflowView'
 import { OutcomeEditView } from './OutcomeEditView'
 import { AlignmentView } from './AlignmentView'
@@ -52,8 +47,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   componentDidMount() {
     this.getUserData()
     this.updateTabs()
-    makeDropdown('#jump-to')
-    makeDropdown('#expand-collapse-all')
+    window.makeDropdown('#jump-to')
+    window.makeDropdown('#expand-collapse-all')
   }
 
   componentDidUpdate(prev_props) {}
@@ -762,7 +757,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           userbar={userbar}
         />
         <div className="right-panel-wrapper">
-          <div class="body-wrapper">
+          <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               {this.getHeader()}
               {this.addEditable(data)}

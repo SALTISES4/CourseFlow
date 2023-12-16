@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { AssignmentView } from './LiveAssignmentView.js'
 import * as Utility from '@cfUtility'
-import { DatePicker } from '@cfCommonComponents'
+import { DatePicker } from '@cfUIComponents'
 import {
   addUsersToAssignment,
   deleteSelfLive,
@@ -10,7 +10,7 @@ import {
   setAssignmentCompletion,
   setWorkflowVisibility,
   updateLiveProjectValue
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility.js'
 import WorkflowLoader from '../../components/CommonComponents/UIComponents/WorkflowLoader.jsx'
 

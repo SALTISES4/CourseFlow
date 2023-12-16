@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import Node from './Node.js'
 import { getNodeWeekByID } from '@cfFindState'
 

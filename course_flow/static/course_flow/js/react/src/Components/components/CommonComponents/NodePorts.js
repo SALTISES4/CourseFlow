@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { newNodeLink } from '@cfPostFunctions'
+import { newNodeLink } from '@XMLHTTP/PostFunctions'
 
 //The ports used to connect links for the nodes
 export class NodePorts extends React.Component {

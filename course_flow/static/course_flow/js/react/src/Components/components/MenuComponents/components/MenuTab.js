@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '@cfLibrary'
-import { getAddedWorkflowMenu } from '@cfPostFunctions'
+import { WorkflowForMenu } from '@cfCommonComponents'
+import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
 
 class MenuSection extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class MenuSection extends React.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    makeDropdown(this.dropdownDiv.current)
+    window.makeDropdown(this.dropdownDiv.current)
   }
 
   /*******************************************************

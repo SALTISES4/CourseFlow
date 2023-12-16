@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import { Component } from '@cfCommonComponents'
+import { Component } from '@cfParentComponents'
 
 /**
  * The nodes (specifically the time data) in the matrix view

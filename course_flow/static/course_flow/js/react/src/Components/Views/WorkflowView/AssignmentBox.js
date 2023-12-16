@@ -1,12 +1,12 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { getAssignmentsForNode } from '@cfPostFunctions'
+import { getAssignmentsForNode } from '@XMLHTTP/PostFunctions'
 import { reloadAssignmentsAction } from '@cfReducers'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
 import { AssignmentView } from '../LiveAssignmentView'
-import { AssignmentTitle, DatePicker } from '@cfCommonComponents'
+import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 
 /**
  *

@@ -1,13 +1,9 @@
 import * as React from 'react'
 import { AssignmentView } from '../LiveAssignmentView'
-import {
-  AssignmentTitle,
-  DatePicker,
-  SimpleWorkflow
-} from '@cfCommonComponents'
-import { setAssignmentCompletion } from '@cfPostFunctions'
+import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
+import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
 import { LiveProjectSection } from './LiveProjectSection.js'
-import { WorkflowForMenu } from '@cfLibrary'
+import { WorkflowForMenu } from '@cfCommonComponents'
 import LiveProjectMenu from './LiveProjectMenu.js'
 
 // LiveProjectSection does not use renderer

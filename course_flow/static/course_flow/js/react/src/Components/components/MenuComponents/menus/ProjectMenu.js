@@ -7,20 +7,22 @@ import {
   getWorkflowsForProject,
   makeProjectLive,
   restoreSelf
-} from '@cfPostFunctions'
-// import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
-import * as Utility from '@cfUtility'
+} from '@XMLHTTP/PostFunctions'
+// @local
 import LibraryMenu from './LibraryMenu.js'
 import WorkflowFilter from './WorkFlowFilter.js'
-// import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
+import * as Utility from '@cfUtility'
 import { WorkflowTitle } from '@cfUIComponents/Titles.js'
-import { CollapsibleText, MenuBar } from '@cfCommonComponents'
-import { LiveProjectOverview } from '../Views/LiveProjectView/LiveProjectOverview.js'
-import LiveProjectStudents from '../Views/LiveProjectView/LiveProjectStudents.js'
+import { CollapsibleText } from '@cfUIComponents'
+import { MenuBar } from '@cfCommonComponents'
+import { LiveProjectOverview } from '@cfViews/LiveProjectView/LiveProjectOverview'
+import LiveProjectStudents from '@cfViews/LiveProjectView/LiveProjectStudents'
 import {
   LiveProjectAssignments,
   LiveProjectCompletionTable
-} from '../Views/LiveProjectView'
+} from '@cfViews/LiveProjectView'
+// import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
+// import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 
 /*******************************************************
  * The project library menu
@@ -47,7 +49,7 @@ class ProjectMenu extends LibraryMenu {
       component.setState({ workflow_data: data.data_package })
     })
     this.getUserData()
-    makeDropdown($(this.createDiv.current))
+    window.makeDropdown($(this.createDiv.current))
   }
 
   /*******************************************************
@@ -550,7 +552,7 @@ class ProjectMenu extends LibraryMenu {
     let overflow_links = this.getOverflowLinks.bind(this)
 
     return (
-      <div class="main-block">
+      <div className="main-block">
         <MenuBar
           overflow_links={overflow_links}
           visible_buttons={visible_buttons}

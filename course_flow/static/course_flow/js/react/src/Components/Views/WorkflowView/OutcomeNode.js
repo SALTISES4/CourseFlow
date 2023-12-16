@@ -1,12 +1,9 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, ActionButton } from '@cfCommonComponents'
-import {
-  getOutcomeNodeByID,
-  getOutcomeByID,
-  getOutcomeOutcomeByID
-} from '@cfFindState'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
+import { Component } from '@cfParentComponents'
+import ActionButton from '@cfUIComponents/ActionButton.js'
+import { getOutcomeNodeByID } from '@cfFindState'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import { SimpleOutcome } from '../OutcomeEditView'
 

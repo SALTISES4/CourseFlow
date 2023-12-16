@@ -2,11 +2,8 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
-import {
-  getLinkedWorkflowMenu,
-  toggleStrategy,
-  updateObjectSet
-} from '@cfPostFunctions'
+import { toggleStrategy, updateObjectSet } from '@XMLHTTP/PostFunctions'
+import { getLinkedWorkflowMenu } from '@XMLHTTP/postTemp'
 import Component from './Component.js'
 
 //Quill div for inputs, as a react component

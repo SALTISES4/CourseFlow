@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { getOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '@cfCommonComponents'
+import { OutcomeTitle } from '@cfUIComponents/Titles'
+import { Component } from '@cfParentComponents/'
 import * as Utility from '@cfUtility'
 
 /**

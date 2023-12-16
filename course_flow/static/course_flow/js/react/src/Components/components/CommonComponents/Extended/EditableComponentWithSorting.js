@@ -1,6 +1,6 @@
 //Extends the react component to add a few features that are used in a large number of components
 import * as Constants from '@cfConstants'
-import { newNode } from '@cfPostFunctions'
+import { newNode } from '@XMLHTTP/PostFunctions'
 import EditableComponentWithActions from './EditableComponentWithActions.js'
 
 class EditableComponentWithSorting extends EditableComponentWithActions {

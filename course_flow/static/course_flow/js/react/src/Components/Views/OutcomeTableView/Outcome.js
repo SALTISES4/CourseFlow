@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '@cfCommonComponents'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
+import { OutcomeTitle } from '@cfUIComponents'
+import { Component } from '@cfParentComponents'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
 
 /**
