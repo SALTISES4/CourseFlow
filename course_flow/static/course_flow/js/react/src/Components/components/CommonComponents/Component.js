@@ -1,6 +1,6 @@
 //Extends the react component to add a few features that are used in a large number of components
 import * as React from 'react'
-import * as Constants from '../../../Constants.js'
+import * as Constants from '@cfConstants'
 
 class Component extends React.Component {
   constructor(props) {

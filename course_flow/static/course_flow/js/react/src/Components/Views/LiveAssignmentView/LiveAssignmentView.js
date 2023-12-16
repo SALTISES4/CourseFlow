@@ -1,12 +1,8 @@
 import * as React from 'react'
-import {
-  AssignmentTitle,
-  TitleText,
-  DatePicker
-} from '../../components/CommonComponents'
-import { setAssignmentCompletion } from '../../../PostFunctions.js'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
+import { AssignmentTitle, TitleText, DatePicker } from '@cfCommonComponents'
+import { setAssignmentCompletion } from '@cfPostFunctions'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
 
 export class AssignmentView extends React.Component {
   constructor(props) {

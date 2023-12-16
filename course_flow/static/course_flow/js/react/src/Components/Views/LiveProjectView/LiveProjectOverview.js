@@ -4,8 +4,8 @@ import {
   AssignmentTitle,
   DatePicker,
   SimpleWorkflow
-} from '../../components/CommonComponents'
-import * as Utility from '../../../UtilityFunctions.js'
+} from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
 
 export class LiveProjectOverview extends LiveProjectSection {
   render() {

@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { WorkflowTitle } from '../components/CommonComponents'
-import * as Utility from '../../UtilityFunctions.js'
-import { setWorkflowVisibility, toggleFavourite } from '../../PostFunctions.js'
-import * as Constants from '../../Constants.js'
+import { WorkflowTitle } from '@cfCommonComponents'
+import * as Utility from '@cfUtility'
+import { setWorkflowVisibility, toggleFavourite } from '@cfPostFunctions'
+import * as Constants from '@cfConstants'
 
 /*******************************************************
  * A workflow card for a menu

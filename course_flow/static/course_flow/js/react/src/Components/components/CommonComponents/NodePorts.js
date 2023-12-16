@@ -1,7 +1,7 @@
 import * as React from 'react'
-import * as Constants from '../../../Constants.js'
-import * as Utility from '../../../UtilityFunctions.js'
-import { newNodeLink } from '../../../PostFunctions.js'
+import * as Constants from '@cfConstants'
+import * as Utility from '@cfUtility'
+import { newNodeLink } from '@cfPostFunctions'
 
 //The ports used to connect links for the nodes
 export class NodePorts extends React.Component {

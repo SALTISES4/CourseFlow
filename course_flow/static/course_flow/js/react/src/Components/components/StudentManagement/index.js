@@ -3,8 +3,8 @@ import {
   setLiveProjectRole,
   getUsersForLiveProject,
   getUserList
-} from '../../../PostFunctions.js'
-import * as Constants from '../../../Constants.js'
+} from '@cfPostFunctions'
+import * as Constants from '@cfConstants'
 import { TinyLoader } from '../../../redux/helpers.js'
 
 class UserLabel extends React.Component {

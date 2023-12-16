@@ -1,7 +1,7 @@
-import * as Utility from '../../../UtilityFunctions.js'
+import * as Utility from '@cfUtility'
 import * as React from 'react'
 import Component from './Component.js'
-import * as Constants from '../../../Constants.js'
+import * as Constants from '@cfConstants'
 import {
   add as mathadd,
   dot as mathdot,

@@ -1162,12 +1162,13 @@ h3.big-space {
 }
 
 .project-menu {
-  min-height: 100%;
   width: fit-content;
   background: $color-white;
   padding: 50px;
   box-sizing: border-box;
   width: 100%;
+  overflow-y:auto;
+  flex-grow:1;
 }
 
 .project-menu .menu-grid {
