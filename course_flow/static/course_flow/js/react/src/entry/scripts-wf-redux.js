@@ -2,10 +2,10 @@ import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
-import { WorkflowBaseView } from '../Components/Views/WorkflowBaseView.js'
-import { WorkflowBase as WorkflowComparisonBaseView } from '../Components/Views/ComparisonView'
+import { WorkflowBaseView } from '@cfViews/WorkflowBaseView.js'
+import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews//ComparisonView'
 import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
-import { ComparisonView } from '../Components/Views/ComparisonView'
+import { ComparisonView } from '@cfViews//ComparisonView'
 import * as Constants from '@cfConstants'
 import * as Reducers from '@cfReducers'
 import {
@@ -15,8 +15,7 @@ import {
   getPublicWorkflowData,
   getPublicWorkflowParentData,
   getPublicWorkflowChildData,
-  updateValue,
-  fail_function
+  updateValue
 } from '@XMLHTTP/PostFunctions'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'

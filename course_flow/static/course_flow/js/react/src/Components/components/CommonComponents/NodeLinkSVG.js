@@ -12,7 +12,9 @@ import {
 } from 'mathjs'
 // SVG portion of a NodeLink
 
-//Creates paths between two ports
+/**
+ * Creates paths between two ports
+ */
 class PathGenerator {
   constructor(
     source_point,

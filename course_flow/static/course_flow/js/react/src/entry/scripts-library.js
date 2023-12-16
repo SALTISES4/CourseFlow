@@ -1,6 +1,3 @@
-/**
- * Individual Page/View React Renderers
- */
 import * as React from 'react'
 import * as Constants from '../Constants.js'
 import { TinyLoader } from '../redux/helpers.js'
@@ -11,6 +8,10 @@ import {
   ProjectMenu,
   HomeMenu
 } from '../Components/components/MenuComponents/menus/index.js'
+
+/**
+ * Individual Page/View React Renderers
+ */
 
 /*******************************************************
  * @LibraryRenderer

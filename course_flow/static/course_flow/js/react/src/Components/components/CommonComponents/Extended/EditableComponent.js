@@ -18,7 +18,7 @@ class QuillDiv extends React.Component {
   render() {
     return (
       <div>
-        <div ref={this.maindiv} className="quill-div"></div>
+        <div ref={this.maindiv} className="quill-div" />
         <div className={'character-length'}>
           {this.state.charlength + ' ' + window.gettext('characters')}
         </div>

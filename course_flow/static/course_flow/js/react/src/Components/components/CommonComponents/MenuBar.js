@@ -1,9 +1,12 @@
+import * as React from 'react'
 /**
  * Creates a menu bar at the top of the page which can be passed
  * various links, buttons, etc
  */
-import * as React from 'react'
 
+/**
+ *
+ */
 class MenuBar extends React.Component {
   /*******************************************************
    * LIFECYCLE
