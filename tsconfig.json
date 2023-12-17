@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": true,
     "checkJs": false,
     "skipLibCheck": true,
@@ -15,10 +19,55 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "typeRoots": ["./node_modules/@types", "./src/types", "./src/types/DTO"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types", // is this from tsconfig path or from baseurl? (note that we don't have any types yet)
+    ],
     "jsx": "react-jsx",
-    "baseUrl": "course_flow/static/course_flow/js",
+    // This must be set if you're using "paths"
+    "baseUrl": "./course_flow/static/",
+    /**
+    ALIASES
+    */
+    "paths": {
+      "@cfModule/*": [
+        "./course_flow/js/react/src/*"
+      ],
+      "@cfComponents/*": [
+        "./course_flow/js/react/src/Components/components/*"
+      ],
+      "@cfViews/*": [
+        "./course_flow/js/react/src/Components/Views/*"
+      ],
+      "@cfLibrary/*": [
+        "./course_flow/js/react/src/Components/Library/*"
+      ],
+      "@cfCommonComponents/*": [
+        "./course_flow/js/react/src/Components/components/CommonComponents/*"
+      ],
+      "@cfFindState": [
+        "./course_flow/js/react/src/redux/FindState.js"
+      ],
+      "@cfReducers": [
+        "./course_flow/js/react/src/redux/Reducers.js"
+      ],
+      "@cfUtility": [
+        "./course_flow/js/react/src/UtilityFunctions.js"
+      ],
+      "@cfConstants": [
+        "./course_flow/js/react/src/Constants.js"
+      ],
+      "@cfPostFunctions": [
+        "./course_flow/js/react/src/PostFunctions.js"
+      ]
+    }
   },
-  "include": ["./course_flow/static/course_flow/js/**/*"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "./course_flow/static/course_flow/js/**/*" //is this from baseurl relative path?
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
