@@ -54,6 +54,11 @@ import {
 // progressively adding partials into the existing templates
 function renderComponents(components) {
   components.forEach((c) => {
+    // hackish check for now since we run this on each page load, but don't necessairly have a component
+    // to load into #container
+    // see getAppComponent()
+    if (!c.component) return
+
     const target = document.querySelector(c.target)
     if (target) {
       const componentRoot = createRoot(target)
@@ -83,7 +88,8 @@ function renderComponents(components) {
 // set in python views and prepped in react_renderer.html
 console.log('current path')
 console.log(COURSEFLOW_APP.path_id)
-const AppComponent = () => {
+
+const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     /*******************************************************
      * LIBRARY
@@ -154,7 +160,7 @@ window.addEventListener('load', () => {
       target: '[data-component="notifications-page"]'
     },
     {
-      component: <AppComponent />,
+      component: getAppComponent(),
       target: '#container'
     },
     {
@@ -162,6 +168,5 @@ window.addEventListener('load', () => {
       target: '[data-component="profile-settings-page"]'
     }
   ]
-
   renderComponents(componentsToRender)
 })
