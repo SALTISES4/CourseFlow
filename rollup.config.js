@@ -147,9 +147,9 @@ export default [
   //   plugins: bundlePlugins
   // },
   {
-    input: `${bundleEntry}scripts-redesign.js`,
+    input: `${bundleEntry}scripts-redesign.jsx`,
     output: {
-      file: `${bundleRoot}scripts-redesign.min.js`,
+      file: `${bundleRoot}scripts-redesign.min.jsx`,
       name: 'redesign_renderers',
       format: 'iife',
       sourceMap: 'inline'
