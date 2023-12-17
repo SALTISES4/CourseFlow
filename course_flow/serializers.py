@@ -2191,6 +2191,7 @@ class FormFieldsSerializer:
                     "name": field_name,
                     "label": field.label if hasattr(field, 'label') else None,
                     "type": self.get_field_type(field),
+                    "required": field.required,
                     "options": self.get_field_choices(field),
                     "max_length": field.max_length if hasattr(field, 'max_length') else None,
                     "help_text": field.help_text if hasattr(field, 'help_text') else None,
