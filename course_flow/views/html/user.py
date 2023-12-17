@@ -1,6 +1,7 @@
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import UpdateView
@@ -12,7 +13,7 @@ from course_flow.models import CourseFlowUser, Notification
 class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CourseFlowUser
     fields = ["first_name", "last_name", "notifications"]
-    template_name = "course_flow/html/courseflowuser_update.html"
+    template_name = "course_flow/courseflowuser_update.html"
 
     def test_func(self):
         user = self.request.user
@@ -43,6 +44,11 @@ class UserNotificationsView(LoginRequiredMixin, ListView):
     def get_form(self, *args, **kwargs):
         form = super(UpdateView, self).get_form()
         return form
+
+
+@login_required
+def UserUpdateView(request):
+    return render(request, "course_flow/profile-settings.html")
 
 
 @ajax_login_required
