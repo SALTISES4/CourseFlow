@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -9,6 +10,7 @@ import FormLabel from '@mui/material/FormLabel'
 import RadioGroup from '@mui/material/RadioGroup'
 import Radio from '@mui/material/Radio'
 import Button from '@mui/material/Button'
+import Snackbar from '@mui/material/Snackbar'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
 import { API_POST } from '../../../PostFunctions'
@@ -33,6 +35,7 @@ const FormWrap = styled(Box)({
 const ProfileSettingsPage = () => {
   const [errors, setErrors] = useState({})
   const [formFields, setFormFields] = useState(null)
+  const [showSnackbar, setShowSnackbar] = useState(false)
   const [apiData, loading, error] = useApi(config.json_api_paths.update_profile)
 
   // after the apiData is loaded in, set it as state so it can be used internally
@@ -47,23 +50,12 @@ const ProfileSettingsPage = () => {
     formFields.map((field) => (formData[field.name] = field.value))
 
     API_POST(config.json_api_paths.update_profile, formData)
-      .then((response) => {
-        console.log(
-          'API_POST\n',
-          formData,
-          '\nto\n',
-          config.json_api_paths.update_profile,
-          '\ngot\n',
-          response
-        )
+      .then(() => setShowSnackbar(true))
+      .catch((error) => setErrors(error.data.errors))
+  }
 
-        // and if successful, dispatch the action to update local state
-        // TODO: implement some kind of success message notification
-        alert('User details updated!')
-      })
-      .catch((error) => {
-        setErrors(error.data.errors)
-      })
+  function onSnackbarClose() {
+    setShowSnackbar(false)
   }
 
   if (loading || error || !formFields) {
@@ -144,11 +136,29 @@ const ProfileSettingsPage = () => {
       <FormWrap component="form" noValidate autoComplete="off">
         {inputFields}
         <Box>
-          <Button variant="contained" onClick={onFormSubmit}>
+          <Button
+            variant="contained"
+            onClick={onFormSubmit}
+            disabled={showSnackbar}
+          >
             {COURSEFLOW_APP.strings.update_profile}
           </Button>
         </Box>
       </FormWrap>
+
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={5000}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        onClose={onSnackbarClose}
+      >
+        <Alert onClose={onSnackbarClose} variant="filled" severity="success">
+          {COURSEFLOW_APP.strings.update_profile_success}
+        </Alert>
+      </Snackbar>
     </OuterContentWrap>
   )
 }
