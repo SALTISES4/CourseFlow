@@ -1350,11 +1350,13 @@ class CourseFlowUser(models.Model):
         primary_key=True,
         related_name="courseflow_user",
     )
+
     first_name = models.CharField(
         max_length=title_max_length,
         null=True,
         blank=True,
     )
+
     last_name = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
@@ -1362,7 +1364,20 @@ class CourseFlowUser(models.Model):
     # Whether the user wants to receive notifications
     notifications = models.BooleanField(
         default=False,
-        help_text="Check this box if you would like to receive emails from us about updates to CourseFlow.",
+        help_text=_("Check this box if you would like to receive emails from us about updates to CourseFlow."),
+    )
+
+    # EN/FR kanguage preferences
+    LANGUAGE_CHOICES = [
+        ("en", _("English")),
+        ("fr", _("French")),
+    ]
+
+    language = models.CharField(
+        _("Language preferences"),
+        max_length=2,
+        choices=LANGUAGE_CHOICES,
+        default="en",
     )
 
     # Whether the user has had the opportunity to choose whether they receive notifications

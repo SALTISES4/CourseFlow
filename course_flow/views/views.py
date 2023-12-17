@@ -694,27 +694,9 @@ class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         )
 
 
-class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = CourseFlowUser
-    fields = ["first_name", "last_name", "notifications"]
-    template_name = "course_flow/courseflowuser_update.html"
-
-    def test_func(self):
-        user = self.request.user
-        courseflow_user = CourseFlowUser.objects.filter(user=user).first()
-        if courseflow_user is None:
-            courseflow_user = CourseFlowUser.objects.create(
-                first_name=user.first_name, last_name=user.last_name, user=user
-            )
-        self.kwargs["pk"] = courseflow_user.pk
-        return True
-
-    def get_form(self, *args, **kwargs):
-        form = super(UpdateView, self).get_form()
-        return form
-
-    def get_success_url(self):
-        return reverse("course_flow:user-update")
+@login_required
+def UserUpdateView(request):
+    return render(request, "course_flow/profile-settings.html")
 
 
 class UserNotificationsView(LoginRequiredMixin, ListView):

@@ -123,6 +123,7 @@
     json_api_paths: {
       get_top_bar: "{% url 'course_flow:json-api-get-top-bar' %}",
       get_sidebar: "{% url 'course_flow:json-api-get-sidebar' %}",
+      update_profile: "{% url 'course_flow:json-api-get-post-update-profile-settings' %}",
       get_notifications_page: "{% url 'course_flow:json-api-get-notifications-page' %}",
       mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",
       delete_notification: "{% url 'course_flow:json-api-post-delete-notification' %}",
@@ -147,6 +148,7 @@
         "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
       unsupported_device:
         "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}",
+      profile_settings: "{% trans 'Profile settings' %}",
       notifications: "{% trans 'Notifications' %}",
       home: "{% trans 'Home' %}",
       my_library: "{% trans 'My library' %}",
@@ -156,6 +158,8 @@
       see_all: "{% trans 'See all' %}",
       view_all: "{% trans 'View all' %}",
       help_support: "{% trans 'Help and Support' %}",
+      update_profile: "{% trans 'Update profile' %}",
+      update_profile_success: "{% trans 'User details updated!' %}",
       password_reset: "{% trans 'Password reset' %}",
       notification_settings: "{% trans 'Notification settings' %}",
       sign_out: "{% trans 'Sign out' %}",

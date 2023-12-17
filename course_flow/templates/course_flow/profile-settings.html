@@ -1,0 +1,11 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% trans "Profile Settings" %} - CourseFlow{% endblock %}
+<!-- -->
+{% block container %}
+  <div data-component="profile-settings-page"></div>
+{% endblock %}
+<!-- -->
+{% csrf_token %}
