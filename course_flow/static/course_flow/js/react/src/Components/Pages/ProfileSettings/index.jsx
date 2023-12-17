@@ -73,8 +73,8 @@ const ProfileSettingsPage = () => {
           <Box key={idx} sx={{ mb: 4 }}>
             <FormControl>
               <TextField
-                required
                 variant="standard"
+                required={field.required}
                 name={field.name}
                 label={field.label}
                 value={field.value}
@@ -83,7 +83,9 @@ const ProfileSettingsPage = () => {
                 onChange={(e) => {
                   const newFieldsState = [...formFields]
                   newFieldsState[idx].value = e.target.value
-                  setErrors({ ...errors, [field.name]: null })
+                  const newErrors = { ...errors }
+                  delete newErrors[field.name]
+                  setErrors(newErrors)
                   setFormFields(newFieldsState)
                 }}
               />
@@ -102,7 +104,9 @@ const ProfileSettingsPage = () => {
                 onChange={(e) => {
                   const newFieldsState = [...formFields]
                   newFieldsState[idx].value = e.target.value
-                  setErrors({ ...errors, [field.name]: null })
+                  const newErrors = { ...errors }
+                  delete newErrors[field.name]
+                  setErrors(newErrors)
                   setFormFields(newFieldsState)
                 }}
               >
@@ -139,7 +143,7 @@ const ProfileSettingsPage = () => {
           <Button
             variant="contained"
             onClick={onFormSubmit}
-            disabled={showSnackbar}
+            disabled={showSnackbar || Object.keys(errors).length > 0}
           >
             {COURSEFLOW_APP.strings.update_profile}
           </Button>
