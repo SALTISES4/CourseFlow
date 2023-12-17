@@ -124,6 +124,7 @@
     json_api_paths: {
       get_top_bar: "{% url 'course_flow:json-api-get-top-bar' %}",
       get_sidebar: "{% url 'course_flow:json-api-get-sidebar' %}",
+      update_profile: "{% url 'course_flow:json-api-get-post-update-profile-settings' %}",
       get_notifications_page: "{% url 'course_flow:json-api-get-notifications-page' %}",
       mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",
       delete_notification: "{% url 'course_flow:json-api-post-delete-notification' %}",
@@ -170,5 +171,8 @@
     mark_as_read: "{% trans 'Mark as read' %}",
     mark_all_as_read: "{% trans 'Mark all as read' %}",
     no_notifications_yet: "{% trans 'You have no notifications yet.' %}",
+    profile_settings: "{% trans 'Profile settings' %}",
+    update_profile: "{% trans 'Update profile' %}",
+    update_profile_success: "{% trans 'User details updated!' %}",
   }
 </script>

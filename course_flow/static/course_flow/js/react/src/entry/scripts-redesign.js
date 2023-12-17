@@ -16,6 +16,7 @@ import createCache from '@emotion/cache'
 
 // pages/views/templates
 import NotificationsPage from '../Components/Pages/Notifications'
+import ProfileSettingsPage from '../Components/Pages/ProfileSettings'
 
 // components
 import Sidebar, {
@@ -155,6 +156,10 @@ window.addEventListener('load', () => {
     {
       component: <AppComponent />,
       target: '#container'
+    },
+    {
+      component: <ProfileSettingsPage />,
+      target: '[data-component="profile-settings-page"]'
     }
   ]
 
