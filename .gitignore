@@ -51,3 +51,4 @@ local_settings.py
 *_local.sh
 /.env
 /rollup.config.local.js
+/course_flow/static/course_flow/js/react/ts_dist/
