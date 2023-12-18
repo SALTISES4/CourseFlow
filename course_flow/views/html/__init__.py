@@ -7,12 +7,12 @@ from .favorites import *
 from .home import *
 from .importer import *
 from .library import *
-from .liveProject import *
+from .live_project import *
 from .notifications import *
 from .profile_settings import *
 from .program import *
 from .project import *
-from .SALTISEAdmin import *
-from .SALTISEAnalytics import *
+from .SALTISE_admin import *
+from .SALTISE_analytics import *
 from .user import *
 from .workflow import *
