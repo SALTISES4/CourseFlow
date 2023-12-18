@@ -1,16 +1,14 @@
 System.config({
   paths: {
     '@cfModule/*': './course_flow/static/course_flow/js/react/src/*',
+    '@cfComponents':
+      './course_flow/static/course_flow/js/react/src/Components/components',
     '@cfComponents/*':
       './course_flow/static/course_flow/js/react/src/Components/components/*',
     '@cfViews':
       './course_flow/static/course_flow/js/react/src/Components/Views',
     '@cfViews/*':
       './course_flow/static/course_flow/js/react/src/Components/Views/*',
-    // '@cfLibrary':
-    //   './course_flow/static/course_flow/js/react/src/Components/Library',
-    '@cfLibrary/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/MenuComponents/menus/*',
     '@cfCommonComponents':
       './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
     '@cfCommonComponents/*':

@@ -5,7 +5,7 @@ import WorkflowVisibility from './WorkflowVisibility.js'
 import LiveProjectSection from './LiveProjectSection.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
-import { WorkflowForMenu } from '@cfCommonComponents'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 import LiveProjectCompletionTable from './LiveProjectCompletionTable.js'
 import LiveProjectSettings from './LiveProjectSettings.js'
 import LiveProjectAssignments from './LiveProjectAssignments.js'
@@ -216,7 +216,7 @@ class LiveProjectMenu extends React.Component {
 
     let view_buttons = this.getViewButtons().map((item) => {
       let view_class = 'hover-shade'
-      if (item.type == this.state.view_type) view_class += ' active'
+      if (item.type === this.state.view_type) view_class += ' active'
       return (
         <a
           id={'button_' + item.type}
@@ -231,7 +231,7 @@ class LiveProjectMenu extends React.Component {
     return (
       <div className="project-menu">
         <div className="project-header">
-          <WorkflowForMenu
+          <WorkflowCard
             no_hyperlink={true}
             workflow_data={this.state.liveproject}
             selectAction={this.openEdit.bind(this)}

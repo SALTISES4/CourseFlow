@@ -8,6 +8,11 @@ import ProjectEditMenu from './menus/ProjectEditMenu.js'
 
 /**
  *
+ * @todo we need a context driven modal to handle this
+ *  component should be passed to the modal
+ *  the modal should not be aware of context
+ *
+ *  // legacy comment
  * Creates a message box with a screen barrier for popups.
  * The choice of which menu is displayed is determined by props.message_type.
  *

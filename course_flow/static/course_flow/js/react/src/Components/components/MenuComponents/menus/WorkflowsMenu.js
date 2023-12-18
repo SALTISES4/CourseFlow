@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '@cfCommonComponents'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
 import MenuTab from '../components/MenuTab.js'
 import closeMessageBox from '../components/closeMessageBox.js'
@@ -222,7 +222,7 @@ class WorkflowsMenu extends React.Component {
       current_project = [
         <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
         <div className="menu-grid">
-          <WorkflowForMenu
+          <WorkflowCard
             workflow_data={this.current_project}
             selected={this.state.selected == this.current_project.id}
             no_hyperlink={no_hyperlink}

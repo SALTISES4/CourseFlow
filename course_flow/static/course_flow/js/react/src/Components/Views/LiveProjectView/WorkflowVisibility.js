@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { WorkflowTitle } from '@cfUIComponents'
-import { WorkflowForMenu } from '@cfCommonComponents'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 
 // @todo circular dependency, wait till merge
-class WorkflowVisibility extends WorkflowForMenu {
+class WorkflowVisibility extends WorkflowCard {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/

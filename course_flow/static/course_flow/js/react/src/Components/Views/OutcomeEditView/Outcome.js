@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
-import { ActionButton } from '@cfCommonComponents'
-import { OutcomeTitle } from '@cfUIComponents'
+import { OutcomeTitle, ActionButton } from '@cfUIComponents'
 import { Component } from '@cfParentComponents'
 import { EditableComponentWithSorting } from '@cfCommonComponents'
 import OutcomeOutcome from './OutcomeOutcome.js'

@@ -67,10 +67,10 @@ const plugins = {
 
 export default [
   {
-    input: `${bundleEntry}scripts-redesign.js`,
+    input: `${bundleEntry}react-app-redesign.js`,
     output: {
-      file: `${bundleRoot}scripts-redesign.min.js`,
-      name: 'redesign_renderers',
+      file: `${bundleRoot}react-app-redesign.min.js`,
+      name: 'react-app-redesign',
       format: 'iife',
       sourceMap: 'inline'
     },

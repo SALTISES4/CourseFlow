@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '@cfCommonComponents'
 import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 
 class MenuSection extends React.Component {
   constructor(props) {
@@ -22,14 +22,16 @@ class MenuSection extends React.Component {
     let section_type = this.props.section_data.object_type
     let is_strategy = this.props.section_data.is_strategy
     let parentID = this.props.parentID
-    var objects = this.props.section_data.objects.map((object) => (
-      <WorkflowForMenu
+    let add_button
+
+    let objects = this.props.section_data.objects.map((object) => (
+      <WorkflowCard
         no_hyperlink={this.props.no_hyperlink}
         key={object.id}
         type={this.props.type}
         workflow_data={object}
         objectType={section_type}
-        selected={this.props.selected_id == object.id}
+        selected={this.props.selected_id === object.id}
         dispatch={this.props.dispatch}
         selectAction={this.props.selectAction}
         parentID={this.props.parentID}
@@ -38,7 +40,6 @@ class MenuSection extends React.Component {
     ))
     if (this.props.replacement_text) objects = this.props.replacement_text
 
-    let add_button
     if (COURSEFLOW_APP.config.create_path && this.props.add) {
       let types
       if (section_type === 'workflow') types = ['program', 'course', 'activity']

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { EditableComponent } from '@cfParentComponents'
 
 import { toggleObjectSet } from '@cfReducers'
-import { WorkflowForMenu } from '@cfCommonComponents'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit.js'
 import Workflow from './Workflow.js'
 
@@ -77,7 +77,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
 
     return [
       <div className="workflow-header" style={style}>
-        <WorkflowForMenu
+        <WorkflowCard
           workflow_data={data}
           selectAction={this.openEdit.bind(this, null)}
         />

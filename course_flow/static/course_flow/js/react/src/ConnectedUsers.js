@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-// @todo should probably be grouped with components/commoncomponents
+// @todo not sure where this goes
 
 //Container for common elements for workflows
 export class ConnectionBar extends React.Component {
@@ -23,8 +23,6 @@ export class ConnectionBar extends React.Component {
   render() {
     if (this.props.updateSocket.readyState === 1) {
       let users = this.state.connected_users.map((user) => {
-        console.log('user')
-        console.log(user)
         return <ConnectedUser user_data={user} />
       })
 
@@ -80,9 +78,6 @@ export class ConnectionBar extends React.Component {
   }
 
   connection_update_received(user_data) {
-    console.log('user_data')
-    console.log(user_data)
-
     if (user_data.connected) {
       let connected_users = this.state.connected_users.slice()
       let found_user = false

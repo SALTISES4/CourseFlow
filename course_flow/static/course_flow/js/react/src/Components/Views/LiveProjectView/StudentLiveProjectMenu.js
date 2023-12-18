@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { AssignmentView } from '../LiveAssignmentView'
-import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
 import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
+import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+// @local
+import { AssignmentView } from '../LiveAssignmentView'
 import LiveProjectSection from './LiveProjectSection.js'
-import { WorkflowForMenu } from '@cfCommonComponents'
 import LiveProjectMenu from './LiveProjectMenu.js'
 
 // LiveProjectSection does not use renderer
@@ -14,13 +15,13 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
     let workflows = this.state.data.workflows.map((workflow) => (
       <SimpleWorkflow workflow_data={workflow} />
     ))
-    if (workflows.length == 0)
+    if (workflows.length === 0)
       workflows = window.gettext(
         'No workflows have been made visible to students.'
       )
 
     let assignments = this.state.data.assignments
-      .filter((assignment) => assignment.user_assignment.completed == false)
+      .filter((assignment) => assignment.user_assignment.completed === false)
       .map((assignment) => (
         <tr>
           <td>
@@ -74,7 +75,7 @@ class StudentLiveProjectWorkflows extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
     let workflows_added = this.state.data.workflows_added.map((workflow) => (
-      <WorkflowForMenu workflow_data={workflow} />
+      <WorkflowCard workflow_data={workflow} />
     ))
     return (
       <div className="workflow-details">
