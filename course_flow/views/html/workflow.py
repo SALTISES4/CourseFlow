@@ -19,7 +19,7 @@ class WorkflowDetailView(
 ):
     model = Workflow
     fields = ["id", "title", "description", "type"]
-    template_name = "course_flow/react/workflow_update.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_success_url(self):
         return reverse(
@@ -58,7 +58,7 @@ class WorkflowDetailView(
 class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
     model = Workflow
     fields = ["id", "title", "description"]
-    template_name = "course_flow/react/workflow_update.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()

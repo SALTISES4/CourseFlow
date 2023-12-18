@@ -1,17 +1,17 @@
 {% extends "course_flow/base.html" %}
-
+<!-- -->
 {% load static i18n %}
-
 {% block title %}
-  {% trans title %} - CourseFlow
+  {% if title != "" %}
+    {{ title }}
+  {% else %}
+    {% trans "Untitled" %}
+  {% endif %}
+  - CourseFlow
 {% endblock %}
 
 {% csrf_token %}
 
 {% block react_scripts %}
   {% include 'course_flow/base/react_renderer.html' %}
-{% endblock %}
-
-{% block scripts %}
-  {{ block.super }}
 {% endblock %}

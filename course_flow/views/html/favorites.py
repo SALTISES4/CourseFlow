@@ -9,4 +9,4 @@ def myfavourites_view(request):
         "path_id": "favorites",
         "contextData": {},
     }
-    return render(request, "course_flow/react/favourites.html", context)
+    return render(request, "course_flow/react/common_entrypoint.html", context)

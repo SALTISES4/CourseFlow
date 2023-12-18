@@ -16,4 +16,4 @@ def home_view(request):
     context["title"] = "Home"
     context["path_id"] = "home"
 
-    return render(request, "course_flow/react/home.html", context)
+    return render(request, "course_flow/react/common_entrypoint.html", context)

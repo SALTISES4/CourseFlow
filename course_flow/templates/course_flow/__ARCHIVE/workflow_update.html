@@ -6,12 +6,12 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}
-  {% trans context.title %} - CourseFlow
-{% endblock %}
-
-{% block body %}
-
-  {{ is_strategy }}
+  {% if title != "" %}
+    {{ title }}
+  {% else %}
+    {% trans "Untitled" %}
+  {% endif %}
+  - CourseFlow
 {% endblock %}
 
 {% csrf_token %}
@@ -24,21 +24,9 @@
   {{ block.super }}
   <script nonce="{{ request.csp_nonce }}">
 
-
-    /*******************************************************
-     * BEGIN JQUERY
-     *******************************************************/
     jQuery('<div>', {
       class: 'load-screen'
     }).appendTo("#container");
-    /*******************************************************
-     * END JQUERY
-     *******************************************************/
-
-
   </script>
 
 {% endblock %}
-
-
-
