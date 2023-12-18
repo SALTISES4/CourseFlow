@@ -8,8 +8,6 @@ from .home import *
 from .importer import *
 from .library import *
 from .live_project import *
-from .notifications import *
-from .profile_settings import *
 from .program import *
 from .project import *
 from .SALTISE_admin import *

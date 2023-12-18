@@ -8,3 +8,23 @@ from course_flow.decorators import ajax_login_required
 def logout_view(request):
     logout(request)
     return redirect(reverse("login"))
+
+
+@login_required
+def notifications_view(request):
+    context = {
+        "title": "Notifications",
+        "path_id": "notifications",
+        "contextData": {}
+    }
+    return render(request, "course_flow/react/notifications.html", context)
+
+
+@login_required
+def profile_settings_view(request):
+    context = {
+        "title": "Profile Settings",
+        "path_id": "profileSettings",
+        "contextData": {}
+    }
+    return render(request, "course_flow/react/profile_settings.html", context)

@@ -76,12 +76,12 @@ def course_flow_patterns():
         ),
         path(
             "user/update/",
-            views.profile_settings_view,
+            views.user.profile_settings_view,
             name="user-update",
         ),
         path(
             "user/notifications/",
-            views.notifications_view,
+            views.user.notifications_view,
             name="user-notifications",
         ),
         path(
