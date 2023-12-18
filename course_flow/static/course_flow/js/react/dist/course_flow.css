@@ -2338,7 +2338,8 @@ text {
   overflow: auto;
   flex-grow: 1;
   height: 100%;
-  position: relative; }
+  position: relative;
+  background-color: #fff; }
 
 .body-wrapper.printing {
   top: 0px;
