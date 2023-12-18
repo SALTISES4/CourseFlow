@@ -15,7 +15,7 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
-// import NotificationsPage from '../Components/Pages/Notifications'
+import NotificationsPage from '../Components/Pages/Notifications'
 import ProfileSettingsPage from '../Components/Pages/ProfileSettings'
 
 // components
