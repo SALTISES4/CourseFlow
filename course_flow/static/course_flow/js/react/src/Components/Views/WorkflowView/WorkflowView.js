@@ -1,36 +1,13 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  EditableComponentWithSorting,
-  MenuBar,
-  RightSideBar
-} from '@cfCommonComponents'
+import { EditableComponentWithSorting } from '@cfCommonComponents'
 import ColumnWorkflow from './ColumnWorkflow.js'
 import WeekWorkflow from './WeekWorkflow.js'
-import { renderMessageBox } from '../../components/MenuComponents/MenuComponents.js'
-import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import {
-  changeField,
-  moveColumnWorkflow,
-  moveWeekWorkflow,
-  toggleObjectSet
-} from '@cfReducers'
-import { ConnectionBar } from '../../../ConnectedUsers.js'
+import { moveColumnWorkflow, moveWeekWorkflow } from '@cfReducers'
 import WorkflowLegend from './WorkflowLegend.js'
-import {
-  getParentWorkflowInfo,
-  getPublicParentWorkflowInfo,
-  insertedAt,
-  restoreSelf,
-  deleteSelf,
-  toggleDrop,
-  getUsersForObject,
-  getTargetProjectMenu,
-  duplicateBaseItem
-} from '@cfPostFunctions'
-import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox.js'
+import { insertedAt } from '@XMLHTTP/PostFunctions'
+// import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox.js'
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns

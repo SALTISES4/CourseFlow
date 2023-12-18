@@ -1,8 +1,7 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 
-import { insertedAt, insertedAtInstant } from '@cfPostFunctions'
+import { insertedAt, insertedAtInstant } from '@XMLHTTP/PostFunctions'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
 

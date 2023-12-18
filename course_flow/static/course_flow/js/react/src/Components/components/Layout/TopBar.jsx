@@ -23,6 +23,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
+import { createNew } from '@XMLHTTP/postTemp.js'
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
@@ -87,7 +88,9 @@ const TopBar = () => {
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
-  const [apiData, loading, error] = useApi(config.json_api_paths.get_top_bar)
+  const [apiData, loading, error] = useApi(
+    COURSEFLOW_APP.config.json_api_paths.get_top_bar
+  )
 
   if (loading || error) {
     return null
@@ -105,7 +108,9 @@ const TopBar = () => {
     setNotificationsMenuAnchorEl(event.currentTarget)
   }
 
-  const handleLogout = () => [window.location.replace(config.logout_path)]
+  const handleLogout = () => [
+    window.location.replace(COURSEFLOW_APP.config.logout_path)
+  ]
 
   const closeAllMenus = () => {
     setAnchorEl(null)
@@ -116,13 +121,13 @@ const TopBar = () => {
   const handleCreateClick = (type) => {
     switch (type) {
       case 'program':
-        window.renderers.CreateNew(config.create_path.program)
+        createNew(COURSEFLOW_APP.config.create_path.program)
         break
       case 'activity':
-        window.renderers.CreateNew(config.create_path.activity)
+        createNew(COURSEFLOW_APP.config.create_path.activity)
         break
       case 'course':
-        window.renderers.CreateNew(config.create_path.course)
+        createNew(COURSEFLOW_APP.config.create_path.course)
         break
     }
 

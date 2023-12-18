@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { EditableComponentWithComments, TitleText } from '@cfCommonComponents'
+import { TitleText } from '@cfUIComponents'
+import { EditableComponentWithComments } from '@cfParentComponents'
 
-import { getWeekByID, getNodeByID } from '@cfFindState'
+import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode.js'
 
 import * as Utility from '@cfUtility'

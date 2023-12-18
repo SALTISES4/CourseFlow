@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component, OutcomeTitle } from '@cfCommonComponents'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
+import { OutcomeTitle } from '@cfUIComponents'
+import { Component } from '@cfParentComponents'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
 
 /**
@@ -47,7 +48,7 @@ class TableCell extends React.Component {
     let divclass = ''
 
     if (completion_status === 0) {
-      return <img src={config.icon_path + 'nocheck.svg'} />
+      return <img src={COURSEFLOW_APP.config.icon_path + 'nocheck.svg'} />
     } else if (!completion_status) {
       return ''
     }
@@ -56,10 +57,10 @@ class TableCell extends React.Component {
         return (
           <img
             className="self-completed"
-            src={config.icon_path + 'solid_check.svg'}
+            src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
           />
         )
-      else return <img src={config.icon_path + 'check.svg'} />
+      else return <img src={COURSEFLOW_APP.config.icon_path + 'check.svg'} />
     }
 
     if (completion_status & 2) {
@@ -170,13 +171,17 @@ export class OutcomeUnconnected extends Component {
     else dropIcon = 'droptriangledown'
 
     let droptext
-    if (is_dropped) droptext = gettext('hide')
+    if (is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     let comments
 
@@ -199,7 +204,9 @@ export class OutcomeUnconnected extends Component {
           {data.child_outcome_links.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
-                <img src={config.icon_path + dropIcon + '.svg'} />
+                <img
+                  src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'}
+                />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>

@@ -1,6 +1,5 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getDescendantOutcomes } from '@cfFindState'
 import AlignmentHorizontalReverseWeek from './AlignmentHorizontalReverseWeek.js'

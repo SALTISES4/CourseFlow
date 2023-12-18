@@ -1,7 +1,11 @@
 import * as React from 'react'
-import { getLiveProjectData, getLiveProjectDataStudent } from '@cfPostFunctions'
+import {
+  getLiveProjectData,
+  getLiveProjectDataStudent
+} from '@XMLHTTP/PostFunctions'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 
-export class LiveProjectSection extends React.Component {
+class LiveProjectSection extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -25,7 +29,8 @@ export class LiveProjectSection extends React.Component {
   }
 
   defaultRender() {
-    // @todo undefined scope error
-    return <renderers.WorkflowLoader />
+    return <WorkflowLoader />
   }
 }
+
+export default LiveProjectSection

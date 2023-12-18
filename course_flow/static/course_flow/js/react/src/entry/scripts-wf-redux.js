@@ -1,18 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
-import { WorkflowBaseView } from '../Components/Views/WorkflowBaseView.js'
-import { WorkflowBase as WorkflowComparisonBaseView } from '../Components/Views/ComparisonView'
-import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
 import {
-  ComparisonView,
-  WorkflowBase
-} from '../Components/Views/ComparisonView'
-import * as Constants from '@cfConstants'
-import * as Reducers from '@cfReducers'
-import {
-  getTargetProjectMenu,
   getWorkflowData,
   getWorkflowParentData,
   getWorkflowChildData,
@@ -20,14 +10,20 @@ import {
   getPublicWorkflowParentData,
   getPublicWorkflowChildData,
   updateValue
-} from '../PostFunctions.js'
-import { ConnectionBar } from '../ConnectedUsers.js'
+} from '@XMLHTTP/PostFunctions'
+import * as Utility from '@cfUtility'
+import * as Constants from '@cfConstants'
+import * as Reducers from '@cfRedux/Reducers'
+// @components
+import { WorkflowBaseView } from '@cfViews/WorkflowBaseView.js'
+import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonView'
+import WorkflowGridMenu from '../Components/components/MenuComponents/menus/WorkflowGridMenu.js'
+import { ComparisonView } from '@cfViews/ComparisonView'
+import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+// @style
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
-import * as Utility from '@cfUtility'
-import { SelectionManager, TinyLoader } from '../redux/helpers.js'
-
-export { fail_function } from '@cfPostFunctions'
 
 const DATA_TYPE = Utility.Enum({
   OUTCOME: 'workflow_action',
@@ -41,20 +37,20 @@ const DATA_TYPE = Utility.Enum({
 /****************************************
  *
  * ****************************************/
-export class WorkflowGridRenderer {
-  constructor(data_package) {
-    this.initial_data = data_package
-    this.store = createStore(Reducers.gridMenuReducer, data_package)
+export class WorkflowGridRenderer extends React.Component {
+  constructor(props) {
+    super(props)
+    // this.props.initial_data = data.props.data_package
+    this.store = createStore(Reducers.gridMenuReducer, this.props.data_package) // is this supposde to be this.initial_data  ?
   }
 
-  render(container) {
+  render() {
     this.container = container
 
-    reactDom.render(
+    return (
       <Provider store={this.store}>
         <WorkflowGridMenu />
-      </Provider>,
-      container[0]
+      </Provider>
     )
   }
 }
@@ -63,62 +59,81 @@ export class WorkflowGridRenderer {
  *
  * ****************************************/
 export class WorkflowRenderer {
-  constructor(workflowID, data_package) {
-    this.workflowID = workflowID
-    makeActiveSidebar('#workflow' + this.workflowID)
+  constructor(props) {
+    const {
+      column_choices,
+      context_choices,
+      task_choices,
+      time_choices,
+      outcome_type_choices,
+      outcome_sort_choices,
+      strategy_classification_choices,
+      is_strategy,
+      project
+    } = props.workflow_data_package
+
     this.message_queue = []
     this.messages_queued = true
-    this.column_choices = data_package.column_choices
-    this.context_choices = data_package.context_choices
-    this.task_choices = data_package.task_choices
-    this.time_choices = data_package.time_choices
-    this.outcome_type_choices = data_package.outcome_type_choices
-    this.outcome_sort_choices = data_package.outcome_sort_choices
-    this.strategy_classification_choices =
-      data_package.strategy_classification_choices
-    this.is_strategy = data_package.is_strategy
-    this.project = data_package.project
-    this.user_permission = user_permission
+
+    this.public_view = props.public_view
+    this.workflowID = props.workflow_model_id
+
+    // Data package
+    this.column_choices = column_choices
+    this.context_choices = context_choices
+    this.task_choices = task_choices
+    this.time_choices = time_choices
+    this.outcome_type_choices = outcome_type_choices
+    this.outcome_sort_choices = outcome_sort_choices
+    this.strategy_classification_choices = strategy_classification_choices
+    this.is_strategy = is_strategy
+    this.project = project
+
+    this.user_permission = props.user_permission
+    this.user_role = props.user_role
+    this.user_id = props.user_id
+
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    try {
-      this.user_role = user_role
-    } catch (err) {
-      this.user_role = Constants.role_keys['none']
+    switch (props.user_permission) {
+      case Constants.permission_keys['view']:
+        this.can_view = true
+        break
+
+      case Constants.permission_keys['comment']:
+        this.view_comments = true
+        this.add_comments = true
+        this.can_view = true
+        break
+
+      case Constants.permission_keys['edit']:
+        this.read_only = false
+        this.view_comments = true
+        this.add_comments = true
+        this.can_view = true
+        break
+
+      // No default case needed here if these are the only options
     }
 
-    this.public_view = public_view
-    this.read_only = true
+    switch (props.user_role) {
+      case Constants.role_keys['none']:
+        // nuclear fusion logic here
+        break
 
-    if (this.public_view) {
-      this.always_static = true
-    }
+      case Constants.role_keys['student']:
+        this.is_student = true
+        this.show_assignments = true
+        break
 
-    if (this.user_permission === Constants.permission_keys['none']) {
-      this.always_static = true
-    } else if (this.user_permission === Constants.permission_keys['view']) {
-      this.can_view = true
-    } else if (this.user_permission === Constants.permission_keys['comment']) {
-      this.view_comments = true
-      this.add_comments = true
-      this.can_view = true
-    } else if (this.user_permission === Constants.permission_keys['edit']) {
-      this.read_only = false
-      this.view_comments = true
-      this.add_comments = true
-      this.can_view = true
-    }
+      case Constants.role_keys['teacher']:
+        this.is_teacher = true
+        this.show_assignments = true
+        break
 
-    if (this.user_role === Constants.role_keys['none']) {
-      // nuclear fusion
-    } else if (this.user_role === Constants.role_keys['student']) {
-      this.is_student = true
-      this.show_assignments = true
-    } else if (this.user_role === Constants.role_keys['teacher']) {
-      this.is_teacher = true
-      this.show_assignments = true
+      // No default case needed here if these are the only options
     }
 
     if (this.public_view) {
@@ -184,7 +199,7 @@ export class WorkflowRenderer {
 
         if (!renderer.silent_connect_fail && !renderer.has_disconnected) {
           alert(
-            gettext(
+            window.gettext(
               'Unable to establish connection to the server, or connection has been lost.'
             )
           )
@@ -433,8 +448,8 @@ export class WorkflowRenderer {
           lock: {
             ...obj,
             expires: Date.now() + time,
-            user_id: user_id,
-            user_colour: myColour,
+            user_id: this.user_id,
+            user_colour: COURSEFLOW_APP.contextData.myColour,
             lock: lock
           }
         })
@@ -478,30 +493,79 @@ export class WorkflowRenderer {
 /****************************************
  *  @ComparisonRenderer
  * ****************************************/
+
+/**
+ * export interface Welcome2 {
+ *     project_data:    ProjectData;
+ *     is_strategy:     boolean;
+ *     user_permission: number;
+ *     user_role:       number;
+ *     public_view:     boolean;
+ *     user_name:       string;
+ *     user_id:         number;
+ *     myColour:        string;
+ *     changeFieldID:   number;
+ * }
+ *
+ * export interface ProjectData {
+ *     deleted:             boolean;
+ *     deleted_on:          string;
+ *     id:                  number;
+ *     title:               string;
+ *     description:         string;
+ *     author:              string;
+ *     author_id:           number;
+ *     published:           boolean;
+ *     created_on:          string;
+ *     last_modified:       string;
+ *     workflowproject_set: number[];
+ *     disciplines:         any[];
+ *     type:                string;
+ *     object_sets:         any[];
+ *     favourite:           boolean;
+ *     liveproject:         null;
+ *     object_permission:   ObjectPermission;
+ * }
+ *
+ * export interface ObjectPermission {
+ *     permission_type: number;
+ *     last_viewed:     Date;
+ * }
+ */
 export class ComparisonRenderer {
-  constructor(project_data) {
-    this.project_data = project_data
+  constructor(props) {
+    this.project_data = props.data.project_data
+    this.user_permission = props.user_permission
     makeActiveSidebar('#project' + this.project_data.id)
   }
 
   render(container, view_type = 'workflowview') {
     this.container = container
     this.view_type = view_type
+
     reactDom.render(<WorkflowLoader />, container[0])
+
     this.tiny_loader = new TinyLoader($('body')[0])
 
-    if (user_permission === Constants.permission_keys['none']) {
-      this.read_only = true
-    } else if (user_permission === Constants.permission_keys['view']) {
-      this.read_only = true
-    } else if (user_permission === Constants.permission_keys['comment']) {
-      this.read_only = true
-      this.view_comments = true
-      this.add_comments = true
-    } else if (user_permission === Constants.permission_keys['edit']) {
-      this.read_only = false
-      this.view_comments = true
-      this.add_comments = true
+    switch (this.user_permission) {
+      case Constants.permission_keys['none']:
+      case Constants.permission_keys['view']:
+        this.read_only = true
+        break
+
+      case Constants.permission_keys['comment']:
+        this.read_only = true
+        this.view_comments = true
+        this.add_comments = true
+        break
+
+      case Constants.permission_keys['edit']:
+        this.read_only = false
+        this.view_comments = true
+        this.add_comments = true
+        break
+      default:
+        break
     }
 
     this.selection_manager = new SelectionManager(this.read_only)
@@ -590,30 +654,5 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
         this.attempt_reconnect()
       }
     })
-  }
-}
-
-export function CreateNew(create_url) {
-  let tiny_loader = new TinyLoader($('body')[0])
-  tiny_loader.startLoad()
-  getTargetProjectMenu(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location = create_url.replace(
-          '/0/',
-          '/' + response_data.parentID + '/'
-        )
-      }
-    },
-    () => {
-      tiny_loader.endLoad()
-    }
-  )
-}
-
-export class WorkflowLoader extends Component {
-  render() {
-    return <div className="load-screen" />
   }
 }

@@ -1,21 +1,16 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  ActionButton,
-  AutoLink,
-  EditableComponentWithActions,
-  NodePorts,
-  NodeTitle,
-  TitleText
-} from '@cfCommonComponents'
+import { NodeTitle, TitleText } from '@cfUIComponents'
+import { ActionButton, AutoLink, NodePorts } from '@cfCommonComponents'
+import { EditableComponentWithActions } from '@cfParentComponents'
 import NodeLink from './NodeLink.js'
 import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode.js'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 
 /**
  * Represents the node in the workflow view
@@ -151,7 +146,7 @@ class Node extends EditableComponentWithActions {
         key={0}
         button_icon="assignment.svg"
         button_class="assignment-button"
-        titletext={gettext('Show Assignment Info')}
+        titletext={window.gettext('Show Assignment Info')}
         handleClick={this.showAssignment.bind(this)}
       />,
       <AssignmentBox
@@ -263,7 +258,7 @@ class Node extends EditableComponentWithActions {
               ).name
             }
             src={
-              config.icon_path +
+              COURSEFLOW_APP.config.icon_path +
               Constants.context_keys[data.context_classification] +
               '.svg'
             }
@@ -280,7 +275,7 @@ class Node extends EditableComponentWithActions {
               ).name
             }
             src={
-              config.icon_path +
+              COURSEFLOW_APP.config.icon_path +
               Constants.task_keys[data.task_classification] +
               '.svg'
             }
@@ -291,7 +286,7 @@ class Node extends EditableComponentWithActions {
     if (data.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
     let linkIcon
-    let linktext = gettext('Visit workflow')
+    let linktext = window.gettext('Visit workflow')
     let clickfunc = this.doubleClick.bind(this)
     let link_class = 'linked-workflow'
     if (data.linked_workflow_data) {
@@ -299,11 +294,11 @@ class Node extends EditableComponentWithActions {
         data.linked_workflow_data.url == 'noaccess' ||
         data.linked_workflow_data.url == 'nouser'
       ) {
-        linktext = gettext('<Inaccessible>')
+        linktext = window.gettext('<Inaccessible>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else if (data.linked_workflow_data.deleted) {
-        linktext = gettext('<Deleted>')
+        linktext = window.gettext('<Deleted>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else {
@@ -314,7 +309,7 @@ class Node extends EditableComponentWithActions {
     if (data.linked_workflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
-          <img src={config.icon_path + 'wflink.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -374,7 +369,7 @@ class Node extends EditableComponentWithActions {
         <div className="node-details">
           <TitleText
             text={data_override.description}
-            defaultText={gettext('Click to edit')}
+            defaultText={window.gettext('Click to edit')}
           />
         </div>
         <div
@@ -383,7 +378,7 @@ class Node extends EditableComponentWithActions {
         >
           <div className="node-drop-side node-drop-left">{dropText}</div>
           <div className="node-drop-middle">
-            <img src={config.icon_path + dropIcon + '.svg'} />
+            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
           </div>
           <div className="node-drop-side node-drop-right">
             <div className="node-drop-time">

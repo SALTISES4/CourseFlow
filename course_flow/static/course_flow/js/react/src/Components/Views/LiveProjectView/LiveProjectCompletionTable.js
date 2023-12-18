@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+// @components
+import LiveProjectSection from './LiveProjectSection.js'
 import { AssignmentViewSmall } from '../LiveAssignmentView'
 import * as Utility from '@cfUtility'
-import { setAssignmentCompletion } from '@cfPostFunctions'
 
 class LiveProjectCompletionTable extends LiveProjectSection {
   render() {
@@ -53,13 +54,13 @@ class LiveProjectCompletionTable extends LiveProjectSection {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Table')}:</h3>
+        <h3>{window.gettext('Table')}:</h3>
         <table className="user-table outcome-table node-rows">
           <tr className="outcome-row node-row">
             <th className="user-head outcome-head empty"></th>
             {head}
             <th className="table-cell nodewrapper total-cell grand-total-cell">
-              <div className="total-header">{gettext('Total')}:</div>
+              <div className="total-header">{window.gettext('Total')}:</div>
             </th>
           </tr>
           {body}

@@ -11,6 +11,7 @@
   "author": "Scivero",
   "scripts": {
     "build-js": "rollup -c",
+    "build-watch": "rollup -c -w",
     "watch": "rollup -c rollup.config.redesign.js -w",
     "watch-local": "rollup -c rollup.config.local.js -w",
     "prettier": "prettier --write 'course_flow/static/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",

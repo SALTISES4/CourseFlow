@@ -1,6 +1,6 @@
 import * as Utility from '@cfUtility'
 import * as React from 'react'
-import Component from './Component.js'
+import { Component } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
 import {
   add as mathadd,
@@ -12,7 +12,9 @@ import {
 } from 'mathjs'
 // SVG portion of a NodeLink
 
-//Creates paths between two ports
+/**
+ * Creates paths between two ports
+ */
 class PathGenerator {
   constructor(
     source_point,

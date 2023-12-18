@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import { Component, EditableComponentWithActions } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { EditableComponentWithActions } from '@cfParentComponents'
 import { getColumnByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import * as Utility from '@cfUtility'
 
 /**
  * The column in a workflow.
@@ -27,7 +26,7 @@ class Column extends EditableComponentWithActions {
     return (
       <img
         src={
-          config.icon_path +
+          COURSEFLOW_APP.config.icon_path +
           Constants.default_column_settings[this.props.data.column_type].icon +
           '.svg'
         }

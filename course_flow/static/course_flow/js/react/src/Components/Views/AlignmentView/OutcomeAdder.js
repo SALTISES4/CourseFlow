@@ -1,7 +1,6 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { getOutcomeTitle, WeekTitle } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { getOutcomeTitle } from '@cfUIComponents/Titles'
 import { getOutcomeByID } from '@cfFindState'
 
 /**

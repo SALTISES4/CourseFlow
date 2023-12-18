@@ -8,27 +8,25 @@
 <!-- -->
 {% block header %}{% endblock %}
 <!-- -->
-{% block body %}
-<div id="create">
+
+
+{% block container %}
+  <div id="create">
     <div class="workflow-create-wrapper">
       <h1>
         {% trans 'Create an activity:' %}
       </h1>
       <form method="post">
         {% csrf_token %} {{ form.as_p }}
-        <input id="save-button" type="submit" value="Save" />
+        <input id="save-button" type="submit" value="Save"/>
       </form>
     </div>
-</div>
+  </div>
 {% endblock %}
+
 <!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
+{% block foot %}
+  <!-- empty footer -->
+{% endblock %}
+
 {% csrf_token %}
-<!-- -->
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-  
-  $("#create").detach().appendTo("#container");
-</script>
-{% endblock %}

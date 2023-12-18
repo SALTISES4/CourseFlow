@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 import StudentManagement from '../../components/StudentManagement'
 
 class LiveProjectStudents extends LiveProjectSection {
@@ -9,7 +9,7 @@ class LiveProjectStudents extends LiveProjectSection {
 
     let register_link
     if (liveproject && liveproject.registration_hash) {
-      let register_url = config.registration_path.replace(
+      let register_url = COURSEFLOW_APP.config.registration_path.replace(
         'project_hash',
         liveproject.registration_hash
       )
@@ -17,7 +17,7 @@ class LiveProjectStudents extends LiveProjectSection {
         <div className="user-text">
           <div className="user-panel">
             <h4>Student Registration:</h4>
-            <p>{gettext('Student Registration Link: ')}</p>
+            <p>{window.gettext('Student Registration Link: ')}</p>
             <div>
               <img
                 id="copy-text"
@@ -26,19 +26,22 @@ class LiveProjectStudents extends LiveProjectSection {
                   navigator.clipboard.writeText(register_url)
                   $('#copy-text').attr(
                     'src',
-                    config.icon_path + 'duplicate_checked.svg'
+                    COURSEFLOW_APP.config.icon_path + 'duplicate_checked.svg'
                   )
                   $('#url-text').text('Copied to Clipboard')
                   setTimeout(() => {
                     $('#copy-text').attr(
                       'src',
-                      config.icon_path + 'duplicate_clipboard.svg'
+                      COURSEFLOW_APP.config.icon_path +
+                        'duplicate_clipboard.svg'
                     )
                     $('#url-text').text(register_url)
                   }, 1000)
                 }}
-                title={gettext('Copy to clipboard')}
-                src={config.icon_path + 'duplicate_clipboard.svg'}
+                title={window.gettext('Copy to clipboard')}
+                src={
+                  COURSEFLOW_APP.config.icon_path + 'duplicate_clipboard.svg'
+                }
               />
               <a id="url-text" className="selectable" href={register_url}>
                 {register_url}

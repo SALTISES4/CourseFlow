@@ -1,10 +1,10 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { EditableComponentWithComments, NodeTitle } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { EditableComponentWithComments } from '@cfParentComponents'
+import { NodeTitle } from '@cfUIComponents'
 import { getChildWorkflowByID } from '@cfFindState'
 import { OutcomeNode } from '../WorkflowView'
-import { newOutcome, updateOutcomenodeDegree } from '@cfPostFunctions'
+import { newOutcome, updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome.js'
@@ -156,7 +156,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
         >
           <img
             className="create-button"
-            src={config.icon_path + 'add_new_white.svg'}
+            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
           />
           <div>{gettext('Add new')}</div>
         </div>

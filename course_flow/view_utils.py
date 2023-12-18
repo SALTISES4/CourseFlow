@@ -57,6 +57,8 @@ def get_workflow_context_data(workflow, context, user):
         parent_project = ProjectSerializerShallow(
             project, context={"user": user}
         ).data
+    user_permission = get_user_permission(workflow, user)
+    user_role = get_user_role(workflow, user)
 
     data_package["is_strategy"] = workflow.is_strategy
     data_package["column_choices"] = column_choices
@@ -65,24 +67,19 @@ def get_workflow_context_data(workflow, context, user):
     data_package["time_choices"] = time_choices
     data_package["outcome_type_choices"] = outcome_type_choices
     data_package["outcome_sort_choices"] = outcome_sort_choices
-
     data_package[
         "strategy_classification_choices"
     ] = strategy_classification_choices
+
     if not workflow.is_strategy:
         data_package["project"] = parent_project
     context["is_strategy"] = (
         JSONRenderer().render(workflow.is_strategy).decode("utf-8")
     )
-    context["data_package"] = (
-        JSONRenderer().render(data_package).decode("utf-8")
-    )
-    user_permission = get_user_permission(workflow, user)
-    user_role = get_user_role(workflow, user)
-    context["user_permission"] = (
-        JSONRenderer().render(user_permission).decode("utf-8")
-    )
-    context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
+
+    context["data_package"] = data_package
+    context["user_permission"] = user_permission
+    context["user_role"] = user_role
 
     return context
 

@@ -1,11 +1,18 @@
-//Basic component to represent a node in the outcomes table
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { getNodeByID } from '@cfFindState'
-import { NodeTitle } from './Titles.js'
-import Component from './Component.js'
+import { Component } from '@cfParentComponents'
+import { NodeTitle } from '@cfUIComponents/Titles.js'
 
+/**
+ *  Basic component to represent a node in the outcomes table
+ *
+ */
+
+/**
+ *
+ */
 class NodeOutcomeViewUnconnected extends Component {
   constructor(props) {
     super(props)

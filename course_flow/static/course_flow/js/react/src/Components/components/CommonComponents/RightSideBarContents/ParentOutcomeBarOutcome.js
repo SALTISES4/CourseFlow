@@ -1,10 +1,9 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 
 import { getOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
 import { OutcomeBarOutcomeUnconnected } from './OutcomeBarOutcome.js'
-import { Component, OutcomeTitle } from '@cfCommonComponents'
+import { OutcomeTitle } from '@cfUIComponents/Titles'
 
 /**
  * Used for the parent outcome bar.
@@ -63,7 +62,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img src={config.icon_path + dropIcon + '.svg'} />
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

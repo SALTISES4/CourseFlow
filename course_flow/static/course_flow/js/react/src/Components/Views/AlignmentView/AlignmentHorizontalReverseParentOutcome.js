@@ -1,8 +1,6 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
 import { OutcomeNode } from '../WorkflowView'
-import { updateOutcomehorizontallinkDegree } from '@cfPostFunctions'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/PostFunctions'
 
 /**
  * Display the parent outcome tagged to a child workflow's outcome in the

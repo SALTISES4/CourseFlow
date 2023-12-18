@@ -7,9 +7,9 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block header %}{% endblock %}
-<!-- -->
-{% block body %}
-<div id="create">
+
+{% block container %}
+  <div id="create">
     <div class="workflow-create-wrapper">
       <h1>
         {% trans 'Create a program:' %}
@@ -25,9 +25,3 @@
 {% block foot %} {% endblock %}
 <!-- -->
 {% csrf_token %}
-<!-- -->
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-  $("#create").detach().appendTo("#container");
-</script>
-{% endblock %}

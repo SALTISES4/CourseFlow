@@ -1,6 +1,4 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
 import { Outcome } from '../OutcomeEditView'
 import * as Utility from '@cfUtility'
 

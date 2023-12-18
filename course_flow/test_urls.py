@@ -16,7 +16,7 @@ def auth_patterns():
         path(
             "login/",
             auth_views.LoginView.as_view(
-                template_name="course_flow/registration/login.html"
+                template_name="course_flow/html/registration/registration.html"
             ),
             name="login",
         ),

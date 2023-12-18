@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { WorkflowForMenu } from '@cfLibrary'
-import { getAddedWorkflowMenu } from '@cfPostFunctions'
-import * as reactDom from 'react-dom'
+import { WorkflowForMenu } from '@cfCommonComponents'
+import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
 
 class MenuSection extends React.Component {
   constructor(props) {
@@ -13,7 +12,7 @@ class MenuSection extends React.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    makeDropdown(this.dropdownDiv.current)
+    COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current)
   }
 
   /*******************************************************
@@ -40,19 +39,23 @@ class MenuSection extends React.Component {
     if (this.props.replacement_text) objects = this.props.replacement_text
 
     let add_button
-    if (config.create_path && this.props.add) {
+    if (COURSEFLOW_APP.config.create_path && this.props.add) {
       let types
       if (section_type === 'workflow') types = ['program', 'course', 'activity']
       else types = [section_type]
       let adds
       {
         adds = types.map((this_type) => (
-          <a className="hover-shade" href={config.create_path[this_type]}>
-            {gettext('Create new ') + gettext(this_type)}
+          <a
+            className="hover-shade"
+            href={COURSEFLOW_APP.config.create_path[this_type]}
+          >
+            {window.gettext('Create new ') + window.gettext(this_type)}
           </a>
         ))
-        let import_text = gettext('Import ') + gettext(section_type)
-        if (is_strategy) import_text += gettext(' strategy')
+        let import_text =
+          window.gettext('Import ') + window.gettext(section_type)
+        if (is_strategy) import_text += window.gettext(' strategy')
         adds.push(
           <a
             className="hover-shade"
@@ -91,8 +94,8 @@ class MenuSection extends React.Component {
               this.props.section_data.object_type +
               ' link-image'
             }
-            title={gettext('Add New')}
-            src={config.icon_path + 'add_new_white.svg'}
+            title={window.gettext('Add New')}
+            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

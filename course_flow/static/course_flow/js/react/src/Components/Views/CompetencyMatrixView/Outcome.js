@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '@cfCommonComponents'
 import { getOutcomeByID } from '@cfFindState'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '../OutcomeTableView'
 

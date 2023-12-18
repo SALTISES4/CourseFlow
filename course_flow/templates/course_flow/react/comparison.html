@@ -1,0 +1,44 @@
+{% extends "course_flow/base.html" %}
+
+{% load static compress i18n %}
+{% load static i18n %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}
+  {% trans context.title %} - CourseFlow
+{% endblock %}
+
+{% block body %}
+
+  {{ is_strategy }}
+{% endblock %}
+
+{% csrf_token %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+
+
+    /*******************************************************
+     * BEGIN JQUERY
+     *******************************************************/
+    jQuery('<div>', {
+      class: 'load-screen'
+    }).appendTo("#container");
+    /*******************************************************
+     * END JQUERY
+     *******************************************************/
+
+
+  </script>
+
+{% endblock %}
+
+
+

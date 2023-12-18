@@ -5,32 +5,31 @@
       defer="true"
       charset="utf-8"
     ></script>
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-wf-redux.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-live.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-library.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
+{#    <!-- -->#}
+{#    {% compress js %}#}
+{#    <script#}
+{#      src="{% static 'course_flow/js/react/dist/scripts-wf-redux.min.js' %}"#}
+{#      defer="true"#}
+{#      charset="utf-8"#}
+{#    ></script>#}
+{#    {% endcompress %}#}
+{#    <!-- -->#}
+{#    {% compress js %}#}
+{#    <script#}
+{#      src="{% static 'course_flow/js/react/dist/scripts-live.min.js' %}"#}
+{#      defer="true"#}
+{#      charset="utf-8"#}
+{#    ></script>#}
+{#    {% endcompress %}#}
+{#    <!-- -->#}
+{#    {% compress js %}#}
+{#    <script#}
+{#      src="{% static 'course_flow/js/react/dist/scripts-library.min.js' %}"#}
+{#      defer="true"#}
+{#      charset="utf-8"#}
+{#    ></script>#}
+{#    {% endcompress %}#}
+{#    <!-- -->#}
     <script
       id="script-redesign"
       nonce="{{ request.csp_nonce }}"
@@ -38,7 +37,6 @@
       defer="true"
       charset="utf-8"
     ></script>
-    {% endcompress %}
     <!-- -->
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"

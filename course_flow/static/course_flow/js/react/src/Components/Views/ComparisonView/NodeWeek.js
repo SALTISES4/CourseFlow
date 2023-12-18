@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import Node from './Node.js'
+import { connect } from 'react-redux'
 import { getNodeWeekByID } from '@cfFindState'
+// @local
+import Node from './Node.js'
 import { NodeWeekUnconnected } from '../WorkflowView'
 
 /**

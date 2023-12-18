@@ -326,7 +326,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
   if (outcomes.length == 0) return outcomes
-  let base_title = Utility.capWords(gettext('outcomes'))
+  let base_title = Utility.capWords(window.gettext('outcomes'))
   let object_sets = state.objectset.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
@@ -337,7 +337,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   if (uncategorized.length > 0)
     categories = [
       {
-        objectset: { title: gettext('Uncategorized') },
+        objectset: { title: window.gettext('Uncategorized') },
         outcomes: uncategorized
       }
     ]
@@ -369,7 +369,7 @@ export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
     outcomenodes.map((outcomenode) => outcomenode.outcome)
   ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
   if (outcomes.length == 0) return outcomes
-  let base_title = Utility.capWords(gettext('outcomes'))
+  let base_title = Utility.capWords(window.gettext('outcomes'))
   let object_sets = state.objectset.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
@@ -377,7 +377,7 @@ export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
     return [{ objectset: { title: base_title }, outcomes: outcomes }]
   let categories = [
     {
-      objectset: { title: gettext('Uncategorized') },
+      objectset: { title: window.gettext('Uncategorized') },
       outcomes: outcomes.filter((outcome) => outcome.sets.length == 0)
     },
     ...object_sets
@@ -443,7 +443,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
   if (outcomes.length == 0) return outcomes.map((outcome) => outcome.id)
-  let base_title = Utility.capWords(gettext('outcomes'))
+  let base_title = Utility.capWords(window.gettext('outcomes'))
   let object_sets = object_sets_unfiltered.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
@@ -461,7 +461,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   if (uncategorized.length > 0)
     categories = [
       {
-        objectset: { title: gettext('Uncategorized') },
+        objectset: { title: window.gettext('Uncategorized') },
         outcomes: uncategorized
       }
     ]

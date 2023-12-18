@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import { AssignmentTitle } from '@cfCommonComponents'
+import { AssignmentTitle } from '@cfUIComponents'
 
 class AssignmentViewSmall extends React.Component {
   render() {

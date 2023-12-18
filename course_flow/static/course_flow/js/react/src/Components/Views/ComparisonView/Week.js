@@ -1,19 +1,11 @@
 import * as React from 'react'
-import { Provider, connect } from 'react-redux'
-import { EditableComponentWithSorting, TitleText } from '@cfCommonComponents'
-import NodeWeek from './NodeWeek.js'
-import { getWeekByID, getNodeWeekByID } from '@cfFindState'
-import * as Constants from '@cfConstants'
-import { columnChangeNode, moveNodeWeek } from '@cfReducers'
-import {
-  toggleDrop,
-  insertedAt,
-  insertedAtInstant,
-  columnChanged,
-  addStrategy,
-  updateValueInstant
-} from '@cfPostFunctions'
+import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
+import { getWeekByID } from '@cfFindState'
+import { moveNodeWeek } from '@cfReducers'
+import { insertedAt, insertedAtInstant } from '@XMLHTTP/PostFunctions'
+// @components
+import NodeWeek from './NodeWeek.js'
 import { WeekUnconnected } from '../WorkflowView'
 
 /**

@@ -3,9 +3,9 @@ import {
   setLiveProjectRole,
   getUsersForLiveProject,
   getUserList
-} from '@cfPostFunctions'
+} from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '../../../redux/helpers.js'
+import { TinyLoader } from '@cfRedux/helpers'
 
 class UserLabel extends React.Component {
   constructor(props) {
@@ -45,7 +45,7 @@ class UserLabel extends React.Component {
                 this.props.addFunction($(this.select.current).val())
               }
             >
-              {gettext('Share')}
+              {window.gettext('Share')}
             </button>
           </div>
         )

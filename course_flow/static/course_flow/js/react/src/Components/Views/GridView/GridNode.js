@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { NodeTitle, EditableComponentWithComments } from '@cfCommonComponents'
-import { getNodeByID } from '@cfFindState'
+import { NodeTitle } from '@cfUIComponents'
+import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
 
 /**

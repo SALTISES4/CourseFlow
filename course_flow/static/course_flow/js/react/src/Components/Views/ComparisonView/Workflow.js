@@ -1,10 +1,9 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { EditableComponentWithSorting } from '@cfCommonComponents'
 import * as Utility from '@cfUtility'
 
-import { insertedAt } from '@cfPostFunctions'
+import { insertedAt } from '@XMLHTTP/PostFunctions'
 import WeekWorkflow from './WeekWorkflow.js'
 import { moveWeekWorkflow } from '@cfReducers'
 

@@ -33,17 +33,32 @@ const plugins = {
       [
         'babel-plugin-module-resolver',
         {
-          alias:{
-            '@cfModule':'./course_flow/static/course_flow/js/react/src',
-            '@cfComponents':'./course_flow/static/course_flow/js/react/src/Components/components',
-            '@cfViews':'./course_flow/static/course_flow/js/react/src/Components/Views',
-            '@cfLibrary':'./course_flow/static/course_flow/js/react/src/Components/Library',
-            '@cfCommonComponents':'./course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
-            '@cfFindState':'./course_flow/static/course_flow/js/react/src/redux/FindState.js',
-            '@cfReducers':'./course_flow/static/course_flow/js/react/src/redux/Reducers.js',
-            '@cfUtility':'./course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
-            '@cfConstants':'./course_flow/static/course_flow/js/react/src/Constants.js',
-            '@cfPostFunctions':'./course_flow/static/course_flow/js/react/src/PostFunctions.js',
+          alias: {
+            '@cfModule': './course_flow/static/course_flow/js/react/src',
+            '@cfComponents':
+              './course_flow/static/course_flow/js/react/src/Components/components',
+            '@cfViews':
+              './course_flow/static/course_flow/js/react/src/Components/Views',
+            // '@cfLibrary':
+            //   './course_flow/static/course_flow/js/react/src/Components/Library',
+            '@cfLibrary':
+              './course_flow/static/course_flow/js/react/src/Components/components/MenuComponents/menus',
+            '@cfCommonComponents':
+              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
+            '@cfParentComponents':
+              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/Extended',
+            '@cfUIComponents':
+              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/UIComponents',
+            '@cfFindState':
+              './course_flow/static/course_flow/js/react/src/redux/FindState.js',
+            '@cfReducers':
+              './course_flow/static/course_flow/js/react/src/redux/Reducers.js',
+            '@cfRedux': './course_flow/static/course_flow/js/react/src/redux',
+            '@cfUtility':
+              './course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
+            '@cfConstants':
+              './course_flow/static/course_flow/js/react/src/Constants.js',
+            '@XMLHTTP': './course_flow/static/course_flow/js/react/src/XMLHTTP'
           }
         }
       ]
@@ -72,7 +87,7 @@ const bundlePlugins = [
   plugins.postcss,
   plugins.nodeResolve,
   plugins.babel,
-  plugins.commonjs,
+  plugins.commonjs
   // plugins.terser
 ]
 
@@ -101,36 +116,36 @@ export default [
     },
     plugins: bundlePlugins
   },
-  {
-    input: `${bundleEntry}scripts-wf-redux.js`,
-    output: {
-      file: `${bundleRoot}scripts-wf-redux.min.js`,
-      name: 'renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
-  {
-    input: `${bundleEntry}scripts-live.js`,
-    output: {
-      file: `${bundleRoot}scripts-live.min.js`,
-      name: 'live_renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
-  {
-    input: `${bundleEntry}scripts-library.js`,
-    output: {
-      file: `${bundleRoot}scripts-library.min.js`,
-      name: 'library_renderers',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
+  // {
+  //   input: `${bundleEntry}scripts-wf-redux.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-wf-redux.min.js`,
+  //     name: 'renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
+  // {
+  //   input: `${bundleEntry}scripts-live.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-live.min.js`,
+  //     name: 'live_renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
+  // {
+  //   input: `${bundleEntry}scripts-library.js`,
+  //   output: {
+  //     file: `${bundleRoot}scripts-library.min.js`,
+  //     name: 'library_renderers',
+  //     format: 'iife',
+  //     sourceMap: 'inline'
+  //   },
+  //   plugins: bundlePlugins
+  // },
   {
     input: `${bundleEntry}scripts-redesign.js`,
     output: {

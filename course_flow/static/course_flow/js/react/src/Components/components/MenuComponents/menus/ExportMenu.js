@@ -20,7 +20,7 @@ class ExportMenu extends React.Component {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'outcome'}
       />,
-      <label htmlFor="export_type">{gettext('Outcomes')}</label>
+      <label htmlFor="export_type">{window.gettext('Outcomes')}</label>
     ])
     exports.push([
       <input
@@ -30,7 +30,7 @@ class ExportMenu extends React.Component {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'node'}
       />,
-      <label htmlFor="export_type">{gettext('Nodes')}</label>
+      <label htmlFor="export_type">{window.gettext('Nodes')}</label>
     ])
     if (type == 'project' || type == 'course')
       exports.push([
@@ -41,7 +41,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label htmlFor="export_type">{gettext('Course Framework')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Course Framework')}
+        </label>
       ])
     if (type == 'project' || type == 'program')
       exports.push([
@@ -52,7 +54,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label htmlFor="export_type">{gettext('Competency Matrix')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Competency Matrix')}
+        </label>
       ])
 
     // brought from master branch
@@ -65,7 +69,9 @@ class ExportMenu extends React.Component {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'sobec'}
         />,
-        <label htmlFor="export_type">{gettext('Sobec Validation')}</label>
+        <label htmlFor="export_type">
+          {window.gettext('Sobec Validation')}
+        </label>
       ])
 
     return exports
@@ -84,7 +90,8 @@ class ExportMenu extends React.Component {
   click(evt) {
     if (evt.ctrlKey) {
       this.ctrlKey = true
-      $('#export-form')[0].action = config.post_paths.get_export_download
+      $('#export-form')[0].action =
+        COURSEFLOW_APP.config.post_paths.get_export_download
     }
   }
 
@@ -93,7 +100,7 @@ class ExportMenu extends React.Component {
     setTimeout(() => {
       if (!this.ctrlKey) this.props.actionFunction()
       alert(
-        gettext(
+        window.gettext(
           'Your file is being generated and will be emailed to you shortly.'
         )
       )
@@ -108,7 +115,7 @@ class ExportMenu extends React.Component {
     let object_sets
     if (this.props.data.object_sets.length > 0) {
       object_sets = [
-        <h4>{gettext('Object Set Visibility')}:</h4>,
+        <h4>{window.gettext('Object Set Visibility')}:</h4>,
         this.props.data.object_sets.map((objectset) => (
           <div>
             <input
@@ -127,12 +134,12 @@ class ExportMenu extends React.Component {
 
     return (
       <div className="message-wrap">
-        <h2>{gettext('Export files')}</h2>
-        <p>{gettext('Use this menu to export files.')}</p>
+        <h2>{window.gettext('Export files')}</h2>
+        <p>{window.gettext('Use this menu to export files.')}</p>
         <form
           id="export-form"
           encType="multipart/form-data"
-          action={config.post_paths.get_export}
+          action={COURSEFLOW_APP.config.post_paths.get_export}
           method="POST"
           target="redirect-iframe"
           onSubmit={this.submit.bind(this)}
@@ -142,9 +149,9 @@ class ExportMenu extends React.Component {
             name="csrfmiddlewaretoken"
             value={root.getCsrfToken()}
           />
-          <h4>{gettext('Export Type')}:</h4>
+          <h4>{window.gettext('Export Type')}:</h4>
           {this.getExportTypes()}
-          <h4>{gettext('Export Format')}:</h4>
+          <h4>{window.gettext('Export Format')}:</h4>
           <select name="export_format">
             <option value="excel">Excel</option>
             <option value="csv">CSV</option>
@@ -173,7 +180,7 @@ class ExportMenu extends React.Component {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

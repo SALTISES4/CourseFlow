@@ -6,10 +6,10 @@ import {
 
 export function permission_translate() {
   return {
-    author: gettext('Owner'),
-    edit: gettext('Editor'),
-    comment: gettext('Commenter'),
-    view: gettext('Viewer')
+    author: window.gettext('Owner'),
+    edit: window.gettext('Editor'),
+    comment: window.gettext('Commenter'),
+    view: window.gettext('Viewer')
   }
 }
 
@@ -390,7 +390,7 @@ export function getCompletionImg(completion_status, outcomes_type) {
     return (
       <img
         className="self-completed"
-        src={config.icon_path + 'solid_check.svg'}
+        src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
       />
     )
   }

@@ -1,13 +1,15 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
-import { WorkflowTitle, Component, RightSideBar } from '@cfCommonComponents'
 import * as Utility from '@cfUtility'
+// @components
+import RightSideBar from '@cfCommonComponents/RightSideBarContents/RightSideBar'
+import { Component } from '@cfParentComponents'
+import { WorkflowTitle } from '@cfUIComponents'
 
-import { getWorkflowSelectMenu, getWorkflowContext } from '@cfPostFunctions'
+import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import { renderMessageBox } from '../../components/MenuComponents/MenuComponents.js'
 import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox.js'
-import { toggleObjectSet } from '@cfReducers'
 
 /**
  * Creates a sort of container for the workflows you want to compare,
@@ -166,7 +168,7 @@ class ComparisonView extends React.Component {
         <div
           id="share-button"
           className="hover-shade"
-          title={gettext('Sharing')}
+          title={window.gettext('Sharing')}
           onClick={renderMessageBox.bind(
             this,
             data,
@@ -174,15 +176,19 @@ class ComparisonView extends React.Component {
             closeMessageBox
           )}
         >
-          <img src={config.icon_path + 'add_person.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
         </div>
       )
 
     let view_buttons = [
-      { type: 'workflowview', name: gettext('Workflow View'), disabled: [] },
+      {
+        type: 'workflowview',
+        name: window.gettext('Workflow View'),
+        disabled: []
+      },
       {
         type: 'outcomeedit',
-        name: Utility.capWords(gettext('View') + ' outcomes'),
+        name: Utility.capWords(window.gettext('View') + ' outcomes'),
         disabled: []
       }
     ]
@@ -223,7 +229,7 @@ class ComparisonView extends React.Component {
         >
           <div className="flex-middle">
             <span className="material-symbols-rounded filled">add_circle</span>
-            <div>{gettext('Load new workflow')}</div>
+            <div>{window.gettext('Load new workflow')}</div>
           </div>
         </button>
       </div>
@@ -237,7 +243,7 @@ class ComparisonView extends React.Component {
     return (
       <div className="main-block">
         <div className="right-panel-wrapper">
-          <div class="body-wrapper">
+          <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               {this.getHeader()}
               <div className="workflow-view-select hide-print">
@@ -302,6 +308,10 @@ class WorkflowComparisonRendererComponent extends Component {
 
     getWorkflowContext(this.props.workflowID, (context_response_data) => {
       let context_data = context_response_data.data_package
+
+      // @todo this will need to be unpacked, type unified with parent and called into parent
+      // is there a reason #workflow-inner-wrapper is a real dom element?
+      // this needs to be imported directly but that would cuase Circ D.
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,
         JSON.parse(context_data.data_package),

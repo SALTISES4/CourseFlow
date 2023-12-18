@@ -13,7 +13,7 @@ import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
 import Typography from '@mui/material/Typography'
 import useApi from '../../../hooks/useApi'
-import { API_POST } from '../../../PostFunctions'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 import { OuterContentWrap } from '../../../mui/helper'
 
 const PageTitle = styled(Box)(({ theme }) => ({

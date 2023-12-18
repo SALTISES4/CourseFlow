@@ -1,9 +1,8 @@
-import * as Redux from 'redux'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Constants from '@cfConstants'
-import { Provider, connect } from 'react-redux'
-import { Slider, LegendLine } from '@cfCommonComponents'
+import { connect } from 'react-redux'
+import { Slider, LegendLine } from '@cfUIComponents'
 
 class WorkflowLegendUnconnected extends React.Component {
   constructor(props) {
@@ -110,7 +109,7 @@ class WorkflowLegendUnconnected extends React.Component {
           </div>
         )}
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img src={config.icon_path + 'close.svg'} />
+          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
         </div>
       </div>
     )

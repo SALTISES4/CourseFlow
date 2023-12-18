@@ -153,22 +153,22 @@ export const get_verbose = function (data, object_type) {
     case 'course':
     case 'program':
       return {
-        activity: gettext('Activity'),
-        course: gettext('Course'),
-        program: gettext('Program'),
-        workflow: gettext('Workflow')
+        activity: window.gettext('Activity'),
+        course: window.gettext('Course'),
+        program: window.gettext('Program'),
+        workflow: window.gettext('Workflow')
       }[data.type]
     case 'week':
       return data.week_type_display
   }
   return {
-    outcome_base: gettext('Outcome'),
-    nodelink: gettext('Node Link'),
-    outcome: gettext('Outcome'),
-    column: gettext('Column'),
-    project: gettext('Project'),
-    outcomehorizontallink: gettext('Association to the parent outcome'),
-    outcomenode: gettext('Association to the outcome')
+    outcome_base: window.gettext('Outcome'),
+    nodelink: window.gettext('Node Link'),
+    outcome: window.gettext('Outcome'),
+    column: window.gettext('Column'),
+    project: window.gettext('Project'),
+    outcomehorizontallink: window.gettext('Association to the parent outcome'),
+    outcomenode: window.gettext('Association to the outcome')
   }[object_type]
 }
 
@@ -211,19 +211,19 @@ export function getColumnColour(data) {
 //get all possible object sets
 export function object_sets_types() {
   return {
-    'program outcome': Utility.capFirst(gettext('program outcome')),
-    'course outcome': Utility.capFirst(gettext('course outcome')),
-    'activity outcome': Utility.capFirst(gettext('activity outcome')),
-    'program node': Utility.capFirst(gettext('program node')),
-    'course node': Utility.capFirst(gettext('course node')),
-    'activity node': Utility.capFirst(gettext('activity node'))
+    'program outcome': Utility.capFirst(window.gettext('program outcome')),
+    'course outcome': Utility.capFirst(window.gettext('course outcome')),
+    'activity outcome': Utility.capFirst(window.gettext('activity outcome')),
+    'program node': Utility.capFirst(window.gettext('program node')),
+    'course node': Utility.capFirst(window.gettext('course node')),
+    'activity node': Utility.capFirst(window.gettext('activity node'))
   }
 }
 
 //missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
 function missing_translations() {
-  gettext('activity')
-  gettext('course')
-  gettext('program')
-  gettext('project')
+  window.gettext('activity')
+  window.gettext('course')
+  window.gettext('program')
+  window.gettext('project')
 }

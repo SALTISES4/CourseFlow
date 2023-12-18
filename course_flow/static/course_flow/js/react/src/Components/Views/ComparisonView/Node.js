@@ -1,18 +1,11 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {
-  ActionButton,
-  EditableComponentWithActions,
-  NodePorts,
-  NodeTitle,
-  TitleText
-} from '@cfCommonComponents'
+import { EditableComponentWithActions } from '@cfParentComponents'
+import { NodeTitle, TitleText } from '@cfUIComponents'
 import { OutcomeNode } from '../WorkflowView'
 import { getNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { updateOutcomenodeDegree } from '@cfPostFunctions'
 
 /**
  * Represents the node in the comparison view
@@ -92,7 +85,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -107,7 +100,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
             ).name
           }
           src={
-            config.icon_path +
+            COURSEFLOW_APP.config.icon_path +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }

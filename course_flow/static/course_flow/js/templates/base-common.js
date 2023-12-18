@@ -33,6 +33,9 @@ const makeActiveSidebar = function (id) {
   $(id).addClass('active')
 }
 
+/*******************************************************
+ * makeDropdown
+ *******************************************************/
 const makeDropdown = (click_element) => {
   if ($(click_element).hasClass('dropdown-ready')) return
 
@@ -65,6 +68,10 @@ const makeDropdown = (click_element) => {
   // check_position();
   // window.addEventListener("resize",check_position);
 }
+COURSEFLOW_APP.makeDropdown = makeDropdown
+/*******************************************************
+ *  // makeDropdown
+ *******************************************************/
 
 // reload if we got here using forward or back button
 if (
@@ -94,7 +101,7 @@ $(window).on('load', () => {
       COURSEFLOW_APP.strings.confirm_email_updates
     )
 
-    $.post(config.post_paths.select_notifications, {
+    $.post(COURSEFLOW_APP.config.post_paths.select_notifications, {
       notifications: JSON.stringify(!!confirmNotifications)
     })
   }
@@ -134,3 +141,37 @@ class CustomLinkSanitizer extends Link {
 
 // @todo scope issue
 Quill.register(CustomLinkSanitizer, true)
+
+function fail_function(a, b, c, d) {
+  if (typeof a === 'string') {
+    alert(b)
+    alert(
+      a +
+        ' - ' +
+        window.gettext('Something went wrong. Please reload the page.')
+    )
+  } else if (a && a.type === 'ajaxError') {
+    if (b.status === 429) {
+      alert(
+        window.gettext(
+          'Too many requests from your IP address. Please wait and try again later.'
+        )
+      )
+    } else if (b.status === 403 || b.status === 401 || b.status === 500) {
+      alert(b.status + ' ' + window.gettext('error at ') + ' ' + c.url)
+    } else
+      alert(
+        a +
+          b.status +
+          c +
+          window.gettext('final Something went wrong. Please reload the page.')
+      )
+  } else {
+    alert(
+      a +
+        b.status +
+        c +
+        window.gettext('final Something went wrong. Please reload the page.')
+    )
+  }
+}

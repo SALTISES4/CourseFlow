@@ -1,10 +1,8 @@
 import * as React from 'react'
-import { LiveProjectSection } from './LiveProjectSection.js'
-import {
-  AssignmentTitle,
-  DatePicker,
-  SimpleWorkflow
-} from '@cfCommonComponents'
+// @local
+import LiveProjectSection from './LiveProjectSection.js'
+// @components
+import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
 
 export class LiveProjectOverview extends LiveProjectSection {
@@ -15,7 +13,9 @@ export class LiveProjectOverview extends LiveProjectSection {
       <SimpleWorkflow workflow_data={workflow} />
     ))
     if (workflows.length == 0)
-      workflows = gettext('No workflows have been made visible to students.')
+      workflows = window.gettext(
+        'No workflows have been made visible to students.'
+      )
     let teachers = this.state.data.teachers.map((user) => (
       <tr>
         <td className="table-user">{Utility.getUserDisplay(user.user)}</td>
@@ -46,30 +46,30 @@ export class LiveProjectOverview extends LiveProjectSection {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Teachers')}:</h3>
+        <h3>{window.gettext('Teachers')}:</h3>
         <table className="overview-table">
           <tr>
-            <th>{gettext('User')}</th>
-            <th>{gettext('Assignments Complete')}</th>
+            <th>{window.gettext('User')}</th>
+            <th>{window.gettext('Assignments Complete')}</th>
           </tr>
           {teachers}
         </table>
-        <h3>{gettext('Students')}:</h3>
+        <h3>{window.gettext('Students')}:</h3>
         <table className="overview-table">
           <tr>
-            <th>{gettext('User')}</th>
-            <th>{gettext('Assignments Complete')}</th>
+            <th>{window.gettext('User')}</th>
+            <th>{window.gettext('Assignments Complete')}</th>
           </tr>
           {students}
         </table>
-        <h3>{gettext('Visible Workflows')}:</h3>
+        <h3>{window.gettext('Visible Workflows')}:</h3>
         <div className="menu-grid">{workflows}</div>
-        <h3>{gettext('Assignments')}:</h3>
+        <h3>{window.gettext('Assignments')}:</h3>
         <table className="overview-table">
           <tr>
-            <th>{gettext('Assignment')}</th>
-            <th>{gettext('Completion')}</th>
-            <th>{gettext('End Date')}</th>
+            <th>{window.gettext('Assignment')}</th>
+            <th>{window.gettext('Completion')}</th>
+            <th>{window.gettext('End Date')}</th>
           </tr>
           {assignments}
         </table>

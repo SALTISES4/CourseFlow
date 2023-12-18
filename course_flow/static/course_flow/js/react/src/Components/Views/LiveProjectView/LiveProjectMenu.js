@@ -2,13 +2,14 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 
 import WorkflowVisibility from './WorkflowVisibility.js'
-import { LiveProjectSection } from './LiveProjectSection.js'
+import LiveProjectSection from './LiveProjectSection.js'
 import { LiveProjectOverview } from './LiveProjectOverview.js'
 import LiveProjectStudents from './LiveProjectStudents.js'
-import { WorkflowForMenu } from '@cfLibrary'
+import { WorkflowForMenu } from '@cfCommonComponents'
 import LiveProjectCompletionTable from './LiveProjectCompletionTable.js'
 import LiveProjectSettings from './LiveProjectSettings.js'
 import LiveProjectAssignments from './LiveProjectAssignments.js'
+import { setWorkflowVisibility } from '@XMLHTTP/PostFunctions.js'
 
 /**
  *
@@ -69,9 +70,9 @@ class LiveProjectWorkflows extends LiveProjectSection {
     )
     return (
       <div className="workflow-details">
-        <h3>{gettext('Visible Workflows')}</h3>
+        <h3>{window.gettext('Visible Workflows')}</h3>
         <div className="menu-grid">{workflows_added}</div>
-        <h3>{gettext('Other Workflows')}</h3>
+        <h3>{window.gettext('Other Workflows')}</h3>
         <div className="menu-grid">{workflows_not_added}</div>
       </div>
     )
@@ -96,12 +97,12 @@ class LiveProjectMenu extends React.Component {
    *******************************************************/
   getViewButtons() {
     return [
-      { type: 'overview', name: gettext('Classroom Overview') },
-      { type: 'students', name: gettext('Students') },
-      { type: 'assignments', name: gettext('Assignments') },
-      { type: 'workflows', name: gettext('Workflow Visibility') },
-      { type: 'completion_table', name: gettext('Completion Table') },
-      { type: 'settings', name: gettext('Classroom Settings') }
+      { type: 'overview', name: window.gettext('Classroom Overview') },
+      { type: 'students', name: window.gettext('Students') },
+      { type: 'assignments', name: window.gettext('Assignments') },
+      { type: 'workflows', name: window.gettext('Workflow Visibility') },
+      { type: 'completion_table', name: window.gettext('Completion Table') },
+      { type: 'settings', name: window.gettext('Classroom Settings') }
     ]
   }
 
@@ -125,6 +126,8 @@ class LiveProjectMenu extends React.Component {
     switch (this.state.view_type) {
       case 'overview':
         return (
+          // @todo renderer IS used in this component
+          // but only user_role, how is that different from getRole?
           <LiveProjectOverview
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -134,8 +137,9 @@ class LiveProjectMenu extends React.Component {
         )
       case 'students':
         return (
+          // @todo  renderer NOT used in this component
           <LiveProjectStudents
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             liveproject={this.state.liveproject}
             objectID={this.props.project.id}
@@ -144,6 +148,7 @@ class LiveProjectMenu extends React.Component {
         )
       case 'assignments':
         return (
+          // @todo  renderer IS used in this component
           <LiveProjectAssignments
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -153,8 +158,9 @@ class LiveProjectMenu extends React.Component {
         )
       case 'workflows':
         return (
+          // @todo  renderer NOT used in this component
           <LiveProjectWorkflows
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             objectID={this.props.project.id}
             view_type={this.state.view_type}
@@ -162,6 +168,7 @@ class LiveProjectMenu extends React.Component {
         )
       case 'completion_table':
         return (
+          //@todo   renderer IS used in this component
           <LiveProjectCompletionTable
             renderer={this.props.renderer}
             role={this.getRole()}
@@ -171,9 +178,10 @@ class LiveProjectMenu extends React.Component {
         )
       case 'settings':
         return (
+          // @todo renderer NOT used in this component
           <LiveProjectSettings
             updateLiveProject={this.updateFunction.bind(this)}
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={this.getRole()}
             liveproject={this.state.liveproject}
             objectID={this.props.project.id}
@@ -199,9 +207,9 @@ class LiveProjectMenu extends React.Component {
         <a
           id="project"
           className="hover-shade"
-          href={config.update_path.project.replace('0', data.id)}
+          href={COURSEFLOW_APP.config.update_path.project.replace('0', data.id)}
         >
-          {gettext('Edit Project')}
+          {window.gettext('Edit Project')}
         </a>
       )
     }

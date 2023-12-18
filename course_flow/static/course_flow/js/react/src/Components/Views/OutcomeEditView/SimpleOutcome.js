@@ -1,13 +1,14 @@
-//Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
 import * as React from 'react'
-import {
-  EditableComponentWithComments,
-  OutcomeTitle
-} from '@cfCommonComponents'
-import * as Utility from '@cfUtility'
-import SimpleOutcomeOutcome from './SimpleOutcomeOutcome.js'
 import { connect } from 'react-redux'
 import { getOutcomeByID } from '@cfFindState'
+import * as Utility from '@cfUtility'
+import { EditableComponentWithComments } from '@cfParentComponents'
+import { OutcomeTitle } from '@cfUIComponents'
+import SimpleOutcomeOutcome from './SimpleOutcomeOutcome.js'
+
+/**
+ *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
+ */
 
 /**
  * A simple outcome block without any action buttons for displaying
@@ -75,13 +76,17 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     if (this.state.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (this.state.is_dropped) droptext = gettext('hide')
+    if (this.state.is_dropped) droptext = window.gettext('hide')
     else
       droptext =
-        gettext('show ') +
+        window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        ngettext('descendant', 'descendants', data.child_outcome_links.length)
+        nwindow.gettext(
+          'descendant',
+          'descendants',
+          data.child_outcome_links.length
+        )
 
     if (this.props.renderer.view_comments) comments = this.addCommenting()
 
@@ -110,7 +115,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img src={config.icon_path + dropIcon + '.svg'} />
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

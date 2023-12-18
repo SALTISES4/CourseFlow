@@ -1,18 +1,10 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { EditableComponentWithSorting, OutcomeTitle } from '@cfCommonComponents'
-
-import {
-  getOutcomeNodeByID,
-  getOutcomeByID,
-  getOutcomeOutcomeByID,
-  getSortedOutcomesFromOutcomeWorkflowSet,
-  getSortedOutcomeNodesFromNodes
-} from '@cfFindState'
+import { connect } from 'react-redux'
+import { newOutcome, insertedAt } from '@XMLHTTP/PostFunctions'
 import { moveOutcomeWorkflow } from '@cfReducers'
-import { newOutcome, insertedAt } from '@cfPostFunctions'
-import * as Utility from '@cfUtility'
+// @components
+import { EditableComponentWithSorting } from '@cfParentComponents'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import Outcome from './Outcome.js'
 
 /**
@@ -49,7 +41,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
         >
           <img
             className="create-button"
-            src={config.icon_path + 'add_new_white.svg'}
+            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
           />
           <div>{gettext('Add new')}</div>
         </div>

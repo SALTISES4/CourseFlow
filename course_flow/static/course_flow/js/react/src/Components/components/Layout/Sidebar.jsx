@@ -129,7 +129,9 @@ const Sidebar = () => {
     sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const [apiData, loading, error] = useApi(config.json_api_paths.get_sidebar)
+  const [apiData, loading, error] = useApi(
+    COURSEFLOW_APP.config.json_api_paths.get_sidebar
+  )
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -164,8 +166,10 @@ const Sidebar = () => {
             <ListItemButton
               component="a"
               id="panel-home"
-              href={config.home_path}
-              selected={window.location.pathname === config.home_path}
+              href={COURSEFLOW_APP.config.home_path}
+              selected={
+                window.location.pathname === COURSEFLOW_APP.config.home_path
+              }
             >
               <ListItemIcon>
                 <HomeIcon />
@@ -179,8 +183,11 @@ const Sidebar = () => {
                 <ListItemButton
                   component="a"
                   id="panel-my-library"
-                  href={config.my_library_path}
-                  selected={window.location.pathname === config.my_library_path}
+                  href={COURSEFLOW_APP.config.my_library_path}
+                  selected={
+                    window.location.pathname ===
+                    COURSEFLOW_APP.config.my_library_path
+                  }
                 >
                   <ListItemIcon>
                     <FolderCopyIcon />
@@ -192,8 +199,11 @@ const Sidebar = () => {
                 <ListItemButton
                   component="a"
                   id="panel-explore"
-                  href={config.explore_path}
-                  selected={window.location.pathname === config.explore_path}
+                  href={COURSEFLOW_APP.config.explore_path}
+                  selected={
+                    window.location.pathname ===
+                    COURSEFLOW_APP.config.explore_path
+                  }
                 >
                   <ListItemIcon>
                     <SearchIcon />
@@ -208,9 +218,10 @@ const Sidebar = () => {
               <ListItemButton
                 component="a"
                 id="panel-my-live-projects"
-                href={config.my_liveprojects_path}
+                href={COURSEFLOW_APP.config.my_liveprojects_path}
                 selected={
-                  window.location.pathname === config.my_liveprojects_path
+                  window.location.pathname ===
+                  COURSEFLOW_APP.config.my_liveprojects_path
                 }
               >
                 <ListItemIcon>
@@ -247,11 +258,13 @@ const Sidebar = () => {
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
                       component="a"
-                      href={config.my_favourites_path}
+                      href={COURSEFLOW_APP.config.my_favourites_path}
                     >
                       <ListItemText
                         primary={
-                          <SeeAllLink href={config.my_favourites_path}>
+                          <SeeAllLink
+                            href={COURSEFLOW_APP.config.my_favourites_path}
+                          >
                             {COURSEFLOW_APP.strings.view_all}
                           </SeeAllLink>
                         }
