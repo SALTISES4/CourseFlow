@@ -36,7 +36,9 @@ const ProfileSettingsPage = () => {
   const [errors, setErrors] = useState({})
   const [formFields, setFormFields] = useState(null)
   const [showSnackbar, setShowSnackbar] = useState(false)
-  const [apiData, loading, error] = useApi(config.json_api_paths.update_profile)
+  const [apiData, loading, error] = useApi(
+    COURSEFLOW_APP.config.json_api_paths.update_profile
+  )
 
   // after the apiData is loaded in, set it as state so it can be used internally
   useEffect(() => {
@@ -49,7 +51,7 @@ const ProfileSettingsPage = () => {
     const formData = {}
     formFields.map((field) => (formData[field.name] = field.value))
 
-    API_POST(config.json_api_paths.update_profile, formData)
+    API_POST(COURSEFLOW_APP.config.json_api_paths.update_profile, formData)
       .then(() => setShowSnackbar(true))
       .catch((error) => setErrors(error.data.errors))
   }
