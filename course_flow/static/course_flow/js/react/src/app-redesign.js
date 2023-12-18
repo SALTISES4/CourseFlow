@@ -15,12 +15,14 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
-import NotificationsPage from './Components/Pages/Notifications/index.jsx'
-import ProfileSettingsPage from './Components/Pages/ProfileSettings/index.jsx'
+import NotificationsPage from './components/pages/Notifications/index.jsx'
+import ProfileSettingsPage from './components/pages/ProfileSettings/index.jsx'
 
 // components
-import Sidebar, { SidebarRootStyles } from '@cfComponents/Layout/Sidebar.jsx'
-import TopBar from '@cfComponents/Layout/TopBar.jsx'
+import Sidebar, {
+  SidebarRootStyles
+} from '@cfCommonComponents/layout/Sidebar.jsx'
+import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
 
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
@@ -33,18 +35,18 @@ const cache = createCache({
 })
 
 // @WORKFLOW
-import WorkflowGrid from '@cfModule/Components/Pages/Workflow/WorkflowGrid'
-import WorkflowComparison from '@cfModule/Components/Pages/Workflow/WorkflowComparison'
+import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
+import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIVE
-import LiveAssignment from '@cfModule/Components/Pages/Live/LiveAssignment'
-import LiveProject from '@cfModule/Components/Pages/Live/LiveProject'
+import LiveAssignment from '@cfModule/components/pages/Live/LiveAssignment'
+import LiveProject from '@cfModule/components/pages/Live/LiveProject'
 // @LIBRARY
-import Project from '@cfModule/Components/Pages/Library/ProjectDetail'
-import Library from '@cfModule/Components/Pages/Library/Library'
-import Favourites from '@cfModule/Components/Pages/Library/Favorites'
-import Home from '@cfModule/Components/Pages/Library/Home'
-import Explore from '@cfModule/Components/Pages/Library/Explore'
-import Workflow from '@cfModule/Components/Pages/Workflow/Workflow'
+import Project from '@cfModule/components/pages/Library/ProjectDetail'
+import Library from '@cfModule/components/pages/Library/Library'
+import Favourites from '@cfModule/components/pages/Library/Favorites'
+import Home from '@cfModule/components/pages/Library/Home'
+import Explore from '@cfModule/components/pages/Library/Explore'
+import Workflow from '@cfModule/components/pages/Workflow/Workflow'
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're

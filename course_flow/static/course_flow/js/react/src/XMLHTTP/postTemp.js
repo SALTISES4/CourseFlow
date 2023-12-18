@@ -1,4 +1,4 @@
-// REACT
+//  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
 // import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents.js'
 import { DATA_ACTIONS } from './common.js'
 import { TinyLoader } from '../redux/helpers.js'
