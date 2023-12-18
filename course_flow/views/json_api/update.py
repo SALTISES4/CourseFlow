@@ -680,6 +680,16 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     )
 
 
+@login_required
+def json_api_get_post_notifications_settings(request: HttpRequest) -> JsonResponse:
+    if request.method == "POST":
+        return JsonResponse({"action": "posted"})
+
+    return JsonResponse(
+        {"fields": "brooo"}
+    )
+
+
 # A helper function to set the linked workflow.
 # Do not call if you are duplicating the parent workflow,
 # that gets taken care of in another manner.

@@ -21,6 +21,16 @@ def notifications_view(request):
 
 
 @login_required
+def notifications_settings_view(request):
+    context = {
+        "title": "Notifications Settings",
+        "path_id": "notificationsSettings",
+        "contextData": {}
+    }
+    return render(request, "course_flow/react/notifications_settings.html", context)
+
+
+@login_required
 def profile_settings_view(request):
     context = {
         "title": "Profile Settings",
