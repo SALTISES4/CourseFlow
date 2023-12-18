@@ -1,7 +1,7 @@
 <script nonce="{{ request.csp_nonce }}">
   COURSEFLOW_APP.path_id = "{{ path_id }}";
   const DTOContextData = {{ contextData | safe }};
-  let contextData
+  let localContextData
   let makeActiveSidebarID = null
 
   switch (COURSEFLOW_APP.path_id) {
@@ -14,7 +14,7 @@
           program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
         }
       {% endif %}
-      makeActiveSidebarID = "#project" + contextData.project_data.id
+      makeActiveSidebarID = "#project" + localContextData.project_data.id
       break;
     }
     case 'favorites': {
