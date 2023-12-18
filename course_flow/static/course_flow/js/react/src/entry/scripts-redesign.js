@@ -15,7 +15,7 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
-import NotificationsPage from '../Components/Pages/Notifications'
+// import NotificationsPage from '../Components/Pages/Notifications'
 import ProfileSettingsPage from '../Components/Pages/ProfileSettings'
 
 // components
@@ -108,6 +108,14 @@ const getAppComponent = () => {
       return <ProjectRenderer {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
+     * USER / PROFILE
+     *******************************************************/
+    case 'notifications':
+      return <NotificationsPage />
+    case 'profileSettings':
+      return <ProfileSettingsPage />
+
+    /*******************************************************
      * LIVE
      *******************************************************/
     case 'assignmentDetail':
@@ -156,16 +164,8 @@ window.addEventListener('load', () => {
       target: '[data-component="topbar"]'
     },
     {
-      component: <NotificationsPage />,
-      target: '[data-component="notifications-page"]'
-    },
-    {
       component: getAppComponent(),
       target: '#container'
-    },
-    {
-      component: <ProfileSettingsPage />,
-      target: '[data-component="profile-settings-page"]'
     }
   ]
   renderComponents(componentsToRender)
