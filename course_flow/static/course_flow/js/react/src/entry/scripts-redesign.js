@@ -16,6 +16,7 @@ import createCache from '@emotion/cache'
 
 // pages/views/templates
 import NotificationsPage from '../Components/Pages/Notifications'
+import NotificationsSettingsPage from '../Components/Pages/NotificationsSettings'
 import ProfileSettingsPage from '../Components/Pages/ProfileSettings'
 
 // components
@@ -112,6 +113,8 @@ const getAppComponent = () => {
      *******************************************************/
     case 'notifications':
       return <NotificationsPage />
+    case 'notificationsSettings':
+      return <NotificationsSettingsPage />
     case 'profileSettings':
       return <ProfileSettingsPage />
 
