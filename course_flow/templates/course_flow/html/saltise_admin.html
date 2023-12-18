@@ -7,7 +7,8 @@
   {% trans "SALTISE Administration" %} - CourseFlow
 {% endblock %}
 
-{% block body %}
+
+{% block container %}
   <div class="saltise-menu-container">
     <h1>SALTISE Administration</h1>
     <hr>
@@ -22,14 +23,5 @@
       </a></p>
     </div>
   </div>
-
 {% endblock %}
-
 {% csrf_token %}
-
-{% block scripts %}
-  {{ block.super }}
-  <script nonce="{{ request.csp_nonce }}">
-    $(".saltise-menu-container").detach().appendTo("#container");
-  </script>
-{% endblock %}

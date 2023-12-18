@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer

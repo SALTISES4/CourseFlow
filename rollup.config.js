@@ -11,7 +11,7 @@ import postcss from 'rollup-plugin-postcss'
 const templateBundleSrc = 'course_flow/static/course_flow/js/other/src/'
 const templateBundleDist = 'course_flow/static/course_flow/js/other/dist/'
 const bundleRoot = 'course_flow/static/course_flow/js/react/dist/'
-const bundleEntry = 'course_flow/static/course_flow/js/react/src/entry/'
+const reactSrcRoot = 'course_flow/static/course_flow/js/react/src/'
 
 const plugins = {
   // bug in postCSS polugin does not allow paths outside of the bundleRoot
@@ -34,21 +34,20 @@ const plugins = {
         'babel-plugin-module-resolver',
         {
           alias: {
+            '@cfSCSS': './course_flow/static/course_flow/scss',
             '@cfModule': './course_flow/static/course_flow/js/react/src',
+            '@cfPages':
+              './course_flow/static/course_flow/js/react/src/components/pages',
             '@cfComponents':
-              './course_flow/static/course_flow/js/react/src/Components/components',
+              './course_flow/static/course_flow/js/react/src/components',
             '@cfViews':
-              './course_flow/static/course_flow/js/react/src/Components/Views',
-            // '@cfLibrary':
-            //   './course_flow/static/course_flow/js/react/src/Components/Library',
-            '@cfLibrary':
-              './course_flow/static/course_flow/js/react/src/Components/components/MenuComponents/menus',
+              './course_flow/static/course_flow/js/react/src/components/views',
             '@cfCommonComponents':
-              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
+              './course_flow/static/course_flow/js/react/src/components/common',
             '@cfParentComponents':
-              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/Extended',
+              './course_flow/static/course_flow/js/react/src/components/common/extended',
             '@cfUIComponents':
-              './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/UIComponents',
+              './course_flow/static/course_flow/js/react/src/components/common/UIComponents',
             '@cfFindState':
               './course_flow/static/course_flow/js/react/src/redux/FindState.js',
             '@cfReducers':
@@ -116,40 +115,10 @@ export default [
     },
     plugins: bundlePlugins
   },
-  // {
-  //   input: `${bundleEntry}scripts-wf-redux.js`,
-  //   output: {
-  //     file: `${bundleRoot}scripts-wf-redux.min.js`,
-  //     name: 'renderers',
-  //     format: 'iife',
-  //     sourceMap: 'inline'
-  //   },
-  //   plugins: bundlePlugins
-  // },
-  // {
-  //   input: `${bundleEntry}scripts-live.js`,
-  //   output: {
-  //     file: `${bundleRoot}scripts-live.min.js`,
-  //     name: 'live_renderers',
-  //     format: 'iife',
-  //     sourceMap: 'inline'
-  //   },
-  //   plugins: bundlePlugins
-  // },
-  // {
-  //   input: `${bundleEntry}scripts-library.js`,
-  //   output: {
-  //     file: `${bundleRoot}scripts-library.min.js`,
-  //     name: 'library_renderers',
-  //     format: 'iife',
-  //     sourceMap: 'inline'
-  //   },
-  //   plugins: bundlePlugins
-  // },
   {
-    input: `${bundleEntry}scripts-redesign.jsx`,
+    input: `${reactSrcRoot}app-redesign.js`,
     output: {
-      file: `${bundleRoot}scripts-redesign.min.jsx`,
+      file: `${bundleRoot}react-app-redesign.min.js`,
       name: 'redesign_renderers',
       format: 'iife',
       sourceMap: 'inline'

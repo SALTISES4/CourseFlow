@@ -1,28 +1,29 @@
 System.config({
   paths: {
     '@cfModule/*': './course_flow/static/course_flow/js/react/src/*',
+    '@cfComponents': './course_flow/static/course_flow/js/react/src/components',
     '@cfComponents/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/*',
+      './course_flow/static/course_flow/js/react/src/Components/*',
     '@cfViews':
-      './course_flow/static/course_flow/js/react/src/Components/Views',
+      './course_flow/static/course_flow/js/react/src/components/views',
     '@cfViews/*':
-      './course_flow/static/course_flow/js/react/src/Components/Views/*',
-    // '@cfLibrary':
-    //   './course_flow/static/course_flow/js/react/src/Components/Library',
-    '@cfLibrary/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/MenuComponents/menus/*',
+      './course_flow/static/course_flow/js/react/src/components/views/*',
+    '@cfPages':
+      './course_flow/static/course_flow/js/react/src/components/pages',
+    '@cfPages/*':
+      './course_flow/static/course_flow/js/react/src/components/pages/*',
     '@cfCommonComponents':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
+      './course_flow/static/course_flow/js/react/src/components/common',
     '@cfCommonComponents/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/*',
+      './course_flow/static/course_flow/js/react/src/Components/common/*',
     '@cfUIComponents/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/UIComponents/*',
+      './course_flow/static/course_flow/js/react/src/Components/common/UIComponents/*',
     '@cfUIComponents':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/UIComponents',
+      './course_flow/static/course_flow/js/react/src/Components/common/UIComponents',
     '@cfParentComponents/*':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/Extended/*',
+      './course_flow/static/course_flow/js/react/src/Components/common/extended/*',
     '@cfParentComponents':
-      './course_flow/static/course_flow/js/react/src/Components/components/CommonComponents/Extended',
+      './course_flow/static/course_flow/js/react/src/Components/common/extended',
     '@cfFindState':
       './course_flow/static/course_flow/js/react/src/redux/FindState.js',
     '@cfReducers':
@@ -30,7 +31,7 @@ System.config({
     '@cfUtility':
       './course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
     '@cfConstants':
-      './course_flow/static/course_flow/js/react/src/Constants.js',
+      './course_flow/static/course_flow/js/react/src/constants.js',
     '@XMLHTTP/*': './course_flow/static/course_flow/js/react/src/XMLHTTP/*',
     '@cfRedux/*': './course_flow/static/course_flow/js/react/src/redux/*'
   }
