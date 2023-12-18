@@ -40,16 +40,16 @@
         "./course_flow/js/react/src/*"
       ],
       "@cfComponents/*": [
-        "./course_flow/js/react/src/Components/components/*"
+        "./course_flow/js/react/src/components/components/*"
       ],
       "@cfViews/*": [
-        "./course_flow/js/react/src/Components/Views/*"
+        "./course_flow/js/react/src/components/views/*"
       ],
-      "@cfLibrary/*": [
-        "./course_flow/js/react/src/Components/Library/*"
+      "@cfPages/*": [
+        "./course_flow/js/react/src/components/pages/*"
       ],
       "@cfCommonComponents/*": [
-        "./course_flow/js/react/src/Components/components/CommonComponents/*"
+        "./course_flow/js/react/src/Components/components/common/*"
       ],
       "@cfFindState": [
         "./course_flow/js/react/src/redux/FindState.js"
