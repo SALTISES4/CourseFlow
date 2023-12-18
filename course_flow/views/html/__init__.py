@@ -8,6 +8,7 @@ from .home import *
 from .importer import *
 from .library import *
 from .liveProject import *
+from .profile_settings import *
 from .program import *
 from .project import *
 from .SALTISEAdmin import *

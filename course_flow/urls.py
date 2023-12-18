@@ -76,7 +76,7 @@ def course_flow_patterns():
         ),
         path(
             "user/update/",
-            views.UserUpdateView,
+            views.profile_settings_view,
             name="user-update",
         ),
         path(
