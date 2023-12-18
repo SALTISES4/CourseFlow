@@ -16,7 +16,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             in self.request.user.groups.all()
         )
 
-    template_name = "course_flow/react/explore.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_context_data(self):
         current_user = self.request.user

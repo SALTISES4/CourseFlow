@@ -120,7 +120,7 @@ const getAppComponent = () => {
     case 'projectComparison':
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
-       * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
+       * the DTO from django, or in a subcomponent, if not from django, define as explicit props
        */
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,

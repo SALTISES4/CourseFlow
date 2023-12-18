@@ -102,7 +102,7 @@ def my_live_projects_view(request):
 class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
     model = Project
     fields = ["title", "description"]
-    template_name = "course_flow/live_project_update.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)

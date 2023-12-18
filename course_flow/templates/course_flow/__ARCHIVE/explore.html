@@ -2,13 +2,15 @@
 
 {% load static i18n %}
 
-{% block title %}{% trans title %} - CourseFlow{% endblock %}
+{% block title %}
+  {% trans title %} - CourseFlow
+{% endblock %}
+
+{% csrf_token %}
 
 {% block react_scripts %}
   {% include 'course_flow/base/react_renderer.html' %}
 {% endblock %}
 
 
-{% block scripts %}
-  {{ block.super }}
-{% endblock %}
+

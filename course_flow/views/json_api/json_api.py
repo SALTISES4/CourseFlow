@@ -1,11 +1,6 @@
 from django.contrib.humanize.templatetags import humanize
 from django.db.models import Q
-from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseForbidden,
-    JsonResponse,
-)
+from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 
 from course_flow.decorators import public_access
