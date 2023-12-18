@@ -448,7 +448,7 @@ export class WorkflowRenderer {
           lock: {
             ...obj,
             expires: Date.now() + time,
-            user_id: user_id,
+            user_id: this.user_id,
             user_colour: myColour,
             lock: lock
           }

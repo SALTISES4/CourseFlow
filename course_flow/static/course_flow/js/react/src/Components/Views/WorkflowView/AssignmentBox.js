@@ -33,6 +33,7 @@ class AssignmentForNode extends AssignmentView {
       if (
         this.props.renderer.user_role == Constants.role_keys.teacher ||
         (data.self_reporting &&
+          //check AssignmentView for user defined in global scope
           data.user_assignment.liveprojectuser.user.id == user_id)
       )
         disabled = false

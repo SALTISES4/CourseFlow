@@ -7,12 +7,14 @@ export class ConnectionBar extends React.Component {
   constructor(props) {
     super(props)
     this.state = { connected_users: [] }
-
     this.user_id = props.renderer.user_id
-    this.user_id = props.renderer.user_name
-    this.user_id = props.renderer.myColour
+    // this.user_name = props.renderer.user_name
+    this.user_name = COURSEFLOW_APP.contextData.user_name
+    // this.myColour = props.renderer.myColour
+    this.myColour = COURSEFLOW_APP.contextData.user_name
 
     let connection_bar = this
+
     props.renderer.connection_update_received = (user_data) => {
       connection_bar.connection_update_received(user_data)
     }
@@ -20,9 +22,11 @@ export class ConnectionBar extends React.Component {
 
   render() {
     if (this.props.updateSocket.readyState === 1) {
-      let users = this.state.connected_users.map((user) => (
-        <ConnectedUser user_data={user} />
-      ))
+      let users = this.state.connected_users.map((user) => {
+        console.log('user')
+        console.log(user)
+        return <ConnectedUser user_data={user} />
+      })
 
       return (
         <div className="users-box">
@@ -61,9 +65,12 @@ export class ConnectionBar extends React.Component {
         JSON.stringify({
           type: 'connection_update',
           user_data: {
+            // user_id: this.user_id,
+            // user_name: this.user_name, // why?
+            // user_colour: this.myColour, // why?
             user_id: this.user_id,
-            user_name: this.user_name,
-            user_colour: this.myColour,
+            user_name: this.user_name, // why?
+            user_colour: this.myColour, // why?
             connected: connected
           }
         })
@@ -73,6 +80,9 @@ export class ConnectionBar extends React.Component {
   }
 
   connection_update_received(user_data) {
+    console.log('user_data')
+    console.log(user_data)
+
     if (user_data.connected) {
       let connected_users = this.state.connected_users.slice()
       let found_user = false
@@ -121,7 +131,7 @@ export class ConnectedUser extends React.Component {
   render() {
     let data = this.props.user_data
     console.log('this.props.user_data')
-    console.log(this.props.user_data)
+    console.log(this)
     return (
       <div
         className="user-indicator"

@@ -8,6 +8,8 @@ export class AssignmentView extends React.Component {
   constructor(props) {
     super(props)
     this.state = { is_dropped: false }
+    this.user_id = COURSEFLOW_APP.contextData.user_id
+
     if (props.data.user_assignment)
       this.state.completed = props.data.user_assignment.completed
   }
@@ -133,7 +135,7 @@ export class AssignmentView extends React.Component {
       if (
         this.props.renderer.user_role == Constants.role_keys.teacher ||
         (data.self_reporting &&
-          data.user_assignment.liveprojectuser.user.id == user_id)
+          data.user_assignment.liveprojectuser.user.id == this.user_id)
       )
         disabled = false
       let extra_data
