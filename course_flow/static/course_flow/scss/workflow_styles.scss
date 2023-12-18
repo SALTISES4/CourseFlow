@@ -1607,7 +1607,7 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   border: 1px solid $color-primary-green;
   background: $color-white;
   z-index: 7;
-  overflow: overlay;
+  overflow: auto;
   padding: 5px;
   font-size: 12px;
   box-sizing: border-box;
@@ -1972,7 +1972,7 @@ circle.mouseover {
 }
 
 .right-panel-inner {
-  overflow-y: overlay;
+  overflow-y: auto;
   display: inline-block;
   padding: 20px;
   box-sizing: border-box;
@@ -2265,7 +2265,7 @@ circle.mouseover {
   background: $color-white;
   height: 100%;
   padding: 20px;
-  overflow: overlay;
+  overflow: auto;
   vertical-align: top;
 }
 
