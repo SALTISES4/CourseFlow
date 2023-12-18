@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -12,7 +12,6 @@ import Radio from '@mui/material/Radio'
 import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
 import Typography from '@mui/material/Typography'
-import useApi from '@cfModule/hooks/useApi'
 import { OuterContentWrap } from '@cfModule/mui/helper'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 
@@ -32,24 +31,14 @@ const FormWrap = styled(Box)({
   }
 })
 
-const ProfileSettingsPage = () => {
+const ProfileSettingsPage = ({ formData }) => {
+  const [state, setState] = useState(formData)
   const [errors, setErrors] = useState({})
-  const [formFields, setFormFields] = useState(null)
   const [showSnackbar, setShowSnackbar] = useState(false)
-  const [apiData, loading, error] = useApi(
-    COURSEFLOW_APP.config.json_api_paths.update_profile
-  )
-
-  // after the apiData is loaded in, set it as state so it can be used internally
-  useEffect(() => {
-    if (!loading) {
-      setFormFields(apiData.fields)
-    }
-  }, [loading])
 
   function onFormSubmit() {
     const formData = {}
-    formFields.map((field) => (formData[field.name] = field.value))
+    state.map((field) => (formData[field.name] = field.value))
 
     API_POST(COURSEFLOW_APP.config.json_api_paths.update_profile, formData)
       .then(() => setShowSnackbar(true))
@@ -60,12 +49,8 @@ const ProfileSettingsPage = () => {
     setShowSnackbar(false)
   }
 
-  if (loading || error || !formFields) {
-    return null
-  }
-
   // loop through all the fields and generate appropriate MUI input element
-  const inputFields = formFields.map((field, idx) => {
+  const inputFields = state.map((field, idx) => {
     const hasError = errors[field.name]
     const errorText = hasError && errors[field.name][0]
 
@@ -83,12 +68,12 @@ const ProfileSettingsPage = () => {
                 error={hasError}
                 helperText={errorText}
                 onChange={(e) => {
-                  const newFieldsState = [...formFields]
+                  const newFieldsState = [...state]
                   newFieldsState[idx].value = e.target.value
                   const newErrors = { ...errors }
                   delete newErrors[field.name]
                   setErrors(newErrors)
-                  setFormFields(newFieldsState)
+                  setState(newFieldsState)
                 }}
               />
             </FormControl>
@@ -104,12 +89,12 @@ const ProfileSettingsPage = () => {
                 value={field.value}
                 name={field.name}
                 onChange={(e) => {
-                  const newFieldsState = [...formFields]
+                  const newFieldsState = [...state]
                   newFieldsState[idx].value = e.target.value
                   const newErrors = { ...errors }
                   delete newErrors[field.name]
                   setErrors(newErrors)
-                  setFormFields(newFieldsState)
+                  setState(newFieldsState)
                 }}
               >
                 {field.options.map((option, idy) => (
