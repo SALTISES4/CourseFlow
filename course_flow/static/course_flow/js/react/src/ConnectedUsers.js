@@ -140,7 +140,7 @@ export class ConnectedUser extends React.Component {
         }}
         title={data.user_name}
       >
-        {data.user_name[0]}
+        {data.user_name}
       </div>
     )
   }

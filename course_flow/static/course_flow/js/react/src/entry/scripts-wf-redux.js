@@ -449,7 +449,7 @@ export class WorkflowRenderer {
             ...obj,
             expires: Date.now() + time,
             user_id: this.user_id,
-            user_colour: myColour,
+            user_colour: COURSEFLOW_APP.contextData.myColour,
             lock: lock
           }
         })
