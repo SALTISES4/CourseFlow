@@ -20,7 +20,10 @@ from course_flow.duplication_functions import (
     fast_create_strategy,
     fast_duplicate_workflow,
 )
-from course_flow.forms import ProfileSettings
+from course_flow.forms import (
+    ProfileSettings,
+    NotificationsSettings
+)
 from course_flow.models import (
     Column,
     CourseFlowUser,
@@ -650,31 +653,6 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
         response["action"] = "error"
 
 
-# TODO: Remove after migrating functionality into
-# json_api_get_post_profile_settings method below
-# class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-#     model = CourseFlowUser
-#     fields = ["first_name", "last_name", "notifications"]
-#     template_name = "course_flow/profile-settings.html"
-
-#     def test_func(self):
-#         user = self.request.user
-#         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
-#         if courseflow_user is None:
-#             courseflow_user = CourseFlowUser.objects.create(
-#                 first_name=user.first_name, last_name=user.last_name, user=user
-#             )
-#         self.kwargs["pk"] = courseflow_user.pk
-#         return True
-
-#     def get_form(self, *args, **kwargs):
-#         form = super(UpdateView, self).get_form()
-#         return form
-
-#     def get_success_url(self):
-#         return reverse("course_flow:user-update")
-
-
 @login_required
 def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     user = CourseFlowUser.objects.filter(user=request.user).first()
@@ -692,7 +670,7 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
 
     # otherwise, the method is GET in which case we're simply returning
     # the JSON for all the inputs for the Profile Settings page (form)
-    profile_form = ProfileSettings(
+    form = ProfileSettings(
         {
             "first_name": user.first_name,
             "last_name": user.last_name,
@@ -701,7 +679,30 @@ def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
     )
 
     return JsonResponse(
-        {"fields": FormFieldsSerializer(profile_form).prepare_fields()}
+        {"fields": FormFieldsSerializer(form).prepare_fields()}
+    )
+
+
+@login_required
+def json_api_get_post_notifications_settings(request: HttpRequest) -> JsonResponse:
+    user = CourseFlowUser.objects.filter(user=request.user).first()
+
+    if request.method == "POST":
+        # on POST, instantiate the form with the JSON params and the model instance
+        form = NotificationsSettings(json.loads(request.body), instance=user)
+
+        # if the form is valid, save it and return a success response
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"action": "posted"})
+
+        # otherwise, return the errors so UI can display errors accordingly
+        return JsonResponse({"action": "error", "errors": form.errors})
+
+    form = NotificationsSettings({"notifications": user.notifications})
+
+    return JsonResponse(
+        {"fields": FormFieldsSerializer(form).prepare_fields()}
     )
 
 

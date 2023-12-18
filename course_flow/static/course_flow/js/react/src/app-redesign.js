@@ -15,8 +15,9 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
-import NotificationsPage from './components/pages/Notifications/index.jsx'
-import ProfileSettingsPage from './components/pages/ProfileSettings/index.jsx'
+import NotificationsPage from '@cfModule/components/pages/Notifications'
+import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
+import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
 import Sidebar, {
@@ -107,6 +108,16 @@ const getAppComponent = () => {
       return <Project {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
+     * USER / PROFILE
+     *******************************************************/
+    case 'notifications':
+      return <NotificationsPage />
+    case 'notificationsSettings':
+      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
+    case 'profileSettings':
+      return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
+
+    /*******************************************************
      * LIVE
      *******************************************************/
     case 'assignmentDetail':
@@ -146,10 +157,6 @@ const getAppComponent = () => {
 window.addEventListener('load', () => {
   const componentsToRender = [
     {
-      component: getAppComponent(),
-      target: '#container'
-    },
-    {
       component: <Sidebar />,
       target: '[data-component="sidebar"]',
       styles: SidebarRootStyles
@@ -159,13 +166,8 @@ window.addEventListener('load', () => {
       target: '[data-component="topbar"]'
     },
     {
-      component: <NotificationsPage />,
-      target: '[data-component="notifications-page"]'
-    },
-
-    {
-      component: <ProfileSettingsPage />,
-      target: '[data-component="profile-settings-page"]'
+      component: getAppComponent(),
+      target: '#container'
     }
   ]
   renderComponents(componentsToRender)
