@@ -81,7 +81,7 @@ def course_flow_patterns():
         ),
         path(
             "user/notifications/",
-            views.UserNotificationsView.as_view(),
+            views.notifications_view,
             name="user-notifications",
         ),
         path(
