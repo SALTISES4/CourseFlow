@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getHome } from '@XMLHTTP/PostFunctions.js'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard'
 
 class HomeMenu extends React.Component {
   constructor(props) {

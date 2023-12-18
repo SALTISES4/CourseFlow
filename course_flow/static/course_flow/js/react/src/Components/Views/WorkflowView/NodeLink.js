@@ -2,9 +2,9 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
-import { NodeLinkSVG } from '@cfCommonComponents'
 import { getNodeLinkByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
+import NodeLinkSVG from '@cfComponents/Workflow/Node/NodeLinkSVG'
 
 /**
  * The arrow manually drawn between two nodes (as opposed to the

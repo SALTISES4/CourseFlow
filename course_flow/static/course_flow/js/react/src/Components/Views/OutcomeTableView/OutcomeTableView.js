@@ -2,9 +2,9 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
-import { NodeOutcomeView } from '@cfCommonComponents'
 import OutcomeBase from './OutcomeBase.js'
 import OutcomeLegend from './OutcomeLegend.js'
+import NodeOutcomeView from '@cfComponents/Workflow/Node/NodeOutcomeView'
 
 /**
  * The outcome table.

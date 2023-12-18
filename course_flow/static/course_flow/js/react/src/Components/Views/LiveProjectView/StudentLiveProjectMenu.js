@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
-import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+import { AssignmentTitle, DatePicker } from '@cfUIComponents'
+import WorkflowCard from '@cfCommonComponents/../../components/Workflow/WorkflowCards/WorkflowCard'
+import WorkflowCardSimple from '@cfCommonComponents/../../components/Workflow/WorkflowCards/WorkflowCardSimple'
 // @local
 import { AssignmentView } from '../LiveAssignmentView'
 import LiveProjectSection from './LiveProjectSection.js'
@@ -12,8 +13,8 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
 
-    let workflows = this.state.data.workflows.map((workflow) => (
-      <SimpleWorkflow workflow_data={workflow} />
+    let workflows = this.state.data.workflows.map((workflow, index) => (
+      <WorkflowCardSimple key={index} workflow_data={workflow} />
     ))
     if (workflows.length === 0)
       workflows = window.gettext(
@@ -22,8 +23,8 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
 
     let assignments = this.state.data.assignments
       .filter((assignment) => assignment.user_assignment.completed === false)
-      .map((assignment) => (
-        <tr>
+      .map((assignment, index) => (
+        <tr key={index}>
           <td>
             <AssignmentTitle
               data={assignment}
@@ -74,9 +75,9 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
 class StudentLiveProjectWorkflows extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
-    let workflows_added = this.state.data.workflows_added.map((workflow) => (
-      <WorkflowCard workflow_data={workflow} />
-    ))
+    let workflows_added = this.state.data.workflows_added.map(
+      (workflow, index) => <WorkflowCard key={index} workflow_data={workflow} />
+    )
     return (
       <div className="workflow-details">
         <h3>{window.gettext('Workflows')}</h3>

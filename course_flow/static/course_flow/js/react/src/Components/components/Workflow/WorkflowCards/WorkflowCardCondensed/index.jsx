@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { WorkflowTitle } from '@cfUIComponents'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard/index.jsx'
 
 /*******************************************************
   A container for workflow cards that allows searching and filtering

@@ -5,8 +5,8 @@ import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeBase } from '../OutcomeTableView'
 import MatrixNode from './MatrixNode.js'
 import MatrixWeek from './MatrixWeek.js'
-import { NodeOutcomeView } from '@cfCommonComponents'
 import { OutcomeLegend } from '@cfViews/OutcomeTableView'
+import NodeOutcomeView from '@cfComponents/Workflow/Node/NodeOutcomeView'
 
 /**
  * The component for the competency matrix view of the

@@ -1,36 +1,37 @@
 import * as React from 'react'
+import * as Utility from '@cfUtility'
 // @local
 import LiveProjectSection from './LiveProjectSection.js'
 // @components
-import { AssignmentTitle, DatePicker, SimpleWorkflow } from '@cfUIComponents'
-import * as Utility from '@cfUtility'
+import { AssignmentTitle, DatePicker } from '@cfUIComponents'
+import WorkflowCardSimple from '@cfCommonComponents/../../components/Workflow/WorkflowCards/WorkflowCardSimple'
 
-export class LiveProjectOverview extends LiveProjectSection {
+class LiveProjectOverview extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
 
-    let workflows = this.state.data.workflows.map((workflow) => (
-      <SimpleWorkflow workflow_data={workflow} />
+    let workflows = this.state.data.workflows.map((workflow, index) => (
+      <WorkflowCardSimple key={index} workflow_data={workflow} />
     ))
-    if (workflows.length == 0)
+    if (workflows.length === 0)
       workflows = window.gettext(
         'No workflows have been made visible to students.'
       )
-    let teachers = this.state.data.teachers.map((user) => (
-      <tr>
+    let teachers = this.state.data.teachers.map((user, index) => (
+      <tr key={index}>
         <td className="table-user">{Utility.getUserDisplay(user.user)}</td>
         <td>{user.completion}</td>
       </tr>
     ))
-    let students = this.state.data.students.map((user) => (
-      <tr>
+    let students = this.state.data.students.map((user, index) => (
+      <tr key={index}>
         <td className="table-user">{Utility.getUserDisplay(user.user)}</td>
         <td>{user.completion}</td>
       </tr>
     ))
 
     let assignments = this.state.data.assignments.map((assignment) => (
-      <tr>
+      <tr key={index}>
         <td>
           <AssignmentTitle
             data={assignment}
@@ -77,3 +78,4 @@ export class LiveProjectOverview extends LiveProjectSection {
     )
   }
 }
+export default LiveProjectOverview

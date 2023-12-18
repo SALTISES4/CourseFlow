@@ -1,8 +1,8 @@
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
 import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
 import MenuTab from '../components/MenuTab.js'
 import closeMessageBox from '../components/closeMessageBox.js'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard'
 
 /*
 Creates a set of sections (tabs) of workflow/project card grids.
@@ -118,11 +118,11 @@ class WorkflowsMenu extends React.Component {
         </button>
       )
     } else if (
-      this.props.type == 'added_workflow_menu' ||
-      this.props.type == 'workflow_select_menu'
+      this.props.type === 'added_workflow_menu' ||
+      this.props.type === 'workflow_select_menu'
     ) {
       var text
-      if (this.props.type == 'added_workflow_menu') {
+      if (this.props.type === 'added_workflow_menu') {
         text = window.gettext('Select')
         if (
           this.state.selected &&
@@ -224,7 +224,7 @@ class WorkflowsMenu extends React.Component {
         <div className="menu-grid">
           <WorkflowCard
             workflow_data={this.current_project}
-            selected={this.state.selected == this.current_project.id}
+            selected={this.state.selected === this.current_project.id}
             no_hyperlink={no_hyperlink}
             type={this.props.type}
             dispatch={this.props.dispatch}

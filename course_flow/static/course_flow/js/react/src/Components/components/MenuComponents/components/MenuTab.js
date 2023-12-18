@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard'
 
 class MenuSection extends React.Component {
   constructor(props) {
@@ -26,8 +26,8 @@ class MenuSection extends React.Component {
 
     let objects = this.props.section_data.objects.map((object) => (
       <WorkflowCard
-        no_hyperlink={this.props.no_hyperlink}
         key={object.id}
+        no_hyperlink={this.props.no_hyperlink}
         type={this.props.type}
         workflow_data={object}
         objectType={section_type}

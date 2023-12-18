@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { EditableComponent } from '@cfParentComponents'
 
 import { toggleObjectSet } from '@cfReducers'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfCommonComponents/../../components/Workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit.js'
 import Workflow from './Workflow.js'
 

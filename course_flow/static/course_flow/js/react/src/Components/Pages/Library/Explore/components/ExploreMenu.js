@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { searchAllObjects } from '@XMLHTTP/PostFunctions.js'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
-import WorkflowFilter from '@cfComponents/WorkflowFilter/WorkFlowFilter.js'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard'
+import WorkflowFilter from '@cfComponents/Workflow/WorkflowFilter'
 import LibraryMenu from '@cfModule/Components/Pages/Library/Library/components/LibraryMenu.js'
 
 // from renderer:

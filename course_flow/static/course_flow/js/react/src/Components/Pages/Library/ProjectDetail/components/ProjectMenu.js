@@ -10,16 +10,16 @@ import {
 } from '@XMLHTTP/PostFunctions.js'
 // @local
 import LibraryMenu from '../../Library/components/LibraryMenu.js'
-import WorkflowFilter from '@cfComponents/WorkflowFilter/WorkFlowFilter.js'
 import * as Utility from '@cfUtility'
 import { CollapsibleText, WorkflowTitle } from '@cfUIComponents'
 import { MenuBar } from '@cfCommonComponents'
-import { LiveProjectOverview } from '@cfViews/LiveProjectView/LiveProjectOverview.js'
+import LiveProjectOverview from '@cfViews/LiveProjectView/LiveProjectOverview'
 import LiveProjectStudents from '@cfViews/LiveProjectView/LiveProjectStudents.js'
 import {
   LiveProjectAssignments,
   LiveProjectCompletionTable
 } from '@cfViews/LiveProjectView/index.js'
+import WorkflowFilter from '@cfComponents/Workflow/WorkflowFilter'
 // import { renderMessageBox } from '../components/MenuComponents/MenuComponents.js'
 // import closeMessageBox from '../components/MenuComponents/components/closeMessageBox.js'
 

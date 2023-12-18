@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Component } from '@cfParentComponents'
-import { searchAllObjects } from '@XMLHTTP/PostFunctions.js'
-import WorkflowCard from '@cfCommonComponents/WorkflowCards/WorkflowCard'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
-import WorkflowCardCondensed from '@cfCommonComponents/WorkflowCards/WorkflowCardCondensed'
+import { searchAllObjects } from '@XMLHTTP/PostFunctions'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+import WorkflowCardCondensed from '@cfComponents/Workflow/WorkflowCards/WorkflowCardCondensed'
+import WorkflowCard from '@cfComponents/Workflow/WorkflowCards/WorkflowCard'
 
 /*******************************************************
  * workflow filter is a shared component that

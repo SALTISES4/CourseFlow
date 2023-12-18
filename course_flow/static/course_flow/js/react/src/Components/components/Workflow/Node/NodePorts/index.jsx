@@ -1,10 +1,10 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { newNodeLink } from '@XMLHTTP/PostFunctions'
+import { newNodeLink } from '@XMLHTTP/PostFunctions.js'
 
 //The ports used to connect links for the nodes
-export class NodePorts extends React.Component {
+export class Index extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -141,4 +141,4 @@ export class NodePorts extends React.Component {
   }
 }
 
-export default NodePorts
+export default Index

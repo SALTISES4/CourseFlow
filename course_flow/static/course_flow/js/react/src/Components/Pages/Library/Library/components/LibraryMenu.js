@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getLibrary } from '@XMLHTTP/PostFunctions.js'
-import WorkflowFilter from '@cfComponents/WorkflowFilter/WorkFlowFilter.js'
+import WorkflowFilter from '@cfComponents/Workflow/WorkflowFilter'
 import { MenuBar } from '@cfCommonComponents'
 
 /*******************************************************

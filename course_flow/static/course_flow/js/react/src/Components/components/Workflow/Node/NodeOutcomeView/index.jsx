@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { getNodeByID } from '@cfFindState'
 import { Component } from '@cfParentComponents'
-import { NodeTitle } from '@cfUIComponents/Titles.js'
+import { NodeTitle } from '@cfUIComponents'
 
 /**
  *  Basic component to represent a node in the outcomes table
@@ -60,9 +60,6 @@ class NodeOutcomeViewUnconnected extends Component {
 }
 const mapNodeStateToProps = (state, own_props) =>
   getNodeByID(state, own_props.objectID)
-const NodeOutcomeView = connect(
-  mapNodeStateToProps,
-  null
-)(NodeOutcomeViewUnconnected)
+const Index = connect(mapNodeStateToProps, null)(NodeOutcomeViewUnconnected)
 
-export default NodeOutcomeView
+export default Index

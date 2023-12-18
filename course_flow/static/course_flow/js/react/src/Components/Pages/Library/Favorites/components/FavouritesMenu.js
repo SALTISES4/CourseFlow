@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getFavourites } from '@XMLHTTP/PostFunctions.js'
-import WorkflowFilter from '@cfComponents/WorkflowFilter/WorkFlowFilter.js'
+import WorkflowFilter from '@cfComponents/Workflow/WorkflowFilter'
 import LibraryMenu from '../../Library/components/LibraryMenu.js'
 
 class FavouritesMenu extends LibraryMenu {
