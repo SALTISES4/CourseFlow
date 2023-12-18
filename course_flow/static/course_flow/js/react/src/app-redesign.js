@@ -15,8 +15,6 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
-import NotificationsPage from './components/pages/Notifications/index.jsx'
-import ProfileSettingsPage from './components/pages/ProfileSettings/index.jsx'
 
 // components
 import Sidebar, {
@@ -27,26 +25,21 @@ import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
+import { Explore, Home } from '@mui/icons-material'
+import Library from '@cfPages/Library/Library/index.jsx'
+import LiveAssignment from '@cfPages/Live/LiveAssignment/index.jsx'
+import LiveProject from '@cfPages/Live/LiveProject/index.jsx'
+import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison/index.jsx'
+import WorkflowGrid from '@cfPages/Workflow/WorkflowGrid/index.jsx'
+import NotificationsPage from '@cfPages/Notifications/index.jsx'
+import ProfileSettingsPage from '@cfPages/ProfileSettings/index.jsx'
+import Favourites from '@cfPages/Library/Favorites/index.jsx'
 
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
   nonce: document.querySelector('#script-redesign').nonce
 })
-
-// @WORKFLOW
-import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
-import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
-// @LIVE
-import LiveAssignment from '@cfModule/components/pages/Live/LiveAssignment'
-import LiveProject from '@cfModule/components/pages/Live/LiveProject'
-// @LIBRARY
-import Project from '@cfModule/components/pages/Library/ProjectDetail'
-import Library from '@cfModule/components/pages/Library/Library'
-import Favourites from '@cfModule/components/pages/Library/Favorites'
-import Home from '@cfModule/components/pages/Library/Home'
-import Explore from '@cfModule/components/pages/Library/Explore'
-import Workflow from '@cfModule/components/pages/Workflow/Workflow'
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
@@ -87,6 +80,10 @@ function renderComponents(components) {
 // set in python views and prepped in react_renderer.html
 console.log('current path')
 console.log(COURSEFLOW_APP.path_id)
+
+function Project() {
+  return null
+}
 
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {

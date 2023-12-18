@@ -32,7 +32,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(
         __dirname,
-        'course_flow/static/course_flow/js/react/src/entry/scripts-redesign.jsx'
+        'course_flow/static/course_flow/js/react/src/app-redesign.js'
       ),
       name: 'MyLib',
       fileName: (format) => `my-lib.${format}.js`

@@ -5,10 +5,10 @@ import { FavouritesMenu } from '@cfCommonComponents/menu/menus'
 /*******************************************************
  * @FavouritesRenderer
  *******************************************************/
-class FavouritesRenderer extends LibraryRenderer {
+class Favourites extends LibraryRenderer {
   getContents() {
     return <FavouritesMenu renderer={this} />
   }
 }
 
-export default FavouritesRenderer
+export default Favourites
