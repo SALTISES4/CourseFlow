@@ -82,6 +82,7 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
                     "projectUrl": reverse("course_flow:project-create"),
                 },
                 "account": {
+                    "notificationsSettingsUrls": reverse("course_flow:user-notifications-settings"),
                     "profileUrl": reverse("course_flow:user-update"),
                     "resetPasswordUrl": course_flow_password_change_url(),
                     "daliteUrl": course_flow_return_url(),

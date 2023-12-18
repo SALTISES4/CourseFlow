@@ -85,6 +85,11 @@ def course_flow_patterns():
             name="user-notifications",
         ),
         path(
+            "user/notifications-settings/",
+            views.user.notifications_settings_view,
+            name="user-notifications-settings",
+        ),
+        path(
             "project/create/",
             views.ProjectCreateView.as_view(),
             name="project-create",
@@ -132,6 +137,11 @@ def course_flow_patterns():
             "json-api-get-post-update-profile-settings/",
             views.json_api.update.json_api_get_post_profile_settings,
             name="json-api-get-post-update-profile-settings",
+        ),
+        path(
+            "json-api-get-post-notifications-settings/",
+            views.json_api.update.json_api_get_post_notifications_settings,
+            name="json-api-get-post-notifications-settings",
         ),
         path(
             "comments/add/",

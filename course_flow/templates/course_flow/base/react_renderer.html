@@ -1,7 +1,6 @@
 <script nonce="{{ request.csp_nonce }}">
   COURSEFLOW_APP.path_id = "{{ path_id }}";
   const DTOContextData = {{ contextData | safe }};
-  let localContextData
   let makeActiveSidebarID = null
 
   switch (COURSEFLOW_APP.path_id) {
@@ -14,7 +13,7 @@
           program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
         }
       {% endif %}
-      makeActiveSidebarID = "#project" + localContextData.project_data.id
+      makeActiveSidebarID = "#project" + DTOContextData.project_data.id
       break;
     }
     case 'favorites': {
@@ -25,6 +24,14 @@
     case 'library': {
       COURSEFLOW_APP.contextData = DTOContextData
       makeActiveSidebarID = '#panel-my-library'
+      break;
+    }
+    case 'notificationsSettings': {
+      COURSEFLOW_APP.contextData = DTOContextData
+      break;
+    }
+    case 'profileSettings': {
+      COURSEFLOW_APP.contextData = DTOContextData
       break;
     }
     case 'home': {

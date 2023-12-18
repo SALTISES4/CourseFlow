@@ -51,3 +51,10 @@ class ProfileSettings(forms.ModelForm):
         widgets = {
             'language': forms.RadioSelect,
         }
+
+class NotificationsSettings(forms.ModelForm):
+    class Meta:
+        model = CourseFlowUser
+        fields = (
+            "notifications",
+        )

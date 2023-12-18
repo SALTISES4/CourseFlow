@@ -16,6 +16,7 @@ import createCache from '@emotion/cache'
 
 // pages/views/templates
 import NotificationsPage from '../Components/Pages/Notifications'
+import NotificationsSettingsPage from '../Components/Pages/NotificationsSettings'
 import ProfileSettingsPage from '../Components/Pages/ProfileSettings'
 
 // components
@@ -112,8 +113,10 @@ const getAppComponent = () => {
      *******************************************************/
     case 'notifications':
       return <NotificationsPage />
+    case 'notificationsSettings':
+      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':
-      return <ProfileSettingsPage />
+      return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
      * LIVE
