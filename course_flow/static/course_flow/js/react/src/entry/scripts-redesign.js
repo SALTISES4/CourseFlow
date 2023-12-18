@@ -114,7 +114,7 @@ const getAppComponent = () => {
     case 'notifications':
       return <NotificationsPage />
     case 'notificationsSettings':
-      return <NotificationsSettingsPage />
+      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':
       return <ProfileSettingsPage />
 
