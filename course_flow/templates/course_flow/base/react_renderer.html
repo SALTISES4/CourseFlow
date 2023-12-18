@@ -1,14 +1,11 @@
 <script nonce="{{ request.csp_nonce }}">
-
   COURSEFLOW_APP.path_id = "{{ path_id }}";
   const DTOContextData = {{ contextData | safe }};
   let contextData
   let makeActiveSidebarID = null
 
-
   switch (COURSEFLOW_APP.path_id) {
     case 'projectDetail': {
-
       COURSEFLOW_APP.contextData = DTOContextData
       {% if object %}
         window.create_path_this_project = {
@@ -30,19 +27,17 @@
       makeActiveSidebarID = '#panel-my-library'
       break;
     }
-
     case 'home': {
       COURSEFLOW_APP.contextData = DTOContextData
       makeActiveSidebarID = '#panel-home'
       break;
     }
-
-
     case 'explore': {
       COURSEFLOW_APP.contextData = DTOContextData
       makeActiveSidebarID = "#panel-explore"
       break;
     }
+
     /*******************************************************
      * REDUX STUFF
      *******************************************************/
@@ -55,7 +50,7 @@
       //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
       //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
       // }
-      {% endif  %}
+      {% endif %}
       COURSEFLOW_APP.contextData = DTOContextData
       break;
     }
@@ -80,6 +75,4 @@
     $(document).ajaxError(window.fail_function);
     makeActiveSidebarID && makeActiveSidebar(makeActiveSidebarID)
   });
-
-
 </script>

@@ -7,6 +7,7 @@ def home_view(request):
     current_user = request.user
     context = {}
     context_data = {
+        # TODO FIXME
         # this line is throwing an error
         # "is_teacher": current_user.groups.filter("Teacher").exists(),
         # "is_teacher": current_user.has_group("Teacher"),
