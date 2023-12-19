@@ -671,26 +671,19 @@ def json_api_post_profile_settings(request: HttpRequest) -> JsonResponse:
 
 
 @login_required
-def json_api_get_post_notifications_settings(request: HttpRequest) -> JsonResponse:
+@require_POST
+def json_api_post_notifications_settings(request: HttpRequest) -> JsonResponse:
     user = CourseFlowUser.objects.filter(user=request.user).first()
+    # on POST, instantiate the form with the JSON params and the model instance
+    form = NotificationsSettings(json.loads(request.body), instance=user)
 
-    if request.method == "POST":
-        # on POST, instantiate the form with the JSON params and the model instance
-        form = NotificationsSettings(json.loads(request.body), instance=user)
+    # if the form is valid, save it and return a success response
+    if form.is_valid():
+        form.save()
+        return JsonResponse({"action": "posted"})
 
-        # if the form is valid, save it and return a success response
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"action": "posted"})
-
-        # otherwise, return the errors so UI can display errors accordingly
-        return JsonResponse({"action": "error", "errors": form.errors})
-
-    form = NotificationsSettings({"notifications": user.notifications})
-
-    return JsonResponse(
-        {"fields": FormFieldsSerializer(form).prepare_fields()}
-    )
+    # otherwise, return the errors so UI can display errors accordingly
+    return JsonResponse({"action": "error", "errors": form.errors})
 
 
 # A helper function to set the linked workflow.
