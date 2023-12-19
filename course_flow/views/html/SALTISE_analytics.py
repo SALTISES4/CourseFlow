@@ -2,13 +2,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.views.generic import TemplateView
 
-from course_flow.models import User
+from course_flow.models.models import User
 
 
 class SALTISEAnalyticsView(
     LoginRequiredMixin, UserPassesTestMixin, TemplateView
 ):
-    template_name = "course_flow/saltise_analytics.html"
+    template_name = "course_flow/admin/saltise_analytics.html"
 
     def test_func(self):
         return (

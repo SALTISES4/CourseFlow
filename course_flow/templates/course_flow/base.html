@@ -38,7 +38,10 @@
 
 <body id="site">
 <div class="main-wrapper">
-  {% include 'course_flow/base/left_panel.html' %}
+  {% comment %}
+  target for sibebar.jsx
+  {% endcomment %}
+  <div data-component="sidebar"></div>
 
   {% comment %}
       @todo see https://course-flow.atlassian.net/browse/COUR-246

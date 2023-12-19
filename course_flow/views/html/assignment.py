@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.models import LiveAssignment, LiveProjectUser
+from course_flow.models.liveAssignment import LiveAssignment
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.serializers import (
     LiveAssignmentSerializer,
     LiveProjectSerializer,

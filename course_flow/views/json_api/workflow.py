@@ -14,20 +14,20 @@ from course_flow.decorators import (
     user_can_view_or_none,
     user_is_teacher,
 )
-from course_flow.models import (
-    Activity,
-    Course,
-    Node,
-    NodeLink,
-    NodeWeek,
-    Notification,
-    ObjectSet,
+from course_flow.models.activity import Activity
+from course_flow.models.course import Course
+from course_flow.models.models import Project
+from course_flow.models.node import Node
+from course_flow.models.notification import Notification
+from course_flow.models.objectset import ObjectSet
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeWorkflow,
-    Project,
-    Workflow,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,

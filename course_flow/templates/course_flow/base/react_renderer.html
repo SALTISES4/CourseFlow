@@ -1,11 +1,20 @@
 <script nonce="{{ request.csp_nonce }}">
   COURSEFLOW_APP.path_id = "{{ path_id }}";
   const DTOContextData = {{ contextData | safe }};
-  let makeActiveSidebarID = null
 
   switch (COURSEFLOW_APP.path_id) {
-    case 'projectDetail': {
+
+    case 'explore':
+    case 'home':
+    case 'favorites':
+    case 'library':
+    case 'notificationsSettings':
+    case 'profileSettings':
+    case "my_live_projects": {
       COURSEFLOW_APP.contextData = DTOContextData
+      break;
+    }
+    case 'projectDetail': {
       {% if object %}
         window.create_path_this_project = {
           activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
@@ -13,35 +22,7 @@
           program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
         }
       {% endif %}
-      makeActiveSidebarID = "#project" + DTOContextData.project_data.id
-      break;
-    }
-    case 'favorites': {
       COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = "#my-favourites"
-      break;
-    }
-    case 'library': {
-      COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = '#panel-my-library'
-      break;
-    }
-    case 'notificationsSettings': {
-      COURSEFLOW_APP.contextData = DTOContextData
-      break;
-    }
-    case 'profileSettings': {
-      COURSEFLOW_APP.contextData = DTOContextData
-      break;
-    }
-    case 'home': {
-      COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = '#panel-home'
-      break;
-    }
-    case 'explore': {
-      COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = "#panel-explore"
       break;
     }
 
@@ -51,19 +32,14 @@
     case 'projectComparison': {
       //  @todo these don't seem to be used
       {% if object %}
-      // window.workflow_paths = {
-      //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      //  course: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
-      // }
+        // window.workflow_paths = {
+        //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //  course: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        // }
       {% endif %}
       COURSEFLOW_APP.contextData = DTOContextData
-      break;
-    }
-    case "my_live_projects": {
-      COURSEFLOW_APP.contextData = DTOContextData
-      makeActiveSidebarID = "#panel-my-live-projects"
       break;
     }
     case "workflowDetailView": {
@@ -73,13 +49,7 @@
           'hsl(' + (((DTOContextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
-      makeActiveSidebarID = '#workflow' + COURSEFLOW_APP.contextData.workflow_model_id
       break;
     }
   }
-
-  window.addEventListener("load", function () {
-    $(document).ajaxError(window.fail_function);
-    makeActiveSidebarID && makeActiveSidebar(makeActiveSidebarID)
-  });
 </script>

@@ -4,20 +4,18 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
 from course_flow.decorators import ajax_login_required
-from course_flow.models import (
-    Activity,
-    Column,
-    ColumnWorkflow,
-    Course,
-    Node,
-    NodeLink,
-    NodeWeek,
-    Program,
-    Project,
-    Week,
-    WeekWorkflow,
-    WorkflowProject,
-)
+from course_flow.models.activity import Activity
+from course_flow.models.column import Column
+from course_flow.models.course import Course
+from course_flow.models.models import Project
+from course_flow.models.node import Node
+from course_flow.models.program import Program
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.week import Week
 from course_flow.serializers import (
     bleach_allowed_tags_description,
     bleach_allowed_tags_title,

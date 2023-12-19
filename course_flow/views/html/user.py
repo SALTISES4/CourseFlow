@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from course_flow.decorators import ajax_login_required
 from course_flow.forms import ProfileSettings
-from course_flow.models import CourseFlowUser
+from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import FormFieldsSerializer
 
 

@@ -3,7 +3,8 @@ import calendar
 import pandas as pd
 from django.core.cache import cache
 
-from course_flow.models import Project, Workflow
+from course_flow.models.models import Project
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import AnalyticsSerializer
 
 

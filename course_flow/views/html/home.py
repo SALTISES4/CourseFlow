@@ -14,7 +14,7 @@ def home_view(request):
             # "is_teacher": current_user.groups.filter("Teacher").exists(),
             # "is_teacher": current_user.has_group("Teacher"),
             "is_teacher": "true",
-        }
+        },
     }
 
     return render(request, "course_flow/react/common_entrypoint.html", context)

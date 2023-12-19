@@ -5,7 +5,6 @@ from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 
-from course_flow import redux_actions as actions
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import (
     cleanup_workflow_post_duplication,
@@ -16,18 +15,16 @@ from course_flow.duplication_functions import (
     fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow.models import (
-    ColumnWorkflow,
-    NodeLink,
-    NodeWeek,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Project,
-    WeekWorkflow,
-    Workflow,
-    WorkflowProject,
-)
+from course_flow.models.models import Project
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -42,6 +39,7 @@ from course_flow.serializers import (
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
 )
+from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_all_outcomes_for_outcome, get_model_from_str
 
 #############################################

@@ -1,8 +1,5 @@
 import datetime
 import re
-import time
-import json
-from functools import wraps
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -13,43 +10,40 @@ from html2text import html2text
 from rest_framework import serializers
 
 # from .decorators import check_object_permission
-from .models import (
-    Activity,
-    Column,
-    ColumnWorkflow,
-    Comment,
-    Course,
-    CourseFlowUser,
-    Discipline,
-    Favourite,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
-    Node,
-    NodeLink,
-    NodeWeek,
-    ObjectPermission,
-    ObjectSet,
-    Outcome,
+from course_flow.models.models import Project, User, title_max_length
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    User,
-    UserAssignment,
-    Week,
-    WeekWorkflow,
-    Workflow,
-    title_max_length,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+
+from .models.activity import Activity
+from .models.column import Column
+from .models.comment import Comment
+from .models.course import Course
+from .models.courseFlowUser import CourseFlowUser
+from .models.discipline import Discipline
+from .models.favourite import Favourite
+from .models.liveAssignment import LiveAssignment
+from .models.liveProject import LiveProject
+from .models.node import Node
+from .models.objectPermission import ObjectPermission
+from .models.objectset import ObjectSet
+from .models.outcome import Outcome
+from .models.program import Program
+from .models.userAssignment import UserAssignment
+from .models.week import Week
+from .models.workflow import Workflow
 from .utils import (
-    benchmark,
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
-    get_user_permission,
     get_user_role,
     linkIDMap,
     user_project_url,
@@ -2174,10 +2168,7 @@ class FormFieldsSerializer:
         choices = []
         if hasattr(field, "choices"):
             for choice in field.choices:
-                choices.append({
-                    "label": str(choice[1]),
-                    "value": choice[0]
-                })
+                choices.append({"label": str(choice[1]), "value": choice[0]})
         return choices if len(choices) > 0 else None
 
     def prepare_fields(self):
@@ -2187,16 +2178,26 @@ class FormFieldsSerializer:
         # in order for cleaned_data to become available
         if self.form_instance.is_valid():
             for field_name, field in self.form_instance.fields.items():
-                fields.append({
-                    "name": field_name,
-                    "label": field.label if hasattr(field, 'label') else None,
-                    "type": self.get_field_type(field),
-                    "required": field.required,
-                    "options": self.get_field_choices(field),
-                    "max_length": field.max_length if hasattr(field, 'max_length') else None,
-                    "help_text": field.help_text if hasattr(field, 'help_text') else None,
-                    "value": self.form_instance.cleaned_data.get(field_name, None),
-                })
+                fields.append(
+                    {
+                        "name": field_name,
+                        "label": field.label
+                        if hasattr(field, "label")
+                        else None,
+                        "type": self.get_field_type(field),
+                        "required": field.required,
+                        "options": self.get_field_choices(field),
+                        "max_length": field.max_length
+                        if hasattr(field, "max_length")
+                        else None,
+                        "help_text": field.help_text
+                        if hasattr(field, "help_text")
+                        else None,
+                        "value": self.form_instance.cleaned_data.get(
+                            field_name, None
+                        ),
+                    }
+                )
         return fields
 
 

@@ -5,7 +5,7 @@ import django.utils.timezone
 from django.conf import settings
 from django.db import migrations, models
 
-import course_flow.models
+import course_flow.models.models
 
 
 class Migration(migrations.Migration):
@@ -32,13 +32,13 @@ class Migration(migrations.Migration):
                 (
                     "start_date",
                     models.DateTimeField(
-                        default=course_flow.models.default_start_date
+                        default=course_flow.models.models.default_start_date
                     ),
                 ),
                 (
                     "end_date",
                     models.DateTimeField(
-                        default=course_flow.models.default_due_date
+                        default=course_flow.models.models.default_due_date
                     ),
                 ),
                 (

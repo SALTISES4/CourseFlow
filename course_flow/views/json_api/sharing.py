@@ -17,7 +17,9 @@ from course_flow.decorators import (
     user_can_view,
     user_is_teacher,
 )
-from course_flow.models import Notification, ObjectPermission, User
+from course_flow.models.models import User
+from course_flow.models.notification import Notification
+from course_flow.models.objectPermission import ObjectPermission
 from course_flow.serializers import UserSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 

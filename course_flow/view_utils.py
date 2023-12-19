@@ -3,15 +3,13 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.models import (
-    Column,
-    Node,
-    ObjectPermission,
-    Project,
-    Week,
-    Workflow,
-    WorkflowProject,
-)
+from course_flow.models.column import Column
+from course_flow.models.models import Project
+from course_flow.models.node import Node
+from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.week import Week
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
 from course_flow.utils import (
     get_model_from_str,

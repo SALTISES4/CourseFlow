@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "daphne",
     "django.contrib.staticfiles",
     "channels",
+    "django_extensions",
 ]
 
 
@@ -286,3 +287,9 @@ if DEBUG:
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
+
+
+GRAPH_MODELS = {
+    "all_applications": True,
+    "graph_models": True,
+}

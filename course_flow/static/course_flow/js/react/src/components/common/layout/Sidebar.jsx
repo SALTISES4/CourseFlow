@@ -165,7 +165,7 @@ const Sidebar = () => {
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
-              id="panel-home"
+              data-test-id="panel-home"
               href={COURSEFLOW_APP.config.home_path}
               selected={
                 window.location.pathname === COURSEFLOW_APP.config.home_path
@@ -182,7 +182,7 @@ const Sidebar = () => {
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
-                  id="panel-my-library"
+                  data-test-id="panel-my-library"
                   href={COURSEFLOW_APP.config.my_library_path}
                   selected={
                     window.location.pathname ===
@@ -198,7 +198,7 @@ const Sidebar = () => {
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
-                  id="panel-explore"
+                  data-test-id="panel-explore"
                   href={COURSEFLOW_APP.config.explore_path}
                   selected={
                     window.location.pathname ===
@@ -217,7 +217,7 @@ const Sidebar = () => {
             <ListItem disablePadding dense>
               <ListItemButton
                 component="a"
-                id="panel-my-live-projects"
+                data-test-id="panel-my-live-projects"
                 href={COURSEFLOW_APP.config.my_liveprojects_path}
                 selected={
                   window.location.pathname ===

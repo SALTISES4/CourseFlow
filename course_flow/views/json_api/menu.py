@@ -10,14 +10,12 @@ from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 
 from course_flow.decorators import ajax_login_required, public_access
-from course_flow.models import (
-    CourseFlowUser,
-    Favourite,
-    LiveProject,
-    ObjectPermission,
-    Project,
-    Workflow,
-)
+from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.favourite import Favourite
+from course_flow.models.liveProject import LiveProject
+from course_flow.models.models import Project
+from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     FavouriteSerializer,
     InfoBoxSerializer,
@@ -82,7 +80,9 @@ def json_api_get_top_bar(request: HttpRequest) -> JsonResponse:
                     "projectUrl": reverse("course_flow:project-create"),
                 },
                 "account": {
-                    "notificationsSettingsUrls": reverse("course_flow:user-notifications-settings"),
+                    "notificationsSettingsUrls": reverse(
+                        "course_flow:user-notifications-settings"
+                    ),
                     "profileUrl": reverse("course_flow:user-update"),
                     "resetPasswordUrl": course_flow_password_change_url(),
                     "daliteUrl": course_flow_return_url(),

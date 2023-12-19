@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+import course_flow.models.project
 from course_flow import models
 
 owned_throughmodels = [
@@ -211,7 +212,9 @@ def get_parent_nodes_for_workflow(workflow):
 
 def get_nondeleted_favourites(user):
     return list(
-        models.Project.objects.filter(favourited_by__user=user)
+        course_flow.models.project.Project.objects.filter(
+            favourited_by__user=user
+        )
     ) + list(models.Workflow.objects.filter(favourited_by__user=user))
 
     # return models.Favourite.objects.filter(user=user).exclude(
@@ -243,7 +246,7 @@ def check_possible_parent(workflow, parent_workflow, same_project):
 
 
 def get_classrooms_for_student(user):
-    return models.Project.objects.filter(
+    return course_flow.models.project.Project.objects.filter(
         liveproject__liveprojectuser__user=user,
         deleted=False,
     )

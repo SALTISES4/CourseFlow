@@ -1,7 +1,6 @@
 import base64
 import uuid
 
-from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import (
     GenericForeignKey,
     GenericRelation,
@@ -17,14 +16,14 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
+from course_flow.models.project import Project
 from course_flow.utils import (
     get_all_outcomes_for_outcome,
     get_descendant_outcomes,
 )
 
-User = get_user_model()
 
-title_max_length = 200
+
 
 
 class Project(models.Model):

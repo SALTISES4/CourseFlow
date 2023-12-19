@@ -1,28 +1,27 @@
 from django.db.models import Q
 from django.utils import timezone
 
-from course_flow.models import (
-    Activity,
-    Column,
-    ColumnWorkflow,
-    Course,
-    Node,
-    NodeLink,
-    NodeWeek,
-    ObjectSet,
-    Outcome,
+from course_flow.models.activity import Activity
+from course_flow.models.column import Column
+from course_flow.models.course import Course
+from course_flow.models.models import Project, User
+from course_flow.models.node import Node
+from course_flow.models.objectset import ObjectSet
+from course_flow.models.outcome import Outcome
+from course_flow.models.program import Program
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    User,
-    Week,
-    WeekWorkflow,
-    Workflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.week import Week
+from course_flow.models.workflow import Workflow
 from course_flow.utils import (
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,

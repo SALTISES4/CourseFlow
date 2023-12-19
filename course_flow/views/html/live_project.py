@@ -11,12 +11,10 @@ from course_flow.decorators import (
     check_object_enrollment,
     check_object_permission,
 )
-from course_flow.models import (
-    LiveProject,
-    LiveProjectUser,
-    ObjectPermission,
-    Project,
-)
+from course_flow.models.liveProject import LiveProject
+from course_flow.models.models import Project
+from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.serializers import (
     InfoBoxSerializer,
     LiveProjectSerializer,

@@ -1,5 +1,4 @@
 import json
-import time
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -8,20 +7,17 @@ from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import settings
-from course_flow.models import (
-    Activity,
-    Course,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
-    ObjectPermission,
-    Project,
-    User,
-    UserAssignment,
-    WorkflowProject,
-)
+from course_flow.models.models import Project, User
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.serializers import LiveProjectSerializer
 
+from ...models.activity import Activity
+from ...models.course import Course
+from ...models.liveAssignment import LiveAssignment
+from ...models.liveProject import LiveProject
+from ...models.objectPermission import ObjectPermission
+from ...models.userAssignment import UserAssignment
 from .utils import get_author, login, login_student
 
 

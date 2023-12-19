@@ -1,6 +1,10 @@
 from django.core.management.base import BaseCommand
 
-from course_flow.models import Activity, Column, Node, NodeWeek, Week
+from course_flow.models.activity import Activity
+from course_flow.models.column import Column
+from course_flow.models.node import Node
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.week import Week
 
 
 class Command(BaseCommand):

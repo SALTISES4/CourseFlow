@@ -9,34 +9,34 @@ from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import tasks
-from course_flow.models import (
-    Activity,
-    Column,
-    ColumnWorkflow,
-    Comment,
-    Course,
-    CourseFlowUser,
-    Discipline,
-    Favourite,
-    Node,
-    NodeLink,
-    NodeWeek,
-    Notification,
-    ObjectPermission,
-    Outcome,
+from course_flow.models.models import Project
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    Week,
-    WeekWorkflow,
-    Workflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.utils import get_model_from_str
 
+from ...models.activity import Activity
+from ...models.column import Column
+from ...models.comment import Comment
+from ...models.course import Course
+from ...models.courseFlowUser import CourseFlowUser
+from ...models.discipline import Discipline
+from ...models.favourite import Favourite
+from ...models.node import Node
+from ...models.notification import Notification
+from ...models.objectPermission import ObjectPermission
+from ...models.outcome import Outcome
+from ...models.program import Program
+from ...models.week import Week
+from ...models.workflow import Workflow
 from .utils import check_order, get_author, login, make_object
 
 TESTJSON_FILENAME = os.path.join(
