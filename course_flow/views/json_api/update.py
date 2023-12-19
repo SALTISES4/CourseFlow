@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
@@ -654,33 +655,19 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
 
 
 @login_required
-def json_api_get_post_profile_settings(request: HttpRequest) -> JsonResponse:
+@require_POST
+def json_api_post_profile_settings(request: HttpRequest) -> JsonResponse:
     user = CourseFlowUser.objects.filter(user=request.user).first()
-    if request.method == "POST":
-        # on POST, instantiate the form with the JSON params and the model instance
-        form = ProfileSettings(json.loads(request.body), instance=user)
+    # instantiate the form with the JSON params and the model instance
+    form = ProfileSettings(json.loads(request.body), instance=user)
 
-        # if the form is valid, save it and return a success response
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"action": "posted"})
+    # if the form is valid, save it and return a success response
+    if form.is_valid():
+        form.save()
+        return JsonResponse({"action": "posted"})
 
-        # otherwise, return the errors so UI can display errors accordingly
-        return JsonResponse({"action": "error", "errors": form.errors})
-
-    # otherwise, the method is GET in which case we're simply returning
-    # the JSON for all the inputs for the Profile Settings page (form)
-    form = ProfileSettings(
-        {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "language": user.language,
-        }
-    )
-
-    return JsonResponse(
-        {"fields": FormFieldsSerializer(form).prepare_fields()}
-    )
+    # otherwise, return the errors so UI can display errors accordingly
+    return JsonResponse({"action": "error", "errors": form.errors})
 
 
 @login_required
