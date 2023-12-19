@@ -1,4 +1,4 @@
-import json
+from rest_framework.renderers import JSONRenderer
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -31,11 +31,11 @@ def notifications_settings_view(request):
     context = {
         "title": "Notifications Settings",
         "path_id": "notificationsSettings",
-        "contextData": json.dumps({
+        "contextData": JSONRenderer().render({
             "formData": {
                 "receiveNotifications": user.notifications
             }
-        })
+        }).decode("utf-8")
     }
     return render(request, "course_flow/react/notifications_settings.html", context)
 
@@ -54,9 +54,9 @@ def profile_settings_view(request):
     context = {
         "title": "Profile Settings",
         "path_id": "profileSettings",
-        "contextData": json.dumps({
+        "contextData": JSONRenderer().render({
             "formData": FormFieldsSerializer(form).prepare_fields()
-        })
+        }).decode("utf-8")
     }
 
     return render(request, "course_flow/react/profile_settings.html", context)
