@@ -134,14 +134,14 @@ def course_flow_patterns():
         ),
         # Register create JSON routes
         path(
-            "json-api-get-post-update-profile-settings/",
-            views.json_api.update.json_api_get_post_profile_settings,
-            name="json-api-get-post-update-profile-settings",
+            "json-api-post-update-profile-settings/",
+            views.json_api.update.json_api_post_profile_settings,
+            name="json-api-post-update-profile-settings",
         ),
         path(
-            "json-api-get-post-notifications-settings/",
-            views.json_api.update.json_api_get_post_notifications_settings,
-            name="json-api-get-post-notifications-settings",
+            "json-api-post-notifications-settings/",
+            views.json_api.update.json_api_post_notifications_settings,
+            name="json-api-post-notifications-settings",
         ),
         path(
             "comments/add/",
