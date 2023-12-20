@@ -1,4 +1,4 @@
-import * as Utility from './UtilityFunctions.js'
+import * as Utility from './utilityFunctions.js'
 
 /*
 Determines how long an action locks an object

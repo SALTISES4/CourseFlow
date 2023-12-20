@@ -8,20 +8,23 @@
 <script
   id="script-redesign"
   nonce="{{ request.csp_nonce }}"
-  src="{% static 'course_flow/js/react/dist/react-app-redesign.min.js' %}"
+  src="{% static 'course_flow/js/react/dist/courseflow-app.es.js' %}"
   defer="true"
   charset="utf-8"
 ></script>
-<!-- -->
 <script nonce="{{ request.csp_nonce }}"
         src="{% url 'course_flow:javascript-catalog' %}"
         defer="true"
         charset="utf-8"
 ></script>
+
 <!-- * CSS -->
 {% compress css %}
   <link
     rel="stylesheet"
-    href="{% static 'course_flow/js/react/dist/course_flow.css' %}"
+    href="{% static 'course_flow/js/react/dist/style.css' %}"
   />
 {% endcompress %}
+<!-- * CSS -->
+
+

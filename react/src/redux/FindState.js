@@ -1,5 +1,5 @@
-import * as Constants from '../Constants.js'
-import * as Utility from '../UtilityFunctions.js'
+import * as Constants from '../constants.js'
+import * as Utility from '../utilityFunctions.js'
 
 /*******************************************************
  *

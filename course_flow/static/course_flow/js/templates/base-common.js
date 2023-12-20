@@ -114,11 +114,11 @@ $(window).on('load', () => {
 
 // @todo imports go at top
 // Fix Quilljs's link sanitization
-const Link = Quill.import('formats/link')
+const QuillLink = Quill.import('formats/link')
 // Override the existing property on the Quill global object and add custom protocols
-Link.PROTOCOL_WHITELIST = ['http', 'https']
+QuillLink.PROTOCOL_WHITELIST = ['http', 'https']
 
-class CustomLinkSanitizer extends Link {
+class CustomLinkSanitizer extends QuillLink {
   static sanitize(url) {
     // Run default sanitize method from Quill
     const sanitizedUrl = super.sanitize(url)
