@@ -5,19 +5,19 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import * as path from 'path'
 
 export default defineConfig({
-  css: {
-    devSourcemap: true // this one
-  },
-  plugins: [eslint(), react(), tsconfigPaths()],
   mode: 'development',
-  esbuild: { loader: 'jsx', include: /src\/.*\.jsx?$/, exclude: [] },
+  plugins: [eslint(), react(), tsconfigPaths()],
+  css: {
+    devSourcemap: true
+  },
+  esbuild: { loader: 'jsx', include: /\.(js|jsx|ts|tsx)$/, exclude: [] },
   optimizeDeps: {
     esbuildOptions: {
       plugins: [
         {
           name: 'load-js-files-as-jsx',
           setup(build) {
-            build.onLoad({ filter: /src\/.*\.js$/ }, async (args) => {
+            build.onLoad({ filter: /\.(js|ts|tsx)$/ }, async (args) => {
               return {
                 loader: 'jsx',
                 contents: await fs.readFile(args.path, 'utf8')
