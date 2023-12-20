@@ -19,6 +19,7 @@
     "comment1": "TS BELOW",
     "dev": "vite --config vite.config.dev.js",
     "build": "tsc && vite --config vite.config.dev.js build",
+    "vite-build-watch": "tsc && VITE_BUILD_WATCH=true vite --config vite.config.dev.js build",
     "buildts": "tsc",
     "buildDev": "tsc && vite build --mode development --minify false",
     "preview": "vite preview",

@@ -45,6 +45,11 @@ export default defineConfig({
     },
     outDir: '../course_flow/static/course_flow/js/react/dist',
     sourcemap: true,
-    minify: false
+    minify: false,
+    watch: process.env.VITE_BUILD_WATCH
+      ? {
+          include: 'src/**'
+        }
+      : null
   }
 })
