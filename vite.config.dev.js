@@ -34,19 +34,19 @@ export default defineConfig({
         __dirname,
         'course_flow/static/course_flow/js/react/src/app-redesign.js'
       ),
-      name: 'MyLib',
-      fileName: (format) => `my-lib.${format}.js`
+      name: 'CourseFlowApp',
+      fileName: (format) => `courseflow-app.${format}.js`
     },
     rollupOptions: {
       output: {
-        manualChunks: {}
+        // manualChunks: {}
         // dir : '~/plugin/assets/',
         // entryFileNames: `test.js`
         // chunkFileNames: `assets/index-chunk.js`,
         // assetFileNames: `assets/[name].[ext]`,
       }
     },
-    outDir: './build',
+    outDir: './course_flow/static/course_flow/ts_build/',
     sourcemap: true,
     minify: false
   }

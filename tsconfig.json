@@ -3,13 +3,20 @@
     "outDir": "./course_flow/static/course_flow/js/react/ts_dist",
     // "rootDir": "course_flow/static/course_flow/js/react/src",
     // try to make TS ignore as much as possible for now
-    "noImplicitAny": false, // allow 'any' types
-    "strictNullChecks": false, // allow fuzziness in our null definitions
-    "strict": false, // lol
-    "skipLibCheck": true, // don't TS check the node modules and other defined libs
-    "allowJs": true, // don't allow just TS/TSX files
-    "noEmitOnError": false, // make TS still build even if we run into errors
-    "noEmit": false, // forgot what this does
+    "noImplicitAny": false,
+    // allow 'any' types
+    "strictNullChecks": false,
+    // allow fuzziness in our null definitions
+    "strict": false,
+    // lol
+    "skipLibCheck": true,
+    // don't TS check the node modules and other defined libs
+    "allowJs": true,
+    // don't allow just TS/TSX files
+    "noEmitOnError": false,
+    // make TS still build even if we run into errors
+    "noEmit": false,
+    // forgot what this does
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": [
@@ -27,7 +34,8 @@
     "isolatedModules": true,
     "typeRoots": [
       "./node_modules/@types",
-      "./src/types" // is this from tsconfig path or from baseurl? (note that we don't have any types yet)
+      "./src/types"
+      // is this from tsconfig path or from baseurl? (note that we don't have any types yet)
     ],
     "jsx": "react-jsx",
     // This must be set if you're using "paths"
@@ -40,7 +48,7 @@
         "./course_flow/js/react/src/*"
       ],
       "@cfComponents/*": [
-        "./course_flow/js/react/src/components/components/*"
+        "./course_flow/js/react/src/components/*"
       ],
       "@cfViews/*": [
         "./course_flow/js/react/src/components/views/*"
@@ -49,10 +57,25 @@
         "./course_flow/js/react/src/components/pages/*"
       ],
       "@cfCommonComponents/*": [
-        "./course_flow/js/react/src/Components/components/common/*"
+        "./course_flow/js/react/src/components/common/*"
+      ],
+      "@cfParentComponents": [
+        "./course_flow/js/react/src/components/common/extended"
+      ],
+      "@cfParentComponents/*": [
+        "./course_flow/js/react/src/components/common/extended/*",
+      ],
+      "@cfUIComponents/*": [
+        "./course_flow/js/react/src/components/common/UIComponents/*"
+      ],
+      "@cfUIComponents": [
+        "./course_flow/js/react/src/components/common/UIComponents"
       ],
       "@cfFindState": [
         "./course_flow/js/react/src/redux/FindState.js"
+      ],
+      "@cfRedux/*": [
+        "./course_flow/js/react/src/redux/*"
       ],
       "@cfReducers": [
         "./course_flow/js/react/src/redux/Reducers.js"
@@ -63,22 +86,30 @@
       "@cfConstants": [
         "./course_flow/js/react/src/constants.js"
       ],
-      "@cfPostFunctions": [
-        "./course_flow/js/react/src/PostFunctions.js"
+      "@XMLHTTP/*": [
+        "./course_flow/js/react/src/XMLHTTP/*"
+      ],
+      "@cfSCSS/*": [
+        "./course_flow/scss/*"
       ]
     }
   },
   "include": [
-    "./course_flow/static/course_flow/js/react/src/**/*" //is this from baseurl relative path?
+    "./course_flow/static/course_flow/js/react/src/**/*"
+    //is this from baseurl relative path?
   ],
   "exclude": [
     "./course_flow/static/course_flow/js/react/ts_dist/**/*",
-    "node_modules", //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/dist/**/*", //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-library.js", //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-live.js", //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-wf-redux.js" //is this from baseurl relative path?
-
+    "node_modules",
+    //is this from baseurl relative path?
+    "./course_flow/static/course_flow/js/react/dist/**/*",
+    //is this from baseurl relative path?
+    "./course_flow/static/course_flow/js/react/src/entry/scripts-library.js",
+    //is this from baseurl relative path?
+    "./course_flow/static/course_flow/js/react/src/entry/scripts-live.js",
+    //is this from baseurl relative path?
+    "./course_flow/static/course_flow/js/react/src/entry/scripts-wf-redux.js"
+    //is this from baseurl relative path?
   ],
   "references": [
     {

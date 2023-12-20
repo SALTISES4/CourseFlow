@@ -41,6 +41,12 @@
     "prettier"
   ],
   "rules": {
+    "react/jsx-key": "off",
+    "react/display-name": "off",
+    "react/no-unknown-property": "off",
+    "react/jsx-no-undef": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-this-alias": "off",
     "react/prop-types": "off",
     "react/jsx-filename-extension": [
       1,
