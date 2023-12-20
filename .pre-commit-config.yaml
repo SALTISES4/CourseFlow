@@ -35,16 +35,16 @@ repos:
         always_run: true
         exclude: ".*"
         verbose: true
-      - id: yarn-audit
-        name: yarn audit
-        language: system
-        entry: bash -c 'yarn audit || true' --
-        always_run: true
-        exclude: ".*"
-        verbose: true
-      - id: prettier
-        name: prettier
-        language: system
-        entry: bash -c 'yarn prettier || true' --
-        always_run: true
-        verbose: true
+#      - id: yarn-audit
+#        name: yarn audit
+#        language: system
+#        entry: bash -c 'yarn audit || true' --
+#        always_run: true
+#        exclude: ".*"
+#        verbose: true
+#      - id: prettier
+#        name: prettier
+#        language: system
+#        entry: bash -c 'yarn prettier || true' --
+#        always_run: true
+#        verbose: true
