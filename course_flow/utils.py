@@ -275,15 +275,12 @@ def get_user_role(obj, user):
         return models.relations.LiveProjectUser.ROLE_NONE
     if obj.type == "liveproject":
         liveproject = obj
-        project = obj.project
     elif obj.type == "project":
         try:
             liveproject = obj.liveproject
-            project = obj
         except AttributeError:
             return models.relations.LiveProjectUser.ROLE_NONE
     elif obj.is_strategy:
-        project = None
         liveproject = None
     else:
         try:
