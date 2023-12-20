@@ -10,37 +10,37 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import tag
 from django.urls import reverse
 from selenium import webdriver
-from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
+from selenium.webdriver import Chrome, Firefox, FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from course_flow.models import (
-    Activity,
-    Course,
-    CourseFlowUser,
-    Discipline,
-    Favourite,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
-    ObjectPermission,
-    Outcome,
+from course_flow.models.project import Project
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    UserAssignment,
-    Workflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.routing import websocket_urlpatterns
 from course_flow.utils import get_model_from_str
 
+from ...models.activity import Activity
+from ...models.course import Course
+from ...models.courseFlowUser import CourseFlowUser
+from ...models.discipline import Discipline
+from ...models.favourite import Favourite
+from ...models.liveAssignment import LiveAssignment
+from ...models.liveProject import LiveProject
+from ...models.objectPermission import ObjectPermission
+from ...models.outcome import Outcome
+from ...models.program import Program
+from ...models.userAssignment import UserAssignment
+from ...models.workflow import Workflow
 from .utils import get_author, login
 
 timeout = 10

@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
-from .models import CourseFlowUser
+
+from course_flow.models.courseFlowUser import CourseFlowUser
 
 
 class RegistrationForm(UserCreationForm):
@@ -32,13 +33,13 @@ class ProfileSettings(forms.ModelForm):
     first_name = forms.CharField(
         label=_("First name"),
         max_length=300,
-        help_text=_("This field is required.")
+        help_text=_("This field is required."),
     )
 
     last_name = forms.CharField(
         label=_("Last name"),
         max_length=300,
-        help_text=_("This field is required.")
+        help_text=_("This field is required."),
     )
 
     class Meta:
@@ -49,12 +50,11 @@ class ProfileSettings(forms.ModelForm):
             "language",
         )
         widgets = {
-            'language': forms.RadioSelect,
+            "language": forms.RadioSelect,
         }
+
 
 class NotificationsSettings(forms.ModelForm):
     class Meta:
         model = CourseFlowUser
-        fields = (
-            "notifications",
-        )
+        fields = ("notifications",)

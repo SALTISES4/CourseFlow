@@ -8,7 +8,7 @@ from course_flow.models import User
 class SALTISEAnalyticsView(
     LoginRequiredMixin, UserPassesTestMixin, TemplateView
 ):
-    template_name = "course_flow/saltise_analytics.html"
+    template_name = "course_flow/admin/saltise_analytics.html"
 
     def test_func(self):
         return (

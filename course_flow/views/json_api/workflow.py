@@ -18,15 +18,17 @@ from course_flow.models import (
     Activity,
     Course,
     Node,
-    NodeLink,
-    NodeWeek,
     Notification,
     ObjectSet,
+    Project,
+    Workflow,
+)
+from course_flow.models.relations import (
+    NodeLink,
+    NodeWeek,
     OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeWorkflow,
-    Project,
-    Workflow,
 )
 from course_flow.serializers import (
     ColumnSerializerShallow,

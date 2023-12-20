@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('course_flow', '0117_alter_notification_options'),
+        ("course_flow", "0117_alter_notification_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='courseflowuser',
-            name='language',
-            field=models.CharField(choices=[('en', 'English'), ('fr', 'French')], default='en', max_length=2),
+            model_name="courseflowuser",
+            name="language",
+            field=models.CharField(
+                choices=[("en", "English"), ("fr", "French")],
+                default="en",
+                max_length=2,
+            ),
         ),
     ]

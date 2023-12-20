@@ -1,11 +1,9 @@
-from pprint import pprint
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.models import Workflow
+from course_flow.models.workflow import Workflow
 from course_flow.utils import get_user_permission, get_user_role
 from course_flow.view_utils import get_workflow_context_data
 from course_flow.views.mixins import (

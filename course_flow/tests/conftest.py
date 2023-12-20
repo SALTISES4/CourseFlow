@@ -4,7 +4,8 @@ import pytest
 from django.contrib.auth.models import User
 
 from course_flow.lti import generate_password
-from course_flow.models import Course, Node
+from course_flow.models.course import Course
+from course_flow.models.node import Node
 
 
 @pytest.fixture(autouse=True)

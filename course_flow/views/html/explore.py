@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.views.generic import TemplateView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.models import Discipline
+from course_flow.models.discipline import Discipline
 from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
 from course_flow.views.json_api.search import get_explore_objects
 

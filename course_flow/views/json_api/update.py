@@ -1,15 +1,13 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
-from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
-from course_flow import redux_actions as actions
 from course_flow.decorators import (
     from_same_workflow,
     user_can_edit,
@@ -21,28 +19,24 @@ from course_flow.duplication_functions import (
     fast_create_strategy,
     fast_duplicate_workflow,
 )
-from course_flow.forms import (
-    ProfileSettings,
-    NotificationsSettings
-)
-from course_flow.models import (
-    Column,
-    CourseFlowUser,
-    Favourite,
-    Node,
-    ObjectSet,
-    Outcome,
+from course_flow.forms import NotificationsSettings, ProfileSettings
+from course_flow.models.column import Column
+from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.favourite import Favourite
+from course_flow.models.node import Node
+from course_flow.models.objectset import ObjectSet
+from course_flow.models.outcome import Outcome
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    Week,
-    WeekWorkflow,
-    Workflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.week import Week
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     ActivitySerializerShallow,
     CourseSerializerShallow,
-    FormFieldsSerializer,
     LinkedWorkflowSerializerShallow,
     NodeSerializerShallow,
     OutcomeHorizontalLinkSerializerShallow,
@@ -53,6 +47,7 @@ from course_flow.serializers import (
     RefreshSerializerOutcome,
     serializer_lookups_shallow,
 )
+from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
     check_possible_parent,
     get_all_outcomes_for_outcome,

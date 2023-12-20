@@ -10,7 +10,8 @@ from django.db.models import Count, Q
 from django.http import HttpRequest, JsonResponse
 
 from course_flow.decorators import user_is_teacher
-from course_flow.models import ObjectPermission, Project
+from course_flow.models import Project
+from course_flow.models.objectPermission import ObjectPermission
 from course_flow.serializers import InfoBoxSerializer
 from course_flow.utils import get_model_from_str, get_relevance
 

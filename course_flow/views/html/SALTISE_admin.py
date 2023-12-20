@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 
 class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = "course_flow/saltise_admin.html"
+    template_name = "course_flow/admin/saltise_admin.html"
 
     def test_func(self):
         return (
