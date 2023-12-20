@@ -157,6 +157,10 @@ const getAppComponent = () => {
 window.addEventListener('load', () => {
   const componentsToRender = [
     {
+      component: getAppComponent(),
+      target: '#container'
+    },
+    {
       component: <Sidebar />,
       target: '[data-component="sidebar"]',
       styles: SidebarRootStyles
@@ -166,8 +170,13 @@ window.addEventListener('load', () => {
       target: '[data-component="topbar"]'
     },
     {
-      component: getAppComponent(),
-      target: '#container'
+      component: <NotificationsPage />,
+      target: '[data-component="notifications-page"]'
+    },
+
+    {
+      component: <ProfileSettingsPage />,
+      target: '[data-component="profile-settings-page"]'
     }
   ]
   renderComponents(componentsToRender)

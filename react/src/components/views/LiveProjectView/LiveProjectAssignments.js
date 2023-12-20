@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getWorkflowNodes } from '@XMLHTTP/PostFunctions'
-import * as Constants from '../../../Constants.js'
+import * as Constants from '../../../constants.js'
 // @components
 import { AssignmentView } from '../LiveAssignmentView'
 import {

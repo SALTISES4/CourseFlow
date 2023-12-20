@@ -19,7 +19,7 @@ import {
   getUsersForObject,
   duplicateBaseItem
 } from '@XMLHTTP/PostFunctions'
-import { getTargetProjectMenu } from '@XMLHTTP/PostTemp'
+import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
 
 import { WorkflowView } from './WorkflowView'
 import { OutcomeEditView } from './OutcomeEditView'

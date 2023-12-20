@@ -1,5 +1,5 @@
 import * as Redux from 'redux'
-import * as Utility from '../UtilityFunctions.js'
+import * as Utility from '../utilityFunctions.js'
 
 export const createLockAction = (
   object_id,
