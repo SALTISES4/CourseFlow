@@ -14,7 +14,7 @@
     "prettier": "prettier --write 'course_flow/static/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "dev": "vite --config vite.config.dev.js",
     "build": "tsc && vite --config vite.config.dev.js build",
-    "vite-build-watch": "tsc && VITE_BUILD_WATCH=true vite --config vite.config.dev.js build",
+    "build-watch": "tsc && VITE_BUILD_WATCH=true vite --config vite.config.dev.js build",
     "buildts": "tsc",
     "buildDev": "tsc && vite build --mode development --minify false",
     "preview": "vite preview",
