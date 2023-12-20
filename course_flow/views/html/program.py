@@ -2,7 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 
-from course_flow.models import Program, Project, WorkflowProject
+from course_flow.models import Project
+from course_flow.models.program import Program
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
 from course_flow.views.mixins import UserCanEditProjectMixin
 

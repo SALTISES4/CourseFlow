@@ -1,16 +1,13 @@
 import re
 
-from course_flow import redux_actions as actions
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
 
-from .models import (
-    Node,
-    NodeWeek,
-    Outcome,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Week,
-    WeekWorkflow,
-)
+from .models.node import Node
+from .models.outcome import Outcome
+from .models.week import Week
 from .serializers import (
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -20,6 +17,7 @@ from .serializers import (
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
 )
+from .sockets import redux_actions as actions
 from .utils import save_serializer
 
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from course_flow.models import Discipline
+from course_flow.models.discipline import Discipline
 
 
 class Command(BaseCommand):

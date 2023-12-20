@@ -4,7 +4,9 @@ from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 
-from course_flow.models import Course, Project, WorkflowProject
+from course_flow.models import Project
+from course_flow.models.course import Course
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
 from course_flow.views.mixins import UserCanEditProjectMixin
 

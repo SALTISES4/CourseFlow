@@ -1,33 +1,35 @@
 from django.contrib import admin
 
-from .models import (
+from course_flow.models import (
     Activity,
     Column,
-    ColumnWorkflow,
     Comment,
     Course,
     Discipline,
     Favourite,
     LiveAssignment,
     LiveProject,
-    LiveProjectUser,
     Node,
-    NodeLink,
-    NodeWeek,
     ObjectPermission,
     ObjectSet,
     Outcome,
-    OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
     Program,
     Project,
     UpdateNotification,
     UserAssignment,
     Week,
-    WeekWorkflow,
     Workflow,
+)
+from course_flow.models.relations import (
+    ColumnWorkflow,
+    LiveProjectUser,
+    NodeLink,
+    NodeWeek,
+    OutcomeHorizontalLink,
+    OutcomeNode,
+    OutcomeOutcome,
+    OutcomeWorkflow,
+    WeekWorkflow,
     WorkflowProject,
 )
 

@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.generics import ListAPIView
 
-from course_flow.models import Discipline
+from course_flow.models.discipline import Discipline
 from course_flow.serializers import DisciplineSerializer
 
 

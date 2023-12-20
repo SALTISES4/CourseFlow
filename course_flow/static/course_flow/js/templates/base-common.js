@@ -83,6 +83,7 @@ if (
 }
 
 $(window).on('load', () => {
+  $(document).ajaxError(window.fail_function)
   waitUntilElementExists('#overflow-options').then((el) => {
     makeDropdown(el, '#overflow-links')
   })

@@ -6,7 +6,6 @@ import bleach
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
 
-from course_flow import redux_actions as actions
 from course_flow.decorators import (
     check_object_permission,
     user_can_comment,
@@ -20,22 +19,23 @@ from course_flow.duplication_functions import (
 )
 from course_flow.models import (
     Column,
-    ColumnWorkflow,
     Node,
-    NodeLink,
-    NodeWeek,
     Notification,
     ObjectPermission,
     ObjectSet,
     Outcome,
+    User,
+    Week,
+    Workflow,
+)
+from course_flow.models.relations import (
+    ColumnWorkflow,
+    NodeLink,
+    NodeWeek,
     OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
-    Project,
-    User,
-    Week,
     WeekWorkflow,
-    Workflow,
 )
 from course_flow.serializers import (
     ColumnSerializerShallow,
@@ -52,6 +52,7 @@ from course_flow.serializers import (
     WeekWorkflowSerializerShallow,
     serializer_lookups_shallow,
 )
+from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_model_from_str, make_user_notification
 
 ###############################################

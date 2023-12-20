@@ -6,26 +6,25 @@ from django.db.models import ProtectedError, Q
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 
-from course_flow import redux_actions as actions
 from course_flow.decorators import (
     user_can_delete,
     user_can_edit,
     user_enrolled_as_teacher,
 )
-from course_flow.models import (
+from course_flow.models import Node, Outcome
+from course_flow.models.relations import (
     ColumnWorkflow,
-    Node,
     NodeWeek,
-    Outcome,
     OutcomeOutcome,
     OutcomeWorkflow,
     WeekWorkflow,
-    Workflow,
 )
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     RefreshSerializerNode,
     RefreshSerializerOutcome,
 )
+from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_descendant_outcomes, get_model_from_str
 
 ####################################
