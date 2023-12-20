@@ -2172,10 +2172,10 @@ class FormFieldsSerializer:
     # generate the list of choices for fields which have them
     def get_field_choices(self, field):
         choices = []
-        if hasattr(field, 'choices'):
+        if hasattr(field, "choices"):
             for choice in field.choices:
                 choices.append({
-                    "label": choice[1],
+                    "label": str(choice[1]),
                     "value": choice[0]
                 })
         return choices if len(choices) > 0 else None

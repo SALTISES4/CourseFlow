@@ -250,7 +250,10 @@ const TopBar = () => {
       <MenuItem component="a" href={apiData.menus.account.resetPasswordUrl}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
-      <MenuItem component="a" href={apiData.menus.account.profileUrl}>
+      <MenuItem
+        component="a"
+        href={apiData.menus.account.notificationsSettingsUrls}
+      >
         {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />

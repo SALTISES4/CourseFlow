@@ -25,7 +25,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     # how are these fields being used?
     fields = ["title", "description", "published"]
 
-    template_name: str = "course_flow/react/project_update.html"
+    template_name: str = "course_flow/react/common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
@@ -68,17 +68,18 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Project
     fields: List[str] = ["title", "description", "published"]
-    template_name = "course_flow/react/comparison.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
+        public_view = False  # moved from template layer
+        is_strategy = False
+
         context = super(DetailView, self).get_context_data(**kwargs)
         current_user = self.request.user
 
         project = self.object
-        is_strategy = False
         user_permission = get_user_permission(project, current_user)
         user_role = get_user_role(project, current_user)
-        public_view = False  # moved from template layer
 
         context_data = {
             "project_data": ProjectSerializerShallow(

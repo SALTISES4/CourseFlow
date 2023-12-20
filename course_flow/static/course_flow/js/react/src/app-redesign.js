@@ -15,6 +15,9 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // pages/views/templates
+import NotificationsPage from '@cfModule/components/pages/Notifications'
+import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
+import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
 import Sidebar, {
@@ -25,21 +28,26 @@ import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import { Explore, Home } from '@mui/icons-material'
-import Library from '@cfPages/Library/Library/index.jsx'
-import LiveAssignment from '@cfPages/Live/LiveAssignment/index.jsx'
-import LiveProject from '@cfPages/Live/LiveProject/index.jsx'
-import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison/index.jsx'
-import WorkflowGrid from '@cfPages/Workflow/WorkflowGrid/index.jsx'
-import NotificationsPage from '@cfPages/Notifications/index.jsx'
-import ProfileSettingsPage from '@cfPages/ProfileSettings/index.jsx'
-import Favourites from '@cfPages/Library/Favorites/index.jsx'
 
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
   nonce: document.querySelector('#script-redesign').nonce
 })
+
+// @WORKFLOW
+import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
+import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
+// @LIVE
+import LiveAssignment from '@cfModule/components/pages/Live/LiveAssignment'
+import LiveProject from '@cfModule/components/pages/Live/LiveProject'
+// @LIBRARY
+import Project from '@cfModule/components/pages/Library/ProjectDetail'
+import Library from '@cfModule/components/pages/Library/Library'
+import Favourites from '@cfModule/components/pages/Library/Favorites'
+import Home from '@cfModule/components/pages/Library/Home'
+import Explore from '@cfModule/components/pages/Library/Explore'
+import Workflow from '@cfModule/components/pages/Workflow/Workflow'
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
@@ -81,10 +89,6 @@ function renderComponents(components) {
 console.log('current path')
 console.log(COURSEFLOW_APP.path_id)
 
-function Project() {
-  return null
-}
-
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     /*******************************************************
@@ -104,6 +108,16 @@ const getAppComponent = () => {
       return <Project {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
+     * USER / PROFILE
+     *******************************************************/
+    case 'notifications':
+      return <NotificationsPage />
+    case 'notificationsSettings':
+      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
+    case 'profileSettings':
+      return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
+
+    /*******************************************************
      * LIVE
      *******************************************************/
     case 'assignmentDetail':
@@ -117,7 +131,7 @@ const getAppComponent = () => {
     case 'projectComparison':
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
-       * the DTO from django, or in a subcomponent, if mot from django, define as explicit props
+       * the DTO from django, or in a subcomponent, if not from django, define as explicit props
        */
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,

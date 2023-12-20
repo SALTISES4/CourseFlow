@@ -1,9 +1,6 @@
 {% extends "course_flow/base.html" %}
 <!-- -->
 {% load static i18n %}
-<!-- -->
-{% block header %}{% endblock %}
-<!-- -->
 {% block title %}
   {% if title != "" %}
     {{ title }}
@@ -12,26 +9,9 @@
   {% endif %}
   - CourseFlow
 {% endblock %}
-<!-- -->
-{% block metadescription %} {% endblock %}
-<!-- -->
-{% block body %}
-  <!-- -->
-{% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
-{% csrf_token %}
-<!-- -->
-{% block read_only_scripts %}
 
-{% endblock %}
-<!-- -->
+{% csrf_token %}
+
 {% block react_scripts %}
   {% include 'course_flow/base/react_renderer.html' %}
-{% endblock %}
-
-{% block scripts %}
-  {{ block.super }}
-
 {% endblock %}

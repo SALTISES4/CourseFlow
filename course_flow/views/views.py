@@ -51,7 +51,7 @@ from course_flow.serializers import (
 )
 from course_flow.utils import get_user_permission
 from course_flow.view_utils import get_my_projects, get_workflow_context_data
-from course_flow.views.json_api.search_api import get_explore_objects
+from course_flow.views.json_api.search import get_explore_objects
 
 # @todo not used?
 # def get_my_shared(user):

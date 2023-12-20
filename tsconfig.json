@@ -58,10 +58,10 @@
         "./course_flow/js/react/src/redux/Reducers.js"
       ],
       "@cfUtility": [
-        "./course_flow/js/react/src/UtilityFunctions.js"
+        "./course_flow/js/react/src/utilityFunctions.js"
       ],
       "@cfConstants": [
-        "./course_flow/js/react/src/Constants.js"
+        "./course_flow/js/react/src/constants.js"
       ],
       "@cfPostFunctions": [
         "./course_flow/js/react/src/PostFunctions.js"

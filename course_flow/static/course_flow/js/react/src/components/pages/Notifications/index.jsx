@@ -16,9 +16,9 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 
-import useApi from '../../../hooks/useApi'
-import { OuterContentWrap } from '../../../mui/helper'
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+import { OuterContentWrap } from '@cfModule/mui/helper'
+import useApi from '@cfModule/hooks/useApi'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 
 const NotificationsWrap = styled(Box)({})
 
@@ -77,35 +77,6 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
   }
 }))
 
-function API_POST(url = '', data = {}) {
-  if (!url) {
-    return Promise.reject('You need to specify an URL in for API_POST to run.')
-  }
-
-  return new Promise((res, rej) => {
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': root.getCsrfToken()
-      },
-      body: JSON.stringify(data)
-    })
-      // convert to JSON
-      .then((response) => response.json())
-      .then((data) => {
-        // and if the action successfully posted, resolve the initial promise
-        if (data.action === DATA_ACTIONS.POSTED) {
-          res(data)
-        } else {
-          rej(url, 'post action !== "posted".')
-        }
-      })
-      // otherwise reject if anything fishy is going on
-      .catch((err) => rej(err))
-  })
-}
-
 const NotificationsPage = () => {
   const [pagination, setPagination] = useState({
     page: 0,
@@ -113,7 +84,7 @@ const NotificationsPage = () => {
   })
 
   const [apiData, loading, error] = useApi(
-    config.json_api_paths.get_notifications_page
+    COURSEFLOW_APP.config.json_api_paths.get_notifications_page
   )
 
   const [pageState, setPageState] = useState({
@@ -168,9 +139,12 @@ const NotificationsPage = () => {
     const { notification } = pageState
 
     // fire the post request
-    API_POST(config.json_api_paths.mark_all_notifications_as_read, {
-      notification_id: notification.id
-    })
+    API_POST(
+      COURSEFLOW_APP.config.json_api_paths.mark_all_notifications_as_read,
+      {
+        notification_id: notification.id
+      }
+    )
       .then(() => {
         const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
@@ -191,7 +165,7 @@ const NotificationsPage = () => {
   function onDeleteClick() {
     const { notification } = pageState
 
-    API_POST(config.json_api_paths.delete_notification, {
+    API_POST(COURSEFLOW_APP.config.json_api_paths.delete_notification, {
       notification_id: notification.id
     })
       .then(() => {
@@ -214,7 +188,9 @@ const NotificationsPage = () => {
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
 
-    API_POST(config.json_api_paths.mark_all_notifications_as_read)
+    API_POST(
+      COURSEFLOW_APP.config.json_api_paths.mark_all_notifications_as_read
+    )
       .then(() => {
         setPageState({
           ...pageState,

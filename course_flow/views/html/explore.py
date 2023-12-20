@@ -6,7 +6,7 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.models import Discipline
 from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
-from course_flow.views.json_api.search_api import get_explore_objects
+from course_flow.views.json_api.search import get_explore_objects
 
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -16,7 +16,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             in self.request.user.groups.all()
         )
 
-    template_name = "course_flow/react/explore.html"
+    template_name = "course_flow/react/common_entrypoint.html"
 
     def get_context_data(self):
         current_user = self.request.user

@@ -54,9 +54,9 @@ const plugins = {
               './course_flow/static/course_flow/js/react/src/redux/Reducers.js',
             '@cfRedux': './course_flow/static/course_flow/js/react/src/redux',
             '@cfUtility':
-              './course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
+              './course_flow/static/course_flow/js/react/src/utilityFunctions.js',
             '@cfConstants':
-              './course_flow/static/course_flow/js/react/src/Constants.js',
+              './course_flow/static/course_flow/js/react/src/constants.js',
             '@XMLHTTP': './course_flow/static/course_flow/js/react/src/XMLHTTP'
           }
         }

@@ -29,7 +29,7 @@ System.config({
     '@cfReducers':
       './course_flow/static/course_flow/js/react/src/redux/Reducers.js',
     '@cfUtility':
-      './course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
+      './course_flow/static/course_flow/js/react/src/utilityFunctions.js',
     '@cfConstants':
       './course_flow/static/course_flow/js/react/src/constants.js',
     '@XMLHTTP/*': './course_flow/static/course_flow/js/react/src/XMLHTTP/*',

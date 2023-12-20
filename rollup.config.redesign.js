@@ -38,8 +38,8 @@ const plugins = {
             '@cfCommonComponents':'./course_flow/static/course_flow/js/react/src/Components/components/CommonComponents',
             '@cfFindState':'./course_flow/static/course_flow/js/react/src/redux/FindState.js',
             '@cfReducers':'./course_flow/static/course_flow/js/react/src/redux/Reducers.js',
-            '@cfUtility':'./course_flow/static/course_flow/js/react/src/UtilityFunctions.js',
-            '@cfConstants':'./course_flow/static/course_flow/js/react/src/Constants.js',
+            '@cfUtility':'./course_flow/static/course_flow/js/react/src/utilityFunctions.js',
+            '@cfConstants':'./course_flow/static/course_flow/js/react/src/constants.js',
             '@cfPostFunctions':'./course_flow/static/course_flow/js/react/src/PostFunctions.js',
           }
         }
