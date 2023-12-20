@@ -17,7 +17,7 @@ from course_flow.decorators import (
     user_can_view,
     user_is_teacher,
 )
-from course_flow.models.models import User
+from course_flow.models import User
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.serializers import UserSerializer
@@ -77,36 +77,6 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
         # Not currently enabled
         if permission_type == ObjectPermission.PERMISSION_STUDENT:
             raise ValidationError
-        #     if objectType == "project":
-        #         if item.liveproject is None:
-        #             return JsonResponse(
-        #                 {
-        #                     "action": "error",
-        #                     "error": _(
-        #                         "Cannot add a student to a non-live project."
-        #                     ),
-        #                 }
-        #             )
-        #     else:
-        #         project = item.get_project()
-        #         if project is None:
-        #             return JsonResponse(
-        #                 {
-        #                     "action": "error",
-        #                     "error": _(
-        #                         "Cannot add a student to this workflow type."
-        #                     ),
-        #                 }
-        #             )
-        #         elif project.liveproject is None:
-        #             return JsonResponse(
-        #                 {
-        #                     "action": "error",
-        #                     "error": _(
-        #                         "Cannot add a student to a non-live project."
-        #                     ),
-        #                 }
-        #             )
 
         ObjectPermission.objects.filter(
             user=user,

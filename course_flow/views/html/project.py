@@ -9,8 +9,8 @@ from django.urls import reverse
 from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer
 
+from course_flow.models import Project
 from course_flow.models.discipline import Discipline
-from course_flow.models.models import Project
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.serializers import (
     DisciplineSerializer,

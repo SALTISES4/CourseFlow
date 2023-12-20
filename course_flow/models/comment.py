@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from course_flow.management.commands.create_instances import User
+User = get_user_model()
 
 
 class Comment(models.Model):

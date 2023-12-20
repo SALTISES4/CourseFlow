@@ -14,9 +14,9 @@ from course_flow.decorators import (
     user_enrolled_as_teacher,
     user_is_author,
 )
+from course_flow.models import User
 from course_flow.models.liveAssignment import LiveAssignment
 from course_flow.models.liveProject import LiveProject
-from course_flow.models.models import Project, User
 from course_flow.models.node import Node
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.userAssignment import UserAssignment

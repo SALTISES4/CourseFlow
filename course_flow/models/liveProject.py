@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
-from course_flow.models.project import Project
-from course_flow.models.workflow import Workflow
+from .project import Project
+from .workflow import Workflow
 
 
 class LiveProject(models.Model):

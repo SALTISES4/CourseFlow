@@ -1,11 +1,15 @@
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models._common import User, title_max_length
-from course_flow.models.outcome import Outcome
+from course_flow.models._common import title_max_length
+
+from .outcome import Outcome
+
+User = get_user_model()
 
 
 class Node(models.Model):

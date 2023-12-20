@@ -10,7 +10,6 @@ from html2text import html2text
 from rest_framework import serializers
 
 # from .decorators import check_object_permission
-from course_flow.models.models import Project, User, title_max_length
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.relations.nodeLink import NodeLink
@@ -23,6 +22,7 @@ from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 
+from .models import Project, User, title_max_length
 from .models.activity import Activity
 from .models.column import Column
 from .models.comment import Comment
@@ -77,23 +77,6 @@ bleach_allowed_tags_title = [
     "em",
     "i",
 ]
-
-
-# timing_results = {}
-# def timing(f):
-#     @wraps(f)
-#     def wrap(*args, **kw):
-#         ts = time.time()
-#         result = f(*args, **kw)
-#         te = time.time()
-#         #print(f'Function {f.__name__} took {te-ts:2.4f} seconds')
-#         if timing_results.get(f.__name__) is None:
-#             timing_results[f.__name__] = te - ts
-#         else:
-#             timing_results[f.__name__] = timing_results[f.__name__] + te - ts
-#         print(f'Function {f.__name__} has taken {timing_results[f.__name__]:2.4f} seconds')
-#         return result
-#     return wrap
 
 
 def bleach_sanitizer(value, **kwargs):

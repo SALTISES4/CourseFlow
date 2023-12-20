@@ -17,7 +17,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from course_flow.models.models import Project
+from course_flow.models.project import Project
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,

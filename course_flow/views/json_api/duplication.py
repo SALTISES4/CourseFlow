@@ -15,16 +15,17 @@ from course_flow.duplication_functions import (
     fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow.models.models import Project
-from course_flow.models.relations.columnWorkflow import ColumnWorkflow
-from course_flow.models.relations.nodeLink import NodeLink
-from course_flow.models.relations.nodeWeek import NodeWeek
-from course_flow.models.relations.outcomeNode import OutcomeNode
-from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
-from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
-from course_flow.models.relations.weekWorkflow import WeekWorkflow
-from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.workflow import Workflow
+from course_flow.models import Project, Workflow
+from course_flow.models.relations import (
+    ColumnWorkflow,
+    NodeLink,
+    NodeWeek,
+    OutcomeNode,
+    OutcomeOutcome,
+    OutcomeWorkflow,
+    WeekWorkflow,
+    WorkflowProject,
+)
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,

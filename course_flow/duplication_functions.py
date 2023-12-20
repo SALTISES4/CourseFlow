@@ -1,10 +1,10 @@
 from django.db.models import Q
 from django.utils import timezone
 
+from course_flow.models import Project, User
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.course import Course
-from course_flow.models.models import Project, User
 from course_flow.models.node import Node
 from course_flow.models.objectset import ObjectSet
 from course_flow.models.outcome import Outcome

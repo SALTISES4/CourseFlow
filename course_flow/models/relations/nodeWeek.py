@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.node import Node
-from course_flow.models.week import Week
+from course_flow.models import Node, Week
 
 
 class NodeWeek(models.Model):

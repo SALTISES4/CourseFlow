@@ -14,7 +14,7 @@ from django.http import (
 from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
-from course_flow.models.models import User
+from course_flow.models import User
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.workflow import Workflow

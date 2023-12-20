@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.outcome import Outcome
+from course_flow.models import Outcome
 
 
 class OutcomeOutcome(models.Model):

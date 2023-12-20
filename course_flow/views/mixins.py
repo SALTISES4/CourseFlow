@@ -7,7 +7,7 @@ from course_flow.decorators import (
     check_object_enrollment,
     check_object_permission,
 )
-from course_flow.models.models import Project
+from course_flow.models import Project
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.relations.liveProjectUser import LiveProjectUser

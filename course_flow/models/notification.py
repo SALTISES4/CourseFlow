@@ -1,11 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.management.commands.create_instances import User
-from course_flow.models.comment import Comment
+from .comment import Comment
+
+User = get_user_model()
 
 
 class Notification(models.Model):

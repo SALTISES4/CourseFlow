@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.cache import cache
 from django.db import models
@@ -7,11 +8,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.management.commands.create_instances import User
-from course_flow.models._common import title_max_length
-from course_flow.models.column import Column
-from course_flow.models.outcome import Outcome
-from course_flow.models.week import Week
+from ._common import title_max_length
+from .column import Column
+from .outcome import Outcome
+from .week import Week
+
+User = get_user_model()
 
 
 class Workflow(models.Model):

@@ -1,7 +1,7 @@
 from django.db import models
 
-from course_flow.models._common import title_max_length
-from course_flow.models.project import Project
+from ._common import title_max_length
+from .project import Project
 
 
 class ObjectSet(models.Model):

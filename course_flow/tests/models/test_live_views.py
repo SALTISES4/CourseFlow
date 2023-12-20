@@ -5,9 +5,9 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
+from src/components import Project, User
 
 from course_flow import settings
-from course_flow.models.models import Project, User
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.serializers import LiveProjectSerializer

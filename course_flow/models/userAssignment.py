@@ -1,7 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
-from course_flow.management.commands.create_instances import User
-from course_flow.models.liveAssignment import LiveAssignment
+from .liveAssignment import LiveAssignment
+
+User = get_user_model()
 
 
 class UserAssignment(models.Model):

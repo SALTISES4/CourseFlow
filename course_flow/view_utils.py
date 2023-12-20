@@ -4,9 +4,9 @@ from django.utils.translation import gettext as _
 from rest_framework.renderers import JSONRenderer
 
 from course_flow.models.column import Column
-from course_flow.models.models import Project
 from course_flow.models.node import Node
 from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.project import Project
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow

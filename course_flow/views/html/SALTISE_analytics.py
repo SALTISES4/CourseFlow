@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.views.generic import TemplateView
 
-from course_flow.models.models import User
+from course_flow.models import User
 
 
 class SALTISEAnalyticsView(

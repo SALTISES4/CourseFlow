@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.workflow import Workflow
+from .workflow import Workflow
 
 
 class Course(Workflow):

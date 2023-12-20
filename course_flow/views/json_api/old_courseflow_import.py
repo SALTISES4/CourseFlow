@@ -4,10 +4,10 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
 from course_flow.decorators import ajax_login_required
+from course_flow.models import Project
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.course import Course
-from course_flow.models.models import Project
 from course_flow.models.node import Node
 from course_flow.models.program import Program
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow

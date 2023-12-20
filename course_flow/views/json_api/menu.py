@@ -10,10 +10,10 @@ from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 
 from course_flow.decorators import ajax_login_required, public_access
+from course_flow.models import Project
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.favourite import Favourite
 from course_flow.models.liveProject import LiveProject
-from course_flow.models.models import Project
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import (

@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.management.commands.create_instances import User
-from course_flow.models.liveProject import LiveProject
+from course_flow.models import LiveProject
+
+User = get_user_model()
 
 
 class LiveProjectUser(models.Model):

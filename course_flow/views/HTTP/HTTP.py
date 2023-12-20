@@ -14,7 +14,7 @@ from django.views.generic.edit import CreateView
 from course_flow import export_functions
 from course_flow.decorators import ajax_login_required
 from course_flow.forms import RegistrationForm
-from course_flow.models.models import Project
+from course_flow.models import Project
 from course_flow.models.relations.liveProjectUser import LiveProjectUser
 
 

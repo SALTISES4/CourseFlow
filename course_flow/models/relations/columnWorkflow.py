@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.column import Column
-from course_flow.models.workflow import Workflow
+from course_flow.models import Column, Workflow
 
 
 class ColumnWorkflow(models.Model):

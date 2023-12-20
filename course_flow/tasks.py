@@ -8,7 +8,7 @@ from django.core.mail import EmailMessage
 from django.utils import timezone
 
 from course_flow import export_functions, import_functions
-from course_flow.models.models import User
+from course_flow.models import User
 from course_flow.sockets.celery import logger, try_async
 
 from .models.objectset import ObjectSet

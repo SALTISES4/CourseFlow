@@ -1,13 +1,16 @@
 import base64
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models._common import User, title_max_length
+from ._common import title_max_length
+
+User = get_user_model()
 
 
 class Project(models.Model):

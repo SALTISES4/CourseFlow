@@ -11,13 +11,14 @@ from course_flow.decorators import (
     user_can_edit,
     user_enrolled_as_teacher,
 )
-from course_flow.models.node import Node
-from course_flow.models.outcome import Outcome
-from course_flow.models.relations.columnWorkflow import ColumnWorkflow
-from course_flow.models.relations.nodeWeek import NodeWeek
-from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
-from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
-from course_flow.models.relations.weekWorkflow import WeekWorkflow
+from course_flow.models import Node, Outcome
+from course_flow.models.relations import (
+    ColumnWorkflow,
+    NodeWeek,
+    OutcomeOutcome,
+    OutcomeWorkflow,
+    WeekWorkflow,
+)
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     RefreshSerializerNode,

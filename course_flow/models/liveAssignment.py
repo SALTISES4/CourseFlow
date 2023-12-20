@@ -1,9 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from course_flow.management.commands.create_instances import User
-from course_flow.models.liveProject import LiveProject
-from course_flow.models.node import Node
+from .liveProject import LiveProject
+from .node import Node
+
+User = get_user_model()
 
 
 def default_due_date():

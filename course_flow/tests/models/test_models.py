@@ -9,7 +9,7 @@ from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import tasks
-from course_flow.models.models import Project
+from course_flow.models.project import Project
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.nodeLink import NodeLink
 from course_flow.models.relations.nodeWeek import NodeWeek

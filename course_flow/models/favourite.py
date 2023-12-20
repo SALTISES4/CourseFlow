@@ -1,10 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from course_flow.management.commands.create_instances import User
 from course_flow.models._common import workflow_choices
-from course_flow.models.workflow import Workflow
+
+from .workflow import Workflow
+
+User = get_user_model()
 
 
 class Favourite(models.Model):
