@@ -20,8 +20,6 @@
 /htmlcov
 /log
 /media
-/media
-/node_modules
 /sent_emails
 /static
 /server_static
@@ -32,9 +30,6 @@ logs
 mysql_scripts/
 partner*.png
 pytest-logs.txt
-scripts/
-src
-!/course_flow/static/course_flow/js/react/src/
 !/course_flow/static/course_flow/js/other/src/
 /course_flow/static/course_flow/js/other/dist/_virtual
 tags
@@ -50,6 +45,6 @@ local_settings.py
 #Local Scripts:
 *_local.sh
 /.env
-/rollup.config.local.js
-/course_flow/static/course_flow/js/react/ts_dist/
-/course_flow/static/course_flow/ts_build/
+/react/node_modules/
+/react/build/
+*.map

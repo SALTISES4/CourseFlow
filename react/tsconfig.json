@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "./course_flow/static/course_flow/js/react/ts_dist",
-    // "rootDir": "course_flow/static/course_flow/js/react/src",
+    // "outDir": "./course_flow/static/course_flow/js/react/dist",
+    "outDir": "./build",
     // try to make TS ignore as much as possible for now
     "noImplicitAny": false,
     // allow 'any' types
@@ -39,77 +39,68 @@
     ],
     "jsx": "react-jsx",
     // This must be set if you're using "paths"
-    "baseUrl": "./course_flow/static/",
+    "baseUrl": "./src/",
     /**
     ALIASES
     */
     "paths": {
       "@cfModule/*": [
-        "./course_flow/js/react/src/*"
+        "./*"
       ],
       "@cfComponents/*": [
-        "./course_flow/js/react/src/components/*"
+        "./components/*"
       ],
       "@cfViews/*": [
-        "./course_flow/js/react/src/components/views/*"
+        "./components/views/*"
       ],
       "@cfPages/*": [
-        "./course_flow/js/react/src/components/pages/*"
+        "./components/pages/*"
       ],
       "@cfCommonComponents/*": [
-        "./course_flow/js/react/src/components/common/*"
+        "./components/common/*"
       ],
       "@cfParentComponents": [
-        "./course_flow/js/react/src/components/common/extended"
+        "./components/common/extended"
       ],
       "@cfParentComponents/*": [
-        "./course_flow/js/react/src/components/common/extended/*",
+        "./components/common/extended/*"
       ],
       "@cfUIComponents/*": [
-        "./course_flow/js/react/src/components/common/UIComponents/*"
+        "./components/common/UIComponents/*"
       ],
       "@cfUIComponents": [
-        "./course_flow/js/react/src/components/common/UIComponents"
+        "./components/common/UIComponents"
       ],
       "@cfFindState": [
-        "./course_flow/js/react/src/redux/FindState.js"
+        "./redux/FindState.js"
       ],
       "@cfRedux/*": [
-        "./course_flow/js/react/src/redux/*"
+        "./redux/*"
       ],
       "@cfReducers": [
-        "./course_flow/js/react/src/redux/Reducers.js"
+        "./redux/Reducers.js"
       ],
       "@cfUtility": [
-        "./course_flow/js/react/src/utilityFunctions.js"
+        "./utilityFunctions.js"
       ],
       "@cfConstants": [
-        "./course_flow/js/react/src/constants.js"
+        "./constants.js"
       ],
       "@XMLHTTP/*": [
-        "./course_flow/js/react/src/XMLHTTP/*"
+        "./XMLHTTP/*"
       ],
       "@cfSCSS/*": [
-        "./course_flow/scss/*"
+        "./scss/*"
       ]
     }
   },
   "include": [
-    "./course_flow/static/course_flow/js/react/src/**/*"
+    "./**/*"
     //is this from baseurl relative path?
   ],
   "exclude": [
-    "./course_flow/static/course_flow/js/react/ts_dist/**/*",
+    "./build/**/*",
     "node_modules",
-    //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/dist/**/*",
-    //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-library.js",
-    //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-live.js",
-    //is this from baseurl relative path?
-    "./course_flow/static/course_flow/js/react/src/entry/scripts-wf-redux.js"
-    //is this from baseurl relative path?
   ],
   "references": [
     {

@@ -15,11 +15,7 @@ const reactSrcRoot = 'course_flow/static/course_flow/js/react/src/'
 
 const plugins = {
   // bug in postCSS polugin does not allow paths outside of the bundleRoot
-  postcss: postcss({
-    extensions: ['.css'],
-    extract: 'course_flow.css',
-    plugins: [autoprefixer]
-  }),
+
   nodeResolve: nodeResolve({
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     mainFields: ['browser', 'module', 'main']
@@ -33,32 +29,6 @@ const plugins = {
       [
         'babel-plugin-module-resolver',
         {
-          alias: {
-            '@cfSCSS': './course_flow/static/course_flow/scss',
-            '@cfModule': './course_flow/static/course_flow/js/react/src',
-            '@cfPages':
-              './course_flow/static/course_flow/js/react/src/components/pages',
-            '@cfComponents':
-              './course_flow/static/course_flow/js/react/src/components',
-            '@cfViews':
-              './course_flow/static/course_flow/js/react/src/components/views',
-            '@cfCommonComponents':
-              './course_flow/static/course_flow/js/react/src/components/common',
-            '@cfParentComponents':
-              './course_flow/static/course_flow/js/react/src/components/common/extended',
-            '@cfUIComponents':
-              './course_flow/static/course_flow/js/react/src/components/common/UIComponents',
-            '@cfFindState':
-              './course_flow/static/course_flow/js/react/src/redux/FindState.js',
-            '@cfReducers':
-              './course_flow/static/course_flow/js/react/src/redux/Reducers.js',
-            '@cfRedux': './course_flow/static/course_flow/js/react/src/redux',
-            '@cfUtility':
-              './course_flow/static/course_flow/js/react/src/utilityFunctions.js',
-            '@cfConstants':
-              './course_flow/static/course_flow/js/react/src/constants.js',
-            '@XMLHTTP': './course_flow/static/course_flow/js/react/src/XMLHTTP'
-          }
         }
       ]
     ],
@@ -83,7 +53,6 @@ const plugins = {
 }
 
 const bundlePlugins = [
-  plugins.postcss,
   plugins.nodeResolve,
   plugins.babel,
   plugins.commonjs
@@ -110,16 +79,6 @@ export default [
     output: {
       file: `${templateBundleDist}csrf-setup.min.js`,
       name: 'root',
-      format: 'iife',
-      sourceMap: 'inline'
-    },
-    plugins: bundlePlugins
-  },
-  {
-    input: `${reactSrcRoot}app-redesign.js`,
-    output: {
-      file: `${bundleRoot}react-app-redesign.min.js`,
-      name: 'redesign_renderers',
       format: 'iife',
       sourceMap: 'inline'
     },

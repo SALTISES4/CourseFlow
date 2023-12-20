@@ -32,7 +32,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(
         __dirname,
-        'course_flow/static/course_flow/js/react/src/app-redesign.js'
+        'src/app-redesign.js'
       ),
       name: 'CourseFlowApp',
       fileName: (format) => `courseflow-app.${format}.js`
@@ -46,7 +46,7 @@ export default defineConfig({
         // assetFileNames: `assets/[name].[ext]`,
       }
     },
-    outDir: './course_flow/static/course_flow/ts_build/',
+    outDir: '../course_flow/static/course_flow/js/react/dist',
     sourcemap: true,
     minify: false
   }
