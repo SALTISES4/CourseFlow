@@ -30,10 +30,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(
-        __dirname,
-        'src/app-redesign.js'
-      ),
+      entry: path.resolve(__dirname, 'src/app-redesign.js'),
       name: 'CourseFlowApp',
       fileName: (format) => `courseflow-app.${format}.js`
     },
