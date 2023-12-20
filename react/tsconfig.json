@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    // "explainFiles": true, // enable this for file inclusion debugging
     "outDir": "./build",  // try to make TS ignore as much as possible for now
     "noImplicitAny": false, // allow 'any' types
     "strictNullChecks": false, // allow fuzziness in our null definitions
@@ -8,8 +9,8 @@
     "allowJs": true,  // don't allow just TS/TSX files
     "noEmitOnError": false, // make TS still build even if we run into errors
     "noEmit": false, // forgot what this does
-    "target": "ESNext",
-    "useDefineForClassFields": true,
+    "target": "es2020",
+    "useDefineForClassFields": false,
     "lib": [
       "DOM",
       "DOM.Iterable",

@@ -1,23 +1,28 @@
-//@ts-nocheck
 import * as React from 'react'
 import { TinyLoader } from '@cfRedux/helpers'
 import Library from '@cfModule/components/pages/Library/Library'
 import { ExploreMenu } from '@cfCommonComponents/menu/menus'
+import {
+  Discipline,
+  ExploreViewContextDataDTO,
+  InitialPages,
+  InitialWorkflow
+} from '@cfPages/Library/Explore/types'
 
 /*******************************************************
  * @ExploreRenderer
- *  disciplines: any
- *  initial_workflows: any[]
- *  initial_pages: any
  *******************************************************/
 class ExploreRenderer extends Library {
-  constructor(props) {
-    console.log('props')
-    console.log(props)
+  private disciplines: Discipline[]
+  private initial_pages: InitialPages
+  private initial_workflows: InitialWorkflow[]
+
+  constructor(props: ExploreViewContextDataDTO) {
     super(props)
-    this.disciplines = this.props.disciplines
-    this.initial_workflows = this.props.initial_workflows
-    this.initial_pages = this.props.initial_pages
+    this.disciplines = props.disciplines
+    this.initial_workflows = props.initial_workflows
+    this.initial_pages = props.initial_pages
+    // @ts-ignore
     this.tiny_loader = new TinyLoader($('body')[0])
   }
 

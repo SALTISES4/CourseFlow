@@ -10,7 +10,12 @@ export default defineConfig({
   css: {
     devSourcemap: true
   },
-  esbuild: { loader: 'jsx', include: /\.(js|jsx|ts|tsx)$/, exclude: [] },
+  esbuild: {
+    loader: 'jsx',
+    include: /\.(js|jsx|ts|tsx)$/,
+    exclude: [],
+    target: 'es2020'
+  },
   optimizeDeps: {
     esbuildOptions: {
       plugins: [
