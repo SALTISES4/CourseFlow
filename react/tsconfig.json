@@ -1,22 +1,13 @@
 {
   "compilerOptions": {
-    // "outDir": "./course_flow/static/course_flow/js/react/dist",
-    "outDir": "./build",
-    // try to make TS ignore as much as possible for now
-    "noImplicitAny": false,
-    // allow 'any' types
-    "strictNullChecks": false,
-    // allow fuzziness in our null definitions
-    "strict": false,
-    // lol
-    "skipLibCheck": true,
-    // don't TS check the node modules and other defined libs
-    "allowJs": true,
-    // don't allow just TS/TSX files
-    "noEmitOnError": false,
-    // make TS still build even if we run into errors
-    "noEmit": false,
-    // forgot what this does
+    "outDir": "./build",  // try to make TS ignore as much as possible for now
+    "noImplicitAny": false, // allow 'any' types
+    "strictNullChecks": false, // allow fuzziness in our null definitions
+    "strict": false,  // lol
+    "skipLibCheck": true,  // don't TS check the node modules and other defined libs
+    "allowJs": true,  // don't allow just TS/TSX files
+    "noEmitOnError": false, // make TS still build even if we run into errors
+    "noEmit": false, // forgot what this does
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": [
@@ -37,8 +28,7 @@
       "./src/types"
       // is this from tsconfig path or from baseurl? (note that we don't have any types yet)
     ],
-    "jsx": "react-jsx",
-    // This must be set if you're using "paths"
+    "jsx": "react-jsx",  // This must be set if you're using "paths"
     "baseUrl": "./src/",
     /**
     ALIASES
@@ -95,8 +85,7 @@
     }
   },
   "include": [
-    "./**/*"
-    //is this from baseurl relative path?
+    "./**/*" //is this from baseurl relative path?
   ],
   "exclude": [
     "./build/**/*",

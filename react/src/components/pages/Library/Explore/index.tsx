@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as React from 'react'
 import { TinyLoader } from '@cfRedux/helpers'
 import Library from '@cfModule/components/pages/Library/Library'
@@ -11,6 +12,8 @@ import { ExploreMenu } from '@cfCommonComponents/menu/menus'
  *******************************************************/
 class ExploreRenderer extends Library {
   constructor(props) {
+    console.log('props')
+    console.log(props)
     super(props)
     this.disciplines = this.props.disciplines
     this.initial_workflows = this.props.initial_workflows

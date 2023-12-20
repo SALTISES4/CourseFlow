@@ -13,6 +13,10 @@ twine
 xlsxwriter
 daphne >= 4
 twisted[tls] == 22.8.0
+graphviz
+django-extensions
+pyparsing
+pydot
 
 
 -e file:./#egg=saltise_course_flow
