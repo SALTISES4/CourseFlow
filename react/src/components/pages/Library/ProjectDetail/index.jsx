@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import { TinyLoader } from '@cfRedux/helpers'
-import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu.js'
+import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
 
 /**
  * export type ProjectViewDTO = {

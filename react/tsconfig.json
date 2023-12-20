@@ -10,12 +10,9 @@
     "noEmitOnError": false, // make TS still build even if we run into errors
     "noEmit": false, // forgot what this does
     "target": "es2020",
-    "useDefineForClassFields": false,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    // "useDefineForClassFields": false,
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "checkJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
@@ -72,7 +69,7 @@
         "./redux/Reducers.js"
       ],
       "@cfUtility": [
-        "./utilityFunctions.js"
+        "./utilityFunctions.jsx"
       ],
       "@cfConstants": [
         "./constants.js"
@@ -86,7 +83,7 @@
     }
   },
   "include": [
-    "./**/*" //is this from baseurl relative path?
+    "./**/*"
   ],
   "exclude": [
     "./build/**/*",

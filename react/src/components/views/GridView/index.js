@@ -1,1 +1,1 @@
-export { default as GridView } from './GridView.js'
+export { default as GridView } from './GridView'

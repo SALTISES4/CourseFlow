@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { TinyLoader } from '@cfRedux/helpers'
-import HomeMenu from '@cfModule/components/pages/Library/Home/components/HomeMenu.js'
+import HomeMenu from '@cfModule/components/pages/Library/Home/components/HomeMenu'
 
 /*******************************************************
  * @HomeRenderer

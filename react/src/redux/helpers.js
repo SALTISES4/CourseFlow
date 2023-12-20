@@ -1,5 +1,5 @@
 import React from 'react'
-import * as Constants from '../constants.js'
+import * as Constants from '../constants'
 
 /**
  * Manages the current selection, ensuring we only have one at a time

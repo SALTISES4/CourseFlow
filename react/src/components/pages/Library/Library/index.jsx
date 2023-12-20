@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { TinyLoader } from '@cfRedux/helpers'
-import LibraryMenu from '@cfModule/components/pages/Library/Library/components/LibraryMenu.js'
+import LibraryMenu from '@cfModule/components/pages/Library/Library/components/LibraryMenu'
 
 /*******************************************************
  * @LibraryRenderer

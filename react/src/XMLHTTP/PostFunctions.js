@@ -1,6 +1,6 @@
 import { changeField } from '@cfRedux/Reducers'
-import * as Constants from '../constants.js'
-import { DATA_ACTIONS } from './common.js'
+import * as Constants from '../constants'
+import { DATA_ACTIONS } from './common'
 
 /*
 All functions for API calls.

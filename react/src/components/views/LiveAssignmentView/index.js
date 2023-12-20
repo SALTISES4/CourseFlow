@@ -1,3 +1,3 @@
-export { default as LiveAssignmentMenu } from './LiveAssignmentMenu.js'
-export { default as AssignmentView } from './LiveAssignmentView.js'
-export { default as AssignmentViewSmall } from './AssignmentViewSmall.js'
+export { default as LiveAssignmentMenu } from './LiveAssignmentMenu'
+export { default as AssignmentView } from './LiveAssignmentView'
+export { default as AssignmentViewSmall } from './AssignmentViewSmall'

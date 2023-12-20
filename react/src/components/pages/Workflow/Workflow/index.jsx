@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { createStore } from '@reduxjs/toolkit'
-import { SelectionManager, TinyLoader } from '@cfRedux/helpers.js'
+import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import {
   getPublicWorkflowChildData,
@@ -13,9 +13,9 @@ import {
   getWorkflowData,
   getWorkflowParentData,
   updateValue
-} from '@XMLHTTP/PostFunctions.js'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
-import { WorkflowBaseView } from '@cfViews/WorkflowBaseView.js'
+} from '@XMLHTTP/PostFunctions'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
+import { WorkflowBaseView } from '@cfViews/WorkflowBaseView'
 
 /****************************************
  *

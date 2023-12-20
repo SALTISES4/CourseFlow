@@ -1,5 +1,5 @@
 import React from 'react'
-import { TinyLoader } from '@cfRedux/helpers.js'
+import { TinyLoader } from '@cfRedux/helpers'
 import { LiveAssignmentMenu } from '@cfViews/LiveAssignmentView'
 
 /*******************************************************

@@ -2,7 +2,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
-import WorkflowGridMenu from './components/WorkflowGridMenu.js'
+import WorkflowGridMenu from './components/WorkflowGridMenu'
 
 /****************************************
  *

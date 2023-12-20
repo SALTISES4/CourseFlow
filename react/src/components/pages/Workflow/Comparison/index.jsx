@@ -1,7 +1,7 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
-import { SelectionManager, TinyLoader } from '@cfRedux/helpers.js'
+import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
 import * as Constants from '@cfConstants'
 import { ComparisonView } from '@cfViews/ComparisonView'
 

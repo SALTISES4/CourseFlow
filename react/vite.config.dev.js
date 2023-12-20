@@ -10,32 +10,9 @@ export default defineConfig({
   css: {
     devSourcemap: true
   },
-  esbuild: {
-    loader: 'jsx',
-    include: /\.(js|jsx|ts|tsx)$/,
-    exclude: [],
-    target: 'es2020'
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      plugins: [
-        {
-          name: 'load-js-files-as-jsx',
-          setup(build) {
-            build.onLoad({ filter: /\.(js|ts|tsx)$/ }, async (args) => {
-              return {
-                loader: 'jsx',
-                contents: await fs.readFile(args.path, 'utf8')
-              }
-            })
-          }
-        }
-      ]
-    }
-  },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/app-redesign.js'),
+      entry: path.resolve(__dirname, 'src/app-redesign.jsx'),
       name: 'CourseFlowApp',
       fileName: (format) => `courseflow-app.${format}.js`
     },

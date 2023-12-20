@@ -1,14 +1,10 @@
-import * as Constants from '../constants.js'
-import * as Utility from '../utilityFunctions.js'
+import * as Constants from '../constants'
+import * as Utility from '../utilityFunctions'
 
 /*******************************************************
  *
  *  This file contains selectors to encapsulate accessing the
  *  Redux state directly
- *
- *
- *
- *
  *
  *******************************************************/
 

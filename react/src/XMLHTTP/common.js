@@ -1,4 +1,4 @@
-import { Enum } from '../utilityFunctions.js'
+import { Enum } from '../utilityFunctions'
 
 export const DATA_ACTIONS = Enum({
   POSTED: 'posted'

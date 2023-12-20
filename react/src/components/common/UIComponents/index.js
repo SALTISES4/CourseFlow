@@ -6,9 +6,9 @@ export {
   OutcomeTitle,
   getOutcomeTitle,
   TitleText
-} from './Titles.js'
-export { default as Slider } from './Slider.js'
-export { default as DatePicker } from './DatePicker.js'
-export { default as CollapsibleText } from './CollapsibleText.js'
-export { default as LegendLine } from './LegendLine.js'
-export { default as ActionButton } from './ActionButton.js'
+} from './Titles'
+export { default as Slider } from './Slider'
+export { default as DatePicker } from './DatePicker'
+export { default as CollapsibleText } from './CollapsibleText'
+export { default as LegendLine } from './LegendLine'
+export { default as ActionButton } from './ActionButton'

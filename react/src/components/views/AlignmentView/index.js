@@ -1,1 +1,1 @@
-export { default as AlignmentView } from './AlignmentView.js'
+export { default as AlignmentView } from './AlignmentView'
