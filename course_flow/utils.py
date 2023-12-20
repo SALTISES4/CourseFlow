@@ -272,7 +272,7 @@ def get_user_permission(obj, user):
 
 def get_user_role(obj, user):
     if user is None or not user.is_authenticated:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     if obj.type == "liveproject":
         liveproject = obj
         project = obj.project
@@ -281,7 +281,7 @@ def get_user_role(obj, user):
             liveproject = obj.liveproject
             project = obj
         except AttributeError:
-            return models.LiveProjectUser.ROLE_NONE
+            return models.relations.LiveProjectUser.ROLE_NONE
     elif obj.is_strategy:
         project = None
         liveproject = None
@@ -290,16 +290,16 @@ def get_user_role(obj, user):
             project = obj.get_project()
             liveproject = project.liveproject
         except AttributeError:
-            return models.LiveProjectUser.ROLE_NONE
+            return models.relations.LiveProjectUser.ROLE_NONE
     if liveproject is None:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     if hasattr(obj, "author") and obj.author == user:
-        return models.LiveProjectUser.ROLE_TEACHER
-    permissions = models.LiveProjectUser.objects.filter(
+        return models.relations.LiveProjectUser.ROLE_TEACHER
+    permissions = models.relations.LiveProjectUser.objects.filter(
         user=user, liveproject=liveproject
     )
     if permissions.count() == 0:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     return permissions.first().role_type
 
 
@@ -313,7 +313,7 @@ def user_workflow_url(workflow, user):
             can_view = True
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
         can_view = True
-    if user_role != models.LiveProjectUser.ROLE_NONE:
+    if user_role != models.relations.LiveProjectUser.ROLE_NONE:
         can_view = True
     if can_view:
         return reverse(
@@ -335,7 +335,7 @@ def user_project_url(project, user):
         return "noaccess"
     if (
         user_permission != models.ObjectPermission.PERMISSION_NONE
-        or user_role == models.LiveProjectUser.ROLE_TEACHER
+        or user_role == models.relations.LiveProjectUser.ROLE_TEACHER
     ):
         return reverse("course_flow:project-update", kwargs={"pk": project.pk})
     return reverse(

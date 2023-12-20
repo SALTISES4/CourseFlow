@@ -1409,56 +1409,6 @@ class AnalyticsSerializer(
             return instance.author.email
 
 
-# class RefreshSerializerWeek(serializers.Serializer):
-#    class Meta:
-#        model = Week
-#        fields = [
-#            "id",
-#            "nodeweek_set",
-#        ]
-#
-#    nodeweek_set = serializers.SerializerMethodField()
-#
-#    def get_nodeweek_set(self, instance):
-#        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#
-#
-# class RefreshSerializerWorkflow(serializers.ModelSerializer):
-#
-#    author_id = serializers.SerializerMethodField()
-#
-#    class Meta:
-#        model = Workflow
-#        fields = [
-#            "id",
-#            "columnworkflow_set",
-#            "weekworkflow_set",
-#            "outcomeworkflow_set",
-#        ]
-#
-#    weekworkflow_set = serializers.SerializerMethodField()
-#    columnworkflow_set = serializers.SerializerMethodField()
-#    outcomeworkflow_set = serializers.SerializerMethodField()
-#
-#
-#
-#    def get_weekworkflow_set(self, instance):
-#        links = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#    def get_columnworkflow_set(self, instance):
-#        links = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#    def get_outcomeworkflow_set(self, instance):
-#        links = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#
-
-
 class RefreshSerializerOutcome(serializers.ModelSerializer):
     class Meta:
         model = Outcome
