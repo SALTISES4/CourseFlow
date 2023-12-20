@@ -1,5 +1,3 @@
-import json
-
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -9,6 +7,7 @@ from course_flow.decorators import ajax_login_required
 from course_flow.forms import ProfileSettings
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import FormFieldsSerializer
+from rest_framework.renderers import JSONRenderer
 
 
 @ajax_login_required
@@ -33,9 +32,9 @@ def notifications_settings_view(request):
     context = {
         "title": "Notifications Settings",
         "path_id": "notificationsSettings",
-        "contextData": json.dumps(
+        "contextData": JSONRenderer().render(
             {"formData": {"receiveNotifications": user.notifications}}
-        ),
+        ).decode("utf-8"),
     }
     return render(request, "course_flow/react/common_entrypoint.html", context)
 
@@ -54,9 +53,9 @@ def profile_settings_view(request):
     context = {
         "title": "Profile Settings",
         "path_id": "profileSettings",
-        "contextData": json.dumps(
+        "contextData": JSONRenderer().render(
             {"formData": FormFieldsSerializer(form).prepare_fields()}
-        ),
+        ).decode("utf-8"),
     }
 
     return render(request, "course_flow/react/common_entrypoint.html", context)
