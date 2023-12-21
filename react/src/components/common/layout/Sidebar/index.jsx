@@ -18,7 +18,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
-import useApi from '../../../hooks/useApi'
+import useApi from '@cfModule/hooks/useApi'
 
 export const SidebarRootStyles = {
   height: '100%'

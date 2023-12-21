@@ -20,9 +20,7 @@ import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsS
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
-import Sidebar, {
-  SidebarRootStyles
-} from '@cfCommonComponents/layout/Sidebar.jsx'
+import Sidebar, { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar'
 import TopBar from '@cfModule/components/common/layout/TopBar'
 
 // global styles / SCSS
