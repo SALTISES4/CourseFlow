@@ -25,6 +25,12 @@ import Typography from '@mui/material/Typography'
 import useApi from '@cfModule/hooks/useApi'
 import { createNew } from '@XMLHTTP/postTemp'
 
+const TopBarWrap = styled(Box)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    backgroundColor: theme.palette.common.white
+  }
+}))
+
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
     minWidth: 220,
@@ -267,62 +273,60 @@ const TopBar = () => {
   )
 
   return (
-    <Box>
+    <TopBarWrap>
       <AppBar position="static">
-        <Paper>
-          <Toolbar variant="dense">
-            <Box sx={{ flexGrow: 1 }} className="title" />
-            <Box sx={{ display: 'flex' }}>
-              {apiData.is_teacher ? (
-                <IconButton
-                  size="large"
-                  aria-label="add menu"
-                  aria-controls="add-menu"
-                  aria-haspopup="true"
-                  color="primary"
-                  onClick={handleAddMenuOpen}
-                >
-                  <AddCircleIcon />
-                </IconButton>
-              ) : null}
-
+        <Toolbar variant="dense">
+          <Box sx={{ flexGrow: 1 }} className="title" />
+          <Box sx={{ display: 'flex' }}>
+            {apiData.is_teacher ? (
               <IconButton
                 size="large"
-                aria-label={
-                  apiData.notifications.unread >= 1
-                    ? `show ${apiData.notifications.unread} new notifications`
-                    : 'no new notifications'
-                }
-                aria-controls="notifications-menu"
+                aria-label="add menu"
+                aria-controls="add-menu"
                 aria-haspopup="true"
-                onClick={handleNotificationsMenuOpen}
+                color="primary"
+                onClick={handleAddMenuOpen}
               >
-                <Badge
-                  badgeContent={apiData.notifications.unread}
-                  color="primary"
-                >
-                  <NotificationsIcon />
-                </Badge>
+                <AddCircleIcon />
               </IconButton>
+            ) : null}
 
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls="account-menu"
-                aria-haspopup="true"
-                onClick={handleMenuOpen}
+            <IconButton
+              size="large"
+              aria-label={
+                apiData.notifications.unread >= 1
+                  ? `show ${apiData.notifications.unread} new notifications`
+                  : 'no new notifications'
+              }
+              aria-controls="notifications-menu"
+              aria-haspopup="true"
+              onClick={handleNotificationsMenuOpen}
+            >
+              <Badge
+                badgeContent={apiData.notifications.unread}
+                color="primary"
               >
-                <AccountCircle />
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </Paper>
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls="account-menu"
+              aria-haspopup="true"
+              onClick={handleMenuOpen}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+        </Toolbar>
       </AppBar>
       {apiData.is_teacher && addMenu}
       {notificationsMenu}
       {accountMenu}
-    </Box>
+    </TopBarWrap>
   )
 }
 

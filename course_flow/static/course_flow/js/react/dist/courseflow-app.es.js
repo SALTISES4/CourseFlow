@@ -59846,6 +59846,11 @@ function createNew(create_url) {
     }
   );
 }
+const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: theme2.palette.common.white
+  }
+}));
 const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
   "& .MuiPaper-root": {
     minWidth: 220,
@@ -60056,8 +60061,8 @@ const TopBar = () => {
       ]
     }
   );
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Paper$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
         apiData.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -60103,7 +60108,7 @@ const TopBar = () => {
           }
         )
       ] })
-    ] }) }) }),
+    ] }) }),
     apiData.is_teacher && addMenu,
     notificationsMenu,
     accountMenu
