@@ -59009,32 +59009,32 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
   }), "Home");
   default_1$a = Home.default = _default$a;
-  var CollectionsBookmark = {};
+  var FolderCopy = {};
   var _interopRequireDefault$9 = interopRequireDefaultExports;
-  Object.defineProperty(CollectionsBookmark, "__esModule", {
+  Object.defineProperty(FolderCopy, "__esModule", {
     value: true
   });
-  var default_1$9 = CollectionsBookmark.default = void 0;
+  var default_1$9 = FolderCopy.default = void 0;
   var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
   var _jsxRuntime$9 = jsxRuntimeExports;
   var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"
+    d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
   }, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 10-2.5-1.5L15 12V4h5v8z"
-  }, "1")], "CollectionsBookmark");
-  default_1$9 = CollectionsBookmark.default = _default$9;
-  var ManageSearch = {};
+    d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+  }, "1")], "FolderCopy");
+  default_1$9 = FolderCopy.default = _default$9;
+  var Search = {};
   var _interopRequireDefault$8 = interopRequireDefaultExports;
-  Object.defineProperty(ManageSearch, "__esModule", {
+  Object.defineProperty(Search, "__esModule", {
     value: true
   });
-  var default_1$8 = ManageSearch.default = void 0;
+  var default_1$8 = Search.default = void 0;
   var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
   var _jsxRuntime$8 = jsxRuntimeExports;
   var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "M7 9H2V7h5v2zm0 3H2v2h5v-2zm13.59 7-3.83-3.83c-.8.52-1.74.83-2.76.83-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5c0 1.02-.31 1.96-.83 2.75L22 17.59 20.59 19zM17 11c0-1.65-1.35-3-3-3s-3 1.35-3 3 1.35 3 3 3 3-1.35 3-3zM2 19h10v-2H2v2z"
-  }), "ManageSearch");
-  default_1$8 = ManageSearch.default = _default$8;
+    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+  }), "Search");
+  default_1$8 = Search.default = _default$8;
   var CalendarMonth = {};
   var _interopRequireDefault$7 = interopRequireDefaultExports;
   Object.defineProperty(CalendarMonth, "__esModule", {
