@@ -9,7 +9,6 @@ import Link from '@mui/material/Link'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import Menu from '@mui/material/Menu'
-import Paper from '@mui/material/Paper'
 import Popover from '@mui/material/Popover'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -24,6 +23,8 @@ import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '@cfModule/hooks/useApi'
 import { createNew } from '@XMLHTTP/postTemp'
+
+import ResetPasswordModal from './components/ResetPasswordModal'
 
 const TopBarWrap = styled(Box)(({ theme }) => ({
   '& .MuiPaper-root': {
@@ -86,6 +87,8 @@ const NotificationsList = styled(List)(({ theme }) => ({
 const TopBar = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
+
+  const [resetPassword, setResetPassword] = useState(false)
 
   const [addMenuAnchorEl, setAddMenuAnchorEl] = useState(null)
   const isAddMenuOpen = Boolean(addMenuAnchorEl)
@@ -253,7 +256,7 @@ const TopBar = () => {
       <MenuItem component="a" href={apiData.menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem component="a" href={apiData.menus.account.resetPasswordUrl}>
+      <MenuItem onClick={() => setResetPassword(true)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem
@@ -326,6 +329,16 @@ const TopBar = () => {
       {apiData.is_teacher && addMenu}
       {notificationsMenu}
       {accountMenu}
+
+      <ResetPasswordModal
+        show={resetPassword}
+        handleClose={() => {
+          setResetPassword(false)
+        }}
+        handleContinue={() =>
+          (window.location = apiData.menus.account.resetPasswordUrl)
+        }
+      />
     </TopBarWrap>
   )
 }
