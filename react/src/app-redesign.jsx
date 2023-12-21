@@ -166,15 +166,6 @@ window.addEventListener('load', () => {
     {
       component: <TopBar />,
       target: '[data-component="topbar"]'
-    },
-    {
-      component: <NotificationsPage />,
-      target: '[data-component="notifications-page"]'
-    },
-
-    {
-      component: <ProfileSettingsPage />,
-      target: '[data-component="profile-settings-page"]'
     }
   ]
   renderComponents(componentsToRender)

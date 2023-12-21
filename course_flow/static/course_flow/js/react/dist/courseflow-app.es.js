@@ -89942,14 +89942,6 @@ window.addEventListener("load", () => {
     {
       component: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}),
       target: '[data-component="topbar"]'
-    },
-    {
-      component: /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsPage, {}),
-      target: '[data-component="notifications-page"]'
-    },
-    {
-      component: /* @__PURE__ */ jsxRuntimeExports.jsx(ProfileSettingsPage, {}),
-      target: '[data-component="profile-settings-page"]'
     }
   ];
   renderComponents(componentsToRender);
