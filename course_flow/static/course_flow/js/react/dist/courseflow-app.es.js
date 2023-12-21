@@ -59209,7 +59209,7 @@ const Sidebar = () => {
           ListItemButton$1,
           {
             component: "a",
-            id: "panel-home",
+            "data-test-id": "panel-home",
             href: COURSEFLOW_APP.config.home_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
             children: [
@@ -59223,7 +59223,7 @@ const Sidebar = () => {
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-my-library",
+              "data-test-id": "panel-my-library",
               href: COURSEFLOW_APP.config.my_library_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
               children: [
@@ -59236,7 +59236,7 @@ const Sidebar = () => {
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-explore",
+              "data-test-id": "panel-explore",
               href: COURSEFLOW_APP.config.explore_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
               children: [
@@ -59250,7 +59250,7 @@ const Sidebar = () => {
           ListItemButton$1,
           {
             component: "a",
-            id: "panel-my-live-projects",
+            "data-test-id": "panel-my-live-projects",
             href: COURSEFLOW_APP.config.my_liveprojects_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
             children: [
@@ -89853,9 +89853,12 @@ class HomeRenderer extends reactExports.Component {
 class ExploreRenderer extends LibraryRenderer {
   constructor(props) {
     super(props);
-    this.disciplines = this.props.disciplines;
-    this.initial_workflows = this.props.initial_workflows;
-    this.initial_pages = this.props.initial_pages;
+    __publicField(this, "disciplines");
+    __publicField(this, "initial_pages");
+    __publicField(this, "initial_workflows");
+    this.disciplines = props.disciplines;
+    this.initial_workflows = props.initial_workflows;
+    this.initial_pages = props.initial_pages;
     this.tiny_loader = new TinyLoader($("body")[0]);
   }
   getContents() {

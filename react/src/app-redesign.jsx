@@ -23,7 +23,7 @@ import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 import Sidebar, {
   SidebarRootStyles
 } from '@cfCommonComponents/layout/Sidebar.jsx'
-import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
+import TopBar from '@cfModule/components/common/layout/TopBar'
 
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'

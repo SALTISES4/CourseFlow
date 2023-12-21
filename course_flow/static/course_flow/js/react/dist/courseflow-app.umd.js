@@ -48399,7 +48399,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           top_rank = findTopRank(state, root_outcome);
         titles.push(outcome.title);
         rank.unshift(top_rank);
-        let hovertext = rank.map((rank_i, i22) => rank_i + ". " + titles[i22]).join(" -> ");
+        let hovertext = rank.map((rank_i, i3) => rank_i + ". " + titles[i3]).join(" -> ");
         let prefix2 = rank.join(".");
         return {
           data: outcome,
@@ -59213,7 +59213,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-home",
+              "data-test-id": "panel-home",
               href: COURSEFLOW_APP.config.home_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
               children: [
@@ -59227,7 +59227,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               ListItemButton$1,
               {
                 component: "a",
-                id: "panel-my-library",
+                "data-test-id": "panel-my-library",
                 href: COURSEFLOW_APP.config.my_library_path,
                 selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
                 children: [
@@ -59240,7 +59240,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               ListItemButton$1,
               {
                 component: "a",
-                id: "panel-explore",
+                "data-test-id": "panel-explore",
                 href: COURSEFLOW_APP.config.explore_path,
                 selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
                 children: [
@@ -59254,7 +59254,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-my-live-projects",
+              "data-test-id": "panel-my-live-projects",
               href: COURSEFLOW_APP.config.my_liveprojects_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
               children: [
@@ -89857,9 +89857,12 @@ ${latestSubscriptionCallbackError.current.stack}
   class ExploreRenderer extends LibraryRenderer {
     constructor(props) {
       super(props);
-      this.disciplines = this.props.disciplines;
-      this.initial_workflows = this.props.initial_workflows;
-      this.initial_pages = this.props.initial_pages;
+      __publicField(this, "disciplines");
+      __publicField(this, "initial_pages");
+      __publicField(this, "initial_workflows");
+      this.disciplines = props.disciplines;
+      this.initial_workflows = props.initial_workflows;
+      this.initial_pages = props.initial_pages;
       this.tiny_loader = new TinyLoader($("body")[0]);
     }
     getContents() {
