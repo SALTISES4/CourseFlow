@@ -1,16 +1,13 @@
 import * as React from 'react'
-import { Component } from '@cfParentComponents'
-import { searchAllObjects } from '@XMLHTTP/PostFunctions'
+import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed/index.jsx'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
-import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed'
-import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
-
-
+import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
+import { searchAllObjectsQuery } from '@XMLHTTP/PostFunctions.js'
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
-class WorkflowFilter extends Component {
 
+class WorkflowFilter extends React.Component {
   constructor(props) {
     super(props)
 
@@ -53,53 +50,17 @@ class WorkflowFilter extends Component {
     COURSEFLOW_APP.makeDropdown(this.sortDOM.current)
     COURSEFLOW_APP.makeDropdown(this.searchDOM.current)
   }
-
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.workflows !== this.props.workflows)
       this.setState({ workflows: this.props.workflows })
   }
 
-  /*******************************************************
-   *  FUNCTIONS
-   *******************************************************/
   getPlaceholder() {
     if (this.props.context === 'project') {
       return window.gettext('Search the project')
     } else {
       return window.gettext('Search the library')
     }
-  }
-
-  sortWorkflows(workflows) {
-    let sort = this.sorts[this.state.active_sort].name
-    if (sort === 'last_viewed') {
-      workflows = workflows.sort((a, b) =>
-        ('' + a.object_permission[sort]).localeCompare(
-          b.object_permission[sort]
-        )
-      )
-      if (!this.state.reversed) return workflows.reverse()
-      return workflows
-    } else
-      workflows = workflows.sort((a, b) =>
-        ('' + a[sort]).localeCompare(b[sort])
-      )
-    if (this.state.reversed) return workflows.reverse()
-    return workflows
-  }
-
-  filterWorkflows(workflows) {
-    let filter = this.filters[this.state.active_filter].name
-    if (filter !== 'archived')
-      workflows = workflows.filter((workflow) => !workflow.deleted)
-    else return workflows.filter((workflow) => workflow.deleted)
-    if (filter === 'owned')
-      return workflows.filter((workflow) => workflow.is_owned)
-    if (filter === 'shared')
-      return workflows.filter((workflow) => !workflow.is_owned)
-    if (filter === 'favourite')
-      return workflows.filter((workflow) => workflow.favourite)
-    return workflows
   }
 
   getFilter() {
@@ -182,10 +143,80 @@ class WorkflowFilter extends Component {
     )
   }
 
+  sortWorkflows(workflows) {
+    let sort = this.sorts[this.state.active_sort].name
+    if (sort === 'last_viewed') {
+      workflows = workflows.sort((a, b) =>
+        ('' + a.object_permission[sort]).localeCompare(
+          b.object_permission[sort]
+        )
+      )
+      if (!this.state.reversed) return workflows.reverse()
+      return workflows
+    } else
+      workflows = workflows.sort((a, b) =>
+        ('' + a[sort]).localeCompare(b[sort])
+      )
+    if (this.state.reversed) return workflows.reverse()
+    return workflows
+  }
+
   sortChange(index) {
     if (this.state.active_sort === index)
       this.setState({ reversed: !this.state.reversed })
     else this.setState({ active_sort: index, reversed: false })
+  }
+
+  filterWorkflows(workflows) {
+    let filter = this.filters[this.state.active_filter].name
+    if (filter !== 'archived')
+      workflows = workflows.filter((workflow) => !workflow.deleted)
+    else return workflows.filter((workflow) => workflow.deleted)
+    if (filter === 'owned')
+      return workflows.filter((workflow) => workflow.is_owned)
+    if (filter === 'shared')
+      return workflows.filter((workflow) => !workflow.is_owned)
+    if (filter === 'favourite')
+      return workflows.filter((workflow) => workflow.favourite)
+    return workflows
+  }
+
+  searchWithin(request, response_function) {
+    let workflows = this.state.workflows.filter(
+      (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
+    )
+    response_function(workflows)
+  }
+
+  seeAll() {
+    COURSEFLOW_APP.tinyLoader.startLoad()
+    let search_filter = this.state.search_filter
+    searchAllObjectsQuery(search_filter, { nresults: 0 }, (response_data) => {
+      this.setState({
+        workflows: response_data.workflow_list,
+        search_filter_lock: search_filter
+      })
+      COURSEFLOW_APP.tinyLoader.endLoad()
+
+      // Remove class from elements
+      var dropdowns = document.querySelectorAll(
+        '#workflow-search .create-dropdown'
+      )
+      dropdowns.forEach(function (dropdown) {
+        dropdown.classList.remove('active')
+      })
+
+      // Set attribute 'disabled' to true for elements
+      var workflowSearch = document.getElementById('workflow-search')
+      if (workflowSearch) {
+        workflowSearch.setAttribute('disabled', true)
+      }
+
+      var workflowSearchInput = document.getElementById('workflow-search-input')
+      if (workflowSearchInput) {
+        workflowSearchInput.setAttribute('disabled', true)
+      }
+    })
   }
 
   searchChange(evt) {
@@ -214,15 +245,8 @@ class WorkflowFilter extends Component {
     }
   }
 
-  searchWithin(request, response_function) {
-    let workflows = this.state.workflows.filter(
-      (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
-    )
-    response_function(workflows)
-  }
-
   searchWithout(request, response_function) {
-    searchAllObjects(
+    searchAllObjectsQuery(
       request,
       {
         nresults: 10
@@ -233,37 +257,6 @@ class WorkflowFilter extends Component {
     )
   }
 
-  seeAll() {
-    COURSEFLOW_APP.tinyLoader.startLoad()
-    let search_filter = this.state.search_filter
-    searchAllObjects(search_filter, { nresults: 0 }, (response_data) => {
-      this.setState({
-        workflows: response_data.workflow_list,
-        search_filter_lock: search_filter
-      })
-      COURSEFLOW_APP.tinyLoader.endLoad()
-
-      // Remove class from elements
-      var dropdowns = document.querySelectorAll(
-        '#workflow-search .create-dropdown'
-      )
-      dropdowns.forEach(function (dropdown) {
-        dropdown.classList.remove('active')
-      })
-
-      // Set attribute 'disabled' to true for elements
-      var workflowSearch = document.getElementById('workflow-search')
-      if (workflowSearch) {
-        workflowSearch.setAttribute('disabled', true)
-      }
-
-      var workflowSearchInput = document.getElementById('workflow-search-input')
-      if (workflowSearchInput) {
-        workflowSearchInput.setAttribute('disabled', true)
-      }
-    })
-  }
-
   clearSearchLock(evt) {
     this.setState({ workflows: this.props.workflows, search_filter_lock: null })
     $('#workflow-search').attr('disabled', false)
@@ -271,22 +264,18 @@ class WorkflowFilter extends Component {
     evt.stopPropagation()
   }
 
-  defaultRender() {
-    return <WorkflowLoader />
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     let workflows
-    if (!this.state.workflows) workflows = this.defaultRender()
+    if (!this.state.workflows) workflows = <WorkflowLoader />
     else {
       workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows))
       workflows = workflows.map((workflow) => (
         <WorkflowCard
-          renderer={this.props.renderer}
           key={workflow.type + workflow.id}
+          renderer={this.props.renderer}
           workflow_data={workflow}
           context={this.props.context}
           updateWorkflow={this.props.updateWorkflow}

@@ -1,15 +1,23 @@
 import * as React from 'react'
-import { getFavourites } from '@XMLHTTP/PostFunctions'
+import { getFavouritesQuery } from '@XMLHTTP/PostFunctions'
 import WorkflowFilter from '@cfCommonComponents/workflow/WorkflowFilter'
-import LibraryMenu from '../../Library/components/LibraryMenu'
 
-class FavouritesMenu extends LibraryMenu {
+class FavouritesMenu extends React.Component {
+  // @todo review constructor
+  constructor(props) {
+    super(props)
+    this.state = {}
+    this.read_only = this.props.renderer.read_only
+    this.renderer = this.props.renderer
+    this.createDiv = React.createRef()
+  }
+
   /*******************************************************
-   * Lifecycle hooks
+   * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
     let component = this
-    getFavourites((data) => {
+    getFavouritesQuery((data) => {
       component.setState({ project_data: data.data_package })
     })
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)

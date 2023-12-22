@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FavouritesMenu } from '@cfCommonComponents/menu/menus'
+import FavouritesMenu from '@cfPages/Library/Favorites/components/FavouritesMenu'
 
 /*******************************************************
  * @FavouritesRenderer

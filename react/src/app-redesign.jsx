@@ -50,6 +50,7 @@ import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
 
+// see note in mouseCursorLoader.js
 const tinyLoader = new MouseCursorLoader($('body')[0])
 COURSEFLOW_APP.tinyLoader = tinyLoader
 

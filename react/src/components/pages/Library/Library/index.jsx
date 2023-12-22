@@ -7,12 +7,10 @@ import LibraryMenu from '@cfModule/components/pages/Library/Library/components/L
 class LibraryPage extends React.Component {
   constructor(props) {
     super(props)
-    console.log('props')
-    console.log(props)
   }
 
   render() {
-    this.container = container
+    // this.container = container // @todo this.container does not appear to be used
     return <LibraryMenu renderer={this} />
   }
 }

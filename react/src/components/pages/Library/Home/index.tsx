@@ -8,7 +8,7 @@ type PropsType = {
   is_teacher: string
 }
 
-class HomeRenderer extends React.Component {
+class HomePage extends React.Component {
   private is_teacher
 
   constructor(props: PropsType) {
@@ -25,4 +25,4 @@ class HomeRenderer extends React.Component {
   }
 }
 
-export default HomeRenderer
+export default HomePage

@@ -1267,7 +1267,7 @@ export function getAssignmentsForNode(
 }
 
 //Get the library projects
-export function getLibrary(callBackFunction = () => console.log('success')) {
+export function getLibraryQuery(callBackFunction = () => console.log('success')) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (data) {
       callBackFunction(data)
@@ -1278,7 +1278,7 @@ export function getLibrary(callBackFunction = () => console.log('success')) {
 }
 
 //Get the library projects
-export function getFavourites(callBackFunction = () => console.log('success')) {
+export function getFavouritesQuery(callBackFunction = () => console.log('success')) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (data) {
       callBackFunction(data)
@@ -1316,7 +1316,7 @@ export function getWorkflowsForProject(
 }
 
 //Search entire library
-export function searchAllObjects(
+export function searchAllObjectsQuery(
   filter,
   data,
   callBackFunction = () => console.log('success')

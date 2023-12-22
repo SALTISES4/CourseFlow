@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getLibrary } from '@XMLHTTP/PostFunctions'
+import { getLibraryQuery } from '@XMLHTTP/PostFunctions'
 import WorkflowFilter from '@cfCommonComponents/workflow/WorkflowFilter'
 import { MenuBar } from '@cfCommonComponents/components'
 
@@ -22,7 +22,7 @@ class LibraryMenu extends React.Component {
    * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
-    getLibrary((data) => {
+    getLibraryQuery((data) => {
       this.setState({ project_data: data.data_package })
     })
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)
