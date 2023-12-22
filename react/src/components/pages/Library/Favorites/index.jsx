@@ -7,8 +7,6 @@ import FavouritesMenu from '@cfPages/Library/Favorites/components/FavouritesMenu
 class FavouritesPage extends React.Component {
   constructor(props) {
     super(props)
-    console.log('props')
-    console.log(props)
   }
 
   render() {

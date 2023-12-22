@@ -19,7 +19,7 @@ import {
   LiveProjectAssignments,
   LiveProjectCompletionTable
 } from '@cfViews/LiveProjectView'
-import WorkflowFilter from '@cfCommonComponents/workflow/WorkflowFilter'
+import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
 // import { renderMessageBox } from '../components/MenuComponents/MenuComponents'
 // import closeMessageBox from '../components/MenuComponents/components/closeMessageBox'
 
@@ -29,10 +29,13 @@ import WorkflowFilter from '@cfCommonComponents/workflow/WorkflowFilter'
  * On mount, this will fetch the workflows for the project. When they have been
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
-class ProjectMenu extends LibraryMenu {
+class ProjectMenu extends React.Component {
   constructor(props) {
     super(props)
     this.user_id = props.userId
+    this.read_only = this.props.renderer.read_only
+    this.renderer = this.props.renderer
+    this.createDiv = React.createRef()
     this.state = {
       data: props.data,
       view_type: 'workflows'

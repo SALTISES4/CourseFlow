@@ -11,7 +11,7 @@ import ExploreMenu from '@cfPages/Library/Explore/components/ExploreMenu'
 /*******************************************************
  * @ExploreRenderer
  *******************************************************/
-class ExploreRenderer extends Library {
+class ExploreRenderer extends React.Component {
   private disciplines: Discipline[]
   private initial_pages: InitialPages
   private initial_workflows: InitialWorkflow[]

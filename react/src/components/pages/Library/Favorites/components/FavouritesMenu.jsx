@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { getFavouritesQuery } from '@XMLHTTP/PostFunctions'
-import WorkflowFilter from '@cfCommonComponents/workflow/WorkflowFilter'
+import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
 
 class FavouritesMenu extends React.Component {
   // @todo review constructor
@@ -13,7 +13,7 @@ class FavouritesMenu extends React.Component {
   }
 
   /*******************************************************
-   * LIFECYCLE HOOKS
+   * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
     let component = this
