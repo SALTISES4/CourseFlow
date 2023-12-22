@@ -5,12 +5,15 @@ import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 
+
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
 class WorkflowFilter extends Component {
+
   constructor(props) {
     super(props)
+
     this.state = {
       workflows: props.workflows,
       active_filter: 0,
@@ -231,14 +234,14 @@ class WorkflowFilter extends Component {
   }
 
   seeAll() {
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     let search_filter = this.state.search_filter
     searchAllObjects(search_filter, { nresults: 0 }, (response_data) => {
       this.setState({
         workflows: response_data.workflow_list,
         search_filter_lock: search_filter
       })
-      this.props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
 
       // Remove class from elements
       var dropdowns = document.querySelectorAll(

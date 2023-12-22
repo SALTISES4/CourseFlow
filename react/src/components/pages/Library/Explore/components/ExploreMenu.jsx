@@ -374,7 +374,7 @@ class ExploreFilter extends WorkflowFilter {
 
   searchWithout(request, response_function, page_number = 1) {
     this.setState({ has_searched: true })
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     searchAllObjects(
       request,
       {
@@ -391,7 +391,7 @@ class ExploreFilter extends WorkflowFilter {
       },
       (response_data) => {
         response_function(response_data.workflow_list, response_data.pages)
-        this.props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
@@ -452,7 +452,6 @@ class ExploreMenu extends LibraryMenu {
         <ExploreFilter
           // @todo from renderer:
           // initial_pages
-          // tiny loader
           disciplines={this.props.disciplines}
           renderer={this.props.renderer}
           workflows={this.props.renderer.initial_workflows}

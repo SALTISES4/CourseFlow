@@ -7,7 +7,6 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '@cfRedux/helpers'
 
 class UserLabel extends React.Component {
   constructor(props) {
@@ -183,7 +182,6 @@ class UserAdd extends React.Component {
 export class ShareMenu extends React.Component {
   constructor(props) {
     super(props)
-    this.tiny_loader = new TinyLoader($('body'))
     this.state = {
       owner: props.data.author,
       edit: [],
@@ -495,7 +493,7 @@ export class ShareMenu extends React.Component {
   }
 
   setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     setUserPermission(
       user.id,
       this.props.data.id,
@@ -512,7 +510,7 @@ export class ShareMenu extends React.Component {
               edit: response.editors,
               student: response.students
             })
-            this.tiny_loader.endLoad()
+            COURSEFLOW_APP.tinyLoader.endLoad()
           }
         )
       }

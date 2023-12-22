@@ -1,7 +1,6 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
 // import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents'
 import { DATA_ACTIONS } from './common'
-import { TinyLoader } from '../redux/helpers'
 
 /**
  *
@@ -119,8 +118,7 @@ export function getLinkedWorkflowMenu(
 
 // not sure where this lives yet
 export function createNew(create_url) {
-  let tiny_loader = new TinyLoader($('body')[0])
-  tiny_loader.startLoad()
+  COURSEFLOW_APP.tinyLoader.startLoad()
   getTargetProjectMenu(
     -1,
     (response_data) => {
@@ -132,7 +130,7 @@ export function createNew(create_url) {
       }
     },
     () => {
-      tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     }
   )
 }

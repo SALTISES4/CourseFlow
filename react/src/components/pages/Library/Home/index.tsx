@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { TinyLoader } from '@cfRedux/helpers'
 import HomeMenu from '@cfPages/Library/Home/components/HomeMenu'
 
 /*******************************************************
@@ -18,9 +17,6 @@ class HomeRenderer extends React.Component {
   }
 
   render() {
-    // @ts-ignore
-    this.tiny_loader = new TinyLoader($('body')[0])
-
     return this.getContents()
   }
 

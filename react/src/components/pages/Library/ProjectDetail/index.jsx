@@ -1,6 +1,5 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '@cfRedux/helpers'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
 
 /**
@@ -58,7 +57,6 @@ class ProjectRenderer extends React.Component {
 
   render() {
     this.container = container
-    this.tiny_loader = new TinyLoader($('body')[0])
 
     return this.getContents()
   }

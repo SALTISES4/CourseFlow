@@ -1,4 +1,4 @@
-import { Enum } from '../utilityFunctions'
+import { Enum } from '@cfUtility'
 
 export const DATA_ACTIONS = Enum({
   POSTED: 'posted'

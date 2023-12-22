@@ -5,7 +5,6 @@ import {
   getUserList
 } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
-import { TinyLoader } from '@cfRedux/helpers'
 
 class UserLabel extends React.Component {
   constructor(props) {
@@ -178,7 +177,7 @@ class StudentManagement extends React.Component {
    * FUNCTIONS
    *******************************************************/
   setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
       getUsersForLiveProject(this.props.data.id, (response) => {
         this.setState({
@@ -186,7 +185,7 @@ class StudentManagement extends React.Component {
           student: response.students,
           teacher: response.teachers
         })
-        this.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       })
     })
   }
