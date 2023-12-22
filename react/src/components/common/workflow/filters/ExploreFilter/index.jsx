@@ -38,7 +38,9 @@ class ExploreFilter extends React.Component {
    *******************************************************/
   componentDidMount() {
     COURSEFLOW_APP.makeDropdown(this.disciplineDOM.current)
-    super.componentDidMount()
+    COURSEFLOW_APP.makeDropdown(this.filterDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.sortDOM.current)
+    COURSEFLOW_APP.makeDropdown(this.searchDOM.current)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -283,6 +285,7 @@ class ExploreFilter extends React.Component {
     else new_filter.push(name)
     this.setState({ active_disciplines: new_filter, has_searched: false })
   }
+
   toPage(number) {
     this.searchWithout(
       $(this.searchDOM.current).children('#workflow-search-input')[0].value,
@@ -290,12 +293,13 @@ class ExploreFilter extends React.Component {
       number
     )
   }
+
   getPages() {
     if (this.state.workflows.length > 0) {
       let page_buttons = [
         <button
           id="prev-page-button"
-          disabled={this.state.pages.current_page == 1}
+          disabled={this.state.pages.current_page === 1}
           onClick={this.toPage.bind(this, this.state.pages.current_page - 1)}
         >
           <span className="material-symbols-rounded">arrow_left</span>

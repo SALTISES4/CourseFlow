@@ -17,12 +17,9 @@ class HomePage extends React.Component {
   }
 
   render() {
-    return this.getContents()
-  }
-
-  getContents() {
     return <HomeMenu renderer={this} />
   }
+
 }
 
 export default HomePage

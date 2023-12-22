@@ -9,7 +9,6 @@ import {
   restoreSelf
 } from '@XMLHTTP/PostFunctions'
 // @local
-import LibraryMenu from '../../Library/components/LibraryMenu'
 import * as Utility from '@cfUtility'
 import { CollapsibleText, WorkflowTitle } from '@cfUIComponents'
 import { MenuBar } from '@cfCommonComponents/components'
@@ -156,52 +155,6 @@ class ProjectMenu extends React.Component {
     return 'teacher'
   }
 
-  getOverflowLinks() {
-    let data = this.state.data
-    let liveproject
-    if (data.author_id === this.userId) {
-      if (data.liveproject) {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
-              '0',
-              data.id
-            )}
-          >
-            {window.gettext('View Classroom')}
-          </a>
-        )
-      } else {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            onClick={this.makeLive.bind(this)}
-          >
-            {window.gettext('Create Classroom')}
-          </a>
-        )
-      }
-    }
-
-    let overflow_links = [liveproject]
-    overflow_links.push(
-      <a id="comparison-view" className="hover-shade" href="comparison">
-        {window.gettext('Workflow comparison tool')}
-      </a>
-    )
-    overflow_links.push(<hr />)
-    overflow_links.push(this.getExportButton())
-    overflow_links.push(this.getCopyButton())
-    if (data.author_id === this.user_id) {
-      overflow_links.push(<hr />)
-      overflow_links.push(this.getDeleteProject())
-    }
-    return overflow_links
-  }
-
   getDeleteProject() {
     if (!this.state.data.deleted) {
       return (
@@ -264,6 +217,51 @@ class ProjectMenu extends React.Component {
         location.reload()
       })
     }
+  }
+
+  OverflowLinks = (data, userId) => {
+    let liveproject
+    if (data.author_id === userId) {
+      if (data.liveproject) {
+        liveproject = (
+          <a
+            id="live-project"
+            className="hover-shade"
+            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
+              '0',
+              data.id
+            )}
+          >
+            {window.gettext('View Classroom')}
+          </a>
+        )
+      } else {
+        liveproject = (
+          <a
+            id="live-project"
+            className="hover-shade"
+            onClick={this.makeLive.bind(this)}
+          >
+            {window.gettext('Create Classroom')}
+          </a>
+        )
+      }
+    }
+
+    let overflow_links = [liveproject]
+    overflow_links.push(
+      <a id="comparison-view" className="hover-shade" href="comparison">
+        {window.gettext('Workflow comparison tool')}
+      </a>
+    )
+    overflow_links.push(<hr />)
+    overflow_links.push(this.getExportButton())
+    overflow_links.push(this.getCopyButton())
+    if (data.author_id === userId) {
+      overflow_links.push(<hr />)
+      overflow_links.push(this.getDeleteProject())
+    }
+    return overflow_links
   }
 
   getExportButton() {
@@ -549,17 +547,14 @@ class ProjectMenu extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let visible_buttons = (() => [
-      this.getEdit(),
-      this.getCreate(),
-      this.getShare()
-    ]).bind(this)
-    let overflow_links = this.getOverflowLinks.bind(this)
+    let visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()]
 
     return (
       <div className="main-block">
         <MenuBar
-          overflow_links={overflow_links}
+          overflow_links={
+            <this.OverflowLinks data={this.state.data} userId={this.userid} />
+          }
           visible_buttons={visible_buttons}
         />
         <div className="project-menu">

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import Library from '@cfModule/components/pages/Library/Library'
 import {
   Discipline,
   ExploreViewContextDataDTO,
@@ -23,7 +22,7 @@ class ExploreRenderer extends React.Component {
     this.initial_pages = props.initial_pages
   }
 
-  getContents() {
+  render() {
     return <ExploreMenu disciplines={this.disciplines} renderer={this} />
   }
 }

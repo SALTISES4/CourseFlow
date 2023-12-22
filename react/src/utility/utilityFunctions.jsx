@@ -283,6 +283,16 @@ export function flattenOutcomeTree(outcomes_tree, array) {
   })
 }
 
+export const debounce = (func, timeout = 300) => {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, timeout)
+  }
+}
+
 /*Used in the table. Creates a shaped tree-like structure for an outcome and its children that includes each one's relationship to each node.*/
 export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {

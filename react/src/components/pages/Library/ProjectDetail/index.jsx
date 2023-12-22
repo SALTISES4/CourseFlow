@@ -35,7 +35,7 @@ import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/compon
  *   }>
  * }
  */
-class ProjectRenderer extends React.Component {
+class ProjectPage extends React.Component {
   constructor(props /*: ProjectViewDTO */) {
     super(props)
 
@@ -72,4 +72,4 @@ class ProjectRenderer extends React.Component {
   }
 }
 
-export default ProjectRenderer
+export default ProjectPage

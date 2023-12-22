@@ -1,14 +1,31 @@
+// @ts-nocheck
 import * as React from 'react'
 import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed/index.jsx'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { searchAllObjectsQuery } from '@XMLHTTP/PostFunctions.js'
+import Workflow from '@cfPages/Workflow/Workflow/index.jsx'
+import { debounce } from '@cfUtility'
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
 
+type PropsType = {
+  workflows: Workflow[]
+}
+
+type Filters = { display: string; name: string }[]
+
+type Sorts = { display: string; name: string }[]
+
 class WorkflowFilter extends React.Component {
-  constructor(props) {
+  private readonly filters: Filters
+  private readonly sorts: Sorts
+  private readonly filterDOM: React.RefObject<HTMLDivElement>
+  private readonly searchDOM: React.RefObject<HTMLDivElement>
+  private readonly sortDOM: React.RefObject<HTMLDivElement>
+
+  constructor(props: PropsType) {
     super(props)
 
     this.state = {
@@ -18,6 +35,7 @@ class WorkflowFilter extends React.Component {
       reversed: false,
       search_results: []
     }
+
     this.filters = [
       { name: 'all', display: window.gettext('All') },
       { name: 'owned', display: window.gettext('Owned') },
@@ -31,12 +49,12 @@ class WorkflowFilter extends React.Component {
       { name: 'created_on', display: window.gettext('Creation date') },
       { name: 'type', display: window.gettext('Type') }
     ]
-    let url_params = new URL(window.location.href).searchParams
+    const url_params = new URL(window.location.href).searchParams
     if (url_params.get('favourites') === 'true')
       this.state.active_filter = this.filters.findIndex(
         (elem) => elem.name === 'favourite'
       )
-    if (this.props.context === 'library') this.search_without = true
+    if (this.props.context === 'library') this.searchWithout = true
     this.filterDOM = React.createRef()
     this.searchDOM = React.createRef()
     this.sortDOM = React.createRef()
@@ -50,6 +68,7 @@ class WorkflowFilter extends React.Component {
     COURSEFLOW_APP.makeDropdown(this.sortDOM.current)
     COURSEFLOW_APP.makeDropdown(this.searchDOM.current)
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.workflows !== this.props.workflows)
       this.setState({ workflows: this.props.workflows })
@@ -64,7 +83,7 @@ class WorkflowFilter extends React.Component {
   }
 
   getFilter() {
-    let active_filter = this.filters[this.state.active_filter]
+    const active_filter = this.filters[this.state.active_filter]
     return (
       <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
         <div
@@ -95,7 +114,7 @@ class WorkflowFilter extends React.Component {
   }
 
   getSort() {
-    let active_sort = this.sorts[this.state.active_sort]
+    const active_sort = this.sorts[this.state.active_sort]
     return (
       <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
         <div
@@ -144,7 +163,7 @@ class WorkflowFilter extends React.Component {
   }
 
   sortWorkflows(workflows) {
-    let sort = this.sorts[this.state.active_sort].name
+    const sort = this.sorts[this.state.active_sort].name
     if (sort === 'last_viewed') {
       workflows = workflows.sort((a, b) =>
         ('' + a.object_permission[sort]).localeCompare(
@@ -168,7 +187,7 @@ class WorkflowFilter extends React.Component {
   }
 
   filterWorkflows(workflows) {
-    let filter = this.filters[this.state.active_filter].name
+    const filter = this.filters[this.state.active_filter].name
     if (filter !== 'archived')
       workflows = workflows.filter((workflow) => !workflow.deleted)
     else return workflows.filter((workflow) => workflow.deleted)
@@ -182,15 +201,27 @@ class WorkflowFilter extends React.Component {
   }
 
   searchWithin(request, response_function) {
-    let workflows = this.state.workflows.filter(
+    const workflows = this.state.workflows.filter(
       (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
     )
     response_function(workflows)
   }
 
+  searchWithout(request, response_function) {
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 10
+      },
+      (response_data) => {
+        response_function(response_data.workflow_list)
+      }
+    )
+  }
+
   seeAll() {
     COURSEFLOW_APP.tinyLoader.startLoad()
-    let search_filter = this.state.search_filter
+    const search_filter = this.state.search_filter
     searchAllObjectsQuery(search_filter, { nresults: 0 }, (response_data) => {
       this.setState({
         workflows: response_data.workflow_list,
@@ -199,7 +230,7 @@ class WorkflowFilter extends React.Component {
       COURSEFLOW_APP.tinyLoader.endLoad()
 
       // Remove class from elements
-      var dropdowns = document.querySelectorAll(
+      const dropdowns = document.querySelectorAll(
         '#workflow-search .create-dropdown'
       )
       dropdowns.forEach(function (dropdown) {
@@ -207,23 +238,25 @@ class WorkflowFilter extends React.Component {
       })
 
       // Set attribute 'disabled' to true for elements
-      var workflowSearch = document.getElementById('workflow-search')
+      const workflowSearch = document.getElementById('workflow-search')
       if (workflowSearch) {
-        workflowSearch.setAttribute('disabled', true)
+        workflowSearch.setAttribute('disabled', String(true))
       }
 
-      var workflowSearchInput = document.getElementById('workflow-search-input')
+      const workflowSearchInput = document.getElementById(
+        'workflow-search-input'
+      )
       if (workflowSearchInput) {
-        workflowSearchInput.setAttribute('disabled', true)
+        workflowSearchInput.setAttribute('disabled', String(true))
       }
     })
   }
 
   searchChange(evt) {
-    let component = this
+    const component = this
     if (evt.target.value && evt.target.value !== '') {
-      let filter = evt.target.value.toLowerCase()
-      if (this.search_without)
+      const filter = evt.target.value.toLowerCase()
+      if (this.searchWithout)
         component.searchWithout(filter, (response) => {
           component.setState({
             search_results: response,
@@ -282,7 +315,7 @@ class WorkflowFilter extends React.Component {
         />
       ))
     }
-    let search_results = this.state.search_results.map((workflow) => (
+    const search_results = this.state.search_results.map((workflow) => (
       <WorkflowCardCondensed
         key={workflow.type + workflow.id}
         workflow_data={workflow}
