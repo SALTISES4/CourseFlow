@@ -8,6 +8,8 @@ import LibraryMenu from '@cfModule/components/pages/Library/Library/components/L
 class LibraryRenderer extends React.Component {
   constructor(props) {
     super(props)
+    console.log('props')
+    console.log(props)
   }
 
   render() {
