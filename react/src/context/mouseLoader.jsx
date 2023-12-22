@@ -1,12 +1,12 @@
 import * as React from 'react'
-import { TinyLoader } from '@cfModule/utility/TinyLoader.js'
+import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
 
 const TinyLoaderContext = React.createContext()
 
 export class TinyLoaderProvider extends React.Component {
   constructor(props) {
     super(props)
-    this.tinyLoader = new TinyLoader($('body')[0])
+    this.tinyLoader = new MouseCursorLoader($('body')[0])
   }
 
   render() {

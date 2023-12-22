@@ -48,9 +48,9 @@ import Favourites from '@cfModule/components/pages/Library/Favorites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
-import { TinyLoader } from '@cfModule/utility/TinyLoader.js'
+import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
 
-const tinyLoader = new TinyLoader($('body')[0])
+const tinyLoader = new MouseCursorLoader($('body')[0])
 COURSEFLOW_APP.tinyLoader = tinyLoader
 
 // helper function that wraps each of the components we want to render

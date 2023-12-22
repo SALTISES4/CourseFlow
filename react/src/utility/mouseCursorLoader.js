@@ -1,5 +1,5 @@
 // @todo this should be a component with managed state
-export class TinyLoader {
+export class MouseCursorLoader {
   constructor(identifier = $('body')[0]) {
     this.identifier = identifier
     this.loadings = 0

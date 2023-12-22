@@ -156,7 +156,7 @@ class UserAdd extends React.Component {
 class StudentManagement extends React.Component {
   constructor(props) {
     super(props)
-    this.tiny_loader = new TinyLoader($('body'))
+    this.tiny_loader = new MouseCursorLoader($('body'))
     this.state = { owner: null, teacher: [], student: [] }
   }
 
