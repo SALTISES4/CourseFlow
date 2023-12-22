@@ -4,8 +4,8 @@ import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/Wo
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { searchAllObjectsQuery } from '@XMLHTTP/PostFunctions.js'
-import Workflow from '@cfPages/Workflow/Workflow/index.jsx'
 import { debounce } from '@cfUtility'
+import { Workflow } from '@XMLHTTP/types'
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
@@ -17,6 +17,14 @@ type PropsType = {
 type Filters = { display: string; name: string }[]
 
 type Sorts = { display: string; name: string }[]
+
+type StateType = {
+  workflows: Workflow[]
+  active_filter: number
+  active_sort: number
+  reversed: boolean
+  search_results: Workflow[]
+}
 
 class WorkflowFilter extends React.Component {
   private readonly filters: Filters
@@ -34,7 +42,7 @@ class WorkflowFilter extends React.Component {
       active_sort: 0,
       reversed: false,
       search_results: []
-    }
+    } as StateType
 
     this.filters = [
       { name: 'all', display: window.gettext('All') },
@@ -54,7 +62,9 @@ class WorkflowFilter extends React.Component {
       this.state.active_filter = this.filters.findIndex(
         (elem) => elem.name === 'favourite'
       )
-    if (this.props.context === 'library') this.searchWithout = true
+    if (this.props.context === 'library') {
+      this.searchWithout = true // ??
+    }
     this.filterDOM = React.createRef()
     this.searchDOM = React.createRef()
     this.sortDOM = React.createRef()

@@ -3,8 +3,8 @@ export type LibraryQueryResp = {
 }
 
 export type Workflow = {
-  deleted: boolean
   id: number
+  deleted: boolean
   created_on: string
   last_modified: string
   type: string
