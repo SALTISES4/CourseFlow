@@ -15,7 +15,7 @@ class LibraryPage extends React.Component {
   constructor(props) {
     super(props)
 
-    this.read_only = this.props.renderer.read_only
+    // this.read_only = this.props.renderer.read_only
     this.createDiv = React.createRef()
   }
 

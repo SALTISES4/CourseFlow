@@ -1270,6 +1270,8 @@ export function getAssignmentsForNode(
 export function getLibraryQuery(callBackFunction = () => console.log('success')) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (data) {
+      console.log('data')
+      console.log(data)
       callBackFunction(data)
     })
   } catch (err) {
