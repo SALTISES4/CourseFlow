@@ -14,9 +14,13 @@ class LiveProjectSection extends React.Component {
   componentDidMount() {
     let component = this
     if (this.props.role === 'teacher') {
-      getLiveProjectDataQuery(this.props.objectID, this.props.view_type, (data) => {
-        component.setState({ data: data.data_package })
-      })
+      getLiveProjectDataQuery(
+        this.props.objectID,
+        this.props.view_type,
+        (data) => {
+          component.setState({ data: data.data_package })
+        }
+      )
     } else if (this.props.role === 'student') {
       getLiveProjectDataStudentQuery(
         this.props.objectID,

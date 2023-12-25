@@ -1,4 +1,3 @@
-
 export enum WorkflowType {
   ACTIVITY = 'activity',
   PROJECT = 'project',

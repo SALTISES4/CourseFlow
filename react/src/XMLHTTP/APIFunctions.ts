@@ -33,5 +33,4 @@ export function searchAllObjectsQuery(
   }
 }
 
-
 export default {}
