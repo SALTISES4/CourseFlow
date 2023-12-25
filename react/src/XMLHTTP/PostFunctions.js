@@ -1059,7 +1059,7 @@ export function makeProjectLive(
 }
 
 //set visibility of workflow
-export function setWorkflowVisibility(
+export function setWorkflowVisibilityQuery(
   liveprojectPk,
   workflowPk,
   visible,
@@ -1071,16 +1071,19 @@ export function setWorkflowVisibility(
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
     }).done(function (data) {
+      console.log('setWorkflowVisibilityQuery data')
+      console.log(data)
+
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
     window.fail_function()
   }
-}
+} //set visibility of workflow
 
 //get live project data
-export function getLiveProjectData(
+export function getLiveProjectDataQuery(
   projectPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1090,6 +1093,9 @@ export function getLiveProjectData(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getLiveProjectDataQuery data')
+      console.log(data)
+
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1099,7 +1105,7 @@ export function getLiveProjectData(
 }
 
 //get live project data
-export function getLiveProjectDataStudent(
+export function getLiveProjectDataStudentQuery(
   projectPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1109,6 +1115,8 @@ export function getLiveProjectDataStudent(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getLiveProjectDataStudentQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1118,7 +1126,7 @@ export function getLiveProjectDataStudent(
 }
 
 //get assignment data
-export function getAssignmentData(
+export function getAssignmentDataQuery(
   liveassignmentPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1128,6 +1136,8 @@ export function getAssignmentData(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getAssignmentDataQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1147,6 +1157,8 @@ export function getAssignmentDataStudent(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getAssignmentDataStudent data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1267,20 +1279,9 @@ export function getAssignmentsForNode(
 }
 
 //Get the library projects
-export function getLibraryQuery(callBackFunction = () => console.log('success')) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (data) {
-      console.log('data')
-      console.log(data)
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the library projects
-export function getFavouritesQuery(callBackFunction = () => console.log('success')) {
+export function getFavouritesQuery(
+  callBackFunction = () => console.log('success')
+) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (data) {
       callBackFunction(data)
@@ -1309,24 +1310,6 @@ export function getWorkflowsForProject(
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
       projectPk: projectPk
-    }).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Search entire library
-export function searchAllObjectsQuery(
-  filter,
-  data,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
     }).done(function (data) {
       callBackFunction(data)
     })

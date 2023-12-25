@@ -1,18 +1,18 @@
+export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
    *~ existing declarations in the global namespace
    */
+  interface Window {
+    gettext: (str: string) => string
+    fail_function: () => void
+  }
 
-  const COURSEFLOW_APP: CourseflowAppGlobals
-  const window: window
   const $: JQuery
+  const COURSEFLOW_APP: CourseflowAppGlobals
 }
 
-type window = {
-  gettext: (str: string) => string
-}
-
-type CourseflowAppGlobals = {
+interface CourseflowAppGlobals {
   config: Config
   show_notification_request: boolean
   update_notifications: ContextData
@@ -24,9 +24,10 @@ type CourseflowAppGlobals = {
   makeDropdown: (item: HTMLElement) => void
 }
 
-export type Config = {
+interface Config {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
+
   create_path: CreatePath
   update_path: UpdatePath
   public_update_path: PublicUpdatePath
@@ -41,7 +42,7 @@ export type Config = {
   json_api_paths: JSONAPIPaths
 }
 
-export type CreatePath = {
+interface CreatePath {
   activity_strategy: string
   course_strategy: string
   project: string
@@ -50,7 +51,7 @@ export type CreatePath = {
   program: string
 }
 
-export type GetPaths = {
+interface GetPaths {
   get_disciplines: string
   get_library: string
   get_favourites: string
@@ -62,7 +63,7 @@ export type GetPaths = {
   get_public_parent_workflow_info: string
 }
 
-export type JSONAPIPaths = {
+interface JSONAPIPaths {
   get_top_bar: string
   get_sidebar: string
   update_profile: string
@@ -72,14 +73,14 @@ export type JSONAPIPaths = {
   delete_notification: string
 }
 
-export type PublicUpdatePath = {
+interface PublicUpdatePath {
   activity: string
   course: string
   program: string
   workflow: string
 }
 
-export type UpdatePath = {
+interface UpdatePath {
   project: string
   activity: string
   course: string
@@ -89,14 +90,14 @@ export type UpdatePath = {
   liveassignment: string
 }
 
-export type ContextData = {}
+interface ContextData {}
 
-export type Home = {
+interface Home {
   user_id: number
   is_teacher: boolean
 }
 
-export type Strings = {
+interface Strings {
   confirm_email_updates: string
   unsupported_device: string
   product_updates_agree: string
@@ -128,13 +129,13 @@ export type Strings = {
   update_profile_success: string
 }
 
-export type TinyLoader = {
+interface TinyLoader {
   identifier: Identifier
   loadings: number
   startLoad: () => void
   endLoad: () => void
 }
 
-export type Identifier = {
+interface Identifier {
   _reactListeningarkdylqyv1: boolean
 }

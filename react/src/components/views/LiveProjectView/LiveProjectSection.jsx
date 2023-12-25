@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {
-  getLiveProjectData,
-  getLiveProjectDataStudent
+  getLiveProjectDataQuery,
+  getLiveProjectDataStudentQuery
 } from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 
@@ -14,11 +14,11 @@ class LiveProjectSection extends React.Component {
   componentDidMount() {
     let component = this
     if (this.props.role === 'teacher') {
-      getLiveProjectData(this.props.objectID, this.props.view_type, (data) => {
+      getLiveProjectDataQuery(this.props.objectID, this.props.view_type, (data) => {
         component.setState({ data: data.data_package })
       })
     } else if (this.props.role === 'student') {
-      getLiveProjectDataStudent(
+      getLiveProjectDataStudentQuery(
         this.props.objectID,
         this.props.view_type,
         (data) => {

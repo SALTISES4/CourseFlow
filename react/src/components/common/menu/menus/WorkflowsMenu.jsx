@@ -223,9 +223,9 @@ class WorkflowsMenu extends React.Component {
         <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
         <div className="menu-grid">
           <WorkflowCard
-            workflow_data={this.current_project}
+            workflowData={this.current_project}
             selected={this.state.selected === this.current_project.id}
-            no_hyperlink={no_hyperlink}
+            noHyperlink={no_hyperlink}
             type={this.props.type}
             dispatch={this.props.dispatch}
             selectAction={this.workflowSelected.bind(this)}

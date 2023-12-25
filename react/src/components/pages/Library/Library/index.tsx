@@ -1,9 +1,9 @@
 // @ts-nocheck
 import * as React from 'react'
-import { getLibraryQuery } from '@XMLHTTP/PostFunctions.js'
 import { LibraryQueryResp } from '@XMLHTTP/types.js'
 import { MenuBar } from '@cfCommonComponents/components/index.jsx'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
+import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
 
 /*******************************************************
  * @LibraryRenderer
@@ -14,7 +14,7 @@ class LibraryPage extends React.Component {
 
   constructor(props) {
     super(props)
-
+    this.state = {}
     // this.read_only = this.props.renderer.read_only
     this.createDiv = React.createRef()
   }
@@ -78,6 +78,19 @@ class LibraryPage extends React.Component {
     )
   }
 
+  OverflowLinks = () => {
+    const link = (
+      <a
+        id="import-old"
+        className="hover-shade"
+        href={COURSEFLOW_APP.config.get_paths.import}
+      >
+        {window.gettext('Import from old CourseFlow')}
+      </a>
+    )
+    return [link]
+  }
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -85,12 +98,12 @@ class LibraryPage extends React.Component {
     return (
       <div className="main-block">
         <MenuBar
-          overflow_links={<OverflowLinks />}
+          overflow_links={<this.OverflowLinks />}
           visible_buttons={<this.CreateButton />}
         />
         <div className="project-menu">
           <WorkflowFilter
-            renderer={this.props.renderer}
+            renderer={this}
             workflows={this.state.project_data}
             context="library"
           />

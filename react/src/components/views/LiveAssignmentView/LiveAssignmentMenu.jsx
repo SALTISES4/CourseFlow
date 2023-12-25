@@ -6,9 +6,9 @@ import { DatePicker } from '@cfUIComponents'
 import {
   addUsersToAssignment,
   deleteSelfLive,
-  getAssignmentData,
+  getAssignmentDataQuery,
   setAssignmentCompletion,
-  setWorkflowVisibility,
+  setWorkflowVisibilityQuery,
   updateLiveProjectValue
 } from '@XMLHTTP/PostFunctions'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility'
@@ -63,7 +63,7 @@ class LiveAssignmentEdit extends React.Component {
    *******************************************************/
   componentDidMount() {
     let component = this
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {
@@ -80,13 +80,13 @@ class LiveAssignmentEdit extends React.Component {
     if (this.state.task.linked_workflow === pk)
       parameter = 'linked_' + parameter
     if (visibility === 'visible') {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, true)
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true)
       let new_state = {}
       new_state[parameter] = true
       this.props.updateAssignment(new_state)
       this.setState(new_state)
     } else {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, false)
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false)
       let new_state = {}
       new_state[parameter] = false
       this.props.updateAssignment(new_state)
@@ -206,7 +206,7 @@ class LiveAssignmentEdit extends React.Component {
         <h4>{window.gettext('Linked Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
-          workflow_data={this.state.task.linked_workflow_data}
+          workflowData={this.state.task.linked_workflow_data}
           visibility={visibility}
           visibilityFunction={this.switchVisibility.bind(this)}
         />
@@ -229,7 +229,7 @@ class LiveAssignmentEdit extends React.Component {
         <h4>{window.gettext('Task Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
-          workflow_data={this.state.user_data.parent_workflow}
+          workflowData={this.state.user_data.parent_workflow}
           visibility={parent_visibility}
           visibilityFunction={this.switchVisibility.bind(this)}
         />
@@ -372,7 +372,7 @@ class LiveAssignmentReport extends React.Component {
    *******************************************************/
   componentDidMount() {
     let component = this
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {

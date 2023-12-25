@@ -3,9 +3,9 @@ import * as React from 'react'
 import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed/index.jsx'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
-import { searchAllObjectsQuery } from '@XMLHTTP/PostFunctions.js'
 import { debounce } from '@cfUtility'
 import { Workflow } from '@XMLHTTP/types'
+import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
@@ -20,10 +20,11 @@ type Sorts = { display: string; name: string }[]
 
 type StateType = {
   workflows: Workflow[]
-  active_filter: number
-  active_sort: number
+  activeFilter: number
+  activeSort: number
   reversed: boolean
-  search_results: Workflow[]
+  searchResults: Workflow[]
+  searchFilterLock: null | number
 }
 
 class WorkflowFilter extends React.Component {
@@ -36,12 +37,16 @@ class WorkflowFilter extends React.Component {
   constructor(props: PropsType) {
     super(props)
 
+    console.log('props')
+    console.log(props)
+
     this.state = {
       workflows: props.workflows,
-      active_filter: 0,
-      active_sort: 0,
+      activeFilter: 0,
+      activeSort: 0,
       reversed: false,
-      search_results: []
+      searchResults: [],
+      searchFilterLock: null
     } as StateType
 
     this.filters = [
@@ -63,6 +68,7 @@ class WorkflowFilter extends React.Component {
         (elem) => elem.name === 'favourite'
       )
     if (this.props.context === 'library') {
+      // @ts-ignore
       this.searchWithout = true // ??
     }
     this.filterDOM = React.createRef()
@@ -93,111 +99,112 @@ class WorkflowFilter extends React.Component {
   }
 
   getFilter() {
-    const active_filter = this.filters[this.state.active_filter]
+    const activeFilter = this.filters[this.state.activeFilter]
+
+    const filters = this.filters.map((filter, i) => {
+      let css_class = 'filter-option'
+      if (this.state.activeFilter === i) css_class += ' active'
+
+      return (
+        <div
+          className={css_class}
+          onClick={() => this.setState({ activeFilter: i })}
+        >
+          {filter.display}
+        </div>
+      )
+    })
+
     return (
       <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
         <div
           className={
             'workflow-sort-indicator hover-shade item-' +
-            this.state.active_filter
+            this.state.activeFilter
           }
         >
           <span className="material-symbols-rounded">filter_alt</span>
-          <div>{active_filter.display}</div>
+          <div>{activeFilter.display}</div>
         </div>
-        <div className="create-dropdown">
-          {this.filters.map((filter, i) => {
-            let css_class = 'filter-option'
-            if (this.state.active_filter === i) css_class += ' active'
-            return (
-              <div
-                className={css_class}
-                onClick={() => this.setState({ active_filter: i })}
-              >
-                {filter.display}
-              </div>
-            )
-          })}
-        </div>
+        <div className="create-dropdown">{filters}</div>
       </div>
     )
   }
 
   getSort() {
-    const active_sort = this.sorts[this.state.active_sort]
+    const activeSort = this.sorts[this.state.activeSort]
+
+    const sorts = this.sorts.map((sort, i) => {
+      let sort_dir
+      let css_class = 'filter-option'
+      if (this.state.activeSort === i) {
+        css_class += ' active'
+        if (this.state.reversed)
+          sort_dir = <span className="material-symbols-rounded">north</span>
+        else sort_dir = <span className="material-symbols-rounded">south</span>
+      }
+      return (
+        <div
+          className={css_class}
+          onClick={(evt) => {
+            evt.stopPropagation()
+            this.sortChange(i)
+            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+            $(this.sortDOM.current)
+              .children('.create-dropdown')
+              .addClass('active')
+          }}
+        >
+          {sort_dir}
+          {sort.display}
+        </div>
+      )
+    })
+
     return (
       <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
         <div
           className={
-            'workflow-sort-indicator hover-shade item-' + this.state.active_sort
+            'workflow-sort-indicator hover-shade item-' + this.state.activeSort
           }
         >
           <span className="material-symbols-rounded">sort</span>
-          <div>{active_sort.display}</div>
+          <div>{activeSort.display}</div>
         </div>
-        <div className="create-dropdown">
-          {this.sorts.map((sort, i) => {
-            let sort_dir
-            let css_class = 'filter-option'
-            if (this.state.active_sort === i) {
-              css_class += ' active'
-              if (this.state.reversed)
-                sort_dir = (
-                  <span className="material-symbols-rounded">north</span>
-                )
-              else
-                sort_dir = (
-                  <span className="material-symbols-rounded">south</span>
-                )
-            }
-            return (
-              <div
-                className={css_class}
-                onClick={(evt) => {
-                  evt.stopPropagation()
-                  this.sortChange(i)
-                  //This is very hacky, but if we're updating we need to re-open the sort dropdown
-                  $(this.sortDOM.current)
-                    .children('.create-dropdown')
-                    .addClass('active')
-                }}
-              >
-                {sort_dir}
-                {sort.display}
-              </div>
-            )
-          })}
-        </div>
+        <div className="create-dropdown">{sorts}</div>
       </div>
     )
   }
 
   sortWorkflows(workflows) {
-    const sort = this.sorts[this.state.active_sort].name
-    if (sort === 'last_viewed') {
-      workflows = workflows.sort((a, b) =>
-        ('' + a.object_permission[sort]).localeCompare(
-          b.object_permission[sort]
-        )
-      )
-      if (!this.state.reversed) return workflows.reverse()
-      return workflows
-    } else
-      workflows = workflows.sort((a, b) =>
-        ('' + a[sort]).localeCompare(b[sort])
-      )
-    if (this.state.reversed) return workflows.reverse()
-    return workflows
+    const sort = this.sorts[this.state.activeSort].name
+
+    // Create a new sorted array
+    const sortedWorkflows = [...workflows].sort((a, b) => {
+      const aValue =
+        sort === 'last_viewed' ? a.object_permission[sort] : a[sort]
+      const bValue =
+        sort === 'last_viewed' ? b.object_permission[sort] : b[sort]
+
+      return String(aValue).localeCompare(String(bValue))
+    })
+
+    // Reverse the order if required
+    if (this.state.reversed) {
+      return sortedWorkflows.reverse()
+    }
+
+    return sortedWorkflows
   }
 
   sortChange(index) {
-    if (this.state.active_sort === index)
+    if (this.state.activeSort === index)
       this.setState({ reversed: !this.state.reversed })
     else this.setState({ active_sort: index, reversed: false })
   }
 
   filterWorkflows(workflows) {
-    const filter = this.filters[this.state.active_filter].name
+    const filter = this.filters[this.state.activeFilter].name
     if (filter !== 'archived')
       workflows = workflows.filter((workflow) => !workflow.deleted)
     else return workflows.filter((workflow) => workflow.deleted)
@@ -210,82 +217,83 @@ class WorkflowFilter extends React.Component {
     return workflows
   }
 
-  searchWithin(request, response_function) {
+  searchWithin(request, responseFunction) {
     const workflows = this.state.workflows.filter(
       (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
     )
-    response_function(workflows)
+    responseFunction(workflows)
   }
 
-  searchWithout(request, response_function) {
+  searchWithout(request, responseFunction) {
     searchAllObjectsQuery(
       request,
       {
         nresults: 10
       },
-      (response_data) => {
-        response_function(response_data.workflow_list)
+      (responseData) => {
+        responseFunction(responseData.workflow_list)
       }
     )
   }
 
   seeAll() {
     COURSEFLOW_APP.tinyLoader.startLoad()
-    const search_filter = this.state.search_filter
-    searchAllObjectsQuery(search_filter, { nresults: 0 }, (response_data) => {
+    const { searchFilter } = this.state
+
+    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
       this.setState({
-        workflows: response_data.workflow_list,
-        search_filter_lock: search_filter
+        workflows: responseData.workflow_list,
+        searchFilterLock: searchFilter
       })
+
       COURSEFLOW_APP.tinyLoader.endLoad()
-
-      // Remove class from elements
-      const dropdowns = document.querySelectorAll(
-        '#workflow-search .create-dropdown'
-      )
-      dropdowns.forEach(function (dropdown) {
-        dropdown.classList.remove('active')
-      })
-
-      // Set attribute 'disabled' to true for elements
-      const workflowSearch = document.getElementById('workflow-search')
-      if (workflowSearch) {
-        workflowSearch.setAttribute('disabled', String(true))
-      }
-
-      const workflowSearchInput = document.getElementById(
-        'workflow-search-input'
-      )
-      if (workflowSearchInput) {
-        workflowSearchInput.setAttribute('disabled', String(true))
-      }
+      this.removeActiveFromDropdowns()
+      this.disableWorkflowSearch()
     })
   }
 
-  searchChange(evt) {
-    const component = this
-    if (evt.target.value && evt.target.value !== '') {
-      const filter = evt.target.value.toLowerCase()
-      if (this.searchWithout)
-        component.searchWithout(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          })
-          $(this.searchDOM.current).addClass('active')
-        })
-      else
-        component.searchWithin(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          })
-          $(this.searchDOM.current).addClass('active')
-        })
-    } else {
-      component.setState({ search_results: [], search_filter: '' })
-      $(this.searchDOM.current).removeClass('active')
+  removeActiveFromDropdowns() {
+    const dropdowns = document.querySelectorAll(
+      '#workflow-search .create-dropdown'
+    )
+    dropdowns.forEach((dropdown) => dropdown.classList.remove('active'))
+  }
+
+  disableWorkflowSearch() {
+    const workflowSearch = document.getElementById('workflow-search')
+    if (workflowSearch) {
+      workflowSearch.setAttribute('disabled', 'true')
     }
+
+    const workflowSearchInput = document.getElementById('workflow-search-input')
+    if (workflowSearchInput) {
+      workflowSearchInput.setAttribute('disabled', 'true')
+    }
+  }
+
+  searchChange(evt) {
+    const searchTerm = evt.target.value
+
+    // Exit early if the search term is empty
+    if (!searchTerm) {
+      this.setState({ searchResults: [], searchFilter: '' })
+      $(this.searchDOM.current).removeClass('active')
+      return
+    }
+
+    // Set the search filter function based on the existence of this.searchWithout
+    const searchFunction = this.searchWithout
+      ? this.searchWithout
+      : this.searchWithin
+    const filter = searchTerm.toLowerCase()
+
+    searchFunction.call(this, filter, (response) => {
+      this.setState({
+        searchResults: response,
+        searchFilter: filter
+      })
+      $(this.searchDOM.current).addClass('active')
+    })
   }
 
   searchWithout(request, response_function) {
@@ -294,14 +302,17 @@ class WorkflowFilter extends React.Component {
       {
         nresults: 10
       },
-      (response_data) => {
-        response_function(response_data.workflow_list)
+      (responseData) => {
+        response_function(responseData.workflow_list)
       }
     )
   }
 
   clearSearchLock(evt) {
-    this.setState({ workflows: this.props.workflows, search_filter_lock: null })
+    this.setState({
+      workflows: this.props.workflows,
+      searchFilterLock: null
+    })
     $('#workflow-search').attr('disabled', false)
     $('#workflow-search-input').attr('disabled', false)
     evt.stopPropagation()
@@ -310,55 +321,66 @@ class WorkflowFilter extends React.Component {
   /*******************************************************
    * RENDER
    *******************************************************/
-  render() {
-    let workflows
-    if (!this.state.workflows) workflows = <WorkflowLoader />
-    else {
-      workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows))
-      workflows = workflows.map((workflow) => (
-        <WorkflowCard
-          key={workflow.type + workflow.id}
-          renderer={this.props.renderer}
-          workflow_data={workflow}
-          context={this.props.context}
-          updateWorkflow={this.props.updateWorkflow}
-        />
-      ))
-    }
-    const search_results = this.state.search_results.map((workflow) => (
+
+  renderWorkflowCards() {
+    if (!this.state.workflows) return <WorkflowLoader />
+
+    const sortedAndFilteredWorkflows = this.sortWorkflows(
+      this.filterWorkflows(this.state.workflows)
+    )
+    return sortedAndFilteredWorkflows.map((workflow) => (
+      <WorkflowCard
+        key={workflow.type + workflow.id}
+        workflowData={workflow}
+        // context={this.props.context} @todo this is no used in component, check git history if bad refactor
+
+        updateWorkflow={this.props.updateWorkflow}
+        userRole={this.props.user_role} // from renderer
+        readOnly={this.props.read_only} // from renderer
+        projectData={this.props.project_data} // from renderer
+      />
+    ))
+  }
+
+  renderSearchResults() {
+    const { searchResults, searchFilter } = this.state
+    const results = searchResults.map((workflow) => (
       <WorkflowCardCondensed
         key={workflow.type + workflow.id}
-        workflow_data={workflow}
+        workflowData={workflow}
         context={this.props.context}
       />
     ))
-    if (
-      this.state.search_filter &&
-      this.state.search_filter.length > 0 &&
-      this.state.search_results.length === 0
-    ) {
-      search_results.push(<div>{window.gettext('No results found')}</div>)
-    } else if (search_results.length === 10) {
-      search_results.push(
-        <div className="hover-shade" onClick={() => this.seeAll()}>
+
+    if (searchFilter && !searchResults.length) {
+      results.push(<div>{window.gettext('No results found')}</div>)
+    } else if (results.length === 10) {
+      results.push(
+        <div className="hover-shade" onClick={this.seeAll}>
           {window.gettext('+ See all')}
         </div>
       )
     }
-    let search_filter_lock
-    if (this.state.search_filter_lock) {
-      search_filter_lock = (
-        <div className="search-filter-lock">
-          <span
-            onClick={this.clearSearchLock.bind(this)}
-            className="material-symbols-rounded hover-shade"
-          >
-            close
-          </span>
-          {window.gettext('Search: ' + this.state.search_filter_lock)}
-        </div>
-      )
-    }
+    return results
+  }
+
+  renderSearchFilterLock() {
+    if (!this.state.searchFilterLock) return null
+
+    return (
+      <div className="search-filter-lock">
+        <span
+          onClick={this.clearSearchLock.bind(this)}
+          className="material-symbols-rounded hover-shade"
+        >
+          close
+        </span>
+        {window.gettext('Search: ' + this.state.searchFilterLock)}
+      </div>
+    )
+  }
+
+  render() {
     return [
       <div className="workflow-filter-top">
         <div id="workflow-search" ref={this.searchDOM}>
@@ -370,15 +392,15 @@ class WorkflowFilter extends React.Component {
             autoComplete="off"
           />
           <span className="material-symbols-rounded">search</span>
-          <div className="create-dropdown">{search_results}</div>
-          {search_filter_lock}
+          <div className="create-dropdown">{this.renderSearchResults()}</div>
+          {this.renderSearchFilterLock()}
         </div>
         <div className="workflow-filter-sort">
           {this.getFilter()}
           {this.getSort()}
         </div>
       </div>,
-      <div className="menu-grid">{workflows}</div>
+      <div className="menu-grid">{this.renderWorkflowCards()}</div>
     ]
   }
 }

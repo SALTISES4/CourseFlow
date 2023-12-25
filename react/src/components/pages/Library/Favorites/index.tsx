@@ -1,14 +1,17 @@
+// @ts-nocheck
 import * as React from 'react'
-import { getFavouritesQuery } from '@XMLHTTP/PostFunctions'
-import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
+import { getFavouritesQuery } from '@XMLHTTP/PostFunctions.js'
+import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.js'
 
-class FavouritesMenu extends React.Component {
-  // @todo review constructor
+/*******************************************************
+ * @FavouritesRenderer
+ *******************************************************/
+class FavouritesPage extends React.Component {
+  private createDiv: React.RefObject<HTMLDivElement>
   constructor(props) {
     super(props)
     this.state = {}
-    this.read_only = this.props.renderer.read_only
-    this.renderer = this.props.renderer
+    // this.read_only = this.props.renderer.read_only
     this.createDiv = React.createRef()
   }
 
@@ -16,9 +19,10 @@ class FavouritesMenu extends React.Component {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    let component = this
     getFavouritesQuery((data) => {
-      component.setState({ project_data: data.data_package })
+      console.log('data')
+      console.log(data)
+      this.setState({ project_data: data.data_package })
     })
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)
   }
@@ -39,4 +43,4 @@ class FavouritesMenu extends React.Component {
   }
 }
 
-export default FavouritesMenu
+export default FavouritesPage

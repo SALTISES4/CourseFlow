@@ -1,9 +1,35 @@
+// @ts-nocheck
 import * as React from 'react'
-import { searchAllObjectsQuery } from '@XMLHTTP/PostFunctions.js'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import { debounce } from '@cfUtility'
+import {
+  Discipline,
+  InitialPages,
+  InitialWorkflow
+} from '@cfPages/Library/Explore/types'
+import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
 
-class ExploreFilter extends React.Component {
-  constructor(props) {
+type Filter = {
+  name: string
+  display: string
+}
+
+type PropsType = {
+  disciplines: Discipline[]
+  workflows: InitialWorkflow[]
+  pages: InitialPages
+  context: string
+}
+
+class ExploreFilter extends React.Component<PropsType> {
+  private readonly filterDOM: React.RefObject<HTMLDivElement>
+  private readonly searchDOM: React.RefObject<HTMLDivElement>
+  private readonly sortDOM: React.RefObject<HTMLDivElement>
+  private readonly disciplineDOM: React.RefObject<HTMLDivElement>
+  private readonly filters: Filter[]
+  private readonly sorts: Filter[]
+
+  constructor(props: PropsType) {
     super(props)
     this.filters = [
       { name: 'activity', display: window.gettext('Activity') },
@@ -11,21 +37,22 @@ class ExploreFilter extends React.Component {
       { name: 'program', display: window.gettext('Program') },
       { name: 'project', display: window.gettext('Project') }
     ]
+
     this.sorts = [
       { name: 'relevance', display: window.gettext('Relevance') },
       { name: 'title', display: window.gettext('A-Z') },
       { name: 'created_on', display: window.gettext('Creation date') }
     ]
     this.state = {
-      workflows: props.workflows,
-      pages: this.props.renderer.initial_pages,
-      has_searched: false,
-      active_sort: 0,
-      active_filters: [],
-      active_disciplines: [],
+      workflows: this.props.workflows,
+      pages: this.props.pages,
+      hasSearched: false,
+      activeSort: 0,
+      activeFilters: [],
+      activeDisciplines: [],
       reversed: false,
-      from_saltise: false,
-      content_rich: true
+      fromSaltise: false,
+      contentRich: true
     }
     this.filterDOM = React.createRef()
     this.searchDOM = React.createRef()
@@ -58,7 +85,7 @@ class ExploreFilter extends React.Component {
         <div
           className={
             'workflow-sort-indicator hover-shade item-' +
-            this.state.active_filters.length
+            this.state.activeFilters.length
           }
         >
           <span className="material-symbols-rounded">filter_alt</span>
@@ -67,7 +94,7 @@ class ExploreFilter extends React.Component {
         <div className="create-dropdown">
           {this.filters.map((filter, i) => {
             let css_class = 'filter-option flex-middle'
-            if (this.state.active_filters.indexOf(filter.name) >= 0)
+            if (this.state.activeFilters.indexOf(filter.name) >= 0)
               css_class += ' active'
             return (
               <div
@@ -83,7 +110,7 @@ class ExploreFilter extends React.Component {
               >
                 <input
                   type="checkbox"
-                  checked={this.state.active_filters.indexOf(filter.name) >= 0}
+                  checked={this.state.activeFilters.indexOf(filter.name) >= 0}
                 />
                 {filter.display}
               </div>
@@ -91,22 +118,22 @@ class ExploreFilter extends React.Component {
           })}
         </div>
         <div
-          attr_number={this.state.active_filters.length}
+          data-attr-number={this.state.activeFilters.length}
           className="dropdown-number-indicator"
         >
-          {this.state.active_filters.length}
+          {this.state.activeFilters.length}
         </div>
       </div>
     )
   }
 
   getSort() {
-    let active_sort = this.sorts[this.state.active_sort]
+    const active_sort = this.sorts[this.state.activeSort]
     return (
       <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
         <div
           className={
-            'workflow-sort-indicator hover-shade item-' + this.state.active_sort
+            'workflow-sort-indicator hover-shade item-' + this.state.activeSort
           }
         >
           <span className="material-symbols-rounded">sort</span>
@@ -116,7 +143,7 @@ class ExploreFilter extends React.Component {
           {this.sorts.map((sort, i) => {
             let sort_dir
             let css_class = 'filter-option filter-checkbox'
-            if (this.state.active_sort == i) {
+            if (this.state.activeSort == i) {
               css_class += ' active'
               if (this.state.reversed)
                 sort_dir = (
@@ -150,25 +177,27 @@ class ExploreFilter extends React.Component {
   }
 
   sortChange(index) {
-    if (this.state.active_sort === index)
+    if (this.state.activeSort === index)
       this.setState({
         reversed: !this.state.reversed,
-        has_searched: false
+        hasSearched: false
       })
     else
       this.setState({
-        active_sort: index,
+        activeSort: index,
         reversed: false,
-        has_searched: false
+        hasSearched: false
       })
   }
 
   searchChange(evt) {
-    this.setState({ has_searched: false })
+    this.setState({ hasSearched: false })
   }
 
-  searchWithout(request, response_function, page_number = 1) {
-    this.setState({ has_searched: true })
+  searchWithout(request, responseFunction, pageNumber = 1) {
+    this.setState({
+      hasSearched: true
+    })
     COURSEFLOW_APP.tinyLoader.startLoad()
     searchAllObjectsQuery(
       request,
@@ -176,16 +205,16 @@ class ExploreFilter extends React.Component {
         nresults: 20,
         published: true,
         full_search: true,
-        disciplines: this.state.active_disciplines,
-        types: this.state.active_filters,
-        sort: this.sorts[this.state.active_sort].name,
+        disciplines: this.state.activeDisciplines,
+        types: this.state.activeFilters,
+        sort: this.sorts[this.state.activeSort].name,
         sort_reversed: this.state.reversed,
-        page: page_number,
-        from_saltise: this.state.from_saltise,
-        content_rich: this.state.content_rich
+        page: pageNumber,
+        fromSaltise: this.state.fromSaltise,
+        contentRich: this.state.contentRich
       },
-      (response_data) => {
-        response_function(response_data.workflow_list, response_data.pages)
+      (responseData) => {
+        responseFunction(responseData.workflow_list, responseData.pages)
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -202,7 +231,7 @@ class ExploreFilter extends React.Component {
         <div
           className={
             'workflow-sort-indicator hover-shade item-' +
-            this.state.active_disciplines.length
+            this.state.activeDisciplines.length
           }
         >
           <span className="material-symbols-rounded">science</span>
@@ -211,7 +240,7 @@ class ExploreFilter extends React.Component {
         <div className="create-dropdown">
           {this.props.disciplines.map((discipline, i) => {
             let css_class = 'filter-option flex-middle'
-            if (this.state.active_disciplines.indexOf(discipline.id) >= 0)
+            if (this.state.activeDisciplines.indexOf(discipline.id) >= 0)
               css_class += ' active'
             return (
               <div
@@ -228,7 +257,7 @@ class ExploreFilter extends React.Component {
                 <input
                   type="checkbox"
                   checked={
-                    this.state.active_disciplines.indexOf(discipline.id) >= 0
+                    this.state.activeDisciplines.indexOf(discipline.id) >= 0
                   }
                 />
                 {discipline.title}
@@ -237,10 +266,10 @@ class ExploreFilter extends React.Component {
           })}
         </div>
         <div
-          attr_number={this.state.active_disciplines.length}
+          data-attr-number={this.state.activeDisciplines.length}
           className="dropdown-number-indicator"
         >
-          {this.state.active_disciplines.length}
+          {this.state.activeDisciplines.length}
         </div>
       </div>
     )
@@ -255,48 +284,54 @@ class ExploreFilter extends React.Component {
         className="hover-shade"
         onClick={() => {
           this.setState({
-            from_saltise: !this.state.from_saltise,
-            has_searched: false
+            fromDaltise: !this.state.fromSaltise,
+            hasSearched: false
           })
           this.doSearch()
         }}
       >
-        <input type="checkbox" checked={this.state.from_saltise} />
+        <input type="checkbox" checked={this.state.fromSaltise} />
         <label>{window.gettext('SALTISE content')}</label>
       </div>
     )
   }
-  searchResults(response_data, pages) {
-    this.setState({ workflows: response_data, pages: pages })
+
+  searchResults(responseData, pages) {
+    this.setState({ workflows: responseData, pages: pages })
   }
-  filterChange(filter, evt) {
-    let name = filter.name
-    let new_filter = this.state.active_filters.slice()
-    if (new_filter.indexOf(name) >= 0)
-      new_filter.splice(new_filter.indexOf(name), 1)
-    else new_filter.push(name)
-    this.setState({ active_filters: new_filter, has_searched: false })
+
+  filterChange(filter) {
+    const name = filter.name
+    const newFilter = this.state.activeFilters.slice()
+    if (newFilter.indexOf(name) >= 0)
+      newFilter.splice(newFilter.indexOf(name), 1)
+    else newFilter.push(name)
+    this.setState({ activeFilters: newFilter, hasSearched: false })
   }
+
   disciplineChange(discipline) {
-    let name = discipline.id
-    let new_filter = this.state.active_disciplines.slice()
-    if (new_filter.indexOf(name) >= 0)
-      new_filter.splice(new_filter.indexOf(name), 1)
-    else new_filter.push(name)
-    this.setState({ active_disciplines: new_filter, has_searched: false })
+    const name = discipline.id
+    const newFilter = this.state.activeDisciplines.slice()
+    if (newFilter.indexOf(name) >= 0)
+      newFilter.splice(newFilter.indexOf(name), 1)
+    else newFilter.push(name)
+    this.setState({ activeDisciplines: newFilter, hasSearched: false })
   }
 
   toPage(number) {
+    const inputElement: HTMLInputElement = $(this.searchDOM.current).children(
+      '#workflow-search-input'
+    )[0] as HTMLInputElement
     this.searchWithout(
-      $(this.searchDOM.current).children('#workflow-search-input')[0].value,
+      inputElement.value,
       this.searchResults.bind(this),
       number
     )
   }
 
   getPages() {
-    if (this.state.workflows.length > 0) {
-      let page_buttons = [
+    if (this.state.workflows.length) {
+      const pageButtons = [
         <button
           id="prev-page-button"
           disabled={this.state.pages.current_page === 1}
@@ -306,13 +341,13 @@ class ExploreFilter extends React.Component {
         </button>
       ]
       if (this.state.pages.current_page > 3) {
-        page_buttons.push(
+        pageButtons.push(
           <button className="page-button" onClick={this.toPage.bind(this, 1)}>
             {1}
           </button>
         )
         if (this.state.pages.current_page > 4) {
-          page_buttons.push(<div className="page-button no-button">...</div>)
+          pageButtons.push(<div className="page-button no-button">...</div>)
         }
       }
 
@@ -325,11 +360,11 @@ class ExploreFilter extends React.Component {
         );
         i++
       ) {
-        let button_class = 'page-button'
+        let buttonClass = 'page-button'
         if (i === this.state.pages.current_page)
-          button_class += ' active-page-button'
-        page_buttons.push(
-          <button className={button_class} onClick={this.toPage.bind(this, i)}>
+          buttonClass += ' active-page-button'
+        pageButtons.push(
+          <button className={buttonClass} onClick={this.toPage.bind(this, i)}>
             {i}
           </button>
         )
@@ -337,9 +372,9 @@ class ExploreFilter extends React.Component {
 
       if (this.state.pages.current_page < this.state.pages.page_count - 2) {
         if (this.state.pages.current_page < this.state.pages.page_count - 3) {
-          page_buttons.push(<div className="page-button no-button">...</div>)
+          pageButtons.push(<div className="page-button no-button">...</div>)
         }
-        page_buttons.push(
+        pageButtons.push(
           <button
             className="page-button"
             onClick={this.toPage.bind(this, this.state.pages.page_count)}
@@ -349,7 +384,7 @@ class ExploreFilter extends React.Component {
         )
       }
 
-      page_buttons.push(
+      pageButtons.push(
         <button
           id="next-page-button"
           disabled={
@@ -370,17 +405,17 @@ class ExploreFilter extends React.Component {
           -{this.state.pages.results_per_page * this.state.pages.current_page} (
           {this.state.pages.total_results} {window.gettext('total results')})
         </p>,
-        <div className="explore-page-buttons">{page_buttons}</div>
+        <div className="explore-page-buttons">{pageButtons}</div>
       ]
     } else {
       return <p>{window.gettext('No results were found.')}</p>
     }
   }
   doSearch() {
-    this.searchWithout(
-      $(this.searchDOM.current).children('#workflow-search-input')[0].value,
-      this.searchResults.bind(this)
-    )
+    const inputEl: HTMLInputElement = $(this.searchDOM.current).children(
+      '#workflow-search-input'
+    )[0] as HTMLInputElement
+    this.searchWithout(inputEl.value, this.searchResults.bind(this))
   }
   getInfo() {
     if (this.state.workflows === this.props.workflows)
@@ -398,11 +433,11 @@ class ExploreFilter extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let workflows = this.state.workflows.map((workflow) => (
+    const workflows = this.state.workflows.map((workflow) => (
       <WorkflowCard
         key={workflow.type + workflow.id}
-        workflow_data={workflow}
-        context={this.props.context}
+        workflowData={workflow}
+        // context={this.props.context} @todo this is no used in component, check git history if bad refactor
       />
     ))
     return [
@@ -419,7 +454,7 @@ class ExploreFilter extends React.Component {
           </div>
           <button
             className="primary-button"
-            disabled={this.state.has_searched}
+            disabled={this.state.hasSearched}
             onClick={this.doSearch.bind(this)}
           >
             {window.gettext('Search')}

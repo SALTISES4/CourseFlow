@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { getLibraryQuery } from '@XMLHTTP/PostFunctions.js'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
+import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
 
 // from renderer:
 //   initial_pages

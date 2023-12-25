@@ -648,6 +648,8 @@ def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
     except ValidationError:
         response["action"] = "error"
 
+    return JsonResponse(response)
+
 
 @login_required
 @require_POST

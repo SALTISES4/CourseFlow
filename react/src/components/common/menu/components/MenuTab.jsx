@@ -29,13 +29,13 @@ class MenuSection extends React.Component {
         key={object.id}
         no_hyperlink={this.props.no_hyperlink}
         type={this.props.type}
-        workflow_data={object}
+        workflowData={object}
         objectType={section_type}
         selected={this.props.selected_id === object.id}
         dispatch={this.props.dispatch}
         selectAction={this.props.selectAction}
-        parentID={this.props.parentID}
-        duplicate={this.props.duplicate}
+        // parentID={this.props.parentID} @todo this is no used in component, check git history if bad refactor
+        // duplicate={this.props.duplicate} @todo this is no used in component, check git history if bad refactor
       />
     ))
     if (this.props.replacement_text) objects = this.props.replacement_text

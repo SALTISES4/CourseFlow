@@ -76,7 +76,7 @@ class StudentLiveProjectWorkflows extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
     let workflows_added = this.state.data.workflows_added.map(
-      (workflow, index) => <WorkflowCard key={index} workflow_data={workflow} />
+      (workflow, index) => <WorkflowCard key={index} workflowData={workflow} />
     )
     return (
       <div className="workflow-details">

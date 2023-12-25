@@ -48743,6 +48743,15 @@ function Enum(baseEnum) {
     }
   });
 }
+const debounce = (func, timeout2 = 300) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(void 0, args);
+    }, timeout2);
+  };
+};
 function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {
     if (props.outcome[i].id === outcome_id) {
@@ -51700,13 +51709,15 @@ function makeProjectLive(projectPk, callBackFunction = () => console.log("succes
     window.fail_function();
   }
 }
-function setWorkflowVisibility(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
+function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
       liveprojectPk: JSON.stringify(liveprojectPk),
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
     }).done(function(data) {
+      console.log("setWorkflowVisibilityQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51716,12 +51727,14 @@ function setWorkflowVisibility(liveprojectPk, workflowPk, visible, callBackFunct
     window.fail_function();
   }
 }
-function getLiveProjectData(projectPk, data_type, callBackFunction = () => console.log("success")) {
+function getLiveProjectDataQuery(projectPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_live_project_data, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getLiveProjectDataQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51731,12 +51744,14 @@ function getLiveProjectData(projectPk, data_type, callBackFunction = () => conso
     window.fail_function();
   }
 }
-function getLiveProjectDataStudent(projectPk, data_type, callBackFunction = () => console.log("success")) {
+function getLiveProjectDataStudentQuery(projectPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_live_project_data_student, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getLiveProjectDataStudentQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51746,12 +51761,14 @@ function getLiveProjectDataStudent(projectPk, data_type, callBackFunction = () =
     window.fail_function();
   }
 }
-function getAssignmentData(liveassignmentPk, data_type, callBackFunction = () => console.log("success")) {
+function getAssignmentDataQuery(liveassignmentPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_assignment_data, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getAssignmentDataQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51836,16 +51853,7 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
     window.fail_function();
   }
 }
-function getLibrary(callBackFunction = () => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getFavourites(callBackFunction = () => console.log("success")) {
+function getFavouritesQuery(callBackFunction = () => console.log("success")) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
       callBackFunction(data);
@@ -51869,18 +51877,6 @@ function getWorkflowsForProject(projectPk, callBackFunction = () => console.log(
       projectPk
     }).done(function(data) {
       callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjects(filter, data, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(data2) {
-      callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
@@ -59209,7 +59205,7 @@ const Sidebar = () => {
           ListItemButton$1,
           {
             component: "a",
-            id: "panel-home",
+            "data-test-id": "panel-home",
             href: COURSEFLOW_APP.config.home_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
             children: [
@@ -59223,7 +59219,7 @@ const Sidebar = () => {
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-my-library",
+              "data-test-id": "panel-my-library",
               href: COURSEFLOW_APP.config.my_library_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
               children: [
@@ -59236,7 +59232,7 @@ const Sidebar = () => {
             ListItemButton$1,
             {
               component: "a",
-              id: "panel-explore",
+              "data-test-id": "panel-explore",
               href: COURSEFLOW_APP.config.explore_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
               children: [
@@ -59250,7 +59246,7 @@ const Sidebar = () => {
           ListItemButton$1,
           {
             component: "a",
-            id: "panel-my-live-projects",
+            "data-test-id": "panel-my-live-projects",
             href: COURSEFLOW_APP.config.my_liveprojects_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
             children: [
@@ -59702,97 +59698,6 @@ var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)(
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
 default_1 = AddCircle.default = _default;
-class SelectionManager {
-  constructor(read_only) {
-    this.currentSelection;
-    this.mouse_isclick = false;
-    this.read_only = read_only;
-    var selector = this;
-    $(document).on("mousedown", () => {
-      selector.mouse_isclick = true;
-      setTimeout(() => {
-        selector.mouse_isclick = false;
-      }, 500);
-    });
-    $(document).on("mousemove", () => {
-      selector.mouse_isclick = false;
-    });
-    $(document).on("mouseup", (evt, newSelection) => {
-      if (selector.mouse_isclick) {
-        selector.changeSelection(evt, null);
-      }
-    });
-    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-  }
-  changeSelection(evt, newSelection) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
-      return;
-    }
-    if (this.currentSelection) {
-      this.currentSelection.setState({ selected: false });
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          false
-        );
-      }
-    }
-    this.currentSelection = newSelection;
-    if (this.currentSelection) {
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          true
-        );
-      }
-      if ($("#sidebar").tabs("option", "active") !== 0) {
-        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-      }
-      $("#sidebar").tabs("enable", 0);
-      $("#sidebar").tabs("option", "active", 0);
-      this.currentSelection.setState({ selected: true });
-    } else {
-      if ($("#sidebar").tabs("option", "active") === 0) {
-        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
-      }
-      $("#sidebar").tabs("disable", 0);
-    }
-  }
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null, null);
-    }
-  }
-}
-class TinyLoader {
-  constructor(identifier2) {
-    this.identifier = identifier2;
-    this.loadings = 0;
-  }
-  startLoad() {
-    $(this.identifier).addClass("waiting");
-    this.loadings++;
-  }
-  endLoad() {
-    if (this.loadings > 0) {
-      this.loadings--;
-    }
-    if (this.loadings <= 0) {
-      $(this.identifier).removeClass("waiting");
-    }
-  }
-}
 function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
@@ -59829,8 +59734,7 @@ function getLinkedWorkflowMenu(nodeData, updateFunction, callBackFunction = () =
   );
 }
 function createNew(create_url) {
-  let tiny_loader = new TinyLoader($("body")[0]);
-  tiny_loader.startLoad();
+  COURSEFLOW_APP.tinyLoader.startLoad();
   getTargetProjectMenu(
     -1,
     (response_data) => {
@@ -59842,7 +59746,7 @@ function createNew(create_url) {
       }
     },
     () => {
-      tiny_loader.endLoad();
+      COURSEFLOW_APP.tinyLoader.endLoad();
     }
   );
 }
@@ -61321,361 +61225,223 @@ function getOutcomeTitle(data, prefix2) {
   }
   return prefix2 + " - " + text;
 }
-class Slider extends reactExports.Component {
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "switch", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          checked: this.props.checked,
-          onChange: this.props.toggleAction.bind(this)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "slider round" })
-    ] });
-  }
-}
-class DatePicker extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-  }
-  componentDidMount() {
-    $(this.input.current).flatpickr({
-      enableTime: true,
-      dateFormat: "Z",
-      altInput: true,
-      altFormat: "D M J, Y - H:i",
-      onChange: (dates, datestring) => {
-        this.props.onChange(datestring);
-      }
-    });
-  }
-  render() {
-    let disabled = false;
-    if (this.props.disabled)
-      disabled = true;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "input",
-      {
-        disabled,
-        ref: this.input,
-        id: this.props.id,
-        defaultValue: this.props.default_value
-      }
-    );
-  }
-}
-class Component extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.maindiv = reactExports.createRef();
-  }
-  toggleDrop(evt) {
-    evt.stopPropagation();
-    toggleDrop(
-      this.props.objectID,
-      object_dictionary[this.objectType],
-      !this.props.data.is_dropped,
-      this.props.dispatch,
-      this.props.data.depth
-    );
-  }
-}
-class CollapsibleText extends Component {
-  componentDidMount() {
-    this.checkSize();
-  }
-  componentDidUpdate() {
-    this.checkSize();
-  }
-  checkSize() {
-    if (this.state.is_dropped)
-      return;
-    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
-      if (!this.state.overflow)
-        this.setState({ overflow: true });
-    } else {
-      if (this.state.overflow)
-        this.setState({ overflow: false });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let css_class = "";
-    if (this.props.css_class)
-      css_class = this.props.css_class + " ";
-    css_class += "title-text collapsible-text";
-    let drop_text = window.gettext("show more");
-    if (this.state.is_dropped) {
-      css_class += " dropped";
-      drop_text = window.gettext("show less");
-    }
-    let overflow;
-    if (this.state.overflow)
-      overflow = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: (evt) => {
-            this.setState({ is_dropped: !this.state.is_dropped });
-            evt.stopPropagation();
-          },
-          className: "collapsed-text-show-more",
-          children: drop_text
-        }
-      );
-    var text = this.props.text;
-    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
-      text = this.props.defaultText;
-    }
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          ref: this.maindiv,
-          className: css_class,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      ),
-      overflow
-    ];
-  }
-}
-class LegendLine extends reactExports.Component {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let icon;
-    if (this.props.icon)
-      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.icon + ".svg" });
-    else
-      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: this.props.divclass, children: this.props.div });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-line", children: [
-      icon,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.text })
-    ] });
-  }
-}
-class ActionButton extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
-  handleClick(evt) {
-    this.props.handleClick(evt);
-    evt.stopPropagation();
-  }
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: this.props.button_class + " action-button",
-        title: this.props.titletext,
-        onClick: this.handleClick,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.button_icon })
-      }
-    );
-  }
-}
+var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
+  WorkflowType2["ACTIVITY"] = "activity";
+  WorkflowType2["PROJECT"] = "project";
+  WorkflowType2["LIVE_PROJECT"] = "liveproject";
+  return WorkflowType2;
+})(WorkflowType || {});
 class WorkflowCard extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "mainDiv");
+    __publicField(this, "workflow");
+    __publicField(this, "updateWorkflow");
+    __publicField(this, "selectAction");
+    __publicField(this, "userRole");
+    __publicField(this, "readOnly");
+    __publicField(this, "projectData");
+    __publicField(this, "selected");
+    __publicField(this, "noHyperlink");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "TypeIndicator", () => {
+      const { type, is_strategy } = this.workflow;
+      let type_text = window.gettext(type);
+      if (type === WorkflowType.LIVE_PROJECT) {
+        type_text = window.gettext("classroom");
+      }
+      if (is_strategy) {
+        type_text += window.gettext(" strategy");
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
+    });
+    __publicField(this, "FavouriteButton", () => {
+      const favourite = this.state.favourite;
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.LIVE_PROJECT)
+        return null;
+      const favClass = favourite ? " filled" : "";
+      const toggleFavouriteAction = (evt) => {
+        toggleFavourite(workflow.id, workflow.type, !favourite);
+        this.setState({ favourite: !favourite });
+        evt.stopPropagation();
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "workflow-toggle-favourite hover-shade",
+          onClick: toggleFavouriteAction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: `material-symbols-outlined${favClass}`,
+              title: window.gettext("Favourite"),
+              children: "star"
+            }
+          )
+        },
+        "btn-workflow-toggle-favourite"
+      );
+    });
+    __publicField(this, "WorkflowDetails", () => {
+      const details = [];
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
+        );
+      }
+      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created workflow-live-classroom",
+              title: window.gettext("Live Classroom"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
+                ` ${window.gettext("Live Classroom")}`
+              ]
+            },
+            "workflow-created-group"
+          )
+        );
+      }
+      if (this.workflow.is_linked) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created linked-workflow-warning",
+              title: window.gettext(
+                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
+                ` ${window.gettext("Already in use")}`
+              ]
+            },
+            "workflow-created-warning"
+          )
+        );
+      }
+      return details;
+    });
+    __publicField(this, "Buttons", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
+      ] });
+    });
+    __publicField(this, "Visible", () => {
+      const isTeacher = this.userRole === role_keys.teacher;
+      const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
+      if (!this.readOnly && isTeacher && isEligibleType) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "permission-select",
+            onClick: (evt) => evt.stopPropagation(),
+            onMouseDown: (evt) => evt.stopPropagation(),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "select",
+              {
+                value: String(this.workflow.is_visible),
+                onChange: (evt) => this.visibilityFunction(this.workflow.id, evt.target.value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
+                ]
+              }
+            )
+          }
+        );
+      }
+      return null;
+    });
     this.state = {
-      favourite: props.workflow_data.favourite
+      favourite: props.workflowData.favourite
     };
-    this.maindiv = reactExports.createRef();
+    this.selected = this.props.selected;
+    this.noHyperlink = this.props.noHyperlink;
+    this.userRole = this.props.userRole;
+    this.readOnly = this.props.readOnly;
+    this.projectData = this.props.projectData;
+    this.updateWorkflow = this.props.updateWorkflow;
+    this.workflow = this.props.workflowData;
+    this.selectAction = this.props.selectAction;
+    this.mainDiv = reactExports.createRef();
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getTypeIndicator() {
-    let data = this.props.workflow_data;
-    let type = data.type;
-    let type_text = window.gettext(type);
-    if (type === "liveproject")
-      type_text = window.gettext("classroom");
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
-  }
-  getButtons() {
-    let fav_class = "";
-    if (this.state.favourite)
-      fav_class = " filled";
-    let buttons = [];
-    if (this.props.workflow_data.type !== "liveproject")
-      buttons.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "workflow-toggle-favourite hover-shade",
-            onClick: (evt) => {
-              toggleFavourite(
-                this.props.workflow_data.id,
-                this.props.workflow_data.type,
-                !this.state.favourite
-              );
-              let state = this.state;
-              this.setState({ favourite: !state.favourite });
-              evt.stopPropagation();
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "span",
-              {
-                className: "material-symbols-outlined" + fav_class,
-                title: window.gettext("Favourite"),
-                children: "star"
-              }
-            )
-          },
-          "btn-workflow-toggle-favourite"
-        )
-      );
-    let workflows = [];
-    if (this.props.workflow_data.type === "project" && !(this.props.workflow_data.workflow_count == null))
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: this.props.workflow_data.workflow_count + " " + window.gettext("workflows") }, "workflow-created-count")
-      );
-    if (this.props.workflow_data.type === "project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type !== role_keys["none"])
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-created workflow-live-classroom",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "span",
-                {
-                  className: "material-symbols-rounded small-inline",
-                  title: window.gettext("Live Classroom"),
-                  children: "group"
-                }
-              ),
-              " " + window.gettext("Live Classroom")
-            ]
-          },
-          "workflow-created-group"
-        )
-      );
-    if (this.props.workflow_data.is_linked)
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-created linked-workflow-warning",
-            title: window.gettext(
-              "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
-            ),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
-              " " + window.gettext("Already in use")
-            ]
-          },
-          "workflow-created-warning"
-        )
-      );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: workflows })
-    ] });
-  }
   clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.props.workflow_data.id);
+    if (this.selectAction) {
+      this.selectAction(this.workflow.id);
     } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
+      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
     }
-  }
-  getVisible() {
-    let component = this;
-    if (this.props.renderer && !this.props.renderer.read_only && this.props.renderer.user_role === role_keys.teacher && this.props.workflow_data.type !== "project" && this.props.workflow_data.type !== "liveproject" && this.props.renderer && this.props.renderer.user_role === role_keys.teacher)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "permission-select",
-          onClick: (evt) => evt.stopPropagation(),
-          onMouseDown: (evt) => evt.stopPropagation(),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              value: this.props.workflow_data.is_visible,
-              onChange: (evt) => component.visibilityFunction(
-                this.props.workflow_data.id,
-                evt.target.value
-              ),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
-              ]
-            }
-          )
-        }
-      );
-    return null;
   }
   visibilityFunction(id, is_visible) {
     const isVisibleBool = is_visible === "true";
-    this.props.updateWorkflow(id, {
+    this.updateWorkflow(id, {
       is_visible: isVisibleBool
     });
-    setWorkflowVisibility(
-      this.props.renderer.project_data.id,
-      id,
-      isVisibleBool
-    );
+    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
+  renderCreationText(data) {
+    let creationText = window.gettext("Created");
+    if (data.author && data.author !== "None") {
+      creationText += ` ${window.gettext("by")} ${data.author}`;
+    }
+    creationText += `${window.gettext(" on ")}${data.created_on}`;
+    return creationText;
+  }
+  renderDescription(description) {
+    if (!description) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-description" });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "workflow-description collapsible-text",
+        dangerouslySetInnerHTML: { __html: description }
+      }
+    );
+  }
   render() {
-    let data = this.props.workflow_data;
-    let css_class = "workflow-for-menu hover-shade " + data.type;
-    if (this.props.selected)
-      css_class += " selected";
-    let creation_text = window.gettext("Created");
-    if (data.author && data.author !== "None")
-      creation_text += " " + window.gettext("by") + " " + data.author;
-    creation_text += window.gettext(" on ") + data.created_on;
-    let description = data.description;
-    if (!description)
-      description = " ";
+    const { selected, no_hyperlink } = this.props;
+    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${selected ? " selected" : ""}`;
+    const creationText = this.renderCreationText(this.workflow);
+    const description = this.renderDescription(this.workflow.description);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        ref: this.maindiv,
-        className: css_class,
+        ref: this.mainDiv,
+        className: cssClass,
         onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
+        onMouseDown: (evt) => evt.preventDefault(),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               WorkflowTitle,
               {
-                no_hyperlink: this.props.no_hyperlink,
+                no_hyperlink,
                 class_name: "workflow-title",
-                data
+                data: this.workflow
               }
             ),
-            this.getVisible(),
-            this.getTypeIndicator()
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Visible, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "workflow-description collapsible-text",
-              dangerouslySetInnerHTML: { __html: description }
-            }
-          ),
-          this.getButtons()
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
+          description,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Buttons, {})
         ]
       }
     );
@@ -61705,13 +61471,11 @@ class MenuSection extends reactExports.Component {
       {
         no_hyperlink: this.props.no_hyperlink,
         type: this.props.type,
-        workflow_data: object,
+        workflowData: object,
         objectType: section_type,
         selected: this.props.selected_id === object.id,
         dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction,
-        parentID: this.props.parentID,
-        duplicate: this.props.duplicate
+        selectAction: this.props.selectAction
       },
       object.id
     ));
@@ -61848,6 +61612,23 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader$1 = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
+class Component extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.maindiv = reactExports.createRef();
+  }
+  toggleDrop(evt) {
+    evt.stopPropagation();
+    toggleDrop(
+      this.props.objectID,
+      object_dictionary[this.objectType],
+      !this.props.data.is_dropped,
+      this.props.dispatch,
+      this.props.data.depth
+    );
+  }
+}
 class NodeBarUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -62949,6 +62730,27 @@ class EditableComponent extends Component {
       style2.border = "2px solid " + data.lock.user_colour;
     }
     return style2;
+  }
+}
+class ActionButton extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(evt) {
+    this.props.handleClick(evt);
+    evt.stopPropagation();
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: this.props.button_class + " action-button",
+        title: this.props.titletext,
+        onClick: this.handleClick,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.button_icon })
+      }
+    );
   }
 }
 class CommentBox extends Component {
@@ -64151,6 +63953,130 @@ class RightSideBar extends reactExports.Component {
     ] });
   }
 }
+class Slider extends reactExports.Component {
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "switch", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          checked: this.props.checked,
+          onChange: this.props.toggleAction.bind(this)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "slider round" })
+    ] });
+  }
+}
+class DatePicker extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.input = reactExports.createRef();
+  }
+  componentDidMount() {
+    $(this.input.current).flatpickr({
+      enableTime: true,
+      dateFormat: "Z",
+      altInput: true,
+      altFormat: "D M J, Y - H:i",
+      onChange: (dates, datestring) => {
+        this.props.onChange(datestring);
+      }
+    });
+  }
+  render() {
+    let disabled = false;
+    if (this.props.disabled)
+      disabled = true;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        disabled,
+        ref: this.input,
+        id: this.props.id,
+        defaultValue: this.props.default_value
+      }
+    );
+  }
+}
+class CollapsibleText extends Component {
+  componentDidMount() {
+    this.checkSize();
+  }
+  componentDidUpdate() {
+    this.checkSize();
+  }
+  checkSize() {
+    if (this.state.is_dropped)
+      return;
+    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
+      if (!this.state.overflow)
+        this.setState({ overflow: true });
+    } else {
+      if (this.state.overflow)
+        this.setState({ overflow: false });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let css_class = "";
+    if (this.props.css_class)
+      css_class = this.props.css_class + " ";
+    css_class += "title-text collapsible-text";
+    let drop_text = window.gettext("show more");
+    if (this.state.is_dropped) {
+      css_class += " dropped";
+      drop_text = window.gettext("show less");
+    }
+    let overflow;
+    if (this.state.overflow)
+      overflow = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          onClick: (evt) => {
+            this.setState({ is_dropped: !this.state.is_dropped });
+            evt.stopPropagation();
+          },
+          className: "collapsed-text-show-more",
+          children: drop_text
+        }
+      );
+    var text = this.props.text;
+    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
+      text = this.props.defaultText;
+    }
+    return [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          ref: this.maindiv,
+          className: css_class,
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
+        }
+      ),
+      overflow
+    ];
+  }
+}
+class LegendLine extends reactExports.Component {
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let icon;
+    if (this.props.icon)
+      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.icon + ".svg" });
+    else
+      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: this.props.divclass, children: this.props.div });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-line", children: [
+      icon,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.text })
+    ] });
+  }
+}
 let UserLabel$1 = class UserLabel extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -64303,7 +64229,6 @@ let UserAdd$1 = class UserAdd extends reactExports.Component {
 class ShareMenu extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.tiny_loader = new TinyLoader($("body"));
     this.state = {
       owner: props.data.author,
       edit: [],
@@ -64575,7 +64500,7 @@ class ShareMenu extends reactExports.Component {
     }
   }
   setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad();
+    COURSEFLOW_APP.tinyLoader.startLoad();
     setUserPermission(
       user.id,
       this.props.data.id,
@@ -64592,7 +64517,7 @@ class ShareMenu extends reactExports.Component {
               edit: response.editors,
               student: response.students
             });
-            this.tiny_loader.endLoad();
+            COURSEFLOW_APP.tinyLoader.endLoad();
           }
         );
       }
@@ -65233,9 +65158,9 @@ class WorkflowsMenu extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
           {
-            workflow_data: this.current_project,
+            workflowData: this.current_project,
             selected: this.state.selected === this.current_project.id,
-            no_hyperlink,
+            noHyperlink: no_hyperlink,
             type: this.props.type,
             dispatch: this.props.dispatch,
             selectAction: this.workflowSelected.bind(this)
@@ -65269,7 +65194,7 @@ class WorkflowVisibility extends WorkflowCard {
       {
         value: this.props.visibility,
         onChange: (evt) => this.props.visibilityFunction(
-          this.props.workflow_data.id,
+          this.props.workflowData.id,
           evt.target.value
         ),
         children: [
@@ -65283,7 +65208,7 @@ class WorkflowVisibility extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    var data = this.props.workflow_data;
+    var data = this.props.workflowData;
     var css_class = "workflow-for-menu workflow-visibility hover-shade " + data.type;
     if (this.props.selected)
       css_class += " selected";
@@ -65316,11 +65241,11 @@ class LiveProjectSection extends reactExports.Component {
   componentDidMount() {
     let component = this;
     if (this.props.role === "teacher") {
-      getLiveProjectData(this.props.objectID, this.props.view_type, (data) => {
+      getLiveProjectDataQuery(this.props.objectID, this.props.view_type, (data) => {
         component.setState({ data: data.data_package });
       });
     } else if (this.props.role === "student") {
-      getLiveProjectDataStudent(
+      getLiveProjectDataStudentQuery(
         this.props.objectID,
         this.props.view_type,
         (data) => {
@@ -65385,7 +65310,7 @@ class LiveProjectOverview extends LiveProjectSection {
   render() {
     if (!this.state.data)
       return this.defaultRender();
-    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
+    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflowData: workflow }, index2));
     if (workflows.length === 0)
       workflows = window.gettext(
         "No workflows have been made visible to students."
@@ -65583,7 +65508,7 @@ class UserAdd2 extends reactExports.Component {
 class StudentManagement extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.tiny_loader = new TinyLoader($("body"));
+    this.tiny_loader = new MouseCursorLoader($("body"));
     this.state = { owner: null, teacher: [], student: [] };
   }
   /*******************************************************
@@ -65602,7 +65527,7 @@ class StudentManagement extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad();
+    COURSEFLOW_APP.tinyLoader.startLoad();
     setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
       getUsersForLiveProject(this.props.data.id, (response) => {
         this.setState({
@@ -65610,7 +65535,7 @@ class StudentManagement extends reactExports.Component {
           student: response.students,
           teacher: response.teachers
         });
-        this.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
       });
     });
   }
@@ -65961,7 +65886,7 @@ class LiveAssignmentEdit extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     let component = this;
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {
@@ -65977,13 +65902,13 @@ class LiveAssignmentEdit extends reactExports.Component {
     if (this.state.task.linked_workflow === pk)
       parameter = "linked_" + parameter;
     if (visibility === "visible") {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, true);
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true);
       let new_state = {};
       new_state[parameter] = true;
       this.props.updateAssignment(new_state);
       this.setState(new_state);
     } else {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, false);
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false);
       let new_state = {};
       new_state[parameter] = false;
       this.props.updateAssignment(new_state);
@@ -66081,7 +66006,7 @@ class LiveAssignmentEdit extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowVisibility,
           {
-            workflow_data: this.state.task.linked_workflow_data,
+            workflowData: this.state.task.linked_workflow_data,
             visibility,
             visibilityFunction: this.switchVisibility.bind(this)
           }
@@ -66107,7 +66032,7 @@ class LiveAssignmentEdit extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowVisibility,
           {
-            workflow_data: this.state.user_data.parent_workflow,
+            workflowData: this.state.user_data.parent_workflow,
             visibility: parent_visibility,
             visibilityFunction: this.switchVisibility.bind(this)
           }
@@ -66262,7 +66187,7 @@ class LiveAssignmentReport extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     let component = this;
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {
@@ -66803,7 +66728,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
       for (let i = 0; i < workflows_not_added.length; i++) {
         if (workflows_not_added[i].id == pk) {
           let removed = workflows_not_added.splice(i, 1);
-          setWorkflowVisibility(this.props.objectID, pk, true);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, true);
           workflows_added.push(removed[0]);
         }
       }
@@ -66811,7 +66736,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
       for (let i = 0; i < workflows_added.length; i++) {
         if (workflows_added[i].id == pk) {
           let removed = workflows_added.splice(i, 1);
-          setWorkflowVisibility(this.props.objectID, pk, false);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, false);
           workflows_not_added.push(removed[0]);
         }
       }
@@ -66833,7 +66758,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
     let workflows_added = this.state.data.workflows_added.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowVisibility,
       {
-        workflow_data: workflow,
+        workflowData: workflow,
         visibility: "visible",
         visibilityFunction: this.switchVisibility.bind(this)
       }
@@ -66842,7 +66767,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
       (workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowVisibility,
         {
-          workflow_data: workflow,
+          workflowData: workflow,
           visibility: "not_visible",
           visibilityFunction: this.switchVisibility.bind(this)
         }
@@ -67014,8 +66939,8 @@ class LiveProjectMenu extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
           {
-            no_hyperlink: true,
-            workflow_data: this.state.liveproject,
+            noHyperlink: true,
+            workflowData: this.state.liveproject,
             selectAction: this.openEdit.bind(this)
           }
         ),
@@ -67086,7 +67011,7 @@ class StudentLiveProjectWorkflows extends LiveProjectSection {
     if (!this.state.data)
       return this.defaultRender();
     let workflows_added = this.state.data.workflows_added.map(
-      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflow_data: workflow }, index2)
+      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, index2)
     );
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Workflows") }),
@@ -68439,10 +68364,10 @@ class MenuBar extends reactExports.Component {
     let viewbar;
     let userbar;
     if (this.props.overflow_links) {
-      overflow_links = this.props.overflow_links();
+      overflow_links = this.props.overflow_links;
     }
     if (this.props.visible_buttons) {
-      visible_buttons = this.props.visible_buttons();
+      visible_buttons = this.props.visible_buttons;
     }
     if (this.props.viewbar)
       viewbar = this.props.viewbar();
@@ -84859,7 +84784,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-header", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowCard,
         {
-          workflow_data: data,
+          workflowData: data,
           selectAction: this.openEdit.bind(this, null)
         }
       ) }),
@@ -84878,6 +84803,79 @@ const WorkflowBase = connect(
   mapWorkflowStateToProps$1,
   null
 )(WorkflowBaseUnconnected);
+class SelectionManager {
+  constructor(read_only) {
+    this.currentSelection;
+    this.mouse_isclick = false;
+    this.read_only = read_only;
+    var selector = this;
+    $(document).on("mousedown", () => {
+      selector.mouse_isclick = true;
+      setTimeout(() => {
+        selector.mouse_isclick = false;
+      }, 500);
+    });
+    $(document).on("mousemove", () => {
+      selector.mouse_isclick = false;
+    });
+    $(document).on("mouseup", (evt, newSelection) => {
+      if (selector.mouse_isclick) {
+        selector.changeSelection(evt, null);
+      }
+    });
+    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+  }
+  changeSelection(evt, newSelection) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
+      return;
+    }
+    if (this.currentSelection) {
+      this.currentSelection.setState({ selected: false });
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          false
+        );
+      }
+    }
+    this.currentSelection = newSelection;
+    if (this.currentSelection) {
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          true
+        );
+      }
+      if ($("#sidebar").tabs("option", "active") !== 0) {
+        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+      }
+      $("#sidebar").tabs("enable", 0);
+      $("#sidebar").tabs("option", "active", 0);
+      this.currentSelection.setState({ selected: true });
+    } else {
+      if ($("#sidebar").tabs("option", "active") === 0) {
+        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
+      }
+      $("#sidebar").tabs("disable", 0);
+    }
+  }
+  deleted(selection) {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null, null);
+    }
+  }
+}
 class ConnectionBar extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -87987,7 +87985,6 @@ class Workflow {
     }
   }
   render(container2, view_type = "workflowview") {
-    this.tiny_loader = new TinyLoader($("body")[0]);
     this.selection_manager = new SelectionManager(this.read_only);
     this.child_data_needed = [];
     this.child_data_completed = -1;
@@ -88250,7 +88247,6 @@ class LiveAssignmentRenderer extends React.Component {
   }
   render() {
     this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
     return this.getContents();
   }
   getContents() {
@@ -88274,7 +88270,6 @@ class LiveProjectRenderer extends React.Component {
   }
   render() {
     this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
     return this.getContents();
   }
   getContents() {
@@ -88302,8 +88297,8 @@ class WorkflowCardCondensed extends WorkflowCard {
     return null;
   }
   getProjectTitle() {
-    if (this.props.workflow_data.project_title) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflow_data.project_title });
+    if (this.props.workflowData.project_title) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
     } else {
       return "-";
     }
@@ -88312,7 +88307,7 @@ class WorkflowCardCondensed extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.workflow_data;
+    let data = this.props.workflowData;
     let css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -88340,15 +88335,44 @@ class WorkflowCardCondensed extends WorkflowCard {
     );
   }
 }
-class WorkflowFilter extends Component {
+function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data)
+    }).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+class WorkflowFilter extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "filters");
+    __publicField(this, "sorts");
+    __publicField(this, "filterDOM");
+    __publicField(this, "searchDOM");
+    __publicField(this, "sortDOM");
+    console.log("props");
+    console.log(props);
     this.state = {
       workflows: props.workflows,
-      active_filter: 0,
-      active_sort: 0,
+      activeFilter: 0,
+      activeSort: 0,
       reversed: false,
-      search_results: []
+      searchResults: [],
+      searchFilterLock: null
     };
     this.filters = [
       { name: "all", display: window.gettext("All") },
@@ -88363,13 +88387,14 @@ class WorkflowFilter extends Component {
       { name: "created_on", display: window.gettext("Creation date") },
       { name: "type", display: window.gettext("Type") }
     ];
-    let url_params = new URL(window.location.href).searchParams;
+    const url_params = new URL(window.location.href).searchParams;
     if (url_params.get("favourites") === "true")
       this.state.active_filter = this.filters.findIndex(
         (elem) => elem.name === "favourite"
       );
-    if (this.props.context === "library")
-      this.search_without = true;
+    if (this.props.context === "library") {
+      this.searchWithout = true;
+    }
     this.filterDOM = reactExports.createRef();
     this.searchDOM = reactExports.createRef();
     this.sortDOM = reactExports.createRef();
@@ -88386,9 +88411,6 @@ class WorkflowFilter extends Component {
     if (prevProps.workflows !== this.props.workflows)
       this.setState({ workflows: this.props.workflows });
   }
-  /*******************************************************
-   *  FUNCTIONS
-   *******************************************************/
   getPlaceholder() {
     if (this.props.context === "project") {
       return window.gettext("Search the project");
@@ -88396,27 +88418,97 @@ class WorkflowFilter extends Component {
       return window.gettext("Search the library");
     }
   }
+  getFilter() {
+    const activeFilter = this.filters[this.state.activeFilter];
+    const filters = this.filters.map((filter, i) => {
+      let css_class = "filter-option";
+      if (this.state.activeFilter === i)
+        css_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: css_class,
+          onClick: () => this.setState({ activeFilter: i }),
+          children: filter.display
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
+    ] });
+  }
+  getSort() {
+    const activeSort = this.sorts[this.state.activeSort];
+    const sorts = this.sorts.map((sort, i) => {
+      let sort_dir;
+      let css_class = "filter-option";
+      if (this.state.activeSort === i) {
+        css_class += " active";
+        if (this.state.reversed)
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
+        else
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: css_class,
+          onClick: (evt) => {
+            evt.stopPropagation();
+            this.sortChange(i);
+            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+          },
+          children: [
+            sort_dir,
+            sort.display
+          ]
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
+    ] });
+  }
   sortWorkflows(workflows) {
-    let sort = this.sorts[this.state.active_sort].name;
-    if (sort === "last_viewed") {
-      workflows = workflows.sort(
-        (a, b) => ("" + a.object_permission[sort]).localeCompare(
-          b.object_permission[sort]
-        )
-      );
-      if (!this.state.reversed)
-        return workflows.reverse();
-      return workflows;
-    } else
-      workflows = workflows.sort(
-        (a, b) => ("" + a[sort]).localeCompare(b[sort])
-      );
-    if (this.state.reversed)
-      return workflows.reverse();
-    return workflows;
+    const sort = this.sorts[this.state.activeSort].name;
+    const sortedWorkflows = [...workflows].sort((a, b) => {
+      const aValue = sort === "last_viewed" ? a.object_permission[sort] : a[sort];
+      const bValue = sort === "last_viewed" ? b.object_permission[sort] : b[sort];
+      return String(aValue).localeCompare(String(bValue));
+    });
+    if (this.state.reversed) {
+      return sortedWorkflows.reverse();
+    }
+    return sortedWorkflows;
+  }
+  sortChange(index2) {
+    if (this.state.activeSort === index2)
+      this.setState({ reversed: !this.state.reversed });
+    else
+      this.setState({ active_sort: index2, reversed: false });
   }
   filterWorkflows(workflows) {
-    let filter = this.filters[this.state.active_filter].name;
+    const filter = this.filters[this.state.activeFilter].name;
     if (filter !== "archived")
       workflows = workflows.filter((workflow) => !workflow.deleted);
     else
@@ -88429,206 +88521,145 @@ class WorkflowFilter extends Component {
       return workflows.filter((workflow) => workflow.favourite);
     return workflows;
   }
-  getFilter() {
-    let active_filter = this.filters[this.state.active_filter];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_filter,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_filter.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.filters.map((filter, i) => {
-        let css_class = "filter-option";
-        if (this.state.active_filter === i)
-          css_class += " active";
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: css_class,
-            onClick: () => this.setState({ active_filter: i }),
-            children: filter.display
-          }
-        );
-      }) })
-    ] });
-  }
-  getSort() {
-    let active_sort = this.sorts[this.state.active_sort];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_sort,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_sort.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.sorts.map((sort, i) => {
-        let sort_dir;
-        let css_class = "filter-option";
-        if (this.state.active_sort === i) {
-          css_class += " active";
-          if (this.state.reversed)
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
-          else
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
-        }
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: css_class,
-            onClick: (evt) => {
-              evt.stopPropagation();
-              this.sortChange(i);
-              $(this.sortDOM.current).children(".create-dropdown").addClass("active");
-            },
-            children: [
-              sort_dir,
-              sort.display
-            ]
-          }
-        );
-      }) })
-    ] });
-  }
-  sortChange(index2) {
-    if (this.state.active_sort === index2)
-      this.setState({ reversed: !this.state.reversed });
-    else
-      this.setState({ active_sort: index2, reversed: false });
-  }
-  searchChange(evt) {
-    let component = this;
-    if (evt.target.value && evt.target.value !== "") {
-      let filter = evt.target.value.toLowerCase();
-      if (this.search_without)
-        component.searchWithout(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          });
-          $(this.searchDOM.current).addClass("active");
-        });
-      else
-        component.searchWithin(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          });
-          $(this.searchDOM.current).addClass("active");
-        });
-    } else {
-      component.setState({ search_results: [], search_filter: "" });
-      $(this.searchDOM.current).removeClass("active");
-    }
-  }
-  searchWithin(request, response_function) {
-    let workflows = this.state.workflows.filter(
+  searchWithin(request, responseFunction) {
+    const workflows = this.state.workflows.filter(
       (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
     );
-    response_function(workflows);
+    responseFunction(workflows);
   }
-  searchWithout(request, response_function) {
-    searchAllObjects(
+  searchWithout(request, responseFunction) {
+    searchAllObjectsQuery(
       request,
       {
         nresults: 10
       },
-      (response_data) => {
-        response_function(response_data.workflow_list);
+      (responseData) => {
+        responseFunction(responseData.workflow_list);
       }
     );
   }
   seeAll() {
-    this.props.renderer.tiny_loader.startLoad();
-    let search_filter = this.state.search_filter;
-    searchAllObjects(search_filter, { nresults: 0 }, (response_data) => {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    const { searchFilter } = this.state;
+    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
       this.setState({
-        workflows: response_data.workflow_list,
-        search_filter_lock: search_filter
+        workflows: responseData.workflow_list,
+        searchFilterLock: searchFilter
       });
-      this.props.renderer.tiny_loader.endLoad();
-      var dropdowns = document.querySelectorAll(
-        "#workflow-search .create-dropdown"
-      );
-      dropdowns.forEach(function(dropdown) {
-        dropdown.classList.remove("active");
-      });
-      var workflowSearch = document.getElementById("workflow-search");
-      if (workflowSearch) {
-        workflowSearch.setAttribute("disabled", true);
-      }
-      var workflowSearchInput = document.getElementById("workflow-search-input");
-      if (workflowSearchInput) {
-        workflowSearchInput.setAttribute("disabled", true);
-      }
+      COURSEFLOW_APP.tinyLoader.endLoad();
+      this.removeActiveFromDropdowns();
+      this.disableWorkflowSearch();
     });
   }
+  removeActiveFromDropdowns() {
+    const dropdowns = document.querySelectorAll(
+      "#workflow-search .create-dropdown"
+    );
+    dropdowns.forEach((dropdown) => dropdown.classList.remove("active"));
+  }
+  disableWorkflowSearch() {
+    const workflowSearch = document.getElementById("workflow-search");
+    if (workflowSearch) {
+      workflowSearch.setAttribute("disabled", "true");
+    }
+    const workflowSearchInput = document.getElementById("workflow-search-input");
+    if (workflowSearchInput) {
+      workflowSearchInput.setAttribute("disabled", "true");
+    }
+  }
+  searchChange(evt) {
+    const searchTerm = evt.target.value;
+    if (!searchTerm) {
+      this.setState({ searchResults: [], searchFilter: "" });
+      $(this.searchDOM.current).removeClass("active");
+      return;
+    }
+    const searchFunction = this.searchWithout ? this.searchWithout : this.searchWithin;
+    const filter = searchTerm.toLowerCase();
+    searchFunction.call(this, filter, (response) => {
+      this.setState({
+        searchResults: response,
+        searchFilter: filter
+      });
+      $(this.searchDOM.current).addClass("active");
+    });
+  }
+  searchWithout(request, response_function) {
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 10
+      },
+      (responseData) => {
+        response_function(responseData.workflow_list);
+      }
+    );
+  }
   clearSearchLock(evt) {
-    this.setState({ workflows: this.props.workflows, search_filter_lock: null });
+    this.setState({
+      workflows: this.props.workflows,
+      searchFilterLock: null
+    });
     $("#workflow-search").attr("disabled", false);
     $("#workflow-search-input").attr("disabled", false);
     evt.stopPropagation();
   }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
   /*******************************************************
    * RENDER
    *******************************************************/
-  render() {
-    let workflows;
+  renderWorkflowCards() {
     if (!this.state.workflows)
-      workflows = this.defaultRender();
-    else {
-      workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows));
-      workflows = workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          renderer: this.props.renderer,
-          workflow_data: workflow,
-          context: this.props.context,
-          updateWorkflow: this.props.updateWorkflow
-        },
-        workflow.type + workflow.id
-      ));
-    }
-    let search_results = this.state.search_results.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+    const sortedAndFilteredWorkflows = this.sortWorkflows(
+      this.filterWorkflows(this.state.workflows)
+    );
+    return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        workflowData: workflow,
+        updateWorkflow: this.props.updateWorkflow,
+        userRole: this.props.user_role,
+        readOnly: this.props.read_only,
+        projectData: this.props.project_data
+      },
+      workflow.type + workflow.id
+    ));
+  }
+  renderSearchResults() {
+    const { searchResults, searchFilter } = this.state;
+    const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowCardCondensed,
       {
-        workflow_data: workflow,
+        workflowData: workflow,
         context: this.props.context
       },
       workflow.type + workflow.id
     ));
-    if (this.state.search_filter && this.state.search_filter.length > 0 && this.state.search_results.length === 0) {
-      search_results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
-    } else if (search_results.length === 10) {
-      search_results.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: () => this.seeAll(), children: window.gettext("+ See all") })
+    if (searchFilter && !searchResults.length) {
+      results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
+    } else if (results.length === 10) {
+      results.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
       );
     }
-    let search_filter_lock;
-    if (this.state.search_filter_lock) {
-      search_filter_lock = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            onClick: this.clearSearchLock.bind(this),
-            className: "material-symbols-rounded hover-shade",
-            children: "close"
-          }
-        ),
-        window.gettext("Search: " + this.state.search_filter_lock)
-      ] });
-    }
+    return results;
+  }
+  renderSearchFilterLock() {
+    if (!this.state.searchFilterLock)
+      return null;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "span",
+        {
+          onClick: this.clearSearchLock.bind(this),
+          className: "material-symbols-rounded hover-shade",
+          children: "close"
+        }
+      ),
+      window.gettext("Search: " + this.state.searchFilterLock)
+    ] });
+  }
+  render() {
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
@@ -88643,129 +88674,66 @@ class WorkflowFilter extends Component {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: search_results }),
-          search_filter_lock
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
+          this.renderSearchFilterLock()
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
           this.getFilter(),
           this.getSort()
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
     ];
   }
 }
-class LibraryMenu extends reactExports.Component {
+class ProjectMenu extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    __publicField(this, "OverflowLinks", (data, userId) => {
+      let liveproject;
+      if (data.author_id === userId) {
+        if (data.liveproject) {
+          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              id: "live-project",
+              className: "hover-shade",
+              href: COURSEFLOW_APP.config.update_path.liveproject.replace(
+                "0",
+                data.id
+              ),
+              children: window.gettext("View Classroom")
+            }
+          );
+        } else {
+          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              id: "live-project",
+              className: "hover-shade",
+              onClick: this.makeLive.bind(this),
+              children: window.gettext("Create Classroom")
+            }
+          );
+        }
+      }
+      let overflow_links = [liveproject];
+      overflow_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+      );
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+      overflow_links.push(this.getExportButton());
+      overflow_links.push(this.getCopyButton());
+      if (data.author_id === userId) {
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+        overflow_links.push(this.getDeleteProject());
+      }
+      return overflow_links;
+    });
+    this.user_id = props.userId;
     this.read_only = this.props.renderer.read_only;
     this.renderer = this.props.renderer;
     this.createDiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * LIFECYCLE HOOKS
-   *******************************************************/
-  componentDidMount() {
-    getLibrary((data) => {
-      this.setState({ project_data: data.data_package });
-    });
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getCreate() {
-    let create2;
-    if (!this.read_only)
-      create2 = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade",
-          id: "create-project-button",
-          title: window.gettext("Create project or strategy"),
-          ref: this.createDiv,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green", children: "add_circle" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "project-create-library",
-                  href: COURSEFLOW_APP.config.create_path.project,
-                  className: "hover-shade",
-                  children: window.gettext("New project")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "activity-strategy-create",
-                  href: COURSEFLOW_APP.config.create_path.activity_strategy,
-                  className: "hover-shade",
-                  children: window.gettext("New activity strategy")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "course-strategy-create",
-                  href: COURSEFLOW_APP.config.create_path.course_strategy,
-                  className: "hover-shade",
-                  children: window.gettext("New course strategy")
-                }
-              )
-            ] })
-          ]
-        }
-      );
-    return create2;
-  }
-  getOverflowLinks() {
-    let overflow_links = [];
-    overflow_links.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "import-old",
-          className: "hover-shade",
-          href: COURSEFLOW_APP.config.get_paths.import,
-          children: window.gettext("Import from old CourseFlow")
-        }
-      )
-    );
-    return overflow_links;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let visible_buttons = this.getCreate.bind(this);
-    let overflow_links = this.getOverflowLinks.bind(this);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        MenuBar,
-        {
-          overflow_links,
-          visible_buttons
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowFilter,
-        {
-          renderer: this.props.renderer,
-          workflows: this.state.project_data,
-          context: "library"
-        }
-      ) })
-    ] });
-  }
-}
-class ProjectMenu extends LibraryMenu {
-  constructor(props) {
-    super(props);
-    this.user_id = props.userId;
     this.state = {
       data: props.data,
       view_type: "workflows"
@@ -88887,48 +88855,6 @@ class ProjectMenu extends LibraryMenu {
   // @todo, candidate to remove
   getRole() {
     return "teacher";
-  }
-  getOverflowLinks() {
-    let data = this.state.data;
-    let liveproject;
-    if (data.author_id === this.userId) {
-      if (data.liveproject) {
-        liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "live-project",
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.update_path.liveproject.replace(
-              "0",
-              data.id
-            ),
-            children: window.gettext("View Classroom")
-          }
-        );
-      } else {
-        liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "live-project",
-            className: "hover-shade",
-            onClick: this.makeLive.bind(this),
-            children: window.gettext("Create Classroom")
-          }
-        );
-      }
-    }
-    let overflow_links = [liveproject];
-    overflow_links.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
-    );
-    overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-    overflow_links.push(this.getExportButton());
-    overflow_links.push(this.getCopyButton());
-    if (data.author_id === this.user_id) {
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-      overflow_links.push(this.getDeleteProject());
-    }
-    return overflow_links;
   }
   getDeleteProject() {
     if (!this.state.data.deleted) {
@@ -89233,17 +89159,12 @@ class ProjectMenu extends LibraryMenu {
    * RENDER
    *******************************************************/
   render() {
-    let visible_buttons = (() => [
-      this.getEdit(),
-      this.getCreate(),
-      this.getShare()
-    ]).bind(this);
-    let overflow_links = this.getOverflowLinks.bind(this);
+    let visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
         {
-          overflow_links,
+          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, { data: this.state.data, userId: this.userid }),
           visible_buttons
         }
       ),
@@ -89254,7 +89175,7 @@ class ProjectMenu extends LibraryMenu {
     ] });
   }
 }
-class ProjectRenderer extends reactExports.Component {
+class ProjectPage extends reactExports.Component {
   constructor(props) {
     super(props);
     this.read_only = true;
@@ -89269,7 +89190,6 @@ class ProjectRenderer extends reactExports.Component {
   }
   render() {
     this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
     return this.getContents();
   }
   getContents() {
@@ -89283,22 +89203,216 @@ class ProjectRenderer extends reactExports.Component {
     );
   }
 }
-class LibraryRenderer extends reactExports.Component {
+class LibraryPage extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "createDiv");
+    __publicField(this, "read_only");
+    /***
+     * z
+     */
+    __publicField(this, "CreateButton", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "hover-shade",
+          id: "create-project-button",
+          title: window.gettext("Create project or strategy"),
+          ref: this.createDiv,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green", children: "add_circle" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "project-create-library",
+                  href: COURSEFLOW_APP.config.create_path.project,
+                  className: "hover-shade",
+                  children: window.gettext("New project")
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "activity-strategy-create",
+                  href: COURSEFLOW_APP.config.create_path.activity_strategy,
+                  className: "hover-shade",
+                  children: window.gettext("New activity strategy")
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "course-strategy-create",
+                  href: COURSEFLOW_APP.config.create_path.course_strategy,
+                  className: "hover-shade",
+                  children: window.gettext("New course strategy")
+                }
+              )
+            ] })
+          ]
+        }
+      );
+    });
+    __publicField(this, "OverflowLinks", () => {
+      const link = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          id: "import-old",
+          className: "hover-shade",
+          href: COURSEFLOW_APP.config.get_paths.import,
+          children: window.gettext("Import from old CourseFlow")
+        }
+      );
+      return [link];
+    });
+    this.state = {};
+    this.createDiv = reactExports.createRef();
   }
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  componentDidMount() {
+    getLibraryQuery((data) => {
+      this.setState({
+        project_data: data.data_package
+      });
+    });
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
-    this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-    return this.getContents();
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryMenu, { renderer: this });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MenuBar,
+        {
+          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
+          visible_buttons: /* @__PURE__ */ jsxRuntimeExports.jsx(this.CreateButton, {})
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowFilter,
+        {
+          renderer: this,
+          workflows: this.state.project_data,
+          context: "library"
+        }
+      ) })
+    ] });
   }
 }
-class ExploreFilter extends WorkflowFilter {
+class FavouritesPage extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "createDiv");
+    this.state = {};
+    this.createDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
+  componentDidMount() {
+    getFavouritesQuery((data) => {
+      console.log("data");
+      console.log(data);
+      this.setState({ project_data: data.data_package });
+    });
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowFilter,
+      {
+        renderer: this.props.renderer,
+        workflows: this.state.project_data,
+        context: "library"
+      }
+    ) });
+  }
+}
+class HomePage extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "is_teacher");
+    this.is_teacher = props.is_teacher;
+    this.state = { projects: [], favourites: [] };
+  }
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
+  componentDidMount() {
+    getHome((data) => {
+      this.setState({
+        projects: data.projects,
+        favourites: data.favourites
+      });
+    });
+  }
+  /*******************************************************
+   * Render
+   *******************************************************/
+  renderWorkflowCards(workflows, keyPrefix) {
+    return workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        workflowData: workflow,
+        projectData: this.props.renderer.project_data,
+        readOnly: this.props.renderer.read_only,
+        userRole: this.props.renderer.user_role
+      },
+      `${keyPrefix}-${index2}`
+    ));
+  }
+  renderHomeItem(title, content, path) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
+    ] });
+  }
+  render() {
+    const { projects, favourites } = this.state;
+    const projectsContent = this.renderWorkflowCards(projects, "project");
+    const favouritesContent = this.renderWorkflowCards(favourites, "favourite");
+    const projectTitle = this.is_teacher ? "Recent projects" : "Recent classrooms";
+    const projectPath = this.is_teacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
+    const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
+    const projectBox = this.renderHomeItem(
+      projectTitle,
+      projectsContent,
+      projectPath
+    );
+    let favouriteBox;
+    if (this.is_teacher) {
+      favouriteBox = this.renderHomeItem(
+        "Favourites",
+        favouritesContent,
+        favouritePath
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
+      projectBox,
+      favouriteBox
+    ] });
+  }
+}
+class ExploreFilter extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "filterDOM");
+    __publicField(this, "searchDOM");
+    __publicField(this, "sortDOM");
+    __publicField(this, "disciplineDOM");
+    __publicField(this, "filters");
+    __publicField(this, "sorts");
     this.filters = [
       { name: "activity", display: window.gettext("Activity") },
       { name: "course", display: window.gettext("Course") },
@@ -89311,15 +89425,15 @@ class ExploreFilter extends WorkflowFilter {
       { name: "created_on", display: window.gettext("Creation date") }
     ];
     this.state = {
-      workflows: props.workflows,
-      pages: this.props.renderer.initial_pages,
-      has_searched: false,
-      active_sort: 0,
-      active_filters: [],
-      active_disciplines: [],
+      workflows: this.props.workflows,
+      pages: this.props.pages,
+      hasSearched: false,
+      activeSort: 0,
+      activeFilters: [],
+      activeDisciplines: [],
       reversed: false,
-      from_saltise: false,
-      content_rich: true
+      fromSaltise: false,
+      contentRich: true
     };
     this.filterDOM = reactExports.createRef();
     this.searchDOM = reactExports.createRef();
@@ -89331,114 +89445,23 @@ class ExploreFilter extends WorkflowFilter {
    *******************************************************/
   componentDidMount() {
     COURSEFLOW_APP.makeDropdown(this.disciplineDOM.current);
-    super.componentDidMount();
+    COURSEFLOW_APP.makeDropdown(this.filterDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.sortDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.searchDOM.current);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.workflows !== this.props.workflows)
+      this.setState({ workflows: this.props.workflows });
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  doSearch() {
-    this.searchWithout(
-      $(this.searchDOM.current).children("#workflow-search-input")[0].value,
-      this.searchResults.bind(this)
-    );
-  }
-  getInfo() {
-    if (this.state.workflows === this.props.workflows)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "Enter a search term or filter then click 'search' to get started."
-      ) });
-    return null;
-  }
-  getPages() {
-    if (this.state.workflows.length > 0) {
-      let page_buttons = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "prev-page-button",
-            disabled: this.state.pages.current_page == 1,
-            onClick: this.toPage.bind(this, this.state.pages.current_page - 1),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_left" })
-          }
-        )
-      ];
-      if (this.state.pages.current_page > 3) {
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "page-button", onClick: this.toPage.bind(this, 1), children: 1 })
-        );
-        if (this.state.pages.current_page > 4) {
-          page_buttons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
-        }
-      }
-      for (let i = Math.max(this.state.pages.current_page - 2, 1); i <= Math.min(
-        this.state.pages.current_page + 2,
-        this.state.pages.page_count
-      ); i++) {
-        let button_class = "page-button";
-        if (i === this.state.pages.current_page)
-          button_class += " active-page-button";
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: button_class, onClick: this.toPage.bind(this, i), children: i })
-        );
-      }
-      if (this.state.pages.current_page < this.state.pages.page_count - 2) {
-        if (this.state.pages.current_page < this.state.pages.page_count - 3) {
-          page_buttons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
-        }
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "page-button",
-              onClick: this.toPage.bind(this, this.state.pages.page_count),
-              children: this.state.pages.page_count
-            }
-          )
-        );
-      }
-      page_buttons.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "next-page-button",
-            disabled: this.state.pages.current_page == this.state.pages.page_count,
-            onClick: this.toPage.bind(this, this.state.pages.current_page + 1),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_right" })
-          }
-        )
-      );
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-          window.gettext("Showing results"),
-          " ",
-          this.state.pages.results_per_page * (this.state.pages.current_page - 1) + 1,
-          "-",
-          this.state.pages.results_per_page * this.state.pages.current_page,
-          " (",
-          this.state.pages.total_results,
-          " ",
-          window.gettext("total results"),
-          ")"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "explore-page-buttons", children: page_buttons })
-      ];
-    } else {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("No results were found.") });
-    }
-  }
-  toPage(number2) {
-    this.searchWithout(
-      $(this.searchDOM.current).children("#workflow-search-input")[0].value,
-      this.searchResults.bind(this),
-      number2
-    );
-  }
   getFilter() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_filters.length,
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilters.length,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Type") })
@@ -89447,7 +89470,7 @@ class ExploreFilter extends WorkflowFilter {
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.filters.map((filter, i) => {
         let css_class = "filter-option flex-middle";
-        if (this.state.active_filters.indexOf(filter.name) >= 0)
+        if (this.state.activeFilters.indexOf(filter.name) >= 0)
           css_class += " active";
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
@@ -89463,7 +89486,7 @@ class ExploreFilter extends WorkflowFilter {
                 "input",
                 {
                   type: "checkbox",
-                  checked: this.state.active_filters.indexOf(filter.name) >= 0
+                  checked: this.state.activeFilters.indexOf(filter.name) >= 0
                 }
               ),
               filter.display
@@ -89474,20 +89497,20 @@ class ExploreFilter extends WorkflowFilter {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          attr_number: this.state.active_filters.length,
+          "data-attr-number": this.state.activeFilters.length,
           className: "dropdown-number-indicator",
-          children: this.state.active_filters.length
+          children: this.state.activeFilters.length
         }
       )
     ] });
   }
   getSort() {
-    let active_sort = this.sorts[this.state.active_sort];
+    const active_sort = this.sorts[this.state.activeSort];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_sort,
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_sort.display })
@@ -89497,7 +89520,7 @@ class ExploreFilter extends WorkflowFilter {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.sorts.map((sort, i) => {
         let sort_dir;
         let css_class = "filter-option filter-checkbox";
-        if (this.state.active_sort == i) {
+        if (this.state.activeSort == i) {
           css_class += " active";
           if (this.state.reversed)
             sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
@@ -89522,6 +89545,48 @@ class ExploreFilter extends WorkflowFilter {
       }) })
     ] });
   }
+  sortChange(index2) {
+    if (this.state.activeSort === index2)
+      this.setState({
+        reversed: !this.state.reversed,
+        hasSearched: false
+      });
+    else
+      this.setState({
+        activeSort: index2,
+        reversed: false,
+        hasSearched: false
+      });
+  }
+  searchChange(evt) {
+    this.setState({ hasSearched: false });
+  }
+  searchWithout(request, responseFunction, pageNumber = 1) {
+    this.setState({
+      hasSearched: true
+    });
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 20,
+        published: true,
+        full_search: true,
+        disciplines: this.state.activeDisciplines,
+        types: this.state.activeFilters,
+        sort: this.sorts[this.state.activeSort].name,
+        sort_reversed: this.state.reversed,
+        page: pageNumber,
+        fromSaltise: this.state.fromSaltise,
+        contentRich: this.state.contentRich
+      },
+      (responseData) => {
+        responseFunction(responseData.workflow_list, responseData.pages);
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+  // not common
   getDisciplines() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -89533,7 +89598,7 @@ class ExploreFilter extends WorkflowFilter {
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "workflow-sort-indicator hover-shade item-" + this.state.active_disciplines.length,
+              className: "workflow-sort-indicator hover-shade item-" + this.state.activeDisciplines.length,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "science" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Discipline") })
@@ -89542,7 +89607,7 @@ class ExploreFilter extends WorkflowFilter {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.props.disciplines.map((discipline, i) => {
             let css_class = "filter-option flex-middle";
-            if (this.state.active_disciplines.indexOf(discipline.id) >= 0)
+            if (this.state.activeDisciplines.indexOf(discipline.id) >= 0)
               css_class += " active";
             return /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
@@ -89558,7 +89623,7 @@ class ExploreFilter extends WorkflowFilter {
                     "input",
                     {
                       type: "checkbox",
-                      checked: this.state.active_disciplines.indexOf(discipline.id) >= 0
+                      checked: this.state.activeDisciplines.indexOf(discipline.id) >= 0
                     }
                   ),
                   discipline.title
@@ -89569,9 +89634,9 @@ class ExploreFilter extends WorkflowFilter {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              attr_number: this.state.active_disciplines.length,
+              "data-attr-number": this.state.activeDisciplines.length,
               className: "dropdown-number-indicator",
-              children: this.state.active_disciplines.length
+              children: this.state.activeDisciplines.length
             }
           )
         ]
@@ -89589,87 +89654,147 @@ class ExploreFilter extends WorkflowFilter {
         className: "hover-shade",
         onClick: () => {
           this.setState({
-            from_saltise: !this.state.from_saltise,
-            has_searched: false
+            fromDaltise: !this.state.fromSaltise,
+            hasSearched: false
           });
           this.doSearch();
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: this.state.from_saltise }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: this.state.fromSaltise }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: window.gettext("SALTISE content") })
         ]
       }
     );
   }
-  searchResults(response_data, pages) {
-    this.setState({ workflows: response_data, pages });
+  searchResults(responseData, pages) {
+    this.setState({ workflows: responseData, pages });
   }
-  filterChange(filter, evt) {
-    let name2 = filter.name;
-    let new_filter = this.state.active_filters.slice();
-    if (new_filter.indexOf(name2) >= 0)
-      new_filter.splice(new_filter.indexOf(name2), 1);
+  filterChange(filter) {
+    const name2 = filter.name;
+    const newFilter = this.state.activeFilters.slice();
+    if (newFilter.indexOf(name2) >= 0)
+      newFilter.splice(newFilter.indexOf(name2), 1);
     else
-      new_filter.push(name2);
-    this.setState({ active_filters: new_filter, has_searched: false });
-  }
-  sortChange(index2) {
-    if (this.state.active_sort === index2)
-      this.setState({
-        reversed: !this.state.reversed,
-        has_searched: false
-      });
-    else
-      this.setState({
-        active_sort: index2,
-        reversed: false,
-        has_searched: false
-      });
+      newFilter.push(name2);
+    this.setState({ activeFilters: newFilter, hasSearched: false });
   }
   disciplineChange(discipline) {
-    let name2 = discipline.id;
-    let new_filter = this.state.active_disciplines.slice();
-    if (new_filter.indexOf(name2) >= 0)
-      new_filter.splice(new_filter.indexOf(name2), 1);
+    const name2 = discipline.id;
+    const newFilter = this.state.activeDisciplines.slice();
+    if (newFilter.indexOf(name2) >= 0)
+      newFilter.splice(newFilter.indexOf(name2), 1);
     else
-      new_filter.push(name2);
-    this.setState({ active_disciplines: new_filter, has_searched: false });
+      newFilter.push(name2);
+    this.setState({ activeDisciplines: newFilter, hasSearched: false });
   }
-  searchChange(evt) {
-    this.setState({ has_searched: false });
-  }
-  searchWithout(request, response_function, page_number = 1) {
-    this.setState({ has_searched: true });
-    this.props.renderer.tiny_loader.startLoad();
-    searchAllObjects(
-      request,
-      {
-        nresults: 20,
-        published: true,
-        full_search: true,
-        disciplines: this.state.active_disciplines,
-        types: this.state.active_filters,
-        sort: this.sorts[this.state.active_sort].name,
-        sort_reversed: this.state.reversed,
-        page: page_number,
-        from_saltise: this.state.from_saltise,
-        content_rich: this.state.content_rich
-      },
-      (response_data) => {
-        response_function(response_data.workflow_list, response_data.pages);
-        this.props.renderer.tiny_loader.endLoad();
-      }
+  toPage(number2) {
+    const inputElement = $(this.searchDOM.current).children(
+      "#workflow-search-input"
+    )[0];
+    this.searchWithout(
+      inputElement.value,
+      this.searchResults.bind(this),
+      number2
     );
+  }
+  getPages() {
+    if (this.state.workflows.length) {
+      const pageButtons = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "prev-page-button",
+            disabled: this.state.pages.current_page === 1,
+            onClick: this.toPage.bind(this, this.state.pages.current_page - 1),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_left" })
+          }
+        )
+      ];
+      if (this.state.pages.current_page > 3) {
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "page-button", onClick: this.toPage.bind(this, 1), children: 1 })
+        );
+        if (this.state.pages.current_page > 4) {
+          pageButtons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
+        }
+      }
+      for (let i = Math.max(this.state.pages.current_page - 2, 1); i <= Math.min(
+        this.state.pages.current_page + 2,
+        this.state.pages.page_count
+      ); i++) {
+        let buttonClass = "page-button";
+        if (i === this.state.pages.current_page)
+          buttonClass += " active-page-button";
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: buttonClass, onClick: this.toPage.bind(this, i), children: i })
+        );
+      }
+      if (this.state.pages.current_page < this.state.pages.page_count - 2) {
+        if (this.state.pages.current_page < this.state.pages.page_count - 3) {
+          pageButtons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
+        }
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              className: "page-button",
+              onClick: this.toPage.bind(this, this.state.pages.page_count),
+              children: this.state.pages.page_count
+            }
+          )
+        );
+      }
+      pageButtons.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "next-page-button",
+            disabled: this.state.pages.current_page == this.state.pages.page_count,
+            onClick: this.toPage.bind(this, this.state.pages.current_page + 1),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_right" })
+          }
+        )
+      );
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          window.gettext("Showing results"),
+          " ",
+          this.state.pages.results_per_page * (this.state.pages.current_page - 1) + 1,
+          "-",
+          this.state.pages.results_per_page * this.state.pages.current_page,
+          " (",
+          this.state.pages.total_results,
+          " ",
+          window.gettext("total results"),
+          ")"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "explore-page-buttons", children: pageButtons })
+      ];
+    } else {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("No results were found.") });
+    }
+  }
+  doSearch() {
+    const inputEl = $(this.searchDOM.current).children(
+      "#workflow-search-input"
+    )[0];
+    this.searchWithout(inputEl.value, this.searchResults.bind(this));
+  }
+  getInfo() {
+    if (this.state.workflows === this.props.workflows)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "Enter a search term or filter then click 'search' to get started."
+      ) });
+    return null;
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let workflows = this.state.workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const workflows = this.state.workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowCard,
       {
-        workflow_data: workflow,
-        context: this.props.context
+        workflowData: workflow
       },
       workflow.type + workflow.id
     ));
@@ -89692,7 +89817,7 @@ class ExploreFilter extends WorkflowFilter {
             "button",
             {
               className: "primary-button",
-              disabled: this.state.has_searched,
+              disabled: this.state.hasSearched,
               onClick: this.doSearch.bind(this),
               children: window.gettext("Search")
             }
@@ -89711,161 +89836,61 @@ class ExploreFilter extends WorkflowFilter {
     ];
   }
 }
-class ExploreMenu extends LibraryMenu {
+class ExplorePage extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "disciplines");
+    __publicField(this, "initial_pages");
+    __publicField(this, "initial_workflows");
+    __publicField(this, "createDiv");
+    this.disciplines = this.props.disciplines;
+    this.initial_workflows = this.props.initial_workflows;
+    this.initial_pages = this.props.initial_pages;
+    this.createDiv = reactExports.createRef();
+  }
+  componentDidMount() {
+    getLibraryQuery((data) => {
+      this.setState({ project_data: data.data_package });
+    });
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+  }
   render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       ExploreFilter,
       {
-        disciplines: this.props.disciplines,
-        renderer: this.props.renderer,
-        workflows: this.props.renderer.initial_workflows,
-        pages: this.props.renderer.initial_pages,
+        disciplines: this.disciplines,
+        workflows: this.initial_workflows,
+        pages: this.initial_pages,
         context: "library"
       }
     ) });
   }
 }
-class FavouritesMenu extends LibraryMenu {
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getFavourites((data) => {
-      component.setState({ project_data: data.data_package });
-    });
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+let MouseCursorLoader$1 = class MouseCursorLoader2 {
+  constructor(identifier2 = $("body")[0]) {
+    this.identifier = identifier2;
+    this.loadings = 0;
   }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowFilter,
-      {
-        renderer: this.props.renderer,
-        workflows: this.state.project_data,
-        context: "library"
-      }
-    ) });
+  startLoad() {
+    $(this.identifier).addClass("waiting");
+    this.loadings++;
   }
-}
-class Favourites extends LibraryRenderer {
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesMenu, { renderer: this });
-  }
-}
-class HomeMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { projects: [], favourites: [] };
-  }
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getHome((data) => {
-      component.setState({
-        projects: data.projects,
-        favourites: data.favourites
-      });
-    });
-  }
-  /*******************************************************
-   * Render
-   *******************************************************/
-  render() {
-    let projects = this.state.projects.map((project, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        workflow_data: project,
-        renderer: this.props.renderer
-      },
-      `project-${index2}`
-    ));
-    let favourites = this.state.favourites.map((project, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        workflow_data: project,
-        renderer: this.props.renderer
-      },
-      `favourite-${index2}`
-    ));
-    let library_path = COURSEFLOW_APP.config.my_library_path;
-    if (!this.props.renderer.is_teacher)
-      library_path = COURSEFLOW_APP.config.my_liveprojects_path;
-    let project_box;
-    if (this.props.renderer.is_teacher) {
-      project_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Recent projects") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: library_path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: projects })
-      ] });
-    } else {
-      project_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Recent classrooms") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: library_path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: projects })
-      ] });
+  endLoad() {
+    if (this.loadings > 0) {
+      this.loadings--;
     }
-    let favourite_box;
-    if (this.props.renderer.is_teacher) {
-      favourite_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Favourites") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "collapsed-text-show-more",
-              href: COURSEFLOW_APP.config.my_favourites_path,
-              children: window.gettext("See all")
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: favourites })
-      ] });
+    if (this.loadings <= 0) {
+      $(this.identifier).removeClass("waiting");
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
-      project_box,
-      favourite_box
-    ] });
   }
-}
-class HomeRenderer extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.is_teacher = this.props.is_teacher;
-  }
-  render() {
-    this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-    return this.getContents();
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(HomeMenu, { renderer: this });
-  }
-}
-class ExploreRenderer extends LibraryRenderer {
-  constructor(props) {
-    super(props);
-    this.disciplines = this.props.disciplines;
-    this.initial_workflows = this.props.initial_workflows;
-    this.initial_pages = this.props.initial_pages;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(ExploreMenu, { disciplines: this.disciplines, renderer: this });
-  }
-}
+};
 const cache = createCache({
   key: "emotion",
   nonce: document.querySelector("#script-redesign").nonce
 });
+const tinyLoader = new MouseCursorLoader$1($("body")[0]);
+COURSEFLOW_APP.tinyLoader = tinyLoader;
 function renderComponents(components) {
   components.forEach((c) => {
     if (!c.component)
@@ -89879,20 +89904,18 @@ function renderComponents(components) {
     }
   });
 }
-console.log("current path");
-console.log(COURSEFLOW_APP.path_id);
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     case "home":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(HomeRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(HomePage, { ...COURSEFLOW_APP.contextData });
     case "favorites":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Favourites, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesPage, {});
     case "library":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryRenderer, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryPage, {});
     case "explore":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ExploreRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ExplorePage, { ...COURSEFLOW_APP.contextData });
     case "projectDetail":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectPage, { ...COURSEFLOW_APP.contextData });
     case "notifications":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsPage, {});
     case "notificationsSettings":
