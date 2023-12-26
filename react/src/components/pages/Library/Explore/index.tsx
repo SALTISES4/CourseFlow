@@ -2,20 +2,19 @@
 import * as React from 'react'
 import {
   Discipline,
-  ExploreViewContextDataDTO,
-  InitialPages,
-  InitialWorkflow
+  ExploreViewContextDataDTO
 } from '@cfPages/Library/Explore/types'
 import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
+import { QueryPages, Workflow } from '@cfModule/types/common'
 
 /*******************************************************
  * @ExploreRenderer
  *******************************************************/
 class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
   private readonly disciplines: Discipline[]
-  private readonly initial_pages: InitialPages
-  private readonly initial_workflows: InitialWorkflow[]
+  private readonly initial_pages: QueryPages
+  private readonly initial_workflows: Workflow[]
   private createDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: ExploreViewContextDataDTO) {
