@@ -1,4 +1,6 @@
+// @ts-nocheck
 // Creates a slider input
+
 import * as React from 'react'
 
 class Slider extends React.Component {
@@ -10,7 +12,7 @@ class Slider extends React.Component {
           checked={this.props.checked}
           onChange={this.props.toggleAction.bind(this)}
         />
-        <span className="slider round"></span>
+        <span className="slider round" />
       </label>
     )
   }

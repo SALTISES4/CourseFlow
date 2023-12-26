@@ -1,5 +1,9 @@
 //Get the library projects
-import { LibraryQueryResp, SearchAllObjectsQueryResp } from '@XMLHTTP/types'
+import {
+  HomeQueryResp,
+  LibraryQueryResp,
+  SearchAllObjectsQueryResp
+} from '@XMLHTTP/types'
 
 export function getLibraryQuery(
   callBackFunction = (data: LibraryQueryResp) => console.log('success')
@@ -34,3 +38,18 @@ export function searchAllObjectsQuery(
 }
 
 export default {}
+
+//Get the home projects
+export function getHomeQuery(
+  callBackFunction = (data: HomeQueryResp) => console.log('success')
+) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function (
+      data: HomeQueryResp
+    ) {
+      callBackFunction(data)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}

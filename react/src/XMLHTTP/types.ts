@@ -9,3 +9,8 @@ export type SearchAllObjectsQueryResp = {
   workflow_list: Workflow[]
   pages: QueryPages
 }
+
+export type HomeQueryResp = {
+  favourites: Workflow[]
+  projects: Workflow[]
+}

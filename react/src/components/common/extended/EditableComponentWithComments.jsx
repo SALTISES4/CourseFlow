@@ -313,9 +313,9 @@ class EditableComponentWithComments extends EditableComponent {
   addCommenting(data) {
     return [
       <ActionButton
-        button_icon="comment_new.svg"
-        button_class="comment-button"
-        titletext={window.gettext('Comments')}
+        buttonIcon="comment_new.svg"
+        buttonClass="comment-button"
+        titleText={window.gettext('Comments')}
         handleClick={this.commentClick.bind(this)}
       />,
       <CommentBox

@@ -146,9 +146,9 @@ class Node extends EditableComponentWithActions {
     return [
       <ActionButton
         key={0}
-        button_icon="assignment.svg"
-        button_class="assignment-button"
-        titletext={window.gettext('Show Assignment Info')}
+        buttonIcon="assignment.svg"
+        buttonClass="assignment-button"
+        titleText={window.gettext('Show Assignment Info')}
         handleClick={this.showAssignment.bind(this)}
       />,
       <AssignmentBox

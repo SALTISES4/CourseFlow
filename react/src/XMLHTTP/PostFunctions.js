@@ -1291,17 +1291,6 @@ export function getFavouritesQuery(
   }
 }
 
-//Get the home projects
-export function getHome(callBackFunction = () => console.log('success')) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
 //Get the workflows for a project
 export function getWorkflowsForProject(
   projectPk,

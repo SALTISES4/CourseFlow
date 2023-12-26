@@ -17,9 +17,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     let icon = alt_icon || 'restore.svg'
     return (
       <ActionButton
-        button_icon={icon}
-        button_class="delete-self-button"
-        titletext={window.gettext('Restore')}
+        buttonIcon={icon}
+        buttonClass="delete-self-button"
+        titleText={window.gettext('Restore')}
         handleClick={this.restoreSelf.bind(this, data)}
       />
     )
@@ -42,9 +42,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     let icon = alt_icon || 'rubbish.svg'
     return (
       <ActionButton
-        button_icon={icon}
-        button_class="delete-self-button"
-        titletext={window.gettext('Delete')}
+        buttonIcon={icon}
+        buttonClass="delete-self-button"
+        titleText={window.gettext('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )
@@ -87,9 +87,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   addDuplicateSelf(data) {
     return (
       <ActionButton
-        button_icon="duplicate.svg"
-        button_class="duplicate-self-button"
-        titletext={window.gettext('Duplicate')}
+        buttonIcon="duplicate.svg"
+        buttonClass="duplicate-self-button"
+        titleText={window.gettext('Duplicate')}
         handleClick={this.duplicateSelf.bind(this, data)}
       />
     )
@@ -115,9 +115,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   addInsertSibling(data) {
     return (
       <ActionButton
-        button_icon="add_new.svg"
-        button_class="insert-sibling-button"
-        titletext={window.gettext('Insert Below')}
+        buttonIcon="add_new.svg"
+        buttonClass="insert-sibling-button"
+        titleText={window.gettext('Insert Below')}
         handleClick={this.insertSibling.bind(this, data)}
       />
     )
@@ -143,9 +143,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   addInsertChild(data) {
     return (
       <ActionButton
-        button_icon="create_new_child.svg"
-        button_class="insert-child-button"
-        titletext={window.gettext('Insert Child')}
+        buttonIcon="create_new_child.svg"
+        buttonClass="insert-child-button"
+        titleText={window.gettext('Insert Child')}
         handleClick={this.insertChild.bind(this, data)}
       />
     )

@@ -4,8 +4,8 @@ import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/Wo
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { debounce } from '@cfUtility'
-import { Workflow } from '@XMLHTTP/types'
 import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
+import { Workflow } from '@cfModule/types/common'
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
@@ -332,8 +332,6 @@ class WorkflowFilter extends React.Component {
       <WorkflowCard
         key={workflow.type + workflow.id}
         workflowData={workflow}
-        // context={this.props.context} @todo this is no used in component, check git history if bad refactor
-
         updateWorkflow={this.props.updateWorkflow}
         userRole={this.props.user_role} // from renderer
         readOnly={this.props.read_only} // from renderer

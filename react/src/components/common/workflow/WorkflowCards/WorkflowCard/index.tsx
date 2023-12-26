@@ -14,13 +14,18 @@ import { WorkflowType } from '@cfModule/types/enum'
  * A workflow card for a menu
  *
  * Props must include workflow_data (serialized model) and context.
+ * // @todo this is wrong, context is not used, leave note during regression testing in case helpful
  * Context will determine which actions are added.
  *
  * Can also optionally receive a clickAction prop to override the behaviour
  * on c
  *******************************************************/
-// @todo define props
-class WorkflowCard extends React.Component<WorkflowCardProps> {
+
+type StateType = {
+  favourite: any
+}
+
+class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
   private readonly mainDiv: React.RefObject<HTMLDivElement>
   private readonly workflow: Workflow
   private readonly updateWorkflow: any
@@ -243,7 +248,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps> {
   }
 
   render() {
-    const { selected, no_hyperlink } = this.props
+    const { selected, noHyperlink } = this.props
 
     const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${
       selected ? ' selected' : ''
@@ -260,7 +265,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps> {
       >
         <div className="workflow-top-row">
           <WorkflowTitle
-            no_hyperlink={no_hyperlink}
+            no_hyperlink={noHyperlink}
             class_name="workflow-title"
             data={this.workflow}
           />

@@ -1,7 +1,7 @@
 import * as React from 'react'
-import HomeMenu from '@cfPages/Library/Home/components/HomeMenu'
-import { getHome } from '@XMLHTTP/PostFunctions'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import { Workflow } from '@cfModule/types/common'
+import { getHomeQuery } from '@XMLHTTP/APIFunctions'
 
 /*******************************************************
  * @HomeRenderer
@@ -9,13 +9,17 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 type PropsType = {
   is_teacher: string
 }
+type StateType = {
+  projects: Workflow[]
+  favourites: Workflow[]
+}
 
-class HomePage extends React.Component {
-  private is_teacher
+class HomePage extends React.Component<PropsType, StateType> {
+  private readonly isTeacher
 
   constructor(props: PropsType) {
     super(props)
-    this.is_teacher = props.is_teacher
+    this.isTeacher = props.is_teacher
     this.state = { projects: [], favourites: [] }
   }
 
@@ -23,7 +27,7 @@ class HomePage extends React.Component {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    getHome((data) => {
+    getHomeQuery((data) => {
       this.setState({
         projects: data.projects,
         favourites: data.favourites
@@ -36,13 +40,7 @@ class HomePage extends React.Component {
    *******************************************************/
   renderWorkflowCards(workflows, keyPrefix) {
     return workflows.map((workflow, index) => (
-      <WorkflowCard
-        key={`${keyPrefix}-${index}`}
-        workflowData={workflow}
-        projectData={this.props.renderer.project_data}
-        readOnly={this.props.renderer.read_only}
-        userRole={this.props.renderer.user_role}
-      />
+      <WorkflowCard key={`${keyPrefix}-${index}`} workflowData={workflow} />
     ))
   }
 
@@ -65,10 +63,10 @@ class HomePage extends React.Component {
     const projectsContent = this.renderWorkflowCards(projects, 'project')
     const favouritesContent = this.renderWorkflowCards(favourites, 'favourite')
 
-    const projectTitle = this.is_teacher
+    const projectTitle = this.isTeacher
       ? 'Recent projects'
       : 'Recent classrooms'
-    const projectPath = this.is_teacher
+    const projectPath = this.isTeacher
       ? COURSEFLOW_APP.config.my_library_path
       : COURSEFLOW_APP.config.my_liveprojects_path
     const favouritePath = COURSEFLOW_APP.config.my_favourites_path
@@ -79,7 +77,7 @@ class HomePage extends React.Component {
       projectPath
     )
     let favouriteBox
-    if (this.is_teacher) {
+    if (this.isTeacher) {
       favouriteBox = this.renderHomeItem(
         'Favourites',
         favouritesContent,
