@@ -17,7 +17,6 @@ import MenuItem from '@mui/material/MenuItem'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 
 import { OuterContentWrap } from '@cfModule/mui/helper'
-import useApi from '@cfModule/hooks/useApi'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 
 const NotificationsWrap = styled(Box)({})
@@ -77,35 +76,18 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
   }
 }))
 
-const NotificationsPage = () => {
+const NotificationsPage = ({ notifications, unreadCount }) => {
   const [pagination, setPagination] = useState({
     page: 0,
     countPerPage: 10
   })
 
-  const [apiData, loading, error] = useApi(
-    COURSEFLOW_APP.config.json_api_paths.get_notifications_page
-  )
-
   const [pageState, setPageState] = useState({
-    notifications: [],
-    allRead: false,
+    notifications,
+    allRead: unreadCount === 0,
     menuAnchor: null,
     notification: null
   })
-
-  useEffect(() => {
-    if (pageState.notifications.length === 0 && apiData.notifications) {
-      setPageState({
-        ...pageState,
-        notifications: apiData.notifications
-      })
-    }
-  }, [apiData])
-
-  if (loading || error) {
-    return null
-  }
 
   const paginateFrom = pagination.page * pagination.countPerPage
   const paginateTo = (pagination.page + 1) * pagination.countPerPage
@@ -220,7 +202,7 @@ const NotificationsPage = () => {
               <Typography variant="h1">
                 {COURSEFLOW_APP.strings.notifications}
               </Typography>
-              {apiData.unread > 0 && !pageState?.allRead && (
+              {unreadCount > 0 && !pageState?.allRead && (
                 <MarkAsRead>
                   <Link
                     href="#"

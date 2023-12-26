@@ -216,51 +216,6 @@ def json_api_post_get_user_list(request: HttpRequest) -> JsonResponse:
     )
 
 
-# Create a JSON response for the Notifications page
-@ajax_login_required
-def json_api_get_notifications_page(request: HttpRequest) -> JsonResponse:
-    user = request.user
-
-    # get total count of unread notifications
-    unread = user.notifications.filter(is_unread=True).count()
-
-    # prepare notification data to be consumed by the frontend
-    prepared_notifications = []
-    for notification in user.notifications.all():
-        if notification.content_object.type == "project":
-            url = reverse(
-                "course_flow:project-update",
-                kwargs={"pk": notification.content_object.pk},
-            )
-        else:
-            url = reverse(
-                "course_flow:workflow-update",
-                kwargs={"pk": notification.content_object.pk},
-            )
-
-        source_user = UserSerializer(notification.source_user).data
-
-        prepared_notifications.append(
-            {
-                "id": notification.id,
-                "unread": notification.is_unread,
-                "url": url,
-                # TODO: Update notification text to omit the user's name
-                # since now it's a separate 'from' field
-                "date": humanize.naturaltime(notification.created_on),
-                "text": notification.text,
-                "from": f"{source_user['first_name']} {source_user['last_name']}",
-            }
-        )
-
-    return JsonResponse(
-        {
-            "notifications": prepared_notifications,
-            "unread": unread,
-        }
-    )
-
-
 @ajax_login_required
 @require_POST
 def json_api_post_mark_all_notifications_as_read(request):

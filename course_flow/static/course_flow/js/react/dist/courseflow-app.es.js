@@ -47656,39 +47656,6 @@ const OuterContentWrap = styled$1(Box$1, {
     paddingRight: theme2.spacing(2)
   }
 }));
-function useApi(url, debug = false) {
-  const [state, setState] = reactExports.useState({
-    loading: true,
-    data: {},
-    error: null
-  });
-  reactExports.useEffect(() => {
-    debug && console.log(`API fetching from: ${url}`);
-    fetch(url).then((response) => {
-      if (response.ok) {
-        response.json().then((data) => {
-          debug && console.log(data);
-          setState({
-            loading: false,
-            error: null,
-            data
-          });
-        });
-      } else {
-        debug && console.log("Error", response);
-        setState({
-          loading: false,
-          data: null,
-          error: {
-            response,
-            message: `Error fetching from API URL: ${url}`
-          }
-        });
-      }
-    });
-  }, []);
-  return [{ ...state.data }, state.loading, state.error];
-}
 function formatProdErrorMessage(code) {
   return "Minified Redux error #" + code + "; visit https://redux.js.org/Errors?code=" + code + " for the full message or use the non-minified dev environment for full errors. ";
 }
@@ -51937,32 +51904,18 @@ const StyledPagination = styled$1(Pagination$1)(({ theme: theme2 }) => ({
     }
   }
 }));
-const NotificationsPage = () => {
+const NotificationsPage = ({ notifications, unreadCount }) => {
   var _a;
   const [pagination, setPagination] = reactExports.useState({
     page: 0,
     countPerPage: 10
   });
-  const [apiData, loading, error] = useApi(
-    COURSEFLOW_APP.config.json_api_paths.get_notifications_page
-  );
   const [pageState, setPageState] = reactExports.useState({
-    notifications: [],
-    allRead: false,
+    notifications,
+    allRead: unreadCount === 0,
     menuAnchor: null,
     notification: null
   });
-  reactExports.useEffect(() => {
-    if (pageState.notifications.length === 0 && apiData.notifications) {
-      setPageState({
-        ...pageState,
-        notifications: apiData.notifications
-      });
-    }
-  }, [apiData]);
-  if (loading || error) {
-    return null;
-  }
   const paginateFrom = pagination.page * pagination.countPerPage;
   const paginateTo = (pagination.page + 1) * pagination.countPerPage;
   function handleMenuOpen(event2, notification) {
@@ -52046,7 +51999,7 @@ const NotificationsPage = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsWrap, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader$1, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h1", children: COURSEFLOW_APP.strings.notifications }),
-        apiData.unread > 0 && !(pageState == null ? void 0 : pageState.allRead) && /* @__PURE__ */ jsxRuntimeExports.jsx(MarkAsRead, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        unreadCount > 0 && !(pageState == null ? void 0 : pageState.allRead) && /* @__PURE__ */ jsxRuntimeExports.jsx(MarkAsRead, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Link$1,
           {
             href: "#",
@@ -59079,6 +59032,39 @@ var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4
   d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
 }), "Menu");
 default_1$4 = Menu2.default = _default$4;
+function useApi(url, debug = false) {
+  const [state, setState] = reactExports.useState({
+    loading: true,
+    data: {},
+    error: null
+  });
+  reactExports.useEffect(() => {
+    debug && console.log(`API fetching from: ${url}`);
+    fetch(url).then((response) => {
+      if (response.ok) {
+        response.json().then((data) => {
+          debug && console.log(data);
+          setState({
+            loading: false,
+            error: null,
+            data
+          });
+        });
+      } else {
+        debug && console.log("Error", response);
+        setState({
+          loading: false,
+          data: null,
+          error: {
+            response,
+            message: `Error fetching from API URL: ${url}`
+          }
+        });
+      }
+    });
+  }, []);
+  return [{ ...state.data }, state.loading, state.error];
+}
 const SidebarRootStyles = {
   height: "100%"
 };
@@ -90559,7 +90545,7 @@ const getAppComponent = () => {
     case "projectDetail":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectRenderer, { ...COURSEFLOW_APP.contextData });
     case "notifications":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsPage, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsPage, { ...COURSEFLOW_APP.contextData });
     case "notificationsSettings":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsSettingsPage, { ...COURSEFLOW_APP.contextData });
     case "profileSettings":
