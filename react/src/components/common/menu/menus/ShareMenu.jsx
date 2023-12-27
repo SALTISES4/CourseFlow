@@ -1,12 +1,12 @@
 import * as React from 'react'
 import {
   setUserPermission,
-  getUsersForObject,
   getUserList,
   updateValueInstant
 } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
 import * as Constants from '@cfConstants'
+import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
 
 class UserLabel extends React.Component {
   constructor(props) {
@@ -109,11 +109,11 @@ class UserAdd extends React.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    let component = this
+    const component = this
     $(this.input.current).autocomplete({
       source: (request, response_function) => {
         getUserList(request.term, (response) => {
-          let user_list = response.user_list.map((user) => {
+          const user_list = response.user_list.map((user) => {
             return {
               label:
                 user.first_name + ' ' + user.last_name + ' - ' + user.username,
@@ -197,26 +197,30 @@ export class ShareMenu extends React.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    getUsersForObject(this.props.data.id, this.props.data.type, (response) => {
-      this.setState({
-        owner: response.author,
-        view: response.viewers,
-        comment: response.commentors,
-        edit: response.editors,
-        student: response.students,
-        published: response.published,
-        public_view: response.public_view,
-        cannot_change: response.cannot_change
-      })
-    })
+    getUsersForObjectQuery(
+      this.props.data.id,
+      this.props.data.type,
+      (response) => {
+        this.setState({
+          owner: response.author,
+          view: response.viewers,
+          comment: response.commentors,
+          edit: response.editors,
+          student: response.students,
+          published: response.published,
+          public_view: response.public_view,
+          cannot_change: response.cannot_change
+        })
+      }
+    )
   }
 
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   getPublication() {
-    let published = this.state.published
-    let data = this.props.data
+    const published = this.state.published
+    const data = this.props.data
     if (data.type === 'project' || data.is_strategy) {
       let public_class = 'big-button make-public'
       let private_class = 'big-button hover-shade make-private'
@@ -227,7 +231,7 @@ export class ShareMenu extends React.Component {
         public_disabled |= data.disciplines.length == 0
       if (!public_disabled && !published) public_class += ' hover-shade'
       if (public_disabled) public_class += ' disabled'
-      let public_text = window.gettext('Any CourseFlow teacher can view')
+      const public_text = window.gettext('Any CourseFlow teacher can view')
       let disabled_indicator
       if (public_disabled) {
         let disabled_text
@@ -308,14 +312,14 @@ export class ShareMenu extends React.Component {
   }
 
   getPublicLink() {
-    let data = this.props.data
-    let public_link =
+    const data = this.props.data
+    const public_link =
       'https://' +
       window.location.host +
       COURSEFLOW_APP.config.public_update_path['workflow'].replace('0', data.id)
 
     if (data.type !== 'project') {
-      let public_view = this.state.public_view
+      const public_view = this.state.public_view
       if (!public_view)
         return (
           <div
@@ -345,10 +349,10 @@ export class ShareMenu extends React.Component {
               className="public-link-button  hover-shade"
               onClick={() => {
                 navigator.clipboard.writeText(public_link)
-                let copy_icon_text = $(
+                const copy_icon_text = $(
                   '#public-page-link .copy-link-icon .material-symbols-rounded'
                 ).text()
-                let copy_description_text = $(
+                const copy_description_text = $(
                   '#public-page-link .copy-link-text'
                 ).text()
                 $(
@@ -383,15 +387,15 @@ export class ShareMenu extends React.Component {
               id="public-page-code"
               className="public-link-button  hover-shade"
               onClick={() => {
-                let iframe =
+                const iframe =
                   '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' +
                   public_link +
                   '"></iframe>'
                 navigator.clipboard.writeText(iframe)
-                let copy_icon_text = $(
+                const copy_icon_text = $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text()
-                let copy_description_text = $(
+                const copy_description_text = $(
                   '#public-page-code .copy-link-text'
                 ).text()
                 $(
@@ -473,8 +477,8 @@ export class ShareMenu extends React.Component {
   }
 
   setPublication(published) {
-    if (published == this.state.published) return
-    let component = this
+    if (published === this.state.published) return
+    const component = this
     if (
       !published ||
       window.confirm(
@@ -500,7 +504,7 @@ export class ShareMenu extends React.Component {
       this.props.data.type,
       permission_type,
       () => {
-        getUsersForObject(
+        getUsersForObjectQuery(
           this.props.data.id,
           this.props.data.type,
           (response) => {
@@ -521,9 +525,9 @@ export class ShareMenu extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let owner = <UserLabel user={this.state.owner} type={'owner'} />
-    let editors = this.state.edit
+    const data = this.props.data
+    const owner = <UserLabel user={this.state.owner} type={'owner'} />
+    const editors = this.state.edit
       .filter((user) => user.id !== this.state.owner.id)
       .map((user) => (
         <UserLabel
@@ -533,7 +537,7 @@ export class ShareMenu extends React.Component {
           permissionChange={this.setUserPermission.bind(this)}
         />
       ))
-    let viewers = this.state.view.map((user) => (
+    const viewers = this.state.view.map((user) => (
       <UserLabel
         user={user}
         type={'view'}
@@ -541,7 +545,7 @@ export class ShareMenu extends React.Component {
         permissionChange={this.setUserPermission.bind(this)}
       />
     ))
-    let commentors = this.state.comment.map((user) => (
+    const commentors = this.state.comment.map((user) => (
       <UserLabel
         user={user}
         type={'comment'}
@@ -549,7 +553,7 @@ export class ShareMenu extends React.Component {
         permissionChange={this.setUserPermission.bind(this)}
       />
     ))
-    let students = this.state.student.map((user) => (
+    const students = this.state.student.map((user) => (
       <UserLabel
         user={user}
         type={'student'}

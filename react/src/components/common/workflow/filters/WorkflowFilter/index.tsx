@@ -27,7 +27,7 @@ type StateType = {
   searchFilterLock: null | number
 }
 
-class WorkflowFilter extends React.Component {
+class WorkflowFilter extends React.Component<PropsType, StateType> {
   private readonly filters: Filters
   private readonly sorts: Sorts
   private readonly filterDOM: React.RefObject<HTMLDivElement>
@@ -47,7 +47,7 @@ class WorkflowFilter extends React.Component {
       reversed: false,
       searchResults: [],
       searchFilterLock: null
-    } as StateType
+    }
 
     this.filters = [
       { name: 'all', display: window.gettext('All') },

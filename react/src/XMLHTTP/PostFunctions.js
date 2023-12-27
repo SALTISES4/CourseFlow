@@ -843,26 +843,8 @@ export function setLiveProjectRole(
   }
 }
 
-//Get the list of users for a project
-export function getUsersForObject(
-  objectID,
-  objectType,
-  callBackFunction = () => console.log('success')
-) {
-  if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
-    objectType = 'workflow'
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
+
 //Get the list of users for a liveproject
 export function getUsersForLiveProject(
   liveprojectPk,
@@ -1185,7 +1167,7 @@ export function getWorkflowNodes(
 }
 
 //get nodes for the workflow
-export function createAssignment(
+export function createAssignmentQuery(
   nodePk,
   liveprojectPk,
   callBackFunction = () => console.log('success')
@@ -1204,7 +1186,7 @@ export function createAssignment(
 }
 
 //add or remove users to/from assignment
-export function addUsersToAssignment(
+export function addUsersToAssignmentQuery(
   liveassignmentPk,
   user_list,
   add,
@@ -1224,7 +1206,7 @@ export function addUsersToAssignment(
   }
 }
 
-export function updateLiveProjectValue(
+export function updateLiveProjectValueQuery(
   objectID,
   objectType,
   json,
@@ -1244,7 +1226,7 @@ export function updateLiveProjectValue(
   }
 }
 
-export function setAssignmentCompletion(
+export function setAssignmentCompletionQuery(
   userassignmentPk,
   completed,
   callBackFunction = () => console.log('success')
@@ -1291,18 +1273,3 @@ export function getFavouritesQuery(
   }
 }
 
-//Get the workflows for a project
-export function getWorkflowsForProject(
-  projectPk,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk: projectPk
-    }).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}

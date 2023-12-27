@@ -5,7 +5,7 @@ declare global {
    */
   interface Window {
     gettext: (str: string) => string
-    fail_function: () => void
+    fail_function: (action?: string) => void
   }
 
   const $: JQuery

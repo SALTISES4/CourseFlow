@@ -51558,23 +51558,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getUsersForObject(objectID, objectType, callBackFunction = () => console.log("success")) {
-    if (["program", "course", "activity"].indexOf(objectType) >= 0)
-      objectType = "workflow";
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
   function getUsersForLiveProject(liveprojectPk, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_users_for_liveproject, {
@@ -51796,7 +51779,22 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function addUsersToAssignment(liveassignmentPk, user_list, add2, callBackFunction = () => console.log("success")) {
+  function createAssignmentQuery$1(nodePk, liveprojectPk, callBackFunction = () => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
+        nodePk: JSON.stringify(nodePk),
+        liveprojectPk: JSON.stringify(liveprojectPk)
+      }).done(function(data) {
+        if (data.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function addUsersToAssignmentQuery(liveassignmentPk, user_list, add2, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.add_users_to_assignment, {
         liveassignmentPk: JSON.stringify(liveassignmentPk),
@@ -51812,7 +51810,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function updateLiveProjectValue(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+  function updateLiveProjectValueQuery(objectID, objectType, json, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.update_liveproject_value, {
         objectID: JSON.stringify(objectID),
@@ -51828,7 +51826,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function setAssignmentCompletion(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
+  function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
         userassignmentPk: JSON.stringify(userassignmentPk),
@@ -51860,17 +51858,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   function getFavouritesQuery(callBackFunction = () => console.log("success")) {
     try {
       $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getWorkflowsForProject(projectPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-        projectPk
-      }).done(function(data) {
         callBackFunction(data);
       });
     } catch (err) {
@@ -62750,6 +62737,64 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
+    try {
+      $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+        callBackFunction(data);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+        filter: JSON.stringify(filter),
+        additional_data: JSON.stringify(data)
+      }).done(function(data2) {
+        callBackFunction(data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getHomeQuery(callBackFunction = (data) => console.log("success")) {
+    try {
+      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
+        callBackFunction(data);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+        projectPk
+      }).done(function(data) {
+        callBackFunction(data);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) => console.log("success")) {
+    if (["program", "course", "activity"].indexOf(objectType) >= 0)
+      objectType = "workflow";
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data) {
+        if (data.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class CommentBox extends Component {
     constructor(props) {
       super(props);
@@ -62774,13 +62819,13 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     addUserTag(user) {
-      let cursor_pos = this.tag_position;
-      let current_value = this.input.current.value;
+      const cursor_pos = this.tag_position;
+      const current_value = this.input.current.value;
       let to_add = "";
       if (cursor_pos > 0 && current_value[cursor_pos - 1] != " ")
         to_add += " ";
       to_add += "@" + user.username + " ";
-      let new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
+      const new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
       this.input.current.value = new_value;
       this.input.current.selectionStart = this.input.current.value.length;
       this.setState({ tagging: false });
@@ -62791,15 +62836,15 @@ ${latestSubscriptionCallbackError.current.stack}
       } else {
         $(this.submit.current).addClass("hidden");
       }
-      if (evt.nativeEvent && evt.nativeEvent.data == "@") {
+      if (evt.nativeEvent && evt.nativeEvent.data === "@") {
         this.tag_position = this.input.current.selectionStart - 1;
-        let renderer2 = this.props.renderer;
-        renderer2.tiny_loader.startLoad();
-        getUsersForObject(
+        const loader = COURSEFLOW_APP.tinyLoader;
+        loader.startLoad();
+        getUsersForObjectQuery(
           this.props.renderer.workflowID,
           "workflow",
           (response) => {
-            renderer2.tiny_loader.endLoad();
+            loader.endLoad();
             this.setState({
               tagging: true,
               user_list: response.editors.concat(response.commentors)
@@ -62811,8 +62856,8 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     removeComment(id) {
-      let parent = this.props.parent;
-      let props = parent.props;
+      const parent = this.props.parent;
+      const props = parent.props;
       if (window.confirm(
         window.gettext(
           "Are you sure you want to permanently clear this comment?"
@@ -62827,8 +62872,8 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     removeAllComments() {
-      let parent = this.props.parent;
-      let props = parent.props;
+      const parent = this.props.parent;
+      const props = parent.props;
       if (window.confirm(
         window.gettext(
           "Are you sure you want to permanently clear all comments from this object?"
@@ -62842,11 +62887,11 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     appendComment() {
-      let text = $(this.input.current)[0].value;
+      const text = $(this.input.current)[0].value;
       if (!text)
         return;
-      let parent = this.props.parent;
-      let props = parent.props;
+      const parent = this.props.parent;
+      const props = parent.props;
       $(this.input.current)[0].value = "";
       $(this.submit.current).addClass("hidden");
       addComment(
@@ -62857,8 +62902,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     commentsSeen() {
-      let unread_comments = this.props.renderer.unread_comments.slice();
-      let comments = this.props.comments.map((comment2) => comment2.id);
+      const unread_comments = this.props.renderer.unread_comments.slice();
+      const comments = this.props.comments.map((comment2) => comment2.id);
       this.props.renderer.unread_comments = unread_comments.filter(
         (comment2) => comments.indexOf(comment2) < 0
       );
@@ -62868,7 +62913,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       let has_comments = false;
-      let has_unread = this.props.comments.filter((value) => {
+      const has_unread = this.props.comments.filter((value) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = this.props) == null ? void 0 : _a.renderer) == null ? void 0 : _b.unread_comments) == null ? void 0 : _c.includes(value);
       }).length > 0;
@@ -62876,7 +62921,7 @@ ${latestSubscriptionCallbackError.current.stack}
         has_comments = this.props.comments.length > 0;
       }
       let render_div;
-      let side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
+      const side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
       if (side_actions.length > 0)
         render_div = side_actions[0];
       else
@@ -62904,11 +62949,11 @@ ${latestSubscriptionCallbackError.current.stack}
       let comments;
       if (this.props.comments)
         comments = this.props.comments.map((comment2) => {
-          let is_unread = this.props.renderer.unread_comments.indexOf(comment2.id) >= 0;
+          const is_unread = this.props.renderer.unread_comments.indexOf(comment2.id) >= 0;
           let comment_class = "comment";
           if (is_unread)
             comment_class += " unread";
-          let text = comment2.text.replace(
+          const text = comment2.text.replace(
             /@\w[@a-zA-Z0-9_.]{1,}/g,
             (val) => "<b>" + val + "</b>"
           );
@@ -62935,7 +62980,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ) })
           ] });
         });
-      let top_contents = [];
+      const top_contents = [];
       top_contents.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -63049,8 +63094,8 @@ ${latestSubscriptionCallbackError.current.stack}
         this.setState({ show_comments: false });
     }
     reloadComments(show_comments) {
-      let props = this.props;
-      let data = props.data;
+      const props = this.props;
+      const data = props.data;
       props.renderer.tiny_loader.startLoad();
       getCommentsForObject(
         data.id,
@@ -66487,11 +66532,11 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      let component = this;
+      const component = this;
       $(this.input.current).autocomplete({
         source: (request, response_function) => {
           getUserList(request.term, (response) => {
-            let user_list = response.user_list.map((user) => {
+            const user_list = response.user_list.map((user) => {
               return {
                 label: user.first_name + " " + user.last_name + " - " + user.username,
                 value: user.username,
@@ -66570,25 +66615,29 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      getUsersForObject(this.props.data.id, this.props.data.type, (response) => {
-        this.setState({
-          owner: response.author,
-          view: response.viewers,
-          comment: response.commentors,
-          edit: response.editors,
-          student: response.students,
-          published: response.published,
-          public_view: response.public_view,
-          cannot_change: response.cannot_change
-        });
-      });
+      getUsersForObjectQuery(
+        this.props.data.id,
+        this.props.data.type,
+        (response) => {
+          this.setState({
+            owner: response.author,
+            view: response.viewers,
+            comment: response.commentors,
+            edit: response.editors,
+            student: response.students,
+            published: response.published,
+            public_view: response.public_view,
+            cannot_change: response.cannot_change
+          });
+        }
+      );
     }
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
     getPublication() {
-      let published = this.state.published;
-      let data = this.props.data;
+      const published = this.state.published;
+      const data = this.props.data;
       if (data.type === "project" || data.is_strategy) {
         let public_class = "big-button make-public";
         let private_class = "big-button hover-shade make-private";
@@ -66603,7 +66652,7 @@ ${latestSubscriptionCallbackError.current.stack}
           public_class += " hover-shade";
         if (public_disabled)
           public_class += " disabled";
-        let public_text = window.gettext("Any CourseFlow teacher can view");
+        const public_text = window.gettext("Any CourseFlow teacher can view");
         let disabled_indicator;
         if (public_disabled) {
           let disabled_text;
@@ -66666,10 +66715,10 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     getPublicLink() {
-      let data = this.props.data;
-      let public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
+      const data = this.props.data;
+      const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
       if (data.type !== "project") {
-        let public_view = this.state.public_view;
+        const public_view = this.state.public_view;
         if (!public_view)
           return /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
@@ -66697,10 +66746,10 @@ ${latestSubscriptionCallbackError.current.stack}
                   className: "public-link-button  hover-shade",
                   onClick: () => {
                     navigator.clipboard.writeText(public_link);
-                    let copy_icon_text = $(
+                    const copy_icon_text = $(
                       "#public-page-link .copy-link-icon .material-symbols-rounded"
                     ).text();
-                    let copy_description_text = $(
+                    const copy_description_text = $(
                       "#public-page-link .copy-link-text"
                     ).text();
                     $(
@@ -66733,12 +66782,12 @@ ${latestSubscriptionCallbackError.current.stack}
                   id: "public-page-code",
                   className: "public-link-button  hover-shade",
                   onClick: () => {
-                    let iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
+                    const iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
                     navigator.clipboard.writeText(iframe);
-                    let copy_icon_text = $(
+                    const copy_icon_text = $(
                       "#public-page-code .copy-link-icon .material-symbols-rounded"
                     ).text();
-                    let copy_description_text = $(
+                    const copy_description_text = $(
                       "#public-page-code .copy-link-text"
                     ).text();
                     $(
@@ -66810,9 +66859,9 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     setPublication(published) {
-      if (published == this.state.published)
+      if (published === this.state.published)
         return;
-      let component = this;
+      const component = this;
       if (!published || window.confirm(
         window.gettext(
           "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
@@ -66834,7 +66883,7 @@ ${latestSubscriptionCallbackError.current.stack}
         this.props.data.type,
         permission_type,
         () => {
-          getUsersForObject(
+          getUsersForObjectQuery(
             this.props.data.id,
             this.props.data.type,
             (response) => {
@@ -66854,9 +66903,9 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      let data = this.props.data;
-      let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
-      let editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const data = this.props.data;
+      const owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
+      const editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         UserLabel$1,
         {
           user,
@@ -66865,7 +66914,7 @@ ${latestSubscriptionCallbackError.current.stack}
           permissionChange: this.setUserPermission.bind(this)
         }
       ));
-      let viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         UserLabel$1,
         {
           user,
@@ -66874,7 +66923,7 @@ ${latestSubscriptionCallbackError.current.stack}
           permissionChange: this.setUserPermission.bind(this)
         }
       ));
-      let commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         UserLabel$1,
         {
           user,
@@ -66883,7 +66932,7 @@ ${latestSubscriptionCallbackError.current.stack}
           permissionChange: this.setUserPermission.bind(this)
         }
       ));
-      let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         UserLabel$1,
         {
           user,
@@ -67659,7 +67708,7 @@ ${latestSubscriptionCallbackError.current.stack}
           AssignmentTitle,
           {
             data: assignment,
-            user_role: this.props.renderer.user_role
+            user_role: this.props.userRole
           }
         ) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: assignment.completion_info }),
@@ -67979,7 +68028,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     visitWorkflow(id, evt) {
-      let path = COURSEFLOW_APP.config.update_path["workflow"];
+      const path = COURSEFLOW_APP.config.update_path["workflow"];
       evt.stopPropagation();
       window.open(path.replace("0", id));
     }
@@ -67989,32 +68038,33 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     changeCompletion(evt) {
-      let checked = evt.target.checked;
+      const checked = evt.target.checked;
       this.setState({ completed: checked });
-      setAssignmentCompletion(this.props.data.user_assignment.id, checked);
+      setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
     }
     /*******************************************************
      * RENDER
      *******************************************************/
     render() {
-      let data = this.props.data;
-      let node_data = data.task;
-      let data_override;
-      if (node_data.represents_workflow)
+      let lefticon;
+      let righticon;
+      let css_class = "node assignment";
+      const data = this.props.data;
+      const node_data = data.task;
+      let data_override = node_data;
+      const mouseover_actions = [];
+      if (node_data.represents_workflow) {
         data_override = {
           ...node_data,
           ...node_data.linked_workflow_data,
           id: data.id
         };
-      else
-        data_override = { ...node_data };
-      let lefticon;
-      let righticon;
+      }
       if (node_data.context_classification > 0)
         lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
-            title: renderer.context_choices.find(
+            title: this.props.renderer.context_choices.find(
               (obj) => obj.type == node_data.context_classification
             ).name,
             src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
@@ -68024,15 +68074,13 @@ ${latestSubscriptionCallbackError.current.stack}
         righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
-            title: renderer.task_choices.find(
+            title: this.props.renderer.task_choices.find(
               (obj) => obj.type == node_data.task_classification
             ).name,
             src: COURSEFLOW_APP.config.icon_path + task_keys[node_data.task_classification] + ".svg"
           }
         );
-      let style2 = { backgroundColor: getColumnColour(node_data) };
-      let mouseover_actions = [];
-      let css_class = "node assignment";
+      const style2 = { backgroundColor: getColumnColour(node_data) };
       if (this.state.is_dropped)
         css_class += " dropped";
       let linkIcon;
@@ -68050,8 +68098,11 @@ ${latestSubscriptionCallbackError.current.stack}
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
         ] });
       let parentLinkIcon;
-      let parentlinktext = window.gettext("Visit containing workflow");
-      let parentclickfunc = this.visitWorkflow.bind(this, data.parent_workflow_id);
+      const parentlinktext = window.gettext("Visit containing workflow");
+      const parentclickfunc = this.visitWorkflow.bind(
+        this,
+        data.parent_workflow_id
+      );
       if (data.workflow_access && data.parent_workflow_id)
         parentLinkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
@@ -68266,7 +68317,7 @@ ${latestSubscriptionCallbackError.current.stack}
       this.setState(new_state);
     }
     saveChanges() {
-      updateLiveProjectValue(this.state.id, "liveassignment", this.changed_values);
+      updateLiveProjectValueQuery(this.state.id, "liveassignment", this.changed_values);
       this.props.updateAssignment(this.changed_values);
       this.changed_values = {};
       this.setState({ has_changed: false });
@@ -68290,7 +68341,7 @@ ${latestSubscriptionCallbackError.current.stack}
         )[0]
       );
       this.setState({ user_data });
-      addUsersToAssignment(this.state.id, [selected], true);
+      addUsersToAssignmentQuery(this.state.id, [selected], true);
     }
     removeUser(evt) {
       let selected = parseInt($("#users_chosen").val());
@@ -68308,7 +68359,7 @@ ${latestSubscriptionCallbackError.current.stack}
         )[0]
       );
       this.setState({ user_data });
-      addUsersToAssignment(this.state.id, [selected], false);
+      addUsersToAssignmentQuery(this.state.id, [selected], false);
     }
     /*******************************************************
      * RENDER
@@ -68510,7 +68561,7 @@ ${latestSubscriptionCallbackError.current.stack}
         (userassignment) => userassignment.id == id
       );
       userassignments[index2] = { ...userassignments[index2], completed };
-      setAssignmentCompletion(id, completed);
+      setAssignmentCompletionQuery(id, completed);
       this.setState({ userassignments });
     }
     /*******************************************************
@@ -68730,7 +68781,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
     toggleCompletion(id, row_index, evt) {
-      setAssignmentCompletion(id, evt.target.checked);
+      setAssignmentCompletionQuery(id, evt.target.checked);
       let new_data = { ...this.state.data };
       new_data.table_rows = new_data.table_rows.slice();
       new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] };
@@ -68764,7 +68815,7 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     saveChanges() {
-      updateLiveProjectValue(
+      updateLiveProjectValueQuery(
         this.state.data.liveproject.id,
         "liveproject",
         this.changed_values
@@ -68906,7 +68957,7 @@ ${latestSubscriptionCallbackError.current.stack}
       this.getData();
     }
     componentDidUpdate(prevProps) {
-      if (prevProps.objectID != this.props.objectID) {
+      if (prevProps.objectID !== this.props.objectID) {
         this.setState({ data: null }, this.getData.bind(this));
       }
     }
@@ -68914,9 +68965,8 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     getData() {
-      let component = this;
       getWorkflowNodes(this.props.objectID, (data) => {
-        component.setState({ data: data.data_package });
+        this.setState({ data: data.data_package });
       });
     }
     defaultRender() {
@@ -68928,8 +68978,8 @@ ${latestSubscriptionCallbackError.current.stack}
     render() {
       if (!this.state.data)
         return this.defaultRender();
-      let weeks = this.state.data.weeks.map((week, i2) => {
-        let nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
+      const weeks = this.state.data.weeks.map((week, i2) => {
+        const nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
         let default_text;
         default_text = week.week_type_display + " " + (i2 + 1);
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week", children: [
@@ -68942,7 +68992,7 @@ ${latestSubscriptionCallbackError.current.stack}
   }
   class AssignmentNode extends reactExports.Component {
     render() {
-      let data = this.props.data;
+      const data = this.props.data;
       let lefticon;
       let righticon;
       if (data.context_classification > 0)
@@ -68965,8 +69015,10 @@ ${latestSubscriptionCallbackError.current.stack}
             src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
           }
         );
-      let style2 = { backgroundColor: getColumnColour(this.props.data) };
-      let mouseover_actions = [this.addCreateAssignment(data)];
+      const style2 = {
+        backgroundColor: getColumnColour(this.props.data)
+      };
+      const mouseover_actions = [this.addCreateAssignment(data)];
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: "node", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
@@ -68989,9 +69041,9 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     createAssignment(data) {
-      let props = this.props;
+      const props = this.props;
       props.renderer.tiny_loader.startLoad();
-      createAssignment(
+      createAssignmentQuery$1(
         data.id,
         props.renderer.project_data.id,
         (response_data) => {
@@ -69014,10 +69066,10 @@ ${latestSubscriptionCallbackError.current.stack}
     render() {
       if (!this.state.data)
         return this.defaultRender();
-      let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
-      let workflow_options = this.state.data.workflows.map((workflow) => {
+      const assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
+      const workflow_options = this.state.data.workflows.map((workflow) => {
         let view_class = "hover-shade";
-        if (workflow.id == this.state.selected_id)
+        if (workflow.id === this.state.selected_id)
           view_class += " active";
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -69334,7 +69386,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
     toggleAssignment(id, evt) {
-      setAssignmentCompletion(id, evt.target.checked);
+      setAssignmentCompletionQuery(id, evt.target.checked);
     }
   }
   class StudentLiveProjectWorkflows extends LiveProjectSection {
@@ -85309,7 +85361,7 @@ ${latestSubscriptionCallbackError.current.stack}
     createAssignment() {
       let props = this.props;
       props.renderer.tiny_loader.startLoad();
-      createAssignment(
+      createAssignmentQuery(
         props.node_id,
         props.renderer.project.id,
         (response_data) => {
@@ -89275,12 +89327,12 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     updateTabs() {
       this.props.renderer.selection_manager.changeSelection(null, null);
-      let disabled_tabs = [];
+      const disabled_tabs = [];
       for (let i2 = 0; i2 <= 4; i2++)
         if (this.allowed_tabs.indexOf(i2) < 0)
           disabled_tabs.push(i2);
       $("#sidebar").tabs({ disabled: false });
-      let current_tab = $("#sidebar").tabs("option", "active");
+      const current_tab = $("#sidebar").tabs("option", "active");
       if (this.allowed_tabs.indexOf(current_tab) < 0) {
         if (this.allowed_tabs.length == 0)
           $("#sidebar").tabs({ active: false });
@@ -89295,8 +89347,8 @@ ${latestSubscriptionCallbackError.current.stack}
       this.props.renderer.render(this.props.renderer.container, type);
     }
     getHeader() {
-      let data = this.props.data;
-      let style2 = {};
+      const data = this.props.data;
+      const style2 = {};
       if (data.lock) {
         style2.border = "2px solid " + data.lock.user_colour;
       }
@@ -89340,7 +89392,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     getTypeIndicator() {
-      let data = this.props.data;
+      const data = this.props.data;
       let type_text = window.gettext(data.type);
       if (data.is_strategy)
         type_text += window.gettext(" strategy");
@@ -89349,10 +89401,10 @@ ${latestSubscriptionCallbackError.current.stack}
     getUsers() {
       if (!this.state.users)
         return null;
-      let author = this.state.users.author;
-      let editors = this.state.users.editors;
-      let commenters = this.state.users.commentors;
-      let viewers = this.state.users.viewers;
+      const author = this.state.users.author;
+      const editors = this.state.users.editors;
+      const commenters = this.state.users.commentors;
+      const viewers = this.state.users.viewers;
       let users_group = [];
       if (this.state.users.published) {
         users_group.push(
@@ -89386,7 +89438,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ] }))
       ]);
       users_group = users_group.flat(2);
-      let users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+      const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
       if (users_group.length > 4) {
         users.push(
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
@@ -89444,8 +89496,8 @@ ${latestSubscriptionCallbackError.current.stack}
       return share;
     }
     openShareMenu() {
-      let component = this;
-      let data = this.props.data;
+      const component = this;
+      const data = this.props.data;
       renderMessageBox(data, "share_menu", () => {
         closeMessageBox();
         component.getUserData();
@@ -89454,14 +89506,12 @@ ${latestSubscriptionCallbackError.current.stack}
     getUserData() {
       if (this.props.renderer.public_view || this.props.renderer.is_student)
         return null;
-      let component = this;
-      getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-        component.setState({ users: data });
+      getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+        this.setState({ users: data });
       });
     }
     getOverflowLinks() {
-      this.state.data;
-      let overflow_links = [];
+      const overflow_links = [];
       overflow_links.push(this.getExportButton());
       overflow_links.push(this.getCopyButton());
       overflow_links.push(this.getImportButton());
@@ -89540,7 +89590,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return null;
       if (this.props.renderer.is_student && !this.props.renderer.can_view)
         return null;
-      let export_button = /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const export_button = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           id: "export-button",
@@ -89558,14 +89608,14 @@ ${latestSubscriptionCallbackError.current.stack}
     getCopyButton() {
       if (!this.props.renderer.user_id)
         return null;
-      let export_button = [
+      const export_button = [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             id: "copy-button",
             className: "hover-shade",
             onClick: () => {
-              let loader = this.props.renderer.tiny_loader;
+              const loader = COURSEFLOW_APP.tiny_loader;
               if (this.props.data.is_strategy) {
                 loader.startLoad();
                 duplicateBaseItem(
@@ -89585,7 +89635,7 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         )
       ];
-      if (!this.props.data.is_strategy && this.props.renderer.project_permission == permission_keys.edit)
+      if (!this.props.data.is_strategy && this.props.renderer.project_permission === permission_keys.edit)
         export_button.unshift(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
@@ -89593,7 +89643,7 @@ ${latestSubscriptionCallbackError.current.stack}
               id: "copy-to-project-button",
               className: "hover-shade",
               onClick: () => {
-                let loader = this.props.renderer.tiny_loader;
+                const loader = COURSEFLOW_APP.tiny_loader;
                 duplicateBaseItem(
                   this.props.data.id,
                   this.props.data.type,
@@ -89616,7 +89666,7 @@ ${latestSubscriptionCallbackError.current.stack}
       let disabled;
       if (this.props.data.importing)
         disabled = true;
-      let imports = [/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})];
+      const imports = [/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})];
       this.pushImport(
         imports,
         "outcomes",
@@ -89649,9 +89699,9 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     getReturnLinks() {
-      let renderer2 = this.props.renderer;
+      const renderer2 = this.props.renderer;
       this.props.data;
-      let return_links = [];
+      const return_links = [];
       if (renderer2.project && !renderer2.is_student && !renderer2.public_view) {
         return_links.push(
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -89707,8 +89757,8 @@ ${latestSubscriptionCallbackError.current.stack}
       return null;
     }
     getWorkflowContent() {
-      let data = this.props.data;
-      let renderer2 = this.props.renderer;
+      const data = this.props.data;
+      const renderer2 = this.props.renderer;
       let workflow_content;
       if (renderer2.view_type == "outcometable") {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -89740,7 +89790,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       if (data.is_strategy)
         return workflow_content;
-      let view_buttons = [
+      const view_buttons = [
         {
           type: "workflowview",
           name: window.gettext("Workflow View"),
@@ -89786,7 +89836,7 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         );
       });
-      let view_buttons_sorted = view_buttons.slice(0, 2);
+      const view_buttons_sorted = view_buttons.slice(0, 2);
       view_buttons_sorted.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
@@ -89817,8 +89867,8 @@ ${latestSubscriptionCallbackError.current.stack}
     getJump() {
       if (this.props.renderer.view_type != "workflowview")
         return null;
-      let data = this.props.data;
-      let nodebarweekworkflows = data.weekworkflow_set.map(
+      const data = this.props.data;
+      const nodebarweekworkflows = data.weekworkflow_set.map(
         (weekworkflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           JumpToWeekWorkflow,
           {
@@ -89929,13 +89979,13 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      let renderer2 = this.props.renderer;
-      let data = this.props.data;
-      let visible_buttons = (() => {
+      const renderer2 = this.props.renderer;
+      const data = this.props.data;
+      const visible_buttons = (() => {
         return [this.getEdit(), this.getShare()];
       }).bind(this);
-      let overflow_links = this.getOverflowLinks.bind(this);
-      let viewbar = (() => {
+      const overflow_links = this.getOverflowLinks.bind(this);
+      const viewbar = (() => {
         return [this.getJump(), this.getExpand()];
       }).bind(this);
       let userbar;
@@ -89993,7 +90043,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      let data = this.props.data;
+      const data = this.props.data;
       if (data.table_type == 1)
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           CompetencyMatrixView$1,
@@ -90043,7 +90093,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     getTypeIndicator(data) {
-      let type = data.type;
+      const type = data.type;
       let type_text = gettext(type);
       if (data.is_strategy)
         type_text += gettext(" strategy");
@@ -90056,7 +90106,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.state.has_loaded) {
         if (this.state.parent_workflows.length == 0 && this.props.child_workflows.length == 0)
           return null;
-        let parent_workflows = this.state.parent_workflows.map(
+        const parent_workflows = this.state.parent_workflows.map(
           (parent_workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             WorkflowTitle,
             {
@@ -90066,7 +90116,7 @@ ${latestSubscriptionCallbackError.current.stack}
             `WorkflowTitleParent-${index2}`
           )
         );
-        let child_workflows = this.props.child_workflows.map(
+        const child_workflows = this.props.child_workflows.map(
           (child_workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             WorkflowTitle,
             {
@@ -90076,7 +90126,7 @@ ${latestSubscriptionCallbackError.current.stack}
             `WorkflowTitleChild-${index2}`
           )
         );
-        let return_val = [
+        const return_val = [
           /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}, "br"),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Quick Navigation") }, "quick-nav")
         ];
@@ -90116,7 +90166,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      let data = this.props.data;
+      const data = this.props.data;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         JumpToWeekView,
         {
@@ -90144,10 +90194,10 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     jumpTo() {
-      let week_id = this.props.data.id;
-      let week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
+      const week_id = this.props.data.id;
+      const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
       if (week.length > 0) {
-        let container2 = $("#container");
+        const container2 = $("#container");
         $("#container").animate(
           {
             scrollTop: week.offset().top + container2[0].scrollTop - container2.offset().top - 200
@@ -90160,8 +90210,8 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      let data = this.props.data;
-      let renderer2 = this.props.renderer;
+      const data = this.props.data;
+      const renderer2 = this.props.renderer;
       let default_text;
       if (!renderer2.is_strategy)
         default_text = data.week_type_display + " " + (this.props.rank + 1);
@@ -90666,36 +90716,6 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-        filter: JSON.stringify(filter),
-        additional_data: JSON.stringify(data)
-      }).done(function(data2) {
-        callBackFunction(data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getHomeQuery(callBackFunction = (data) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
   class WorkflowFilter extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -91029,6 +91049,15 @@ ${latestSubscriptionCallbackError.current.stack}
   class ProjectMenu extends reactExports.Component {
     constructor(props) {
       super(props);
+      __publicField(this, "readOnly");
+      __publicField(this, "userId");
+      __publicField(this, "createDiv");
+      __publicField(this, "renderer");
+      __publicField(this, "projectPaths");
+      __publicField(this, "userRole");
+      __publicField(this, "allDisciplines");
+      __publicField(this, "viewButtons");
+      __publicField(this, "data");
       __publicField(this, "OverflowLinks", (data, userId) => {
         let liveproject;
         if (data.author_id === userId) {
@@ -91057,7 +91086,7 @@ ${latestSubscriptionCallbackError.current.stack}
             );
           }
         }
-        let overflow_links = [liveproject];
+        const overflow_links = [liveproject];
         overflow_links.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
         );
@@ -91070,131 +91099,141 @@ ${latestSubscriptionCallbackError.current.stack}
         }
         return overflow_links;
       });
-      this.user_id = props.userId;
-      this.read_only = this.props.renderer.read_only;
-      this.renderer = this.props.renderer;
-      this.createDiv = reactExports.createRef();
-      this.state = {
-        data: props.data,
-        view_type: "workflows"
-      };
-    }
-    /*******************************************************
-     * LIFECYCLE HOOKS
-     *******************************************************/
-    componentDidMount() {
-      let component = this;
-      getWorkflowsForProject(this.props.data.id, (data) => {
-        component.setState({ workflow_data: data.data_package });
-      });
-      this.getUserData();
-      COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    getViewButtons() {
-      return [
+      this.viewButtons = [
         { type: "workflows", name: window.gettext("Workflows") },
         { type: "overview", name: window.gettext("Classroom Overview") },
         { type: "students", name: window.gettext("Students") },
         { type: "assignments", name: window.gettext("Assignments") },
         { type: "completion_table", name: window.gettext("Completion Table") }
       ];
+      this.userId = this.props.userId;
+      this.userRole = this.props.userRole;
+      this.readOnly = this.props.readOnly;
+      this.projectPaths = this.props.projectPaths;
+      this.allDisciplines = this.props.allDisciplines;
+      this.renderer = this.props.renderer;
+      this.data = this.props.data;
+      this.state = {
+        data: this.props.data,
+        view_type: "workflows",
+        users: null,
+        workflow_data: []
+      };
+      this.createDiv = reactExports.createRef();
     }
-    getContent() {
-      let return_val = [];
-      if (this.state.data.liveproject && this.props.renderer.user_role === role_keys.teacher)
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.getViewButtons().map((item) => {
-            let view_class = "hover-shade";
-            if (item.type === this.state.view_type)
-              view_class += " active";
-            return /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                id: "button_" + item.type,
-                className: view_class,
-                onClick: this.changeView.bind(this, item.type),
-                children: item.name
-              }
-            );
-          }) })
-        );
-      switch (this.state.view_type) {
-        case "overview":
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              LiveProjectOverview,
-              {
-                renderer: this.props.renderer,
-                role: this.getRole(),
-                objectID: this.state.data.id,
-                view_type: this.state.view_type
-              }
-            )
-          );
-          break;
-        case "students":
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              LiveProjectStudents,
-              {
-                renderer: this.props.renderer,
-                role: this.getRole(),
-                objectID: this.state.data.id,
-                view_type: this.state.view_type
-              }
-            )
-          );
-          break;
-        case "assignments":
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              LiveProjectAssignments,
-              {
-                renderer: this.props.renderer,
-                role: this.getRole(),
-                objectID: this.state.data.id,
-                view_type: this.state.view_type
-              }
-            )
-          );
-          break;
-        case "completion_table":
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              LiveProjectCompletionTable,
-              {
-                renderer: this.props.renderer,
-                role: this.getRole(),
-                objectID: this.props.data.id,
-                view_type: this.state.view_type
-              }
-            )
-          );
-          break;
-        default:
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowFilter,
-              {
-                renderer: this.props.renderer,
-                workflows: this.state.workflow_data,
-                updateWorkflow: this.updateWorkflow.bind(this),
-                context: "project"
-              }
-            )
-          );
-      }
-      return return_val;
+    /*******************************************************
+     * LIFECYCLE HOOKS
+     *******************************************************/
+    componentDidMount() {
+      const component = this;
+      getWorkflowsForProjectQuery(this.data.id, (data) => {
+        component.setState({
+          workflow_data: data.data_package
+        });
+      });
+      this.getUserData();
+      COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
     }
+    // @todo this is wrapped because it is called by openShareMenu
+    // so do no unwrap until the renderMessageBox is sorted out
+    getUserData() {
+      getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
+        this.setState({ users: data });
+      });
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
     changeView(view_type) {
       this.setState({ view_type });
     }
     // @todo, candidate to remove
     getRole() {
       return "teacher";
+    }
+    deleteProject() {
+      if (window.confirm(
+        window.gettext("Are you sure you want to delete this project?")
+      )) {
+        deleteSelf(this.data.id, "project", true, () => {
+          this.setState({ data: { ...this.data, deleted: true } });
+        });
+      }
+    }
+    deleteProjectHard() {
+      if (window.confirm(
+        window.gettext(
+          "Are you sure you want to permanently delete this project?"
+        )
+      )) {
+        deleteSelf(this.data.id, "project", false, () => {
+          window.location = COURSEFLOW_APP.config.home_path;
+        });
+      }
+    }
+    restoreProject() {
+      restoreSelf(this.data.id, "project", () => {
+        this.setState({ data: { ...this.data, deleted: false } });
+      });
+    }
+    makeLive() {
+      if (window.confirm(
+        window.gettext(
+          "Are you sure you want to create a live classroom for this project?"
+        )
+      )) {
+        makeProjectLive(this.data.id, (data) => {
+          location.reload();
+        });
+      }
+    }
+    openEditMenu() {
+      console.log(
+        "openEditMenu in procetmenu.js see function coment for why this doesn't work"
+      );
+    }
+    updateFunction(new_data) {
+      if (new_data.liveproject) {
+        console.log("liveproject updated");
+      } else {
+        const new_state = { ...this.state };
+        new_state.data = { ...new_state.data, ...new_data };
+        this.setState(new_state);
+      }
+    }
+    updateWorkflow(id, new_values) {
+      for (let i2 = 0; i2 < this.state.workflow_data.length; i2++) {
+        if (this.state.workflow_data[i2].id === id) {
+          const new_state = { ...this.state };
+          new_state.workflow_data = [...this.state.workflow_data];
+          new_state.workflow_data[i2] = {
+            ...this.state.workflow_data[i2],
+            ...new_values
+          };
+          this.setState(new_state);
+          break;
+        }
+      }
+    }
+    openShareMenu() {
+      this.state.data;
+    }
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    getShare() {
+      if (!this.readOnly)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: this.openShareMenu.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return null;
     }
     getDeleteProject() {
       if (!this.state.data.deleted) {
@@ -91205,44 +91244,8 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
       ];
     }
-    deleteProject() {
-      if (window.confirm(
-        window.gettext("Are you sure you want to delete this project?")
-      )) {
-        deleteSelf(this.props.data.id, "project", true, () => {
-          this.setState({ data: { ...this.props.data, deleted: true } });
-        });
-      }
-    }
-    deleteProjectHard() {
-      if (window.confirm(
-        window.gettext(
-          "Are you sure you want to permanently delete this project?"
-        )
-      )) {
-        deleteSelf(this.props.data.id, "project", false, () => {
-          window.location = COURSEFLOW_APP.config.home_path;
-        });
-      }
-    }
-    restoreProject() {
-      restoreSelf(this.props.data.id, "project", () => {
-        this.setState({ data: { ...this.props.data, deleted: false } });
-      });
-    }
-    makeLive() {
-      if (window.confirm(
-        window.gettext(
-          "Are you sure you want to create a live classroom for this project?"
-        )
-      )) {
-        makeProjectLive(this.props.data.id, (data) => {
-          location.reload();
-        });
-      }
-    }
     getExportButton() {
-      if (this.user_id) {
+      if (this.userId) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -91257,18 +91260,18 @@ ${latestSubscriptionCallbackError.current.stack}
       return null;
     }
     getCopyButton() {
-      if (this.user_id) {
+      if (this.userId) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             id: "copy-button",
             className: "hover-shade",
             onClick: () => {
-              let loader = this.props.renderer.tiny_loader;
+              const loader = COURSEFLOW_APP.tinyLoader;
               loader.startLoad();
               duplicateBaseItem(
-                this.props.data.id,
-                this.props.data.type,
+                this.data.id,
+                this.data.type,
                 null,
                 (response_data) => {
                   loader.endLoad();
@@ -91282,13 +91285,129 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return null;
     }
-    getUserData() {
-      getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-        this.setState({ users: data });
-      });
+    getUsers() {
+      let users_group = [];
+      if (!this.state.users)
+        return null;
+      const { author, editors, commentors, viewers } = this.state.users;
+      if (!author)
+        return null;
+      if (this.state.users.published) {
+        users_group.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+            getUserTag("view"),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+            " ",
+            window.gettext("All CourseFlow")
+          ] })
+        );
+      }
+      users_group.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("author"),
+          getUserDisplay(author)
+        ] }),
+        editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("edit"),
+          getUserDisplay(user)
+        ] })),
+        commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("comment"),
+          getUserDisplay(user)
+        ] })),
+        viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("view"),
+          getUserDisplay(user)
+        ] }))
+      ]);
+      users_group = users_group.flat(2);
+      const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+      if (users_group.length > 4) {
+        users.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+            "+",
+            users_group.length - 4,
+            " ",
+            window.gettext("more")
+          ] })
+        );
+      }
+      if (!this.readOnly)
+        users.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "user-name collapsed-text-show-more",
+              onClick: this.openShareMenu.bind(this),
+              children: window.gettext("Modify")
+            }
+          )
+        );
+      return users;
+    }
+    getEdit() {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "edit-project-button",
+            title: window.gettext("Edit Project"),
+            onClick: this.openEditMenu.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
+          }
+        );
+      }
+      return null;
+    }
+    getCreate() {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "hover-shade",
+            id: "create-project-button",
+            title: window.gettext("Create workflow"),
+            ref: this.createDiv,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "activity-create-project",
+                    href: this.projectPaths.activity,
+                    className: "hover-shade",
+                    children: window.gettext("New activity")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "course-create-project",
+                    href: this.projectPaths.course,
+                    className: "hover-shade",
+                    children: window.gettext("New course")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "program-create-project",
+                    href: this.projectPaths.program,
+                    className: "hover-shade",
+                    children: window.gettext("New program")
+                  }
+                )
+              ] })
+            ]
+          }
+        );
+      }
+      return null;
     }
     getHeader() {
-      let data = this.state.data;
+      const data = this.state.data;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
@@ -91316,7 +91435,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-              this.props.renderer.all_disciplines.filter(
+              this.allDisciplines.filter(
                 (discipline) => data.disciplines.indexOf(discipline.id) >= 0
               ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
             ] })
@@ -91324,187 +91443,99 @@ ${latestSubscriptionCallbackError.current.stack}
         ] })
       ] });
     }
-    // @todo needs work
-    getUsers() {
-      if (!this.state.users)
-        return null;
-      let author = this.state.users.author;
-      let editors = this.state.users.editors;
-      let commenters = this.state.users.commentors;
-      let viewers = this.state.users.viewers;
-      let users_group = [];
-      if (!author)
-        return null;
-      if (this.state.users.published) {
-        users_group.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-            getUserTag("view"),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-            " ",
-            window.gettext("All CourseFlow")
-          ] })
+    getContent() {
+      const return_val = [];
+      if (this.state.data.liveproject && this.userRole === role_keys.teacher)
+        return_val.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
+            let view_class = "hover-shade";
+            if (item.type === this.state.view_type)
+              view_class += " active";
+            return /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                id: "button_" + item.type,
+                className: view_class,
+                onClick: this.changeView.bind(this, item.type),
+                children: item.name
+              }
+            );
+          }) })
         );
-      }
-      users_group.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("author"),
-          getUserDisplay(author)
-        ] }),
-        editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("edit"),
-          getUserDisplay(user)
-        ] })),
-        commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("comment"),
-          getUserDisplay(user)
-        ] })),
-        viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          getUserDisplay(user)
-        ] }))
-      ]);
-      users_group = users_group.flat(2);
-      let users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-      if (users_group.length > 4) {
-        users.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-            "+",
-            users_group.length - 4,
-            " ",
-            window.gettext("more")
-          ] })
-        );
-      }
-      if (!this.props.renderer.read_only)
-        users.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "user-name collapsed-text-show-more",
-              onClick: this.openShareMenu.bind(this),
-              children: window.gettext("Modify")
-            }
-          )
-        );
-      return users;
-    }
-    getEdit() {
-      if (!this.props.renderer.read_only) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "edit-project-button",
-            title: window.gettext("Edit Project"),
-            onClick: this.openEditMenu.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-          }
-        );
-      }
-      return null;
-    }
-    openEditMenu() {
-      console.log(
-        "openEditMenu in procetmenu.js see function coment for why this doesn't work"
-      );
-    }
-    getCreate() {
-      if (!this.props.renderer.read_only) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "hover-shade",
-            id: "create-project-button",
-            title: window.gettext("Create workflow"),
-            ref: this.createDiv,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "activity-create-project",
-                    href: create_path_this_project.activity,
-                    className: "hover-shade",
-                    children: window.gettext("New activity")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "course-create-project",
-                    href: create_path_this_project.course,
-                    className: "hover-shade",
-                    children: window.gettext("New course")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "program-create-project",
-                    href: create_path_this_project.program,
-                    className: "hover-shade",
-                    children: window.gettext("New program")
-                  }
-                )
-              ] })
-            ]
-          }
-        );
-      }
-      return null;
-    }
-    updateFunction(new_data) {
-      if (new_data.liveproject) {
-        console.log("liveproject updated");
-      } else {
-        let new_state = { ...this.state };
-        new_state.data = { ...new_state.data, ...new_data };
-        this.setState(new_state);
-      }
-    }
-    getShare() {
-      let share;
-      if (!this.props.renderer.read_only)
-        share = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "share-button",
-            title: window.gettext("Sharing"),
-            onClick: this.openShareMenu.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-          }
-        );
-      return share;
-    }
-    openShareMenu() {
-      this.state.data;
-    }
-    updateWorkflow(id, new_values) {
-      for (let i2 = 0; i2 < this.state.workflow_data.length; i2++) {
-        if (this.state.workflow_data[i2].id === id) {
-          let new_state = { ...this.state };
-          new_state.workflow_data = [...this.state.workflow_data];
-          new_state.workflow_data[i2] = {
-            ...this.state.workflow_data[i2],
-            ...new_values
-          };
-          this.setState(new_state);
+      switch (this.state.view_type) {
+        case "overview":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectOverview,
+              {
+                userRole: this.userRole,
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
           break;
-        }
+        case "students":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectStudents,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "assignments":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectAssignments,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "completion_table":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectCompletionTable,
+              {
+                role: this.getRole(),
+                objectID: this.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        default:
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowFilter,
+              {
+                workflows: this.state.workflow_data,
+                updateWorkflow: this.updateWorkflow.bind(this),
+                context: "project"
+              }
+            )
+          );
       }
+      return return_val;
     }
     /*******************************************************
      * RENDER
      *******************************************************/
     render() {
-      let visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()];
+      const visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()];
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           MenuBar,
           {
-            overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, { data: this.state.data, userId: this.userid }),
+            overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, { data: this.state.data, userId: this.userId }),
             visible_buttons
           }
         ),
@@ -91518,27 +91549,35 @@ ${latestSubscriptionCallbackError.current.stack}
   class ProjectPage extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.read_only = true;
-      this.project_data = this.props.project_data;
-      this.all_disciplines = this.props.disciplines;
-      this.user_role = this.props.user_role;
-      this.user_permission = this.props.user_permission;
+      __publicField(this, "readOnly");
+      __publicField(this, "projectData");
+      __publicField(this, "allDisciplines");
+      __publicField(this, "userRole");
+      __publicField(this, "userPermission");
+      __publicField(this, "userId");
+      __publicField(this, "projectPaths");
+      this.readOnly = true;
+      this.projectData = this.props.project_data;
+      this.allDisciplines = this.props.disciplines;
+      this.userRole = this.props.user_role;
+      this.userPermission = this.props.user_permission;
       this.userId = this.props.user_id;
-      if (this.project_data.object_permission && this.project_data.object_permission.permission_type === permission_keys["edit"]) {
-        this.read_only = false;
+      this.projectPaths = this.props.create_path_this_project;
+      if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
+        this.readOnly = false;
       }
     }
     render() {
-      this.container = container;
-      return this.getContents();
-    }
-    getContents() {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         ProjectMenu,
         {
           renderer: this,
-          data: this.project_data,
-          userid: this.userId
+          projectPaths: this.projectPaths,
+          allDisciplines: this.allDisciplines,
+          userRole: this.userRole,
+          readOnly: this.readOnly,
+          data: this.projectData,
+          userId: this.userId
         }
       );
     }

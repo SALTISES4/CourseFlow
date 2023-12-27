@@ -35,7 +35,7 @@ class LiveProjectOverview extends LiveProjectSection {
         <td>
           <AssignmentTitle
             data={assignment}
-            user_role={this.props.renderer.user_role}
+            user_role={this.props.userRole}
           />
         </td>
         <td>{assignment.completion_info}</td>

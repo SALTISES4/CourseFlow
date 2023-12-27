@@ -4,15 +4,15 @@ import { AssignmentView } from './LiveAssignmentView'
 import * as Utility from '@cfUtility'
 import { DatePicker } from '@cfUIComponents'
 import {
-  addUsersToAssignment,
+  addUsersToAssignmentQuery,
   deleteSelfLive,
   getAssignmentDataQuery,
-  setAssignmentCompletion,
+  setAssignmentCompletionQuery,
   setWorkflowVisibilityQuery,
-  updateLiveProjectValue
+  updateLiveProjectValueQuery
 } from '@XMLHTTP/PostFunctions'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 
 /**
  *
@@ -120,7 +120,7 @@ class LiveAssignmentEdit extends React.Component {
   }
 
   saveChanges() {
-    updateLiveProjectValue(this.state.id, 'liveassignment', this.changed_values)
+    updateLiveProjectValueQuery(this.state.id, 'liveassignment', this.changed_values)
     this.props.updateAssignment(this.changed_values)
     this.changed_values = {}
     this.setState({ has_changed: false })
@@ -145,7 +145,7 @@ class LiveAssignmentEdit extends React.Component {
       )[0]
     )
     this.setState({ user_data: user_data })
-    addUsersToAssignment(this.state.id, [selected], true)
+    addUsersToAssignmentQuery(this.state.id, [selected], true)
   }
 
   removeUser(evt) {
@@ -163,7 +163,7 @@ class LiveAssignmentEdit extends React.Component {
       )[0]
     )
     this.setState({ user_data: user_data })
-    addUsersToAssignment(this.state.id, [selected], false)
+    addUsersToAssignmentQuery(this.state.id, [selected], false)
   }
 
   /*******************************************************
@@ -363,7 +363,7 @@ class LiveAssignmentReport extends React.Component {
       (userassignment) => userassignment.id == id
     )
     userassignments[index] = { ...userassignments[index], completed: completed }
-    setAssignmentCompletion(id, completed)
+    setAssignmentCompletionQuery(id, completed)
     this.setState({ userassignments: userassignments })
   }
 

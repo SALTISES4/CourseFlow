@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { AssignmentTitle, TitleText, DatePicker } from '@cfUIComponents'
-import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+import { setAssignmentCompletionQuery } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
@@ -18,7 +18,7 @@ export class AssignmentView extends React.Component {
    * FUNCTIONS
    *******************************************************/
   visitWorkflow(id, evt) {
-    let path = COURSEFLOW_APP.config.update_path['workflow']
+    const path = COURSEFLOW_APP.config.update_path['workflow']
     evt.stopPropagation()
     window.open(path.replace('0', id))
   }
@@ -30,32 +30,37 @@ export class AssignmentView extends React.Component {
   }
 
   changeCompletion(evt) {
-    let checked = evt.target.checked
+    const checked = evt.target.checked
     this.setState({ completed: checked })
-    setAssignmentCompletion(this.props.data.user_assignment.id, checked)
+    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked)
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let node_data = data.task
-    let data_override
-    if (node_data.represents_workflow)
+    let lefticon
+    let righticon
+    let css_class = 'node assignment'
+
+    const data = this.props.data
+    const node_data = data.task
+    let data_override = node_data
+    const mouseover_actions = []
+
+    if (node_data.represents_workflow) {
       data_override = {
         ...node_data,
         ...node_data.linked_workflow_data,
         id: data.id
       }
-    else data_override = { ...node_data }
-    let lefticon
-    let righticon
+    }
+
     if (node_data.context_classification > 0)
       lefticon = (
         <img
           title={
-            renderer.context_choices.find(
+            this.props.renderer.context_choices.find(
               (obj) => obj.type == node_data.context_classification
             ).name
           }
@@ -70,7 +75,7 @@ export class AssignmentView extends React.Component {
       righticon = (
         <img
           title={
-            renderer.task_choices.find(
+            this.props.renderer.task_choices.find(
               (obj) => obj.type == node_data.task_classification
             ).name
           }
@@ -81,9 +86,8 @@ export class AssignmentView extends React.Component {
           }
         />
       )
-    let style = { backgroundColor: Constants.getColumnColour(node_data) }
-    let mouseover_actions = []
-    let css_class = 'node assignment'
+    const style = { backgroundColor: Constants.getColumnColour(node_data) }
+
     if (this.state.is_dropped) css_class += ' dropped'
 
     let linkIcon
@@ -102,8 +106,11 @@ export class AssignmentView extends React.Component {
         </div>
       )
     let parentLinkIcon
-    let parentlinktext = window.gettext('Visit containing workflow')
-    let parentclickfunc = this.visitWorkflow.bind(this, data.parent_workflow_id)
+    const parentlinktext = window.gettext('Visit containing workflow')
+    const parentclickfunc = this.visitWorkflow.bind(
+      this,
+      data.parent_workflow_id
+    )
     if (data.workflow_access && data.parent_workflow_id)
       parentLinkIcon = (
         <div

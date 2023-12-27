@@ -1,24 +1,24 @@
 import { WorkflowType } from '@cfModule/types/enum'
 
 export type Workflow = {
-  deleted: boolean
   id: number
+  author: string
   created_on: string
-  last_modified: string
-  type: WorkflowType
+  deleted: boolean
+  description: null
   favourite: boolean
+  has_liveproject: boolean
+  is_linked: boolean
   is_owned: boolean
   is_strategy: boolean
-  published: boolean
-  author: string
-  title: string
-  description: null
-  project_title: null
-  object_permission: ObjectPermission
-  has_liveproject: boolean
-  workflow_count: null
-  is_linked: boolean
   is_visible: boolean
+  last_modified: string
+  object_permission: ObjectPermission
+  project_title: null
+  published: boolean
+  title: string
+  type: WorkflowType
+  workflow_count: null
 }
 
 export type ObjectPermission = {
@@ -32,4 +32,9 @@ export type QueryPages = {
   page_count: number
   current_page: number
   results_per_page: number
+}
+
+export type Discipline = {
+  id: number
+  title: string
 }
