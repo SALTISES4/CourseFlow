@@ -6,5 +6,6 @@ export const DATA_ACTIONS = Enum({
 
 export const OBJECT_TYPE = Enum({
   OUTCOME: 'outcome',
-  PROJECT: 'project'
+  PROJECT: 'project',
+  STRATEGY: 'strategy'
 })

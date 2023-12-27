@@ -24,28 +24,11 @@ export type ObjectPermission = {
 
 export type ProjectMenuProps = {
   data: ProjectData
-  renderer: ProjectRenderer
   userId: number
   projectPaths
   allDisciplines
   userRole
   readOnly
-}
-
-export type ProjectRenderer = {
-  allDisciplines: Discipline[]
-  projectData: ProjectData
-  context: any
-  props: RenderProps
-  userId: number
-  user_permissions: number
-  user_role: number
-  read_only: boolean
-  create_path_this_project: {
-    activity: string
-    course: string
-    program: string
-  }
 }
 
 export type RenderProps = {
@@ -56,11 +39,6 @@ export type RenderProps = {
   user_id: number
 }
 
-export type Discipline = {
-  id: number
-  title: string
-}
-
 export type ProjectData = {
   author: string
   author_id: number
@@ -68,7 +46,7 @@ export type ProjectData = {
   deleted: boolean
   deleted_on: string
   description: string
-  disciplines: any[]
+  disciplines: Discipline[] // @todo this might be just ints / IDS
   favourite: boolean
   id: number
   last_modified: string

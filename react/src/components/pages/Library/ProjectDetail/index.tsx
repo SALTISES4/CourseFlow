@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
@@ -11,7 +10,7 @@ import { Discipline } from '@cfModule/types/common'
 class ProjectPage extends React.Component<ProjectViewDTO> {
   private readOnly: boolean
   private readonly projectData: ProjectData
-  private allDisciplines: Discipline[]
+  private readonly allDisciplines: Discipline[]
   private readonly userRole: number
   private userPermission: number
   private readonly userId: number
@@ -45,7 +44,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
     // this.container = container @todo how is container used if at all, need clarification
     return (
       <ProjectMenu
-        renderer={this}
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
         userRole={this.userRole}

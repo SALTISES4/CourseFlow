@@ -12,6 +12,11 @@ import { Workflow } from '@cfModule/types/common'
 
 type PropsType = {
   workflows: Workflow[]
+  context: string
+  updateWorkflow: any
+  user_role: number
+  read_only: any
+  project_data: any
 }
 
 type Filters = { display: string; name: string }[]

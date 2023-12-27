@@ -1,9 +1,7 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import {
   deleteSelf,
-  duplicateBaseItem,
   makeProjectLive,
   restoreSelf
 } from '@XMLHTTP/PostFunctions'
@@ -18,18 +16,17 @@ import {
 } from '@cfViews/LiveProjectView'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import {
+  duplicateBaseItemQuery,
   getUsersForObjectQuery,
   getWorkflowsForProjectQuery
 } from '@XMLHTTP/APIFunctions'
 import {
-  Discipline,
   ProjectData,
-  ProjectMenuProps,
-  ProjectRenderer
+  ProjectMenuProps
 } from '@cfPages/Library/ProjectDetail/types'
-import { Workflow } from '@cfModule/types/common'
+import { Discipline, Workflow } from '@cfModule/types/common'
 import { CollapsibleText, WorkflowTitle } from '@cfUIComponents/index.js'
-import { UsersForObjectQuery } from '@XMLHTTP/types'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types'
 // import { renderMessageBox } from '../components/MenuComponents/MenuComponents'
 // import closeMessageBox from '../components/MenuComponents/components/closeMessageBox'
 
@@ -42,7 +39,7 @@ import { UsersForObjectQuery } from '@XMLHTTP/types'
 type StateType = {
   data?: ProjectData
   view_type?: string
-  users?: UsersForObjectQuery
+  users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
 }
 
@@ -50,15 +47,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   private readonly readOnly: boolean
   private readonly userId: number
   private readonly createDiv: React.RefObject<HTMLDivElement>
-  private readonly renderer: ProjectRenderer
   private projectPaths: {
     activity: string
     course: string
     program: string
   }
   private readonly userRole: number
-  private allDisciplines: Discipline[]
-  private viewButtons: { name: string; type: string }[]
+  private readonly allDisciplines: Discipline[]
+  private readonly viewButtons: { name: string; type: string }[]
   private readonly data: ProjectData
 
   constructor(props: ProjectMenuProps) {
@@ -76,7 +72,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     this.projectPaths = this.props.projectPaths
     this.allDisciplines = this.props.allDisciplines
 
-    this.renderer = this.props.renderer
+    // this.renderer = this.props.renderer
     this.data = this.props.data
 
     this.state = {
@@ -143,7 +139,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       )
     ) {
       deleteSelf(this.data.id, 'project', false, () => {
-        window.location = COURSEFLOW_APP.config.home_path
+        window.location.href = COURSEFLOW_APP.config.home_path
       })
     }
   }
@@ -163,6 +159,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       )
     ) {
       makeProjectLive(this.data.id, (data) => {
+        console.log(data)
         location.reload()
       })
     }
@@ -255,6 +252,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
   OverflowLinks = (data, userId) => {
     let liveproject
+    const overflow_links = []
+
     if (data.author_id === userId) {
       if (data.liveproject) {
         liveproject = (
@@ -282,7 +281,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       }
     }
 
-    const overflow_links = [liveproject]
+    overflow_links.push(liveproject)
     overflow_links.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
         {window.gettext('Workflow comparison tool')}
@@ -325,7 +324,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           onClick={() => {
             const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
-            duplicateBaseItem(
+            duplicateBaseItemQuery(
               this.data.id,
               this.data.type,
               null,
@@ -465,8 +464,13 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  getHeader() {
+  Header = () => {
     const data = this.state.data
+    console.log('discipline')
+    // @todo see error below, verify data type of data.disciplines
+    console.log(this.allDisciplines)
+    console.log(data.disciplines)
+
     return (
       <div className="project-header">
         <WorkflowTitle
@@ -479,6 +483,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             <h4>{window.gettext('Permissions')}</h4>
             {this.getUsers()}
           </div>
+
           <div className="project-other">
             <div className="project-info-section project-description">
               <h4>{window.gettext('Description')}</h4>
@@ -487,11 +492,13 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
                 defaultText={window.gettext('No description')}
               />
             </div>
+
             <div className="project-info-section project-disciplines">
               <h4>{window.gettext('Disciplines')}</h4>
               {this.allDisciplines
                 .filter(
-                  (discipline) => data.disciplines.indexOf(discipline.id) >= 0
+                  // @ts-ignore
+                  (discipline) => data.disciplines.indexOf(discipline.id) >= 0 // @todo don't understand this error yet
                 )
                 .map((discipline) => discipline.title)
                 .join(', ') || window.gettext('None')}
@@ -502,7 +509,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     )
   }
 
-  getContent() {
+  Content = () => {
     const return_val = []
 
     if (
@@ -571,6 +578,9 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       default:
         return_val.push(
           <WorkflowFilter
+            user_role={this.userRole}
+            read_only={this.readOnly}
+            project_data={this.state.data}
             workflows={this.state.workflow_data}
             updateWorkflow={this.updateWorkflow.bind(this)}
             context="project"
@@ -595,8 +605,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           visible_buttons={visible_buttons}
         />
         <div className="project-menu">
-          {this.getHeader()}
-          {this.getContent()}
+          <this.Header />
+          <this.Content />
         </div>
       </div>
     )

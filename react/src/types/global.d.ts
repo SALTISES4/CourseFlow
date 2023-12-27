@@ -21,7 +21,9 @@ interface CourseflowAppGlobals {
   path_id: string
   contextData: ContextData
   tinyLoader: TinyLoader
-  makeDropdown: (item: HTMLElement) => void
+  makeDropdown: (
+    item: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> // @todo ...
+  ) => void
 }
 
 interface Config {

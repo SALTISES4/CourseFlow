@@ -50916,9 +50916,10 @@ combineReducers({
 const DATA_ACTIONS = Enum({
   POSTED: "posted"
 });
-Enum({
+const OBJECT_TYPE = Enum({
   OUTCOME: "outcome",
-  PROJECT: "project"
+  PROJECT: "project",
+  STRATEGY: "strategy"
 });
 function API_POST(url = "", data = {}) {
   if (!url) {
@@ -50957,7 +50958,7 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => consol
 }
 function updateValue(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
   var t = 1e3;
-  let previousCall = document.lastUpdateCall;
+  const previousCall = document.lastUpdateCall;
   document.lastUpdateCall = {
     time: Date.now(),
     id: objectID,
@@ -50970,7 +50971,7 @@ function updateValue(objectID, objectType, json, changeField2 = false, callBackF
   if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
     document.lastUpdateCallFunction();
   }
-  let post_object = {
+  const post_object = {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
     data: JSON.stringify(json)
@@ -51013,7 +51014,7 @@ function updateValueInstant(objectID, objectType, json, callBackFunction = () =>
 }
 function toggleDrop(objectID, objectType, is_dropped, dispatch, depth = 1) {
   try {
-    let default_drop = get_default_drop_state(
+    const default_drop = get_default_drop_state(
       objectID,
       objectType,
       depth
@@ -51132,7 +51133,7 @@ function deleteSelf(objectID, objectType, soft = false, callBackFunction = () =>
   }
 }
 function deleteSelfLive(objectID, objectType, callBackFunction = () => console.log("success")) {
-  let path = COURSEFLOW_APP.config.post_paths.delete_self_live;
+  const path = COURSEFLOW_APP.config.post_paths.delete_self_live;
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
@@ -51379,51 +51380,6 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = () 
       else
         window.fail_function(data.action);
     });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function duplicateBaseItem(itemPk, objectType, projectID, callBackFunction = () => console.log("success")) {
-  try {
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: JSON.stringify(itemPk)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else if (!projectID && projectID !== 0) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
-        workflowPk: JSON.stringify(itemPk)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
-        workflowPk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    }
   } catch (err) {
     window.fail_function();
   }
@@ -51678,7 +51634,7 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => consol
     window.fail_function();
   }
 }
-function makeProjectLive(projectPk, callBackFunction = () => console.log("success")) {
+function makeProjectLive(projectPk, callBackFunction = (data) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
@@ -62787,6 +62743,45 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) 
       else
         window.fail_function(data.action);
     });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+        outcomePk: itemPkString,
+        projectPk: projectPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
   } catch (err) {
     window.fail_function();
   }
@@ -89614,7 +89609,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             const loader = COURSEFLOW_APP.tiny_loader;
             if (this.props.data.is_strategy) {
               loader.startLoad();
-              duplicateBaseItem(
+              duplicateBaseItemQuery(
                 this.props.data.id,
                 this.props.data.type,
                 null,
@@ -91048,7 +91043,6 @@ class ProjectMenu extends reactExports.Component {
     __publicField(this, "readOnly");
     __publicField(this, "userId");
     __publicField(this, "createDiv");
-    __publicField(this, "renderer");
     __publicField(this, "projectPaths");
     __publicField(this, "userRole");
     __publicField(this, "allDisciplines");
@@ -91056,6 +91050,7 @@ class ProjectMenu extends reactExports.Component {
     __publicField(this, "data");
     __publicField(this, "OverflowLinks", (data, userId) => {
       let liveproject;
+      const overflow_links = [];
       if (data.author_id === userId) {
         if (data.liveproject) {
           liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -91082,7 +91077,7 @@ class ProjectMenu extends reactExports.Component {
           );
         }
       }
-      const overflow_links = [liveproject];
+      overflow_links.push(liveproject);
       overflow_links.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
       );
@@ -91094,6 +91089,134 @@ class ProjectMenu extends reactExports.Component {
         overflow_links.push(this.getDeleteProject());
       }
       return overflow_links;
+    });
+    __publicField(this, "Header", () => {
+      const data = this.state.data;
+      console.log("discipline");
+      console.log(this.allDisciplines);
+      console.log(data.disciplines);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            data,
+            no_hyperlink: true,
+            class_name: "project-title"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
+            this.getUsers()
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CollapsibleText,
+                {
+                  text: data.description,
+                  defaultText: window.gettext("No description")
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+              this.allDisciplines.filter(
+                // @ts-ignore
+                (discipline) => data.disciplines.indexOf(discipline.id) >= 0
+                // @todo don't understand this error yet
+              ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
+            ] })
+          ] })
+        ] })
+      ] });
+    });
+    __publicField(this, "Content", () => {
+      const return_val = [];
+      if (this.state.data.liveproject && this.userRole === role_keys.teacher)
+        return_val.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
+            let view_class = "hover-shade";
+            if (item.type === this.state.view_type)
+              view_class += " active";
+            return /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                id: "button_" + item.type,
+                className: view_class,
+                onClick: this.changeView.bind(this, item.type),
+                children: item.name
+              }
+            );
+          }) })
+        );
+      switch (this.state.view_type) {
+        case "overview":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectOverview,
+              {
+                userRole: this.userRole,
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "students":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectStudents,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "assignments":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectAssignments,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "completion_table":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectCompletionTable,
+              {
+                role: this.getRole(),
+                objectID: this.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        default:
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowFilter,
+              {
+                user_role: this.userRole,
+                read_only: this.readOnly,
+                project_data: this.state.data,
+                workflows: this.state.workflow_data,
+                updateWorkflow: this.updateWorkflow.bind(this),
+                context: "project"
+              }
+            )
+          );
+      }
+      return return_val;
     });
     this.viewButtons = [
       { type: "workflows", name: window.gettext("Workflows") },
@@ -91107,7 +91230,6 @@ class ProjectMenu extends reactExports.Component {
     this.readOnly = this.props.readOnly;
     this.projectPaths = this.props.projectPaths;
     this.allDisciplines = this.props.allDisciplines;
-    this.renderer = this.props.renderer;
     this.data = this.props.data;
     this.state = {
       data: this.props.data,
@@ -91163,7 +91285,7 @@ class ProjectMenu extends reactExports.Component {
       )
     )) {
       deleteSelf(this.data.id, "project", false, () => {
-        window.location = COURSEFLOW_APP.config.home_path;
+        window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
@@ -91179,6 +91301,7 @@ class ProjectMenu extends reactExports.Component {
       )
     )) {
       makeProjectLive(this.data.id, (data) => {
+        console.log(data);
         location.reload();
       });
     }
@@ -91265,7 +91388,7 @@ class ProjectMenu extends reactExports.Component {
           onClick: () => {
             const loader = COURSEFLOW_APP.tinyLoader;
             loader.startLoad();
-            duplicateBaseItem(
+            duplicateBaseItemQuery(
               this.data.id,
               this.data.type,
               null,
@@ -91402,126 +91525,6 @@ class ProjectMenu extends reactExports.Component {
     }
     return null;
   }
-  getHeader() {
-    const data = this.state.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowTitle,
-        {
-          data,
-          no_hyperlink: true,
-          class_name: "project-title"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-          this.getUsers()
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              CollapsibleText,
-              {
-                text: data.description,
-                defaultText: window.gettext("No description")
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-            this.allDisciplines.filter(
-              (discipline) => data.disciplines.indexOf(discipline.id) >= 0
-            ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
-          ] })
-        ] })
-      ] })
-    ] });
-  }
-  getContent() {
-    const return_val = [];
-    if (this.state.data.liveproject && this.userRole === role_keys.teacher)
-      return_val.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
-          let view_class = "hover-shade";
-          if (item.type === this.state.view_type)
-            view_class += " active";
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              id: "button_" + item.type,
-              className: view_class,
-              onClick: this.changeView.bind(this, item.type),
-              children: item.name
-            }
-          );
-        }) })
-      );
-    switch (this.state.view_type) {
-      case "overview":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectOverview,
-            {
-              userRole: this.userRole,
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "students":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectStudents,
-            {
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "assignments":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectAssignments,
-            {
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "completion_table":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectCompletionTable,
-            {
-              role: this.getRole(),
-              objectID: this.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      default:
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowFilter,
-            {
-              workflows: this.state.workflow_data,
-              updateWorkflow: this.updateWorkflow.bind(this),
-              context: "project"
-            }
-          )
-        );
-    }
-    return return_val;
-  }
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -91536,8 +91539,8 @@ class ProjectMenu extends reactExports.Component {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-        this.getHeader(),
-        this.getContent()
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
       ] })
     ] });
   }
@@ -91567,7 +91570,6 @@ class ProjectPage extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ProjectMenu,
       {
-        renderer: this,
         projectPaths: this.projectPaths,
         allDisciplines: this.allDisciplines,
         userRole: this.userRole,

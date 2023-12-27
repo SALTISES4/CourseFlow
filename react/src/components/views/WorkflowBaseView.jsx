@@ -16,7 +16,6 @@ import {
   restoreSelf,
   deleteSelf,
   toggleDrop,
-  duplicateBaseItem
 } from '@XMLHTTP/PostFunctions'
 import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
 
@@ -27,7 +26,7 @@ import { CompetencyMatrixView } from './CompetencyMatrixView'
 import { OutcomeTableView } from './OutcomeTableView'
 import { GridView } from './GridView'
 import closeMessageBox from '../common/menu/components/closeMessageBox'
-import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
+import {duplicateBaseItemQuery, getUsersForObjectQuery} from '@XMLHTTP/APIFunctions'
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -362,7 +361,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           const loader = COURSEFLOW_APP.tiny_loader
           if (this.props.data.is_strategy) {
             loader.startLoad()
-            duplicateBaseItem(
+            duplicateBaseItemQuery(
               this.props.data.id,
               this.props.data.type,
               null,
@@ -377,7 +376,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             getTargetProjectMenu(-1, (response_data) => {
               if (response_data.parentID != null) {
                 const utilLoader = new Utility.Loader('body')
-                duplicateBaseItem(
+                duplicateBaseItemQuery(
                   this.props.data.id,
                   this.props.data.type,
                   response_data.parentID,
