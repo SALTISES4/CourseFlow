@@ -40,9 +40,9 @@ class OutcomeNodeUnconnected extends Component {
     let icon = 'close.svg'
     return (
       <ActionButton
-        button_icon={icon}
-        button_class="delete-self-button"
-        titletext={gettext('Delete')}
+        buttonIcon={icon}
+        buttonClass="delete-self-button"
+        titleText={window.gettext('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )

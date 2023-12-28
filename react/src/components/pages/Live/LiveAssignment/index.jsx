@@ -1,5 +1,4 @@
 import React from 'react'
-import { TinyLoader } from '@cfRedux/helpers'
 import { LiveAssignmentMenu } from '@cfViews/LiveAssignmentView'
 
 /*******************************************************
@@ -15,7 +14,6 @@ class LiveAssignmentRenderer extends React.Component {
 
   render() {
     this.container = container
-    this.tiny_loader = new TinyLoader($('body')[0])
 
     return this.getContents()
   }

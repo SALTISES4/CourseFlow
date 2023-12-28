@@ -1,4 +1,4 @@
-import { Enum } from '../utilityFunctions'
+import { Enum } from '@cfUtility'
 
 export const DATA_ACTIONS = Enum({
   POSTED: 'posted'
@@ -6,5 +6,6 @@ export const DATA_ACTIONS = Enum({
 
 export const OBJECT_TYPE = Enum({
   OUTCOME: 'outcome',
-  PROJECT: 'project'
+  PROJECT: 'project',
+  STRATEGY: 'strategy'
 })

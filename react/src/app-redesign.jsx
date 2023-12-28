@@ -48,6 +48,11 @@ import Favourites from '@cfModule/components/pages/Library/Favorites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
+import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
+
+// see note in mouseCursorLoader.js
+const tinyLoader = new MouseCursorLoader($('body')[0])
+COURSEFLOW_APP.tinyLoader = tinyLoader
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
@@ -86,9 +91,6 @@ function renderComponents(components) {
 
 // contextData
 // set in python views and prepped in react_renderer.html
-console.log('current path')
-console.log(COURSEFLOW_APP.path_id)
-
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     /*******************************************************

@@ -1,4 +1,4 @@
-import * as Utility from './utilityFunctions'
+import * as Utility from '@cfUtility'
 
 /*
 Determines how long an action locks an object

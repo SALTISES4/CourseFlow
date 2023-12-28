@@ -1,4 +1,4 @@
-export { default as Component } from './Component'
+export { default as Component } from './ComponentWithToggleDrop.tsx'
 export { default as EditableComponent } from './EditableComponent'
 export { default as EditableComponentWithActions } from './EditableComponentWithActions'
 export { default as EditableComponentWithComments } from './EditableComponentWithComments'

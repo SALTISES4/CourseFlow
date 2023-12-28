@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+import { setAssignmentCompletionQuery } from '@XMLHTTP/PostFunctions'
 // @components
 import LiveProjectSection from './LiveProjectSection'
 import { AssignmentViewSmall } from '../LiveAssignmentView'
@@ -70,7 +70,7 @@ class LiveProjectCompletionTable extends LiveProjectSection {
   }
 
   toggleCompletion(id, row_index, evt) {
-    setAssignmentCompletion(id, evt.target.checked)
+    setAssignmentCompletionQuery(id, evt.target.checked)
     let new_data = { ...this.state.data }
     new_data.table_rows = new_data.table_rows.slice()
     new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] }

@@ -13,11 +13,9 @@ import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import {
   getParentWorkflowInfo,
   getPublicParentWorkflowInfo,
-  restoreSelf,
-  deleteSelf,
+  restoreSelfQuery,
+  deleteSelfQuery,
   toggleDrop,
-  getUsersForObject,
-  duplicateBaseItem
 } from '@XMLHTTP/PostFunctions'
 import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
 
@@ -28,6 +26,7 @@ import { CompetencyMatrixView } from './CompetencyMatrixView'
 import { OutcomeTableView } from './OutcomeTableView'
 import { GridView } from './GridView'
 import closeMessageBox from '../common/menu/components/closeMessageBox'
+import {duplicateBaseItemQuery, getUsersForObjectQuery} from '@XMLHTTP/APIFunctions'
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -59,7 +58,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
     this.props.renderer.selection_manager.changeSelection(null, null)
-    let disabled_tabs = []
+    const disabled_tabs = []
     for (let i = 0; i <= 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
 
@@ -67,7 +66,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      * JQUERY
      *******************************************************/
     $('#sidebar').tabs({ disabled: false })
-    let current_tab = $('#sidebar').tabs('option', 'active')
+    const current_tab = $('#sidebar').tabs('option', 'active')
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
       if (this.allowed_tabs.length == 0) $('#sidebar').tabs({ active: false })
       else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
@@ -85,8 +84,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getHeader() {
-    let data = this.props.data
-    let style = {}
+    const data = this.props.data
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
@@ -127,7 +126,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getTypeIndicator() {
-    let data = this.props.data
+    const data = this.props.data
     let type_text = window.gettext(data.type)
     if (data.is_strategy) type_text += window.gettext(' strategy')
     return (
@@ -137,10 +136,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   getUsers() {
     if (!this.state.users) return null
-    let author = this.state.users.author
-    let editors = this.state.users.editors
-    let commenters = this.state.users.commentors
-    let viewers = this.state.users.viewers
+    const author = this.state.users.author
+    const editors = this.state.users.editors
+    const commenters = this.state.users.commentors
+    const viewers = this.state.users.viewers
     let users_group = []
     if (this.state.users.published) {
       users_group.push(
@@ -181,7 +180,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       ))
     ])
     users_group = users_group.flat(2)
-    let users = [<div className="users-group">{users_group}</div>]
+    const users = [<div className="users-group">{users_group}</div>]
     if (users_group.length > 4) {
       users.push(
         <div className="workflow-created">
@@ -238,8 +237,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   openShareMenu() {
-    let component = this
-    let data = this.props.data
+    const component = this
+    const data = this.props.data
     renderMessageBox(data, 'share_menu', () => {
       closeMessageBox()
       component.getUserData()
@@ -249,17 +248,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getUserData() {
     if (this.props.renderer.public_view || this.props.renderer.is_student)
       return null
-    let component = this
-    getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-      component.setState({ users: data })
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+      this.setState({ users: data })
     })
   }
 
   getOverflowLinks() {
-    let data = this.state.data
-    let liveproject
-
-    let overflow_links = []
+    const overflow_links = []
     overflow_links.push(this.getExportButton())
     overflow_links.push(this.getCopyButton())
     overflow_links.push(this.getImportButton())
@@ -308,7 +303,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         window.gettext('Are you sure you want to delete this workflow?')
       )
     ) {
-      deleteSelf(this.props.data.id, 'workflow', true, () => {})
+      deleteSelfQuery(this.props.data.id, 'workflow', true, () => {})
     }
   }
 
@@ -320,7 +315,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         )
       )
     ) {
-      deleteSelf(this.props.data.id, 'workflow', false, () => {
+      deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
         window.location = COURSEFLOW_APP.config.update_path['project'].replace(
           0,
           renderer.project.id
@@ -330,7 +325,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   restoreWorkflow() {
-    restoreSelf(this.props.data.id, 'workflow', () => {})
+    restoreSelfQuery(this.props.data.id, 'workflow', () => {})
   }
 
   getExportButton() {
@@ -338,7 +333,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       return null
     if (this.props.renderer.is_student && !this.props.renderer.can_view)
       return null
-    let export_button = (
+    const export_button = (
       <div
         id="export-button"
         className="hover-shade"
@@ -358,15 +353,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   getCopyButton() {
     if (!this.props.renderer.user_id) return null
-    let export_button = [
+    const export_button = [
       <div
         id="copy-button"
         className="hover-shade"
         onClick={() => {
-          let loader = this.props.renderer.tiny_loader
+          const loader = COURSEFLOW_APP.tiny_loader
           if (this.props.data.is_strategy) {
             loader.startLoad()
-            duplicateBaseItem(
+            duplicateBaseItemQuery(
               this.props.data.id,
               this.props.data.type,
               null,
@@ -380,13 +375,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           } else {
             getTargetProjectMenu(-1, (response_data) => {
               if (response_data.parentID != null) {
-                let loader = new Utility.Loader('body')
-                duplicateBaseItem(
+                const utilLoader = new Utility.Loader('body')
+                duplicateBaseItemQuery(
                   this.props.data.id,
                   this.props.data.type,
                   response_data.parentID,
                   (response_data) => {
-                    loader.endLoad()
+                    utilLoader.endLoad()
                     window.location = COURSEFLOW_APP.config.update_path[
                       response_data.new_item.type
                     ].replace('0', response_data.new_item.id)
@@ -402,14 +397,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     ]
     if (
       !this.props.data.is_strategy &&
-      this.props.renderer.project_permission == Constants.permission_keys.edit
+      this.props.renderer.project_permission === Constants.permission_keys.edit
     )
       export_button.unshift(
         <div
           id="copy-to-project-button"
           className="hover-shade"
           onClick={() => {
-            let loader = this.props.renderer.tiny_loader
+            const loader = COURSEFLOW_APP.tiny_loader
             duplicateBaseItem(
               this.props.data.id,
               this.props.data.type,
@@ -433,7 +428,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (this.props.renderer.read_only) return null
     let disabled
     if (this.props.data.importing) disabled = true
-    let imports = [<hr />]
+    const imports = [<hr />]
     this.pushImport(
       imports,
       'outcomes',
@@ -471,9 +466,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getReturnLinks() {
-    let renderer = this.props.renderer
-    let data = this.props.data
-    let return_links = []
+    const renderer = this.props.renderer
+    const data = this.props.data
+    const return_links = []
     if (renderer.project && !renderer.is_student && !renderer.public_view) {
       return_links.push(
         <a
@@ -525,8 +520,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   getWorkflowContent() {
-    let data = this.props.data
-    let renderer = this.props.renderer
+    const data = this.props.data
+    const renderer = this.props.renderer
 
     let workflow_content
     if (renderer.view_type == 'outcometable') {
@@ -560,7 +555,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
     if (data.is_strategy) return workflow_content
 
-    let view_buttons = [
+    const view_buttons = [
       {
         type: 'workflowview',
         name: window.gettext('Workflow View'),
@@ -611,7 +606,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         )
       })
 
-    let view_buttons_sorted = view_buttons.slice(0, 2)
+    const view_buttons_sorted = view_buttons.slice(0, 2)
     view_buttons_sorted.push(
       <div
         className="hover-shade other-views"
@@ -641,8 +636,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   getJump() {
     if (this.props.renderer.view_type != 'workflowview') return null
-    let data = this.props.data
-    let nodebarweekworkflows = data.weekworkflow_set.map(
+    const data = this.props.data
+    const nodebarweekworkflows = data.weekworkflow_set.map(
       (weekworkflow, index) => (
         <JumpToWeekWorkflow
           key={`weekworkflow-${index}`}
@@ -738,13 +733,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let renderer = this.props.renderer
-    let data = this.props.data
-    let visible_buttons = (() => {
+    const renderer = this.props.renderer
+    const data = this.props.data
+    const visible_buttons = (() => {
       return [this.getEdit(), this.getShare()]
     }).bind(this)
-    let overflow_links = this.getOverflowLinks.bind(this)
-    let viewbar = (() => {
+    const overflow_links = this.getOverflowLinks.bind(this)
+    const viewbar = (() => {
       return [this.getJump(), this.getExpand()]
     }).bind(this)
     let userbar
@@ -808,7 +803,7 @@ class WorkflowTableView extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     if (data.table_type == 1)
       return (
         <CompetencyMatrixView
@@ -862,7 +857,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
    * FUNCTIONS
    *******************************************************/
   getTypeIndicator(data) {
-    let type = data.type
+    const type = data.type
     let type_text = gettext(type)
     if (data.is_strategy) type_text += gettext(' strategy')
     return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
@@ -878,7 +873,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
         this.props.child_workflows.length == 0
       )
         return null
-      let parent_workflows = this.state.parent_workflows.map(
+      const parent_workflows = this.state.parent_workflows.map(
         (parent_workflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleParent-${index}`}
@@ -887,7 +882,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
           />
         )
       )
-      let child_workflows = this.props.child_workflows.map(
+      const child_workflows = this.props.child_workflows.map(
         (child_workflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleChild-${index}`}
@@ -896,7 +891,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
           />
         )
       )
-      let return_val = [
+      const return_val = [
         <hr key="br" />,
         <a key="quick-nav" className="panel-item">
           {window.gettext('Quick Navigation')}
@@ -947,7 +942,7 @@ class JumpToWeekWorkflowUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <JumpToWeekView
         objectID={data.week}
@@ -980,10 +975,10 @@ export class JumpToWeekViewUnconnected extends React.Component {
    * FUNCTIONS
    *******************************************************/
   jumpTo() {
-    let week_id = this.props.data.id
-    let week = $(".week-workflow[data-child-id='" + week_id + "'] > .week")
+    const week_id = this.props.data.id
+    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week")
     if (week.length > 0) {
-      let container = $('#container')
+      const container = $('#container')
 
       $('#container').animate(
         {
@@ -1002,8 +997,8 @@ export class JumpToWeekViewUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let renderer = this.props.renderer
+    const data = this.props.data
+    const renderer = this.props.renderer
     let default_text
     if (!renderer.is_strategy)
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)

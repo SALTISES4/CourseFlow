@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { createStore } from '@reduxjs/toolkit'
-import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
+import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import {
   getPublicWorkflowChildData,
@@ -174,7 +174,6 @@ class Workflow {
   }
 
   render(container, view_type = 'workflowview') {
-    this.tiny_loader = new TinyLoader($('body')[0])
     this.selection_manager = new SelectionManager(this.read_only)
 
     // In case we need to get child workflows

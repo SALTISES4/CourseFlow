@@ -11,7 +11,7 @@ class LiveProjectOverview extends LiveProjectSection {
     if (!this.state.data) return this.defaultRender()
 
     let workflows = this.state.data.workflows.map((workflow, index) => (
-      <WorkflowCardSimple key={index} workflow_data={workflow} />
+      <WorkflowCardSimple key={index} workflowData={workflow} />
     ))
     if (workflows.length === 0)
       workflows = window.gettext(
@@ -35,7 +35,7 @@ class LiveProjectOverview extends LiveProjectSection {
         <td>
           <AssignmentTitle
             data={assignment}
-            user_role={this.props.renderer.user_role}
+            user_role={this.props.userRole}
           />
         </td>
         <td>{assignment.completion_info}</td>
