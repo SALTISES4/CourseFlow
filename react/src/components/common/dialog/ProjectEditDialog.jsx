@@ -6,17 +6,17 @@ import {
   deleteSelfQuery,
   updateValueInstant
 } from '@XMLHTTP/PostFunctions'
-import closeMessageBox from '../components/closeMessageBox'
 import { LiveProjectSettings } from '@cfViews/LiveProjectView'
 
 /*
 The menu for editing a project.
 */
-class ProjectEditMenu extends React.Component {
+class ProjectEditDialog extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { ...props.data, selected_set: 'none' }
+    this.state = { ...this.props.data, selected_set: 'none' }
     this.object_set_updates = {}
+    this.close = this.props.closeAction
   }
   /*******************************************************
    * LIFECYCLE
@@ -116,7 +116,7 @@ class ProjectEditMenu extends React.Component {
   getActions() {
     var actions = []
     actions.push(
-      <button className="secondary-button" onClick={closeMessageBox}>
+      <button className="secondary-button" onClick={this.close}>
         {window.gettext('Cancel')}
       </button>
     )
@@ -134,7 +134,7 @@ class ProjectEditMenu extends React.Component {
           })
           this.updateTerms()
           this.props.actionFunction({ ...this.state, changed: false })
-          closeMessageBox()
+          this.close()
         }}
       >
         {window.gettext('Save Changes')}
@@ -193,7 +193,6 @@ class ProjectEditMenu extends React.Component {
   render() {
     var data = this.state
 
-    let all_disciplines
     let disciplines
     if (data.all_disciplines) {
       disciplines = data.all_disciplines
@@ -286,6 +285,7 @@ class ProjectEditMenu extends React.Component {
             placeholder="Search"
           />
         </div>
+
         <div>
           <h4>{window.gettext('Object sets')}</h4>
           <div className="workflow-created">
@@ -315,13 +315,15 @@ class ProjectEditMenu extends React.Component {
             </div>
           </div>
         </div>
+
         {this.getLiveProjectSettings()}
+
         <div className="action-bar">{this.getActions()}</div>
-        <div className="window-close-button" onClick={closeMessageBox}>
+        <div className="window-close-button" onClick={this.close}>
           <span className="material-symbols-rounded green">close</span>
         </div>
       </div>
     )
   }
 }
-export default ProjectEditMenu
+export default ProjectEditDialog

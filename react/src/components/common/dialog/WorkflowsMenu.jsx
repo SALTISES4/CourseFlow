@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
-import MenuTab from '../components/MenuTab'
-import closeMessageBox from '../components/closeMessageBox'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
+import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 
 /*
 Creates a set of sections (tabs) of workflow/project card grids.
@@ -154,7 +154,7 @@ class WorkflowsMenu extends React.Component {
           {text}
         </button>
       )
-    } else if (this.props.type == 'target_project_menu') {
+    } else if (this.props.type === 'target_project_menu') {
       actions.push(
         <button
           id="set-linked-workflow-cancel"

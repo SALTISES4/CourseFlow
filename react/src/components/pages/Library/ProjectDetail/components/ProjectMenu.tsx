@@ -6,7 +6,6 @@ import {
   restoreSelfQuery
 } from '@XMLHTTP/PostFunctions'
 // @local
-import * as Utility from '@cfUtility'
 import { MenuBar } from '@cfCommonComponents/components'
 import LiveProjectOverview from '@cfViews/LiveProjectView/LiveProjectOverview'
 import LiveProjectStudents from '@cfViews/LiveProjectView/LiveProjectStudents'
@@ -28,11 +27,9 @@ import { Discipline, Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types'
 import { Dialog, DialogTitle } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
-import ProjectEditMenu from '@cfCommonComponents/menu/menus/ProjectEditMenu'
-import ShareMenu from '@cfCommonComponents/menu/menus/ShareMenu'
-import ExportMenu from '@cfCommonComponents/menu/menus/ExportMenu'
-// import { renderMessageBox } from '../components/MenuComponents/MenuComponents'
-// import closeMessageBox from '../components/MenuComponents/components/closeMessageBox'
+import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
+import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
+import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
 
 /*******************************************************
  * The project library menu
@@ -534,10 +531,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   EditDialog = () => {
     return (
       <Dialog open={this.state.openEditDialog}>
-        <DialogTitle>
-          <h2>{window.gettext('Edit project')}</h2>
-        </DialogTitle>
-        <ProjectEditMenu
+        <ProjectEditDialog
           type={'project_edit_menu'}
           data={{
             ...this.state.data,
@@ -546,6 +540,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             // renderer: this.props.renderer
           }}
           actionFunction={this.updateFunction}
+          closeAction={() => this.closeModals()}
         />
       </Dialog>
     )
@@ -584,7 +579,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             allDisciplines={this.allDisciplines}
             data={this.state.data} // @todo this needs to be unpacked
             users={this.state.users}
-            openShareDialog={this.openShareDialog}
+            openShareDialog={() => this.openShareDialog()}
             readOnly={this.readOnly}
           />
           <this.Content />

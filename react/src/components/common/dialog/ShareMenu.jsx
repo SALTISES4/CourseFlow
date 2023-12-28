@@ -52,7 +52,6 @@ class UserLabel extends React.Component {
                 <option value="edit">{window.gettext('Can edit')}</option>
                 <option value="comment">{window.gettext('Can comment')}</option>
                 <option value="view">{window.gettext('Can view')}</option>
-                {/*<option value="student">{window.gettext("Student")}</option>*/}
               </select>
             </div>
             <button
@@ -76,7 +75,6 @@ class UserLabel extends React.Component {
               <option value="edit">{window.gettext('Can edit')}</option>
               <option value="comment">{window.gettext('Can comment')}</option>
               <option value="view">{window.gettext('Can view')}</option>
-              {/*<option value="student">{window.gettext("Student")}</option>*/}
               <option value="none">{window.gettext('Remove user')}</option>
             </select>
           </div>

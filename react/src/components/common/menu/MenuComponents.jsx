@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import ImportMenu from './menus/ImportMenu'
-import WorkflowsMenu from './menus/WorkflowsMenu'
+import ImportMenu from '../dialog/ImportMenu'
+import WorkflowsMenu from '../dialog/WorkflowsMenu'
 import { Dialog, DialogTitle } from '@mui/material'
 
 /**
@@ -86,21 +86,5 @@ export function renderMessageBox(data, type, updateFunction) {
       actionFunction={updateFunction}
     />,
     $('#popup-container')[0]
-  )
-}
-
-export const MessageBoxWrapper = ({ data, type, action, open }) => {
-  // const [openModal, setOpenModal] = useState(false)
-  return (
-    <Dialog open={open}>
-      <DialogTitle>
-        <h2>{window.gettext('Edit project')}</h2>
-      </DialogTitle>
-      <MessageBox
-        message_data={data}
-        message_type={type}
-        actionFunction={action}
-      />
-    </Dialog>
   )
 }

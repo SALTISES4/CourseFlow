@@ -66707,7 +66707,7 @@ ${latestSubscriptionCallbackError.current.stack}
             }
           )
         );
-      } else if (this.props.type == "target_project_menu") {
+      } else if (this.props.type === "target_project_menu") {
         actions.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
@@ -90530,11 +90530,12 @@ ${latestSubscriptionCallbackError.current.stack}
       ] })
     ] });
   };
-  class ProjectEditMenu extends reactExports.Component {
+  class ProjectEditDialog extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.state = { ...props.data, selected_set: "none" };
+      this.state = { ...this.props.data, selected_set: "none" };
       this.object_set_updates = {};
+      this.close = this.props.closeAction;
     }
     /*******************************************************
      * LIFECYCLE
@@ -90625,7 +90626,7 @@ ${latestSubscriptionCallbackError.current.stack}
     getActions() {
       var actions = [];
       actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: closeMessageBox, children: window.gettext("Cancel") })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.close, children: window.gettext("Cancel") })
       );
       actions.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -90643,7 +90644,7 @@ ${latestSubscriptionCallbackError.current.stack}
               });
               this.updateTerms();
               this.props.actionFunction({ ...this.state, changed: false });
-              closeMessageBox();
+              this.close();
             },
             children: window.gettext("Save Changes")
           }
@@ -90819,7 +90820,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ] }),
         this.getLiveProjectSettings(),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: closeMessageBox, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.close, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
       ] });
     }
   }
@@ -91889,22 +91890,20 @@ ${latestSubscriptionCallbackError.current.stack}
         ] });
       });
       __publicField(this, "EditDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openEditDialog, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ProjectEditMenu,
-            {
-              type: "project_edit_menu",
-              data: {
-                ...this.state.data,
-                all_disciplines: this.allDisciplines,
-                user_role: this.userRole
-                // renderer: this.props.renderer
-              },
-              actionFunction: this.updateFunction
-            }
-          )
-        ] });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ProjectEditDialog,
+          {
+            type: "project_edit_menu",
+            data: {
+              ...this.state.data,
+              all_disciplines: this.allDisciplines,
+              user_role: this.userRole
+              // renderer: this.props.renderer
+            },
+            actionFunction: this.updateFunction,
+            closeAction: () => this.closeModals()
+          }
+        ) });
       });
       __publicField(this, "ExportDialog", () => {
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
@@ -92087,7 +92086,7 @@ ${latestSubscriptionCallbackError.current.stack}
               allDisciplines: this.allDisciplines,
               data: this.state.data,
               users: this.state.users,
-              openShareDialog: this.openShareDialog,
+              openShareDialog: () => this.openShareDialog(),
               readOnly: this.readOnly
             }
           ),
