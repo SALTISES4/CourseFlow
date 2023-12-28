@@ -280,20 +280,20 @@ function requireReact_development() {
         {
           Object.freeze(emptyObject);
         }
-        function Component2(props, context, updater) {
+        function Component(props, context, updater) {
           this.props = props;
           this.context = context;
           this.refs = emptyObject;
           this.updater = updater || ReactNoopUpdateQueue;
         }
-        Component2.prototype.isReactComponent = {};
-        Component2.prototype.setState = function(partialState, callback) {
+        Component.prototype.isReactComponent = {};
+        Component.prototype.setState = function(partialState, callback) {
           if (typeof partialState !== "object" && typeof partialState !== "function" && partialState != null) {
             throw new Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
           }
           this.updater.enqueueSetState(this, partialState, callback, "setState");
         };
-        Component2.prototype.forceUpdate = function(callback) {
+        Component.prototype.forceUpdate = function(callback) {
           this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
         };
         {
@@ -302,7 +302,7 @@ function requireReact_development() {
             replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
           };
           var defineDeprecationWarning = function(methodName, info) {
-            Object.defineProperty(Component2.prototype, methodName, {
+            Object.defineProperty(Component.prototype, methodName, {
               get: function() {
                 warn("%s(...) is deprecated in plain JavaScript React classes. %s", info[0], info[1]);
                 return void 0;
@@ -317,7 +317,7 @@ function requireReact_development() {
         }
         function ComponentDummy() {
         }
-        ComponentDummy.prototype = Component2.prototype;
+        ComponentDummy.prototype = Component.prototype;
         function PureComponent(props, context, updater) {
           this.props = props;
           this.context = context;
@@ -326,7 +326,7 @@ function requireReact_development() {
         }
         var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
         pureComponentPrototype.constructor = PureComponent;
-        assign2(pureComponentPrototype, Component2.prototype);
+        assign2(pureComponentPrototype, Component.prototype);
         pureComponentPrototype.isPureReactComponent = true;
         function createRef() {
           var refObject = {
@@ -1391,8 +1391,8 @@ function requireReact_development() {
             return describeNativeComponentFrame(fn, false);
           }
         }
-        function shouldConstruct(Component3) {
-          var prototype = Component3.prototype;
+        function shouldConstruct(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -1898,7 +1898,7 @@ function requireReact_development() {
           only: onlyChild
         };
         exports.Children = Children;
-        exports.Component = Component2;
+        exports.Component = Component;
         exports.Fragment = REACT_FRAGMENT_TYPE;
         exports.Profiler = REACT_PROFILER_TYPE;
         exports.PureComponent = PureComponent;
@@ -2613,8 +2613,8 @@ function requireReactJsxRuntime_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -4588,29 +4588,29 @@ function getFunctionName(fn) {
   const name2 = match2 && match2[1];
   return name2 || "";
 }
-function getFunctionComponentName(Component2, fallback = "") {
-  return Component2.displayName || Component2.name || getFunctionName(Component2) || fallback;
+function getFunctionComponentName(Component, fallback = "") {
+  return Component.displayName || Component.name || getFunctionName(Component) || fallback;
 }
 function getWrappedName(outerType, innerType, wrapperName) {
   const functionName = getFunctionComponentName(innerType);
   return outerType.displayName || (functionName !== "" ? `${wrapperName}(${functionName})` : wrapperName);
 }
-function getDisplayName(Component2) {
-  if (Component2 == null) {
+function getDisplayName(Component) {
+  if (Component == null) {
     return void 0;
   }
-  if (typeof Component2 === "string") {
-    return Component2;
+  if (typeof Component === "string") {
+    return Component;
   }
-  if (typeof Component2 === "function") {
-    return getFunctionComponentName(Component2, "Component");
+  if (typeof Component === "function") {
+    return getFunctionComponentName(Component, "Component");
   }
-  if (typeof Component2 === "object") {
-    switch (Component2.$$typeof) {
+  if (typeof Component === "object") {
+    switch (Component.$$typeof) {
       case reactIsExports$1.ForwardRef:
-        return getWrappedName(Component2, Component2.render, "ForwardRef");
+        return getWrappedName(Component, Component.render, "ForwardRef");
       case reactIsExports$1.Memo:
-        return getWrappedName(Component2, Component2.type, "memo");
+        return getWrappedName(Component, Component.type, "memo");
       default:
         return void 0;
     }
@@ -4694,11 +4694,11 @@ function ownerWindow(node2) {
   const doc = ownerDocument(node2);
   return doc.defaultView || window;
 }
-function requirePropFactory(componentNameInError, Component2) {
+function requirePropFactory(componentNameInError, Component) {
   if (process.env.NODE_ENV === "production") {
     return () => null;
   }
-  const prevPropTypes = Component2 ? _extends$2({}, Component2.propTypes) : null;
+  const prevPropTypes = Component ? _extends$2({}, Component.propTypes) : null;
   const requireProp = (requiredProp) => (props, propName, componentName, location2, propFullName, ...args) => {
     const propFullNameSafe = propFullName || propName;
     const defaultTypeChecker = prevPropTypes == null ? void 0 : prevPropTypes[propFullNameSafe];
@@ -7344,7 +7344,7 @@ const internal_processStyles = (tag2, processor) => {
     tag2.__emotion_styles = processor(tag2.__emotion_styles);
   }
 };
-const _excluded$16 = ["values", "unit", "step"];
+const _excluded$18 = ["values", "unit", "step"];
 const sortBreakpointsValues = (values2) => {
   const breakpointsAsArray = Object.keys(values2).map((key) => ({
     key,
@@ -7375,7 +7375,7 @@ function createBreakpoints(breakpoints) {
     },
     unit = "px",
     step = 5
-  } = breakpoints, other = _objectWithoutPropertiesLoose$1(breakpoints, _excluded$16);
+  } = breakpoints, other = _objectWithoutPropertiesLoose$1(breakpoints, _excluded$18);
   const sortedValues = sortBreakpointsValues(values2);
   const keys = Object.keys(sortedValues);
   function up(key) {
@@ -8397,14 +8397,14 @@ function unstable_createStyleFunctionSx() {
 const styleFunctionSx = unstable_createStyleFunctionSx();
 styleFunctionSx.filterProps = ["sx"];
 const styleFunctionSx$1 = styleFunctionSx;
-const _excluded$15 = ["breakpoints", "palette", "spacing", "shape"];
+const _excluded$17 = ["breakpoints", "palette", "spacing", "shape"];
 function createTheme$1(options = {}, ...args) {
   const {
     breakpoints: breakpointsInput = {},
     palette: paletteInput = {},
     spacing: spacingInput,
     shape: shapeInput = {}
-  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$15);
+  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$17);
   const breakpoints = createBreakpoints(breakpointsInput);
   const spacing = createSpacing(spacingInput);
   let muiTheme = deepmerge({
@@ -8468,7 +8468,7 @@ process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
    */
   themeId: PropTypes.string
 } : void 0;
-const _excluded$14 = ["sx"];
+const _excluded$16 = ["sx"];
 const splitProps = (props) => {
   var _props$theme$unstable, _props$theme;
   const result = {
@@ -8488,7 +8488,7 @@ const splitProps = (props) => {
 function extendSxProp(props) {
   const {
     sx: inSx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$14);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$16);
   const {
     systemProps,
     otherProps
@@ -8511,7 +8511,7 @@ function extendSxProp(props) {
     sx: finalSx
   });
 }
-const _excluded$13 = ["className", "component"];
+const _excluded$15 = ["className", "component"];
 function createBox(options = {}) {
   const {
     themeId,
@@ -8527,7 +8527,7 @@ function createBox(options = {}) {
     const _extendSxProp = extendSxProp(inProps), {
       className,
       component = "div"
-    } = _extendSxProp, other = _objectWithoutPropertiesLoose$1(_extendSxProp, _excluded$13);
+    } = _extendSxProp, other = _objectWithoutPropertiesLoose$1(_extendSxProp, _excluded$15);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$2({
       as: component,
       ref,
@@ -8537,14 +8537,14 @@ function createBox(options = {}) {
   });
   return Box2;
 }
-const _excluded$12 = ["variant"];
+const _excluded$14 = ["variant"];
 function isEmpty$3(string) {
   return string.length === 0;
 }
 function propsToClassKey(props) {
   const {
     variant
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$12);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$14);
   let classKey = variant || "";
   Object.keys(other).sort().forEach((key) => {
     if (key === "color") {
@@ -8555,7 +8555,7 @@ function propsToClassKey(props) {
   });
   return classKey;
 }
-const _excluded$11 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+const _excluded$13 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
 function isEmpty$2(obj) {
   return Object.keys(obj).length === 0;
 }
@@ -8685,7 +8685,7 @@ function createStyled2(input = {}) {
       // TODO v6: remove `lowercaseFirstLetter()` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
       overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-    } = inputOptions, options = _objectWithoutPropertiesLoose$1(inputOptions, _excluded$11);
+    } = inputOptions, options = _objectWithoutPropertiesLoose$1(inputOptions, _excluded$13);
     const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
       // TODO v6: remove `Root` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
@@ -8802,7 +8802,7 @@ function createStyled2(input = {}) {
         transformedStyleArg = [...styleArg, ...placeholders];
         transformedStyleArg.raw = [...styleArg.raw, ...placeholders];
       }
-      const Component2 = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
+      const Component = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
       if (process.env.NODE_ENV !== "production") {
         let displayName;
         if (componentName) {
@@ -8811,12 +8811,12 @@ function createStyled2(input = {}) {
         if (displayName === void 0) {
           displayName = `Styled(${getDisplayName(tag2)})`;
         }
-        Component2.displayName = displayName;
+        Component.displayName = displayName;
       }
       if (tag2.muiName) {
-        Component2.muiName = tag2.muiName;
+        Component.muiName = tag2.muiName;
       }
-      return Component2;
+      return Component;
     };
     if (defaultStyledResolver.withConfig) {
       muiStyledResolver.withConfig = defaultStyledResolver.withConfig;
@@ -9135,7 +9135,7 @@ process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
 }
-const _excluded$10 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+const _excluded$12 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
 const defaultTheme$3 = createTheme$1();
 const defaultCreateStyledComponent = systemStyled("div", {
   name: "MuiStack",
@@ -9258,7 +9258,7 @@ function createStack(options = {}) {
       children,
       className,
       useFlexGap = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$10);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$12);
     const ownerState = {
       direction,
       spacing,
@@ -9422,7 +9422,7 @@ const green = {
   A700: "#00c853"
 };
 const green$1 = green;
-const _excluded$$ = ["mode", "contrastThreshold", "tonalOffset"];
+const _excluded$11 = ["mode", "contrastThreshold", "tonalOffset"];
 const light = {
   // The colors used to style the text.
   text: {
@@ -9590,7 +9590,7 @@ function createPalette(palette) {
     mode = "light",
     contrastThreshold = 3,
     tonalOffset = 0.2
-  } = palette, other = _objectWithoutPropertiesLoose$1(palette, _excluded$$);
+  } = palette, other = _objectWithoutPropertiesLoose$1(palette, _excluded$11);
   const primary = palette.primary || getDefaultPrimary(mode);
   const secondary = palette.secondary || getDefaultSecondary(mode);
   const error = palette.error || getDefaultError(mode);
@@ -9709,7 +9709,7 @@ const theme2 = createTheme({ palette: {
   }, modes[mode]), other);
   return paletteOutput;
 }
-const _excluded$_ = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+const _excluded$10 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
 function round$1(value) {
   return Math.round(value * 1e5) / 1e5;
 }
@@ -9733,7 +9733,7 @@ function createTypography(palette, typography) {
     // Apply the CSS properties to all the variants.
     allVariants,
     pxToRem: pxToRem2
-  } = _ref, other = _objectWithoutPropertiesLoose$1(_ref, _excluded$_);
+  } = _ref, other = _objectWithoutPropertiesLoose$1(_ref, _excluded$10);
   if (process.env.NODE_ENV !== "production") {
     if (typeof fontSize !== "number") {
       console.error("MUI: `fontSize` is required to be a number.");
@@ -9798,7 +9798,7 @@ function createShadow(...px) {
 }
 const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
 const shadows$1 = shadows;
-const _excluded$Z = ["duration", "easing", "delay"];
+const _excluded$$ = ["duration", "easing", "delay"];
 const easing = {
   // This is the most common easing curve.
   easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -9841,7 +9841,7 @@ function createTransitions(inputTransitions) {
       duration: durationOption = mergedDuration.standard,
       easing: easingOption = mergedEasing.easeInOut,
       delay = 0
-    } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$Z);
+    } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$$);
     if (process.env.NODE_ENV !== "production") {
       const isString2 = (value) => typeof value === "string";
       const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -9885,14 +9885,14 @@ const zIndex = {
   tooltip: 1500
 };
 const zIndex$1 = zIndex;
-const _excluded$Y = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+const _excluded$_ = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
 function createTheme(options = {}, ...args) {
   const {
     mixins: mixinsInput = {},
     palette: paletteInput = {},
     transitions: transitionsInput = {},
     typography: typographyInput = {}
-  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$Y);
+  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$_);
   if (options.vars) {
     throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -10026,8 +10026,8 @@ function getScopedCssBaselineUtilityClass(slot) {
   return generateUtilityClass("MuiScopedCssBaseline", slot);
 }
 generateUtilityClasses("MuiScopedCssBaseline", ["root"]);
-const _excluded$X = ["className", "component", "enableColorScheme"];
-const useUtilityClasses$L = (ownerState) => {
+const _excluded$Z = ["className", "component", "enableColorScheme"];
+const useUtilityClasses$N = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -10070,11 +10070,11 @@ const ScopedCssBaseline = /* @__PURE__ */ reactExports.forwardRef(function Scope
   const {
     className,
     component = "div"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$X);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Z);
   const ownerState = _extends$2({}, props, {
     component
   });
-  const classes = useUtilityClasses$L(ownerState);
+  const classes = useUtilityClasses$N(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ScopedCssBaselineRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -11904,8 +11904,8 @@ function requireReactDom_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -19348,9 +19348,9 @@ function requireReactDom_development() {
       var contextStackCursor = createCursor(emptyContextObject);
       var didPerformWorkStackCursor = createCursor(false);
       var previousContext = emptyContextObject;
-      function getUnmaskedContext(workInProgress2, Component2, didPushOwnContextIfProvider) {
+      function getUnmaskedContext(workInProgress2, Component, didPushOwnContextIfProvider) {
         {
-          if (didPushOwnContextIfProvider && isContextProvider(Component2)) {
+          if (didPushOwnContextIfProvider && isContextProvider(Component)) {
             return previousContext;
           }
           return contextStackCursor.current;
@@ -19487,8 +19487,8 @@ function requireReactDom_development() {
               case HostRoot:
                 return node2.stateNode.context;
               case ClassComponent: {
-                var Component2 = node2.type;
-                if (isContextProvider(Component2)) {
+                var Component = node2.type;
+                if (isContextProvider(Component)) {
                   return node2.stateNode.__reactInternalMemoizedMergedChildContext;
                 }
                 break;
@@ -20250,10 +20250,10 @@ function requireReactDom_development() {
           pendingLegacyContextWarning = /* @__PURE__ */ new Map();
         };
       }
-      function resolveDefaultProps(Component2, baseProps) {
-        if (Component2 && Component2.defaultProps) {
+      function resolveDefaultProps(Component, baseProps) {
+        if (Component && Component.defaultProps) {
           var props = assign2({}, baseProps);
-          var defaultProps2 = Component2.defaultProps;
+          var defaultProps2 = Component.defaultProps;
           for (var propName in defaultProps2) {
             if (props[propName] === void 0) {
               props[propName] = defaultProps2[propName];
@@ -22548,7 +22548,7 @@ function requireReactDom_development() {
         }
         return true;
       }
-      function renderWithHooks(current2, workInProgress2, Component2, props, secondArg, nextRenderLanes) {
+      function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
         renderLanes = nextRenderLanes;
         currentlyRenderingFiber$1 = workInProgress2;
         {
@@ -22568,7 +22568,7 @@ function requireReactDom_development() {
             ReactCurrentDispatcher$1.current = HooksDispatcherOnMountInDEV;
           }
         }
-        var children = Component2(props, secondArg);
+        var children = Component(props, secondArg);
         if (didScheduleRenderPhaseUpdateDuringThisPass) {
           var numberOfReRenders = 0;
           do {
@@ -22588,7 +22588,7 @@ function requireReactDom_development() {
               hookTypesUpdateIndexDev = -1;
             }
             ReactCurrentDispatcher$1.current = HooksDispatcherOnRerenderInDEV;
-            children = Component2(props, secondArg);
+            children = Component(props, secondArg);
           } while (didScheduleRenderPhaseUpdateDuringThisPass);
         }
         ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -24696,22 +24696,22 @@ function requireReactDom_development() {
         workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
         workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
       }
-      function updateForwardRef(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
-        var render2 = Component2.render;
+        var render2 = Component.render;
         var ref = workInProgress2.ref;
         var nextChildren;
         var hasId;
@@ -24749,11 +24749,11 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         if (current2 === null) {
-          var type = Component2.type;
-          if (isSimpleFunctionComponent(type) && Component2.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
-          Component2.defaultProps === void 0) {
+          var type = Component.type;
+          if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
+          Component.defaultProps === void 0) {
             var resolvedType = type;
             {
               resolvedType = resolveFunctionForHotReloading(type);
@@ -24777,14 +24777,14 @@ function requireReactDom_development() {
               );
             }
           }
-          var child = createFiberFromTypeAndProps(Component2.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
+          var child = createFiberFromTypeAndProps(Component.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
           child.ref = workInProgress2.ref;
           child.return = workInProgress2;
           workInProgress2.child = child;
           return child;
         }
         {
-          var _type = Component2.type;
+          var _type = Component.type;
           var _innerPropTypes = _type.propTypes;
           if (_innerPropTypes) {
             checkPropTypes(
@@ -24800,7 +24800,7 @@ function requireReactDom_development() {
         var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
         if (!hasScheduledUpdateOrContext) {
           var prevProps = currentChild.memoizedProps;
-          var compare = Component2.compare;
+          var compare = Component.compare;
           compare = compare !== null ? compare : shallowEqual2;
           if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
             return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
@@ -24813,7 +24813,7 @@ function requireReactDom_development() {
         workInProgress2.child = newChild;
         return newChild;
       }
-      function updateSimpleMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
             var outerMemoType = workInProgress2.elementType;
@@ -24853,7 +24853,7 @@ function requireReactDom_development() {
             }
           }
         }
-        return updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2);
+        return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
       }
       function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
         var nextProps = workInProgress2.pendingProps;
@@ -24943,24 +24943,24 @@ function requireReactDom_development() {
           }
         }
       }
-      function updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, true);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, true);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         var nextChildren;
@@ -24972,12 +24972,12 @@ function requireReactDom_development() {
         {
           ReactCurrentOwner$1.current = workInProgress2;
           setIsRendering(true);
-          nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+          nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           if (workInProgress2.mode & StrictLegacyMode) {
             setIsStrictModeForDevtools(true);
             try {
-              nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+              nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
               hasId = checkDidRenderIdHook();
             } finally {
               setIsStrictModeForDevtools(false);
@@ -24999,7 +24999,7 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateClassComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           switch (shouldError(workInProgress2)) {
             case false: {
@@ -25022,20 +25022,20 @@ function requireReactDom_development() {
             }
           }
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
@@ -25046,15 +25046,15 @@ function requireReactDom_development() {
         var shouldUpdate;
         if (instance === null) {
           resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
-          constructClassInstance(workInProgress2, Component2, nextProps);
-          mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          constructClassInstance(workInProgress2, Component, nextProps);
+          mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
           shouldUpdate = true;
         } else if (current2 === null) {
-          shouldUpdate = resumeMountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
         } else {
-          shouldUpdate = updateClassInstance(current2, workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
         }
-        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2);
+        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
         {
           var inst = workInProgress2.stateNode;
           if (shouldUpdate && inst.props !== nextProps) {
@@ -25066,19 +25066,19 @@ function requireReactDom_development() {
         }
         return nextUnitOfWork;
       }
-      function finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2) {
+      function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
         markRef(current2, workInProgress2);
         var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
         if (!shouldUpdate && !didCaptureError) {
           if (hasContext) {
-            invalidateContextProvider(workInProgress2, Component2, false);
+            invalidateContextProvider(workInProgress2, Component, false);
           }
           return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
         }
         var instance = workInProgress2.stateNode;
         ReactCurrentOwner$1.current = workInProgress2;
         var nextChildren;
-        if (didCaptureError && typeof Component2.getDerivedStateFromError !== "function") {
+        if (didCaptureError && typeof Component.getDerivedStateFromError !== "function") {
           nextChildren = null;
           {
             stopProfilerTimerIfRunning();
@@ -25112,7 +25112,7 @@ function requireReactDom_development() {
         }
         workInProgress2.memoizedState = instance.state;
         if (hasContext) {
-          invalidateContextProvider(workInProgress2, Component2, true);
+          invalidateContextProvider(workInProgress2, Component, true);
         }
         return workInProgress2.child;
       }
@@ -25212,45 +25212,45 @@ function requireReactDom_development() {
         var lazyComponent = elementType;
         var payload = lazyComponent._payload;
         var init = lazyComponent._init;
-        var Component2 = init(payload);
-        workInProgress2.type = Component2;
-        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component2);
-        var resolvedProps = resolveDefaultProps(Component2, props);
+        var Component = init(payload);
+        workInProgress2.type = Component;
+        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component);
+        var resolvedProps = resolveDefaultProps(Component, props);
         var child;
         switch (resolvedTag) {
           case FunctionComponent: {
             {
-              validateFunctionComponentInDev(workInProgress2, Component2);
-              workInProgress2.type = Component2 = resolveFunctionForHotReloading(Component2);
+              validateFunctionComponentInDev(workInProgress2, Component);
+              workInProgress2.type = Component = resolveFunctionForHotReloading(Component);
             }
-            child = updateFunctionComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateFunctionComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ClassComponent: {
             {
-              workInProgress2.type = Component2 = resolveClassForHotReloading(Component2);
+              workInProgress2.type = Component = resolveClassForHotReloading(Component);
             }
-            child = updateClassComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateClassComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ForwardRef: {
             {
-              workInProgress2.type = Component2 = resolveForwardRefForHotReloading(Component2);
+              workInProgress2.type = Component = resolveForwardRefForHotReloading(Component);
             }
-            child = updateForwardRef(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateForwardRef(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case MemoComponent: {
             {
               if (workInProgress2.type !== workInProgress2.elementType) {
-                var outerPropTypes = Component2.propTypes;
+                var outerPropTypes = Component.propTypes;
                 if (outerPropTypes) {
                   checkPropTypes(
                     outerPropTypes,
                     resolvedProps,
                     // Resolved for outer only
                     "prop",
-                    getComponentNameFromType(Component2)
+                    getComponentNameFromType(Component)
                   );
                 }
               }
@@ -25258,8 +25258,8 @@ function requireReactDom_development() {
             child = updateMemoComponent(
               null,
               workInProgress2,
-              Component2,
-              resolveDefaultProps(Component2.type, resolvedProps),
+              Component,
+              resolveDefaultProps(Component.type, resolvedProps),
               // The inner type can have defaults too
               renderLanes2
             );
@@ -25268,33 +25268,33 @@ function requireReactDom_development() {
         }
         var hint = "";
         {
-          if (Component2 !== null && typeof Component2 === "object" && Component2.$$typeof === REACT_LAZY_TYPE) {
+          if (Component !== null && typeof Component === "object" && Component.$$typeof === REACT_LAZY_TYPE) {
             hint = " Did you wrap a component in React.lazy() more than once?";
           }
         }
-        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component2 + ". " + ("Lazy element type must resolve to a class or function." + hint));
+        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component + ". " + ("Lazy element type must resolve to a class or function." + hint));
       }
-      function mountIncompleteClassComponent(_current, workInProgress2, Component2, nextProps, renderLanes2) {
+      function mountIncompleteClassComponent(_current, workInProgress2, Component, nextProps, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         workInProgress2.tag = ClassComponent;
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
           hasContext = false;
         }
         prepareToReadContext(workInProgress2, renderLanes2);
-        constructClassInstance(workInProgress2, Component2, nextProps);
-        mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
-        return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+        constructClassInstance(workInProgress2, Component, nextProps);
+        mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
+        return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
       }
-      function mountIndeterminateComponent(_current, workInProgress2, Component2, renderLanes2) {
+      function mountIndeterminateComponent(_current, workInProgress2, Component, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         var props = workInProgress2.pendingProps;
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, false);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, false);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         prepareToReadContext(workInProgress2, renderLanes2);
@@ -25304,8 +25304,8 @@ function requireReactDom_development() {
           markComponentRenderStarted(workInProgress2);
         }
         {
-          if (Component2.prototype && typeof Component2.prototype.render === "function") {
-            var componentName = getComponentNameFromType(Component2) || "Unknown";
+          if (Component.prototype && typeof Component.prototype.render === "function") {
+            var componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutBadClass[componentName]) {
               error("The <%s /> component appears to have a render method, but doesn't extend React.Component. This is likely to cause errors. Change %s to extend React.Component instead.", componentName, componentName);
               didWarnAboutBadClass[componentName] = true;
@@ -25316,7 +25316,7 @@ function requireReactDom_development() {
           }
           setIsRendering(true);
           ReactCurrentOwner$1.current = workInProgress2;
-          value = renderWithHooks(null, workInProgress2, Component2, props, context, renderLanes2);
+          value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           setIsRendering(false);
         }
@@ -25326,7 +25326,7 @@ function requireReactDom_development() {
         workInProgress2.flags |= PerformedWork;
         {
           if (typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0) {
-            var _componentName = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName, _componentName, _componentName);
               didWarnAboutModulePatternComponent[_componentName] = true;
@@ -25339,7 +25339,7 @@ function requireReactDom_development() {
           typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0
         ) {
           {
-            var _componentName2 = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName2 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName2]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName2, _componentName2, _componentName2);
               didWarnAboutModulePatternComponent[_componentName2] = true;
@@ -25349,7 +25349,7 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = null;
           workInProgress2.updateQueue = null;
           var hasContext = false;
-          if (isContextProvider(Component2)) {
+          if (isContextProvider(Component)) {
             hasContext = true;
             pushContextProvider(workInProgress2);
           } else {
@@ -25358,15 +25358,15 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = value.state !== null && value.state !== void 0 ? value.state : null;
           initializeUpdateQueue(workInProgress2);
           adoptClassInstance(workInProgress2, value);
-          mountClassInstance(workInProgress2, Component2, props, renderLanes2);
-          return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+          mountClassInstance(workInProgress2, Component, props, renderLanes2);
+          return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
         } else {
           workInProgress2.tag = FunctionComponent;
           {
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                value = renderWithHooks(null, workInProgress2, Component2, props, context, renderLanes2);
+                value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
                 hasId = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -25378,16 +25378,16 @@ function requireReactDom_development() {
           }
           reconcileChildren(null, workInProgress2, value, renderLanes2);
           {
-            validateFunctionComponentInDev(workInProgress2, Component2);
+            validateFunctionComponentInDev(workInProgress2, Component);
           }
           return workInProgress2.child;
         }
       }
-      function validateFunctionComponentInDev(workInProgress2, Component2) {
+      function validateFunctionComponentInDev(workInProgress2, Component) {
         {
-          if (Component2) {
-            if (Component2.childContextTypes) {
-              error("%s(...): childContextTypes cannot be defined on a function component.", Component2.displayName || Component2.name || "Component");
+          if (Component) {
+            if (Component.childContextTypes) {
+              error("%s(...): childContextTypes cannot be defined on a function component.", Component.displayName || Component.name || "Component");
             }
           }
           if (workInProgress2.ref !== null) {
@@ -25406,15 +25406,15 @@ function requireReactDom_development() {
               error("Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s", info);
             }
           }
-          if (typeof Component2.getDerivedStateFromProps === "function") {
-            var _componentName3 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.getDerivedStateFromProps === "function") {
+            var _componentName3 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3]) {
               error("%s: Function components do not support getDerivedStateFromProps.", _componentName3);
               didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3] = true;
             }
           }
-          if (typeof Component2.contextType === "object" && Component2.contextType !== null) {
-            var _componentName4 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.contextType === "object" && Component.contextType !== null) {
+            var _componentName4 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutContextTypeOnFunctionComponent[_componentName4]) {
               error("%s: Function components do not support contextType.", _componentName4);
               didWarnAboutContextTypeOnFunctionComponent[_componentName4] = true;
@@ -26176,8 +26176,8 @@ function requireReactDom_development() {
             pushHostContext(workInProgress2);
             break;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               pushContextProvider(workInProgress2);
             }
             break;
@@ -26304,10 +26304,10 @@ function requireReactDom_development() {
             return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
           }
           case FunctionComponent: {
-            var Component2 = workInProgress2.type;
+            var Component = workInProgress2.type;
             var unresolvedProps = workInProgress2.pendingProps;
-            var resolvedProps = workInProgress2.elementType === Component2 ? unresolvedProps : resolveDefaultProps(Component2, unresolvedProps);
-            return updateFunctionComponent(current2, workInProgress2, Component2, resolvedProps, renderLanes2);
+            var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
+            return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
           }
           case ClassComponent: {
             var _Component = workInProgress2.type;
@@ -26612,8 +26612,8 @@ function requireReactDom_development() {
             bubbleProperties(workInProgress2);
             return null;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             bubbleProperties(workInProgress2);
@@ -26931,8 +26931,8 @@ function requireReactDom_development() {
         popTreeContext(workInProgress2);
         switch (workInProgress2.tag) {
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             var flags = workInProgress2.flags;
@@ -30610,18 +30610,18 @@ function requireReactDom_development() {
       var createFiber = function(tag2, pendingProps, key, mode) {
         return new FiberNode(tag2, pendingProps, key, mode);
       };
-      function shouldConstruct$1(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct$1(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function isSimpleFunctionComponent(type) {
         return typeof type === "function" && !shouldConstruct$1(type) && type.defaultProps === void 0;
       }
-      function resolveLazyComponentTag(Component2) {
-        if (typeof Component2 === "function") {
-          return shouldConstruct$1(Component2) ? ClassComponent : FunctionComponent;
-        } else if (Component2 !== void 0 && Component2 !== null) {
-          var $$typeof = Component2.$$typeof;
+      function resolveLazyComponentTag(Component) {
+        if (typeof Component === "function") {
+          return shouldConstruct$1(Component) ? ClassComponent : FunctionComponent;
+        } else if (Component !== void 0 && Component !== null) {
+          var $$typeof = Component.$$typeof;
           if ($$typeof === REACT_FORWARD_REF_TYPE) {
             return ForwardRef;
           }
@@ -31058,9 +31058,9 @@ function requireReactDom_development() {
         var fiber = get(parentComponent);
         var parentContext = findCurrentUnmaskedContext(fiber);
         if (fiber.tag === ClassComponent) {
-          var Component2 = fiber.type;
-          if (isContextProvider(Component2)) {
-            return processChildContext(fiber, Component2, parentContext);
+          var Component = fiber.type;
+          if (isContextProvider(Component)) {
+            return processChildContext(fiber, Component, parentContext);
           }
         }
         return parentContext;
@@ -38935,11 +38935,11 @@ function useTheme() {
   }
   return theme2[THEME_ID] || theme2;
 }
-const _excluded$W = ["theme"];
+const _excluded$Y = ["theme"];
 function ThemeProvider(_ref) {
   let {
     theme: themeInput
-  } = _ref, props = _objectWithoutPropertiesLoose$1(_ref, _excluded$W);
+  } = _ref, props = _objectWithoutPropertiesLoose$1(_ref, _excluded$Y);
   const scopedTheme = themeInput[THEME_ID];
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$2({}, props, {
     themeId: scopedTheme ? THEME_ID : void 0,
@@ -39120,7 +39120,7 @@ function mergeSlotProps(parameters) {
     internalRef: internalSlotProps.ref
   };
 }
-const _excluded$V = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+const _excluded$X = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
 function useSlotProps(parameters) {
   var _parameters$additiona;
   const {
@@ -39128,7 +39128,7 @@ function useSlotProps(parameters) {
     externalSlotProps,
     ownerState,
     skipResolvingSlotProps = false
-  } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$V);
+  } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$X);
   const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
   const {
     props: mergedProps,
@@ -40058,7 +40058,7 @@ function useSnackbar(parameters = {}) {
     onClickAway: handleClickAway
   };
 }
-const _excluded$U = ["onChange", "maxRows", "minRows", "style", "value"];
+const _excluded$W = ["onChange", "maxRows", "minRows", "style", "value"];
 function getStyleValue(value) {
   return parseInt(value, 10) || 0;
 }
@@ -40087,7 +40087,7 @@ const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function Textar
     minRows = 1,
     style: style2,
     value
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
   const {
     current: isControlled
   } = reactExports.useRef(value != null);
@@ -40306,10 +40306,10 @@ const badgeClasses = generateUtilityClasses("MuiBadge", [
   "anchorOriginBottomRightRectangular"
 ]);
 const badgeClasses$1 = badgeClasses;
-const _excluded$T = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+const _excluded$V = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
 const RADIUS_STANDARD = 10;
 const RADIUS_DOT = 4;
-const useUtilityClasses$K = (ownerState) => {
+const useUtilityClasses$M = (ownerState) => {
   const {
     color: color2,
     anchorOrigin,
@@ -40473,7 +40473,7 @@ const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, r
     slotProps,
     showZero = false,
     variant: variantProp = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
   const {
     badgeContent,
     invisible: invisibleFromHook,
@@ -40511,7 +40511,7 @@ const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, r
     overlap,
     variant
   });
-  const classes = useUtilityClasses$K(ownerState);
+  const classes = useUtilityClasses$M(ownerState);
   const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
   const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
   const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -40660,8 +40660,8 @@ function getTypographyUtilityClass(slot) {
   return generateUtilityClass("MuiTypography", slot);
 }
 generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-const _excluded$S = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-const useUtilityClasses$J = (ownerState) => {
+const _excluded$U = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+const useUtilityClasses$L = (ownerState) => {
   const {
     align,
     gutterBottom,
@@ -40744,7 +40744,7 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     paragraph = false,
     variant = "body1",
     variantMapping = defaultVariantMapping
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
   const ownerState = _extends$2({}, props, {
     align,
     color: color2,
@@ -40756,10 +40756,10 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     variant,
     variantMapping
   });
-  const Component2 = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-  const classes = useUtilityClasses$J(ownerState);
+  const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+  const classes = useUtilityClasses$L(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$2({
-    as: Component2,
+    as: Component,
     ref,
     ownerState,
     className: clsx(classes.root, className)
@@ -40869,8 +40869,8 @@ const getTextDecoration = ({
   return alpha(color2, 0.4);
 };
 const getTextDecoration$1 = getTextDecoration;
-const _excluded$R = ["className", "color", "component", "onBlur", "onFocus", "TypographyClasses", "underline", "variant", "sx"];
-const useUtilityClasses$I = (ownerState) => {
+const _excluded$T = ["className", "color", "component", "onBlur", "onFocus", "TypographyClasses", "underline", "variant", "sx"];
+const useUtilityClasses$K = (ownerState) => {
   const {
     classes,
     component,
@@ -40957,7 +40957,7 @@ const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref
     underline = "always",
     variant = "inherit",
     sx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
   const {
     isFocusVisibleRef,
     onBlur: handleBlurVisible,
@@ -40991,7 +40991,7 @@ const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref
     underline,
     variant
   });
-  const classes = useUtilityClasses$I(ownerState);
+  const classes = useUtilityClasses$K(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(LinkRoot, _extends$2({
     color: color2,
     className: clsx(classes.root, className),
@@ -41071,8 +41071,8 @@ function getListUtilityClass(slot) {
   return generateUtilityClass("MuiList", slot);
 }
 generateUtilityClasses("MuiList", ["root", "padding", "dense", "subheader"]);
-const _excluded$Q = ["children", "className", "component", "dense", "disablePadding", "subheader"];
-const useUtilityClasses$H = (ownerState) => {
+const _excluded$S = ["children", "className", "component", "dense", "disablePadding", "subheader"];
+const useUtilityClasses$J = (ownerState) => {
   const {
     classes,
     disablePadding,
@@ -41118,7 +41118,7 @@ const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref
     dense = false,
     disablePadding = false,
     subheader
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
   const context = reactExports.useMemo(() => ({
     dense
   }), [dense]);
@@ -41127,7 +41127,7 @@ const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref
     dense,
     disablePadding
   });
-  const classes = useUtilityClasses$H(ownerState);
+  const classes = useUtilityClasses$J(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: context,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListRoot, _extends$2({
@@ -41808,20 +41808,20 @@ var TransitionGroup = /* @__PURE__ */ function(_React$Component) {
     }
   };
   _proto.render = function render() {
-    var _this$props = this.props, Component2 = _this$props.component, childFactory2 = _this$props.childFactory, props = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
+    var _this$props = this.props, Component = _this$props.component, childFactory2 = _this$props.childFactory, props = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
     var contextValue = this.state.contextValue;
     var children = values(this.state.children).map(childFactory2);
     delete props.appear;
     delete props.enter;
     delete props.exit;
-    if (Component2 === null) {
+    if (Component === null) {
       return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
         value: contextValue
       }, children);
     }
     return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
       value: contextValue
-    }, /* @__PURE__ */ React.createElement(Component2, props, children));
+    }, /* @__PURE__ */ React.createElement(Component, props, children));
   };
   return TransitionGroup2;
 }(React.Component);
@@ -41959,7 +41959,7 @@ process.env.NODE_ENV !== "production" ? Ripple.propTypes = {
 } : void 0;
 const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
 const touchRippleClasses$1 = touchRippleClasses;
-const _excluded$P = ["center", "classes", "className"];
+const _excluded$R = ["center", "classes", "className"];
 let _ = (t) => t, _t, _t2, _t3, _t4;
 const DURATION = 550;
 const DELAY_RIPPLE = 80;
@@ -42074,7 +42074,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
     center: centerProp = false,
     classes = {},
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
   const [ripples, setRipples] = reactExports.useState([]);
   const nextKey = reactExports.useRef(0);
   const rippleCallback = reactExports.useRef(null);
@@ -42257,8 +42257,8 @@ function getButtonBaseUtilityClass(slot) {
 }
 const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
 const buttonBaseClasses$1 = buttonBaseClasses;
-const _excluded$O = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-const useUtilityClasses$G = (ownerState) => {
+const _excluded$Q = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+const useUtilityClasses$I = (ownerState) => {
   const {
     disabled,
     focusVisible,
@@ -42352,7 +42352,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     TouchRippleProps,
     touchRippleRef,
     type
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
   const buttonRef = reactExports.useRef(null);
   const rippleRef = reactExports.useRef(null);
   const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -42506,7 +42506,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     tabIndex,
     focusVisible
   });
-  const classes = useUtilityClasses$G(ownerState);
+  const classes = useUtilityClasses$I(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$2({
     as: ComponentProp,
     className: clsx(classes.root, className),
@@ -42706,14 +42706,14 @@ function getListItemButtonUtilityClass(slot) {
 }
 const listItemButtonClasses = generateUtilityClasses("MuiListItemButton", ["root", "focusVisible", "dense", "alignItemsFlexStart", "disabled", "divider", "gutters", "selected"]);
 const listItemButtonClasses$1 = listItemButtonClasses;
-const _excluded$N = ["alignItems", "autoFocus", "component", "children", "dense", "disableGutters", "divider", "focusVisibleClassName", "selected", "className"];
+const _excluded$P = ["alignItems", "autoFocus", "component", "children", "dense", "disableGutters", "divider", "focusVisibleClassName", "selected", "className"];
 const overridesResolver$3 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
 };
-const useUtilityClasses$F = (ownerState) => {
+const useUtilityClasses$H = (ownerState) => {
   const {
     alignItems,
     classes,
@@ -42807,7 +42807,7 @@ const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItem
     focusVisibleClassName,
     selected = false,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$N);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -42831,7 +42831,7 @@ const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItem
     divider,
     selected
   });
-  const classes = useUtilityClasses$F(ownerState);
+  const classes = useUtilityClasses$H(ownerState);
   const handleRef = useForkRef(listItemRef, ref);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: childContext,
@@ -42931,8 +42931,8 @@ function getListItemSecondaryActionClassesUtilityClass(slot) {
   return generateUtilityClass("MuiListItemSecondaryAction", slot);
 }
 generateUtilityClasses("MuiListItemSecondaryAction", ["root", "disableGutters"]);
-const _excluded$M = ["className"];
-const useUtilityClasses$E = (ownerState) => {
+const _excluded$O = ["className"];
+const useUtilityClasses$G = (ownerState) => {
   const {
     disableGutters,
     classes
@@ -42968,12 +42968,12 @@ const ListItemSecondaryAction = /* @__PURE__ */ reactExports.forwardRef(function
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     disableGutters: context.disableGutters
   });
-  const classes = useUtilityClasses$E(ownerState);
+  const classes = useUtilityClasses$G(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemSecondaryActionRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -43004,14 +43004,14 @@ process.env.NODE_ENV !== "production" ? ListItemSecondaryAction.propTypes = {
 } : void 0;
 ListItemSecondaryAction.muiName = "ListItemSecondaryAction";
 const ListItemSecondaryAction$1 = ListItemSecondaryAction;
-const _excluded$L = ["className"], _excluded2$4 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
+const _excluded$N = ["className"], _excluded2$4 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
 const overridesResolver$2 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters, !ownerState.disablePadding && styles2.padding, ownerState.button && styles2.button, ownerState.hasSecondaryAction && styles2.secondaryAction];
 };
-const useUtilityClasses$D = (ownerState) => {
+const useUtilityClasses$F = (ownerState) => {
   const {
     alignItems,
     button,
@@ -43140,7 +43140,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     selected = false,
     slotProps = {},
     slots = {}
-  } = props, ContainerProps = _objectWithoutPropertiesLoose$1(props.ContainerProps, _excluded$L), other = _objectWithoutPropertiesLoose$1(props, _excluded2$4);
+  } = props, ContainerProps = _objectWithoutPropertiesLoose$1(props.ContainerProps, _excluded$N), other = _objectWithoutPropertiesLoose$1(props, _excluded2$4);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -43171,7 +43171,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     hasSecondaryAction,
     selected
   });
-  const classes = useUtilityClasses$D(ownerState);
+  const classes = useUtilityClasses$F(ownerState);
   const handleRef = useForkRef(listItemRef, ref);
   const Root = slots.root || components.Root || ListItemRoot;
   const rootProps = slotProps.root || componentsProps.root || {};
@@ -43179,17 +43179,17 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     className: clsx(classes.root, rootProps.className, className),
     disabled
   }, other);
-  let Component2 = componentProp || "li";
+  let Component = componentProp || "li";
   if (button) {
     componentProps.component = componentProp || "div";
     componentProps.focusVisibleClassName = clsx(listItemClasses$1.focusVisible, focusVisibleClassName);
-    Component2 = ButtonBase$1;
+    Component = ButtonBase$1;
   }
   if (hasSecondaryAction) {
-    Component2 = !componentProps.component && !componentProp ? "div" : Component2;
+    Component = !componentProps.component && !componentProp ? "div" : Component;
     if (ContainerComponent === "li") {
-      if (Component2 === "li") {
-        Component2 = "div";
+      if (Component === "li") {
+        Component = "div";
       } else if (componentProps.component === "li") {
         componentProps.component = "div";
       }
@@ -43203,7 +43203,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
         ownerState
       }, ContainerProps, {
         children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root, _extends$2({}, rootProps, !isHostComponent(Root) && {
-          as: Component2,
+          as: Component,
           ownerState: _extends$2({}, ownerState, rootProps.ownerState)
         }, componentProps, {
           children
@@ -43214,7 +43214,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: childContext,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root, _extends$2({}, rootProps, {
-      as: Component2,
+      as: Component,
       ref: handleRef
     }, !isHostComponent(Root) && {
       ownerState: _extends$2({}, ownerState, rootProps.ownerState)
@@ -43389,8 +43389,8 @@ function getListItemTextUtilityClass(slot) {
 }
 const listItemTextClasses = generateUtilityClasses("MuiListItemText", ["root", "multiline", "dense", "inset", "primary", "secondary"]);
 const listItemTextClasses$1 = listItemTextClasses;
-const _excluded$K = ["children", "className", "disableTypography", "inset", "primary", "primaryTypographyProps", "secondary", "secondaryTypographyProps"];
-const useUtilityClasses$C = (ownerState) => {
+const _excluded$M = ["children", "className", "disableTypography", "inset", "primary", "primaryTypographyProps", "secondary", "secondaryTypographyProps"];
+const useUtilityClasses$E = (ownerState) => {
   const {
     classes,
     inset,
@@ -43445,7 +43445,7 @@ const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemTe
     primaryTypographyProps,
     secondary: secondaryProp,
     secondaryTypographyProps
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
   const {
     dense
   } = reactExports.useContext(ListContext$1);
@@ -43458,7 +43458,7 @@ const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemTe
     secondary: !!secondary,
     dense
   });
-  const classes = useUtilityClasses$C(ownerState);
+  const classes = useUtilityClasses$E(ownerState);
   if (primary != null && primary.type !== Typography$1 && !disableTypography) {
     primary = /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, _extends$2({
       variant: dense ? "body2" : "body1",
@@ -43546,8 +43546,8 @@ function getListItemAvatarUtilityClass(slot) {
   return generateUtilityClass("MuiListItemAvatar", slot);
 }
 generateUtilityClasses("MuiListItemAvatar", ["root", "alignItemsFlexStart"]);
-const _excluded$J = ["className"];
-const useUtilityClasses$B = (ownerState) => {
+const _excluded$L = ["className"];
+const useUtilityClasses$D = (ownerState) => {
   const {
     alignItems,
     classes
@@ -43581,12 +43581,12 @@ const ListItemAvatar = /* @__PURE__ */ reactExports.forwardRef(function ListItem
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     alignItems: context.alignItems
   });
-  const classes = useUtilityClasses$B(ownerState);
+  const classes = useUtilityClasses$D(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatarRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -43620,7 +43620,7 @@ function getPaginationUtilityClass(slot) {
   return generateUtilityClass("MuiPagination", slot);
 }
 generateUtilityClasses("MuiPagination", ["root", "ul", "outlined", "text"]);
-const _excluded$I = ["boundaryCount", "componentName", "count", "defaultPage", "disabled", "hideNextButton", "hidePrevButton", "onChange", "page", "showFirstButton", "showLastButton", "siblingCount"];
+const _excluded$K = ["boundaryCount", "componentName", "count", "defaultPage", "disabled", "hideNextButton", "hidePrevButton", "onChange", "page", "showFirstButton", "showLastButton", "siblingCount"];
 function usePagination(props = {}) {
   const {
     boundaryCount = 1,
@@ -43635,7 +43635,7 @@ function usePagination(props = {}) {
     showFirstButton = false,
     showLastButton = false,
     siblingCount = 1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
   const [page, setPageState] = useControlled({
     controlled: pageProp,
     default: defaultPage,
@@ -43741,8 +43741,8 @@ function getSvgIconUtilityClass(slot) {
   return generateUtilityClass("MuiSvgIcon", slot);
 }
 generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-const _excluded$H = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-const useUtilityClasses$A = (ownerState) => {
+const _excluded$J = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+const useUtilityClasses$C = (ownerState) => {
   const {
     color: color2,
     fontSize,
@@ -43808,7 +43808,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
     inheritViewBox = false,
     titleAccess,
     viewBox = "0 0 24 24"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
   const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
   const ownerState = _extends$2({}, props, {
     color: color2,
@@ -43823,7 +43823,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
   if (!inheritViewBox) {
     more.viewBox = viewBox;
   }
-  const classes = useUtilityClasses$A(ownerState);
+  const classes = useUtilityClasses$C(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -43914,7 +43914,7 @@ process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
 SvgIcon.muiName = "SvgIcon";
 const SvgIcon$1 = SvgIcon;
 function createSvgIcon$1(path, displayName) {
-  function Component2(props, ref) {
+  function Component(props, ref) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(SvgIcon$1, _extends$2({
       "data-testid": `${displayName}Icon`,
       ref
@@ -43923,10 +43923,10 @@ function createSvgIcon$1(path, displayName) {
     }));
   }
   if (process.env.NODE_ENV !== "production") {
-    Component2.displayName = `${displayName}Icon`;
+    Component.displayName = `${displayName}Icon`;
   }
-  Component2.muiName = SvgIcon$1.muiName;
-  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component2));
+  Component.muiName = SvgIcon$1.muiName;
+  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component));
 }
 const FirstPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
@@ -43940,14 +43940,14 @@ const NavigateBeforeIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx
 const NavigateNextIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
 }), "NavigateNext");
-const _excluded$G = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
+const _excluded$I = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
 const overridesResolver$1 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.variant === "text" && styles2[`text${capitalize(ownerState.color)}`], ownerState.variant === "outlined" && styles2[`outlined${capitalize(ownerState.color)}`], ownerState.shape === "rounded" && styles2.rounded, ownerState.type === "page" && styles2.page, (ownerState.type === "start-ellipsis" || ownerState.type === "end-ellipsis") && styles2.ellipsis, (ownerState.type === "previous" || ownerState.type === "next") && styles2.previousNext, (ownerState.type === "first" || ownerState.type === "last") && styles2.firstLast];
 };
-const useUtilityClasses$z = (ownerState) => {
+const useUtilityClasses$B = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -44144,7 +44144,7 @@ const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function Paginati
     slots = {},
     type = "page",
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
   const ownerState = _extends$2({}, props, {
     color: color2,
     disabled,
@@ -44155,7 +44155,7 @@ const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function Paginati
     variant
   });
   const theme2 = useTheme();
-  const classes = useUtilityClasses$z(ownerState);
+  const classes = useUtilityClasses$B(ownerState);
   const normalizedIcons = theme2.direction === "rtl" ? {
     previous: slots.next || components.next || NavigateNextIcon,
     next: slots.previous || components.previous || NavigateBeforeIcon,
@@ -44283,8 +44283,8 @@ process.env.NODE_ENV !== "production" ? PaginationItem.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["outlined", "text"]), PropTypes.string])
 } : void 0;
 const PaginationItem$1 = PaginationItem;
-const _excluded$F = ["boundaryCount", "className", "color", "count", "defaultPage", "disabled", "getItemAriaLabel", "hideNextButton", "hidePrevButton", "onChange", "page", "renderItem", "shape", "showFirstButton", "showLastButton", "siblingCount", "size", "variant"];
-const useUtilityClasses$y = (ownerState) => {
+const _excluded$H = ["boundaryCount", "className", "color", "count", "defaultPage", "disabled", "getItemAriaLabel", "hideNextButton", "hidePrevButton", "onChange", "page", "renderItem", "shape", "showFirstButton", "showLastButton", "siblingCount", "size", "variant"];
+const useUtilityClasses$A = (ownerState) => {
   const {
     classes,
     variant
@@ -44345,7 +44345,7 @@ const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(
     siblingCount = 1,
     size: size2 = "medium",
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
   const {
     items
   } = usePagination(_extends$2({}, props, {
@@ -44368,7 +44368,7 @@ const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$y(ownerState);
+  const classes = useUtilityClasses$A(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(PaginationRoot, _extends$2({
     "aria-label": "pagination navigation",
     className: clsx(classes.root, className),
@@ -44512,8 +44512,8 @@ function getAvatarUtilityClass(slot) {
   return generateUtilityClass("MuiAvatar", slot);
 }
 generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-const _excluded$E = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-const useUtilityClasses$x = (ownerState) => {
+const _excluded$G = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+const useUtilityClasses$z = (ownerState) => {
   const {
     classes,
     variant,
@@ -44639,7 +44639,7 @@ const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps,
     src,
     srcSet,
     variant = "circular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$E);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
   let children = null;
   const loaded = useLoaded(_extends$2({}, imgProps, {
     src,
@@ -44652,7 +44652,7 @@ const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps,
     component,
     variant
   });
-  const classes = useUtilityClasses$x(ownerState);
+  const classes = useUtilityClasses$z(ownerState);
   if (hasImgNotFailing) {
     children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$2({
       alt,
@@ -44743,8 +44743,8 @@ function getIconButtonUtilityClass(slot) {
 }
 const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
 const iconButtonClasses$1 = iconButtonClasses;
-const _excluded$D = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-const useUtilityClasses$w = (ownerState) => {
+const _excluded$F = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+const useUtilityClasses$y = (ownerState) => {
   const {
     classes,
     disabled,
@@ -44838,7 +44838,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disabled = false,
     disableFocusRipple = false,
     size: size2 = "medium"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$D);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
   const ownerState = _extends$2({}, props, {
     edge,
     color: color2,
@@ -44846,7 +44846,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disableFocusRipple,
     size: size2
   });
-  const classes = useUtilityClasses$w(ownerState);
+  const classes = useUtilityClasses$y(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$2({
     className: clsx(classes.root, className),
     centerRipple: true,
@@ -44926,7 +44926,7 @@ process.env.NODE_ENV !== "production" ? IconButton.propTypes = {
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
 const IconButton$1 = IconButton;
-const _excluded$C = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
+const _excluded$E = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
 function nextItem(list, item, disableListWrap) {
   if (list === item) {
     return list.firstChild;
@@ -44995,7 +44995,7 @@ const MenuList = /* @__PURE__ */ reactExports.forwardRef(function MenuList2(prop
     disableListWrap = false,
     onKeyDown,
     variant = "selectedMenu"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$C);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$E);
   const listRef = reactExports.useRef(null);
   const textCriteriaRef = reactExports.useRef({
     keys: [],
@@ -45175,7 +45175,7 @@ function getTransitionProps(props, options) {
     delay: style2.transitionDelay
   };
 }
-const _excluded$B = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+const _excluded$D = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
 function getScale(value) {
   return `scale(${value}, ${value ** 2})`;
 }
@@ -45207,7 +45207,7 @@ const Grow = /* @__PURE__ */ reactExports.forwardRef(function Grow2(props, ref) 
     timeout: timeout2 = "auto",
     // eslint-disable-next-line react/prop-types
     TransitionComponent = Transition$1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$B);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$D);
   const timer = reactExports.useRef();
   const autoTimeout = reactExports.useRef();
   const theme2 = useTheme();
@@ -45406,7 +45406,7 @@ process.env.NODE_ENV !== "production" ? Grow.propTypes = {
 } : void 0;
 Grow.muiSupportAuto = true;
 const Grow$1 = Grow;
-const _excluded$A = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+const _excluded$C = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
 const styles = {
   entering: {
     opacity: 1
@@ -45437,7 +45437,7 @@ const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) 
     timeout: timeout2 = defaultTimeout,
     // eslint-disable-next-line react/prop-types
     TransitionComponent = Transition$1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$A);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$C);
   const nodeRef = reactExports.useRef(null);
   const handleRef = useForkRef(nodeRef, children.ref, ref);
   const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -45592,8 +45592,8 @@ function getBackdropUtilityClass(slot) {
   return generateUtilityClass("MuiBackdrop", slot);
 }
 generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-const _excluded$z = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-const useUtilityClasses$v = (ownerState) => {
+const _excluded$B = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+const useUtilityClasses$x = (ownerState) => {
   const {
     classes,
     invisible
@@ -45646,12 +45646,12 @@ const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inPr
     slots = {},
     TransitionComponent = Fade$1,
     transitionDuration
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$z);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$B);
   const ownerState = _extends$2({}, props, {
     component,
     invisible
   });
-  const classes = useUtilityClasses$v(ownerState);
+  const classes = useUtilityClasses$x(ownerState);
   const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$2({
     in: open,
@@ -45770,8 +45770,8 @@ function getModalUtilityClass(slot) {
   return generateUtilityClass("MuiModal", slot);
 }
 generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
-const _excluded$y = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
-const useUtilityClasses$u = (ownerState) => {
+const _excluded$A = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
+const useUtilityClasses$w = (ownerState) => {
   const {
     open,
     exited,
@@ -45843,7 +45843,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
     slotProps,
     slots
     // eslint-disable-next-line react/prop-types
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$y);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$A);
   const propsWithDefaults = _extends$2({}, props, {
     closeAfterTransition,
     disableAutoFocus,
@@ -45869,7 +45869,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
   const ownerState = _extends$2({}, propsWithDefaults, {
     exited
   });
-  const classes = useUtilityClasses$u(ownerState);
+  const classes = useUtilityClasses$w(ownerState);
   const childProps = {};
   if (children.props.tabIndex === void 0) {
     childProps.tabIndex = "-1";
@@ -46119,8 +46119,8 @@ function getPaperUtilityClass(slot) {
   return generateUtilityClass("MuiPaper", slot);
 }
 generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-const _excluded$x = ["className", "component", "elevation", "square", "variant"];
-const useUtilityClasses$t = (ownerState) => {
+const _excluded$z = ["className", "component", "elevation", "square", "variant"];
+const useUtilityClasses$v = (ownerState) => {
   const {
     square,
     elevation,
@@ -46173,14 +46173,14 @@ const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, r
     elevation = 1,
     square = false,
     variant = "elevation"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$x);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$z);
   const ownerState = _extends$2({}, props, {
     component,
     elevation,
     square,
     variant
   });
-  const classes = useUtilityClasses$t(ownerState);
+  const classes = useUtilityClasses$v(ownerState);
   if (process.env.NODE_ENV !== "production") {
     const theme2 = useTheme();
     if (theme2.shadows[elevation] === void 0) {
@@ -46251,7 +46251,7 @@ function getPopoverUtilityClass(slot) {
   return generateUtilityClass("MuiPopover", slot);
 }
 generateUtilityClasses("MuiPopover", ["root", "paper"]);
-const _excluded$w = ["onEntering"], _excluded2$3 = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3 = ["slotProps"];
+const _excluded$y = ["onEntering"], _excluded2$3 = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3 = ["slotProps"];
 function getOffsetTop(rect, vertical) {
   let offset = 0;
   if (typeof vertical === "number") {
@@ -46280,7 +46280,7 @@ function getTransformOriginValue(transformOrigin) {
 function resolveAnchorEl(anchorEl) {
   return typeof anchorEl === "function" ? anchorEl() : anchorEl;
 }
-const useUtilityClasses$s = (ownerState) => {
+const useUtilityClasses$u = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -46346,7 +46346,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
       onEntering
     } = {},
     disableScrollLock = false
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$w), other = _objectWithoutPropertiesLoose$1(props, _excluded2$3);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$y), other = _objectWithoutPropertiesLoose$1(props, _excluded2$3);
   const externalPaperSlotProps = (_slotProps$paper = slotProps == null ? void 0 : slotProps.paper) != null ? _slotProps$paper : PaperPropsProp;
   const paperRef = reactExports.useRef();
   const handlePaperRef = useForkRef(paperRef, externalPaperSlotProps.ref);
@@ -46361,7 +46361,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
     transitionDuration: transitionDurationProp,
     TransitionProps
   });
-  const classes = useUtilityClasses$s(ownerState);
+  const classes = useUtilityClasses$u(ownerState);
   const getAnchorOffset = reactExports.useCallback(() => {
     if (anchorReference === "anchorPosition") {
       if (process.env.NODE_ENV !== "production") {
@@ -46735,7 +46735,7 @@ function getMenuUtilityClass(slot) {
   return generateUtilityClass("MuiMenu", slot);
 }
 generateUtilityClasses("MuiMenu", ["root", "paper", "list"]);
-const _excluded$v = ["onEntering"], _excluded2$2 = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
+const _excluded$x = ["onEntering"], _excluded2$2 = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
 const RTL_ORIGIN = {
   vertical: "top",
   horizontal: "right"
@@ -46744,7 +46744,7 @@ const LTR_ORIGIN = {
   vertical: "top",
   horizontal: "left"
 };
-const useUtilityClasses$r = (ownerState) => {
+const useUtilityClasses$t = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -46804,7 +46804,7 @@ const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu(inProps, re
     variant = "selectedMenu",
     slots = {},
     slotProps = {}
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$v), other = _objectWithoutPropertiesLoose$1(props, _excluded2$2);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$x), other = _objectWithoutPropertiesLoose$1(props, _excluded2$2);
   const theme2 = useTheme();
   const isRtl = theme2.direction === "rtl";
   const ownerState = _extends$2({}, props, {
@@ -46817,7 +46817,7 @@ const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu(inProps, re
     TransitionProps,
     variant
   });
-  const classes = useUtilityClasses$r(ownerState);
+  const classes = useUtilityClasses$t(ownerState);
   const autoFocusItem = autoFocus && !disableAutoFocusItem && open;
   const menuListActionsRef = reactExports.useRef(null);
   const handleEntering = (element, isAppearing) => {
@@ -47016,8 +47016,8 @@ function getDividerUtilityClass(slot) {
 }
 const dividerClasses = generateUtilityClasses("MuiDivider", ["root", "absolute", "fullWidth", "inset", "middle", "flexItem", "light", "vertical", "withChildren", "withChildrenVertical", "textAlignRight", "textAlignLeft", "wrapper", "wrapperVertical"]);
 const dividerClasses$1 = dividerClasses;
-const _excluded$u = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
-const useUtilityClasses$q = (ownerState) => {
+const _excluded$w = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
+const useUtilityClasses$s = (ownerState) => {
   const {
     absolute,
     children,
@@ -47157,7 +47157,7 @@ const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProp
     role = component !== "hr" ? "separator" : void 0,
     textAlign = "center",
     variant = "fullWidth"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$u);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$w);
   const ownerState = _extends$2({}, props, {
     absolute,
     component,
@@ -47168,7 +47168,7 @@ const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProp
     textAlign,
     variant
   });
-  const classes = useUtilityClasses$q(ownerState);
+  const classes = useUtilityClasses$s(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(DividerRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -47252,8 +47252,8 @@ function getListItemIconUtilityClass(slot) {
 }
 const listItemIconClasses = generateUtilityClasses("MuiListItemIcon", ["root", "alignItemsFlexStart"]);
 const listItemIconClasses$1 = listItemIconClasses;
-const _excluded$t = ["className"];
-const useUtilityClasses$p = (ownerState) => {
+const _excluded$v = ["className"];
+const useUtilityClasses$r = (ownerState) => {
   const {
     alignItems,
     classes
@@ -47290,12 +47290,12 @@ const ListItemIcon = /* @__PURE__ */ reactExports.forwardRef(function ListItemIc
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$t);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$v);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     alignItems: context.alignItems
   });
-  const classes = useUtilityClasses$p(ownerState);
+  const classes = useUtilityClasses$r(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIconRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -47331,14 +47331,14 @@ function getMenuItemUtilityClass(slot) {
 }
 const menuItemClasses = generateUtilityClasses("MuiMenuItem", ["root", "focusVisible", "dense", "disabled", "divider", "gutters", "selected"]);
 const menuItemClasses$1 = menuItemClasses;
-const _excluded$s = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
+const _excluded$u = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
 const overridesResolver = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
 };
-const useUtilityClasses$o = (ownerState) => {
+const useUtilityClasses$q = (ownerState) => {
   const {
     disabled,
     dense,
@@ -47452,7 +47452,7 @@ const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inPr
     role = "menuitem",
     tabIndex: tabIndexProp,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$s);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$u);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -47473,7 +47473,7 @@ const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inPr
     divider,
     disableGutters
   });
-  const classes = useUtilityClasses$o(props);
+  const classes = useUtilityClasses$q(props);
   const handleRef = useForkRef(menuItemRef, ref);
   let tabIndex;
   if (!props.disabled) {
@@ -51112,7 +51112,7 @@ function toggleStrategy(weekPk, is_strategy, callBackFunction = () => console.lo
     window.fail_function();
   }
 }
-function deleteSelf(objectID, objectType, soft = false, callBackFunction = () => console.log("success")) {
+function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = () => console.log("success")) {
   let path;
   if (soft)
     path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
@@ -51123,6 +51123,8 @@ function deleteSelf(objectID, objectType, soft = false, callBackFunction = () =>
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data) {
+      console.log("deleteSelfQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51148,12 +51150,14 @@ function deleteSelfLive(objectID, objectType, callBackFunction = () => console.l
     window.fail_function();
   }
 }
-function restoreSelf(objectID, objectType, callBackFunction = () => console.log("success")) {
+function restoreSelfQuery(objectID, objectType, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data) {
+      console.log("restoreSelfQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51634,11 +51638,13 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => consol
     window.fail_function();
   }
 }
-function makeProjectLive(projectPk, callBackFunction = (data) => console.log("success")) {
+function makeProjectLiveQuery(projectPk, callBackFunction = (data) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function(data) {
+      console.log("makeProjectLiveQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -52092,8 +52098,8 @@ function formControlState({
     return acc;
   }, {});
 }
-const _excluded$r = ["className", "row"];
-const useUtilityClasses$n = (ownerState) => {
+const _excluded$t = ["className", "row"];
+const useUtilityClasses$p = (ownerState) => {
   const {
     classes,
     row,
@@ -52130,7 +52136,7 @@ const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(in
   const {
     className,
     row = false
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$r);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$t);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -52141,7 +52147,7 @@ const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(in
     row,
     error: fcs.error
   });
-  const classes = useUtilityClasses$n(ownerState);
+  const classes = useUtilityClasses$p(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroupRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -52189,8 +52195,8 @@ function getFormControlUtilityClasses(slot) {
   return generateUtilityClass("MuiFormControl", slot);
 }
 generateUtilityClasses("MuiFormControl", ["root", "marginNone", "marginNormal", "marginDense", "fullWidth", "disabled"]);
-const _excluded$q = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
-const useUtilityClasses$m = (ownerState) => {
+const _excluded$s = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
+const useUtilityClasses$o = (ownerState) => {
   const {
     classes,
     margin: margin2,
@@ -52249,7 +52255,7 @@ const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl
     required = false,
     size: size2 = "medium",
     variant = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$q);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$s);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -52262,7 +52268,7 @@ const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$m(ownerState);
+  const classes = useUtilityClasses$o(ownerState);
   const [adornedStart, setAdornedStart] = reactExports.useState(() => {
     let initialAdornedStart = false;
     if (children) {
@@ -52493,8 +52499,8 @@ function getFormControlLabelUtilityClasses(slot) {
 }
 const formControlLabelClasses = generateUtilityClasses("MuiFormControlLabel", ["root", "labelPlacementStart", "labelPlacementTop", "labelPlacementBottom", "disabled", "label", "error", "required", "asterisk"]);
 const formControlLabelClasses$1 = formControlLabelClasses;
-const _excluded$p = ["checked", "className", "componentsProps", "control", "disabled", "disableTypography", "inputRef", "label", "labelPlacement", "name", "onChange", "required", "slotProps", "value"];
-const useUtilityClasses$l = (ownerState) => {
+const _excluded$r = ["checked", "className", "componentsProps", "control", "disabled", "disableTypography", "inputRef", "label", "labelPlacement", "name", "onChange", "required", "slotProps", "value"];
+const useUtilityClasses$n = (ownerState) => {
   const {
     classes,
     disabled,
@@ -52581,7 +52587,7 @@ const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormCo
     labelPlacement = "end",
     required: requiredProp,
     slotProps = {}
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$p);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$r);
   const muiFormControl = useFormControl();
   const disabled = (_ref = disabledProp != null ? disabledProp : control.props.disabled) != null ? _ref : muiFormControl == null ? void 0 : muiFormControl.disabled;
   const required = requiredProp != null ? requiredProp : control.props.required;
@@ -52605,7 +52611,7 @@ const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormCo
     required,
     error: fcs.error
   });
-  const classes = useUtilityClasses$l(ownerState);
+  const classes = useUtilityClasses$n(ownerState);
   const typographySlotProps = (_slotProps$typography = slotProps.typography) != null ? _slotProps$typography : componentsProps.typography;
   let label = labelProp;
   if (label != null && label.type !== Typography$1 && !disableTypography) {
@@ -52718,8 +52724,8 @@ function getSwitchBaseUtilityClass(slot) {
   return generateUtilityClass("PrivateSwitchBase", slot);
 }
 generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-const _excluded$o = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-const useUtilityClasses$k = (ownerState) => {
+const _excluded$q = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+const useUtilityClasses$m = (ownerState) => {
   const {
     classes,
     checked,
@@ -52777,7 +52783,7 @@ const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(
     tabIndex,
     type,
     value
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$o);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$q);
   const [checked, setCheckedState] = useControlled({
     controlled: checkedProp,
     default: Boolean(defaultChecked),
@@ -52824,7 +52830,7 @@ const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(
     disableFocusRipple,
     edge
   });
-  const classes = useUtilityClasses$k(ownerState);
+  const classes = useUtilityClasses$m(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$2({
     component: "span",
     className: clsx(classes.root, className),
@@ -52968,8 +52974,8 @@ function getSwitchUtilityClass(slot) {
 }
 const switchClasses = generateUtilityClasses("MuiSwitch", ["root", "edgeStart", "edgeEnd", "switchBase", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium", "checked", "disabled", "input", "thumb", "track"]);
 const switchClasses$1 = switchClasses;
-const _excluded$n = ["className", "color", "edge", "size", "sx"];
-const useUtilityClasses$j = (ownerState) => {
+const _excluded$p = ["className", "color", "edge", "size", "sx"];
+const useUtilityClasses$l = (ownerState) => {
   const {
     classes,
     edge,
@@ -53142,13 +53148,13 @@ const Switch = /* @__PURE__ */ reactExports.forwardRef(function Switch2(inProps,
     edge = false,
     size: size2 = "medium",
     sx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$n);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$p);
   const ownerState = _extends$2({}, props, {
     color: color2,
     edge,
     size: size2
   });
-  const classes = useUtilityClasses$j(ownerState);
+  const classes = useUtilityClasses$l(ownerState);
   const icon = /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchThumb, {
     className: classes.thumb,
     ownerState
@@ -53340,11 +53346,11 @@ const ErrorOutlineIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("
 const InfoOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20, 12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10, 10 0 0,0 12,2M11,17H13V11H11V17Z"
 }), "InfoOutlined");
-const CloseIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ClearIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
-const _excluded$m = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-const useUtilityClasses$i = (ownerState) => {
+const _excluded$o = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+const useUtilityClasses$k = (ownerState) => {
   const {
     variant,
     color: color2,
@@ -53472,15 +53478,15 @@ const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, r
     slotProps = {},
     slots = {},
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$m);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$o);
   const ownerState = _extends$2({}, props, {
     color: color2,
     severity,
     variant
   });
-  const classes = useUtilityClasses$i(ownerState);
+  const classes = useUtilityClasses$k(ownerState);
   const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
-  const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : CloseIcon;
+  const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
   const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
   const closeIconProps = (_slotProps$closeIcon = slotProps.closeIcon) != null ? _slotProps$closeIcon : componentsProps.closeIcon;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertRoot, _extends$2({
@@ -53652,8 +53658,8 @@ function getFormHelperTextUtilityClasses(slot) {
 const formHelperTextClasses = generateUtilityClasses("MuiFormHelperText", ["root", "error", "disabled", "sizeSmall", "sizeMedium", "contained", "focused", "filled", "required"]);
 const formHelperTextClasses$1 = formHelperTextClasses;
 var _span$2;
-const _excluded$l = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
-const useUtilityClasses$h = (ownerState) => {
+const _excluded$n = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
+const useUtilityClasses$j = (ownerState) => {
   const {
     classes,
     contained,
@@ -53710,7 +53716,7 @@ const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelp
     children,
     className,
     component = "p"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$l);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$n);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -53728,7 +53734,7 @@ const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelp
     focused: fcs.focused,
     required: fcs.required
   });
-  const classes = useUtilityClasses$h(ownerState);
+  const classes = useUtilityClasses$j(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FormHelperTextRoot, _extends$2({
     as: component,
     ownerState,
@@ -53808,7 +53814,7 @@ function getInputBaseUtilityClass(slot) {
 }
 const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
 const inputBaseClasses$1 = inputBaseClasses;
-const _excluded$k = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+const _excluded$m = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
 const rootOverridesResolver = (props, styles2) => {
   const {
     ownerState
@@ -53821,7 +53827,7 @@ const inputOverridesResolver = (props, styles2) => {
   } = props;
   return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
 };
-const useUtilityClasses$g = (ownerState) => {
+const useUtilityClasses$i = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -54032,7 +54038,7 @@ const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(in
     startAdornment,
     type = "text",
     value: valueProp
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$k);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$m);
   const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
   const {
     current: isControlled
@@ -54193,7 +54199,7 @@ const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(in
     startAdornment,
     type
   });
-  const classes = useUtilityClasses$g(ownerState);
+  const classes = useUtilityClasses$i(ownerState);
   const Root = slots.root || components.Root || InputBaseRoot;
   const rootProps = slotProps.root || componentsProps.root || {};
   const Input3 = slots.input || components.Input || InputBaseComponent;
@@ -54479,8 +54485,8 @@ function getInputUtilityClass(slot) {
 }
 const inputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiInput", ["root", "underline", "input"]));
 const inputClasses$1 = inputClasses;
-const _excluded$j = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
-const useUtilityClasses$f = (ownerState) => {
+const _excluded$l = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
+const useUtilityClasses$h = (ownerState) => {
   const {
     classes,
     disableUnderline
@@ -54591,8 +54597,8 @@ const Input = /* @__PURE__ */ reactExports.forwardRef(function Input2(inProps, r
     slotProps,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$j);
-  const classes = useUtilityClasses$f(props);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$l);
+  const classes = useUtilityClasses$h(props);
   const ownerState = {
     disableUnderline
   };
@@ -54812,8 +54818,8 @@ function getFilledInputUtilityClass(slot) {
 }
 const filledInputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiFilledInput", ["root", "underline", "input"]));
 const filledInputClasses$1 = filledInputClasses;
-const _excluded$i = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
-const useUtilityClasses$e = (ownerState) => {
+const _excluded$k = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
+const useUtilityClasses$g = (ownerState) => {
   const {
     classes,
     disableUnderline
@@ -54995,14 +55001,14 @@ const FilledInput = /* @__PURE__ */ reactExports.forwardRef(function FilledInput
     slotProps,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$i);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$k);
   const ownerState = _extends$2({}, props, {
     fullWidth,
     inputComponent,
     multiline,
     type
   });
-  const classes = useUtilityClasses$e(props);
+  const classes = useUtilityClasses$g(props);
   const filledInputComponentsProps = {
     root: {
       ownerState
@@ -55225,7 +55231,7 @@ process.env.NODE_ENV !== "production" ? FilledInput.propTypes = {
 FilledInput.muiName = "Input";
 const FilledInput$1 = FilledInput;
 var _span$1;
-const _excluded$h = ["children", "classes", "className", "label", "notched"];
+const _excluded$j = ["children", "classes", "className", "label", "notched"];
 const NotchedOutlineRoot$1 = styled$1("fieldset")({
   textAlign: "left",
   position: "absolute",
@@ -55293,7 +55299,7 @@ function NotchedOutline(props) {
     className,
     label,
     notched
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$h);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$j);
   const withLabel = label != null && label !== "";
   const ownerState = _extends$2({}, props, {
     notched,
@@ -55350,8 +55356,8 @@ function getOutlinedInputUtilityClass(slot) {
 }
 const outlinedInputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiOutlinedInput", ["root", "notchedOutline", "input"]));
 const outlinedInputClasses$1 = outlinedInputClasses;
-const _excluded$g = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
-const useUtilityClasses$d = (ownerState) => {
+const _excluded$i = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
+const useUtilityClasses$f = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -55468,8 +55474,8 @@ const OutlinedInput = /* @__PURE__ */ reactExports.forwardRef(function OutlinedI
     notched,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$g);
-  const classes = useUtilityClasses$d(props);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$i);
+  const classes = useUtilityClasses$f(props);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -55687,8 +55693,8 @@ function getFormLabelUtilityClasses(slot) {
 }
 const formLabelClasses = generateUtilityClasses("MuiFormLabel", ["root", "colorSecondary", "focused", "disabled", "error", "filled", "required", "asterisk"]);
 const formLabelClasses$1 = formLabelClasses;
-const _excluded$f = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
-const useUtilityClasses$c = (ownerState) => {
+const _excluded$h = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
+const useUtilityClasses$e = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -55751,7 +55757,7 @@ const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(in
     children,
     className,
     component = "label"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$f);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$h);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -55767,7 +55773,7 @@ const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(in
     focused: fcs.focused,
     required: fcs.required
   });
-  const classes = useUtilityClasses$c(ownerState);
+  const classes = useUtilityClasses$e(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(FormLabelRoot, _extends$2({
     as: component,
     ownerState,
@@ -55840,8 +55846,8 @@ function getInputLabelUtilityClasses(slot) {
   return generateUtilityClass("MuiInputLabel", slot);
 }
 generateUtilityClasses("MuiInputLabel", ["root", "focused", "disabled", "error", "required", "asterisk", "formControl", "sizeSmall", "shrink", "animated", "standard", "filled", "outlined"]);
-const _excluded$e = ["disableAnimation", "margin", "shrink", "variant", "className"];
-const useUtilityClasses$b = (ownerState) => {
+const _excluded$g = ["disableAnimation", "margin", "shrink", "variant", "className"];
+const useUtilityClasses$d = (ownerState) => {
   const {
     classes,
     formControl,
@@ -55941,7 +55947,7 @@ const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(
     disableAnimation = false,
     shrink: shrinkProp,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$e);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$g);
   const muiFormControl = useFormControl();
   let shrink = shrinkProp;
   if (typeof shrink === "undefined" && muiFormControl) {
@@ -55960,7 +55966,7 @@ const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(
     variant: fcs.variant,
     required: fcs.required
   });
-  const classes = useUtilityClasses$b(ownerState);
+  const classes = useUtilityClasses$d(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabelRoot, _extends$2({
     "data-shrink": shrink,
     ownerState,
@@ -56043,8 +56049,8 @@ function getNativeSelectUtilityClasses(slot) {
 }
 const nativeSelectClasses = generateUtilityClasses("MuiNativeSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
 const nativeSelectClasses$1 = nativeSelectClasses;
-const _excluded$d = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
-const useUtilityClasses$a = (ownerState) => {
+const _excluded$f = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
+const useUtilityClasses$c = (ownerState) => {
   const {
     classes,
     variant,
@@ -56168,13 +56174,13 @@ const NativeSelectInput = /* @__PURE__ */ reactExports.forwardRef(function Nativ
     IconComponent,
     inputRef,
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$d);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$f);
   const ownerState = _extends$2({}, props, {
     disabled,
     variant,
     error
   });
-  const classes = useUtilityClasses$a(ownerState);
+  const classes = useUtilityClasses$c(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
     children: [/* @__PURE__ */ jsxRuntimeExports.jsx(NativeSelectSelect, _extends$2({
       ownerState,
@@ -56251,7 +56257,7 @@ function getSelectUtilityClasses(slot) {
 const selectClasses = generateUtilityClasses("MuiSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "focused", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
 const selectClasses$1 = selectClasses;
 var _span;
-const _excluded$c = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
+const _excluded$e = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
 const SelectSelect = styled$1("div", {
   name: "MuiSelect",
   slot: "Select",
@@ -56320,7 +56326,7 @@ function areEqualValues$1(a, b) {
 function isEmpty(display) {
   return display == null || typeof display === "string" && !display.trim();
 }
-const useUtilityClasses$9 = (ownerState) => {
+const useUtilityClasses$b = (ownerState) => {
   const {
     classes,
     variant,
@@ -56368,7 +56374,7 @@ const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput
     tabIndex: tabIndexProp,
     value: valueProp,
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$c);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$e);
   const [value, setValueState] = useControlled({
     controlled: valueProp,
     default: defaultValue,
@@ -56635,7 +56641,7 @@ const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput
     open,
     error
   });
-  const classes = useUtilityClasses$9(ownerState);
+  const classes = useUtilityClasses$b(ownerState);
   const paperProps = _extends$2({}, MenuProps.PaperProps, (_MenuProps$slotProps = MenuProps.slotProps) == null ? void 0 : _MenuProps$slotProps.paper);
   const listboxId = useId();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
@@ -56862,8 +56868,8 @@ const SelectInput$1 = SelectInput;
 const ArrowDropDownIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M7 10l5 5 5-5z"
 }), "ArrowDropDown");
-const _excluded$b = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$1 = ["root"];
-const useUtilityClasses$8 = (ownerState) => {
+const _excluded$d = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$1 = ["root"];
+const useUtilityClasses$a = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -56905,7 +56911,7 @@ const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps,
     renderValue,
     SelectDisplayProps,
     variant: variantProp = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$b);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$d);
   const inputComponent = native ? NativeSelectInput$1 : SelectInput$1;
   const muiFormControl = useFormControl();
   const fcs = formControlState({
@@ -56918,7 +56924,7 @@ const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps,
     variant,
     classes: classesProp
   });
-  const classes = useUtilityClasses$8(ownerState);
+  const classes = useUtilityClasses$a(ownerState);
   const restOfClasses = _objectWithoutPropertiesLoose$1(classes, _excluded2$1);
   const InputComponent = input || {
     standard: /* @__PURE__ */ jsxRuntimeExports.jsx(StyledInput, {
@@ -57127,13 +57133,13 @@ function getTextFieldUtilityClass(slot) {
   return generateUtilityClass("MuiTextField", slot);
 }
 generateUtilityClasses("MuiTextField", ["root"]);
-const _excluded$a = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
+const _excluded$c = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
 const variantComponent = {
   standard: Input$1,
   filled: FilledInput$1,
   outlined: OutlinedInput$1
 };
-const useUtilityClasses$7 = (ownerState) => {
+const useUtilityClasses$9 = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -57185,7 +57191,7 @@ const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(in
     type,
     value,
     variant = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$a);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$c);
   const ownerState = _extends$2({}, props, {
     autoFocus,
     color: color2,
@@ -57197,7 +57203,7 @@ const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(in
     select,
     variant
   });
-  const classes = useUtilityClasses$7(ownerState);
+  const classes = useUtilityClasses$9(ownerState);
   if (process.env.NODE_ENV !== "production") {
     if (select && !children) {
       console.error("MUI: `children` must be passed when using the `TextField` component with `select`.");
@@ -57451,7 +57457,7 @@ if (process.env.NODE_ENV !== "production") {
   RadioGroupContext.displayName = "RadioGroupContext";
 }
 const RadioGroupContext$1 = RadioGroupContext;
-const _excluded$9 = ["actions", "children", "defaultValue", "name", "onChange", "value"];
+const _excluded$b = ["actions", "children", "defaultValue", "name", "onChange", "value"];
 const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(props, ref) {
   const {
     // private
@@ -57462,7 +57468,7 @@ const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(
     name: nameProp,
     onChange,
     value: valueProp
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$9);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$b);
   const rootRef = reactExports.useRef(null);
   const [value, setValueState] = useControlled({
     controlled: valueProp,
@@ -57613,8 +57619,8 @@ function getRadioUtilityClass(slot) {
 }
 const radioClasses = generateUtilityClasses("MuiRadio", ["root", "checked", "disabled", "colorPrimary", "colorSecondary", "sizeSmall"]);
 const radioClasses$1 = radioClasses;
-const _excluded$8 = ["checked", "checkedIcon", "color", "icon", "name", "onChange", "size", "className"];
-const useUtilityClasses$6 = (ownerState) => {
+const _excluded$a = ["checked", "checkedIcon", "color", "icon", "name", "onChange", "size", "className"];
+const useUtilityClasses$8 = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -57682,12 +57688,12 @@ const Radio = /* @__PURE__ */ reactExports.forwardRef(function Radio2(inProps, r
     onChange: onChangeProp,
     size: size2 = "medium",
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$8);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$a);
   const ownerState = _extends$2({}, props, {
     color: color2,
     size: size2
   });
-  const classes = useUtilityClasses$6(ownerState);
+  const classes = useUtilityClasses$8(ownerState);
   const radioGroup = useRadioGroup();
   let checked = checkedProp;
   const onChange = createChainedFunction(onChangeProp, radioGroup && radioGroup.onChange);
@@ -57820,8 +57826,8 @@ if (process.env.NODE_ENV !== "production") {
   ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
 }
 const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-const _excluded$7 = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-const useUtilityClasses$5 = (ownerState) => {
+const _excluded$9 = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+const useUtilityClasses$7 = (ownerState) => {
   const {
     color: color2,
     disableElevation,
@@ -58046,7 +58052,7 @@ const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps,
     startIcon: startIconProp,
     type,
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$7);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$9);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -58058,7 +58064,7 @@ const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps,
     type,
     variant
   });
-  const classes = useUtilityClasses$5(ownerState);
+  const classes = useUtilityClasses$7(ownerState);
   const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
     className: classes.startIcon,
     ownerState,
@@ -58183,8 +58189,8 @@ function getSnackbarContentUtilityClass(slot) {
   return generateUtilityClass("MuiSnackbarContent", slot);
 }
 generateUtilityClasses("MuiSnackbarContent", ["root", "message", "action"]);
-const _excluded$6 = ["action", "className", "message", "role"];
-const useUtilityClasses$4 = (ownerState) => {
+const _excluded$8 = ["action", "className", "message", "role"];
+const useUtilityClasses$6 = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -58247,9 +58253,9 @@ const SnackbarContent = /* @__PURE__ */ reactExports.forwardRef(function Snackba
     className,
     message,
     role = "alert"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$6);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$8);
   const ownerState = props;
-  const classes = useUtilityClasses$4(ownerState);
+  const classes = useUtilityClasses$6(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SnackbarContentRoot, _extends$2({
     role,
     square: true,
@@ -58305,8 +58311,8 @@ function getSnackbarUtilityClass(slot) {
   return generateUtilityClass("MuiSnackbar", slot);
 }
 generateUtilityClasses("MuiSnackbar", ["root", "anchorOriginTopCenter", "anchorOriginBottomCenter", "anchorOriginTopRight", "anchorOriginBottomRight", "anchorOriginTopLeft", "anchorOriginBottomLeft"]);
-const _excluded$5 = ["onEnter", "onExited"], _excluded2 = ["action", "anchorOrigin", "autoHideDuration", "children", "className", "ClickAwayListenerProps", "ContentProps", "disableWindowBlurListener", "message", "onBlur", "onClose", "onFocus", "onMouseEnter", "onMouseLeave", "open", "resumeHideDuration", "TransitionComponent", "transitionDuration", "TransitionProps"];
-const useUtilityClasses$3 = (ownerState) => {
+const _excluded$7 = ["onEnter", "onExited"], _excluded2 = ["action", "anchorOrigin", "autoHideDuration", "children", "className", "ClickAwayListenerProps", "ContentProps", "disableWindowBlurListener", "message", "onBlur", "onClose", "onFocus", "onMouseEnter", "onMouseLeave", "open", "resumeHideDuration", "TransitionComponent", "transitionDuration", "TransitionProps"];
+const useUtilityClasses$5 = (ownerState) => {
   const {
     classes,
     anchorOrigin
@@ -58397,7 +58403,7 @@ const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inPr
       onEnter,
       onExited
     } = {}
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$5), other = _objectWithoutPropertiesLoose$1(props, _excluded2);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$7), other = _objectWithoutPropertiesLoose$1(props, _excluded2);
   const ownerState = _extends$2({}, props, {
     anchorOrigin: {
       vertical,
@@ -58408,7 +58414,7 @@ const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inPr
     TransitionComponent,
     transitionDuration
   });
-  const classes = useUtilityClasses$3(ownerState);
+  const classes = useUtilityClasses$5(ownerState);
   const {
     getRootProps,
     onClickAway
@@ -58709,8 +58715,8 @@ function getFabUtilityClass(slot) {
 }
 const fabClasses = generateUtilityClasses("MuiFab", ["root", "primary", "secondary", "extended", "circular", "focusVisible", "disabled", "colorInherit", "sizeSmall", "sizeMedium", "sizeLarge", "info", "error", "warning", "success"]);
 const fabClasses$1 = fabClasses;
-const _excluded$4 = ["children", "className", "color", "component", "disabled", "disableFocusRipple", "focusVisibleClassName", "size", "variant"];
-const useUtilityClasses$2 = (ownerState) => {
+const _excluded$6 = ["children", "className", "color", "component", "disabled", "disableFocusRipple", "focusVisibleClassName", "size", "variant"];
+const useUtilityClasses$4 = (ownerState) => {
   const {
     color: color2,
     variant,
@@ -58831,7 +58837,7 @@ const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) 
     focusVisibleClassName,
     size: size2 = "large",
     variant = "circular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$6);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -58840,7 +58846,7 @@ const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) 
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$2(ownerState);
+  const classes = useUtilityClasses$4(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FabRoot, _extends$2({
     className: clsx(classes.root, className),
     component,
@@ -59316,8 +59322,8 @@ function getAppBarUtilityClass(slot) {
   return generateUtilityClass("MuiAppBar", slot);
 }
 generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-const _excluded$3 = ["className", "color", "enableColorOnDark", "position"];
-const useUtilityClasses$1 = (ownerState) => {
+const _excluded$5 = ["className", "color", "enableColorOnDark", "position"];
+const useUtilityClasses$3 = (ownerState) => {
   const {
     color: color2,
     position: position2,
@@ -59418,13 +59424,13 @@ const AppBar = /* @__PURE__ */ reactExports.forwardRef(function AppBar2(inProps,
     color: color2 = "primary",
     enableColorOnDark = false,
     position: position2 = "fixed"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$3);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
   const ownerState = _extends$2({}, props, {
     color: color2,
     position: position2,
     enableColorOnDark
   });
-  const classes = useUtilityClasses$1(ownerState);
+  const classes = useUtilityClasses$3(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$2({
     square: true,
     component: "header",
@@ -59480,8 +59486,8 @@ function getToolbarUtilityClass(slot) {
   return generateUtilityClass("MuiToolbar", slot);
 }
 generateUtilityClasses("MuiToolbar", ["root", "gutters", "regular", "dense"]);
-const _excluded$2 = ["className", "component", "disableGutters", "variant"];
-const useUtilityClasses = (ownerState) => {
+const _excluded$4 = ["className", "component", "disableGutters", "variant"];
+const useUtilityClasses$2 = (ownerState) => {
   const {
     classes,
     disableGutters,
@@ -59531,13 +59537,13 @@ const Toolbar = /* @__PURE__ */ reactExports.forwardRef(function Toolbar2(inProp
     component = "div",
     disableGutters = false,
     variant = "regular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$2);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
   const ownerState = _extends$2({}, props, {
     component,
     disableGutters,
     variant
   });
-  const classes = useUtilityClasses(ownerState);
+  const classes = useUtilityClasses$2(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ToolbarRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -60389,7 +60395,7 @@ function verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps) {
   verify(mapDispatchToProps, "mapDispatchToProps");
   verify(mergeProps, "mergeProps");
 }
-const _excluded$1 = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+const _excluded$3 = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
 function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
   areStatesEqual,
   areOwnPropsEqual,
@@ -60455,7 +60461,7 @@ function finalPropsSelectorFactory(dispatch, _ref) {
     initMapStateToProps,
     initMapDispatchToProps,
     initMergeProps
-  } = _ref, options = _objectWithoutPropertiesLoose(_ref, _excluded$1);
+  } = _ref, options = _objectWithoutPropertiesLoose(_ref, _excluded$3);
   const mapStateToProps2 = initMapStateToProps(dispatch, options);
   const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
   const mergeProps = initMergeProps(dispatch, options);
@@ -60709,7 +60715,7 @@ function shallowEqual(objA, objB) {
   }
   return true;
 }
-const _excluded = ["reactReduxForwardedRef"];
+const _excluded$2 = ["reactReduxForwardedRef"];
 let useSyncExternalStore = notInitialized;
 const initializeConnect = (fn) => {
   useSyncExternalStore = fn;
@@ -60831,7 +60837,7 @@ function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
       const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
         const {
           reactReduxForwardedRef: reactReduxForwardedRef2
-        } = props, wrapperProps2 = _objectWithoutPropertiesLoose(props, _excluded);
+        } = props, wrapperProps2 = _objectWithoutPropertiesLoose(props, _excluded$2);
         return [props.context, reactReduxForwardedRef2, wrapperProps2];
       }, [props]);
       const ContextToUse = reactExports.useMemo(() => {
@@ -61546,21 +61552,22 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader$1 = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
-class Component extends reactExports.Component {
+class ComponentWithToggleDrop extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.maindiv = reactExports.createRef();
-  }
-  toggleDrop(evt) {
-    evt.stopPropagation();
-    toggleDrop(
-      this.props.objectID,
-      object_dictionary[this.objectType],
-      !this.props.data.is_dropped,
-      this.props.dispatch,
-      this.props.data.depth
-    );
+    __publicField(this, "mainDiv");
+    __publicField(this, "toggleDrop", (evt) => {
+      evt.stopPropagation();
+      toggleDrop(
+        this.props.objectID,
+        // @ts-ignore
+        object_dictionary[this.objectType],
+        !this.props.data.is_dropped,
+        this.props.dispatch,
+        this.props.data.depth
+      );
+    });
+    this.mainDiv = reactExports.createRef();
   }
 }
 class NodeBarUnconnected extends reactExports.Component {
@@ -61668,7 +61675,7 @@ const NodeBarColumnWorkflow = connect(
   mapColumnWorkflowStateToProps$1,
   null
 )(NodeBarColumnWorkflowUnconnected);
-class NodeBarColumnUnconnected extends Component {
+class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -61763,7 +61770,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     );
   }
 }
-class StrategyUnconnected extends Component {
+class StrategyUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "strategy";
@@ -62051,7 +62058,7 @@ const mapRestoreBarStateToProps = (state) => ({
   nodelinks: state.nodelink.filter((x) => x.deleted)
 });
 const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected);
-class RestoreBarItem extends Component {
+class RestoreBarItem extends ComponentWithToggleDrop {
   render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "restore-bar-item", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
@@ -62070,7 +62077,7 @@ class RestoreBarItem extends Component {
   restore() {
     this.setState({ disabled: true });
     this.props.renderer.tiny_loader.startLoad();
-    restoreSelf(this.props.data.id, this.props.objectType, () => {
+    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
       this.props.renderer.tiny_loader.endLoad();
     });
   }
@@ -62080,7 +62087,7 @@ class RestoreBarItem extends Component {
     )) {
       $(this.maindiv.current).children("button").attr("disabled", true);
       this.props.renderer.tiny_loader.startLoad();
-      deleteSelf(this.props.data.id, this.props.objectType, false, () => {
+      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
         this.props.renderer.tiny_loader.endLoad();
       });
     }
@@ -62152,7 +62159,7 @@ class QuillDiv extends reactExports.Component {
     });
   }
 }
-class EditableComponent extends Component {
+class EditableComponent extends ComponentWithToggleDrop {
   //Makes the item selectable
   addEditable(data, no_delete = false) {
     var _a;
@@ -62786,7 +62793,7 @@ function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction 
     window.fail_function();
   }
 }
-class CommentBox extends Component {
+class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.input = reactExports.createRef();
@@ -63124,7 +63131,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   restoreSelf(data) {
     var props = this.props;
     props.renderer.tiny_loader.startLoad();
-    restoreSelf(
+    restoreSelfQuery(
       data.id,
       object_dictionary[this.objectType],
       (response_data) => {
@@ -63160,7 +63167,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       ).toLowerCase() + "?"
     )) {
       props.renderer.tiny_loader.startLoad();
-      deleteSelf(
+      deleteSelfQuery(
         data.id,
         object_dictionary[this.objectType],
         true,
@@ -63411,7 +63418,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
     );
   }
 }
-class OutcomeBarOutcomeUnconnected extends Component {
+class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcome";
@@ -66355,17 +66362,34 @@ class DatePicker extends reactExports.Component {
     );
   }
 }
-class CollapsibleText extends Component {
+class CollapsibleText extends ComponentWithToggleDrop {
+  constructor(props) {
+    super(props);
+    __publicField(this, "css_class");
+    __publicField(this, "defaultText");
+    __publicField(this, "text");
+    this.state = {};
+    this.mainDiv = reactExports.createRef();
+    this.css_class = this.props.css_class;
+    this.defaultText = this.props.defaultText;
+    this.text = this.props.text;
+  }
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
   componentDidMount() {
     this.checkSize();
   }
   componentDidUpdate() {
     this.checkSize();
   }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   checkSize() {
     if (this.state.is_dropped)
       return;
-    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
+    if (this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight) {
       if (!this.state.overflow)
         this.setState({ overflow: true });
     } else {
@@ -66378,8 +66402,8 @@ class CollapsibleText extends Component {
    *******************************************************/
   render() {
     let css_class = "";
-    if (this.props.css_class)
-      css_class = this.props.css_class + " ";
+    if (this.css_class)
+      css_class = this.css_class + " ";
     css_class += "title-text collapsible-text";
     let drop_text = window.gettext("show more");
     if (this.state.is_dropped) {
@@ -66399,15 +66423,15 @@ class CollapsibleText extends Component {
           children: drop_text
         }
       );
-    var text = this.props.text;
-    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
-      text = this.props.defaultText;
+    let text = this.text;
+    if ((this.text == null || this.text == "") && this.defaultText != null) {
+      text = this.defaultText;
     }
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          ref: this.maindiv,
+          ref: this.mainDiv,
           className: css_class,
           title: text,
           dangerouslySetInnerHTML: { __html: text }
@@ -66437,573 +66461,6 @@ class LegendLine extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-line", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.Icon, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.text })
-    ] });
-  }
-}
-let UserLabel$1 = class UserLabel extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.select = reactExports.createRef();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  onChange(evt) {
-    switch (evt.target.value) {
-      case "none":
-        if (window.confirm("Are you sure you want to remove this user?")) {
-          this.props.permissionChange(0, this.props.user);
-        }
-        break;
-      default:
-        this.props.permissionChange(
-          permission_keys[evt.target.value],
-          this.props.user
-        );
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let permission_select;
-    let disabled = false;
-    if (this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id) >= 0)
-      disabled = true;
-    if (this.props.type !== "owner") {
-      if (this.props.type === "add") {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, disabled, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "primary-button",
-              onClick: () => this.props.addFunction($(this.select.current).val()),
-              children: window.gettext("Share")
-            }
-          )
-        ] });
-      } else {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "select",
-          {
-            value: this.props.type,
-            disabled,
-            onChange: this.onChange.bind(this),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Remove user") })
-            ]
-          }
-        ) });
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
-      ] }),
-      permission_select
-    ] });
-  }
-};
-let UserAdd$1 = class UserAdd extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-    this.state = { selected: null };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    const component = this;
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          const user_list = response.user_list.map((user) => {
-            return {
-              label: user.first_name + " " + user.last_name + " - " + user.username,
-              value: user.username,
-              user
-            };
-          });
-          response_function(user_list);
-        });
-        component.setState({ selected: null });
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user });
-      },
-      minLength: 1
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        permission_keys[value],
-        this.state.selected
-      );
-      $(this.input.current).val(null);
-      this.setState({ selected: null });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let user;
-    if (this.state.selected) {
-      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserLabel$1,
-        {
-          user: this.state.selected,
-          type: "add",
-          addFunction: this.addClick.bind(this)
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: this.props.share_info }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            className: "search-input",
-            ref: this.input,
-            placeholder: window.gettext("Begin typing to search users")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" })
-      ] }),
-      user
-    ] });
-  }
-};
-class ShareMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      owner: props.data.author,
-      edit: [],
-      view: [],
-      comment: [],
-      student: [],
-      userlist: [],
-      cannot_change: []
-    };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    getUsersForObjectQuery(
-      this.props.data.id,
-      this.props.data.type,
-      (response) => {
-        this.setState({
-          owner: response.author,
-          view: response.viewers,
-          comment: response.commentors,
-          edit: response.editors,
-          student: response.students,
-          published: response.published,
-          public_view: response.public_view,
-          cannot_change: response.cannot_change
-        });
-      }
-    );
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getPublication() {
-    const published = this.state.published;
-    const data = this.props.data;
-    if (data.type === "project" || data.is_strategy) {
-      let public_class = "big-button make-public";
-      let private_class = "big-button hover-shade make-private";
-      if (published)
-        public_class += " active";
-      else
-        private_class += " active";
-      let public_disabled = !(data.title && data.title.length > 0);
-      if (data.type == "project")
-        public_disabled |= data.disciplines.length == 0;
-      if (!public_disabled && !published)
-        public_class += " hover-shade";
-      if (public_disabled)
-        public_class += " disabled";
-      const public_text = window.gettext("Any CourseFlow teacher can view");
-      let disabled_indicator;
-      if (public_disabled) {
-        let disabled_text;
-        if (data.type == "project")
-          disabled_text = window.gettext(
-            "Title and disciplines are required to publish."
-          );
-        else
-          disabled_text = window.gettext("Title is required to publish.");
-        disabled_indicator = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "warning flex-middle", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red", children: "block" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: disabled_text })
-        ] });
-      }
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-buttons-wrapper", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: public_class,
-              disabled: public_disabled,
-              onClick: this.setPublication.bind(this, !public_disabled),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Public to CourseFlow") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: public_text })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: private_class,
-              onClick: this.setPublication.bind(this, false),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Private") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
-              ]
-            }
-          )
-        ] }),
-        disabled_indicator
-      ];
-    } else {
-      let published_icon;
-      if (published)
-        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project public to CourseFlow") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Any CourseFlow teacher can view") })
-        ] }) });
-      else
-        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project is private") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
-        ] }) });
-      return [published_icon, this.getPublicLink()];
-    }
-  }
-  getPublicLink() {
-    const data = this.props.data;
-    const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
-    if (data.type !== "project") {
-      const public_view = this.state.public_view;
-      if (!public_view)
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "public-link-button  hover-shade",
-            onClick: this.togglePublicView.bind(this, !public_view),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "add_link" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Generate a public link") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
-                  "Anyone with the link will be able to view the workflow"
-                ) })
-              ] })
-            ]
-          }
-        );
-      else
-        return [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                id: "public-page-link",
-                className: "public-link-button  hover-shade",
-                onClick: () => {
-                  navigator.clipboard.writeText(public_link);
-                  const copy_icon_text = $(
-                    "#public-page-link .copy-link-icon .material-symbols-rounded"
-                  ).text();
-                  const copy_description_text = $(
-                    "#public-page-link .copy-link-text"
-                  ).text();
-                  $(
-                    "#public-page-link .copy-link-icon .material-symbols-rounded"
-                  ).text("done");
-                  $("#public-page-link .copy-link-text").text(
-                    "Copied to Clipboard"
-                  );
-                  setTimeout(() => {
-                    $(
-                      "#public-page-link .copy-link-icon .material-symbols-rounded"
-                    ).text(copy_icon_text);
-                    $("#public-page-link .copy-link-text").text(
-                      copy_description_text
-                    );
-                  }, 1e3);
-                },
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy public link") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext("Anyone with the link can view the workflow") })
-                  ] })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                id: "public-page-code",
-                className: "public-link-button  hover-shade",
-                onClick: () => {
-                  const iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
-                  navigator.clipboard.writeText(iframe);
-                  const copy_icon_text = $(
-                    "#public-page-code .copy-link-icon .material-symbols-rounded"
-                  ).text();
-                  const copy_description_text = $(
-                    "#public-page-code .copy-link-text"
-                  ).text();
-                  $(
-                    "#public-page-code .copy-link-icon .material-symbols-rounded"
-                  ).text("done");
-                  $("#public-page-code .copy-link-text").text(
-                    "Copied to Clipboard"
-                  );
-                  setTimeout(() => {
-                    $(
-                      "#public-page-code .copy-link-icon .material-symbols-rounded"
-                    ).text(copy_icon_text);
-                    $("#public-page-code .copy-link-text").text(
-                      copy_description_text
-                    );
-                  }, 1e3);
-                },
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "frame_source" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy embed code") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
-                      "HTML code to embed the workflow in a site or page"
-                    ) })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "public-link-button public-link-remove  hover-shade",
-              onClick: this.togglePublicView.bind(this, !public_view),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link_off" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Remove public link") }) })
-              ]
-            }
-          )
-        ];
-    }
-  }
-  togglePublicView(public_view) {
-    if (public_view) {
-      if (window.confirm(
-        window.gettext(
-          "Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."
-        )
-      )) {
-        updateValueInstant(
-          this.props.data.id,
-          "workflow",
-          { public_view },
-          () => {
-            this.setState({ public_view });
-          }
-        );
-      }
-    } else {
-      updateValueInstant(
-        this.props.data.id,
-        "workflow",
-        { public_view },
-        () => {
-          this.setState({ public_view });
-        }
-      );
-    }
-  }
-  setPublication(published) {
-    if (published === this.state.published)
-      return;
-    const component = this;
-    if (!published || window.confirm(
-      window.gettext(
-        "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
-      )
-    )) {
-      updateValueInstant(
-        component.props.data.id,
-        component.props.data.type,
-        { published },
-        () => component.setState({ published })
-      );
-    }
-  }
-  setUserPermission(permission_type, user) {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    setUserPermission(
-      user.id,
-      this.props.data.id,
-      this.props.data.type,
-      permission_type,
-      () => {
-        getUsersForObjectQuery(
-          this.props.data.id,
-          this.props.data.type,
-          (response) => {
-            this.setState({
-              view: response.viewers,
-              comment: response.commentors,
-              edit: response.editors,
-              student: response.students
-            });
-            COURSEFLOW_APP.tinyLoader.endLoad();
-          }
-        );
-      }
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    const owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
-    const editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "edit",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    const viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "view",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    const commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "comment",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    const students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "student",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let share_info;
-    if (data.type === "project") {
-      share_info = window.gettext(
-        "Invite collaborators to project and its workflows"
-      );
-    } else {
-      share_info = window.gettext(
-        "Invite collaborators to workflow and grant view permissions to the project"
-      );
-    }
-    let shared_with;
-    if (editors.length || commentors.length || viewers.length || students.length) {
-      shared_with = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            window.gettext("Shared With"),
-            ":"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "user-list", children: [
-            editors,
-            commentors,
-            viewers,
-            students
-          ] })
-        ] })
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap user-text", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { children: [
-        window.gettext("Share") + " " + window.gettext(data.type) + " ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTitle,
-          {
-            no_hyperlink: true,
-            data: this.props.data,
-            class_name: "inline"
-          }
-        )
-      ] }),
-      this.getPublication(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-        window.gettext("Owned By"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserAdd$1,
-        {
-          permissionChange: this.setUserPermission.bind(this),
-          share_info
-        }
-      ),
-      shared_with,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "close" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "secondary-button",
-          onClick: this.props.actionFunction,
-          children: window.gettext("Close")
-        }
-      ) })
     ] });
   }
 }
@@ -67098,218 +66555,6 @@ class ImportMenu extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
         "The uploading process may take some time. It is not recommended to continue editing until it is complete."
       ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-        }
-      )
-    ] });
-  }
-}
-class ExportMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { type: "outcome" };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getExportTypes() {
-    let type = this.props.data.type;
-    let exports = [];
-    exports.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          name: "export_type",
-          type: "radio",
-          value: "outcome",
-          onChange: this.inputChange.bind(this, "type", ""),
-          checked: this.state.type == "outcome"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Outcomes") })
-    ]);
-    exports.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          name: "export_type",
-          type: "radio",
-          value: "node",
-          onChange: this.inputChange.bind(this, "type", ""),
-          checked: this.state.type == "node"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Nodes") })
-    ]);
-    if (type == "project" || type == "course")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "framework",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "framework"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Course Framework") })
-      ]);
-    if (type == "project" || type == "program")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "matrix",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "matrix"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Competency Matrix") })
-      ]);
-    if (type == "project" || type == "program")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "sobec",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "sobec"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Sobec Validation") })
-      ]);
-    return exports;
-  }
-  inputChange(type, id, evt) {
-    if (type == "set") {
-      let new_state = {};
-      new_state[id] = !evt.target.checked;
-      this.setState(new_state);
-    } else if (type == "type" && evt.target.checked) {
-      this.setState({ type: evt.target.value });
-    }
-  }
-  click(evt) {
-    if (evt.ctrlKey) {
-      this.ctrlKey = true;
-      $("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
-    }
-  }
-  submit(evt) {
-    $("#submit-button").attr("disabled", true);
-    setTimeout(() => {
-      if (!this.ctrlKey)
-        this.props.actionFunction();
-      alert(
-        window.gettext(
-          "Your file is being generated and will be emailed to you shortly."
-        )
-      );
-    }, 100);
-    return true;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let object_sets;
-    if (this.props.data.object_sets.length > 0) {
-      object_sets = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Object Set Visibility"),
-          ":"
-        ] }),
-        this.props.data.object_sets.map((objectset) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              onChange: this.inputChange.bind(this, "set", objectset.id),
-              name: "object_sets[]",
-              value: objectset.id,
-              type: "checkbox",
-              id: objectset.id,
-              checked: !this.state[objectset.id]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: objectset.title })
-        ] }))
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export files") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Use this menu to export files.") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "form",
-        {
-          id: "export-form",
-          encType: "multipart/form-data",
-          action: COURSEFLOW_APP.config.post_paths.get_export,
-          method: "POST",
-          target: "redirect-iframe",
-          onSubmit: this.submit.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                name: "csrfmiddlewaretoken",
-                value: root.getCsrfToken()
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-              window.gettext("Export Type"),
-              ":"
-            ] }),
-            this.getExportTypes(),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-              window.gettext("Export Format"),
-              ":"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { name: "export_format", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "excel", children: "Excel" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "csv", children: "CSV" })
-            ] }),
-            object_sets,
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectID",
-                name: "objectID",
-                value: JSON.stringify(this.props.data.id)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectType",
-                name: "objectType",
-                value: JSON.stringify(this.props.data.type)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                onClick: this.click.bind(this),
-                id: "submit-button",
-                type: "submit"
-              }
-            )
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -67548,2236 +66793,453 @@ class WorkflowsMenu extends reactExports.Component {
     ] });
   }
 }
-class WorkflowVisibility extends WorkflowCard {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    return null;
-  }
-  getButtons() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "select",
-      {
-        value: this.props.visibility,
-        onChange: (evt) => this.props.visibilityFunction(
-          this.props.workflowData.id,
-          evt.target.value
-        ),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "not_visible", children: window.gettext("Not Visible") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "visible", children: window.gettext("Visible") })
-        ]
-      }
-    ) });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.props.workflowData;
-    var css_class = "workflow-for-menu workflow-visibility hover-shade " + data.type;
-    if (this.props.selected)
-      css_class += " selected";
-    let creation_text = window.gettext("Created");
-    if (data.author && data.author !== "None")
-      creation_text += " " + window.gettext("by") + " " + data.author;
-    creation_text += " " + data.created_on;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
-        this.getButtons(),
-        this.getTypeIndicator()
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "workflow-description",
-          dangerouslySetInnerHTML: { __html: data.description }
-        }
-      )
-    ] });
-  }
+function getDialogUtilityClass(slot) {
+  return generateUtilityClass("MuiDialog", slot);
 }
-class LiveProjectSection extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  componentDidMount() {
-    let component = this;
-    if (this.props.role === "teacher") {
-      getLiveProjectDataQuery(
-        this.props.objectID,
-        this.props.view_type,
-        (data) => {
-          component.setState({ data: data.data_package });
-        }
-      );
-    } else if (this.props.role === "student") {
-      getLiveProjectDataStudentQuery(
-        this.props.objectID,
-        this.props.view_type,
-        (data) => {
-          component.setState({ data: data.data_package });
-        }
-      );
-    }
-  }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
+const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
+const dialogClasses$1 = dialogClasses;
+const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+if (process.env.NODE_ENV !== "production") {
+  DialogContext.displayName = "DialogContext";
 }
-class WorkflowCardSimple extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.maindiv = reactExports.createRef();
+const DialogContext$1 = DialogContext;
+const _excluded$1 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+const DialogBackdrop = styled$1(Backdrop$1, {
+  name: "MuiDialog",
+  slot: "Backdrop",
+  overrides: (props, styles2) => styles2.backdrop
+})({
+  // Improve scrollable dialog support.
+  zIndex: -1
+});
+const useUtilityClasses$1 = (ownerState) => {
+  const {
+    classes,
+    scroll,
+    maxWidth: maxWidth2,
+    fullWidth,
+    fullScreen
+  } = ownerState;
+  const slots = {
+    root: ["root"],
+    container: ["container", `scroll${capitalize(scroll)}`],
+    paper: ["paper", `paperScroll${capitalize(scroll)}`, `paperWidth${capitalize(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
+  };
+  return composeClasses(slots, getDialogUtilityClass, classes);
+};
+const DialogRoot = styled$1(Modal$1, {
+  name: "MuiDialog",
+  slot: "Root",
+  overridesResolver: (props, styles2) => styles2.root
+})({
+  "@media print": {
+    // Use !important to override the Modal inline-style.
+    position: "absolute !important"
   }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.props.workflow_data.id);
-    } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
+});
+const DialogContainer = styled$1("div", {
+  name: "MuiDialog",
+  slot: "Container",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [styles2.container, styles2[`scroll${capitalize(ownerState.scroll)}`]];
+  }
+})(({
+  ownerState
+}) => _extends$2({
+  height: "100%",
+  "@media print": {
+    height: "auto"
+  },
+  // We disable the focus ring for mouse, touch and keyboard users.
+  outline: 0
+}, ownerState.scroll === "paper" && {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center"
+}, ownerState.scroll === "body" && {
+  overflowY: "auto",
+  overflowX: "hidden",
+  textAlign: "center",
+  "&:after": {
+    content: '""',
+    display: "inline-block",
+    verticalAlign: "middle",
+    height: "100%",
+    width: "0"
+  }
+}));
+const DialogPaper = styled$1(Paper$1, {
+  name: "MuiDialog",
+  slot: "Paper",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [styles2.paper, styles2[`scrollPaper${capitalize(ownerState.scroll)}`], styles2[`paperWidth${capitalize(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
+  }
+})(({
+  theme: theme2,
+  ownerState
+}) => _extends$2({
+  margin: 32,
+  position: "relative",
+  overflowY: "auto",
+  // Fix IE11 issue, to remove at some point.
+  "@media print": {
+    overflowY: "visible",
+    boxShadow: "none"
+  }
+}, ownerState.scroll === "paper" && {
+  display: "flex",
+  flexDirection: "column",
+  maxHeight: "calc(100% - 64px)"
+}, ownerState.scroll === "body" && {
+  display: "inline-block",
+  verticalAlign: "middle",
+  textAlign: "left"
+  // 'initial' doesn't work on IE11
+}, !ownerState.maxWidth && {
+  maxWidth: "calc(100% - 64px)"
+}, ownerState.maxWidth === "xs" && {
+  maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
+  [`&.${dialogClasses$1.paperScrollBody}`]: {
+    [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
+      maxWidth: "calc(100% - 64px)"
     }
   }
-  getTypeIndicator() {
-    let data = this.props.workflow_data;
-    let type = data.type;
-    let type_text = window.gettext(type);
-    if (type === "liveproject")
-      type_text = window.gettext("classroom");
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.props.workflow_data;
-    var css_class = "simple-workflow workflow-for-menu hover-shade " + data.type;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        ref: this.maindiv,
-        className: css_class,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
-          this.getTypeIndicator()
-        ] })
-      }
-    );
-  }
-}
-class LiveProjectOverview extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflowData: workflow }, index2));
-    if (workflows.length === 0)
-      workflows = window.gettext(
-        "No workflows have been made visible to students."
-      );
-    let teachers = this.state.data.teachers.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
-    ] }, index2));
-    let students = this.state.data.students.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
-    ] }, index2));
-    let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentTitle,
-        {
-          data: assignment,
-          user_role: this.props.userRole
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: assignment.completion_info }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
-    ] }, index));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Teachers"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
-        ] }),
-        teachers
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Students"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
-        ] }),
-        students
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Visible Workflows"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Assignments"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
-        ] }),
-        assignments
-      ] })
-    ] });
-  }
-}
-class UserLabel2 extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.select = reactExports.createRef();
-  }
-  onChange(evt) {
-    switch (evt.target.value) {
-      case "none":
-        if (window.confirm("Are you sure you want to remove this user?")) {
-          this.props.permissionChange(0, this.props.user);
-        }
-        break;
-      default:
-        this.props.permissionChange(
-          role_keys[evt.target.value],
-          this.props.user
-        );
+}, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
+  maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
+  [`&.${dialogClasses$1.paperScrollBody}`]: {
+    [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
+      maxWidth: "calc(100% - 64px)"
     }
   }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let permission_select;
-    if (this.props.type !== "owner") {
-      if (this.props.type === "add") {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "permission-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => this.props.addFunction($(this.select.current).val()),
-              children: window.gettext("Share")
-            }
-          )
-        ] });
-      } else {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: this.props.type, onChange: this.onChange.bind(this), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: gettext("Remove user") })
-        ] }) });
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
-      ] }),
-      permission_select
-    ] });
+}, ownerState.fullWidth && {
+  width: "calc(100% - 64px)"
+}, ownerState.fullScreen && {
+  margin: 0,
+  width: "100%",
+  maxWidth: "100%",
+  height: "100%",
+  maxHeight: "none",
+  borderRadius: 0,
+  [`&.${dialogClasses$1.paperScrollBody}`]: {
+    margin: 0,
+    maxWidth: "100%"
   }
-}
-class UserAdd2 extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-    this.state = { selected: null };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          let user_list = response.user_list.map((user) => {
-            return {
-              label: user.first_name + " " + user.last_name + " - " + user.username,
-              value: user.username,
-              user
-            };
-          });
-          response_function(user_list);
-        });
-        component.setState({ selected: null });
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user });
-      },
-      minLength: 1
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        role_keys[value],
-        this.state.selected
-      );
-      $(this.input.current).val(null);
-      this.setState({ selected: null });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let user;
-    if (this.state.selected) {
-      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserLabel2,
-        {
-          user: this.state.selected,
-          type: "add",
-          addFunction: this.addClick.bind(this)
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        gettext("Add A User"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext(
-        "Begin typing to search users. Select the desired user then click Share."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ref: this.input }),
-      user
-    ] });
-  }
-}
-class StudentManagement extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.tiny_loader = new MouseCursorLoader($("body"));
-    this.state = { owner: null, teacher: [], student: [] };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    getUsersForLiveProject(this.props.data.id, (response) => {
-      this.setState({
-        owner: response.author,
-        student: response.students,
-        teacher: response.teachers
-      });
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  setUserPermission(permission_type, user) {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
-      getUsersForLiveProject(this.props.data.id, (response) => {
-        this.setState({
-          owner: response.author,
-          student: response.students,
-          teacher: response.teachers
-        });
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (this.state.owner == null)
-      return null;
-    let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel2, { user: this.state.owner, type: "owner" });
-    let teachers = this.state.teacher.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel2,
-      {
-        user,
-        type: "teacher",
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel2,
-      {
-        user,
-        type: "student",
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-text", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("Student Management") + ":" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        gettext("Owned By"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Teachers"),
-          ":"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: teachers })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Enrolled Users"),
-          ":"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: students })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(UserAdd2, { permissionChange: this.setUserPermission.bind(this) })
-    ] });
-  }
-}
-class LiveProjectStudents extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let liveproject = this.state.data.liveproject;
-    let register_link;
-    if (liveproject && liveproject.registration_hash) {
-      let register_url = COURSEFLOW_APP.config.registration_path.replace(
-        "project_hash",
-        liveproject.registration_hash
-      );
-      register_link = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-text", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Student Registration:" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Student Registration Link: ") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              id: "copy-text",
-              className: "hover-shade",
-              onClick: () => {
-                navigator.clipboard.writeText(register_url);
-                $("#copy-text").attr(
-                  "src",
-                  COURSEFLOW_APP.config.icon_path + "duplicate_checked.svg"
-                );
-                $("#url-text").text("Copied to Clipboard");
-                setTimeout(() => {
-                  $("#copy-text").attr(
-                    "src",
-                    COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
-                  );
-                  $("#url-text").text(register_url);
-                }, 1e3);
-              },
-              title: window.gettext("Copy to clipboard"),
-              src: COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "url-text", className: "selectable", href: register_url, children: register_url })
-        ] })
-      ] }) });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(StudentManagement, { data: this.state.data.liveproject }),
-      register_link
-    ] });
-  }
-}
-class AssignmentView extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { is_dropped: false };
-    this.user_id = COURSEFLOW_APP.contextData.user_id;
-    if (props.data.user_assignment)
-      this.state.completed = props.data.user_assignment.completed;
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  visitWorkflow(id, evt) {
-    const path = COURSEFLOW_APP.config.update_path["workflow"];
-    evt.stopPropagation();
-    window.open(path.replace("0", id));
-  }
-  toggleDrop() {
-    this.setState((state) => {
-      return { is_dropped: !state.is_dropped };
-    });
-  }
-  changeCompletion(evt) {
-    const checked = evt.target.checked;
-    this.setState({ completed: checked });
-    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let lefticon;
-    let righticon;
-    let css_class = "node assignment";
-    const data = this.props.data;
-    const node_data = data.task;
-    let data_override = node_data;
-    const mouseover_actions = [];
-    if (node_data.represents_workflow) {
-      data_override = {
-        ...node_data,
-        ...node_data.linked_workflow_data,
-        id: data.id
-      };
-    }
-    if (node_data.context_classification > 0)
-      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: this.props.renderer.context_choices.find(
-            (obj) => obj.type == node_data.context_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
-        }
-      );
-    if (node_data.task_classification > 0)
-      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: this.props.renderer.task_choices.find(
-            (obj) => obj.type == node_data.task_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[node_data.task_classification] + ".svg"
-        }
-      );
-    const style2 = { backgroundColor: getColumnColour(node_data) };
-    if (this.state.is_dropped)
-      css_class += " dropped";
-    let linkIcon;
-    let linktext = window.gettext("Visit linked workflow");
-    let clickfunc = this.visitWorkflow.bind(this, node_data.linked_workflow);
-    if (node_data.linked_workflow_data) {
-      if (node_data.linked_workflow_data.deleted)
-        linktext = window.gettext("<Deleted Workflow>");
-      if (node_data.linked_workflow_data.deleted)
-        clickfunc = null;
-    }
-    if (data.linked_workflow_access && node_data.linked_workflow)
-      linkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade linked-workflow", onClick: clickfunc, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
-      ] });
-    let parentLinkIcon;
-    const parentlinktext = window.gettext("Visit containing workflow");
-    const parentclickfunc = this.visitWorkflow.bind(
-      this,
-      data.parent_workflow_id
-    );
-    if (data.workflow_access && data.parent_workflow_id)
-      parentLinkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade linked-workflow containing-workflow",
-          onClick: parentclickfunc,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: parentlinktext })
-          ]
-        }
-      );
-    let dropText = "";
-    if (data_override.description && data_override.description.replace(
-      /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
-      ""
-    ) != "")
-      dropText = "...";
-    let dropIcon;
-    if (this.state.is_dropped)
-      dropIcon = "droptriangleup";
-    else
-      dropIcon = "droptriangledown";
-    let completion_data;
-    if (data.user_assignment) {
-      let disabled = true;
-      if (this.props.renderer.user_role == role_keys.teacher || data.self_reporting && data.user_assignment.liveprojectuser.user.id == this.user_id)
-        disabled = false;
-      let extra_data;
-      if (data.single_completion && data.user_assignment.completed) {
-        extra_data = [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            window.gettext("Completed by ") + getUserDisplay(
-              data.user_assignment.liveprojectuser.user
-            ) + window.gettext(" on "),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                default_value: data.user_assignment.completed_on,
-                disabled: true
-              }
-            )
-          ] })
-        ];
-      }
-      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("Completion"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            disabled,
-            checked: this.state.completed,
-            onChange: this.changeCompletion.bind(this)
-          }
-        ),
-        extra_data
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          AssignmentTitle,
-          {
-            user_role: this.props.renderer.user_role,
-            data
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("End Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "end_date",
-                default_value: data.end_date,
-                disabled: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("Start Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "start_date",
-                default_value: data.start_date,
-                disabled: true
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
-      ] }),
-      parentLinkIcon,
-      linkIcon,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        TitleText,
-        {
-          text: data_override.description,
-          defaultText: window.gettext("No description given")
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "node-drop-row hover-shade",
-          onClick: this.toggleDrop.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left", children: dropText }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.props.renderer.time_choices[data_override.time_units].name }) })
-          ]
-        }
-      )
-    ] });
-  }
-}
-class ReportRow extends reactExports.Component {
-  render() {
-    let user = this.props.userassignment.liveprojectuser;
-    let userassignment = this.props.userassignment;
-    let updateFunction = this.props.updateFunction;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          checked: userassignment.completed,
-          onChange: (evt) => updateFunction(userassignment.id, evt.target.checked)
-        }
-      ) })
-    ] });
-  }
-}
-class LiveAssignmentEdit extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...this.props.data,
-      has_changed: false,
-      user_data: { assigned_users: [], other_users: [] }
-    };
-    this.changed_values = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getAssignmentDataQuery(
-      component.props.data.id,
-      component.props.view_type,
-      (data) => {
-        component.setState({ user_data: data.data_package });
-      }
-    );
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  switchVisibility(pk, visibility) {
-    let parameter = "workflow_access";
-    if (this.state.task.linked_workflow === pk)
-      parameter = "linked_" + parameter;
-    if (visibility === "visible") {
-      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true);
-      let new_state = {};
-      new_state[parameter] = true;
-      this.props.updateAssignment(new_state);
-      this.setState(new_state);
-    } else {
-      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false);
-      let new_state = {};
-      new_state[parameter] = false;
-      this.props.updateAssignment(new_state);
-      this.setState(new_state);
-    }
-  }
-  delete() {
-    let data = this.state;
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + window.gettext("assignment") + "?"
-    )) {
-      deleteSelfLive(data.id, "liveassignment", (response_data) => {
-        window.location = COURSEFLOW_APP.config.update_path.liveproject.replace(
-          "0",
-          data.liveproject
-        );
-      });
-    }
-  }
-  changeField(type, new_value) {
-    let new_state = { has_changed: true };
-    new_state[type] = new_value;
-    this.changed_values[type] = new_value;
-    this.setState(new_state);
-  }
-  saveChanges() {
-    updateLiveProjectValueQuery(this.state.id, "liveassignment", this.changed_values);
-    this.props.updateAssignment(this.changed_values);
-    this.changed_values = {};
-    this.setState({ has_changed: false });
-  }
-  changeView(workflow_id) {
-    this.setState({ selected_id: workflow_id });
-  }
-  addUser(evt) {
-    let selected = parseInt($("#users_all").val());
-    if (!selected)
+}));
+const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiDialog"
+  });
+  const theme2 = useTheme();
+  const defaultTransitionDuration = {
+    enter: theme2.transitions.duration.enteringScreen,
+    exit: theme2.transitions.duration.leavingScreen
+  };
+  const {
+    "aria-describedby": ariaDescribedby,
+    "aria-labelledby": ariaLabelledbyProp,
+    BackdropComponent,
+    BackdropProps,
+    children,
+    className,
+    disableEscapeKeyDown = false,
+    fullScreen = false,
+    fullWidth = false,
+    maxWidth: maxWidth2 = "sm",
+    onBackdropClick,
+    onClose,
+    open,
+    PaperComponent = Paper$1,
+    PaperProps = {},
+    scroll = "paper",
+    TransitionComponent = Fade$1,
+    transitionDuration = defaultTransitionDuration,
+    TransitionProps
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$1);
+  const ownerState = _extends$2({}, props, {
+    disableEscapeKeyDown,
+    fullScreen,
+    fullWidth,
+    maxWidth: maxWidth2,
+    scroll
+  });
+  const classes = useUtilityClasses$1(ownerState);
+  const backdropClick = reactExports.useRef();
+  const handleMouseDown = (event2) => {
+    backdropClick.current = event2.target === event2.currentTarget;
+  };
+  const handleBackdropClick = (event2) => {
+    if (!backdropClick.current) {
       return;
-    let user_data = { ...this.state.user_data };
-    user_data.assigned_users = user_data.assigned_users.slice();
-    user_data.other_users = user_data.other_users.slice();
-    user_data.assigned_users.push(
-      user_data.other_users.splice(
-        user_data.other_users.findIndex(
-          (element) => element.user.id == selected
-        ),
-        1
-      )[0]
-    );
-    this.setState({ user_data });
-    addUsersToAssignmentQuery(this.state.id, [selected], true);
-  }
-  removeUser(evt) {
-    let selected = parseInt($("#users_chosen").val());
-    if (!selected)
-      return;
-    let user_data = { ...this.state.user_data };
-    user_data.assigned_users = user_data.assigned_users.slice();
-    user_data.other_users = user_data.other_users.slice();
-    user_data.other_users.push(
-      user_data.assigned_users.splice(
-        user_data.assigned_users.findIndex(
-          (element) => element.user.id == selected
-        ),
-        1
-      )[0]
-    );
-    this.setState({ user_data });
-    addUsersToAssignmentQuery(this.state.id, [selected], false);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.state;
-    let changeField2 = this.changeField.bind(this);
-    let assigned_users = this.state.user_data.assigned_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
-    let other_users = this.state.user_data.other_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
-    let linked_workflow;
-    if (this.state.task.linked_workflow) {
-      let visibility = "not_visible";
-      if (this.state.linked_workflow_access)
-        visibility = "visible";
-      let warning2;
-      if (!this.state.linked_workflow_access)
-        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
-          "Warning: the linked workflow is not visible to those in the classroom"
-        ) });
-      linked_workflow = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Linked Workflow"),
-          ":"
-        ] }),
-        warning2,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowVisibility,
-          {
-            workflowData: this.state.task.linked_workflow_data,
-            visibility,
-            visibilityFunction: this.switchVisibility.bind(this)
-          }
-        )
-      ];
     }
-    let parent_workflow;
-    if (this.state.user_data.parent_workflow) {
-      let parent_visibility = "not_visible";
-      if (this.state.workflow_access)
-        parent_visibility = "visible";
-      let warning2;
-      if (!this.state.workflow_access)
-        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
-          "Warning: the workflow the task appears in is not visible to those in the classroom"
-        ) });
-      parent_workflow = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Task Workflow"),
-          ":"
-        ] }),
-        warning2,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowVisibility,
-          {
-            workflowData: this.state.user_data.parent_workflow,
-            visibility: parent_visibility,
-            visibilityFunction: this.switchVisibility.bind(this)
-          }
-        )
-      ];
+    backdropClick.current = null;
+    if (onBackdropClick) {
+      onBackdropClick(event2);
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Configuration"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("End Date"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DatePicker,
-          {
-            id: "end_date",
-            default_value: data.end_date,
-            onChange: this.changeField.bind(this, "end_date")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("Start Date"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DatePicker,
-          {
-            id: "start_date",
-            default_value: data.start_date,
-            onChange: this.changeField.bind(this, "start_date")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "single-completion",
-            title: window.gettext(
-              "Whether to mark the assignment as complete if any user has completed it."
-            ),
-            children: window.gettext(
-              "Mark assignment as complete when a single user has completed it:"
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "single-completion",
-            name: "single-completion",
-            type: "checkbox",
-            checked: data.single_completion,
-            onChange: (evt) => changeField2("single_completion", evt.target.checked)
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "self-reporting",
-            title: window.gettext(
-              "Whether students can mark their own assignments as complete."
-            ),
-            children: window.gettext(
-              "Let students self-report their assignment completion:"
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "self-reporting",
-            name: "self-reporting",
-            type: "checkbox",
-            checked: data.self_reporting,
-            onChange: (evt) => changeField2("self_reporting", evt.target.checked)
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          disabled: !this.state.has_changed,
-          onClick: this.saveChanges.bind(this),
-          children: window.gettext("Save Changes")
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Delete") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Users"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Assigned Users") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_chosen", multiple: true, children: assigned_users }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "remove-user", onClick: this.removeUser.bind(this), children: [
-            " ",
-            window.gettext("Remove"),
-            " "
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Other Users") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_all", multiple: true, children: other_users }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "add-user", onClick: this.addUser.bind(this), children: [
-            " ",
-            window.gettext("Add"),
-            " "
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Workflows"),
-        ":"
-      ] }),
-      parent_workflow,
-      linked_workflow
-    ] });
-  }
-}
-class LiveAssignmentReport extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
-  updateCompletion(id, completed) {
-    let userassignments = this.state.userassignments.slice();
-    let index2 = userassignments.findIndex(
-      (userassignment) => userassignment.id == id
-    );
-    userassignments[index2] = { ...userassignments[index2], completed };
-    setAssignmentCompletionQuery(id, completed);
-    this.setState({ userassignments });
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getAssignmentDataQuery(
-      component.props.data.id,
-      component.props.view_type,
-      (data) => {
-        component.setState({ ...data.data_package });
-      }
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.userassignments) {
-      return this.defaultRender();
+    if (onClose) {
+      onClose(event2, "backdropClick");
     }
-    let rows = this.state.userassignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ReportRow,
-      {
-        userassignment: assignment,
-        updateFunction: this.updateCompletion.bind(this)
-      }
-    ));
-    let total_completion = this.state.userassignments.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.completed,
-      0
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Completion"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { children: [
-        rows,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
-            window.gettext("Total"),
-            ":"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
-            total_completion,
-            "/",
-            this.state.userassignments.length
-          ] })
-        ] })
-      ] })
-    ] });
-  }
-}
-class LiveAssignmentMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { view_type: "edit", assignment_data: props.assignment_data };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getViewButtons() {
-    return [
-      { type: "edit", name: window.gettext("Edit") },
-      { type: "report", name: window.gettext("Report") }
-    ];
-  }
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "edit":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LiveAssignmentEdit,
-          {
-            updateAssignment: this.updateAssignment.bind(this),
-            view_type: this.state.view_type,
-            renderer: this.props.renderer,
-            data: this.props.assignment_data,
-            live_project_data: this.props.live_project_data
-          }
-        );
-      case "report":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LiveAssignmentReport,
-          {
-            view_type: this.state.view_type,
-            renderer: this.props.renderer,
-            data: this.props.assignment_data
-          }
-        );
-    }
-  }
-  updateAssignment(new_values) {
-    this.setState({
-      assignment_data: { ...this.state.assignment_data, ...new_values }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.state.assignment_data;
-    let liveproject = this.props.live_project_data;
-    let view_buttons = this.getViewButtons().map((item) => {
-      let view_class = "hover-shade";
-      if (item.type === this.state.view_type)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "button_" + item.type,
-          className: view_class,
-          onClick: this.changeView.bind(this, item.type),
-          children: item.name
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-        reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "a",
-            {
-              id: "live-project-return",
-              href: COURSEFLOW_APP.config.update_path["liveproject"].replace(
-                0,
-                liveproject.pk
-              ),
-              className: "hover-shade no-underline",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_back_ios" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Classroom") })
-              ]
-            }
-          ),
-          $(".titlebar .title")[0]
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() })
-    ] });
-  }
-}
-class AssignmentViewSmall extends reactExports.Component {
-  render() {
-    let data = this.props.data;
-    let node_data = data.task;
-    let css_class = "node assignment";
-    let style2 = {
-      backgroundColor: getColumnColour(node_data)
+  };
+  const ariaLabelledby = useId(ariaLabelledbyProp);
+  const dialogContextValue = reactExports.useMemo(() => {
+    return {
+      titleId: ariaLabelledby
     };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: style2, className: css_class, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      AssignmentTitle,
-      {
-        user_role: this.props.renderer.user_role,
-        data
-      }
-    ) }) });
-  }
+  }, [ariaLabelledby]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$2({
+    className: clsx(classes.root, className),
+    closeAfterTransition: true,
+    components: {
+      Backdrop: DialogBackdrop
+    },
+    componentsProps: {
+      backdrop: _extends$2({
+        transitionDuration,
+        as: BackdropComponent
+      }, BackdropProps)
+    },
+    disableEscapeKeyDown,
+    onClose,
+    open,
+    ref,
+    onClick: handleBackdropClick,
+    ownerState
+  }, other, {
+    children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$2({
+      appear: true,
+      in: open,
+      timeout: transitionDuration,
+      role: "presentation"
+    }, TransitionProps, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
+        className: clsx(classes.container),
+        onMouseDown: handleMouseDown,
+        ownerState,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$2({
+          as: PaperComponent,
+          elevation: 24,
+          role: "dialog",
+          "aria-describedby": ariaDescribedby,
+          "aria-labelledby": ariaLabelledby
+        }, PaperProps, {
+          className: clsx(classes.paper, PaperProps.className),
+          ownerState,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+            value: dialogContextValue,
+            children
+          })
+        }))
+      })
+    }))
+  }));
+});
+process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The id(s) of the element(s) that describe the dialog.
+   */
+  "aria-describedby": PropTypes.string,
+  /**
+   * The id(s) of the element(s) that label the dialog.
+   */
+  "aria-labelledby": PropTypes.string,
+  /**
+   * A backdrop component. This prop enables custom backdrop rendering.
+   * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+   * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+   * @default styled(Backdrop, {
+   *   name: 'MuiModal',
+   *   slot: 'Backdrop',
+   *   overridesResolver: (props, styles) => {
+   *     return styles.backdrop;
+   *   },
+   * })({
+   *   zIndex: -1,
+   * })
+   */
+  BackdropComponent: PropTypes.elementType,
+  /**
+   * @ignore
+   */
+  BackdropProps: PropTypes.object,
+  /**
+   * Dialog children, usually the included sub-components.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, hitting escape will not fire the `onClose` callback.
+   * @default false
+   */
+  disableEscapeKeyDown: PropTypes.bool,
+  /**
+   * If `true`, the dialog is full-screen.
+   * @default false
+   */
+  fullScreen: PropTypes.bool,
+  /**
+   * If `true`, the dialog stretches to `maxWidth`.
+   *
+   * Notice that the dialog width grow is limited by the default margin.
+   * @default false
+   */
+  fullWidth: PropTypes.bool,
+  /**
+   * Determine the max-width of the dialog.
+   * The dialog width grows with the size of the screen.
+   * Set to `false` to disable `maxWidth`.
+   * @default 'sm'
+   */
+  maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
+  /**
+   * Callback fired when the backdrop is clicked.
+   * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+   */
+  onBackdropClick: PropTypes.func,
+  /**
+   * Callback fired when the component requests to be closed.
+   *
+   * @param {object} event The event source of the callback.
+   * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+   */
+  onClose: PropTypes.func,
+  /**
+   * If `true`, the component is shown.
+   */
+  open: PropTypes.bool.isRequired,
+  /**
+   * The component used to render the body of the dialog.
+   * @default Paper
+   */
+  PaperComponent: PropTypes.elementType,
+  /**
+   * Props applied to the [`Paper`](/material-ui/api/paper/) element.
+   * @default {}
+   */
+  PaperProps: PropTypes.object,
+  /**
+   * Determine the container for scrolling the dialog.
+   * @default 'paper'
+   */
+  scroll: PropTypes.oneOf(["body", "paper"]),
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * The component used for the transition.
+   * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+   * @default Fade
+   */
+  TransitionComponent: PropTypes.elementType,
+  /**
+   * The duration for the transition, in milliseconds.
+   * You may specify a single timeout for all transitions, or individually with an object.
+   * @default {
+   *   enter: theme.transitions.duration.enteringScreen,
+   *   exit: theme.transitions.duration.leavingScreen,
+   * }
+   */
+  transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+    appear: PropTypes.number,
+    enter: PropTypes.number,
+    exit: PropTypes.number
+  })]),
+  /**
+   * Props applied to the transition element.
+   * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+   */
+  TransitionProps: PropTypes.object
+} : void 0;
+const Dialog$1 = Dialog;
+function getDialogTitleUtilityClass(slot) {
+  return generateUtilityClass("MuiDialogTitle", slot);
 }
-class LiveProjectCompletionTable extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    this.state.liveproject;
-    let head = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentViewSmall, { renderer: this.props.renderer, data: assignment }) }));
-    let assignment_ids = this.state.data.assignments.map(
-      (assignment) => assignment.id
-    );
-    let body2 = this.state.data.table_rows.map((row, row_index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "user-head outcome-head", children: getUserDisplay(row.user) }),
-      assignment_ids.map((id) => {
-        let assignment = row.assignments.find(
-          (row_element) => row_element.assignment == id
-        );
-        if (!assignment)
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell" });
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            onChange: this.toggleCompletion.bind(
-              this,
-              assignment.id,
-              row_index
-            ),
-            type: "checkbox",
-            checked: assignment.completed
-          }
-        ) });
-      }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell total-cell grand-total-cell", children: row.assignments.reduce(
-        (total, assignment) => total + assignment.completed,
-        0
-      ) + "/" + row.assignments.length })
-    ] }));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Table"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "user-table outcome-table node-rows", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row node-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "user-head outcome-head empty" }),
-          head,
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "total-header", children: [
-            window.gettext("Total"),
-            ":"
-          ] }) })
-        ] }),
-        body2
-      ] })
-    ] });
-  }
-  toggleCompletion(id, row_index, evt) {
-    setAssignmentCompletionQuery(id, evt.target.checked);
-    let new_data = { ...this.state.data };
-    new_data.table_rows = new_data.table_rows.slice();
-    new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] };
-    new_data.table_rows[row_index].assignments = new_data.table_rows[row_index].assignments.slice();
-    let index2 = new_data.table_rows[row_index].assignments.findIndex(
-      (assignment) => assignment.id == id
-    );
-    new_data.table_rows[row_index].assignments[index2] = {
-      ...new_data.table_rows[row_index].assignments[index2],
-      completed: evt.target.checked
-    };
-    this.setState({ data: new_data });
-  }
-}
-class LiveProjectSettings extends LiveProjectSection {
-  constructor(props) {
-    super(props);
-    this.state = { has_changed: false, liveproject: null };
-    this.changed_values = {};
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  changeField(type, new_value) {
-    let new_state = { ...this.state.data.liveproject };
-    new_state[type] = new_value;
-    this.changed_values[type] = new_value;
-    this.setState({
-      has_changed: true,
-      data: { ...this.state.data, liveproject: new_state }
-    });
-  }
-  saveChanges() {
-    updateLiveProjectValueQuery(
-      this.state.data.liveproject.id,
-      "liveproject",
-      this.changed_values
-    );
-    this.props.updateLiveProject({
-      liveproject: { ...this.state.data.liveproject, ...this.changed_values }
-    });
-    this.changed_values = {};
-    this.setState({ has_changed: false });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let data = this.state.data.liveproject;
-    let changeField2 = this.changeField.bind(this);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Classroom configuration"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-single-completion",
-            name: "default-single-completion",
-            type: "checkbox",
-            checked: data.default_single_completion,
-            onChange: (evt) => changeField2("default_single_completion", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-signle-completion",
-            title: window.gettext(
-              "Whether to mark the assignment as complete if any user has completed it."
-            ),
-            children: window.gettext(
-              "By default, mark assignments as complete when a single user has completed them"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-assign-to-all",
-            name: "default-assign-to-all",
-            type: "checkbox",
-            checked: data.default_assign_to_all,
-            onChange: (evt) => changeField2("default_assign_to_all", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-assign-to-all",
-            title: window.gettext(
-              "Whether creating an assignment automatically adds all students to it."
-            ),
-            children: window.gettext(
-              "Assign new assignments to all students by default"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-self-reporting",
-            name: "default-self-reporting",
-            type: "checkbox",
-            checked: data.default_self_reporting,
-            onChange: (evt) => changeField2("default_self_reporting", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-self-reporting",
-            title: window.gettext(
-              "Whether students can mark their own assignments as complete."
-            ),
-            children: window.gettext(
-              "Let students self-report their assignment completion by default"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-all-workflows-visible",
-            name: "default-all-workflows-visible",
-            type: "checkbox",
-            checked: data.default_all_workflows_visible,
-            onChange: (evt) => changeField2("default_all_workflows_visible", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-all-workflows-visible",
-            title: window.gettext(
-              "Whether all workflows in the project will be visible to students by default."
-            ),
-            children: window.gettext("All Workflows Visible To Students")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "primary-button",
-          disabled: !this.state.has_changed,
-          onClick: this.saveChanges.bind(this),
-          children: window.gettext("Save classroom changes")
-        }
-      ) })
-    ] });
-  }
-}
-class AssignmentWorkflowNodesDisplay extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.getData();
-  }
-  componentDidUpdate(prevProps) {
-    if (prevProps.objectID !== this.props.objectID) {
-      this.setState({ data: null }, this.getData.bind(this));
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  getData() {
-    getWorkflowNodes(this.props.objectID, (data) => {
-      this.setState({ data: data.data_package });
-    });
-  }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    const weeks = this.state.data.weeks.map((week, i) => {
-      const nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
-      let default_text;
-      default_text = week.week_type_display + " " + (i + 1);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: week.title, defaultText: default_text }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-block-grid", children: nodes })
-      ] });
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: weeks });
-  }
-}
-class AssignmentNode extends reactExports.Component {
-  render() {
-    const data = this.props.data;
-    let lefticon;
-    let righticon;
-    if (data.context_classification > 0)
-      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.context_choices.find(
-            (obj) => obj.type == data.context_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
-        }
-      );
-    if (data.task_classification > 0)
-      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.task_choices.find(
-            (obj) => obj.type == data.task_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
-        }
-      );
-    const style2 = {
-      backgroundColor: getColumnColour(this.props.data)
-    };
-    const mouseover_actions = [this.addCreateAssignment(data)];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: "node", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: this.props.data }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-row" })
-    ] });
-  }
-  addCreateAssignment(data) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: "assignment.svg",
-        buttonClass: "duplicate-self-button",
-        titleText: window.gettext("Create Assignment"),
-        handleClick: this.createAssignment.bind(this, data)
-      }
-    );
-  }
-  createAssignment(data) {
-    const props = this.props;
-    props.renderer.tiny_loader.startLoad();
-    createAssignmentQuery$1(
-      data.id,
-      props.renderer.project_data.id,
-      (response_data) => {
-        props.renderer.tiny_loader.endLoad();
-        window.location = COURSEFLOW_APP.config.update_path.liveassignment.replace(
-          "0",
-          response_data.assignmentPk
-        );
-      }
-    );
-  }
-}
-class LiveProjectAssignments extends LiveProjectSection {
-  changeView(workflow_id) {
-    this.setState({ selected_id: workflow_id });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    const assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
-    const workflow_options = this.state.data.workflows.map((workflow) => {
-      let view_class = "hover-shade";
-      if (workflow.id === this.state.selected_id)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "button_" + workflow.id,
-          className: view_class,
-          onClick: this.changeView.bind(this, workflow.id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { no_hyperlink: true, data: workflow })
-        }
-      );
-    });
-    let workflow_nodes;
-    if (this.state.selected_id) {
-      workflow_nodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentWorkflowNodesDisplay,
-        {
-          renderer: this.props.renderer,
-          objectID: this.state.selected_id
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Assigned Tasks") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("All Tasks") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "select-workflow", className: "workflow-view-select", children: workflow_options }),
-      workflow_nodes
-    ] });
-  }
-}
-class LiveProjectWorkflows extends LiveProjectSection {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  switchVisibility(pk, visibility) {
-    let workflows_added = this.state.data.workflows_added.slice();
-    let workflows_not_added = this.state.data.workflows_not_added.slice();
-    if (visibility == "visible") {
-      for (let i = 0; i < workflows_not_added.length; i++) {
-        if (workflows_not_added[i].id == pk) {
-          let removed = workflows_not_added.splice(i, 1);
-          setWorkflowVisibilityQuery(this.props.objectID, pk, true);
-          workflows_added.push(removed[0]);
-        }
-      }
-    } else {
-      for (let i = 0; i < workflows_added.length; i++) {
-        if (workflows_added[i].id == pk) {
-          let removed = workflows_added.splice(i, 1);
-          setWorkflowVisibilityQuery(this.props.objectID, pk, false);
-          workflows_not_added.push(removed[0]);
-        }
-      }
-    }
-    this.setState({
-      data: {
-        ...this.state.data,
-        workflows_added,
-        workflows_not_added
-      }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows_added = this.state.data.workflows_added.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowVisibility,
-      {
-        workflowData: workflow,
-        visibility: "visible",
-        visibilityFunction: this.switchVisibility.bind(this)
-      }
-    ));
-    let workflows_not_added = this.state.data.workflows_not_added.map(
-      (workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowVisibility,
-        {
-          workflowData: workflow,
-          visibility: "not_visible",
-          visibilityFunction: this.switchVisibility.bind(this)
-        }
-      )
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Visible Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Other Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_not_added })
-    ] });
-  }
-}
-class LiveProjectMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...props.project,
-      liveproject: this.props.liveproject,
-      view_type: "overview"
-    };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getViewButtons() {
-    return [
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "students", name: window.gettext("Students") },
-      { type: "assignments", name: window.gettext("Assignments") },
-      { type: "workflows", name: window.gettext("Workflow Visibility") },
-      { type: "completion_table", name: window.gettext("Completion Table") },
-      { type: "settings", name: window.gettext("Classroom Settings") }
-    ];
-  }
-  getRole() {
-    return "teacher";
-  }
-  openEdit() {
-    return null;
-  }
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  getHeader() {
-    return null;
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "overview":
-        return (
-          // @todo renderer IS used in this component
-          // but only user_role, how is that different from getRole?
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectOverview,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "students":
-        return (
-          // @todo  renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectStudents,
-            {
-              role: this.getRole(),
-              liveproject: this.state.liveproject,
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "assignments":
-        return (
-          // @todo  renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectAssignments,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "workflows":
-        return (
-          // @todo  renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectWorkflows,
-            {
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "completion_table":
-        return (
-          //@todo   renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectCompletionTable,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "settings":
-        return (
-          // @todo renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectSettings,
-            {
-              updateLiveProject: this.updateFunction.bind(this),
-              role: this.getRole(),
-              liveproject: this.state.liveproject,
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-    }
-  }
-  updateFunction(new_state) {
-    this.setState(new_state);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.props.project;
-    let overflow_links = [];
-    if (this.props.renderer.user_permission > 0) {
-      overflow_links.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "project",
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.update_path.project.replace("0", data.id),
-            children: window.gettext("Edit Project")
-          }
-        )
-      );
-    }
-    let view_buttons = this.getViewButtons().map((item) => {
-      let view_class = "hover-shade";
-      if (item.type === this.state.view_type)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "button_" + item.type,
-          className: view_class,
-          onClick: this.changeView.bind(this, item.type),
-          children: item.name
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            noHyperlink: true,
-            workflowData: this.state.liveproject,
-            selectAction: this.openEdit.bind(this)
-          }
-        ),
-        this.getHeader()
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() }),
-      reactDomExports.createPortal(overflow_links, $("#overflow-links")[0])
-    ] });
-  }
-}
-class StudentLiveProjectOverview extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
-    if (workflows.length === 0)
-      workflows = window.gettext(
-        "No workflows have been made visible to students."
-      );
-    let assignments = this.state.data.assignments.filter((assignment) => assignment.user_assignment.completed === false).map((assignment, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentTitle,
-        {
-          data: assignment,
-          user_role: this.props.renderer.user_role
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          disabled: !assignment.self_reporting,
-          onChange: this.toggleAssignment.bind(
-            this,
-            assignment.user_assignment.id
-          )
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
-    ] }, index2));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Your Incomplete Assignments"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
-        ] }),
-        assignments
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Visible Workflows"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
-    ] });
-  }
-  toggleAssignment(id, evt) {
-    setAssignmentCompletionQuery(id, evt.target.checked);
-  }
-}
-class StudentLiveProjectWorkflows extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows_added = this.state.data.workflows_added.map(
-      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, index2)
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added })
-    ] });
-  }
-}
-class StudentLiveProjectAssignments extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let assignments_past = this.state.data.assignments_past.map(
-      (assignment) => (
-        // @todo renderer IS used in this component
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
-      )
-    );
-    let assignments_upcoming = this.state.data.assignments_upcoming.map(
-      (assignment) => (
-        // @todo renderer IS used in this component
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
-      )
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Your Tasks"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Upcoming"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_upcoming }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Past"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_past })
-    ] });
-  }
-}
-class StudentLiveProjectMenu extends LiveProjectMenu {
-  getViewButtons() {
-    return [
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "assignments", name: window.gettext("My Assignments") },
-      { type: "workflows", name: window.gettext("My Workflows") }
-    ];
-  }
-  getRole() {
-    return "student";
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "overview":
-        return (
-          // @todo renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectOverview,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "assignments":
-        return (
-          // @todo renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectAssignments,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "workflows":
-        return (
-          // @todo renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectWorkflows,
-            {
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-    }
-  }
-  updateFunction(new_state) {
-    this.setState(new_state);
-  }
-}
-class ProjectEditMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...props.data, selected_set: "none" };
-    this.object_set_updates = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  componentDidUpdate() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  deleteTerm(id) {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
-    )) {
-      let new_state_dict = this.state.object_sets.slice();
-      for (let i = 0; i < new_state_dict.length; i++) {
-        if (new_state_dict[i].id === id) {
-          deleteSelf(id, "objectset");
-          new_state_dict.splice(i, 1);
-          this.setState({ object_sets: new_state_dict });
-          break;
-        }
-      }
-    }
-  }
-  addTerm() {
-    let term = $("#nomenclature-select")[0].value;
-    let title = $("#term-singular")[0].value;
-    addTerminology(this.state.id, term, title, "", (response_data) => {
-      this.setState({
-        object_sets: response_data.new_dict,
-        selected_set: "none",
-        termsingular: ""
-      });
-    });
-  }
-  termChanged(id, evt) {
-    let new_sets = this.state.object_sets.slice();
-    for (var i = 0; i < new_sets.length; i++) {
-      if (new_sets[i].id == id) {
-        new_sets[i] = { ...new_sets[i], title: evt.target.value };
-        this.object_set_updates[id] = { title: evt.target.value };
-      }
-    }
-    this.setState({ object_sets: new_sets, changed: true });
-  }
-  updateTerms() {
-    for (var object_set_id in this.object_set_updates) {
-      updateValueInstant(
-        object_set_id,
-        "objectset",
-        this.object_set_updates[object_set_id]
-      );
-    }
-  }
-  addTermDisabled(selected_set) {
-    if (!selected_set)
-      return true;
-    if (!this.state.termsingular)
-      return true;
-    return false;
-  }
-  addDiscipline(id) {
-    this.setState((state, props) => {
-      return { disciplines: [...state.disciplines, id], changed: true };
-    });
-  }
-  removeDiscipline(id) {
-    this.setState((state, props) => {
-      return {
-        disciplines: state.disciplines.filter((value) => value != id),
-        changed: true
-      };
-    });
-  }
-  inputChanged(field, evt) {
-    var new_state = { changed: true };
-    new_state[field] = evt.target.value;
-    if (field === "selected_set")
-      new_state["termsingular"] = "";
-    this.setState(new_state);
-  }
-  getActions() {
-    var actions = [];
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: closeMessageBox, children: window.gettext("Cancel") })
-    );
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          id: "save-changes",
-          className: "primary-button",
-          disabled: !this.state.changed,
-          onClick: () => {
-            updateValueInstant(this.state.id, "project", {
-              title: this.state.title,
-              description: this.state.description,
-              published: this.state.published,
-              disciplines: this.state.disciplines
-            });
-            this.updateTerms();
-            this.props.actionFunction({ ...this.state, changed: false });
-            closeMessageBox();
-          },
-          children: window.gettext("Save Changes")
-        }
-      )
-    );
-    return actions;
-  }
-  getLiveProjectSettings() {
-    if (this.props.data.renderer.user_role === role_keys.teacher) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        LiveProjectSettings,
-        {
-          renderer: this.props.renderer,
-          role: "teacher",
-          objectID: this.state.id,
-          view_type: "settings",
-          updateLiveProject: this.props.actionFunction
-        }
-      ) });
-    }
-    return null;
-  }
-  autocompleteDiscipline() {
-    let choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
-      value: discipline.title,
-      label: discipline.title,
-      id: discipline.id
-    }));
-    $("#project-discipline-input").autocomplete({
-      source: choices,
-      minLength: 0,
-      focus: null,
-      select: (evt, ui) => {
-        this.addDiscipline(ui.item.id);
-        $("#project-discipline-input").val("");
-        return false;
-      }
-    }).focus(function() {
-      $("#project-discipline-input").autocomplete(
-        "search",
-        $("#project-discipline-input").val()
-      );
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.state;
-    let disciplines;
-    if (data.all_disciplines) {
-      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
-        discipline.title,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            className: "material-symbols-rounded green",
-            onClick: this.removeDiscipline.bind(this, discipline.id),
-            children: "close"
-          }
-        )
-      ] }));
-    }
-    let title = unescapeCharacters(data.title || "");
-    let description = unescapeCharacters(data.description || "");
-    let object_sets = object_sets_types();
-    let set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
-    let selected_set;
-    if (this.state.selected_set)
-      selected_set = object_sets[this.state.selected_set];
-    let sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          value: item.title,
-          onChange: this.termChanged.bind(this, item.id)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "nomenclature-delete-button",
-          onClick: this.deleteTerm.bind(this, item.id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
-        }
-      )
-    ] }));
-    let published_enabled = data.title && data.disciplines.length > 0;
-    if (data.published && !published_enabled)
-      this.setState({ published: false });
-    if (!published_enabled)
-      window.gettext(
-        "A title and at least one discipline is required for publishing."
-      );
-    let add_term_css = "material-symbols-rounded filled";
-    let clickEvt;
-    if (this.addTermDisabled(selected_set)) {
-      clickEvt = () => console.log("Disabled");
-      add_term_css += " grey";
-    } else {
-      clickEvt = this.addTerm.bind(this);
-      add_term_css += " green hover-shade";
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-title-input",
-            value: title,
-            onChange: this.inputChanged.bind(this, "title")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-description-input",
-            value: description,
-            onChange: this.inputChanged.bind(this, "description")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            autoComplete: "off",
-            id: "project-discipline-input",
-            placeholder: "Search"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
-        sets_added,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              id: "nomenclature-select",
-              value: this.state.selected_set,
-              onChange: this.inputChanged.bind(this, "selected_set"),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
-                set_options
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              placeholder: window.gettext("Set name"),
-              type: "text",
-              id: "term-singular",
-              maxLength: "50",
-              value: this.state.termsingular,
-              onChange: this.inputChanged.bind(this, "termsingular"),
-              disabled: selected_set == null
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
-        ] })
-      ] }),
-      this.getLiveProjectSettings(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: closeMessageBox, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
-    ] });
-  }
-}
+generateUtilityClasses("MuiDialogTitle", ["root"]);
+const _excluded = ["className", "id"];
+const useUtilityClasses = (ownerState) => {
+  const {
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root"]
+  };
+  return composeClasses(slots, getDialogTitleUtilityClass, classes);
+};
+const DialogTitleRoot = styled$1(Typography$1, {
+  name: "MuiDialogTitle",
+  slot: "Root",
+  overridesResolver: (props, styles2) => styles2.root
+})({
+  padding: "16px 24px",
+  flex: "0 0 auto"
+});
+const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiDialogTitle"
+  });
+  const {
+    className,
+    id: idProp
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded);
+  const ownerState = props;
+  const classes = useUtilityClasses(ownerState);
+  const {
+    titleId = idProp
+  } = reactExports.useContext(DialogContext$1);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$2({
+    component: "h2",
+    className: clsx(classes.root, className),
+    ownerState,
+    ref,
+    variant: "h6",
+    id: idProp != null ? idProp : titleId
+  }, other));
+});
+process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * @ignore
+   */
+  id: PropTypes.string,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+const DialogTitle$1 = DialogTitle;
 class MessageBox extends reactExports.Component {
   constructor() {
     super(...arguments);
@@ -69795,34 +67257,9 @@ class MessageBox extends reactExports.Component {
               actionFunction: this.props.actionFunction
             }
           );
-        case "project_edit_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ProjectEditMenu,
-            {
-              type: this.props.message_type,
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
-        case "share_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ShareMenu,
-            {
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
         case "import":
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             ImportMenu,
-            {
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
-        case "export":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ExportMenu,
             {
               data: this.props.message_data,
               actionFunction: this.props.actionFunction
@@ -70045,7 +67482,7 @@ const SimpleOutcome = connect(
   null
 )(SimpleOutcomeUnconnected);
 const SimpleOutcome$1 = SimpleOutcome;
-class OutcomeHorizontalLinkUnconnected extends Component {
+class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcomehorizontallink";
@@ -84886,7 +82323,7 @@ class PathGenerator {
     return joined;
   }
 }
-class NodeLinkSVG extends Component {
+class NodeLinkSVG extends ComponentWithToggleDrop {
   componentDidUpdate() {
     if (this.props.hovered || this.state.hovered || this.props.selected || this.props.node_selected)
       ;
@@ -85212,6 +82649,769 @@ class NodeLink extends EditableComponentWithActions {
 }
 const mapNodeLinkStateToProps = (state, own_props) => getNodeLinkByID(state, own_props.objectID);
 const NodeLink$1 = connect(mapNodeLinkStateToProps, null)(NodeLink);
+class AssignmentView extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { is_dropped: false };
+    this.user_id = COURSEFLOW_APP.contextData.user_id;
+    if (props.data.user_assignment)
+      this.state.completed = props.data.user_assignment.completed;
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  visitWorkflow(id, evt) {
+    const path = COURSEFLOW_APP.config.update_path["workflow"];
+    evt.stopPropagation();
+    window.open(path.replace("0", id));
+  }
+  toggleDrop() {
+    this.setState((state) => {
+      return { is_dropped: !state.is_dropped };
+    });
+  }
+  changeCompletion(evt) {
+    const checked = evt.target.checked;
+    this.setState({ completed: checked });
+    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let lefticon;
+    let righticon;
+    let css_class = "node assignment";
+    const data = this.props.data;
+    const node_data = data.task;
+    let data_override = node_data;
+    const mouseover_actions = [];
+    if (node_data.represents_workflow) {
+      data_override = {
+        ...node_data,
+        ...node_data.linked_workflow_data,
+        id: data.id
+      };
+    }
+    if (node_data.context_classification > 0)
+      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: this.props.renderer.context_choices.find(
+            (obj) => obj.type == node_data.context_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+        }
+      );
+    if (node_data.task_classification > 0)
+      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: this.props.renderer.task_choices.find(
+            (obj) => obj.type == node_data.task_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + task_keys[node_data.task_classification] + ".svg"
+        }
+      );
+    const style2 = { backgroundColor: getColumnColour(node_data) };
+    if (this.state.is_dropped)
+      css_class += " dropped";
+    let linkIcon;
+    let linktext = window.gettext("Visit linked workflow");
+    let clickfunc = this.visitWorkflow.bind(this, node_data.linked_workflow);
+    if (node_data.linked_workflow_data) {
+      if (node_data.linked_workflow_data.deleted)
+        linktext = window.gettext("<Deleted Workflow>");
+      if (node_data.linked_workflow_data.deleted)
+        clickfunc = null;
+    }
+    if (data.linked_workflow_access && node_data.linked_workflow)
+      linkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade linked-workflow", onClick: clickfunc, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
+      ] });
+    let parentLinkIcon;
+    const parentlinktext = window.gettext("Visit containing workflow");
+    const parentclickfunc = this.visitWorkflow.bind(
+      this,
+      data.parent_workflow_id
+    );
+    if (data.workflow_access && data.parent_workflow_id)
+      parentLinkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "hover-shade linked-workflow containing-workflow",
+          onClick: parentclickfunc,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: parentlinktext })
+          ]
+        }
+      );
+    let dropText = "";
+    if (data_override.description && data_override.description.replace(
+      /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+      ""
+    ) != "")
+      dropText = "...";
+    let dropIcon;
+    if (this.state.is_dropped)
+      dropIcon = "droptriangleup";
+    else
+      dropIcon = "droptriangledown";
+    let completion_data;
+    if (data.user_assignment) {
+      let disabled = true;
+      if (this.props.renderer.user_role == role_keys.teacher || data.self_reporting && data.user_assignment.liveprojectuser.user.id == this.user_id)
+        disabled = false;
+      let extra_data;
+      if (data.single_completion && data.user_assignment.completed) {
+        extra_data = [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            window.gettext("Completed by ") + getUserDisplay(
+              data.user_assignment.liveprojectuser.user
+            ) + window.gettext(" on "),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                default_value: data.user_assignment.completed_on,
+                disabled: true
+              }
+            )
+          ] })
+        ];
+      }
+      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("Completion"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            disabled,
+            checked: this.state.completed,
+            onChange: this.changeCompletion.bind(this)
+          }
+        ),
+        extra_data
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: css_class, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AssignmentTitle,
+          {
+            user_role: this.props.renderer.user_role,
+            data
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+              window.gettext("End Date"),
+              ": "
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                id: "end_date",
+                default_value: data.end_date,
+                disabled: true
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+              window.gettext("Start Date"),
+              ": "
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                id: "start_date",
+                default_value: data.start_date,
+                disabled: true
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
+      ] }),
+      parentLinkIcon,
+      linkIcon,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        TitleText,
+        {
+          text: data_override.description,
+          defaultText: window.gettext("No description given")
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "node-drop-row hover-shade",
+          onClick: this.toggleDrop.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left", children: dropText }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.props.renderer.time_choices[data_override.time_units].name }) })
+          ]
+        }
+      )
+    ] });
+  }
+}
+class WorkflowVisibility extends WorkflowCard {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    return null;
+  }
+  getButtons() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "select",
+      {
+        value: this.props.visibility,
+        onChange: (evt) => this.props.visibilityFunction(
+          this.props.workflowData.id,
+          evt.target.value
+        ),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "not_visible", children: window.gettext("Not Visible") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "visible", children: window.gettext("Visible") })
+        ]
+      }
+    ) });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.props.workflowData;
+    var css_class = "workflow-for-menu workflow-visibility hover-shade " + data.type;
+    if (this.props.selected)
+      css_class += " selected";
+    let creation_text = window.gettext("Created");
+    if (data.author && data.author !== "None")
+      creation_text += " " + window.gettext("by") + " " + data.author;
+    creation_text += " " + data.created_on;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: css_class, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
+        this.getButtons(),
+        this.getTypeIndicator()
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "workflow-description",
+          dangerouslySetInnerHTML: { __html: data.description }
+        }
+      )
+    ] });
+  }
+}
+class ReportRow extends reactExports.Component {
+  render() {
+    let user = this.props.userassignment.liveprojectuser;
+    let userassignment = this.props.userassignment;
+    let updateFunction = this.props.updateFunction;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          checked: userassignment.completed,
+          onChange: (evt) => updateFunction(userassignment.id, evt.target.checked)
+        }
+      ) })
+    ] });
+  }
+}
+class LiveAssignmentEdit extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...this.props.data,
+      has_changed: false,
+      user_data: { assigned_users: [], other_users: [] }
+    };
+    this.changed_values = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    getAssignmentDataQuery(
+      component.props.data.id,
+      component.props.view_type,
+      (data) => {
+        component.setState({ user_data: data.data_package });
+      }
+    );
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  switchVisibility(pk, visibility) {
+    let parameter = "workflow_access";
+    if (this.state.task.linked_workflow === pk)
+      parameter = "linked_" + parameter;
+    if (visibility === "visible") {
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true);
+      let new_state = {};
+      new_state[parameter] = true;
+      this.props.updateAssignment(new_state);
+      this.setState(new_state);
+    } else {
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false);
+      let new_state = {};
+      new_state[parameter] = false;
+      this.props.updateAssignment(new_state);
+      this.setState(new_state);
+    }
+  }
+  delete() {
+    let data = this.state;
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + window.gettext("assignment") + "?"
+    )) {
+      deleteSelfLive(data.id, "liveassignment", (response_data) => {
+        window.location = COURSEFLOW_APP.config.update_path.liveproject.replace(
+          "0",
+          data.liveproject
+        );
+      });
+    }
+  }
+  changeField(type, new_value) {
+    let new_state = { has_changed: true };
+    new_state[type] = new_value;
+    this.changed_values[type] = new_value;
+    this.setState(new_state);
+  }
+  saveChanges() {
+    updateLiveProjectValueQuery(this.state.id, "liveassignment", this.changed_values);
+    this.props.updateAssignment(this.changed_values);
+    this.changed_values = {};
+    this.setState({ has_changed: false });
+  }
+  changeView(workflow_id) {
+    this.setState({ selected_id: workflow_id });
+  }
+  addUser(evt) {
+    let selected = parseInt($("#users_all").val());
+    if (!selected)
+      return;
+    let user_data = { ...this.state.user_data };
+    user_data.assigned_users = user_data.assigned_users.slice();
+    user_data.other_users = user_data.other_users.slice();
+    user_data.assigned_users.push(
+      user_data.other_users.splice(
+        user_data.other_users.findIndex(
+          (element) => element.user.id == selected
+        ),
+        1
+      )[0]
+    );
+    this.setState({ user_data });
+    addUsersToAssignmentQuery(this.state.id, [selected], true);
+  }
+  removeUser(evt) {
+    let selected = parseInt($("#users_chosen").val());
+    if (!selected)
+      return;
+    let user_data = { ...this.state.user_data };
+    user_data.assigned_users = user_data.assigned_users.slice();
+    user_data.other_users = user_data.other_users.slice();
+    user_data.other_users.push(
+      user_data.assigned_users.splice(
+        user_data.assigned_users.findIndex(
+          (element) => element.user.id == selected
+        ),
+        1
+      )[0]
+    );
+    this.setState({ user_data });
+    addUsersToAssignmentQuery(this.state.id, [selected], false);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.state;
+    let changeField2 = this.changeField.bind(this);
+    let assigned_users = this.state.user_data.assigned_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
+    let other_users = this.state.user_data.other_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
+    let linked_workflow;
+    if (this.state.task.linked_workflow) {
+      let visibility = "not_visible";
+      if (this.state.linked_workflow_access)
+        visibility = "visible";
+      let warning2;
+      if (!this.state.linked_workflow_access)
+        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
+          "Warning: the linked workflow is not visible to those in the classroom"
+        ) });
+      linked_workflow = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Linked Workflow"),
+          ":"
+        ] }),
+        warning2,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowVisibility,
+          {
+            workflowData: this.state.task.linked_workflow_data,
+            visibility,
+            visibilityFunction: this.switchVisibility.bind(this)
+          }
+        )
+      ];
+    }
+    let parent_workflow;
+    if (this.state.user_data.parent_workflow) {
+      let parent_visibility = "not_visible";
+      if (this.state.workflow_access)
+        parent_visibility = "visible";
+      let warning2;
+      if (!this.state.workflow_access)
+        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
+          "Warning: the workflow the task appears in is not visible to those in the classroom"
+        ) });
+      parent_workflow = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Task Workflow"),
+          ":"
+        ] }),
+        warning2,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowVisibility,
+          {
+            workflowData: this.state.user_data.parent_workflow,
+            visibility: parent_visibility,
+            visibilityFunction: this.switchVisibility.bind(this)
+          }
+        )
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Configuration"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("End Date"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DatePicker,
+          {
+            id: "end_date",
+            default_value: data.end_date,
+            onChange: this.changeField.bind(this, "end_date")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("Start Date"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DatePicker,
+          {
+            id: "start_date",
+            default_value: data.start_date,
+            onChange: this.changeField.bind(this, "start_date")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "single-completion",
+            title: window.gettext(
+              "Whether to mark the assignment as complete if any user has completed it."
+            ),
+            children: window.gettext(
+              "Mark assignment as complete when a single user has completed it:"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "single-completion",
+            name: "single-completion",
+            type: "checkbox",
+            checked: data.single_completion,
+            onChange: (evt) => changeField2("single_completion", evt.target.checked)
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "self-reporting",
+            title: window.gettext(
+              "Whether students can mark their own assignments as complete."
+            ),
+            children: window.gettext(
+              "Let students self-report their assignment completion:"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "self-reporting",
+            name: "self-reporting",
+            type: "checkbox",
+            checked: data.self_reporting,
+            onChange: (evt) => changeField2("self_reporting", evt.target.checked)
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          disabled: !this.state.has_changed,
+          onClick: this.saveChanges.bind(this),
+          children: window.gettext("Save Changes")
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Delete") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Users"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Assigned Users") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_chosen", multiple: true, children: assigned_users }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "remove-user", onClick: this.removeUser.bind(this), children: [
+            " ",
+            window.gettext("Remove"),
+            " "
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Other Users") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_all", multiple: true, children: other_users }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "add-user", onClick: this.addUser.bind(this), children: [
+            " ",
+            window.gettext("Add"),
+            " "
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Workflows"),
+        ":"
+      ] }),
+      parent_workflow,
+      linked_workflow
+    ] });
+  }
+}
+class LiveAssignmentReport extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+  }
+  updateCompletion(id, completed) {
+    let userassignments = this.state.userassignments.slice();
+    let index2 = userassignments.findIndex(
+      (userassignment) => userassignment.id == id
+    );
+    userassignments[index2] = { ...userassignments[index2], completed };
+    setAssignmentCompletionQuery(id, completed);
+    this.setState({ userassignments });
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    getAssignmentDataQuery(
+      component.props.data.id,
+      component.props.view_type,
+      (data) => {
+        component.setState({ ...data.data_package });
+      }
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.userassignments) {
+      return this.defaultRender();
+    }
+    let rows = this.state.userassignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ReportRow,
+      {
+        userassignment: assignment,
+        updateFunction: this.updateCompletion.bind(this)
+      }
+    ));
+    let total_completion = this.state.userassignments.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.completed,
+      0
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Completion"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { children: [
+        rows,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
+            window.gettext("Total"),
+            ":"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
+            total_completion,
+            "/",
+            this.state.userassignments.length
+          ] })
+        ] })
+      ] })
+    ] });
+  }
+}
+class LiveAssignmentMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { view_type: "edit", assignment_data: props.assignment_data };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getViewButtons() {
+    return [
+      { type: "edit", name: window.gettext("Edit") },
+      { type: "report", name: window.gettext("Report") }
+    ];
+  }
+  changeView(view_type) {
+    this.setState({ view_type });
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "edit":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LiveAssignmentEdit,
+          {
+            updateAssignment: this.updateAssignment.bind(this),
+            view_type: this.state.view_type,
+            renderer: this.props.renderer,
+            data: this.props.assignment_data,
+            live_project_data: this.props.live_project_data
+          }
+        );
+      case "report":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LiveAssignmentReport,
+          {
+            view_type: this.state.view_type,
+            renderer: this.props.renderer,
+            data: this.props.assignment_data
+          }
+        );
+    }
+  }
+  updateAssignment(new_values) {
+    this.setState({
+      assignment_data: { ...this.state.assignment_data, ...new_values }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.state.assignment_data;
+    let liveproject = this.props.live_project_data;
+    let view_buttons = this.getViewButtons().map((item) => {
+      let view_class = "hover-shade";
+      if (item.type === this.state.view_type)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          id: "button_" + item.type,
+          className: view_class,
+          onClick: this.changeView.bind(this, item.type),
+          children: item.name
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+        reactDomExports.createPortal(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "a",
+            {
+              id: "live-project-return",
+              href: COURSEFLOW_APP.config.update_path["liveproject"].replace(
+                0,
+                liveproject.pk
+              ),
+              className: "hover-shade no-underline",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_back_ios" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Classroom") })
+              ]
+            }
+          ),
+          $(".titlebar .title")[0]
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() })
+    ] });
+  }
+}
+class AssignmentViewSmall extends reactExports.Component {
+  render() {
+    let data = this.props.data;
+    let node_data = data.task;
+    let css_class = "node assignment";
+    let style2 = {
+      backgroundColor: getColumnColour(node_data)
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: style2, className: css_class, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AssignmentTitle,
+      {
+        user_role: this.props.renderer.user_role,
+        data
+      }
+    ) }) });
+  }
+}
 class AssignmentForNode extends AssignmentView {
   /*******************************************************
    * RENDER
@@ -85435,7 +83635,7 @@ class AssignmentBox extends reactExports.Component {
     );
   }
 }
-class OutcomeNodeUnconnected extends Component {
+class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcomenode";
@@ -86411,7 +84611,7 @@ class Term extends WeekUnconnected {
 }
 const mapTermStateToProps = (state, own_props) => getTermByID(state, own_props.objectID);
 const Term$1 = connect(mapTermStateToProps, null)(Term);
-class WeekWorkflowUnconnected extends Component {
+class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "weekworkflow";
@@ -88206,7 +86406,7 @@ class TableCell extends reactExports.Component {
     ] });
   }
 }
-let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
+let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcome";
@@ -88335,7 +86535,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
 };
 const mapOutcomeStateToProps$1 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
 const Outcome$1 = connect(mapOutcomeStateToProps$1, null)(OutcomeUnconnected$1);
-class OutcomeBaseUnconnected extends Component {
+class OutcomeBaseUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -88468,7 +86668,7 @@ const OutcomeLegend = connect(
   mapWorkflowOutcomeLegendStateToProps,
   null
 )(OutcomeLegendUnconnected);
-class NodeOutcomeViewUnconnected extends Component {
+class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "node";
@@ -88704,7 +86904,7 @@ const mapStateToProps$2 = (state, own_props) => {
   };
 };
 const OutcomeTableView$1 = connect(mapStateToProps$2, null)(OutcomeTableView);
-class MatrixNodeUnconnected extends Component {
+class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "node";
@@ -88752,7 +86952,7 @@ class MatrixNodeUnconnected extends Component {
 }
 const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
 const MatrixNode = connect(mapNodeStateToProps$1, null)(MatrixNodeUnconnected);
-class MatrixWeekUnconnected extends Component {
+class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "week";
@@ -89554,7 +87754,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this workflow?")
     )) {
-      deleteSelf(this.props.data.id, "workflow", true, () => {
+      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
       });
     }
   }
@@ -89564,7 +87764,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         "Are you sure you want to permanently delete this workflow?"
       )
     )) {
-      deleteSelf(this.props.data.id, "workflow", false, () => {
+      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
         window.location = COURSEFLOW_APP.config.update_path["project"].replace(
           0,
           renderer.project.id
@@ -89573,7 +87773,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     }
   }
   restoreWorkflow() {
-    restoreSelf(this.props.data.id, "workflow", () => {
+    restoreSelfQuery(this.props.data.id, "workflow", () => {
     });
   }
   getExportButton() {
@@ -90632,6 +88832,1179 @@ class LiveAssignmentRenderer extends React.Component {
     );
   }
 }
+class LiveProjectSection extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
+    let component = this;
+    if (this.props.role === "teacher") {
+      getLiveProjectDataQuery(
+        this.props.objectID,
+        this.props.view_type,
+        (data) => {
+          component.setState({ data: data.data_package });
+        }
+      );
+    } else if (this.props.role === "student") {
+      getLiveProjectDataStudentQuery(
+        this.props.objectID,
+        this.props.view_type,
+        (data) => {
+          component.setState({ data: data.data_package });
+        }
+      );
+    }
+  }
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+  }
+}
+class WorkflowCardSimple extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.maindiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    if (this.props.selectAction) {
+      this.props.selectAction(this.props.workflow_data.id);
+    } else {
+      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
+    }
+  }
+  getTypeIndicator() {
+    let data = this.props.workflow_data;
+    let type = data.type;
+    let type_text = window.gettext(type);
+    if (type === "liveproject")
+      type_text = window.gettext("classroom");
+    if (data.is_strategy)
+      type_text += window.gettext(" strategy");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.props.workflow_data;
+    var css_class = "simple-workflow workflow-for-menu hover-shade " + data.type;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        ref: this.maindiv,
+        className: css_class,
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => {
+          evt.preventDefault();
+        },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
+          this.getTypeIndicator()
+        ] })
+      }
+    );
+  }
+}
+class LiveProjectOverview extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflowData: workflow }, index2));
+    if (workflows.length === 0)
+      workflows = window.gettext(
+        "No workflows have been made visible to students."
+      );
+    let teachers = this.state.data.teachers.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
+    ] }, index2));
+    let students = this.state.data.students.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
+    ] }, index2));
+    let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentTitle,
+        {
+          data: assignment,
+          user_role: this.props.userRole
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: assignment.completion_info }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
+    ] }, index));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Teachers"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
+        ] }),
+        teachers
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Students"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
+        ] }),
+        students
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Visible Workflows"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Assignments"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
+        ] }),
+        assignments
+      ] })
+    ] });
+  }
+}
+let UserLabel$1 = class UserLabel extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.select = reactExports.createRef();
+  }
+  onChange(evt) {
+    switch (evt.target.value) {
+      case "none":
+        if (window.confirm("Are you sure you want to remove this user?")) {
+          this.props.permissionChange(0, this.props.user);
+        }
+        break;
+      default:
+        this.props.permissionChange(
+          role_keys[evt.target.value],
+          this.props.user
+        );
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let permission_select;
+    if (this.props.type !== "owner") {
+      if (this.props.type === "add") {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "permission-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => this.props.addFunction($(this.select.current).val()),
+              children: window.gettext("Share")
+            }
+          )
+        ] });
+      } else {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: this.props.type, onChange: this.onChange.bind(this), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: gettext("Remove user") })
+        ] }) });
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
+      ] }),
+      permission_select
+    ] });
+  }
+};
+let UserAdd$1 = class UserAdd extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.input = reactExports.createRef();
+    this.state = { selected: null };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    $(this.input.current).autocomplete({
+      source: (request, response_function) => {
+        getUserList(request.term, (response) => {
+          let user_list = response.user_list.map((user) => {
+            return {
+              label: user.first_name + " " + user.last_name + " - " + user.username,
+              value: user.username,
+              user
+            };
+          });
+          response_function(user_list);
+        });
+        component.setState({ selected: null });
+      },
+      select: (evt, ui) => {
+        this.setState({ selected: ui.item.user });
+      },
+      minLength: 1
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addClick(value) {
+    if (this.state.selected) {
+      this.props.permissionChange(
+        role_keys[value],
+        this.state.selected
+      );
+      $(this.input.current).val(null);
+      this.setState({ selected: null });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let user;
+    if (this.state.selected) {
+      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserLabel$1,
+        {
+          user: this.state.selected,
+          type: "add",
+          addFunction: this.addClick.bind(this)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        gettext("Add A User"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext(
+        "Begin typing to search users. Select the desired user then click Share."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ref: this.input }),
+      user
+    ] });
+  }
+};
+class StudentManagement extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.tiny_loader = new MouseCursorLoader($("body"));
+    this.state = { owner: null, teacher: [], student: [] };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    getUsersForLiveProject(this.props.data.id, (response) => {
+      this.setState({
+        owner: response.author,
+        student: response.students,
+        teacher: response.teachers
+      });
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  setUserPermission(permission_type, user) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
+      getUsersForLiveProject(this.props.data.id, (response) => {
+        this.setState({
+          owner: response.author,
+          student: response.students,
+          teacher: response.teachers
+        });
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (this.state.owner == null)
+      return null;
+    let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
+    let teachers = this.state.teacher.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel$1,
+      {
+        user,
+        type: "teacher",
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel$1,
+      {
+        user,
+        type: "student",
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-text", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("Student Management") + ":" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        gettext("Owned By"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          gettext("Teachers"),
+          ":"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: teachers })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          gettext("Enrolled Users"),
+          ":"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: students })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(UserAdd$1, { permissionChange: this.setUserPermission.bind(this) })
+    ] });
+  }
+}
+class LiveProjectStudents extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let liveproject = this.state.data.liveproject;
+    let register_link;
+    if (liveproject && liveproject.registration_hash) {
+      let register_url = COURSEFLOW_APP.config.registration_path.replace(
+        "project_hash",
+        liveproject.registration_hash
+      );
+      register_link = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-text", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Student Registration:" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Student Registration Link: ") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              id: "copy-text",
+              className: "hover-shade",
+              onClick: () => {
+                navigator.clipboard.writeText(register_url);
+                $("#copy-text").attr(
+                  "src",
+                  COURSEFLOW_APP.config.icon_path + "duplicate_checked.svg"
+                );
+                $("#url-text").text("Copied to Clipboard");
+                setTimeout(() => {
+                  $("#copy-text").attr(
+                    "src",
+                    COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
+                  );
+                  $("#url-text").text(register_url);
+                }, 1e3);
+              },
+              title: window.gettext("Copy to clipboard"),
+              src: COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "url-text", className: "selectable", href: register_url, children: register_url })
+        ] })
+      ] }) });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(StudentManagement, { data: this.state.data.liveproject }),
+      register_link
+    ] });
+  }
+}
+class LiveProjectCompletionTable extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    this.state.liveproject;
+    let head = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentViewSmall, { renderer: this.props.renderer, data: assignment }) }));
+    let assignment_ids = this.state.data.assignments.map(
+      (assignment) => assignment.id
+    );
+    let body2 = this.state.data.table_rows.map((row, row_index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "user-head outcome-head", children: getUserDisplay(row.user) }),
+      assignment_ids.map((id) => {
+        let assignment = row.assignments.find(
+          (row_element) => row_element.assignment == id
+        );
+        if (!assignment)
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            onChange: this.toggleCompletion.bind(
+              this,
+              assignment.id,
+              row_index
+            ),
+            type: "checkbox",
+            checked: assignment.completed
+          }
+        ) });
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell total-cell grand-total-cell", children: row.assignments.reduce(
+        (total, assignment) => total + assignment.completed,
+        0
+      ) + "/" + row.assignments.length })
+    ] }));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Table"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "user-table outcome-table node-rows", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row node-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "user-head outcome-head empty" }),
+          head,
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "total-header", children: [
+            window.gettext("Total"),
+            ":"
+          ] }) })
+        ] }),
+        body2
+      ] })
+    ] });
+  }
+  toggleCompletion(id, row_index, evt) {
+    setAssignmentCompletionQuery(id, evt.target.checked);
+    let new_data = { ...this.state.data };
+    new_data.table_rows = new_data.table_rows.slice();
+    new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] };
+    new_data.table_rows[row_index].assignments = new_data.table_rows[row_index].assignments.slice();
+    let index2 = new_data.table_rows[row_index].assignments.findIndex(
+      (assignment) => assignment.id == id
+    );
+    new_data.table_rows[row_index].assignments[index2] = {
+      ...new_data.table_rows[row_index].assignments[index2],
+      completed: evt.target.checked
+    };
+    this.setState({ data: new_data });
+  }
+}
+class LiveProjectSettings extends LiveProjectSection {
+  constructor(props) {
+    super(props);
+    this.state = { has_changed: false, liveproject: null };
+    this.changed_values = {};
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  changeField(type, new_value) {
+    let new_state = { ...this.state.data.liveproject };
+    new_state[type] = new_value;
+    this.changed_values[type] = new_value;
+    this.setState({
+      has_changed: true,
+      data: { ...this.state.data, liveproject: new_state }
+    });
+  }
+  saveChanges() {
+    updateLiveProjectValueQuery(
+      this.state.data.liveproject.id,
+      "liveproject",
+      this.changed_values
+    );
+    this.props.updateLiveProject({
+      liveproject: { ...this.state.data.liveproject, ...this.changed_values }
+    });
+    this.changed_values = {};
+    this.setState({ has_changed: false });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let data = this.state.data.liveproject;
+    let changeField2 = this.changeField.bind(this);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Classroom configuration"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-single-completion",
+            name: "default-single-completion",
+            type: "checkbox",
+            checked: data.default_single_completion,
+            onChange: (evt) => changeField2("default_single_completion", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-signle-completion",
+            title: window.gettext(
+              "Whether to mark the assignment as complete if any user has completed it."
+            ),
+            children: window.gettext(
+              "By default, mark assignments as complete when a single user has completed them"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-assign-to-all",
+            name: "default-assign-to-all",
+            type: "checkbox",
+            checked: data.default_assign_to_all,
+            onChange: (evt) => changeField2("default_assign_to_all", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-assign-to-all",
+            title: window.gettext(
+              "Whether creating an assignment automatically adds all students to it."
+            ),
+            children: window.gettext(
+              "Assign new assignments to all students by default"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-self-reporting",
+            name: "default-self-reporting",
+            type: "checkbox",
+            checked: data.default_self_reporting,
+            onChange: (evt) => changeField2("default_self_reporting", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-self-reporting",
+            title: window.gettext(
+              "Whether students can mark their own assignments as complete."
+            ),
+            children: window.gettext(
+              "Let students self-report their assignment completion by default"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-all-workflows-visible",
+            name: "default-all-workflows-visible",
+            type: "checkbox",
+            checked: data.default_all_workflows_visible,
+            onChange: (evt) => changeField2("default_all_workflows_visible", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-all-workflows-visible",
+            title: window.gettext(
+              "Whether all workflows in the project will be visible to students by default."
+            ),
+            children: window.gettext("All Workflows Visible To Students")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          className: "primary-button",
+          disabled: !this.state.has_changed,
+          onClick: this.saveChanges.bind(this),
+          children: window.gettext("Save classroom changes")
+        }
+      ) })
+    ] });
+  }
+}
+class AssignmentWorkflowNodesDisplay extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.getData();
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.objectID !== this.props.objectID) {
+      this.setState({ data: null }, this.getData.bind(this));
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  getData() {
+    getWorkflowNodes(this.props.objectID, (data) => {
+      this.setState({ data: data.data_package });
+    });
+  }
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    const weeks = this.state.data.weeks.map((week, i) => {
+      const nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
+      let default_text;
+      default_text = week.week_type_display + " " + (i + 1);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: week.title, defaultText: default_text }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-block-grid", children: nodes })
+      ] });
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: weeks });
+  }
+}
+class AssignmentNode extends reactExports.Component {
+  render() {
+    const data = this.props.data;
+    let lefticon;
+    let righticon;
+    if (data.context_classification > 0)
+      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.context_choices.find(
+            (obj) => obj.type == data.context_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+        }
+      );
+    if (data.task_classification > 0)
+      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.task_choices.find(
+            (obj) => obj.type == data.task_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
+        }
+      );
+    const style2 = {
+      backgroundColor: getColumnColour(this.props.data)
+    };
+    const mouseover_actions = [this.addCreateAssignment(data)];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: "node", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: this.props.data }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-row" })
+    ] });
+  }
+  addCreateAssignment(data) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: "assignment.svg",
+        buttonClass: "duplicate-self-button",
+        titleText: window.gettext("Create Assignment"),
+        handleClick: this.createAssignment.bind(this, data)
+      }
+    );
+  }
+  createAssignment(data) {
+    const props = this.props;
+    props.renderer.tiny_loader.startLoad();
+    createAssignmentQuery$1(
+      data.id,
+      props.renderer.project_data.id,
+      (response_data) => {
+        props.renderer.tiny_loader.endLoad();
+        window.location = COURSEFLOW_APP.config.update_path.liveassignment.replace(
+          "0",
+          response_data.assignmentPk
+        );
+      }
+    );
+  }
+}
+class LiveProjectAssignments extends LiveProjectSection {
+  changeView(workflow_id) {
+    this.setState({ selected_id: workflow_id });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    const assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
+    const workflow_options = this.state.data.workflows.map((workflow) => {
+      let view_class = "hover-shade";
+      if (workflow.id === this.state.selected_id)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          id: "button_" + workflow.id,
+          className: view_class,
+          onClick: this.changeView.bind(this, workflow.id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { no_hyperlink: true, data: workflow })
+        }
+      );
+    });
+    let workflow_nodes;
+    if (this.state.selected_id) {
+      workflow_nodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentWorkflowNodesDisplay,
+        {
+          renderer: this.props.renderer,
+          objectID: this.state.selected_id
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Assigned Tasks") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("All Tasks") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "select-workflow", className: "workflow-view-select", children: workflow_options }),
+      workflow_nodes
+    ] });
+  }
+}
+class LiveProjectWorkflows extends LiveProjectSection {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  switchVisibility(pk, visibility) {
+    let workflows_added = this.state.data.workflows_added.slice();
+    let workflows_not_added = this.state.data.workflows_not_added.slice();
+    if (visibility == "visible") {
+      for (let i = 0; i < workflows_not_added.length; i++) {
+        if (workflows_not_added[i].id == pk) {
+          let removed = workflows_not_added.splice(i, 1);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, true);
+          workflows_added.push(removed[0]);
+        }
+      }
+    } else {
+      for (let i = 0; i < workflows_added.length; i++) {
+        if (workflows_added[i].id == pk) {
+          let removed = workflows_added.splice(i, 1);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, false);
+          workflows_not_added.push(removed[0]);
+        }
+      }
+    }
+    this.setState({
+      data: {
+        ...this.state.data,
+        workflows_added,
+        workflows_not_added
+      }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows_added = this.state.data.workflows_added.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowVisibility,
+      {
+        workflowData: workflow,
+        visibility: "visible",
+        visibilityFunction: this.switchVisibility.bind(this)
+      }
+    ));
+    let workflows_not_added = this.state.data.workflows_not_added.map(
+      (workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowVisibility,
+        {
+          workflowData: workflow,
+          visibility: "not_visible",
+          visibilityFunction: this.switchVisibility.bind(this)
+        }
+      )
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Visible Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Other Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_not_added })
+    ] });
+  }
+}
+class LiveProjectMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...props.project,
+      liveproject: this.props.liveproject,
+      view_type: "overview"
+    };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getViewButtons() {
+    return [
+      { type: "overview", name: window.gettext("Classroom Overview") },
+      { type: "students", name: window.gettext("Students") },
+      { type: "assignments", name: window.gettext("Assignments") },
+      { type: "workflows", name: window.gettext("Workflow Visibility") },
+      { type: "completion_table", name: window.gettext("Completion Table") },
+      { type: "settings", name: window.gettext("Classroom Settings") }
+    ];
+  }
+  getRole() {
+    return "teacher";
+  }
+  openEdit() {
+    return null;
+  }
+  changeView(view_type) {
+    this.setState({ view_type });
+  }
+  getHeader() {
+    return null;
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "overview":
+        return (
+          // @todo renderer IS used in this component
+          // but only user_role, how is that different from getRole?
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectOverview,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "students":
+        return (
+          // @todo  renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectStudents,
+            {
+              role: this.getRole(),
+              liveproject: this.state.liveproject,
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "assignments":
+        return (
+          // @todo  renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectAssignments,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "workflows":
+        return (
+          // @todo  renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectWorkflows,
+            {
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "completion_table":
+        return (
+          //@todo   renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectCompletionTable,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "settings":
+        return (
+          // @todo renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectSettings,
+            {
+              updateLiveProject: this.updateFunction.bind(this),
+              role: this.getRole(),
+              liveproject: this.state.liveproject,
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+    }
+  }
+  updateFunction(new_state) {
+    this.setState(new_state);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.props.project;
+    let overflow_links = [];
+    if (this.props.renderer.user_permission > 0) {
+      overflow_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            id: "project",
+            className: "hover-shade",
+            href: COURSEFLOW_APP.config.update_path.project.replace("0", data.id),
+            children: window.gettext("Edit Project")
+          }
+        )
+      );
+    }
+    let view_buttons = this.getViewButtons().map((item) => {
+      let view_class = "hover-shade";
+      if (item.type === this.state.view_type)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          id: "button_" + item.type,
+          className: view_class,
+          onClick: this.changeView.bind(this, item.type),
+          children: item.name
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCard,
+          {
+            noHyperlink: true,
+            workflowData: this.state.liveproject,
+            selectAction: this.openEdit.bind(this)
+          }
+        ),
+        this.getHeader()
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() }),
+      reactDomExports.createPortal(overflow_links, $("#overflow-links")[0])
+    ] });
+  }
+}
+class StudentLiveProjectOverview extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
+    if (workflows.length === 0)
+      workflows = window.gettext(
+        "No workflows have been made visible to students."
+      );
+    let assignments = this.state.data.assignments.filter((assignment) => assignment.user_assignment.completed === false).map((assignment, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentTitle,
+        {
+          data: assignment,
+          user_role: this.props.renderer.user_role
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          disabled: !assignment.self_reporting,
+          onChange: this.toggleAssignment.bind(
+            this,
+            assignment.user_assignment.id
+          )
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
+    ] }, index2));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Your Incomplete Assignments"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
+        ] }),
+        assignments
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Visible Workflows"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
+    ] });
+  }
+  toggleAssignment(id, evt) {
+    setAssignmentCompletionQuery(id, evt.target.checked);
+  }
+}
+class StudentLiveProjectWorkflows extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows_added = this.state.data.workflows_added.map(
+      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, index2)
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added })
+    ] });
+  }
+}
+class StudentLiveProjectAssignments extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let assignments_past = this.state.data.assignments_past.map(
+      (assignment) => (
+        // @todo renderer IS used in this component
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
+      )
+    );
+    let assignments_upcoming = this.state.data.assignments_upcoming.map(
+      (assignment) => (
+        // @todo renderer IS used in this component
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
+      )
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Your Tasks"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Upcoming"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_upcoming }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Past"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_past })
+    ] });
+  }
+}
+class StudentLiveProjectMenu extends LiveProjectMenu {
+  getViewButtons() {
+    return [
+      { type: "overview", name: window.gettext("Classroom Overview") },
+      { type: "assignments", name: window.gettext("My Assignments") },
+      { type: "workflows", name: window.gettext("My Workflows") }
+    ];
+  }
+  getRole() {
+    return "student";
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "overview":
+        return (
+          // @todo renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectOverview,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "assignments":
+        return (
+          // @todo renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectAssignments,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "workflows":
+        return (
+          // @todo renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectWorkflows,
+            {
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+    }
+  }
+  updateFunction(new_state) {
+    this.setState(new_state);
+  }
+}
 class LiveProjectRenderer extends React.Component {
   constructor(props) {
     super(props);
@@ -91037,6 +90410,1194 @@ class WorkflowFilter extends reactExports.Component {
     ];
   }
 }
+const Users = ({ users, readOnly, openShareDialog }) => {
+  let users_group = [];
+  if (!users)
+    return null;
+  const { author, editors, commentors, viewers, published } = users;
+  if (!author)
+    return null;
+  if (published) {
+    users_group.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("view"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+        " ",
+        window.gettext("All CourseFlow")
+      ] })
+    );
+  }
+  users_group.push([
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("author"),
+      getUserDisplay(author)
+    ] }),
+    editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("edit"),
+      getUserDisplay(user)
+    ] })),
+    commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("comment"),
+      getUserDisplay(user)
+    ] })),
+    viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("view"),
+      getUserDisplay(user)
+    ] }))
+  ]);
+  users_group = users_group.flat(2);
+  const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+  if (users_group.length > 4) {
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+        "+",
+        users_group.length - 4,
+        " ",
+        window.gettext("more")
+      ] })
+    );
+  }
+  if (!readOnly)
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "user-name collapsed-text-show-more",
+          onClick: openShareDialog,
+          children: window.gettext("Modify")
+        }
+      )
+    );
+  return usersBlocks;
+};
+const Header = ({
+  allDisciplines,
+  description,
+  disciplines,
+  data,
+  users,
+  readOnly,
+  openShareDialog
+}) => {
+  console.log("discipline");
+  console.log(allDisciplines);
+  console.log(data.disciplines);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowTitle,
+      {
+        data,
+        no_hyperlink: true,
+        class_name: "project-title"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Users,
+          {
+            users,
+            readOnly,
+            openShareDialog
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CollapsibleText,
+            {
+              text: description,
+              defaultText: window.gettext("No description")
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+          allDisciplines.filter(
+            // @ts-ignore
+            (discipline) => disciplines.indexOf(discipline.id) >= 0
+            // @todo don't understand this error yet
+          ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
+        ] })
+      ] })
+    ] })
+  ] });
+};
+class ProjectEditMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { ...props.data, selected_set: "none" };
+    this.object_set_updates = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  componentDidUpdate() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  deleteTerm(id) {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
+    )) {
+      const new_state_dict = this.state.object_sets.slice();
+      for (let i = 0; i < new_state_dict.length; i++) {
+        if (new_state_dict[i].id === id) {
+          deleteSelfQuery(id, "objectset");
+          new_state_dict.splice(i, 1);
+          this.setState({ object_sets: new_state_dict });
+          break;
+        }
+      }
+    }
+  }
+  addTerm() {
+    const term = $("#nomenclature-select")[0].value;
+    const title = $("#term-singular")[0].value;
+    addTerminology(this.state.id, term, title, "", (response_data) => {
+      this.setState({
+        object_sets: response_data.new_dict,
+        selected_set: "none",
+        termsingular: ""
+      });
+    });
+  }
+  termChanged(id, evt) {
+    const new_sets = this.state.object_sets.slice();
+    for (var i = 0; i < new_sets.length; i++) {
+      if (new_sets[i].id == id) {
+        new_sets[i] = { ...new_sets[i], title: evt.target.value };
+        this.object_set_updates[id] = { title: evt.target.value };
+      }
+    }
+    this.setState({ object_sets: new_sets, changed: true });
+  }
+  updateTerms() {
+    for (var object_set_id in this.object_set_updates) {
+      updateValueInstant(
+        object_set_id,
+        "objectset",
+        this.object_set_updates[object_set_id]
+      );
+    }
+  }
+  addTermDisabled(selected_set) {
+    if (!selected_set)
+      return true;
+    if (!this.state.termsingular)
+      return true;
+    return false;
+  }
+  addDiscipline(id) {
+    this.setState((state, props) => {
+      return { disciplines: [...state.disciplines, id], changed: true };
+    });
+  }
+  removeDiscipline(id) {
+    this.setState((state, props) => {
+      return {
+        disciplines: state.disciplines.filter((value) => value != id),
+        changed: true
+      };
+    });
+  }
+  inputChanged(field, evt) {
+    var new_state = { changed: true };
+    new_state[field] = evt.target.value;
+    if (field === "selected_set")
+      new_state["termsingular"] = "";
+    this.setState(new_state);
+  }
+  getActions() {
+    var actions = [];
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: closeMessageBox, children: window.gettext("Cancel") })
+    );
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          id: "save-changes",
+          className: "primary-button",
+          disabled: !this.state.changed,
+          onClick: () => {
+            updateValueInstant(this.state.id, "project", {
+              title: this.state.title,
+              description: this.state.description,
+              published: this.state.published,
+              disciplines: this.state.disciplines
+            });
+            this.updateTerms();
+            this.props.actionFunction({ ...this.state, changed: false });
+            closeMessageBox();
+          },
+          children: window.gettext("Save Changes")
+        }
+      )
+    );
+    return actions;
+  }
+  getLiveProjectSettings() {
+    if (this.props.user_role === role_keys.teacher) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        LiveProjectSettings,
+        {
+          role: "teacher",
+          objectID: this.state.id,
+          view_type: "settings",
+          updateLiveProject: this.props.actionFunction
+        }
+      ) });
+    }
+    return null;
+  }
+  autocompleteDiscipline() {
+    const choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
+      value: discipline.title,
+      label: discipline.title,
+      id: discipline.id
+    }));
+    $("#project-discipline-input").autocomplete({
+      source: choices,
+      minLength: 0,
+      focus: null,
+      select: (evt, ui) => {
+        this.addDiscipline(ui.item.id);
+        $("#project-discipline-input").val("");
+        return false;
+      }
+    }).focus(function() {
+      $("#project-discipline-input").autocomplete(
+        "search",
+        $("#project-discipline-input").val()
+      );
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.state;
+    let disciplines;
+    if (data.all_disciplines) {
+      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
+        discipline.title,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: "material-symbols-rounded green",
+            onClick: this.removeDiscipline.bind(this, discipline.id),
+            children: "close"
+          }
+        )
+      ] }));
+    }
+    const title = unescapeCharacters(data.title || "");
+    const description = unescapeCharacters(data.description || "");
+    const object_sets = object_sets_types();
+    const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
+    let selected_set;
+    if (this.state.selected_set)
+      selected_set = object_sets[this.state.selected_set];
+    const sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          value: item.title,
+          onChange: this.termChanged.bind(this, item.id)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "nomenclature-delete-button",
+          onClick: this.deleteTerm.bind(this, item.id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
+        }
+      )
+    ] }));
+    const published_enabled = data.title && data.disciplines.length > 0;
+    if (data.published && !published_enabled)
+      this.setState({ published: false });
+    if (!published_enabled)
+      window.gettext(
+        "A title and at least one discipline is required for publishing."
+      );
+    let add_term_css = "material-symbols-rounded filled";
+    let clickEvt;
+    if (this.addTermDisabled(selected_set)) {
+      clickEvt = () => console.log("Disabled");
+      add_term_css += " grey";
+    } else {
+      clickEvt = this.addTerm.bind(this);
+      add_term_css += " green hover-shade";
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-title-input",
+            value: title,
+            onChange: this.inputChanged.bind(this, "title")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-description-input",
+            value: description,
+            onChange: this.inputChanged.bind(this, "description")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            autoComplete: "off",
+            id: "project-discipline-input",
+            placeholder: "Search"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
+        sets_added,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              id: "nomenclature-select",
+              value: this.state.selected_set,
+              onChange: this.inputChanged.bind(this, "selected_set"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
+                set_options
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              placeholder: window.gettext("Set name"),
+              type: "text",
+              id: "term-singular",
+              maxLength: "50",
+              value: this.state.termsingular,
+              onChange: this.inputChanged.bind(this, "termsingular"),
+              disabled: selected_set == null
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
+        ] })
+      ] }),
+      this.getLiveProjectSettings(),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: closeMessageBox, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
+    ] });
+  }
+}
+class UserLabel2 extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.select = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  onChange(evt) {
+    switch (evt.target.value) {
+      case "none":
+        if (window.confirm("Are you sure you want to remove this user?")) {
+          this.props.permissionChange(0, this.props.user);
+        }
+        break;
+      default:
+        this.props.permissionChange(
+          permission_keys[evt.target.value],
+          this.props.user
+        );
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let permission_select;
+    let disabled = false;
+    if (this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id) >= 0)
+      disabled = true;
+    if (this.props.type !== "owner") {
+      if (this.props.type === "add") {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, disabled, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              className: "primary-button",
+              onClick: () => this.props.addFunction($(this.select.current).val()),
+              children: window.gettext("Share")
+            }
+          )
+        ] });
+      } else {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "select",
+          {
+            value: this.props.type,
+            disabled,
+            onChange: this.onChange.bind(this),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Remove user") })
+            ]
+          }
+        ) });
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
+      ] }),
+      permission_select
+    ] });
+  }
+}
+class UserAdd2 extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.input = reactExports.createRef();
+    this.state = { selected: null };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    const component = this;
+    $(this.input.current).autocomplete({
+      source: (request, response_function) => {
+        getUserList(request.term, (response) => {
+          const user_list = response.user_list.map((user) => {
+            return {
+              label: user.first_name + " " + user.last_name + " - " + user.username,
+              value: user.username,
+              user
+            };
+          });
+          response_function(user_list);
+        });
+        component.setState({ selected: null });
+      },
+      select: (evt, ui) => {
+        this.setState({ selected: ui.item.user });
+      },
+      minLength: 1
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addClick(value) {
+    if (this.state.selected) {
+      this.props.permissionChange(
+        permission_keys[value],
+        this.state.selected
+      );
+      $(this.input.current).val(null);
+      this.setState({ selected: null });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let user;
+    if (this.state.selected) {
+      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserLabel2,
+        {
+          user: this.state.selected,
+          type: "add",
+          addFunction: this.addClick.bind(this)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: this.props.share_info }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            className: "search-input",
+            ref: this.input,
+            placeholder: window.gettext("Begin typing to search users")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" })
+      ] }),
+      user
+    ] });
+  }
+}
+class ShareMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      owner: props.data.author,
+      edit: [],
+      view: [],
+      comment: [],
+      student: [],
+      userlist: [],
+      cannot_change: []
+    };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    getUsersForObjectQuery(
+      this.props.data.id,
+      this.props.data.type,
+      (response) => {
+        this.setState({
+          owner: response.author,
+          view: response.viewers,
+          comment: response.commentors,
+          edit: response.editors,
+          student: response.students,
+          published: response.published,
+          public_view: response.public_view,
+          cannot_change: response.cannot_change
+        });
+      }
+    );
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getPublication() {
+    const published = this.state.published;
+    const data = this.props.data;
+    if (data.type === "project" || data.is_strategy) {
+      let public_class = "big-button make-public";
+      let private_class = "big-button hover-shade make-private";
+      if (published)
+        public_class += " active";
+      else
+        private_class += " active";
+      let public_disabled = !(data.title && data.title.length > 0);
+      if (data.type == "project")
+        public_disabled |= data.disciplines.length == 0;
+      if (!public_disabled && !published)
+        public_class += " hover-shade";
+      if (public_disabled)
+        public_class += " disabled";
+      const public_text = window.gettext("Any CourseFlow teacher can view");
+      let disabled_indicator;
+      if (public_disabled) {
+        let disabled_text;
+        if (data.type == "project")
+          disabled_text = window.gettext(
+            "Title and disciplines are required to publish."
+          );
+        else
+          disabled_text = window.gettext("Title is required to publish.");
+        disabled_indicator = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "warning flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red", children: "block" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: disabled_text })
+        ] });
+      }
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-buttons-wrapper", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: public_class,
+              disabled: public_disabled,
+              onClick: this.setPublication.bind(this, !public_disabled),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Public to CourseFlow") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: public_text })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: private_class,
+              onClick: this.setPublication.bind(this, false),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Private") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
+              ]
+            }
+          )
+        ] }),
+        disabled_indicator
+      ];
+    } else {
+      let published_icon;
+      if (published)
+        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project public to CourseFlow") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Any CourseFlow teacher can view") })
+        ] }) });
+      else
+        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project is private") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
+        ] }) });
+      return [published_icon, this.getPublicLink()];
+    }
+  }
+  getPublicLink() {
+    const data = this.props.data;
+    const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
+    if (data.type !== "project") {
+      const public_view = this.state.public_view;
+      if (!public_view)
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "public-link-button  hover-shade",
+            onClick: this.togglePublicView.bind(this, !public_view),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "add_link" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Generate a public link") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
+                  "Anyone with the link will be able to view the workflow"
+                ) })
+              ] })
+            ]
+          }
+        );
+      else
+        return [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                id: "public-page-link",
+                className: "public-link-button  hover-shade",
+                onClick: () => {
+                  navigator.clipboard.writeText(public_link);
+                  const copy_icon_text = $(
+                    "#public-page-link .copy-link-icon .material-symbols-rounded"
+                  ).text();
+                  const copy_description_text = $(
+                    "#public-page-link .copy-link-text"
+                  ).text();
+                  $(
+                    "#public-page-link .copy-link-icon .material-symbols-rounded"
+                  ).text("done");
+                  $("#public-page-link .copy-link-text").text(
+                    "Copied to Clipboard"
+                  );
+                  setTimeout(() => {
+                    $(
+                      "#public-page-link .copy-link-icon .material-symbols-rounded"
+                    ).text(copy_icon_text);
+                    $("#public-page-link .copy-link-text").text(
+                      copy_description_text
+                    );
+                  }, 1e3);
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy public link") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext("Anyone with the link can view the workflow") })
+                  ] })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                id: "public-page-code",
+                className: "public-link-button  hover-shade",
+                onClick: () => {
+                  const iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
+                  navigator.clipboard.writeText(iframe);
+                  const copy_icon_text = $(
+                    "#public-page-code .copy-link-icon .material-symbols-rounded"
+                  ).text();
+                  const copy_description_text = $(
+                    "#public-page-code .copy-link-text"
+                  ).text();
+                  $(
+                    "#public-page-code .copy-link-icon .material-symbols-rounded"
+                  ).text("done");
+                  $("#public-page-code .copy-link-text").text(
+                    "Copied to Clipboard"
+                  );
+                  setTimeout(() => {
+                    $(
+                      "#public-page-code .copy-link-icon .material-symbols-rounded"
+                    ).text(copy_icon_text);
+                    $("#public-page-code .copy-link-text").text(
+                      copy_description_text
+                    );
+                  }, 1e3);
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "frame_source" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy embed code") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
+                      "HTML code to embed the workflow in a site or page"
+                    ) })
+                  ] })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "public-link-button public-link-remove  hover-shade",
+              onClick: this.togglePublicView.bind(this, !public_view),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link_off" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Remove public link") }) })
+              ]
+            }
+          )
+        ];
+    }
+  }
+  togglePublicView(public_view) {
+    if (public_view) {
+      if (window.confirm(
+        window.gettext(
+          "Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."
+        )
+      )) {
+        updateValueInstant(
+          this.props.data.id,
+          "workflow",
+          { public_view },
+          () => {
+            this.setState({ public_view });
+          }
+        );
+      }
+    } else {
+      updateValueInstant(
+        this.props.data.id,
+        "workflow",
+        { public_view },
+        () => {
+          this.setState({ public_view });
+        }
+      );
+    }
+  }
+  setPublication(published) {
+    if (published === this.state.published)
+      return;
+    const component = this;
+    if (!published || window.confirm(
+      window.gettext(
+        "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
+      )
+    )) {
+      updateValueInstant(
+        component.props.data.id,
+        component.props.data.type,
+        { published },
+        () => component.setState({ published })
+      );
+    }
+  }
+  setUserPermission(permission_type, user) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    setUserPermission(
+      user.id,
+      this.props.data.id,
+      this.props.data.type,
+      permission_type,
+      () => {
+        getUsersForObjectQuery(
+          this.props.data.id,
+          this.props.data.type,
+          (response) => {
+            this.setState({
+              view: response.viewers,
+              comment: response.commentors,
+              edit: response.editors,
+              student: response.students
+            });
+            COURSEFLOW_APP.tinyLoader.endLoad();
+          }
+        );
+      }
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    const owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel2, { user: this.state.owner, type: "owner" });
+    const editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "edit",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "view",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "comment",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "student",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    let share_info;
+    if (data.type === "project") {
+      share_info = window.gettext(
+        "Invite collaborators to project and its workflows"
+      );
+    } else {
+      share_info = window.gettext(
+        "Invite collaborators to workflow and grant view permissions to the project"
+      );
+    }
+    let shared_with;
+    if (editors.length || commentors.length || viewers.length || students.length) {
+      shared_with = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+            window.gettext("Shared With"),
+            ":"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "user-list", children: [
+            editors,
+            commentors,
+            viewers,
+            students
+          ] })
+        ] })
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap user-text", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { children: [
+        window.gettext("Share") + " " + window.gettext(data.type) + " ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            no_hyperlink: true,
+            data: this.props.data,
+            class_name: "inline"
+          }
+        )
+      ] }),
+      this.getPublication(),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+        window.gettext("Owned By"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserAdd2,
+        {
+          permissionChange: this.setUserPermission.bind(this),
+          share_info
+        }
+      ),
+      shared_with,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "close" })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          className: "secondary-button",
+          onClick: this.props.actionFunction,
+          children: window.gettext("Close")
+        }
+      ) })
+    ] });
+  }
+}
+class ExportMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { type: "outcome" };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getExportTypes() {
+    let type = this.props.data.type;
+    const exports = [];
+    exports.push([
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          name: "export_type",
+          type: "radio",
+          value: "outcome",
+          onChange: this.inputChange.bind(this, "type", ""),
+          checked: this.state.type == "outcome"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Outcomes") })
+    ]);
+    exports.push([
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          name: "export_type",
+          type: "radio",
+          value: "node",
+          onChange: this.inputChange.bind(this, "type", ""),
+          checked: this.state.type == "node"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Nodes") })
+    ]);
+    if (type == "project" || type == "course")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "framework",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "framework"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Course Framework") })
+      ]);
+    if (type == "project" || type == "program")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "matrix",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "matrix"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Competency Matrix") })
+      ]);
+    if (type == "project" || type == "program")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "sobec",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "sobec"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Sobec Validation") })
+      ]);
+    return exports;
+  }
+  inputChange(type, id, evt) {
+    if (type == "set") {
+      let new_state = {};
+      new_state[id] = !evt.target.checked;
+      this.setState(new_state);
+    } else if (type == "type" && evt.target.checked) {
+      this.setState({ type: evt.target.value });
+    }
+  }
+  click(evt) {
+    if (evt.ctrlKey) {
+      this.ctrlKey = true;
+      $("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
+    }
+  }
+  submit(evt) {
+    $("#submit-button").attr("disabled", true);
+    setTimeout(() => {
+      if (!this.ctrlKey)
+        this.props.actionFunction();
+      alert(
+        window.gettext(
+          "Your file is being generated and will be emailed to you shortly."
+        )
+      );
+    }, 100);
+    return true;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let object_sets;
+    if (this.props.data.object_sets.length > 0) {
+      object_sets = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Object Set Visibility"),
+          ":"
+        ] }),
+        this.props.data.object_sets.map((objectset) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              onChange: this.inputChange.bind(this, "set", objectset.id),
+              name: "object_sets[]",
+              value: objectset.id,
+              type: "checkbox",
+              id: objectset.id,
+              checked: !this.state[objectset.id]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: objectset.title })
+        ] }))
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export files") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Use this menu to export files.") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "form",
+        {
+          id: "export-form",
+          encType: "multipart/form-data",
+          action: COURSEFLOW_APP.config.post_paths.get_export,
+          method: "POST",
+          target: "redirect-iframe",
+          onSubmit: this.submit.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                name: "csrfmiddlewaretoken",
+                value: window.getCsrfToken()
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+              window.gettext("Export Type"),
+              ":"
+            ] }),
+            this.getExportTypes(),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+              window.gettext("Export Format"),
+              ":"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { name: "export_format", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "excel", children: "Excel" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "csv", children: "CSV" })
+            ] }),
+            object_sets,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectID",
+                name: "objectID",
+                value: JSON.stringify(this.props.data.id)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectType",
+                name: "objectType",
+                value: JSON.stringify(this.props.data.type)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                onClick: this.click.bind(this),
+                id: "submit-button",
+                type: "submit"
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+        }
+      )
+    ] });
+  }
+}
 class ProjectMenu extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -91048,6 +91609,74 @@ class ProjectMenu extends reactExports.Component {
     __publicField(this, "allDisciplines");
     __publicField(this, "viewButtons");
     __publicField(this, "data");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Share", () => {
+      if (!this.readOnly)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: this.openShareDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return null;
+    });
+    __publicField(this, "DeleteProject", () => {
+      if (!this.state.data.deleted) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
+      }
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
+      ];
+    });
+    __publicField(this, "ExportButton", () => {
+      if (this.userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "export-button",
+            className: "hover-shade",
+            onClick: () => {
+              this.openExportDialog.bind(this);
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
+          }
+        );
+      }
+      return null;
+    });
+    __publicField(this, "CopyButton", () => {
+      if (this.userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "copy-button",
+            className: "hover-shade",
+            onClick: () => {
+              const loader = COURSEFLOW_APP.tinyLoader;
+              loader.startLoad();
+              duplicateBaseItemQuery(
+                this.data.id,
+                this.data.type,
+                null,
+                (response_data) => {
+                  loader.endLoad();
+                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+                }
+              );
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+          }
+        );
+      }
+      return null;
+    });
     __publicField(this, "OverflowLinks", (data, userId) => {
       let liveproject;
       const overflow_links = [];
@@ -91082,55 +91711,74 @@ class ProjectMenu extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
       );
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-      overflow_links.push(this.getExportButton());
-      overflow_links.push(this.getCopyButton());
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
       if (data.author_id === userId) {
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-        overflow_links.push(this.getDeleteProject());
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProject, {}));
       }
       return overflow_links;
     });
-    __publicField(this, "Header", () => {
-      const data = this.state.data;
-      console.log("discipline");
-      console.log(this.allDisciplines);
-      console.log(data.disciplines);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTitle,
+    __publicField(this, "Edit", () => {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
           {
-            data,
-            no_hyperlink: true,
-            class_name: "project-title"
+            className: "hover-shade",
+            id: "edit-project-button",
+            title: window.gettext("Edit Project"),
+            onClick: this.openEditDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
           }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-            this.getUsers()
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                CollapsibleText,
-                {
-                  text: data.description,
-                  defaultText: window.gettext("No description")
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-              this.allDisciplines.filter(
-                // @ts-ignore
-                (discipline) => data.disciplines.indexOf(discipline.id) >= 0
-                // @todo don't understand this error yet
-              ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
-            ] })
-          ] })
-        ] })
-      ] });
+        );
+      }
+      return null;
+    });
+    __publicField(this, "Create", () => {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "hover-shade",
+            id: "create-project-button",
+            title: window.gettext("Create workflow"),
+            ref: this.createDiv,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "activity-create-project",
+                    href: this.projectPaths.activity,
+                    className: "hover-shade",
+                    children: window.gettext("New activity")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "course-create-project",
+                    href: this.projectPaths.course,
+                    className: "hover-shade",
+                    children: window.gettext("New course")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "program-create-project",
+                    href: this.projectPaths.program,
+                    className: "hover-shade",
+                    children: window.gettext("New program")
+                  }
+                )
+              ] })
+            ]
+          }
+        );
+      }
+      return null;
     });
     __publicField(this, "Content", () => {
       const return_val = [];
@@ -91218,6 +91866,48 @@ class ProjectMenu extends reactExports.Component {
       }
       return return_val;
     });
+    __publicField(this, "ShareDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ShareMenu,
+          {
+            data: this.state.data,
+            actionFunction: () => {
+              this.setState({
+                ...this.state,
+                openShareDialog: false
+              });
+              this.getUserData();
+            }
+          }
+        )
+      ] });
+    });
+    __publicField(this, "EditDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openEditDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ProjectEditMenu,
+          {
+            type: "project_edit_menu",
+            data: {
+              ...this.state.data,
+              all_disciplines: this.allDisciplines,
+              user_role: this.userRole
+              // renderer: this.props.renderer
+            },
+            actionFunction: this.updateFunction
+          }
+        )
+      ] });
+    });
+    __publicField(this, "ExportDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: this.state.data, actionFunction: this.closeModals })
+      ] });
+    });
     this.viewButtons = [
       { type: "workflows", name: window.gettext("Workflows") },
       { type: "overview", name: window.gettext("Classroom Overview") },
@@ -91235,7 +91925,10 @@ class ProjectMenu extends reactExports.Component {
       data: this.props.data,
       view_type: "workflows",
       users: null,
-      workflow_data: []
+      workflow_data: [],
+      openEditDialog: false,
+      openShareDialog: false,
+      openExportDialog: false
     };
     this.createDiv = reactExports.createRef();
   }
@@ -91269,11 +91962,14 @@ class ProjectMenu extends reactExports.Component {
   getRole() {
     return "teacher";
   }
+  /*******************************************************
+   * ACTION HANDLERS
+   *******************************************************/
   deleteProject() {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this project?")
     )) {
-      deleteSelf(this.data.id, "project", true, () => {
+      deleteSelfQuery(this.data.id, "project", true, () => {
         this.setState({ data: { ...this.data, deleted: true } });
       });
     }
@@ -91284,13 +91980,13 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to permanently delete this project?"
       )
     )) {
-      deleteSelf(this.data.id, "project", false, () => {
+      deleteSelfQuery(this.data.id, "project", false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
   restoreProject() {
-    restoreSelf(this.data.id, "project", () => {
+    restoreSelfQuery(this.data.id, "project", () => {
       this.setState({ data: { ...this.data, deleted: false } });
     });
   }
@@ -91300,26 +91996,14 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to create a live classroom for this project?"
       )
     )) {
-      makeProjectLive(this.data.id, (data) => {
-        console.log(data);
+      makeProjectLiveQuery(this.data.id, (data) => {
         location.reload();
       });
     }
   }
-  openEditMenu() {
-    console.log(
-      "openEditMenu in procetmenu.js see function coment for why this doesn't work"
-    );
-  }
-  updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log("liveproject updated");
-    } else {
-      const new_state = { ...this.state };
-      new_state.data = { ...new_state.data, ...new_data };
-      this.setState(new_state);
-    }
-  }
+  /*******************************************************
+   * MODAL HANDLERS
+   *******************************************************/
   updateWorkflow(id, new_values) {
     for (let i = 0; i < this.state.workflow_data.length; i++) {
       if (this.state.workflow_data[i].id === id) {
@@ -91334,202 +92018,54 @@ class ProjectMenu extends reactExports.Component {
       }
     }
   }
-  openShareMenu() {
-    this.state.data;
-  }
   /*******************************************************
-   * COMPONENTS
+   * MODALS
    *******************************************************/
-  getShare() {
-    if (!this.readOnly)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "share-button",
-          title: window.gettext("Sharing"),
-          onClick: this.openShareMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-        }
-      );
-    return null;
+  openEditDialog() {
+    this.setState({
+      ...this.state,
+      openEditDialog: true
+    });
   }
-  getDeleteProject() {
-    if (!this.state.data.deleted) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
-    }
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
-    ];
+  openShareDialog() {
+    this.setState({
+      ...this.state,
+      openShareDialog: true
+    });
   }
-  getExportButton() {
-    if (this.userId) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "export-button",
-          className: "hover-shade",
-          onClick: () => {
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
-        }
-      );
-    }
-    return null;
+  openExportDialog() {
+    this.setState({
+      ...this.state,
+      openExportDialog: true
+    });
   }
-  getCopyButton() {
-    if (this.userId) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "copy-button",
-          className: "hover-shade",
-          onClick: () => {
-            const loader = COURSEFLOW_APP.tinyLoader;
-            loader.startLoad();
-            duplicateBaseItemQuery(
-              this.data.id,
-              this.data.type,
-              null,
-              (response_data) => {
-                loader.endLoad();
-                window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-              }
-            );
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-        }
-      );
-    }
-    return null;
+  closeModals() {
+    this.setState({
+      ...this.state,
+      openExportDialog: false,
+      openShareDialog: false,
+      openEditDialog: false
+    });
   }
-  getUsers() {
-    let users_group = [];
-    if (!this.state.users)
-      return null;
-    const { author, editors, commentors, viewers } = this.state.users;
-    if (!author)
-      return null;
-    if (this.state.users.published) {
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          " ",
-          window.gettext("All CourseFlow")
-        ] })
-      );
+  updateFunction(new_data) {
+    if (new_data.liveproject) {
+      console.log("liveproject updated");
+    } else {
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          ...new_data
+        },
+        openEditDialog: false
+      });
     }
-    users_group.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("author"),
-        getUserDisplay(author)
-      ] }),
-      editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("edit"),
-        getUserDisplay(user)
-      ] })),
-      commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("comment"),
-        getUserDisplay(user)
-      ] })),
-      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        getUserDisplay(user)
-      ] }))
-    ]);
-    users_group = users_group.flat(2);
-    const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-    if (users_group.length > 4) {
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-          "+",
-          users_group.length - 4,
-          " ",
-          window.gettext("more")
-        ] })
-      );
-    }
-    if (!this.readOnly)
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "user-name collapsed-text-show-more",
-            onClick: this.openShareMenu.bind(this),
-            children: window.gettext("Modify")
-          }
-        )
-      );
-    return users;
-  }
-  getEdit() {
-    if (!this.readOnly) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "edit-project-button",
-          title: window.gettext("Edit Project"),
-          onClick: this.openEditMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-        }
-      );
-    }
-    return null;
-  }
-  getCreate() {
-    if (!this.readOnly) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade",
-          id: "create-project-button",
-          title: window.gettext("Create workflow"),
-          ref: this.createDiv,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "activity-create-project",
-                  href: this.projectPaths.activity,
-                  className: "hover-shade",
-                  children: window.gettext("New activity")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "course-create-project",
-                  href: this.projectPaths.course,
-                  className: "hover-shade",
-                  children: window.gettext("New course")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "program-create-project",
-                  href: this.projectPaths.program,
-                  className: "hover-shade",
-                  children: window.gettext("New program")
-                }
-              )
-            ] })
-          ]
-        }
-      );
-    }
-    return null;
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()];
+    const visible_buttons = [/* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
@@ -91539,9 +92075,23 @@ class ProjectMenu extends reactExports.Component {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Header,
+          {
+            disciplines: this.state.data.disciplines,
+            description: this.state.data.description,
+            allDisciplines: this.allDisciplines,
+            data: this.state.data,
+            users: this.state.users,
+            openShareDialog: this.openShareDialog,
+            readOnly: this.readOnly
+          }
+        ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
-      ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {})
     ] });
   }
 }
@@ -91562,8 +92112,12 @@ class ProjectPage extends reactExports.Component {
     this.userPermission = this.props.user_permission;
     this.userId = this.props.user_id;
     this.projectPaths = this.props.create_path_this_project;
+    console.log("this.projectData");
+    console.log(this.projectData);
     if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
+      console.log("readOnly");
       this.readOnly = false;
+      console.log(this.readOnly);
     }
   }
   render() {

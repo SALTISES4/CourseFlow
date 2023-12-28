@@ -13,8 +13,8 @@ import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import {
   getParentWorkflowInfo,
   getPublicParentWorkflowInfo,
-  restoreSelf,
-  deleteSelf,
+  restoreSelfQuery,
+  deleteSelfQuery,
   toggleDrop,
 } from '@XMLHTTP/PostFunctions'
 import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
@@ -303,7 +303,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         window.gettext('Are you sure you want to delete this workflow?')
       )
     ) {
-      deleteSelf(this.props.data.id, 'workflow', true, () => {})
+      deleteSelfQuery(this.props.data.id, 'workflow', true, () => {})
     }
   }
 
@@ -315,7 +315,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         )
       )
     ) {
-      deleteSelf(this.props.data.id, 'workflow', false, () => {
+      deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
         window.location = COURSEFLOW_APP.config.update_path['project'].replace(
           0,
           renderer.project.id
@@ -325,7 +325,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   restoreWorkflow() {
-    restoreSelf(this.props.data.id, 'workflow', () => {})
+    restoreSelfQuery(this.props.data.id, 'workflow', () => {})
   }
 
   getExportButton() {

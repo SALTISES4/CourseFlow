@@ -2,11 +2,11 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ActionButton from '@cfUIComponents/ActionButton'
 import {
-  deleteSelf,
+  deleteSelfQuery,
   duplicateSelf,
   insertChild,
   insertSibling,
-  restoreSelf
+  restoreSelfQuery
 } from '@XMLHTTP/PostFunctions'
 import EditableComponentWithComments from './EditableComponentWithComments'
 
@@ -28,7 +28,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   restoreSelf(data) {
     var props = this.props
     props.renderer.tiny_loader.startLoad()
-    restoreSelf(
+    restoreSelfQuery(
       data.id,
       Constants.object_dictionary[this.objectType],
       (response_data) => {
@@ -72,7 +72,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       )
     ) {
       props.renderer.tiny_loader.startLoad()
-      deleteSelf(
+      deleteSelfQuery(
         data.id,
         Constants.object_dictionary[this.objectType],
         true,

@@ -3,7 +3,7 @@ import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import {
   addTerminology,
-  deleteSelf,
+  deleteSelfQuery,
   updateValueInstant
 } from '@XMLHTTP/PostFunctions'
 import closeMessageBox from '../components/closeMessageBox'
@@ -40,10 +40,10 @@ class ProjectEditMenu extends React.Component {
           '?'
       )
     ) {
-      let new_state_dict = this.state.object_sets.slice()
+      const new_state_dict = this.state.object_sets.slice()
       for (let i = 0; i < new_state_dict.length; i++) {
         if (new_state_dict[i].id === id) {
-          deleteSelf(id, 'objectset')
+          deleteSelfQuery(id, 'objectset')
           new_state_dict.splice(i, 1)
           this.setState({ object_sets: new_state_dict })
           break
@@ -53,8 +53,8 @@ class ProjectEditMenu extends React.Component {
   }
 
   addTerm() {
-    let term = $('#nomenclature-select')[0].value
-    let title = $('#term-singular')[0].value
+    const term = $('#nomenclature-select')[0].value
+    const title = $('#term-singular')[0].value
     addTerminology(this.state.id, term, title, '', (response_data) => {
       this.setState({
         object_sets: response_data.new_dict,
@@ -65,7 +65,7 @@ class ProjectEditMenu extends React.Component {
   }
 
   termChanged(id, evt) {
-    let new_sets = this.state.object_sets.slice()
+    const new_sets = this.state.object_sets.slice()
     for (var i = 0; i < new_sets.length; i++) {
       if (new_sets[i].id == id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value }
@@ -144,11 +144,11 @@ class ProjectEditMenu extends React.Component {
   }
 
   getLiveProjectSettings() {
-    if (this.props.data.renderer.user_role === Constants.role_keys.teacher) {
+    if (this.props.user_role === Constants.role_keys.teacher) {
       return (
         <div>
           <LiveProjectSettings
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             role={'teacher'}
             objectID={this.state.id}
             view_type={'settings'}
@@ -161,7 +161,7 @@ class ProjectEditMenu extends React.Component {
   }
 
   autocompleteDiscipline() {
-    let choices = this.state.all_disciplines
+    const choices = this.state.all_disciplines
       .filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0)
       .map((discipline) => ({
         value: discipline.title,
@@ -210,18 +210,18 @@ class ProjectEditMenu extends React.Component {
           </div>
         ))
     }
-    let title = Utility.unescapeCharacters(data.title || '')
-    let description = Utility.unescapeCharacters(data.description || '')
+    const title = Utility.unescapeCharacters(data.title || '')
+    const description = Utility.unescapeCharacters(data.description || '')
 
-    let object_sets = Constants.object_sets_types()
-    let set_options = Object.keys(object_sets).map((key) => (
+    const object_sets = Constants.object_sets_types()
+    const set_options = Object.keys(object_sets).map((key) => (
       <option value={key}>{object_sets[key]}</option>
     ))
 
     let selected_set
     if (this.state.selected_set)
       selected_set = object_sets[this.state.selected_set]
-    let sets_added = data.object_sets.map((item) => (
+    const sets_added = data.object_sets.map((item) => (
       <div className="nomenclature-row">
         <div>{object_sets[item.term]}</div>
         <input
@@ -239,7 +239,7 @@ class ProjectEditMenu extends React.Component {
       </div>
     ))
 
-    let published_enabled = data.title && data.disciplines.length > 0
+    const published_enabled = data.title && data.disciplines.length > 0
     if (data.published && !published_enabled)
       this.setState({ published: false })
     let disabled_publish_text

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import {
-  deleteSelf,
-  makeProjectLive,
-  restoreSelf
+  deleteSelfQuery,
+  makeProjectLiveQuery,
+  restoreSelfQuery
 } from '@XMLHTTP/PostFunctions'
 // @local
 import * as Utility from '@cfUtility'
@@ -25,8 +25,12 @@ import {
   ProjectMenuProps
 } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline, Workflow } from '@cfModule/types/common'
-import { CollapsibleText, WorkflowTitle } from '@cfUIComponents/index.js'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types'
+import { Dialog, DialogTitle } from '@mui/material'
+import Header from '@cfPages/Library/ProjectDetail/components/Header'
+import ProjectEditMenu from '@cfCommonComponents/menu/menus/ProjectEditMenu'
+import ShareMenu from '@cfCommonComponents/menu/menus/ShareMenu'
+import ExportMenu from '@cfCommonComponents/menu/menus/ExportMenu'
 // import { renderMessageBox } from '../components/MenuComponents/MenuComponents'
 // import closeMessageBox from '../components/MenuComponents/components/closeMessageBox'
 
@@ -41,6 +45,9 @@ type StateType = {
   view_type?: string
   users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
+  openEditDialog?: boolean
+  openShareDialog?: boolean
+  openExportDialog?: boolean
 }
 
 class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
@@ -79,8 +86,12 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       data: this.props.data,
       view_type: 'workflows',
       users: null,
-      workflow_data: []
+      workflow_data: [],
+      openEditDialog: false,
+      openShareDialog: false,
+      openExportDialog: false
     }
+
     this.createDiv = React.createRef()
   }
 
@@ -118,13 +129,16 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return 'teacher'
   }
 
+  /*******************************************************
+   * ACTION HANDLERS
+   *******************************************************/
   deleteProject() {
     if (
       window.confirm(
         window.gettext('Are you sure you want to delete this project?')
       )
     ) {
-      deleteSelf(this.data.id, 'project', true, () => {
+      deleteSelfQuery(this.data.id, 'project', true, () => {
         this.setState({ data: { ...this.data, deleted: true } })
       })
     }
@@ -138,14 +152,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         )
       )
     ) {
-      deleteSelf(this.data.id, 'project', false, () => {
+      deleteSelfQuery(this.data.id, 'project', false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path
       })
     }
   }
 
   restoreProject() {
-    restoreSelf(this.data.id, 'project', () => {
+    restoreSelfQuery(this.data.id, 'project', () => {
       this.setState({ data: { ...this.data, deleted: false } })
     })
   }
@@ -158,38 +172,15 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         )
       )
     ) {
-      makeProjectLive(this.data.id, (data) => {
-        console.log(data)
+      makeProjectLiveQuery(this.data.id, (data) => {
         location.reload()
       })
     }
   }
 
-  openEditMenu() {
-    console.log(
-      "openEditMenu in procetmenu.js see function coment for why this doesn't work"
-    )
-    // @todo the renderMessageBox is causing a circ cep and needs to be refactored
-    // renderMessageBox(
-    //   {
-    //     ...this.state.data,
-    //     all_disciplines: this.props.renderer.all_disciplines,
-    //     renderer: this.props.renderer
-    //   },
-    //   'project_edit_menu',
-    //   this.updateFunction.bind(this)
-    // )
-  }
-
-  updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log('liveproject updated')
-    } else {
-      const new_state = { ...this.state }
-      new_state.data = { ...new_state.data, ...new_data }
-      this.setState(new_state)
-    }
-  }
+  /*******************************************************
+   * MODAL HANDLERS
+   *******************************************************/
 
   updateWorkflow(id, new_values) {
     for (let i = 0; i < this.state.workflow_data.length; i++) {
@@ -206,25 +197,17 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     }
   }
 
-  openShareMenu() {
-    const component = this
-    const data = this.state.data
-    /*    renderMessageBox(data, 'share_menu', () => {
-      closeMessageBox()
-      component.getUserData()
-    }) */
-  }
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  getShare() {
+  Share = () => {
     if (!this.readOnly)
       return (
         <div
           className="hover-shade"
           id="share-button"
           title={window.gettext('Sharing')}
-          onClick={this.openShareMenu.bind(this)}
+          onClick={this.openShareDialog.bind(this)}
         >
           <span className="material-symbols-rounded filled">person_add</span>
         </div>
@@ -232,7 +215,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  getDeleteProject() {
+  DeleteProject = () => {
     if (!this.state.data.deleted) {
       return (
         <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
@@ -248,6 +231,52 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         <div>{window.gettext('Permanently delete project')}</div>
       </div>
     ]
+  }
+
+  ExportButton = () => {
+    if (this.userId) {
+      return (
+        <div
+          id="export-button"
+          className="hover-shade"
+          onClick={() => {
+            this.openExportDialog.bind(this)
+          }}
+        >
+          <div>{window.gettext('Export')}</div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  CopyButton = () => {
+    if (this.userId) {
+      return (
+        <div
+          id="copy-button"
+          className="hover-shade"
+          onClick={() => {
+            const loader = COURSEFLOW_APP.tinyLoader
+            loader.startLoad()
+            duplicateBaseItemQuery(
+              this.data.id,
+              this.data.type,
+              null,
+              (response_data) => {
+                loader.endLoad()
+                window.location = COURSEFLOW_APP.config.update_path[
+                  response_data.new_item.type
+                ].replace('0', response_data.new_item.id)
+              }
+            )
+          }}
+        >
+          <div>{window.gettext('Copy to my library')}</div>
+        </div>
+      )
+    }
+    return null
   }
 
   OverflowLinks = (data, userId) => {
@@ -288,135 +317,23 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       </a>
     )
     overflow_links.push(<hr />)
-    overflow_links.push(this.getExportButton())
-    overflow_links.push(this.getCopyButton())
+    overflow_links.push(<this.ExportButton />)
+    overflow_links.push(<this.CopyButton />)
     if (data.author_id === userId) {
       overflow_links.push(<hr />)
-      overflow_links.push(this.getDeleteProject())
+      overflow_links.push(<this.DeleteProject />)
     }
     return overflow_links
   }
 
-  getExportButton() {
-    if (this.userId) {
-      return (
-        <div
-          id="export-button"
-          className="hover-shade"
-          onClick={() => {
-            // @todo the renderMessageBox is causing a circ cep and needs to be refactored
-            //   renderMessageBox(this.state.data, 'export', closeMessageBox)
-          }}
-        >
-          <div>{window.gettext('Export')}</div>
-        </div>
-      )
-    }
-    return null
-  }
-
-  getCopyButton() {
-    if (this.userId) {
-      return (
-        <div
-          id="copy-button"
-          className="hover-shade"
-          onClick={() => {
-            const loader = COURSEFLOW_APP.tinyLoader
-            loader.startLoad()
-            duplicateBaseItemQuery(
-              this.data.id,
-              this.data.type,
-              null,
-              (response_data) => {
-                loader.endLoad()
-                window.location = COURSEFLOW_APP.config.update_path[
-                  response_data.new_item.type
-                ].replace('0', response_data.new_item.id)
-              }
-            )
-          }}
-        >
-          <div>{window.gettext('Copy to my library')}</div>
-        </div>
-      )
-    }
-    return null
-  }
-
-  getUsers() {
-    let users_group = []
-
-    if (!this.state.users) return null
-    const { author, editors, commentors, viewers } = this.state.users
-
-    if (!author) return null
-
-    if (this.state.users.published) {
-      users_group.push(
-        <div className="user-name">
-          {Utility.getUserTag('view')}
-          <span className="material-symbols-rounded">public</span>{' '}
-          {window.gettext('All CourseFlow')}
-        </div>
-      )
-    }
-
-    users_group.push([
-      <div className="user-name">
-        {Utility.getUserTag('author')}
-        {Utility.getUserDisplay(author)}
-      </div>,
-      editors
-        .filter((user) => user.id != author.id)
-        .map((user) => (
-          <div className="user-name">
-            {Utility.getUserTag('edit')}
-            {Utility.getUserDisplay(user)}
-          </div>
-        )),
-      commentors.map((user) => (
-        <div className="user-name">
-          {Utility.getUserTag('comment')}
-          {Utility.getUserDisplay(user)}
-        </div>
-      )),
-      viewers.map((user) => (
-        <div className="user-name">
-          {Utility.getUserTag('view')}
-          {Utility.getUserDisplay(user)}
-        </div>
-      ))
-    ])
-    users_group = users_group.flat(2)
-    const users = [<div className="users-group">{users_group}</div>]
-    if (users_group.length > 4) {
-      users.push(
-        <div className="workflow-created">
-          +{users_group.length - 4} {window.gettext('more')}
-        </div>
-      )
-    }
-    if (!this.readOnly)
-      users.push(
-        <div
-          className="user-name collapsed-text-show-more"
-          onClick={this.openShareMenu.bind(this)}
-        >
-          {window.gettext('Modify')}
-        </div>
-      )
-    return users
-  }
-
-  getEdit() {
+  Edit = () => {
     if (!this.readOnly) {
       return (
         <div
           className="hover-shade"
           id="edit-project-button"
           title={window.gettext('Edit Project')}
-          onClick={this.openEditMenu.bind(this)}
+          onClick={this.openEditDialog.bind(this)}
         >
           <span className="material-symbols-rounded filled">edit</span>
         </div>
@@ -425,7 +342,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  getCreate() {
+  Create = () => {
     if (!this.readOnly) {
       return (
         <div
@@ -462,51 +379,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       )
     }
     return null
-  }
-
-  Header = () => {
-    const data = this.state.data
-    console.log('discipline')
-    // @todo see error below, verify data type of data.disciplines
-    console.log(this.allDisciplines)
-    console.log(data.disciplines)
-
-    return (
-      <div className="project-header">
-        <WorkflowTitle
-          data={data}
-          no_hyperlink={true}
-          class_name="project-title"
-        />
-        <div className="project-header-info">
-          <div className="project-info-section project-members">
-            <h4>{window.gettext('Permissions')}</h4>
-            {this.getUsers()}
-          </div>
-
-          <div className="project-other">
-            <div className="project-info-section project-description">
-              <h4>{window.gettext('Description')}</h4>
-              <CollapsibleText
-                text={data.description}
-                defaultText={window.gettext('No description')}
-              />
-            </div>
-
-            <div className="project-info-section project-disciplines">
-              <h4>{window.gettext('Disciplines')}</h4>
-              {this.allDisciplines
-                .filter(
-                  // @ts-ignore
-                  (discipline) => data.disciplines.indexOf(discipline.id) >= 0 // @todo don't understand this error yet
-                )
-                .map((discipline) => discipline.title)
-                .join(', ') || window.gettext('None')}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   Content = () => {
@@ -591,10 +463,110 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   /*******************************************************
+   * MODALS
+   *******************************************************/
+
+  openEditDialog() {
+    this.setState({
+      ...this.state,
+      openEditDialog: true
+    })
+  }
+
+  openShareDialog() {
+    this.setState({
+      ...this.state,
+      openShareDialog: true
+    })
+  }
+
+  openExportDialog() {
+    this.setState({
+      ...this.state,
+      openExportDialog: true
+    })
+  }
+
+  closeModals() {
+    this.setState({
+      ...this.state,
+      openExportDialog: false,
+      openShareDialog: false,
+      openEditDialog: false
+    })
+  }
+
+  updateFunction(new_data) {
+    if (new_data.liveproject) {
+      console.log('liveproject updated')
+    } else {
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          ...new_data
+        },
+        openEditDialog: false
+      })
+    }
+  }
+
+  ShareDialog = () => {
+    return (
+      <Dialog open={this.state.openShareDialog}>
+        <DialogTitle>
+          <h2>{window.gettext('Share project')}</h2>
+        </DialogTitle>
+        <ShareMenu
+          data={this.state.data}
+          actionFunction={() => {
+            this.setState({
+              ...this.state,
+              openShareDialog: false
+            })
+            this.getUserData()
+          }}
+        />
+      </Dialog>
+    )
+  }
+
+  EditDialog = () => {
+    return (
+      <Dialog open={this.state.openEditDialog}>
+        <DialogTitle>
+          <h2>{window.gettext('Edit project')}</h2>
+        </DialogTitle>
+        <ProjectEditMenu
+          type={'project_edit_menu'}
+          data={{
+            ...this.state.data,
+            all_disciplines: this.allDisciplines,
+            user_role: this.userRole
+            // renderer: this.props.renderer
+          }}
+          actionFunction={this.updateFunction}
+        />
+      </Dialog>
+    )
+  }
+
+  ExportDialog = () => {
+    return (
+      <Dialog open={this.state.openExportDialog}>
+        <DialogTitle>
+          <h2>{window.gettext('Export project')}</h2>
+        </DialogTitle>
+        <ExportMenu data={this.state.data} actionFunction={this.closeModals} />
+      </Dialog>
+    )
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const visible_buttons = [this.getEdit(), this.getCreate(), this.getShare()]
+    const visible_buttons = [<this.Edit />, <this.Create />, <this.Share />]
 
     return (
       <div className="main-block">
@@ -604,10 +576,22 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           }
           visible_buttons={visible_buttons}
         />
+
         <div className="project-menu">
-          <this.Header />
+          <Header
+            disciplines={this.state.data.disciplines}
+            description={this.state.data.description}
+            allDisciplines={this.allDisciplines}
+            data={this.state.data} // @todo this needs to be unpacked
+            users={this.state.users}
+            openShareDialog={this.openShareDialog}
+            readOnly={this.readOnly}
+          />
           <this.Content />
         </div>
+        <this.EditDialog />
+        <this.ShareDialog />
+        <this.ExportDialog />
       </div>
     )
   }

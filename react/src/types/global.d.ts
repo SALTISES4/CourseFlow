@@ -6,6 +6,7 @@ declare global {
   interface Window {
     gettext: (str: string) => string
     fail_function: (action?: string) => void
+    getCsrfToken: () => string
   }
 
   const $: JQuery

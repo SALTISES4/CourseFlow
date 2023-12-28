@@ -284,7 +284,7 @@ export function toggleStrategy(
 }
 
 //Causes the specified object to delete itself
-export function deleteSelf(
+export function deleteSelfQuery(
   objectID,
   objectType,
   soft = false,
@@ -299,6 +299,8 @@ export function deleteSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
+      console.log('deleteSelfQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -328,7 +330,7 @@ export function deleteSelfLive(
 }
 
 //Causes the specified object to undelete itself
-export function restoreSelf(
+export function restoreSelfQuery(
   objectID,
   objectType,
   callBackFunction = () => console.log('success')
@@ -339,6 +341,8 @@ export function restoreSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
+      console.log('restoreSelfQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -628,8 +632,6 @@ export function toggleFavourite(
     window.fail_function()
   }
 }
-
-
 
 //Get the data from the workflow
 export function getWorkflowData(
@@ -980,7 +982,7 @@ export function getExport(
 }
 
 //create live project
-export function makeProjectLive(
+export function makeProjectLiveQuery(
   projectPk,
   callBackFunction = (data) => console.log('success')
 ) {
@@ -988,6 +990,8 @@ export function makeProjectLive(
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function (data) {
+      console.log('makeProjectLiveQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

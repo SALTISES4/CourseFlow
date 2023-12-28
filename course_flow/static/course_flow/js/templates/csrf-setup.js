@@ -15,3 +15,4 @@ function getCsrfToken() {
     .getElementsByName("csrfmiddlewaretoken")[0]
     .getAttribute("value");
 }
+window.getCsrfToken = getCsrfToken

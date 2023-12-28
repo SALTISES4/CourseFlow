@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
-import Component from '@cfParentComponents/Component'
+import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop.tsx'
 import {
   getColumnWorkflowByID,
   getColumnByID,
@@ -139,7 +139,7 @@ const NodeBarColumnWorkflow = connect(
  * a node of the corresponding column. The actual dropping functionality
  * is handled in the Week component, not here.
  */
-class NodeBarColumnUnconnected extends Component {
+class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -248,7 +248,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected {
  * in the sidebar, to be dragged in and dropped. The actual dropping functionality
  * is handled in the Week component, not here.
  */
-class StrategyUnconnected extends Component {
+class StrategyUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props)
     this.objectType = 'strategy'

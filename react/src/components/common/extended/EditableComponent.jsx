@@ -4,7 +4,7 @@ import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
 import { toggleStrategy, updateObjectSet } from '@XMLHTTP/PostFunctions'
 import { getLinkedWorkflowMenu } from '@XMLHTTP/postTemp'
-import Component from './Component'
+import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 
 //Quill div for inputs, as a react component
 class QuillDiv extends React.Component {
@@ -80,7 +80,7 @@ class QuillDiv extends React.Component {
 }
 
 //Extends the react component to add a few features that are used in a large number of components
-class EditableComponent extends Component {
+class EditableComponent extends ComponentWithToggleDrop {
   //Makes the item selectable
   addEditable(data, no_delete = false) {
     let read_only = this.props.renderer.read_only

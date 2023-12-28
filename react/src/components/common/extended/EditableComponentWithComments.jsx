@@ -10,7 +10,7 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { reloadCommentsAction } from '@cfReducers'
 // @components
-import Component from './Component'
+import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
@@ -20,7 +20,7 @@ import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
  *
  * @todo description
  *******************************************************/
-class CommentBox extends Component {
+class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
     super(props)
     this.input = React.createRef()

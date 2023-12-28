@@ -11,7 +11,7 @@ class ExportMenu extends React.Component {
    *******************************************************/
   getExportTypes() {
     let type = this.props.data.type
-    let exports = []
+    const exports = []
     exports.push([
       <input
         name="export_type"
@@ -147,7 +147,7 @@ class ExportMenu extends React.Component {
           <input
             type="hidden"
             name="csrfmiddlewaretoken"
-            value={root.getCsrfToken()}
+            value={window.getCsrfToken()}
           />
           <h4>{window.gettext('Export Type')}:</h4>
           {this.getExportTypes()}
