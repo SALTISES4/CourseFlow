@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { getWorkflowNodes } from '@XMLHTTP/PostFunctions'
+import { createAssignmentQuery, getWorkflowNodes } from '@XMLHTTP/PostFunctions'
 import * as Constants from '../../../constants'
 // @components
 import { AssignmentView } from '../LiveAssignmentView'
@@ -25,7 +25,7 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.objectID != this.props.objectID) {
+    if (prevProps.objectID !== this.props.objectID) {
       this.setState({ data: null }, this.getData.bind(this))
     }
   }
@@ -34,9 +34,8 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
    * RENDER
    *******************************************************/
   getData() {
-    let component = this
     getWorkflowNodes(this.props.objectID, (data) => {
-      component.setState({ data: data.data_package })
+      this.setState({ data: data.data_package })
     })
   }
 
@@ -49,8 +48,8 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
    *******************************************************/
   render() {
     if (!this.state.data) return this.defaultRender()
-    let weeks = this.state.data.weeks.map((week, i) => {
-      let nodes = week.nodes.map((node) => (
+    const weeks = this.state.data.weeks.map((week, i) => {
+      const nodes = week.nodes.map((node) => (
         <AssignmentNode renderer={this.props.renderer} data={node} />
       ))
       let default_text
@@ -68,7 +67,7 @@ class AssignmentWorkflowNodesDisplay extends React.Component {
 
 class AssignmentNode extends React.Component {
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let lefticon
     let righticon
     if (data.context_classification > 0)
@@ -101,8 +100,10 @@ class AssignmentNode extends React.Component {
           }
         />
       )
-    let style = { backgroundColor: Constants.getColumnColour(this.props.data) }
-    let mouseover_actions = [this.addCreateAssignment(data)]
+    const style = {
+      backgroundColor: Constants.getColumnColour(this.props.data)
+    }
+    const mouseover_actions = [this.addCreateAssignment(data)]
 
     return (
       <div style={style} className="node">
@@ -120,18 +121,18 @@ class AssignmentNode extends React.Component {
   addCreateAssignment(data) {
     return (
       <ActionButton
-        button_icon="assignment.svg"
-        button_class="duplicate-self-button"
-        titletext={window.gettext('Create Assignment')}
+        buttonIcon="assignment.svg"
+        buttonClass="duplicate-self-button"
+        titleText={window.gettext('Create Assignment')}
         handleClick={this.createAssignment.bind(this, data)}
       />
     )
   }
 
   createAssignment(data) {
-    let props = this.props
+    const props = this.props
     props.renderer.tiny_loader.startLoad()
-    createAssignment(
+    createAssignmentQuery(
       data.id,
       props.renderer.project_data.id,
       (response_data) => {
@@ -156,12 +157,14 @@ class LiveProjectAssignments extends LiveProjectSection {
    *******************************************************/
   render() {
     if (!this.state.data) return this.defaultRender()
-    let assignments = this.state.data.assignments.map((assignment) => (
+
+    const assignments = this.state.data.assignments.map((assignment) => (
       <AssignmentView renderer={this.props.renderer} data={assignment} />
     ))
-    let workflow_options = this.state.data.workflows.map((workflow) => {
+
+    const workflow_options = this.state.data.workflows.map((workflow) => {
       let view_class = 'hover-shade'
-      if (workflow.id == this.state.selected_id) view_class += ' active'
+      if (workflow.id === this.state.selected_id) view_class += ' active'
       return (
         <div
           id={'button_' + workflow.id}
@@ -172,6 +175,7 @@ class LiveProjectAssignments extends LiveProjectSection {
         </div>
       )
     })
+
     let workflow_nodes
     if (this.state.selected_id) {
       workflow_nodes = (

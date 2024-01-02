@@ -4,15 +4,15 @@ import { AssignmentView } from './LiveAssignmentView'
 import * as Utility from '@cfUtility'
 import { DatePicker } from '@cfUIComponents'
 import {
-  addUsersToAssignment,
+  addUsersToAssignmentQuery,
   deleteSelfLive,
-  getAssignmentData,
-  setAssignmentCompletion,
-  setWorkflowVisibility,
-  updateLiveProjectValue
+  getAssignmentDataQuery,
+  setAssignmentCompletionQuery,
+  setWorkflowVisibilityQuery,
+  updateLiveProjectValueQuery
 } from '@XMLHTTP/PostFunctions'
 import WorkflowVisibility from '../LiveProjectView/WorkflowVisibility'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 
 /**
  *
@@ -63,7 +63,7 @@ class LiveAssignmentEdit extends React.Component {
    *******************************************************/
   componentDidMount() {
     let component = this
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {
@@ -80,13 +80,13 @@ class LiveAssignmentEdit extends React.Component {
     if (this.state.task.linked_workflow === pk)
       parameter = 'linked_' + parameter
     if (visibility === 'visible') {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, true)
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true)
       let new_state = {}
       new_state[parameter] = true
       this.props.updateAssignment(new_state)
       this.setState(new_state)
     } else {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, false)
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false)
       let new_state = {}
       new_state[parameter] = false
       this.props.updateAssignment(new_state)
@@ -120,7 +120,7 @@ class LiveAssignmentEdit extends React.Component {
   }
 
   saveChanges() {
-    updateLiveProjectValue(this.state.id, 'liveassignment', this.changed_values)
+    updateLiveProjectValueQuery(this.state.id, 'liveassignment', this.changed_values)
     this.props.updateAssignment(this.changed_values)
     this.changed_values = {}
     this.setState({ has_changed: false })
@@ -145,7 +145,7 @@ class LiveAssignmentEdit extends React.Component {
       )[0]
     )
     this.setState({ user_data: user_data })
-    addUsersToAssignment(this.state.id, [selected], true)
+    addUsersToAssignmentQuery(this.state.id, [selected], true)
   }
 
   removeUser(evt) {
@@ -163,7 +163,7 @@ class LiveAssignmentEdit extends React.Component {
       )[0]
     )
     this.setState({ user_data: user_data })
-    addUsersToAssignment(this.state.id, [selected], false)
+    addUsersToAssignmentQuery(this.state.id, [selected], false)
   }
 
   /*******************************************************
@@ -206,7 +206,7 @@ class LiveAssignmentEdit extends React.Component {
         <h4>{window.gettext('Linked Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
-          workflow_data={this.state.task.linked_workflow_data}
+          workflowData={this.state.task.linked_workflow_data}
           visibility={visibility}
           visibilityFunction={this.switchVisibility.bind(this)}
         />
@@ -229,7 +229,7 @@ class LiveAssignmentEdit extends React.Component {
         <h4>{window.gettext('Task Workflow')}:</h4>,
         warning,
         <WorkflowVisibility
-          workflow_data={this.state.user_data.parent_workflow}
+          workflowData={this.state.user_data.parent_workflow}
           visibility={parent_visibility}
           visibilityFunction={this.switchVisibility.bind(this)}
         />
@@ -363,7 +363,7 @@ class LiveAssignmentReport extends React.Component {
       (userassignment) => userassignment.id == id
     )
     userassignments[index] = { ...userassignments[index], completed: completed }
-    setAssignmentCompletion(id, completed)
+    setAssignmentCompletionQuery(id, completed)
     this.setState({ userassignments: userassignments })
   }
 
@@ -372,7 +372,7 @@ class LiveAssignmentReport extends React.Component {
    *******************************************************/
   componentDidMount() {
     let component = this
-    getAssignmentData(
+    getAssignmentDataQuery(
       component.props.data.id,
       component.props.view_type,
       (data) => {

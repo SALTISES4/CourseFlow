@@ -23,8 +23,7 @@
     "isolatedModules": true,
     "typeRoots": [
       "./node_modules/@types",
-      "./src/types"
-      // is this from tsconfig path or from baseurl? (note that we don't have any types yet)
+      "./src/types/"
     ],
     "jsx": "react-jsx",  // This must be set if you're using "paths"
     "baseUrl": "./src/",
@@ -69,7 +68,7 @@
         "./redux/Reducers.js"
       ],
       "@cfUtility": [
-        "./utilityFunctions.jsx"
+        "./utility/utilityFunctions.jsx"
       ],
       "@cfConstants": [
         "./constants.js"
@@ -83,7 +82,7 @@
     }
   },
   "include": [
-    "./**/*"
+    "./**/*",
   ],
   "exclude": [
     "./build/**/*",

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { setAssignmentCompletion } from '@XMLHTTP/PostFunctions'
+import { setAssignmentCompletionQuery } from '@XMLHTTP/PostFunctions'
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import WorkflowCardSimple from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardSimple'
@@ -65,7 +65,7 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
   }
 
   toggleAssignment(id, evt) {
-    setAssignmentCompletion(id, evt.target.checked)
+    setAssignmentCompletionQuery(id, evt.target.checked)
   }
 }
 
@@ -76,7 +76,7 @@ class StudentLiveProjectWorkflows extends LiveProjectSection {
   render() {
     if (!this.state.data) return this.defaultRender()
     let workflows_added = this.state.data.workflows_added.map(
-      (workflow, index) => <WorkflowCard key={index} workflow_data={workflow} />
+      (workflow, index) => <WorkflowCard key={index} workflowData={workflow} />
     )
     return (
       <div className="workflow-details">

@@ -36,10 +36,10 @@ class MenuBar extends React.Component {
     let userbar
 
     if (this.props.overflow_links) {
-      overflow_links = this.props.overflow_links()
+      overflow_links = this.props.overflow_links
     }
     if (this.props.visible_buttons) {
-      visible_buttons = this.props.visible_buttons()
+      visible_buttons = this.props.visible_buttons
     }
     if (this.props.viewbar) viewbar = this.props.viewbar()
     if (this.props.userbar) userbar = this.props.userbar()

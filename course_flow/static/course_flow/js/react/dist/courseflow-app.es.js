@@ -280,20 +280,20 @@ function requireReact_development() {
         {
           Object.freeze(emptyObject);
         }
-        function Component2(props, context, updater) {
+        function Component(props, context, updater) {
           this.props = props;
           this.context = context;
           this.refs = emptyObject;
           this.updater = updater || ReactNoopUpdateQueue;
         }
-        Component2.prototype.isReactComponent = {};
-        Component2.prototype.setState = function(partialState, callback) {
+        Component.prototype.isReactComponent = {};
+        Component.prototype.setState = function(partialState, callback) {
           if (typeof partialState !== "object" && typeof partialState !== "function" && partialState != null) {
             throw new Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
           }
           this.updater.enqueueSetState(this, partialState, callback, "setState");
         };
-        Component2.prototype.forceUpdate = function(callback) {
+        Component.prototype.forceUpdate = function(callback) {
           this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
         };
         {
@@ -302,7 +302,7 @@ function requireReact_development() {
             replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
           };
           var defineDeprecationWarning = function(methodName, info) {
-            Object.defineProperty(Component2.prototype, methodName, {
+            Object.defineProperty(Component.prototype, methodName, {
               get: function() {
                 warn("%s(...) is deprecated in plain JavaScript React classes. %s", info[0], info[1]);
                 return void 0;
@@ -317,7 +317,7 @@ function requireReact_development() {
         }
         function ComponentDummy() {
         }
-        ComponentDummy.prototype = Component2.prototype;
+        ComponentDummy.prototype = Component.prototype;
         function PureComponent(props, context, updater) {
           this.props = props;
           this.context = context;
@@ -326,7 +326,7 @@ function requireReact_development() {
         }
         var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
         pureComponentPrototype.constructor = PureComponent;
-        assign2(pureComponentPrototype, Component2.prototype);
+        assign2(pureComponentPrototype, Component.prototype);
         pureComponentPrototype.isPureReactComponent = true;
         function createRef() {
           var refObject = {
@@ -552,7 +552,7 @@ function requireReact_development() {
           }
           return element;
         };
-        function createElement(type, config3, children) {
+        function createElement2(type, config3, children) {
           var propName;
           var props = {};
           var key = null;
@@ -1391,8 +1391,8 @@ function requireReact_development() {
             return describeNativeComponentFrame(fn, false);
           }
         }
-        function shouldConstruct(Component3) {
-          var prototype = Component3.prototype;
+        function shouldConstruct(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -1651,7 +1651,7 @@ function requireReact_development() {
               error("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
             }
           }
-          var element = createElement.apply(this, arguments);
+          var element = createElement2.apply(this, arguments);
           if (element == null) {
             return element;
           }
@@ -1898,7 +1898,7 @@ function requireReact_development() {
           only: onlyChild
         };
         exports.Children = Children;
-        exports.Component = Component2;
+        exports.Component = Component;
         exports.Fragment = REACT_FRAGMENT_TYPE;
         exports.Profiler = REACT_PROFILER_TYPE;
         exports.PureComponent = PureComponent;
@@ -2613,8 +2613,8 @@ function requireReactJsxRuntime_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -4588,29 +4588,29 @@ function getFunctionName(fn) {
   const name2 = match2 && match2[1];
   return name2 || "";
 }
-function getFunctionComponentName(Component2, fallback = "") {
-  return Component2.displayName || Component2.name || getFunctionName(Component2) || fallback;
+function getFunctionComponentName(Component, fallback = "") {
+  return Component.displayName || Component.name || getFunctionName(Component) || fallback;
 }
 function getWrappedName(outerType, innerType, wrapperName) {
   const functionName = getFunctionComponentName(innerType);
   return outerType.displayName || (functionName !== "" ? `${wrapperName}(${functionName})` : wrapperName);
 }
-function getDisplayName(Component2) {
-  if (Component2 == null) {
+function getDisplayName(Component) {
+  if (Component == null) {
     return void 0;
   }
-  if (typeof Component2 === "string") {
-    return Component2;
+  if (typeof Component === "string") {
+    return Component;
   }
-  if (typeof Component2 === "function") {
-    return getFunctionComponentName(Component2, "Component");
+  if (typeof Component === "function") {
+    return getFunctionComponentName(Component, "Component");
   }
-  if (typeof Component2 === "object") {
-    switch (Component2.$$typeof) {
+  if (typeof Component === "object") {
+    switch (Component.$$typeof) {
       case reactIsExports$1.ForwardRef:
-        return getWrappedName(Component2, Component2.render, "ForwardRef");
+        return getWrappedName(Component, Component.render, "ForwardRef");
       case reactIsExports$1.Memo:
-        return getWrappedName(Component2, Component2.type, "memo");
+        return getWrappedName(Component, Component.type, "memo");
       default:
         return void 0;
     }
@@ -4651,7 +4651,7 @@ function createChainedFunction(...funcs) {
   }, () => {
   });
 }
-function debounce$1(func, wait = 166) {
+function debounce$2(func, wait = 166) {
   let timeout2;
   function debounced(...args) {
     const later = () => {
@@ -4694,11 +4694,11 @@ function ownerWindow(node2) {
   const doc = ownerDocument(node2);
   return doc.defaultView || window;
 }
-function requirePropFactory(componentNameInError, Component2) {
+function requirePropFactory(componentNameInError, Component) {
   if (process.env.NODE_ENV === "production") {
     return () => null;
   }
-  const prevPropTypes = Component2 ? _extends$2({}, Component2.propTypes) : null;
+  const prevPropTypes = Component ? _extends$2({}, Component.propTypes) : null;
   const requireProp = (requiredProp) => (props, propName, componentName, location2, propFullName, ...args) => {
     const propFullNameSafe = propFullName || propName;
     const defaultTypeChecker = prevPropTypes == null ? void 0 : prevPropTypes[propFullNameSafe];
@@ -8802,7 +8802,7 @@ function createStyled2(input = {}) {
         transformedStyleArg = [...styleArg, ...placeholders];
         transformedStyleArg.raw = [...styleArg.raw, ...placeholders];
       }
-      const Component2 = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
+      const Component = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
       if (process.env.NODE_ENV !== "production") {
         let displayName;
         if (componentName) {
@@ -8811,12 +8811,12 @@ function createStyled2(input = {}) {
         if (displayName === void 0) {
           displayName = `Styled(${getDisplayName(tag2)})`;
         }
-        Component2.displayName = displayName;
+        Component.displayName = displayName;
       }
       if (tag2.muiName) {
-        Component2.muiName = tag2.muiName;
+        Component.muiName = tag2.muiName;
       }
-      return Component2;
+      return Component;
     };
     if (defaultStyledResolver.withConfig) {
       muiStyledResolver.withConfig = defaultStyledResolver.withConfig;
@@ -9810,7 +9810,7 @@ const easing = {
   // The sharp curve is used by objects that may return to the screen at any time.
   sharp: "cubic-bezier(0.4, 0, 0.6, 1)"
 };
-const duration = {
+const duration$1 = {
   shortest: 150,
   shorter: 200,
   short: 250,
@@ -9835,7 +9835,7 @@ function getAutoHeightDuration(height2) {
 }
 function createTransitions(inputTransitions) {
   const mergedEasing = _extends$2({}, easing, inputTransitions.easing);
-  const mergedDuration = _extends$2({}, duration, inputTransitions.duration);
+  const mergedDuration = _extends$2({}, duration$1, inputTransitions.duration);
   const create2 = (props = ["all"], options = {}) => {
     const {
       duration: durationOption = mergedDuration.standard,
@@ -11904,8 +11904,8 @@ function requireReactDom_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -13891,7 +13891,7 @@ function requireReactDom_development() {
       function isReplayingEvent(event2) {
         return event2 === currentReplayingEvent;
       }
-      function getEventTarget(nativeEvent) {
+      function getEventTarget2(nativeEvent) {
         var target = nativeEvent.target || nativeEvent.srcElement || window;
         if (target.correspondingUseElement) {
           target = target.correspondingUseElement;
@@ -15897,7 +15897,7 @@ function requireReactDom_development() {
       var return_targetInst = null;
       function findInstanceBlockingEvent(domEventName, eventSystemFlags, targetContainer, nativeEvent) {
         return_targetInst = null;
-        var nativeEventTarget = getEventTarget(nativeEvent);
+        var nativeEventTarget = getEventTarget2(nativeEvent);
         var targetInst = getClosestInstanceFromNode(nativeEventTarget);
         if (targetInst !== null) {
           var nearestMounted = getNearestMountedFiber(targetInst);
@@ -16693,7 +16693,7 @@ function requireReactDom_development() {
       }
       function manualDispatchChangeEvent(nativeEvent) {
         var dispatchQueue = [];
-        createAndAccumulateChangeEvent(dispatchQueue, activeElementInst, nativeEvent, getEventTarget(nativeEvent));
+        createAndAccumulateChangeEvent(dispatchQueue, activeElementInst, nativeEvent, getEventTarget2(nativeEvent));
         batchedUpdates(runEventInBatch, dispatchQueue);
       }
       function runEventInBatch(dispatchQueue) {
@@ -17448,7 +17448,7 @@ function requireReactDom_development() {
         rethrowCaughtError();
       }
       function dispatchEventsForPlugins(domEventName, eventSystemFlags, nativeEvent, targetInst, targetContainer) {
-        var nativeEventTarget = getEventTarget(nativeEvent);
+        var nativeEventTarget = getEventTarget2(nativeEvent);
         var dispatchQueue = [];
         extractEvents$5(dispatchQueue, domEventName, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags);
         processDispatchQueue(dispatchQueue, eventSystemFlags);
@@ -17883,7 +17883,7 @@ function requireReactDom_development() {
           }
         }
       }
-      function createElement(type, props, rootContainerElement, parentNamespace) {
+      function createElement2(type, props, rootContainerElement, parentNamespace) {
         var isCustomComponentTag;
         var ownerDocument2 = getOwnerDocumentFromRootContainer(rootContainerElement);
         var domElement;
@@ -18744,7 +18744,7 @@ function requireReactDom_development() {
           }
           parentNamespace = hostContextDev.namespace;
         }
-        var domElement = createElement(type, props, rootContainerInstance, parentNamespace);
+        var domElement = createElement2(type, props, rootContainerInstance, parentNamespace);
         precacheFiberNode(internalInstanceHandle, domElement);
         updateFiberProps(domElement, props);
         return domElement;
@@ -19348,9 +19348,9 @@ function requireReactDom_development() {
       var contextStackCursor = createCursor(emptyContextObject);
       var didPerformWorkStackCursor = createCursor(false);
       var previousContext = emptyContextObject;
-      function getUnmaskedContext(workInProgress2, Component2, didPushOwnContextIfProvider) {
+      function getUnmaskedContext(workInProgress2, Component, didPushOwnContextIfProvider) {
         {
-          if (didPushOwnContextIfProvider && isContextProvider(Component2)) {
+          if (didPushOwnContextIfProvider && isContextProvider(Component)) {
             return previousContext;
           }
           return contextStackCursor.current;
@@ -19487,8 +19487,8 @@ function requireReactDom_development() {
               case HostRoot:
                 return node2.stateNode.context;
               case ClassComponent: {
-                var Component2 = node2.type;
-                if (isContextProvider(Component2)) {
+                var Component = node2.type;
+                if (isContextProvider(Component)) {
                   return node2.stateNode.__reactInternalMemoizedMergedChildContext;
                 }
                 break;
@@ -20250,10 +20250,10 @@ function requireReactDom_development() {
           pendingLegacyContextWarning = /* @__PURE__ */ new Map();
         };
       }
-      function resolveDefaultProps(Component2, baseProps) {
-        if (Component2 && Component2.defaultProps) {
+      function resolveDefaultProps(Component, baseProps) {
+        if (Component && Component.defaultProps) {
           var props = assign2({}, baseProps);
-          var defaultProps2 = Component2.defaultProps;
+          var defaultProps2 = Component.defaultProps;
           for (var propName in defaultProps2) {
             if (props[propName] === void 0) {
               props[propName] = defaultProps2[propName];
@@ -22548,7 +22548,7 @@ function requireReactDom_development() {
         }
         return true;
       }
-      function renderWithHooks(current2, workInProgress2, Component2, props, secondArg, nextRenderLanes) {
+      function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
         renderLanes = nextRenderLanes;
         currentlyRenderingFiber$1 = workInProgress2;
         {
@@ -22568,7 +22568,7 @@ function requireReactDom_development() {
             ReactCurrentDispatcher$1.current = HooksDispatcherOnMountInDEV;
           }
         }
-        var children = Component2(props, secondArg);
+        var children = Component(props, secondArg);
         if (didScheduleRenderPhaseUpdateDuringThisPass) {
           var numberOfReRenders = 0;
           do {
@@ -22588,7 +22588,7 @@ function requireReactDom_development() {
               hookTypesUpdateIndexDev = -1;
             }
             ReactCurrentDispatcher$1.current = HooksDispatcherOnRerenderInDEV;
-            children = Component2(props, secondArg);
+            children = Component(props, secondArg);
           } while (didScheduleRenderPhaseUpdateDuringThisPass);
         }
         ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -24696,22 +24696,22 @@ function requireReactDom_development() {
         workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
         workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
       }
-      function updateForwardRef(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
-        var render2 = Component2.render;
+        var render2 = Component.render;
         var ref = workInProgress2.ref;
         var nextChildren;
         var hasId;
@@ -24749,11 +24749,11 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         if (current2 === null) {
-          var type = Component2.type;
-          if (isSimpleFunctionComponent(type) && Component2.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
-          Component2.defaultProps === void 0) {
+          var type = Component.type;
+          if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
+          Component.defaultProps === void 0) {
             var resolvedType = type;
             {
               resolvedType = resolveFunctionForHotReloading(type);
@@ -24777,14 +24777,14 @@ function requireReactDom_development() {
               );
             }
           }
-          var child = createFiberFromTypeAndProps(Component2.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
+          var child = createFiberFromTypeAndProps(Component.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
           child.ref = workInProgress2.ref;
           child.return = workInProgress2;
           workInProgress2.child = child;
           return child;
         }
         {
-          var _type = Component2.type;
+          var _type = Component.type;
           var _innerPropTypes = _type.propTypes;
           if (_innerPropTypes) {
             checkPropTypes(
@@ -24800,7 +24800,7 @@ function requireReactDom_development() {
         var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
         if (!hasScheduledUpdateOrContext) {
           var prevProps = currentChild.memoizedProps;
-          var compare = Component2.compare;
+          var compare = Component.compare;
           compare = compare !== null ? compare : shallowEqual2;
           if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
             return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
@@ -24813,7 +24813,7 @@ function requireReactDom_development() {
         workInProgress2.child = newChild;
         return newChild;
       }
-      function updateSimpleMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
             var outerMemoType = workInProgress2.elementType;
@@ -24853,7 +24853,7 @@ function requireReactDom_development() {
             }
           }
         }
-        return updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2);
+        return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
       }
       function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
         var nextProps = workInProgress2.pendingProps;
@@ -24943,24 +24943,24 @@ function requireReactDom_development() {
           }
         }
       }
-      function updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, true);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, true);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         var nextChildren;
@@ -24972,12 +24972,12 @@ function requireReactDom_development() {
         {
           ReactCurrentOwner$1.current = workInProgress2;
           setIsRendering(true);
-          nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+          nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           if (workInProgress2.mode & StrictLegacyMode) {
             setIsStrictModeForDevtools(true);
             try {
-              nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+              nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
               hasId = checkDidRenderIdHook();
             } finally {
               setIsStrictModeForDevtools(false);
@@ -24999,7 +24999,7 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateClassComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           switch (shouldError(workInProgress2)) {
             case false: {
@@ -25022,20 +25022,20 @@ function requireReactDom_development() {
             }
           }
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
@@ -25046,15 +25046,15 @@ function requireReactDom_development() {
         var shouldUpdate;
         if (instance === null) {
           resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
-          constructClassInstance(workInProgress2, Component2, nextProps);
-          mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          constructClassInstance(workInProgress2, Component, nextProps);
+          mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
           shouldUpdate = true;
         } else if (current2 === null) {
-          shouldUpdate = resumeMountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
         } else {
-          shouldUpdate = updateClassInstance(current2, workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
         }
-        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2);
+        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
         {
           var inst = workInProgress2.stateNode;
           if (shouldUpdate && inst.props !== nextProps) {
@@ -25066,19 +25066,19 @@ function requireReactDom_development() {
         }
         return nextUnitOfWork;
       }
-      function finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2) {
+      function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
         markRef(current2, workInProgress2);
         var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
         if (!shouldUpdate && !didCaptureError) {
           if (hasContext) {
-            invalidateContextProvider(workInProgress2, Component2, false);
+            invalidateContextProvider(workInProgress2, Component, false);
           }
           return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
         }
         var instance = workInProgress2.stateNode;
         ReactCurrentOwner$1.current = workInProgress2;
         var nextChildren;
-        if (didCaptureError && typeof Component2.getDerivedStateFromError !== "function") {
+        if (didCaptureError && typeof Component.getDerivedStateFromError !== "function") {
           nextChildren = null;
           {
             stopProfilerTimerIfRunning();
@@ -25112,7 +25112,7 @@ function requireReactDom_development() {
         }
         workInProgress2.memoizedState = instance.state;
         if (hasContext) {
-          invalidateContextProvider(workInProgress2, Component2, true);
+          invalidateContextProvider(workInProgress2, Component, true);
         }
         return workInProgress2.child;
       }
@@ -25212,45 +25212,45 @@ function requireReactDom_development() {
         var lazyComponent = elementType;
         var payload = lazyComponent._payload;
         var init = lazyComponent._init;
-        var Component2 = init(payload);
-        workInProgress2.type = Component2;
-        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component2);
-        var resolvedProps = resolveDefaultProps(Component2, props);
+        var Component = init(payload);
+        workInProgress2.type = Component;
+        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component);
+        var resolvedProps = resolveDefaultProps(Component, props);
         var child;
         switch (resolvedTag) {
           case FunctionComponent: {
             {
-              validateFunctionComponentInDev(workInProgress2, Component2);
-              workInProgress2.type = Component2 = resolveFunctionForHotReloading(Component2);
+              validateFunctionComponentInDev(workInProgress2, Component);
+              workInProgress2.type = Component = resolveFunctionForHotReloading(Component);
             }
-            child = updateFunctionComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateFunctionComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ClassComponent: {
             {
-              workInProgress2.type = Component2 = resolveClassForHotReloading(Component2);
+              workInProgress2.type = Component = resolveClassForHotReloading(Component);
             }
-            child = updateClassComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateClassComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ForwardRef: {
             {
-              workInProgress2.type = Component2 = resolveForwardRefForHotReloading(Component2);
+              workInProgress2.type = Component = resolveForwardRefForHotReloading(Component);
             }
-            child = updateForwardRef(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateForwardRef(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case MemoComponent: {
             {
               if (workInProgress2.type !== workInProgress2.elementType) {
-                var outerPropTypes = Component2.propTypes;
+                var outerPropTypes = Component.propTypes;
                 if (outerPropTypes) {
                   checkPropTypes(
                     outerPropTypes,
                     resolvedProps,
                     // Resolved for outer only
                     "prop",
-                    getComponentNameFromType(Component2)
+                    getComponentNameFromType(Component)
                   );
                 }
               }
@@ -25258,8 +25258,8 @@ function requireReactDom_development() {
             child = updateMemoComponent(
               null,
               workInProgress2,
-              Component2,
-              resolveDefaultProps(Component2.type, resolvedProps),
+              Component,
+              resolveDefaultProps(Component.type, resolvedProps),
               // The inner type can have defaults too
               renderLanes2
             );
@@ -25268,33 +25268,33 @@ function requireReactDom_development() {
         }
         var hint = "";
         {
-          if (Component2 !== null && typeof Component2 === "object" && Component2.$$typeof === REACT_LAZY_TYPE) {
+          if (Component !== null && typeof Component === "object" && Component.$$typeof === REACT_LAZY_TYPE) {
             hint = " Did you wrap a component in React.lazy() more than once?";
           }
         }
-        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component2 + ". " + ("Lazy element type must resolve to a class or function." + hint));
+        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component + ". " + ("Lazy element type must resolve to a class or function." + hint));
       }
-      function mountIncompleteClassComponent(_current, workInProgress2, Component2, nextProps, renderLanes2) {
+      function mountIncompleteClassComponent(_current, workInProgress2, Component, nextProps, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         workInProgress2.tag = ClassComponent;
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
           hasContext = false;
         }
         prepareToReadContext(workInProgress2, renderLanes2);
-        constructClassInstance(workInProgress2, Component2, nextProps);
-        mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
-        return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+        constructClassInstance(workInProgress2, Component, nextProps);
+        mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
+        return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
       }
-      function mountIndeterminateComponent(_current, workInProgress2, Component2, renderLanes2) {
+      function mountIndeterminateComponent(_current, workInProgress2, Component, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         var props = workInProgress2.pendingProps;
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, false);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, false);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         prepareToReadContext(workInProgress2, renderLanes2);
@@ -25304,8 +25304,8 @@ function requireReactDom_development() {
           markComponentRenderStarted(workInProgress2);
         }
         {
-          if (Component2.prototype && typeof Component2.prototype.render === "function") {
-            var componentName = getComponentNameFromType(Component2) || "Unknown";
+          if (Component.prototype && typeof Component.prototype.render === "function") {
+            var componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutBadClass[componentName]) {
               error("The <%s /> component appears to have a render method, but doesn't extend React.Component. This is likely to cause errors. Change %s to extend React.Component instead.", componentName, componentName);
               didWarnAboutBadClass[componentName] = true;
@@ -25316,7 +25316,7 @@ function requireReactDom_development() {
           }
           setIsRendering(true);
           ReactCurrentOwner$1.current = workInProgress2;
-          value = renderWithHooks(null, workInProgress2, Component2, props, context, renderLanes2);
+          value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           setIsRendering(false);
         }
@@ -25326,7 +25326,7 @@ function requireReactDom_development() {
         workInProgress2.flags |= PerformedWork;
         {
           if (typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0) {
-            var _componentName = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName, _componentName, _componentName);
               didWarnAboutModulePatternComponent[_componentName] = true;
@@ -25339,7 +25339,7 @@ function requireReactDom_development() {
           typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0
         ) {
           {
-            var _componentName2 = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName2 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName2]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName2, _componentName2, _componentName2);
               didWarnAboutModulePatternComponent[_componentName2] = true;
@@ -25349,7 +25349,7 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = null;
           workInProgress2.updateQueue = null;
           var hasContext = false;
-          if (isContextProvider(Component2)) {
+          if (isContextProvider(Component)) {
             hasContext = true;
             pushContextProvider(workInProgress2);
           } else {
@@ -25358,15 +25358,15 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = value.state !== null && value.state !== void 0 ? value.state : null;
           initializeUpdateQueue(workInProgress2);
           adoptClassInstance(workInProgress2, value);
-          mountClassInstance(workInProgress2, Component2, props, renderLanes2);
-          return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+          mountClassInstance(workInProgress2, Component, props, renderLanes2);
+          return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
         } else {
           workInProgress2.tag = FunctionComponent;
           {
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                value = renderWithHooks(null, workInProgress2, Component2, props, context, renderLanes2);
+                value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
                 hasId = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -25378,16 +25378,16 @@ function requireReactDom_development() {
           }
           reconcileChildren(null, workInProgress2, value, renderLanes2);
           {
-            validateFunctionComponentInDev(workInProgress2, Component2);
+            validateFunctionComponentInDev(workInProgress2, Component);
           }
           return workInProgress2.child;
         }
       }
-      function validateFunctionComponentInDev(workInProgress2, Component2) {
+      function validateFunctionComponentInDev(workInProgress2, Component) {
         {
-          if (Component2) {
-            if (Component2.childContextTypes) {
-              error("%s(...): childContextTypes cannot be defined on a function component.", Component2.displayName || Component2.name || "Component");
+          if (Component) {
+            if (Component.childContextTypes) {
+              error("%s(...): childContextTypes cannot be defined on a function component.", Component.displayName || Component.name || "Component");
             }
           }
           if (workInProgress2.ref !== null) {
@@ -25406,15 +25406,15 @@ function requireReactDom_development() {
               error("Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s", info);
             }
           }
-          if (typeof Component2.getDerivedStateFromProps === "function") {
-            var _componentName3 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.getDerivedStateFromProps === "function") {
+            var _componentName3 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3]) {
               error("%s: Function components do not support getDerivedStateFromProps.", _componentName3);
               didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3] = true;
             }
           }
-          if (typeof Component2.contextType === "object" && Component2.contextType !== null) {
-            var _componentName4 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.contextType === "object" && Component.contextType !== null) {
+            var _componentName4 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutContextTypeOnFunctionComponent[_componentName4]) {
               error("%s: Function components do not support contextType.", _componentName4);
               didWarnAboutContextTypeOnFunctionComponent[_componentName4] = true;
@@ -26176,8 +26176,8 @@ function requireReactDom_development() {
             pushHostContext(workInProgress2);
             break;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               pushContextProvider(workInProgress2);
             }
             break;
@@ -26304,10 +26304,10 @@ function requireReactDom_development() {
             return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
           }
           case FunctionComponent: {
-            var Component2 = workInProgress2.type;
+            var Component = workInProgress2.type;
             var unresolvedProps = workInProgress2.pendingProps;
-            var resolvedProps = workInProgress2.elementType === Component2 ? unresolvedProps : resolveDefaultProps(Component2, unresolvedProps);
-            return updateFunctionComponent(current2, workInProgress2, Component2, resolvedProps, renderLanes2);
+            var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
+            return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
           }
           case ClassComponent: {
             var _Component = workInProgress2.type;
@@ -26612,8 +26612,8 @@ function requireReactDom_development() {
             bubbleProperties(workInProgress2);
             return null;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             bubbleProperties(workInProgress2);
@@ -26931,8 +26931,8 @@ function requireReactDom_development() {
         popTreeContext(workInProgress2);
         switch (workInProgress2.tag) {
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             var flags = workInProgress2.flags;
@@ -30610,18 +30610,18 @@ function requireReactDom_development() {
       var createFiber = function(tag2, pendingProps, key, mode) {
         return new FiberNode(tag2, pendingProps, key, mode);
       };
-      function shouldConstruct$1(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct$1(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function isSimpleFunctionComponent(type) {
         return typeof type === "function" && !shouldConstruct$1(type) && type.defaultProps === void 0;
       }
-      function resolveLazyComponentTag(Component2) {
-        if (typeof Component2 === "function") {
-          return shouldConstruct$1(Component2) ? ClassComponent : FunctionComponent;
-        } else if (Component2 !== void 0 && Component2 !== null) {
-          var $$typeof = Component2.$$typeof;
+      function resolveLazyComponentTag(Component) {
+        if (typeof Component === "function") {
+          return shouldConstruct$1(Component) ? ClassComponent : FunctionComponent;
+        } else if (Component !== void 0 && Component !== null) {
+          var $$typeof = Component.$$typeof;
           if ($$typeof === REACT_FORWARD_REF_TYPE) {
             return ForwardRef;
           }
@@ -31058,9 +31058,9 @@ function requireReactDom_development() {
         var fiber = get(parentComponent);
         var parentContext = findCurrentUnmaskedContext(fiber);
         if (fiber.tag === ClassComponent) {
-          var Component2 = fiber.type;
-          if (isContextProvider(Component2)) {
-            return processChildContext(fiber, Component2, parentContext);
+          var Component = fiber.type;
+          if (isContextProvider(Component)) {
+            return processChildContext(fiber, Component, parentContext);
           }
         }
         return parentContext;
@@ -40181,7 +40181,7 @@ const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function Textar
         handleResize();
       });
     };
-    const debounceHandleResize = debounce$1(handleResize);
+    const debounceHandleResize = debounce$2(handleResize);
     const input = inputRef.current;
     const containerWindow = ownerWindow(input);
     containerWindow.addEventListener("resize", debounceHandleResize);
@@ -40756,10 +40756,10 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     variant,
     variantMapping
   });
-  const Component2 = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+  const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
   const classes = useUtilityClasses$N(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$2({
-    as: Component2,
+    as: Component,
     ref,
     ownerState,
     className: clsx(classes.root, className)
@@ -41808,20 +41808,20 @@ var TransitionGroup = /* @__PURE__ */ function(_React$Component) {
     }
   };
   _proto.render = function render() {
-    var _this$props = this.props, Component2 = _this$props.component, childFactory2 = _this$props.childFactory, props = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
+    var _this$props = this.props, Component = _this$props.component, childFactory2 = _this$props.childFactory, props = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
     var contextValue = this.state.contextValue;
     var children = values(this.state.children).map(childFactory2);
     delete props.appear;
     delete props.enter;
     delete props.exit;
-    if (Component2 === null) {
+    if (Component === null) {
       return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
         value: contextValue
       }, children);
     }
     return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
       value: contextValue
-    }, /* @__PURE__ */ React.createElement(Component2, props, children));
+    }, /* @__PURE__ */ React.createElement(Component, props, children));
   };
   return TransitionGroup2;
 }(React.Component);
@@ -43179,17 +43179,17 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     className: clsx(classes.root, rootProps.className, className),
     disabled
   }, other);
-  let Component2 = componentProp || "li";
+  let Component = componentProp || "li";
   if (button) {
     componentProps.component = componentProp || "div";
     componentProps.focusVisibleClassName = clsx(listItemClasses$1.focusVisible, focusVisibleClassName);
-    Component2 = ButtonBase$1;
+    Component = ButtonBase$1;
   }
   if (hasSecondaryAction) {
-    Component2 = !componentProps.component && !componentProp ? "div" : Component2;
+    Component = !componentProps.component && !componentProp ? "div" : Component;
     if (ContainerComponent === "li") {
-      if (Component2 === "li") {
-        Component2 = "div";
+      if (Component === "li") {
+        Component = "div";
       } else if (componentProps.component === "li") {
         componentProps.component = "div";
       }
@@ -43203,7 +43203,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
         ownerState
       }, ContainerProps, {
         children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root, _extends$2({}, rootProps, !isHostComponent(Root) && {
-          as: Component2,
+          as: Component,
           ownerState: _extends$2({}, ownerState, rootProps.ownerState)
         }, componentProps, {
           children
@@ -43214,7 +43214,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: childContext,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root, _extends$2({}, rootProps, {
-      as: Component2,
+      as: Component,
       ref: handleRef
     }, !isHostComponent(Root) && {
       ownerState: _extends$2({}, ownerState, rootProps.ownerState)
@@ -43914,7 +43914,7 @@ process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
 SvgIcon.muiName = "SvgIcon";
 const SvgIcon$1 = SvgIcon;
 function createSvgIcon$1(path, displayName) {
-  function Component2(props, ref) {
+  function Component(props, ref) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(SvgIcon$1, _extends$2({
       "data-testid": `${displayName}Icon`,
       ref
@@ -43923,10 +43923,10 @@ function createSvgIcon$1(path, displayName) {
     }));
   }
   if (process.env.NODE_ENV !== "production") {
-    Component2.displayName = `${displayName}Icon`;
+    Component.displayName = `${displayName}Icon`;
   }
-  Component2.muiName = SvgIcon$1.muiName;
-  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component2));
+  Component.muiName = SvgIcon$1.muiName;
+  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component));
 }
 const FirstPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
@@ -46486,7 +46486,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
     if (!open) {
       return void 0;
     }
-    const handleResize = debounce$1(() => {
+    const handleResize = debounce$2(() => {
       setPositioningStyles();
     });
     const containerWindow = ownerWindow(anchorEl);
@@ -47595,7 +47595,7 @@ const utils = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   capitalize,
   createChainedFunction,
   createSvgIcon: createSvgIcon$1,
-  debounce: debounce$1,
+  debounce: debounce$2,
   deprecatedPropType,
   isMuiElement,
   ownerDocument,
@@ -48710,6 +48710,15 @@ function Enum(baseEnum) {
     }
   });
 }
+const debounce$1 = (func, timeout2 = 300) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(void 0, args);
+    }, timeout2);
+  };
+};
 function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {
     if (props.outcome[i].id === outcome_id) {
@@ -50874,9 +50883,10 @@ combineReducers({
 const DATA_ACTIONS = Enum({
   POSTED: "posted"
 });
-Enum({
+const OBJECT_TYPE = Enum({
   OUTCOME: "outcome",
-  PROJECT: "project"
+  PROJECT: "project",
+  STRATEGY: "strategy"
 });
 function API_POST(url = "", data = {}) {
   if (!url) {
@@ -50915,7 +50925,7 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => consol
 }
 function updateValue(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
   var t = 1e3;
-  let previousCall = document.lastUpdateCall;
+  const previousCall = document.lastUpdateCall;
   document.lastUpdateCall = {
     time: Date.now(),
     id: objectID,
@@ -50928,7 +50938,7 @@ function updateValue(objectID, objectType, json, changeField2 = false, callBackF
   if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
     document.lastUpdateCallFunction();
   }
-  let post_object = {
+  const post_object = {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
     data: JSON.stringify(json)
@@ -50971,7 +50981,7 @@ function updateValueInstant(objectID, objectType, json, callBackFunction = () =>
 }
 function toggleDrop(objectID, objectType, is_dropped, dispatch, depth = 1) {
   try {
-    let default_drop = get_default_drop_state(
+    const default_drop = get_default_drop_state(
       objectID,
       objectType,
       depth
@@ -51069,7 +51079,7 @@ function toggleStrategy(weekPk, is_strategy, callBackFunction = () => console.lo
     window.fail_function();
   }
 }
-function deleteSelf(objectID, objectType, soft = false, callBackFunction = () => console.log("success")) {
+function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = () => console.log("success")) {
   let path;
   if (soft)
     path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
@@ -51080,6 +51090,8 @@ function deleteSelf(objectID, objectType, soft = false, callBackFunction = () =>
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data) {
+      console.log("deleteSelfQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51090,7 +51102,7 @@ function deleteSelf(objectID, objectType, soft = false, callBackFunction = () =>
   }
 }
 function deleteSelfLive(objectID, objectType, callBackFunction = () => console.log("success")) {
-  let path = COURSEFLOW_APP.config.post_paths.delete_self_live;
+  const path = COURSEFLOW_APP.config.post_paths.delete_self_live;
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
@@ -51105,12 +51117,14 @@ function deleteSelfLive(objectID, objectType, callBackFunction = () => console.l
     window.fail_function();
   }
 }
-function restoreSelf(objectID, objectType, callBackFunction = () => console.log("success")) {
+function restoreSelfQuery(objectID, objectType, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data) {
+      console.log("restoreSelfQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51341,51 +51355,6 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = () 
     window.fail_function();
   }
 }
-function duplicateBaseItem(itemPk, objectType, projectID, callBackFunction = () => console.log("success")) {
-  try {
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: JSON.stringify(itemPk)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else if (!projectID && projectID !== 0) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
-        workflowPk: JSON.stringify(itemPk)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } else {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
-        workflowPk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function getWorkflowData(workflowPk, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
@@ -51507,23 +51476,6 @@ function setLiveProjectRole(user_id2, liveprojectPk, permission_type, callBackFu
         callBackFunction(data);
       else
         window.fail_function(data.error);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getUsersForObject(objectID, objectType, callBackFunction = () => console.log("success")) {
-  if (["program", "course", "activity"].indexOf(objectType) >= 0)
-    objectType = "workflow";
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
     });
   } catch (err) {
     window.fail_function();
@@ -51653,11 +51605,13 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => consol
     window.fail_function();
   }
 }
-function makeProjectLive(projectPk, callBackFunction = () => console.log("success")) {
+function makeProjectLiveQuery(projectPk, callBackFunction = (data) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function(data) {
+      console.log("makeProjectLiveQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51667,13 +51621,15 @@ function makeProjectLive(projectPk, callBackFunction = () => console.log("succes
     window.fail_function();
   }
 }
-function setWorkflowVisibility(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
+function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
       liveprojectPk: JSON.stringify(liveprojectPk),
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
     }).done(function(data) {
+      console.log("setWorkflowVisibilityQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51683,12 +51639,14 @@ function setWorkflowVisibility(liveprojectPk, workflowPk, visible, callBackFunct
     window.fail_function();
   }
 }
-function getLiveProjectData(projectPk, data_type, callBackFunction = () => console.log("success")) {
+function getLiveProjectDataQuery(projectPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_live_project_data, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getLiveProjectDataQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51698,12 +51656,14 @@ function getLiveProjectData(projectPk, data_type, callBackFunction = () => conso
     window.fail_function();
   }
 }
-function getLiveProjectDataStudent(projectPk, data_type, callBackFunction = () => console.log("success")) {
+function getLiveProjectDataStudentQuery(projectPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_live_project_data_student, {
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getLiveProjectDataStudentQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51713,12 +51673,14 @@ function getLiveProjectDataStudent(projectPk, data_type, callBackFunction = () =
     window.fail_function();
   }
 }
-function getAssignmentData(liveassignmentPk, data_type, callBackFunction = () => console.log("success")) {
+function getAssignmentDataQuery(liveassignmentPk, data_type, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_assignment_data, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function(data) {
+      console.log("getAssignmentDataQuery data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
@@ -51742,7 +51704,22 @@ function getWorkflowNodes(workflowPk, callBackFunction = () => console.log("succ
     window.fail_function();
   }
 }
-function addUsersToAssignment(liveassignmentPk, user_list, add2, callBackFunction = () => console.log("success")) {
+function createAssignmentQuery$1(nodePk, liveprojectPk, callBackFunction = () => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
+      nodePk: JSON.stringify(nodePk),
+      liveprojectPk: JSON.stringify(liveprojectPk)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function addUsersToAssignmentQuery(liveassignmentPk, user_list, add2, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.add_users_to_assignment, {
       liveassignmentPk: JSON.stringify(liveassignmentPk),
@@ -51758,7 +51735,7 @@ function addUsersToAssignment(liveassignmentPk, user_list, add2, callBackFunctio
     window.fail_function();
   }
 }
-function updateLiveProjectValue(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+function updateLiveProjectValueQuery(objectID, objectType, json, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.update_liveproject_value, {
       objectID: JSON.stringify(objectID),
@@ -51774,7 +51751,7 @@ function updateLiveProjectValue(objectID, objectType, json, callBackFunction = (
     window.fail_function();
   }
 }
-function setAssignmentCompletion(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
+function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
       userassignmentPk: JSON.stringify(userassignmentPk),
@@ -51803,51 +51780,10 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
     window.fail_function();
   }
 }
-function getLibrary(callBackFunction = () => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getFavourites(callBackFunction = () => console.log("success")) {
+function getFavouritesQuery(callBackFunction = () => console.log("success")) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
       callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getHome(callBackFunction = () => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowsForProject(projectPk, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjects(filter, data, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(data2) {
-      callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
@@ -53363,7 +53299,7 @@ const ErrorOutlineIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("
 const InfoOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20, 12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10, 10 0 0,0 12,2M11,17H13V11H11V17Z"
 }), "InfoOutlined");
-const CloseIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ClearIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
 const _excluded$q = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
@@ -53503,7 +53439,7 @@ const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, r
   });
   const classes = useUtilityClasses$m(ownerState);
   const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
-  const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : CloseIcon;
+  const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
   const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
   const closeIconProps = (_slotProps$closeIcon = slotProps.closeIcon) != null ? _slotProps$closeIcon : componentsProps.closeIcon;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(AlertRoot, _extends$2({
@@ -59688,97 +59624,6 @@ var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)(
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
 default_1 = AddCircle.default = _default;
-class SelectionManager {
-  constructor(read_only) {
-    this.currentSelection;
-    this.mouse_isclick = false;
-    this.read_only = read_only;
-    var selector = this;
-    $(document).on("mousedown", () => {
-      selector.mouse_isclick = true;
-      setTimeout(() => {
-        selector.mouse_isclick = false;
-      }, 500);
-    });
-    $(document).on("mousemove", () => {
-      selector.mouse_isclick = false;
-    });
-    $(document).on("mouseup", (evt, newSelection) => {
-      if (selector.mouse_isclick) {
-        selector.changeSelection(evt, null);
-      }
-    });
-    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-  }
-  changeSelection(evt, newSelection) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
-      return;
-    }
-    if (this.currentSelection) {
-      this.currentSelection.setState({ selected: false });
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          false
-        );
-      }
-    }
-    this.currentSelection = newSelection;
-    if (this.currentSelection) {
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          true
-        );
-      }
-      if ($("#sidebar").tabs("option", "active") !== 0) {
-        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-      }
-      $("#sidebar").tabs("enable", 0);
-      $("#sidebar").tabs("option", "active", 0);
-      this.currentSelection.setState({ selected: true });
-    } else {
-      if ($("#sidebar").tabs("option", "active") === 0) {
-        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
-      }
-      $("#sidebar").tabs("disable", 0);
-    }
-  }
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null, null);
-    }
-  }
-}
-class TinyLoader {
-  constructor(identifier2) {
-    this.identifier = identifier2;
-    this.loadings = 0;
-  }
-  startLoad() {
-    $(this.identifier).addClass("waiting");
-    this.loadings++;
-  }
-  endLoad() {
-    if (this.loadings > 0) {
-      this.loadings--;
-    }
-    if (this.loadings <= 0) {
-      $(this.identifier).removeClass("waiting");
-    }
-  }
-}
 function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
@@ -59815,8 +59660,7 @@ function getLinkedWorkflowMenu(nodeData, updateFunction, callBackFunction = () =
   );
 }
 function createNew(create_url) {
-  let tiny_loader = new TinyLoader($("body")[0]);
-  tiny_loader.startLoad();
+  COURSEFLOW_APP.tinyLoader.startLoad();
   getTargetProjectMenu(
     -1,
     (response_data) => {
@@ -59828,7 +59672,7 @@ function createNew(create_url) {
       }
     },
     () => {
-      tiny_loader.endLoad();
+      COURSEFLOW_APP.tinyLoader.endLoad();
     }
   );
 }
@@ -61969,361 +61813,223 @@ function getOutcomeTitle(data, prefix2) {
   }
   return prefix2 + " - " + text;
 }
-class Slider extends reactExports.Component {
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "switch", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          checked: this.props.checked,
-          onChange: this.props.toggleAction.bind(this)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "slider round" })
-    ] });
-  }
-}
-class DatePicker extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-  }
-  componentDidMount() {
-    $(this.input.current).flatpickr({
-      enableTime: true,
-      dateFormat: "Z",
-      altInput: true,
-      altFormat: "D M J, Y - H:i",
-      onChange: (dates, datestring) => {
-        this.props.onChange(datestring);
-      }
-    });
-  }
-  render() {
-    let disabled = false;
-    if (this.props.disabled)
-      disabled = true;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "input",
-      {
-        disabled,
-        ref: this.input,
-        id: this.props.id,
-        defaultValue: this.props.default_value
-      }
-    );
-  }
-}
-class Component extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.maindiv = reactExports.createRef();
-  }
-  toggleDrop(evt) {
-    evt.stopPropagation();
-    toggleDrop(
-      this.props.objectID,
-      object_dictionary[this.objectType],
-      !this.props.data.is_dropped,
-      this.props.dispatch,
-      this.props.data.depth
-    );
-  }
-}
-class CollapsibleText extends Component {
-  componentDidMount() {
-    this.checkSize();
-  }
-  componentDidUpdate() {
-    this.checkSize();
-  }
-  checkSize() {
-    if (this.state.is_dropped)
-      return;
-    if (this.maindiv.current.scrollHeight > this.maindiv.current.clientHeight) {
-      if (!this.state.overflow)
-        this.setState({ overflow: true });
-    } else {
-      if (this.state.overflow)
-        this.setState({ overflow: false });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let css_class = "";
-    if (this.props.css_class)
-      css_class = this.props.css_class + " ";
-    css_class += "title-text collapsible-text";
-    let drop_text = window.gettext("show more");
-    if (this.state.is_dropped) {
-      css_class += " dropped";
-      drop_text = window.gettext("show less");
-    }
-    let overflow;
-    if (this.state.overflow)
-      overflow = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: (evt) => {
-            this.setState({ is_dropped: !this.state.is_dropped });
-            evt.stopPropagation();
-          },
-          className: "collapsed-text-show-more",
-          children: drop_text
-        }
-      );
-    var text = this.props.text;
-    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
-      text = this.props.defaultText;
-    }
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          ref: this.maindiv,
-          className: css_class,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      ),
-      overflow
-    ];
-  }
-}
-class LegendLine extends reactExports.Component {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let icon;
-    if (this.props.icon)
-      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.icon + ".svg" });
-    else
-      icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: this.props.divclass, children: this.props.div });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-line", children: [
-      icon,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.text })
-    ] });
-  }
-}
-class ActionButton extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
-  handleClick(evt) {
-    this.props.handleClick(evt);
-    evt.stopPropagation();
-  }
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: this.props.button_class + " action-button",
-        title: this.props.titletext,
-        onClick: this.handleClick,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + this.props.button_icon })
-      }
-    );
-  }
-}
+var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
+  WorkflowType2["ACTIVITY"] = "activity";
+  WorkflowType2["PROJECT"] = "project";
+  WorkflowType2["LIVE_PROJECT"] = "liveproject";
+  return WorkflowType2;
+})(WorkflowType || {});
 class WorkflowCard extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "mainDiv");
+    __publicField(this, "workflow");
+    __publicField(this, "updateWorkflow");
+    __publicField(this, "selectAction");
+    __publicField(this, "userRole");
+    __publicField(this, "readOnly");
+    __publicField(this, "projectData");
+    __publicField(this, "selected");
+    __publicField(this, "noHyperlink");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "TypeIndicator", () => {
+      const { type, is_strategy } = this.workflow;
+      let type_text = window.gettext(type);
+      if (type === WorkflowType.LIVE_PROJECT) {
+        type_text = window.gettext("classroom");
+      }
+      if (is_strategy) {
+        type_text += window.gettext(" strategy");
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
+    });
+    __publicField(this, "FavouriteButton", () => {
+      const favourite = this.state.favourite;
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.LIVE_PROJECT)
+        return null;
+      const favClass = favourite ? " filled" : "";
+      const toggleFavouriteAction = (evt) => {
+        toggleFavourite(workflow.id, workflow.type, !favourite);
+        this.setState({ favourite: !favourite });
+        evt.stopPropagation();
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "workflow-toggle-favourite hover-shade",
+          onClick: toggleFavouriteAction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: `material-symbols-outlined${favClass}`,
+              title: window.gettext("Favourite"),
+              children: "star"
+            }
+          )
+        },
+        "btn-workflow-toggle-favourite"
+      );
+    });
+    __publicField(this, "WorkflowDetails", () => {
+      const details = [];
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
+        );
+      }
+      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created workflow-live-classroom",
+              title: window.gettext("Live Classroom"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
+                ` ${window.gettext("Live Classroom")}`
+              ]
+            },
+            "workflow-created-group"
+          )
+        );
+      }
+      if (this.workflow.is_linked) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created linked-workflow-warning",
+              title: window.gettext(
+                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
+                ` ${window.gettext("Already in use")}`
+              ]
+            },
+            "workflow-created-warning"
+          )
+        );
+      }
+      return details;
+    });
+    __publicField(this, "Buttons", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
+      ] });
+    });
+    __publicField(this, "Visible", () => {
+      const isTeacher = this.userRole === role_keys.teacher;
+      const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
+      if (!this.readOnly && isTeacher && isEligibleType) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "permission-select",
+            onClick: (evt) => evt.stopPropagation(),
+            onMouseDown: (evt) => evt.stopPropagation(),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "select",
+              {
+                value: String(this.workflow.is_visible),
+                onChange: (evt) => this.visibilityFunction(this.workflow.id, evt.target.value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
+                ]
+              }
+            )
+          }
+        );
+      }
+      return null;
+    });
     this.state = {
-      favourite: props.workflow_data.favourite
+      favourite: props.workflowData.favourite
     };
-    this.maindiv = reactExports.createRef();
+    this.selected = this.props.selected;
+    this.noHyperlink = this.props.noHyperlink;
+    this.userRole = this.props.userRole;
+    this.readOnly = this.props.readOnly;
+    this.projectData = this.props.projectData;
+    this.updateWorkflow = this.props.updateWorkflow;
+    this.workflow = this.props.workflowData;
+    this.selectAction = this.props.selectAction;
+    this.mainDiv = reactExports.createRef();
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getTypeIndicator() {
-    let data = this.props.workflow_data;
-    let type = data.type;
-    let type_text = window.gettext(type);
-    if (type === "liveproject")
-      type_text = window.gettext("classroom");
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
-  }
-  getButtons() {
-    let fav_class = "";
-    if (this.state.favourite)
-      fav_class = " filled";
-    let buttons = [];
-    if (this.props.workflow_data.type !== "liveproject")
-      buttons.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "workflow-toggle-favourite hover-shade",
-            onClick: (evt) => {
-              toggleFavourite(
-                this.props.workflow_data.id,
-                this.props.workflow_data.type,
-                !this.state.favourite
-              );
-              let state = this.state;
-              this.setState({ favourite: !state.favourite });
-              evt.stopPropagation();
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "span",
-              {
-                className: "material-symbols-outlined" + fav_class,
-                title: window.gettext("Favourite"),
-                children: "star"
-              }
-            )
-          },
-          "btn-workflow-toggle-favourite"
-        )
-      );
-    let workflows = [];
-    if (this.props.workflow_data.type === "project" && !(this.props.workflow_data.workflow_count == null))
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: this.props.workflow_data.workflow_count + " " + window.gettext("workflows") }, "workflow-created-count")
-      );
-    if (this.props.workflow_data.type === "project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type !== role_keys["none"])
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-created workflow-live-classroom",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "span",
-                {
-                  className: "material-symbols-rounded small-inline",
-                  title: window.gettext("Live Classroom"),
-                  children: "group"
-                }
-              ),
-              " " + window.gettext("Live Classroom")
-            ]
-          },
-          "workflow-created-group"
-        )
-      );
-    if (this.props.workflow_data.is_linked)
-      workflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-created linked-workflow-warning",
-            title: window.gettext(
-              "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
-            ),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
-              " " + window.gettext("Already in use")
-            ]
-          },
-          "workflow-created-warning"
-        )
-      );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: workflows })
-    ] });
-  }
   clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.props.workflow_data.id);
+    if (this.selectAction) {
+      this.selectAction(this.workflow.id);
     } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
+      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
     }
-  }
-  getVisible() {
-    let component = this;
-    if (this.props.renderer && !this.props.renderer.read_only && this.props.renderer.user_role === role_keys.teacher && this.props.workflow_data.type !== "project" && this.props.workflow_data.type !== "liveproject" && this.props.renderer && this.props.renderer.user_role === role_keys.teacher)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "permission-select",
-          onClick: (evt) => evt.stopPropagation(),
-          onMouseDown: (evt) => evt.stopPropagation(),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              value: this.props.workflow_data.is_visible,
-              onChange: (evt) => component.visibilityFunction(
-                this.props.workflow_data.id,
-                evt.target.value
-              ),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
-              ]
-            }
-          )
-        }
-      );
-    return null;
   }
   visibilityFunction(id, is_visible) {
     const isVisibleBool = is_visible === "true";
-    this.props.updateWorkflow(id, {
+    this.updateWorkflow(id, {
       is_visible: isVisibleBool
     });
-    setWorkflowVisibility(
-      this.props.renderer.project_data.id,
-      id,
-      isVisibleBool
-    );
+    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
+  renderCreationText(data) {
+    let creationText = window.gettext("Created");
+    if (data.author && data.author !== "None") {
+      creationText += ` ${window.gettext("by")} ${data.author}`;
+    }
+    creationText += `${window.gettext(" on ")}${data.created_on}`;
+    return creationText;
+  }
+  renderDescription(description) {
+    if (!description) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-description" });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "workflow-description collapsible-text",
+        dangerouslySetInnerHTML: { __html: description }
+      }
+    );
+  }
   render() {
-    let data = this.props.workflow_data;
-    let css_class = "workflow-for-menu hover-shade " + data.type;
-    if (this.props.selected)
-      css_class += " selected";
-    let creation_text = window.gettext("Created");
-    if (data.author && data.author !== "None")
-      creation_text += " " + window.gettext("by") + " " + data.author;
-    creation_text += window.gettext(" on ") + data.created_on;
-    let description = data.description;
-    if (!description)
-      description = " ";
+    const { selected, noHyperlink } = this.props;
+    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${selected ? " selected" : ""}`;
+    const creationText = this.renderCreationText(this.workflow);
+    const description = this.renderDescription(this.workflow.description);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        ref: this.maindiv,
-        className: css_class,
+        ref: this.mainDiv,
+        className: cssClass,
         onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
+        onMouseDown: (evt) => evt.preventDefault(),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               WorkflowTitle,
               {
-                no_hyperlink: this.props.no_hyperlink,
+                no_hyperlink: noHyperlink,
                 class_name: "workflow-title",
-                data
+                data: this.workflow
               }
             ),
-            this.getVisible(),
-            this.getTypeIndicator()
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Visible, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "workflow-description collapsible-text",
-              dangerouslySetInnerHTML: { __html: description }
-            }
-          ),
-          this.getButtons()
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
+          description,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Buttons, {})
         ]
       }
     );
@@ -62353,13 +62059,11 @@ class MenuSection extends reactExports.Component {
       {
         no_hyperlink: this.props.no_hyperlink,
         type: this.props.type,
-        workflow_data: object,
+        workflowData: object,
         objectType: section_type,
         selected: this.props.selected_id === object.id,
         dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction,
-        parentID: this.props.parentID,
-        duplicate: this.props.duplicate
+        selectAction: this.props.selectAction
       },
       object.id
     ));
@@ -62496,6 +62200,24 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader$1 = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
+class ComponentWithToggleDrop extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "mainDiv");
+    __publicField(this, "toggleDrop", (evt) => {
+      evt.stopPropagation();
+      toggleDrop(
+        this.props.objectID,
+        // @ts-ignore
+        object_dictionary[this.objectType],
+        !this.props.data.is_dropped,
+        this.props.dispatch,
+        this.props.data.depth
+      );
+    });
+    this.mainDiv = reactExports.createRef();
+  }
+}
 class NodeBarUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -62601,7 +62323,7 @@ const NodeBarColumnWorkflow = connect(
   mapColumnWorkflowStateToProps$1,
   null
 )(NodeBarColumnWorkflowUnconnected);
-class NodeBarColumnUnconnected extends Component {
+class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -62696,7 +62418,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     );
   }
 }
-class StrategyUnconnected extends Component {
+class StrategyUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "strategy";
@@ -62984,7 +62706,7 @@ const mapRestoreBarStateToProps = (state) => ({
   nodelinks: state.nodelink.filter((x) => x.deleted)
 });
 const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected);
-class RestoreBarItem extends Component {
+class RestoreBarItem extends ComponentWithToggleDrop {
   render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "restore-bar-item", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
@@ -63003,7 +62725,7 @@ class RestoreBarItem extends Component {
   restore() {
     this.setState({ disabled: true });
     this.props.renderer.tiny_loader.startLoad();
-    restoreSelf(this.props.data.id, this.props.objectType, () => {
+    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
       this.props.renderer.tiny_loader.endLoad();
     });
   }
@@ -63013,7 +62735,7 @@ class RestoreBarItem extends Component {
     )) {
       $(this.maindiv.current).children("button").attr("disabled", true);
       this.props.renderer.tiny_loader.startLoad();
-      deleteSelf(this.props.data.id, this.props.objectType, false, () => {
+      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
         this.props.renderer.tiny_loader.endLoad();
       });
     }
@@ -63085,7 +62807,7 @@ class QuillDiv extends reactExports.Component {
     });
   }
 }
-class EditableComponent extends Component {
+class EditableComponent extends ComponentWithToggleDrop {
   //Makes the item selectable
   addEditable(data, no_delete = false) {
     var _a;
@@ -63599,7 +63321,127 @@ class EditableComponent extends Component {
     return style2;
   }
 }
-class CommentBox extends Component {
+class ActionButton extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(evt) {
+    this.props.handleClick(evt);
+    evt.stopPropagation();
+  }
+  render() {
+    const { buttonClass, titleText, buttonIcon } = this.props;
+    const iconPath = COURSEFLOW_APP.config.icon_path + buttonIcon;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: `${buttonClass} action-button`,
+        title: titleText,
+        onClick: this.handleClick,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: iconPath, alt: titleText })
+      }
+    );
+  }
+}
+function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data)
+    }).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getHomeQuery(callBackFunction = (data) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) => console.log("success")) {
+  if (["program", "course", "activity"].indexOf(objectType) >= 0)
+    objectType = "workflow";
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+        outcomePk: itemPkString,
+        projectPk: projectPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.input = reactExports.createRef();
@@ -63623,13 +63465,13 @@ class CommentBox extends Component {
    * FUNCTIONS
    *******************************************************/
   addUserTag(user) {
-    let cursor_pos = this.tag_position;
-    let current_value = this.input.current.value;
+    const cursor_pos = this.tag_position;
+    const current_value = this.input.current.value;
     let to_add = "";
     if (cursor_pos > 0 && current_value[cursor_pos - 1] != " ")
       to_add += " ";
     to_add += "@" + user.username + " ";
-    let new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
+    const new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
     this.input.current.value = new_value;
     this.input.current.selectionStart = this.input.current.value.length;
     this.setState({ tagging: false });
@@ -63640,15 +63482,15 @@ class CommentBox extends Component {
     } else {
       $(this.submit.current).addClass("hidden");
     }
-    if (evt.nativeEvent && evt.nativeEvent.data == "@") {
+    if (evt.nativeEvent && evt.nativeEvent.data === "@") {
       this.tag_position = this.input.current.selectionStart - 1;
-      let renderer2 = this.props.renderer;
-      renderer2.tiny_loader.startLoad();
-      getUsersForObject(
+      const loader = COURSEFLOW_APP.tinyLoader;
+      loader.startLoad();
+      getUsersForObjectQuery(
         this.props.renderer.workflowID,
         "workflow",
         (response) => {
-          renderer2.tiny_loader.endLoad();
+          loader.endLoad();
           this.setState({
             tagging: true,
             user_list: response.editors.concat(response.commentors)
@@ -63660,8 +63502,8 @@ class CommentBox extends Component {
     }
   }
   removeComment(id) {
-    let parent = this.props.parent;
-    let props = parent.props;
+    const parent = this.props.parent;
+    const props = parent.props;
     if (window.confirm(
       window.gettext(
         "Are you sure you want to permanently clear this comment?"
@@ -63676,8 +63518,8 @@ class CommentBox extends Component {
     }
   }
   removeAllComments() {
-    let parent = this.props.parent;
-    let props = parent.props;
+    const parent = this.props.parent;
+    const props = parent.props;
     if (window.confirm(
       window.gettext(
         "Are you sure you want to permanently clear all comments from this object?"
@@ -63691,11 +63533,11 @@ class CommentBox extends Component {
     }
   }
   appendComment() {
-    let text = $(this.input.current)[0].value;
+    const text = $(this.input.current)[0].value;
     if (!text)
       return;
-    let parent = this.props.parent;
-    let props = parent.props;
+    const parent = this.props.parent;
+    const props = parent.props;
     $(this.input.current)[0].value = "";
     $(this.submit.current).addClass("hidden");
     addComment(
@@ -63706,8 +63548,8 @@ class CommentBox extends Component {
     );
   }
   commentsSeen() {
-    let unread_comments = this.props.renderer.unread_comments.slice();
-    let comments = this.props.comments.map((comment2) => comment2.id);
+    const unread_comments = this.props.renderer.unread_comments.slice();
+    const comments = this.props.comments.map((comment2) => comment2.id);
     this.props.renderer.unread_comments = unread_comments.filter(
       (comment2) => comments.indexOf(comment2) < 0
     );
@@ -63717,7 +63559,7 @@ class CommentBox extends Component {
    *******************************************************/
   render() {
     let has_comments = false;
-    let has_unread = this.props.comments.filter((value) => {
+    const has_unread = this.props.comments.filter((value) => {
       var _a, _b, _c;
       return (_c = (_b = (_a = this.props) == null ? void 0 : _a.renderer) == null ? void 0 : _b.unread_comments) == null ? void 0 : _c.includes(value);
     }).length > 0;
@@ -63725,7 +63567,7 @@ class CommentBox extends Component {
       has_comments = this.props.comments.length > 0;
     }
     let render_div;
-    let side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
+    const side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
     if (side_actions.length > 0)
       render_div = side_actions[0];
     else
@@ -63753,11 +63595,11 @@ class CommentBox extends Component {
     let comments;
     if (this.props.comments)
       comments = this.props.comments.map((comment2) => {
-        let is_unread = this.props.renderer.unread_comments.indexOf(comment2.id) >= 0;
+        const is_unread = this.props.renderer.unread_comments.indexOf(comment2.id) >= 0;
         let comment_class = "comment";
         if (is_unread)
           comment_class += " unread";
-        let text = comment2.text.replace(
+        const text = comment2.text.replace(
           /@\w[@a-zA-Z0-9_.]{1,}/g,
           (val) => "<b>" + val + "</b>"
         );
@@ -63784,7 +63626,7 @@ class CommentBox extends Component {
           ) })
         ] });
       });
-    let top_contents = [];
+    const top_contents = [];
     top_contents.push(
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
@@ -63873,9 +63715,9 @@ class EditableComponentWithComments extends EditableComponent {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ActionButton,
         {
-          button_icon: "comment_new.svg",
-          button_class: "comment-button",
-          titletext: window.gettext("Comments"),
+          buttonIcon: "comment_new.svg",
+          buttonClass: "comment-button",
+          titleText: window.gettext("Comments"),
           handleClick: this.commentClick.bind(this)
         }
       ),
@@ -63898,8 +63740,8 @@ class EditableComponentWithComments extends EditableComponent {
       this.setState({ show_comments: false });
   }
   reloadComments(show_comments) {
-    let props = this.props;
-    let data = props.data;
+    const props = this.props;
+    const data = props.data;
     props.renderer.tiny_loader.startLoad();
     getCommentsForObject(
       data.id,
@@ -63927,9 +63769,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: icon,
-        button_class: "delete-self-button",
-        titletext: window.gettext("Restore"),
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Restore"),
         handleClick: this.restoreSelf.bind(this, data)
       }
     );
@@ -63937,7 +63779,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   restoreSelf(data) {
     var props = this.props;
     props.renderer.tiny_loader.startLoad();
-    restoreSelf(
+    restoreSelfQuery(
       data.id,
       object_dictionary[this.objectType],
       (response_data) => {
@@ -63951,9 +63793,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: icon,
-        button_class: "delete-self-button",
-        titletext: window.gettext("Delete"),
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Delete"),
         handleClick: this.deleteSelf.bind(this, data)
       }
     );
@@ -63973,7 +63815,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       ).toLowerCase() + "?"
     )) {
       props.renderer.tiny_loader.startLoad();
-      deleteSelf(
+      deleteSelfQuery(
         data.id,
         object_dictionary[this.objectType],
         true,
@@ -63988,9 +63830,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: "duplicate.svg",
-        button_class: "duplicate-self-button",
-        titletext: window.gettext("Duplicate"),
+        buttonIcon: "duplicate.svg",
+        buttonClass: "duplicate-self-button",
+        titleText: window.gettext("Duplicate"),
         handleClick: this.duplicateSelf.bind(this, data)
       }
     );
@@ -64015,9 +63857,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: "add_new.svg",
-        button_class: "insert-sibling-button",
-        titletext: window.gettext("Insert Below"),
+        buttonIcon: "add_new.svg",
+        buttonClass: "insert-sibling-button",
+        titleText: window.gettext("Insert Below"),
         handleClick: this.insertSibling.bind(this, data)
       }
     );
@@ -64042,9 +63884,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: "create_new_child.svg",
-        button_class: "insert-child-button",
-        titletext: window.gettext("Insert Child"),
+        buttonIcon: "create_new_child.svg",
+        buttonClass: "insert-child-button",
+        titleText: window.gettext("Insert Child"),
         handleClick: this.insertChild.bind(this, data)
       }
     );
@@ -64224,7 +64066,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
     );
   }
 }
-class OutcomeBarOutcomeUnconnected extends Component {
+class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcome";
@@ -64799,567 +64641,2474 @@ class RightSideBar extends reactExports.Component {
     ] });
   }
 }
-let UserLabel$1 = class UserLabel extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.select = reactExports.createRef();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  onChange(evt) {
-    switch (evt.target.value) {
-      case "none":
-        if (window.confirm("Are you sure you want to remove this user?")) {
-          this.props.permissionChange(0, this.props.user);
-        }
-        break;
-      default:
-        this.props.permissionChange(
-          permission_keys[evt.target.value],
-          this.props.user
-        );
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
+class Slider extends reactExports.Component {
   render() {
-    let permission_select;
-    let disabled = false;
-    if (this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id) >= 0)
-      disabled = true;
-    if (this.props.type !== "owner") {
-      if (this.props.type === "add") {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, disabled, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "primary-button",
-              onClick: () => this.props.addFunction($(this.select.current).val()),
-              children: window.gettext("Share")
-            }
-          )
-        ] });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "switch", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          checked: this.props.checked,
+          onChange: this.props.toggleAction.bind(this)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "slider round" })
+    ] });
+  }
+}
+var HOOKS = [
+  "onChange",
+  "onClose",
+  "onDayCreate",
+  "onDestroy",
+  "onKeyDown",
+  "onMonthChange",
+  "onOpen",
+  "onParseConfig",
+  "onReady",
+  "onValueUpdate",
+  "onYearChange",
+  "onPreCalendarPosition"
+];
+var defaults = {
+  _disable: [],
+  allowInput: false,
+  allowInvalidPreload: false,
+  altFormat: "F j, Y",
+  altInput: false,
+  altInputClass: "form-control input",
+  animate: typeof window === "object" && window.navigator.userAgent.indexOf("MSIE") === -1,
+  ariaDateFormat: "F j, Y",
+  autoFillDefaultTime: true,
+  clickOpens: true,
+  closeOnSelect: true,
+  conjunction: ", ",
+  dateFormat: "Y-m-d",
+  defaultHour: 12,
+  defaultMinute: 0,
+  defaultSeconds: 0,
+  disable: [],
+  disableMobile: false,
+  enableSeconds: false,
+  enableTime: false,
+  errorHandler: function(err) {
+    return typeof console !== "undefined" && console.warn(err);
+  },
+  getWeek: function(givenDate) {
+    var date = new Date(givenDate.getTime());
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 864e5 - 3 + (week1.getDay() + 6) % 7) / 7);
+  },
+  hourIncrement: 1,
+  ignoredFocusElements: [],
+  inline: false,
+  locale: "default",
+  minuteIncrement: 5,
+  mode: "single",
+  monthSelectorType: "dropdown",
+  nextArrow: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 17 17'><g></g><path d='M13.207 8.472l-7.854 7.854-0.707-0.707 7.146-7.146-7.146-7.148 0.707-0.707 7.854 7.854z' /></svg>",
+  noCalendar: false,
+  now: /* @__PURE__ */ new Date(),
+  onChange: [],
+  onClose: [],
+  onDayCreate: [],
+  onDestroy: [],
+  onKeyDown: [],
+  onMonthChange: [],
+  onOpen: [],
+  onParseConfig: [],
+  onReady: [],
+  onValueUpdate: [],
+  onYearChange: [],
+  onPreCalendarPosition: [],
+  plugins: [],
+  position: "auto",
+  positionElement: void 0,
+  prevArrow: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 17 17'><g></g><path d='M5.207 8.471l7.146 7.147-0.707 0.707-7.853-7.854 7.854-7.853 0.707 0.707-7.147 7.146z' /></svg>",
+  shorthandCurrentMonth: false,
+  showMonths: 1,
+  static: false,
+  time_24hr: false,
+  weekNumbers: false,
+  wrap: false
+};
+var english = {
+  weekdays: {
+    shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    longhand: [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
+  },
+  months: {
+    shorthand: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    longhand: [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+  firstDayOfWeek: 0,
+  ordinal: function(nth) {
+    var s = nth % 100;
+    if (s > 3 && s < 21)
+      return "th";
+    switch (s % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  },
+  rangeSeparator: " to ",
+  weekAbbreviation: "Wk",
+  scrollTitle: "Scroll to increment",
+  toggleTitle: "Click to toggle",
+  amPM: ["AM", "PM"],
+  yearAriaLabel: "Year",
+  monthAriaLabel: "Month",
+  hourAriaLabel: "Hour",
+  minuteAriaLabel: "Minute",
+  time_24hr: false
+};
+var pad = function(number2, length2) {
+  if (length2 === void 0) {
+    length2 = 2;
+  }
+  return ("000" + number2).slice(length2 * -1);
+};
+var int = function(bool) {
+  return bool === true ? 1 : 0;
+};
+function debounce(fn, wait) {
+  var t;
+  return function() {
+    var _this = this;
+    var args = arguments;
+    clearTimeout(t);
+    t = setTimeout(function() {
+      return fn.apply(_this, args);
+    }, wait);
+  };
+}
+var arrayify = function(obj) {
+  return obj instanceof Array ? obj : [obj];
+};
+function toggleClass(elem, className, bool) {
+  if (bool === true)
+    return elem.classList.add(className);
+  elem.classList.remove(className);
+}
+function createElement(tag2, className, content) {
+  var e = window.document.createElement(tag2);
+  className = className || "";
+  content = content || "";
+  e.className = className;
+  if (content !== void 0)
+    e.textContent = content;
+  return e;
+}
+function clearNode(node2) {
+  while (node2.firstChild)
+    node2.removeChild(node2.firstChild);
+}
+function findParent(node2, condition) {
+  if (condition(node2))
+    return node2;
+  else if (node2.parentNode)
+    return findParent(node2.parentNode, condition);
+  return void 0;
+}
+function createNumberInput(inputClassName, opts) {
+  var wrapper = createElement("div", "numInputWrapper"), numInput = createElement("input", "numInput " + inputClassName), arrowUp = createElement("span", "arrowUp"), arrowDown = createElement("span", "arrowDown");
+  if (navigator.userAgent.indexOf("MSIE 9.0") === -1) {
+    numInput.type = "number";
+  } else {
+    numInput.type = "text";
+    numInput.pattern = "\\d*";
+  }
+  if (opts !== void 0)
+    for (var key in opts)
+      numInput.setAttribute(key, opts[key]);
+  wrapper.appendChild(numInput);
+  wrapper.appendChild(arrowUp);
+  wrapper.appendChild(arrowDown);
+  return wrapper;
+}
+function getEventTarget(event2) {
+  try {
+    if (typeof event2.composedPath === "function") {
+      var path = event2.composedPath();
+      return path[0];
+    }
+    return event2.target;
+  } catch (error) {
+    return event2.target;
+  }
+}
+var doNothing = function() {
+  return void 0;
+};
+var monthToStr = function(monthNumber, shorthand, locale) {
+  return locale.months[shorthand ? "shorthand" : "longhand"][monthNumber];
+};
+var revFormat = {
+  D: doNothing,
+  F: function(dateObj, monthName, locale) {
+    dateObj.setMonth(locale.months.longhand.indexOf(monthName));
+  },
+  G: function(dateObj, hour) {
+    dateObj.setHours((dateObj.getHours() >= 12 ? 12 : 0) + parseFloat(hour));
+  },
+  H: function(dateObj, hour) {
+    dateObj.setHours(parseFloat(hour));
+  },
+  J: function(dateObj, day) {
+    dateObj.setDate(parseFloat(day));
+  },
+  K: function(dateObj, amPM, locale) {
+    dateObj.setHours(dateObj.getHours() % 12 + 12 * int(new RegExp(locale.amPM[1], "i").test(amPM)));
+  },
+  M: function(dateObj, shortMonth, locale) {
+    dateObj.setMonth(locale.months.shorthand.indexOf(shortMonth));
+  },
+  S: function(dateObj, seconds) {
+    dateObj.setSeconds(parseFloat(seconds));
+  },
+  U: function(_2, unixSeconds) {
+    return new Date(parseFloat(unixSeconds) * 1e3);
+  },
+  W: function(dateObj, weekNum, locale) {
+    var weekNumber = parseInt(weekNum);
+    var date = new Date(dateObj.getFullYear(), 0, 2 + (weekNumber - 1) * 7, 0, 0, 0, 0);
+    date.setDate(date.getDate() - date.getDay() + locale.firstDayOfWeek);
+    return date;
+  },
+  Y: function(dateObj, year) {
+    dateObj.setFullYear(parseFloat(year));
+  },
+  Z: function(_2, ISODate) {
+    return new Date(ISODate);
+  },
+  d: function(dateObj, day) {
+    dateObj.setDate(parseFloat(day));
+  },
+  h: function(dateObj, hour) {
+    dateObj.setHours((dateObj.getHours() >= 12 ? 12 : 0) + parseFloat(hour));
+  },
+  i: function(dateObj, minutes) {
+    dateObj.setMinutes(parseFloat(minutes));
+  },
+  j: function(dateObj, day) {
+    dateObj.setDate(parseFloat(day));
+  },
+  l: doNothing,
+  m: function(dateObj, month) {
+    dateObj.setMonth(parseFloat(month) - 1);
+  },
+  n: function(dateObj, month) {
+    dateObj.setMonth(parseFloat(month) - 1);
+  },
+  s: function(dateObj, seconds) {
+    dateObj.setSeconds(parseFloat(seconds));
+  },
+  u: function(_2, unixMillSeconds) {
+    return new Date(parseFloat(unixMillSeconds));
+  },
+  w: doNothing,
+  y: function(dateObj, year) {
+    dateObj.setFullYear(2e3 + parseFloat(year));
+  }
+};
+var tokenRegex = {
+  D: "",
+  F: "",
+  G: "(\\d\\d|\\d)",
+  H: "(\\d\\d|\\d)",
+  J: "(\\d\\d|\\d)\\w+",
+  K: "",
+  M: "",
+  S: "(\\d\\d|\\d)",
+  U: "(.+)",
+  W: "(\\d\\d|\\d)",
+  Y: "(\\d{4})",
+  Z: "(.+)",
+  d: "(\\d\\d|\\d)",
+  h: "(\\d\\d|\\d)",
+  i: "(\\d\\d|\\d)",
+  j: "(\\d\\d|\\d)",
+  l: "",
+  m: "(\\d\\d|\\d)",
+  n: "(\\d\\d|\\d)",
+  s: "(\\d\\d|\\d)",
+  u: "(.+)",
+  w: "(\\d\\d|\\d)",
+  y: "(\\d{2})"
+};
+var formats = {
+  Z: function(date) {
+    return date.toISOString();
+  },
+  D: function(date, locale, options) {
+    return locale.weekdays.shorthand[formats.w(date, locale, options)];
+  },
+  F: function(date, locale, options) {
+    return monthToStr(formats.n(date, locale, options) - 1, false, locale);
+  },
+  G: function(date, locale, options) {
+    return pad(formats.h(date, locale, options));
+  },
+  H: function(date) {
+    return pad(date.getHours());
+  },
+  J: function(date, locale) {
+    return locale.ordinal !== void 0 ? date.getDate() + locale.ordinal(date.getDate()) : date.getDate();
+  },
+  K: function(date, locale) {
+    return locale.amPM[int(date.getHours() > 11)];
+  },
+  M: function(date, locale) {
+    return monthToStr(date.getMonth(), true, locale);
+  },
+  S: function(date) {
+    return pad(date.getSeconds());
+  },
+  U: function(date) {
+    return date.getTime() / 1e3;
+  },
+  W: function(date, _2, options) {
+    return options.getWeek(date);
+  },
+  Y: function(date) {
+    return pad(date.getFullYear(), 4);
+  },
+  d: function(date) {
+    return pad(date.getDate());
+  },
+  h: function(date) {
+    return date.getHours() % 12 ? date.getHours() % 12 : 12;
+  },
+  i: function(date) {
+    return pad(date.getMinutes());
+  },
+  j: function(date) {
+    return date.getDate();
+  },
+  l: function(date, locale) {
+    return locale.weekdays.longhand[date.getDay()];
+  },
+  m: function(date) {
+    return pad(date.getMonth() + 1);
+  },
+  n: function(date) {
+    return date.getMonth() + 1;
+  },
+  s: function(date) {
+    return date.getSeconds();
+  },
+  u: function(date) {
+    return date.getTime();
+  },
+  w: function(date) {
+    return date.getDay();
+  },
+  y: function(date) {
+    return String(date.getFullYear()).substring(2);
+  }
+};
+var createDateFormatter = function(_a) {
+  var _b = _a.config, config3 = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c, _d = _a.isMobile, isMobile = _d === void 0 ? false : _d;
+  return function(dateObj, frmt, overrideLocale) {
+    var locale = overrideLocale || l10n;
+    if (config3.formatDate !== void 0 && !isMobile) {
+      return config3.formatDate(dateObj, frmt, locale);
+    }
+    return frmt.split("").map(function(c, i, arr) {
+      return formats[c] && arr[i - 1] !== "\\" ? formats[c](dateObj, locale, config3) : c !== "\\" ? c : "";
+    }).join("");
+  };
+};
+var createDateParser = function(_a) {
+  var _b = _a.config, config3 = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c;
+  return function(date, givenFormat, timeless, customLocale) {
+    if (date !== 0 && !date)
+      return void 0;
+    var locale = customLocale || l10n;
+    var parsedDate;
+    var dateOrig = date;
+    if (date instanceof Date)
+      parsedDate = new Date(date.getTime());
+    else if (typeof date !== "string" && date.toFixed !== void 0)
+      parsedDate = new Date(date);
+    else if (typeof date === "string") {
+      var format2 = givenFormat || (config3 || defaults).dateFormat;
+      var datestr = String(date).trim();
+      if (datestr === "today") {
+        parsedDate = /* @__PURE__ */ new Date();
+        timeless = true;
+      } else if (config3 && config3.parseDate) {
+        parsedDate = config3.parseDate(date, format2);
+      } else if (/Z$/.test(datestr) || /GMT$/.test(datestr)) {
+        parsedDate = new Date(date);
       } else {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "select",
-          {
-            value: this.props.type,
-            disabled,
-            onChange: this.onChange.bind(this),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Remove user") })
-            ]
-          }
-        ) });
+        var matched = void 0, ops = [];
+        for (var i = 0, matchIndex = 0, regexStr = ""; i < format2.length; i++) {
+          var token2 = format2[i];
+          var isBackSlash = token2 === "\\";
+          var escaped = format2[i - 1] === "\\" || isBackSlash;
+          if (tokenRegex[token2] && !escaped) {
+            regexStr += tokenRegex[token2];
+            var match2 = new RegExp(regexStr).exec(date);
+            if (match2 && (matched = true)) {
+              ops[token2 !== "Y" ? "push" : "unshift"]({
+                fn: revFormat[token2],
+                val: match2[++matchIndex]
+              });
+            }
+          } else if (!isBackSlash)
+            regexStr += ".";
+        }
+        parsedDate = !config3 || !config3.noCalendar ? new Date((/* @__PURE__ */ new Date()).getFullYear(), 0, 1, 0, 0, 0, 0) : new Date((/* @__PURE__ */ new Date()).setHours(0, 0, 0, 0));
+        ops.forEach(function(_a2) {
+          var fn = _a2.fn, val = _a2.val;
+          return parsedDate = fn(parsedDate, val, locale) || parsedDate;
+        });
+        parsedDate = matched ? parsedDate : void 0;
       }
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
-      ] }),
-      permission_select
-    ] });
-  }
+    if (!(parsedDate instanceof Date && !isNaN(parsedDate.getTime()))) {
+      config3.errorHandler(new Error("Invalid date provided: " + dateOrig));
+      return void 0;
+    }
+    if (timeless === true)
+      parsedDate.setHours(0, 0, 0, 0);
+    return parsedDate;
+  };
 };
-let UserAdd$1 = class UserAdd extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-    this.state = { selected: null };
+function compareDates(date1, date2, timeless) {
+  if (timeless === void 0) {
+    timeless = true;
   }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          let user_list = response.user_list.map((user) => {
-            return {
-              label: user.first_name + " " + user.last_name + " - " + user.username,
-              value: user.username,
-              user
-            };
-          });
-          response_function(user_list);
+  if (timeless !== false) {
+    return new Date(date1.getTime()).setHours(0, 0, 0, 0) - new Date(date2.getTime()).setHours(0, 0, 0, 0);
+  }
+  return date1.getTime() - date2.getTime();
+}
+var isBetween = function(ts, ts1, ts2) {
+  return ts > Math.min(ts1, ts2) && ts < Math.max(ts1, ts2);
+};
+var calculateSecondsSinceMidnight = function(hours, minutes, seconds) {
+  return hours * 3600 + minutes * 60 + seconds;
+};
+var parseSeconds = function(secondsSinceMidnight) {
+  var hours = Math.floor(secondsSinceMidnight / 3600), minutes = (secondsSinceMidnight - hours * 3600) / 60;
+  return [hours, minutes, secondsSinceMidnight - hours * 3600 - minutes * 60];
+};
+var duration = {
+  DAY: 864e5
+};
+function getDefaultHours(config3) {
+  var hours = config3.defaultHour;
+  var minutes = config3.defaultMinute;
+  var seconds = config3.defaultSeconds;
+  if (config3.minDate !== void 0) {
+    var minHour = config3.minDate.getHours();
+    var minMinutes = config3.minDate.getMinutes();
+    var minSeconds = config3.minDate.getSeconds();
+    if (hours < minHour) {
+      hours = minHour;
+    }
+    if (hours === minHour && minutes < minMinutes) {
+      minutes = minMinutes;
+    }
+    if (hours === minHour && minutes === minMinutes && seconds < minSeconds)
+      seconds = config3.minDate.getSeconds();
+  }
+  if (config3.maxDate !== void 0) {
+    var maxHr = config3.maxDate.getHours();
+    var maxMinutes = config3.maxDate.getMinutes();
+    hours = Math.min(hours, maxHr);
+    if (hours === maxHr)
+      minutes = Math.min(maxMinutes, minutes);
+    if (hours === maxHr && minutes === maxMinutes)
+      seconds = config3.maxDate.getSeconds();
+  }
+  return { hours, minutes, seconds };
+}
+if (typeof Object.assign !== "function") {
+  Object.assign = function(target) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+      args[_i - 1] = arguments[_i];
+    }
+    if (!target) {
+      throw TypeError("Cannot convert undefined or null to object");
+    }
+    var _loop_1 = function(source2) {
+      if (source2) {
+        Object.keys(source2).forEach(function(key) {
+          return target[key] = source2[key];
         });
-        component.setState({ selected: null });
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user });
-      },
-      minLength: 1
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        permission_keys[value],
-        this.state.selected
-      );
-      $(this.input.current).val(null);
-      this.setState({ selected: null });
+      }
+    };
+    for (var _a = 0, args_1 = args; _a < args_1.length; _a++) {
+      var source = args_1[_a];
+      _loop_1(source);
     }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let user;
-    if (this.state.selected) {
-      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserLabel$1,
-        {
-          user: this.state.selected,
-          type: "add",
-          addFunction: this.addClick.bind(this)
-        }
-      );
+    return target;
+  };
+}
+var __assign = function() {
+  __assign = Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+      for (var p in s)
+        if (Object.prototype.hasOwnProperty.call(s, p))
+          t[p] = s[p];
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: this.props.share_info }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            className: "search-input",
-            ref: this.input,
-            placeholder: window.gettext("Begin typing to search users")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" })
-      ] }),
-      user
-    ] });
-  }
+    return t;
+  };
+  return __assign.apply(this, arguments);
 };
-class ShareMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.tiny_loader = new TinyLoader($("body"));
-    this.state = {
-      owner: props.data.author,
-      edit: [],
-      view: [],
-      comment: [],
-      student: [],
-      userlist: [],
-      cannot_change: []
+var __spreadArrays = function() {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++)
+    s += arguments[i].length;
+  for (var r2 = Array(s), k = 0, i = 0; i < il; i++)
+    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+      r2[k] = a[j];
+  return r2;
+};
+var DEBOUNCED_CHANGE_MS = 300;
+function FlatpickrInstance(element, instanceConfig) {
+  var self = {
+    config: __assign(__assign({}, defaults), flatpickr.defaultConfig),
+    l10n: english
+  };
+  self.parseDate = createDateParser({ config: self.config, l10n: self.l10n });
+  self._handlers = [];
+  self.pluginElements = [];
+  self.loadedPlugins = [];
+  self._bind = bind;
+  self._setHoursFromDate = setHoursFromDate;
+  self._positionCalendar = positionCalendar;
+  self.changeMonth = changeMonth;
+  self.changeYear = changeYear;
+  self.clear = clear;
+  self.close = close;
+  self.onMouseOver = onMouseOver;
+  self._createElement = createElement;
+  self.createDay = createDay;
+  self.destroy = destroy;
+  self.isEnabled = isEnabled;
+  self.jumpToDate = jumpToDate;
+  self.updateValue = updateValue2;
+  self.open = open;
+  self.redraw = redraw;
+  self.set = set;
+  self.setDate = setDate;
+  self.toggle = toggle;
+  function setupHelperFunctions() {
+    self.utils = {
+      getDaysInMonth: function(month, yr) {
+        if (month === void 0) {
+          month = self.currentMonth;
+        }
+        if (yr === void 0) {
+          yr = self.currentYear;
+        }
+        if (month === 1 && (yr % 4 === 0 && yr % 100 !== 0 || yr % 400 === 0))
+          return 29;
+        return self.l10n.daysInMonth[month];
+      }
     };
   }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    getUsersForObject(this.props.data.id, this.props.data.type, (response) => {
-      this.setState({
-        owner: response.author,
-        view: response.viewers,
-        comment: response.commentors,
-        edit: response.editors,
-        student: response.students,
-        published: response.published,
-        public_view: response.public_view,
-        cannot_change: response.cannot_change
+  function init() {
+    self.element = self.input = element;
+    self.isOpen = false;
+    parseConfig();
+    setupLocale();
+    setupInputs();
+    setupDates();
+    setupHelperFunctions();
+    if (!self.isMobile)
+      build();
+    bindEvents();
+    if (self.selectedDates.length || self.config.noCalendar) {
+      if (self.config.enableTime) {
+        setHoursFromDate(self.config.noCalendar ? self.latestSelectedDateObj : void 0);
+      }
+      updateValue2(false);
+    }
+    setCalendarWidth();
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!self.isMobile && isSafari) {
+      positionCalendar();
+    }
+    triggerEvent("onReady");
+  }
+  function getClosestActiveElement() {
+    var _a;
+    return ((_a = self.calendarContainer) === null || _a === void 0 ? void 0 : _a.getRootNode()).activeElement || document.activeElement;
+  }
+  function bindToInstance(fn) {
+    return fn.bind(self);
+  }
+  function setCalendarWidth() {
+    var config3 = self.config;
+    if (config3.weekNumbers === false && config3.showMonths === 1) {
+      return;
+    } else if (config3.noCalendar !== true) {
+      window.requestAnimationFrame(function() {
+        if (self.calendarContainer !== void 0) {
+          self.calendarContainer.style.visibility = "hidden";
+          self.calendarContainer.style.display = "block";
+        }
+        if (self.daysContainer !== void 0) {
+          var daysWidth = (self.days.offsetWidth + 1) * config3.showMonths;
+          self.daysContainer.style.width = daysWidth + "px";
+          self.calendarContainer.style.width = daysWidth + (self.weekWrapper !== void 0 ? self.weekWrapper.offsetWidth : 0) + "px";
+          self.calendarContainer.style.removeProperty("visibility");
+          self.calendarContainer.style.removeProperty("display");
+        }
       });
+    }
+  }
+  function updateTime(e) {
+    if (self.selectedDates.length === 0) {
+      var defaultDate = self.config.minDate === void 0 || compareDates(/* @__PURE__ */ new Date(), self.config.minDate) >= 0 ? /* @__PURE__ */ new Date() : new Date(self.config.minDate.getTime());
+      var defaults2 = getDefaultHours(self.config);
+      defaultDate.setHours(defaults2.hours, defaults2.minutes, defaults2.seconds, defaultDate.getMilliseconds());
+      self.selectedDates = [defaultDate];
+      self.latestSelectedDateObj = defaultDate;
+    }
+    if (e !== void 0 && e.type !== "blur") {
+      timeWrapper(e);
+    }
+    var prevValue = self._input.value;
+    setHoursFromInputs();
+    updateValue2();
+    if (self._input.value !== prevValue) {
+      self._debouncedChange();
+    }
+  }
+  function ampm2military(hour, amPM) {
+    return hour % 12 + 12 * int(amPM === self.l10n.amPM[1]);
+  }
+  function military2ampm(hour) {
+    switch (hour % 24) {
+      case 0:
+      case 12:
+        return 12;
+      default:
+        return hour % 12;
+    }
+  }
+  function setHoursFromInputs() {
+    if (self.hourElement === void 0 || self.minuteElement === void 0)
+      return;
+    var hours = (parseInt(self.hourElement.value.slice(-2), 10) || 0) % 24, minutes = (parseInt(self.minuteElement.value, 10) || 0) % 60, seconds = self.secondElement !== void 0 ? (parseInt(self.secondElement.value, 10) || 0) % 60 : 0;
+    if (self.amPM !== void 0) {
+      hours = ampm2military(hours, self.amPM.textContent);
+    }
+    var limitMinHours = self.config.minTime !== void 0 || self.config.minDate && self.minDateHasTime && self.latestSelectedDateObj && compareDates(self.latestSelectedDateObj, self.config.minDate, true) === 0;
+    var limitMaxHours = self.config.maxTime !== void 0 || self.config.maxDate && self.maxDateHasTime && self.latestSelectedDateObj && compareDates(self.latestSelectedDateObj, self.config.maxDate, true) === 0;
+    if (self.config.maxTime !== void 0 && self.config.minTime !== void 0 && self.config.minTime > self.config.maxTime) {
+      var minBound = calculateSecondsSinceMidnight(self.config.minTime.getHours(), self.config.minTime.getMinutes(), self.config.minTime.getSeconds());
+      var maxBound = calculateSecondsSinceMidnight(self.config.maxTime.getHours(), self.config.maxTime.getMinutes(), self.config.maxTime.getSeconds());
+      var currentTime = calculateSecondsSinceMidnight(hours, minutes, seconds);
+      if (currentTime > maxBound && currentTime < minBound) {
+        var result = parseSeconds(minBound);
+        hours = result[0];
+        minutes = result[1];
+        seconds = result[2];
+      }
+    } else {
+      if (limitMaxHours) {
+        var maxTime = self.config.maxTime !== void 0 ? self.config.maxTime : self.config.maxDate;
+        hours = Math.min(hours, maxTime.getHours());
+        if (hours === maxTime.getHours())
+          minutes = Math.min(minutes, maxTime.getMinutes());
+        if (minutes === maxTime.getMinutes())
+          seconds = Math.min(seconds, maxTime.getSeconds());
+      }
+      if (limitMinHours) {
+        var minTime = self.config.minTime !== void 0 ? self.config.minTime : self.config.minDate;
+        hours = Math.max(hours, minTime.getHours());
+        if (hours === minTime.getHours() && minutes < minTime.getMinutes())
+          minutes = minTime.getMinutes();
+        if (minutes === minTime.getMinutes())
+          seconds = Math.max(seconds, minTime.getSeconds());
+      }
+    }
+    setHours(hours, minutes, seconds);
+  }
+  function setHoursFromDate(dateObj) {
+    var date = dateObj || self.latestSelectedDateObj;
+    if (date && date instanceof Date) {
+      setHours(date.getHours(), date.getMinutes(), date.getSeconds());
+    }
+  }
+  function setHours(hours, minutes, seconds) {
+    if (self.latestSelectedDateObj !== void 0) {
+      self.latestSelectedDateObj.setHours(hours % 24, minutes, seconds || 0, 0);
+    }
+    if (!self.hourElement || !self.minuteElement || self.isMobile)
+      return;
+    self.hourElement.value = pad(!self.config.time_24hr ? (12 + hours) % 12 + 12 * int(hours % 12 === 0) : hours);
+    self.minuteElement.value = pad(minutes);
+    if (self.amPM !== void 0)
+      self.amPM.textContent = self.l10n.amPM[int(hours >= 12)];
+    if (self.secondElement !== void 0)
+      self.secondElement.value = pad(seconds);
+  }
+  function onYearInput(event2) {
+    var eventTarget = getEventTarget(event2);
+    var year = parseInt(eventTarget.value) + (event2.delta || 0);
+    if (year / 1e3 > 1 || event2.key === "Enter" && !/[^\d]/.test(year.toString())) {
+      changeYear(year);
+    }
+  }
+  function bind(element2, event2, handler, options) {
+    if (event2 instanceof Array)
+      return event2.forEach(function(ev) {
+        return bind(element2, ev, handler, options);
+      });
+    if (element2 instanceof Array)
+      return element2.forEach(function(el) {
+        return bind(el, event2, handler, options);
+      });
+    element2.addEventListener(event2, handler, options);
+    self._handlers.push({
+      remove: function() {
+        return element2.removeEventListener(event2, handler, options);
+      }
     });
   }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getPublication() {
-    let published = this.state.published;
-    let data = this.props.data;
-    if (data.type === "project" || data.is_strategy) {
-      let public_class = "big-button make-public";
-      let private_class = "big-button hover-shade make-private";
-      if (published)
-        public_class += " active";
-      else
-        private_class += " active";
-      let public_disabled = !(data.title && data.title.length > 0);
-      if (data.type == "project")
-        public_disabled |= data.disciplines.length == 0;
-      if (!public_disabled && !published)
-        public_class += " hover-shade";
-      if (public_disabled)
-        public_class += " disabled";
-      let public_text = window.gettext("Any CourseFlow teacher can view");
-      let disabled_indicator;
-      if (public_disabled) {
-        let disabled_text;
-        if (data.type == "project")
-          disabled_text = window.gettext(
-            "Title and disciplines are required to publish."
-          );
-        else
-          disabled_text = window.gettext("Title is required to publish.");
-        disabled_indicator = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "warning flex-middle", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red", children: "block" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: disabled_text })
-        ] });
-      }
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-buttons-wrapper", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: public_class,
-              disabled: public_disabled,
-              onClick: this.setPublication.bind(this, !public_disabled),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Public to CourseFlow") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: public_text })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: private_class,
-              onClick: this.setPublication.bind(this, false),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Private") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
-              ]
-            }
-          )
-        ] }),
-        disabled_indicator
-      ];
-    } else {
-      let published_icon;
-      if (published)
-        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project public to CourseFlow") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Any CourseFlow teacher can view") })
-        ] }) });
-      else
-        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project is private") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
-        ] }) });
-      return [published_icon, this.getPublicLink()];
-    }
+  function triggerChange() {
+    triggerEvent("onChange");
   }
-  getPublicLink() {
-    let data = this.props.data;
-    let public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
-    if (data.type !== "project") {
-      let public_view = this.state.public_view;
-      if (!public_view)
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "public-link-button  hover-shade",
-            onClick: this.togglePublicView.bind(this, !public_view),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "add_link" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Generate a public link") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
-                  "Anyone with the link will be able to view the workflow"
-                ) })
-              ] })
-            ]
-          }
-        );
-      else
-        return [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                id: "public-page-link",
-                className: "public-link-button  hover-shade",
-                onClick: () => {
-                  navigator.clipboard.writeText(public_link);
-                  let copy_icon_text = $(
-                    "#public-page-link .copy-link-icon .material-symbols-rounded"
-                  ).text();
-                  let copy_description_text = $(
-                    "#public-page-link .copy-link-text"
-                  ).text();
-                  $(
-                    "#public-page-link .copy-link-icon .material-symbols-rounded"
-                  ).text("done");
-                  $("#public-page-link .copy-link-text").text(
-                    "Copied to Clipboard"
-                  );
-                  setTimeout(() => {
-                    $(
-                      "#public-page-link .copy-link-icon .material-symbols-rounded"
-                    ).text(copy_icon_text);
-                    $("#public-page-link .copy-link-text").text(
-                      copy_description_text
-                    );
-                  }, 1e3);
-                },
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy public link") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext("Anyone with the link can view the workflow") })
-                  ] })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                id: "public-page-code",
-                className: "public-link-button  hover-shade",
-                onClick: () => {
-                  let iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
-                  navigator.clipboard.writeText(iframe);
-                  let copy_icon_text = $(
-                    "#public-page-code .copy-link-icon .material-symbols-rounded"
-                  ).text();
-                  let copy_description_text = $(
-                    "#public-page-code .copy-link-text"
-                  ).text();
-                  $(
-                    "#public-page-code .copy-link-icon .material-symbols-rounded"
-                  ).text("done");
-                  $("#public-page-code .copy-link-text").text(
-                    "Copied to Clipboard"
-                  );
-                  setTimeout(() => {
-                    $(
-                      "#public-page-code .copy-link-icon .material-symbols-rounded"
-                    ).text(copy_icon_text);
-                    $("#public-page-code .copy-link-text").text(
-                      copy_description_text
-                    );
-                  }, 1e3);
-                },
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "frame_source" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy embed code") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
-                      "HTML code to embed the workflow in a site or page"
-                    ) })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "public-link-button public-link-remove  hover-shade",
-              onClick: this.togglePublicView.bind(this, !public_view),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link_off" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Remove public link") }) })
-              ]
-            }
-          )
-        ];
+  function bindEvents() {
+    if (self.config.wrap) {
+      ["open", "close", "toggle", "clear"].forEach(function(evt) {
+        Array.prototype.forEach.call(self.element.querySelectorAll("[data-" + evt + "]"), function(el) {
+          return bind(el, "click", self[evt]);
+        });
+      });
     }
-  }
-  togglePublicView(public_view) {
-    if (public_view) {
-      if (window.confirm(
-        window.gettext(
-          "Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."
-        )
-      )) {
-        updateValueInstant(
-          this.props.data.id,
-          "workflow",
-          { public_view },
-          () => {
-            this.setState({ public_view });
-          }
-        );
-      }
-    } else {
-      updateValueInstant(
-        this.props.data.id,
-        "workflow",
-        { public_view },
-        () => {
-          this.setState({ public_view });
-        }
-      );
-    }
-  }
-  setPublication(published) {
-    if (published == this.state.published)
+    if (self.isMobile) {
+      setupMobile();
       return;
-    let component = this;
-    if (!published || window.confirm(
-      window.gettext(
-        "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
-      )
-    )) {
-      updateValueInstant(
-        component.props.data.id,
-        component.props.data.type,
-        { published },
-        () => component.setState({ published })
-      );
+    }
+    var debouncedResize = debounce(onResize, 50);
+    self._debouncedChange = debounce(triggerChange, DEBOUNCED_CHANGE_MS);
+    if (self.daysContainer && !/iPhone|iPad|iPod/i.test(navigator.userAgent))
+      bind(self.daysContainer, "mouseover", function(e) {
+        if (self.config.mode === "range")
+          onMouseOver(getEventTarget(e));
+      });
+    bind(self._input, "keydown", onKeyDown);
+    if (self.calendarContainer !== void 0) {
+      bind(self.calendarContainer, "keydown", onKeyDown);
+    }
+    if (!self.config.inline && !self.config.static)
+      bind(window, "resize", debouncedResize);
+    if (window.ontouchstart !== void 0)
+      bind(window.document, "touchstart", documentClick);
+    else
+      bind(window.document, "mousedown", documentClick);
+    bind(window.document, "focus", documentClick, { capture: true });
+    if (self.config.clickOpens === true) {
+      bind(self._input, "focus", self.open);
+      bind(self._input, "click", self.open);
+    }
+    if (self.daysContainer !== void 0) {
+      bind(self.monthNav, "click", onMonthNavClick);
+      bind(self.monthNav, ["keyup", "increment"], onYearInput);
+      bind(self.daysContainer, "click", selectDate);
+    }
+    if (self.timeContainer !== void 0 && self.minuteElement !== void 0 && self.hourElement !== void 0) {
+      var selText = function(e) {
+        return getEventTarget(e).select();
+      };
+      bind(self.timeContainer, ["increment"], updateTime);
+      bind(self.timeContainer, "blur", updateTime, { capture: true });
+      bind(self.timeContainer, "click", timeIncrement);
+      bind([self.hourElement, self.minuteElement], ["focus", "click"], selText);
+      if (self.secondElement !== void 0)
+        bind(self.secondElement, "focus", function() {
+          return self.secondElement && self.secondElement.select();
+        });
+      if (self.amPM !== void 0) {
+        bind(self.amPM, "click", function(e) {
+          updateTime(e);
+        });
+      }
+    }
+    if (self.config.allowInput) {
+      bind(self._input, "blur", onBlur);
     }
   }
-  setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad();
-    setUserPermission(
-      user.id,
-      this.props.data.id,
-      this.props.data.type,
-      permission_type,
-      () => {
-        getUsersForObject(
-          this.props.data.id,
-          this.props.data.type,
-          (response) => {
-            this.setState({
-              view: response.viewers,
-              comment: response.commentors,
-              edit: response.editors,
-              student: response.students
-            });
-            this.tiny_loader.endLoad();
+  function jumpToDate(jumpDate, triggerChange2) {
+    var jumpTo = jumpDate !== void 0 ? self.parseDate(jumpDate) : self.latestSelectedDateObj || (self.config.minDate && self.config.minDate > self.now ? self.config.minDate : self.config.maxDate && self.config.maxDate < self.now ? self.config.maxDate : self.now);
+    var oldYear = self.currentYear;
+    var oldMonth = self.currentMonth;
+    try {
+      if (jumpTo !== void 0) {
+        self.currentYear = jumpTo.getFullYear();
+        self.currentMonth = jumpTo.getMonth();
+      }
+    } catch (e) {
+      e.message = "Invalid date supplied: " + jumpTo;
+      self.config.errorHandler(e);
+    }
+    if (triggerChange2 && self.currentYear !== oldYear) {
+      triggerEvent("onYearChange");
+      buildMonthSwitch();
+    }
+    if (triggerChange2 && (self.currentYear !== oldYear || self.currentMonth !== oldMonth)) {
+      triggerEvent("onMonthChange");
+    }
+    self.redraw();
+  }
+  function timeIncrement(e) {
+    var eventTarget = getEventTarget(e);
+    if (~eventTarget.className.indexOf("arrow"))
+      incrementNumInput(e, eventTarget.classList.contains("arrowUp") ? 1 : -1);
+  }
+  function incrementNumInput(e, delta, inputElem) {
+    var target = e && getEventTarget(e);
+    var input = inputElem || target && target.parentNode && target.parentNode.firstChild;
+    var event2 = createEvent("increment");
+    event2.delta = delta;
+    input && input.dispatchEvent(event2);
+  }
+  function build() {
+    var fragment = window.document.createDocumentFragment();
+    self.calendarContainer = createElement("div", "flatpickr-calendar");
+    self.calendarContainer.tabIndex = -1;
+    if (!self.config.noCalendar) {
+      fragment.appendChild(buildMonthNav());
+      self.innerContainer = createElement("div", "flatpickr-innerContainer");
+      if (self.config.weekNumbers) {
+        var _a = buildWeeks(), weekWrapper = _a.weekWrapper, weekNumbers = _a.weekNumbers;
+        self.innerContainer.appendChild(weekWrapper);
+        self.weekNumbers = weekNumbers;
+        self.weekWrapper = weekWrapper;
+      }
+      self.rContainer = createElement("div", "flatpickr-rContainer");
+      self.rContainer.appendChild(buildWeekdays());
+      if (!self.daysContainer) {
+        self.daysContainer = createElement("div", "flatpickr-days");
+        self.daysContainer.tabIndex = -1;
+      }
+      buildDays();
+      self.rContainer.appendChild(self.daysContainer);
+      self.innerContainer.appendChild(self.rContainer);
+      fragment.appendChild(self.innerContainer);
+    }
+    if (self.config.enableTime) {
+      fragment.appendChild(buildTime());
+    }
+    toggleClass(self.calendarContainer, "rangeMode", self.config.mode === "range");
+    toggleClass(self.calendarContainer, "animate", self.config.animate === true);
+    toggleClass(self.calendarContainer, "multiMonth", self.config.showMonths > 1);
+    self.calendarContainer.appendChild(fragment);
+    var customAppend = self.config.appendTo !== void 0 && self.config.appendTo.nodeType !== void 0;
+    if (self.config.inline || self.config.static) {
+      self.calendarContainer.classList.add(self.config.inline ? "inline" : "static");
+      if (self.config.inline) {
+        if (!customAppend && self.element.parentNode)
+          self.element.parentNode.insertBefore(self.calendarContainer, self._input.nextSibling);
+        else if (self.config.appendTo !== void 0)
+          self.config.appendTo.appendChild(self.calendarContainer);
+      }
+      if (self.config.static) {
+        var wrapper = createElement("div", "flatpickr-wrapper");
+        if (self.element.parentNode)
+          self.element.parentNode.insertBefore(wrapper, self.element);
+        wrapper.appendChild(self.element);
+        if (self.altInput)
+          wrapper.appendChild(self.altInput);
+        wrapper.appendChild(self.calendarContainer);
+      }
+    }
+    if (!self.config.static && !self.config.inline)
+      (self.config.appendTo !== void 0 ? self.config.appendTo : window.document.body).appendChild(self.calendarContainer);
+  }
+  function createDay(className, date, _dayNumber, i) {
+    var dateIsEnabled = isEnabled(date, true), dayElement = createElement("span", className, date.getDate().toString());
+    dayElement.dateObj = date;
+    dayElement.$i = i;
+    dayElement.setAttribute("aria-label", self.formatDate(date, self.config.ariaDateFormat));
+    if (className.indexOf("hidden") === -1 && compareDates(date, self.now) === 0) {
+      self.todayDateElem = dayElement;
+      dayElement.classList.add("today");
+      dayElement.setAttribute("aria-current", "date");
+    }
+    if (dateIsEnabled) {
+      dayElement.tabIndex = -1;
+      if (isDateSelected(date)) {
+        dayElement.classList.add("selected");
+        self.selectedDateElem = dayElement;
+        if (self.config.mode === "range") {
+          toggleClass(dayElement, "startRange", self.selectedDates[0] && compareDates(date, self.selectedDates[0], true) === 0);
+          toggleClass(dayElement, "endRange", self.selectedDates[1] && compareDates(date, self.selectedDates[1], true) === 0);
+          if (className === "nextMonthDay")
+            dayElement.classList.add("inRange");
+        }
+      }
+    } else {
+      dayElement.classList.add("flatpickr-disabled");
+    }
+    if (self.config.mode === "range") {
+      if (isDateInRange(date) && !isDateSelected(date))
+        dayElement.classList.add("inRange");
+    }
+    if (self.weekNumbers && self.config.showMonths === 1 && className !== "prevMonthDay" && i % 7 === 6) {
+      self.weekNumbers.insertAdjacentHTML("beforeend", "<span class='flatpickr-day'>" + self.config.getWeek(date) + "</span>");
+    }
+    triggerEvent("onDayCreate", dayElement);
+    return dayElement;
+  }
+  function focusOnDayElem(targetNode) {
+    targetNode.focus();
+    if (self.config.mode === "range")
+      onMouseOver(targetNode);
+  }
+  function getFirstAvailableDay(delta) {
+    var startMonth = delta > 0 ? 0 : self.config.showMonths - 1;
+    var endMonth = delta > 0 ? self.config.showMonths : -1;
+    for (var m2 = startMonth; m2 != endMonth; m2 += delta) {
+      var month = self.daysContainer.children[m2];
+      var startIndex = delta > 0 ? 0 : month.children.length - 1;
+      var endIndex = delta > 0 ? month.children.length : -1;
+      for (var i = startIndex; i != endIndex; i += delta) {
+        var c = month.children[i];
+        if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj))
+          return c;
+      }
+    }
+    return void 0;
+  }
+  function getNextAvailableDay(current, delta) {
+    var givenMonth = current.className.indexOf("Month") === -1 ? current.dateObj.getMonth() : self.currentMonth;
+    var endMonth = delta > 0 ? self.config.showMonths : -1;
+    var loopDelta = delta > 0 ? 1 : -1;
+    for (var m2 = givenMonth - self.currentMonth; m2 != endMonth; m2 += loopDelta) {
+      var month = self.daysContainer.children[m2];
+      var startIndex = givenMonth - self.currentMonth === m2 ? current.$i + delta : delta < 0 ? month.children.length - 1 : 0;
+      var numMonthDays = month.children.length;
+      for (var i = startIndex; i >= 0 && i < numMonthDays && i != (delta > 0 ? numMonthDays : -1); i += loopDelta) {
+        var c = month.children[i];
+        if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj) && Math.abs(current.$i - i) >= Math.abs(delta))
+          return focusOnDayElem(c);
+      }
+    }
+    self.changeMonth(loopDelta);
+    focusOnDay(getFirstAvailableDay(loopDelta), 0);
+    return void 0;
+  }
+  function focusOnDay(current, offset) {
+    var activeElement = getClosestActiveElement();
+    var dayFocused = isInView(activeElement || document.body);
+    var startElem = current !== void 0 ? current : dayFocused ? activeElement : self.selectedDateElem !== void 0 && isInView(self.selectedDateElem) ? self.selectedDateElem : self.todayDateElem !== void 0 && isInView(self.todayDateElem) ? self.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
+    if (startElem === void 0) {
+      self._input.focus();
+    } else if (!dayFocused) {
+      focusOnDayElem(startElem);
+    } else {
+      getNextAvailableDay(startElem, offset);
+    }
+  }
+  function buildMonthDays(year, month) {
+    var firstOfMonth = (new Date(year, month, 1).getDay() - self.l10n.firstDayOfWeek + 7) % 7;
+    var prevMonthDays = self.utils.getDaysInMonth((month - 1 + 12) % 12, year);
+    var daysInMonth = self.utils.getDaysInMonth(month, year), days = window.document.createDocumentFragment(), isMultiMonth = self.config.showMonths > 1, prevMonthDayClass = isMultiMonth ? "prevMonthDay hidden" : "prevMonthDay", nextMonthDayClass = isMultiMonth ? "nextMonthDay hidden" : "nextMonthDay";
+    var dayNumber = prevMonthDays + 1 - firstOfMonth, dayIndex = 0;
+    for (; dayNumber <= prevMonthDays; dayNumber++, dayIndex++) {
+      days.appendChild(createDay("flatpickr-day " + prevMonthDayClass, new Date(year, month - 1, dayNumber), dayNumber, dayIndex));
+    }
+    for (dayNumber = 1; dayNumber <= daysInMonth; dayNumber++, dayIndex++) {
+      days.appendChild(createDay("flatpickr-day", new Date(year, month, dayNumber), dayNumber, dayIndex));
+    }
+    for (var dayNum = daysInMonth + 1; dayNum <= 42 - firstOfMonth && (self.config.showMonths === 1 || dayIndex % 7 !== 0); dayNum++, dayIndex++) {
+      days.appendChild(createDay("flatpickr-day " + nextMonthDayClass, new Date(year, month + 1, dayNum % daysInMonth), dayNum, dayIndex));
+    }
+    var dayContainer = createElement("div", "dayContainer");
+    dayContainer.appendChild(days);
+    return dayContainer;
+  }
+  function buildDays() {
+    if (self.daysContainer === void 0) {
+      return;
+    }
+    clearNode(self.daysContainer);
+    if (self.weekNumbers)
+      clearNode(self.weekNumbers);
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < self.config.showMonths; i++) {
+      var d = new Date(self.currentYear, self.currentMonth, 1);
+      d.setMonth(self.currentMonth + i);
+      frag.appendChild(buildMonthDays(d.getFullYear(), d.getMonth()));
+    }
+    self.daysContainer.appendChild(frag);
+    self.days = self.daysContainer.firstChild;
+    if (self.config.mode === "range" && self.selectedDates.length === 1) {
+      onMouseOver();
+    }
+  }
+  function buildMonthSwitch() {
+    if (self.config.showMonths > 1 || self.config.monthSelectorType !== "dropdown")
+      return;
+    var shouldBuildMonth = function(month2) {
+      if (self.config.minDate !== void 0 && self.currentYear === self.config.minDate.getFullYear() && month2 < self.config.minDate.getMonth()) {
+        return false;
+      }
+      return !(self.config.maxDate !== void 0 && self.currentYear === self.config.maxDate.getFullYear() && month2 > self.config.maxDate.getMonth());
+    };
+    self.monthsDropdownContainer.tabIndex = -1;
+    self.monthsDropdownContainer.innerHTML = "";
+    for (var i = 0; i < 12; i++) {
+      if (!shouldBuildMonth(i))
+        continue;
+      var month = createElement("option", "flatpickr-monthDropdown-month");
+      month.value = new Date(self.currentYear, i).getMonth().toString();
+      month.textContent = monthToStr(i, self.config.shorthandCurrentMonth, self.l10n);
+      month.tabIndex = -1;
+      if (self.currentMonth === i) {
+        month.selected = true;
+      }
+      self.monthsDropdownContainer.appendChild(month);
+    }
+  }
+  function buildMonth() {
+    var container2 = createElement("div", "flatpickr-month");
+    var monthNavFragment = window.document.createDocumentFragment();
+    var monthElement;
+    if (self.config.showMonths > 1 || self.config.monthSelectorType === "static") {
+      monthElement = createElement("span", "cur-month");
+    } else {
+      self.monthsDropdownContainer = createElement("select", "flatpickr-monthDropdown-months");
+      self.monthsDropdownContainer.setAttribute("aria-label", self.l10n.monthAriaLabel);
+      bind(self.monthsDropdownContainer, "change", function(e) {
+        var target = getEventTarget(e);
+        var selectedMonth = parseInt(target.value, 10);
+        self.changeMonth(selectedMonth - self.currentMonth);
+        triggerEvent("onMonthChange");
+      });
+      buildMonthSwitch();
+      monthElement = self.monthsDropdownContainer;
+    }
+    var yearInput = createNumberInput("cur-year", { tabindex: "-1" });
+    var yearElement = yearInput.getElementsByTagName("input")[0];
+    yearElement.setAttribute("aria-label", self.l10n.yearAriaLabel);
+    if (self.config.minDate) {
+      yearElement.setAttribute("min", self.config.minDate.getFullYear().toString());
+    }
+    if (self.config.maxDate) {
+      yearElement.setAttribute("max", self.config.maxDate.getFullYear().toString());
+      yearElement.disabled = !!self.config.minDate && self.config.minDate.getFullYear() === self.config.maxDate.getFullYear();
+    }
+    var currentMonth = createElement("div", "flatpickr-current-month");
+    currentMonth.appendChild(monthElement);
+    currentMonth.appendChild(yearInput);
+    monthNavFragment.appendChild(currentMonth);
+    container2.appendChild(monthNavFragment);
+    return {
+      container: container2,
+      yearElement,
+      monthElement
+    };
+  }
+  function buildMonths() {
+    clearNode(self.monthNav);
+    self.monthNav.appendChild(self.prevMonthNav);
+    if (self.config.showMonths) {
+      self.yearElements = [];
+      self.monthElements = [];
+    }
+    for (var m2 = self.config.showMonths; m2--; ) {
+      var month = buildMonth();
+      self.yearElements.push(month.yearElement);
+      self.monthElements.push(month.monthElement);
+      self.monthNav.appendChild(month.container);
+    }
+    self.monthNav.appendChild(self.nextMonthNav);
+  }
+  function buildMonthNav() {
+    self.monthNav = createElement("div", "flatpickr-months");
+    self.yearElements = [];
+    self.monthElements = [];
+    self.prevMonthNav = createElement("span", "flatpickr-prev-month");
+    self.prevMonthNav.innerHTML = self.config.prevArrow;
+    self.nextMonthNav = createElement("span", "flatpickr-next-month");
+    self.nextMonthNav.innerHTML = self.config.nextArrow;
+    buildMonths();
+    Object.defineProperty(self, "_hidePrevMonthArrow", {
+      get: function() {
+        return self.__hidePrevMonthArrow;
+      },
+      set: function(bool) {
+        if (self.__hidePrevMonthArrow !== bool) {
+          toggleClass(self.prevMonthNav, "flatpickr-disabled", bool);
+          self.__hidePrevMonthArrow = bool;
+        }
+      }
+    });
+    Object.defineProperty(self, "_hideNextMonthArrow", {
+      get: function() {
+        return self.__hideNextMonthArrow;
+      },
+      set: function(bool) {
+        if (self.__hideNextMonthArrow !== bool) {
+          toggleClass(self.nextMonthNav, "flatpickr-disabled", bool);
+          self.__hideNextMonthArrow = bool;
+        }
+      }
+    });
+    self.currentYearElement = self.yearElements[0];
+    updateNavigationCurrentMonth();
+    return self.monthNav;
+  }
+  function buildTime() {
+    self.calendarContainer.classList.add("hasTime");
+    if (self.config.noCalendar)
+      self.calendarContainer.classList.add("noCalendar");
+    var defaults2 = getDefaultHours(self.config);
+    self.timeContainer = createElement("div", "flatpickr-time");
+    self.timeContainer.tabIndex = -1;
+    var separator = createElement("span", "flatpickr-time-separator", ":");
+    var hourInput = createNumberInput("flatpickr-hour", {
+      "aria-label": self.l10n.hourAriaLabel
+    });
+    self.hourElement = hourInput.getElementsByTagName("input")[0];
+    var minuteInput = createNumberInput("flatpickr-minute", {
+      "aria-label": self.l10n.minuteAriaLabel
+    });
+    self.minuteElement = minuteInput.getElementsByTagName("input")[0];
+    self.hourElement.tabIndex = self.minuteElement.tabIndex = -1;
+    self.hourElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getHours() : self.config.time_24hr ? defaults2.hours : military2ampm(defaults2.hours));
+    self.minuteElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getMinutes() : defaults2.minutes);
+    self.hourElement.setAttribute("step", self.config.hourIncrement.toString());
+    self.minuteElement.setAttribute("step", self.config.minuteIncrement.toString());
+    self.hourElement.setAttribute("min", self.config.time_24hr ? "0" : "1");
+    self.hourElement.setAttribute("max", self.config.time_24hr ? "23" : "12");
+    self.hourElement.setAttribute("maxlength", "2");
+    self.minuteElement.setAttribute("min", "0");
+    self.minuteElement.setAttribute("max", "59");
+    self.minuteElement.setAttribute("maxlength", "2");
+    self.timeContainer.appendChild(hourInput);
+    self.timeContainer.appendChild(separator);
+    self.timeContainer.appendChild(minuteInput);
+    if (self.config.time_24hr)
+      self.timeContainer.classList.add("time24hr");
+    if (self.config.enableSeconds) {
+      self.timeContainer.classList.add("hasSeconds");
+      var secondInput = createNumberInput("flatpickr-second");
+      self.secondElement = secondInput.getElementsByTagName("input")[0];
+      self.secondElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getSeconds() : defaults2.seconds);
+      self.secondElement.setAttribute("step", self.minuteElement.getAttribute("step"));
+      self.secondElement.setAttribute("min", "0");
+      self.secondElement.setAttribute("max", "59");
+      self.secondElement.setAttribute("maxlength", "2");
+      self.timeContainer.appendChild(createElement("span", "flatpickr-time-separator", ":"));
+      self.timeContainer.appendChild(secondInput);
+    }
+    if (!self.config.time_24hr) {
+      self.amPM = createElement("span", "flatpickr-am-pm", self.l10n.amPM[int((self.latestSelectedDateObj ? self.hourElement.value : self.config.defaultHour) > 11)]);
+      self.amPM.title = self.l10n.toggleTitle;
+      self.amPM.tabIndex = -1;
+      self.timeContainer.appendChild(self.amPM);
+    }
+    return self.timeContainer;
+  }
+  function buildWeekdays() {
+    if (!self.weekdayContainer)
+      self.weekdayContainer = createElement("div", "flatpickr-weekdays");
+    else
+      clearNode(self.weekdayContainer);
+    for (var i = self.config.showMonths; i--; ) {
+      var container2 = createElement("div", "flatpickr-weekdaycontainer");
+      self.weekdayContainer.appendChild(container2);
+    }
+    updateWeekdays();
+    return self.weekdayContainer;
+  }
+  function updateWeekdays() {
+    if (!self.weekdayContainer) {
+      return;
+    }
+    var firstDayOfWeek = self.l10n.firstDayOfWeek;
+    var weekdays = __spreadArrays(self.l10n.weekdays.shorthand);
+    if (firstDayOfWeek > 0 && firstDayOfWeek < weekdays.length) {
+      weekdays = __spreadArrays(weekdays.splice(firstDayOfWeek, weekdays.length), weekdays.splice(0, firstDayOfWeek));
+    }
+    for (var i = self.config.showMonths; i--; ) {
+      self.weekdayContainer.children[i].innerHTML = "\n      <span class='flatpickr-weekday'>\n        " + weekdays.join("</span><span class='flatpickr-weekday'>") + "\n      </span>\n      ";
+    }
+  }
+  function buildWeeks() {
+    self.calendarContainer.classList.add("hasWeeks");
+    var weekWrapper = createElement("div", "flatpickr-weekwrapper");
+    weekWrapper.appendChild(createElement("span", "flatpickr-weekday", self.l10n.weekAbbreviation));
+    var weekNumbers = createElement("div", "flatpickr-weeks");
+    weekWrapper.appendChild(weekNumbers);
+    return {
+      weekWrapper,
+      weekNumbers
+    };
+  }
+  function changeMonth(value, isOffset) {
+    if (isOffset === void 0) {
+      isOffset = true;
+    }
+    var delta = isOffset ? value : value - self.currentMonth;
+    if (delta < 0 && self._hidePrevMonthArrow === true || delta > 0 && self._hideNextMonthArrow === true)
+      return;
+    self.currentMonth += delta;
+    if (self.currentMonth < 0 || self.currentMonth > 11) {
+      self.currentYear += self.currentMonth > 11 ? 1 : -1;
+      self.currentMonth = (self.currentMonth + 12) % 12;
+      triggerEvent("onYearChange");
+      buildMonthSwitch();
+    }
+    buildDays();
+    triggerEvent("onMonthChange");
+    updateNavigationCurrentMonth();
+  }
+  function clear(triggerChangeEvent, toInitial) {
+    if (triggerChangeEvent === void 0) {
+      triggerChangeEvent = true;
+    }
+    if (toInitial === void 0) {
+      toInitial = true;
+    }
+    self.input.value = "";
+    if (self.altInput !== void 0)
+      self.altInput.value = "";
+    if (self.mobileInput !== void 0)
+      self.mobileInput.value = "";
+    self.selectedDates = [];
+    self.latestSelectedDateObj = void 0;
+    if (toInitial === true) {
+      self.currentYear = self._initialDate.getFullYear();
+      self.currentMonth = self._initialDate.getMonth();
+    }
+    if (self.config.enableTime === true) {
+      var _a = getDefaultHours(self.config), hours = _a.hours, minutes = _a.minutes, seconds = _a.seconds;
+      setHours(hours, minutes, seconds);
+    }
+    self.redraw();
+    if (triggerChangeEvent)
+      triggerEvent("onChange");
+  }
+  function close() {
+    self.isOpen = false;
+    if (!self.isMobile) {
+      if (self.calendarContainer !== void 0) {
+        self.calendarContainer.classList.remove("open");
+      }
+      if (self._input !== void 0) {
+        self._input.classList.remove("active");
+      }
+    }
+    triggerEvent("onClose");
+  }
+  function destroy() {
+    if (self.config !== void 0)
+      triggerEvent("onDestroy");
+    for (var i = self._handlers.length; i--; ) {
+      self._handlers[i].remove();
+    }
+    self._handlers = [];
+    if (self.mobileInput) {
+      if (self.mobileInput.parentNode)
+        self.mobileInput.parentNode.removeChild(self.mobileInput);
+      self.mobileInput = void 0;
+    } else if (self.calendarContainer && self.calendarContainer.parentNode) {
+      if (self.config.static && self.calendarContainer.parentNode) {
+        var wrapper = self.calendarContainer.parentNode;
+        wrapper.lastChild && wrapper.removeChild(wrapper.lastChild);
+        if (wrapper.parentNode) {
+          while (wrapper.firstChild)
+            wrapper.parentNode.insertBefore(wrapper.firstChild, wrapper);
+          wrapper.parentNode.removeChild(wrapper);
+        }
+      } else
+        self.calendarContainer.parentNode.removeChild(self.calendarContainer);
+    }
+    if (self.altInput) {
+      self.input.type = "text";
+      if (self.altInput.parentNode)
+        self.altInput.parentNode.removeChild(self.altInput);
+      delete self.altInput;
+    }
+    if (self.input) {
+      self.input.type = self.input._type;
+      self.input.classList.remove("flatpickr-input");
+      self.input.removeAttribute("readonly");
+    }
+    [
+      "_showTimeInput",
+      "latestSelectedDateObj",
+      "_hideNextMonthArrow",
+      "_hidePrevMonthArrow",
+      "__hideNextMonthArrow",
+      "__hidePrevMonthArrow",
+      "isMobile",
+      "isOpen",
+      "selectedDateElem",
+      "minDateHasTime",
+      "maxDateHasTime",
+      "days",
+      "daysContainer",
+      "_input",
+      "_positionElement",
+      "innerContainer",
+      "rContainer",
+      "monthNav",
+      "todayDateElem",
+      "calendarContainer",
+      "weekdayContainer",
+      "prevMonthNav",
+      "nextMonthNav",
+      "monthsDropdownContainer",
+      "currentMonthElement",
+      "currentYearElement",
+      "navigationCurrentMonth",
+      "selectedDateElem",
+      "config"
+    ].forEach(function(k) {
+      try {
+        delete self[k];
+      } catch (_2) {
+      }
+    });
+  }
+  function isCalendarElem(elem) {
+    return self.calendarContainer.contains(elem);
+  }
+  function documentClick(e) {
+    if (self.isOpen && !self.config.inline) {
+      var eventTarget_1 = getEventTarget(e);
+      var isCalendarElement = isCalendarElem(eventTarget_1);
+      var isInput = eventTarget_1 === self.input || eventTarget_1 === self.altInput || self.element.contains(eventTarget_1) || e.path && e.path.indexOf && (~e.path.indexOf(self.input) || ~e.path.indexOf(self.altInput));
+      var lostFocus = !isInput && !isCalendarElement && !isCalendarElem(e.relatedTarget);
+      var isIgnored = !self.config.ignoredFocusElements.some(function(elem) {
+        return elem.contains(eventTarget_1);
+      });
+      if (lostFocus && isIgnored) {
+        if (self.config.allowInput) {
+          self.setDate(self._input.value, false, self.config.altInput ? self.config.altFormat : self.config.dateFormat);
+        }
+        if (self.timeContainer !== void 0 && self.minuteElement !== void 0 && self.hourElement !== void 0 && self.input.value !== "" && self.input.value !== void 0) {
+          updateTime();
+        }
+        self.close();
+        if (self.config && self.config.mode === "range" && self.selectedDates.length === 1)
+          self.clear(false);
+      }
+    }
+  }
+  function changeYear(newYear) {
+    if (!newYear || self.config.minDate && newYear < self.config.minDate.getFullYear() || self.config.maxDate && newYear > self.config.maxDate.getFullYear())
+      return;
+    var newYearNum = newYear, isNewYear = self.currentYear !== newYearNum;
+    self.currentYear = newYearNum || self.currentYear;
+    if (self.config.maxDate && self.currentYear === self.config.maxDate.getFullYear()) {
+      self.currentMonth = Math.min(self.config.maxDate.getMonth(), self.currentMonth);
+    } else if (self.config.minDate && self.currentYear === self.config.minDate.getFullYear()) {
+      self.currentMonth = Math.max(self.config.minDate.getMonth(), self.currentMonth);
+    }
+    if (isNewYear) {
+      self.redraw();
+      triggerEvent("onYearChange");
+      buildMonthSwitch();
+    }
+  }
+  function isEnabled(date, timeless) {
+    var _a;
+    if (timeless === void 0) {
+      timeless = true;
+    }
+    var dateToCheck = self.parseDate(date, void 0, timeless);
+    if (self.config.minDate && dateToCheck && compareDates(dateToCheck, self.config.minDate, timeless !== void 0 ? timeless : !self.minDateHasTime) < 0 || self.config.maxDate && dateToCheck && compareDates(dateToCheck, self.config.maxDate, timeless !== void 0 ? timeless : !self.maxDateHasTime) > 0)
+      return false;
+    if (!self.config.enable && self.config.disable.length === 0)
+      return true;
+    if (dateToCheck === void 0)
+      return false;
+    var bool = !!self.config.enable, array = (_a = self.config.enable) !== null && _a !== void 0 ? _a : self.config.disable;
+    for (var i = 0, d = void 0; i < array.length; i++) {
+      d = array[i];
+      if (typeof d === "function" && d(dateToCheck))
+        return bool;
+      else if (d instanceof Date && dateToCheck !== void 0 && d.getTime() === dateToCheck.getTime())
+        return bool;
+      else if (typeof d === "string") {
+        var parsed = self.parseDate(d, void 0, true);
+        return parsed && parsed.getTime() === dateToCheck.getTime() ? bool : !bool;
+      } else if (typeof d === "object" && dateToCheck !== void 0 && d.from && d.to && dateToCheck.getTime() >= d.from.getTime() && dateToCheck.getTime() <= d.to.getTime())
+        return bool;
+    }
+    return !bool;
+  }
+  function isInView(elem) {
+    if (self.daysContainer !== void 0)
+      return elem.className.indexOf("hidden") === -1 && elem.className.indexOf("flatpickr-disabled") === -1 && self.daysContainer.contains(elem);
+    return false;
+  }
+  function onBlur(e) {
+    var isInput = e.target === self._input;
+    var valueChanged = self._input.value.trimEnd() !== getDateStr();
+    if (isInput && valueChanged && !(e.relatedTarget && isCalendarElem(e.relatedTarget))) {
+      self.setDate(self._input.value, true, e.target === self.altInput ? self.config.altFormat : self.config.dateFormat);
+    }
+  }
+  function onKeyDown(e) {
+    var eventTarget = getEventTarget(e);
+    var isInput = self.config.wrap ? element.contains(eventTarget) : eventTarget === self._input;
+    var allowInput = self.config.allowInput;
+    var allowKeydown = self.isOpen && (!allowInput || !isInput);
+    var allowInlineKeydown = self.config.inline && isInput && !allowInput;
+    if (e.keyCode === 13 && isInput) {
+      if (allowInput) {
+        self.setDate(self._input.value, true, eventTarget === self.altInput ? self.config.altFormat : self.config.dateFormat);
+        self.close();
+        return eventTarget.blur();
+      } else {
+        self.open();
+      }
+    } else if (isCalendarElem(eventTarget) || allowKeydown || allowInlineKeydown) {
+      var isTimeObj = !!self.timeContainer && self.timeContainer.contains(eventTarget);
+      switch (e.keyCode) {
+        case 13:
+          if (isTimeObj) {
+            e.preventDefault();
+            updateTime();
+            focusAndClose();
+          } else
+            selectDate(e);
+          break;
+        case 27:
+          e.preventDefault();
+          focusAndClose();
+          break;
+        case 8:
+        case 46:
+          if (isInput && !self.config.allowInput) {
+            e.preventDefault();
+            self.clear();
           }
-        );
+          break;
+        case 37:
+        case 39:
+          if (!isTimeObj && !isInput) {
+            e.preventDefault();
+            var activeElement = getClosestActiveElement();
+            if (self.daysContainer !== void 0 && (allowInput === false || activeElement && isInView(activeElement))) {
+              var delta_1 = e.keyCode === 39 ? 1 : -1;
+              if (!e.ctrlKey)
+                focusOnDay(void 0, delta_1);
+              else {
+                e.stopPropagation();
+                changeMonth(delta_1);
+                focusOnDay(getFirstAvailableDay(1), 0);
+              }
+            }
+          } else if (self.hourElement)
+            self.hourElement.focus();
+          break;
+        case 38:
+        case 40:
+          e.preventDefault();
+          var delta = e.keyCode === 40 ? 1 : -1;
+          if (self.daysContainer && eventTarget.$i !== void 0 || eventTarget === self.input || eventTarget === self.altInput) {
+            if (e.ctrlKey) {
+              e.stopPropagation();
+              changeYear(self.currentYear - delta);
+              focusOnDay(getFirstAvailableDay(1), 0);
+            } else if (!isTimeObj)
+              focusOnDay(void 0, delta * 7);
+          } else if (eventTarget === self.currentYearElement) {
+            changeYear(self.currentYear - delta);
+          } else if (self.config.enableTime) {
+            if (!isTimeObj && self.hourElement)
+              self.hourElement.focus();
+            updateTime(e);
+            self._debouncedChange();
+          }
+          break;
+        case 9:
+          if (isTimeObj) {
+            var elems = [
+              self.hourElement,
+              self.minuteElement,
+              self.secondElement,
+              self.amPM
+            ].concat(self.pluginElements).filter(function(x) {
+              return x;
+            });
+            var i = elems.indexOf(eventTarget);
+            if (i !== -1) {
+              var target = elems[i + (e.shiftKey ? -1 : 1)];
+              e.preventDefault();
+              (target || self._input).focus();
+            }
+          } else if (!self.config.noCalendar && self.daysContainer && self.daysContainer.contains(eventTarget) && e.shiftKey) {
+            e.preventDefault();
+            self._input.focus();
+          }
+          break;
+      }
+    }
+    if (self.amPM !== void 0 && eventTarget === self.amPM) {
+      switch (e.key) {
+        case self.l10n.amPM[0].charAt(0):
+        case self.l10n.amPM[0].charAt(0).toLowerCase():
+          self.amPM.textContent = self.l10n.amPM[0];
+          setHoursFromInputs();
+          updateValue2();
+          break;
+        case self.l10n.amPM[1].charAt(0):
+        case self.l10n.amPM[1].charAt(0).toLowerCase():
+          self.amPM.textContent = self.l10n.amPM[1];
+          setHoursFromInputs();
+          updateValue2();
+          break;
+      }
+    }
+    if (isInput || isCalendarElem(eventTarget)) {
+      triggerEvent("onKeyDown", e);
+    }
+  }
+  function onMouseOver(elem, cellClass) {
+    if (cellClass === void 0) {
+      cellClass = "flatpickr-day";
+    }
+    if (self.selectedDates.length !== 1 || elem && (!elem.classList.contains(cellClass) || elem.classList.contains("flatpickr-disabled")))
+      return;
+    var hoverDate = elem ? elem.dateObj.getTime() : self.days.firstElementChild.dateObj.getTime(), initialDate = self.parseDate(self.selectedDates[0], void 0, true).getTime(), rangeStartDate = Math.min(hoverDate, self.selectedDates[0].getTime()), rangeEndDate = Math.max(hoverDate, self.selectedDates[0].getTime());
+    var containsDisabled = false;
+    var minRange = 0, maxRange = 0;
+    for (var t = rangeStartDate; t < rangeEndDate; t += duration.DAY) {
+      if (!isEnabled(new Date(t), true)) {
+        containsDisabled = containsDisabled || t > rangeStartDate && t < rangeEndDate;
+        if (t < initialDate && (!minRange || t > minRange))
+          minRange = t;
+        else if (t > initialDate && (!maxRange || t < maxRange))
+          maxRange = t;
+      }
+    }
+    var hoverableCells = Array.from(self.rContainer.querySelectorAll("*:nth-child(-n+" + self.config.showMonths + ") > ." + cellClass));
+    hoverableCells.forEach(function(dayElem) {
+      var date = dayElem.dateObj;
+      var timestamp = date.getTime();
+      var outOfRange = minRange > 0 && timestamp < minRange || maxRange > 0 && timestamp > maxRange;
+      if (outOfRange) {
+        dayElem.classList.add("notAllowed");
+        ["inRange", "startRange", "endRange"].forEach(function(c) {
+          dayElem.classList.remove(c);
+        });
+        return;
+      } else if (containsDisabled && !outOfRange)
+        return;
+      ["startRange", "inRange", "endRange", "notAllowed"].forEach(function(c) {
+        dayElem.classList.remove(c);
+      });
+      if (elem !== void 0) {
+        elem.classList.add(hoverDate <= self.selectedDates[0].getTime() ? "startRange" : "endRange");
+        if (initialDate < hoverDate && timestamp === initialDate)
+          dayElem.classList.add("startRange");
+        else if (initialDate > hoverDate && timestamp === initialDate)
+          dayElem.classList.add("endRange");
+        if (timestamp >= minRange && (maxRange === 0 || timestamp <= maxRange) && isBetween(timestamp, initialDate, hoverDate))
+          dayElem.classList.add("inRange");
+      }
+    });
+  }
+  function onResize() {
+    if (self.isOpen && !self.config.static && !self.config.inline)
+      positionCalendar();
+  }
+  function open(e, positionElement) {
+    if (positionElement === void 0) {
+      positionElement = self._positionElement;
+    }
+    if (self.isMobile === true) {
+      if (e) {
+        e.preventDefault();
+        var eventTarget = getEventTarget(e);
+        if (eventTarget) {
+          eventTarget.blur();
+        }
+      }
+      if (self.mobileInput !== void 0) {
+        self.mobileInput.focus();
+        self.mobileInput.click();
+      }
+      triggerEvent("onOpen");
+      return;
+    } else if (self._input.disabled || self.config.inline) {
+      return;
+    }
+    var wasOpen = self.isOpen;
+    self.isOpen = true;
+    if (!wasOpen) {
+      self.calendarContainer.classList.add("open");
+      self._input.classList.add("active");
+      triggerEvent("onOpen");
+      positionCalendar(positionElement);
+    }
+    if (self.config.enableTime === true && self.config.noCalendar === true) {
+      if (self.config.allowInput === false && (e === void 0 || !self.timeContainer.contains(e.relatedTarget))) {
+        setTimeout(function() {
+          return self.hourElement.select();
+        }, 50);
+      }
+    }
+  }
+  function minMaxDateSetter(type) {
+    return function(date) {
+      var dateObj = self.config["_" + type + "Date"] = self.parseDate(date, self.config.dateFormat);
+      var inverseDateObj = self.config["_" + (type === "min" ? "max" : "min") + "Date"];
+      if (dateObj !== void 0) {
+        self[type === "min" ? "minDateHasTime" : "maxDateHasTime"] = dateObj.getHours() > 0 || dateObj.getMinutes() > 0 || dateObj.getSeconds() > 0;
+      }
+      if (self.selectedDates) {
+        self.selectedDates = self.selectedDates.filter(function(d) {
+          return isEnabled(d);
+        });
+        if (!self.selectedDates.length && type === "min")
+          setHoursFromDate(dateObj);
+        updateValue2();
+      }
+      if (self.daysContainer) {
+        redraw();
+        if (dateObj !== void 0)
+          self.currentYearElement[type] = dateObj.getFullYear().toString();
+        else
+          self.currentYearElement.removeAttribute(type);
+        self.currentYearElement.disabled = !!inverseDateObj && dateObj !== void 0 && inverseDateObj.getFullYear() === dateObj.getFullYear();
+      }
+    };
+  }
+  function parseConfig() {
+    var boolOpts = [
+      "wrap",
+      "weekNumbers",
+      "allowInput",
+      "allowInvalidPreload",
+      "clickOpens",
+      "time_24hr",
+      "enableTime",
+      "noCalendar",
+      "altInput",
+      "shorthandCurrentMonth",
+      "inline",
+      "static",
+      "enableSeconds",
+      "disableMobile"
+    ];
+    var userConfig = __assign(__assign({}, JSON.parse(JSON.stringify(element.dataset || {}))), instanceConfig);
+    var formats2 = {};
+    self.config.parseDate = userConfig.parseDate;
+    self.config.formatDate = userConfig.formatDate;
+    Object.defineProperty(self.config, "enable", {
+      get: function() {
+        return self.config._enable;
+      },
+      set: function(dates) {
+        self.config._enable = parseDateRules(dates);
+      }
+    });
+    Object.defineProperty(self.config, "disable", {
+      get: function() {
+        return self.config._disable;
+      },
+      set: function(dates) {
+        self.config._disable = parseDateRules(dates);
+      }
+    });
+    var timeMode = userConfig.mode === "time";
+    if (!userConfig.dateFormat && (userConfig.enableTime || timeMode)) {
+      var defaultDateFormat = flatpickr.defaultConfig.dateFormat || defaults.dateFormat;
+      formats2.dateFormat = userConfig.noCalendar || timeMode ? "H:i" + (userConfig.enableSeconds ? ":S" : "") : defaultDateFormat + " H:i" + (userConfig.enableSeconds ? ":S" : "");
+    }
+    if (userConfig.altInput && (userConfig.enableTime || timeMode) && !userConfig.altFormat) {
+      var defaultAltFormat = flatpickr.defaultConfig.altFormat || defaults.altFormat;
+      formats2.altFormat = userConfig.noCalendar || timeMode ? "h:i" + (userConfig.enableSeconds ? ":S K" : " K") : defaultAltFormat + (" h:i" + (userConfig.enableSeconds ? ":S" : "") + " K");
+    }
+    Object.defineProperty(self.config, "minDate", {
+      get: function() {
+        return self.config._minDate;
+      },
+      set: minMaxDateSetter("min")
+    });
+    Object.defineProperty(self.config, "maxDate", {
+      get: function() {
+        return self.config._maxDate;
+      },
+      set: minMaxDateSetter("max")
+    });
+    var minMaxTimeSetter = function(type) {
+      return function(val) {
+        self.config[type === "min" ? "_minTime" : "_maxTime"] = self.parseDate(val, "H:i:S");
+      };
+    };
+    Object.defineProperty(self.config, "minTime", {
+      get: function() {
+        return self.config._minTime;
+      },
+      set: minMaxTimeSetter("min")
+    });
+    Object.defineProperty(self.config, "maxTime", {
+      get: function() {
+        return self.config._maxTime;
+      },
+      set: minMaxTimeSetter("max")
+    });
+    if (userConfig.mode === "time") {
+      self.config.noCalendar = true;
+      self.config.enableTime = true;
+    }
+    Object.assign(self.config, formats2, userConfig);
+    for (var i = 0; i < boolOpts.length; i++)
+      self.config[boolOpts[i]] = self.config[boolOpts[i]] === true || self.config[boolOpts[i]] === "true";
+    HOOKS.filter(function(hook) {
+      return self.config[hook] !== void 0;
+    }).forEach(function(hook) {
+      self.config[hook] = arrayify(self.config[hook] || []).map(bindToInstance);
+    });
+    self.isMobile = !self.config.disableMobile && !self.config.inline && self.config.mode === "single" && !self.config.disable.length && !self.config.enable && !self.config.weekNumbers && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    for (var i = 0; i < self.config.plugins.length; i++) {
+      var pluginConf = self.config.plugins[i](self) || {};
+      for (var key in pluginConf) {
+        if (HOOKS.indexOf(key) > -1) {
+          self.config[key] = arrayify(pluginConf[key]).map(bindToInstance).concat(self.config[key]);
+        } else if (typeof userConfig[key] === "undefined")
+          self.config[key] = pluginConf[key];
+      }
+    }
+    if (!userConfig.altInputClass) {
+      self.config.altInputClass = getInputElem().className + " " + self.config.altInputClass;
+    }
+    triggerEvent("onParseConfig");
+  }
+  function getInputElem() {
+    return self.config.wrap ? element.querySelector("[data-input]") : element;
+  }
+  function setupLocale() {
+    if (typeof self.config.locale !== "object" && typeof flatpickr.l10ns[self.config.locale] === "undefined")
+      self.config.errorHandler(new Error("flatpickr: invalid locale " + self.config.locale));
+    self.l10n = __assign(__assign({}, flatpickr.l10ns.default), typeof self.config.locale === "object" ? self.config.locale : self.config.locale !== "default" ? flatpickr.l10ns[self.config.locale] : void 0);
+    tokenRegex.D = "(" + self.l10n.weekdays.shorthand.join("|") + ")";
+    tokenRegex.l = "(" + self.l10n.weekdays.longhand.join("|") + ")";
+    tokenRegex.M = "(" + self.l10n.months.shorthand.join("|") + ")";
+    tokenRegex.F = "(" + self.l10n.months.longhand.join("|") + ")";
+    tokenRegex.K = "(" + self.l10n.amPM[0] + "|" + self.l10n.amPM[1] + "|" + self.l10n.amPM[0].toLowerCase() + "|" + self.l10n.amPM[1].toLowerCase() + ")";
+    var userConfig = __assign(__assign({}, instanceConfig), JSON.parse(JSON.stringify(element.dataset || {})));
+    if (userConfig.time_24hr === void 0 && flatpickr.defaultConfig.time_24hr === void 0) {
+      self.config.time_24hr = self.l10n.time_24hr;
+    }
+    self.formatDate = createDateFormatter(self);
+    self.parseDate = createDateParser({ config: self.config, l10n: self.l10n });
+  }
+  function positionCalendar(customPositionElement) {
+    if (typeof self.config.position === "function") {
+      return void self.config.position(self, customPositionElement);
+    }
+    if (self.calendarContainer === void 0)
+      return;
+    triggerEvent("onPreCalendarPosition");
+    var positionElement = customPositionElement || self._positionElement;
+    var calendarHeight = Array.prototype.reduce.call(self.calendarContainer.children, function(acc, child) {
+      return acc + child.offsetHeight;
+    }, 0), calendarWidth = self.calendarContainer.offsetWidth, configPos = self.config.position.split(" "), configPosVertical = configPos[0], configPosHorizontal = configPos.length > 1 ? configPos[1] : null, inputBounds = positionElement.getBoundingClientRect(), distanceFromBottom = window.innerHeight - inputBounds.bottom, showOnTop = configPosVertical === "above" || configPosVertical !== "below" && distanceFromBottom < calendarHeight && inputBounds.top > calendarHeight;
+    var top = window.pageYOffset + inputBounds.top + (!showOnTop ? positionElement.offsetHeight + 2 : -calendarHeight - 2);
+    toggleClass(self.calendarContainer, "arrowTop", !showOnTop);
+    toggleClass(self.calendarContainer, "arrowBottom", showOnTop);
+    if (self.config.inline)
+      return;
+    var left = window.pageXOffset + inputBounds.left;
+    var isCenter = false;
+    var isRight = false;
+    if (configPosHorizontal === "center") {
+      left -= (calendarWidth - inputBounds.width) / 2;
+      isCenter = true;
+    } else if (configPosHorizontal === "right") {
+      left -= calendarWidth - inputBounds.width;
+      isRight = true;
+    }
+    toggleClass(self.calendarContainer, "arrowLeft", !isCenter && !isRight);
+    toggleClass(self.calendarContainer, "arrowCenter", isCenter);
+    toggleClass(self.calendarContainer, "arrowRight", isRight);
+    var right = window.document.body.offsetWidth - (window.pageXOffset + inputBounds.right);
+    var rightMost = left + calendarWidth > window.document.body.offsetWidth;
+    var centerMost = right + calendarWidth > window.document.body.offsetWidth;
+    toggleClass(self.calendarContainer, "rightMost", rightMost);
+    if (self.config.static)
+      return;
+    self.calendarContainer.style.top = top + "px";
+    if (!rightMost) {
+      self.calendarContainer.style.left = left + "px";
+      self.calendarContainer.style.right = "auto";
+    } else if (!centerMost) {
+      self.calendarContainer.style.left = "auto";
+      self.calendarContainer.style.right = right + "px";
+    } else {
+      var doc = getDocumentStyleSheet();
+      if (doc === void 0)
+        return;
+      var bodyWidth = window.document.body.offsetWidth;
+      var centerLeft = Math.max(0, bodyWidth / 2 - calendarWidth / 2);
+      var centerBefore = ".flatpickr-calendar.centerMost:before";
+      var centerAfter = ".flatpickr-calendar.centerMost:after";
+      var centerIndex = doc.cssRules.length;
+      var centerStyle = "{left:" + inputBounds.left + "px;right:auto;}";
+      toggleClass(self.calendarContainer, "rightMost", false);
+      toggleClass(self.calendarContainer, "centerMost", true);
+      doc.insertRule(centerBefore + "," + centerAfter + centerStyle, centerIndex);
+      self.calendarContainer.style.left = centerLeft + "px";
+      self.calendarContainer.style.right = "auto";
+    }
+  }
+  function getDocumentStyleSheet() {
+    var editableSheet = null;
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var sheet = document.styleSheets[i];
+      if (!sheet.cssRules)
+        continue;
+      try {
+        sheet.cssRules;
+      } catch (err) {
+        continue;
+      }
+      editableSheet = sheet;
+      break;
+    }
+    return editableSheet != null ? editableSheet : createStyleSheet();
+  }
+  function createStyleSheet() {
+    var style2 = document.createElement("style");
+    document.head.appendChild(style2);
+    return style2.sheet;
+  }
+  function redraw() {
+    if (self.config.noCalendar || self.isMobile)
+      return;
+    buildMonthSwitch();
+    updateNavigationCurrentMonth();
+    buildDays();
+  }
+  function focusAndClose() {
+    self._input.focus();
+    if (window.navigator.userAgent.indexOf("MSIE") !== -1 || navigator.msMaxTouchPoints !== void 0) {
+      setTimeout(self.close, 0);
+    } else {
+      self.close();
+    }
+  }
+  function selectDate(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var isSelectable = function(day) {
+      return day.classList && day.classList.contains("flatpickr-day") && !day.classList.contains("flatpickr-disabled") && !day.classList.contains("notAllowed");
+    };
+    var t = findParent(getEventTarget(e), isSelectable);
+    if (t === void 0)
+      return;
+    var target = t;
+    var selectedDate = self.latestSelectedDateObj = new Date(target.dateObj.getTime());
+    var shouldChangeMonth = (selectedDate.getMonth() < self.currentMonth || selectedDate.getMonth() > self.currentMonth + self.config.showMonths - 1) && self.config.mode !== "range";
+    self.selectedDateElem = target;
+    if (self.config.mode === "single")
+      self.selectedDates = [selectedDate];
+    else if (self.config.mode === "multiple") {
+      var selectedIndex = isDateSelected(selectedDate);
+      if (selectedIndex)
+        self.selectedDates.splice(parseInt(selectedIndex), 1);
+      else
+        self.selectedDates.push(selectedDate);
+    } else if (self.config.mode === "range") {
+      if (self.selectedDates.length === 2) {
+        self.clear(false, false);
+      }
+      self.latestSelectedDateObj = selectedDate;
+      self.selectedDates.push(selectedDate);
+      if (compareDates(selectedDate, self.selectedDates[0], true) !== 0)
+        self.selectedDates.sort(function(a, b) {
+          return a.getTime() - b.getTime();
+        });
+    }
+    setHoursFromInputs();
+    if (shouldChangeMonth) {
+      var isNewYear = self.currentYear !== selectedDate.getFullYear();
+      self.currentYear = selectedDate.getFullYear();
+      self.currentMonth = selectedDate.getMonth();
+      if (isNewYear) {
+        triggerEvent("onYearChange");
+        buildMonthSwitch();
+      }
+      triggerEvent("onMonthChange");
+    }
+    updateNavigationCurrentMonth();
+    buildDays();
+    updateValue2();
+    if (!shouldChangeMonth && self.config.mode !== "range" && self.config.showMonths === 1)
+      focusOnDayElem(target);
+    else if (self.selectedDateElem !== void 0 && self.hourElement === void 0) {
+      self.selectedDateElem && self.selectedDateElem.focus();
+    }
+    if (self.hourElement !== void 0)
+      self.hourElement !== void 0 && self.hourElement.focus();
+    if (self.config.closeOnSelect) {
+      var single = self.config.mode === "single" && !self.config.enableTime;
+      var range2 = self.config.mode === "range" && self.selectedDates.length === 2 && !self.config.enableTime;
+      if (single || range2) {
+        focusAndClose();
+      }
+    }
+    triggerChange();
+  }
+  var CALLBACKS = {
+    locale: [setupLocale, updateWeekdays],
+    showMonths: [buildMonths, setCalendarWidth, buildWeekdays],
+    minDate: [jumpToDate],
+    maxDate: [jumpToDate],
+    positionElement: [updatePositionElement],
+    clickOpens: [
+      function() {
+        if (self.config.clickOpens === true) {
+          bind(self._input, "focus", self.open);
+          bind(self._input, "click", self.open);
+        } else {
+          self._input.removeEventListener("focus", self.open);
+          self._input.removeEventListener("click", self.open);
+        }
+      }
+    ]
+  };
+  function set(option, value) {
+    if (option !== null && typeof option === "object") {
+      Object.assign(self.config, option);
+      for (var key in option) {
+        if (CALLBACKS[key] !== void 0)
+          CALLBACKS[key].forEach(function(x) {
+            return x();
+          });
+      }
+    } else {
+      self.config[option] = value;
+      if (CALLBACKS[option] !== void 0)
+        CALLBACKS[option].forEach(function(x) {
+          return x();
+        });
+      else if (HOOKS.indexOf(option) > -1)
+        self.config[option] = arrayify(value);
+    }
+    self.redraw();
+    updateValue2(true);
+  }
+  function setSelectedDate(inputDate, format2) {
+    var dates = [];
+    if (inputDate instanceof Array)
+      dates = inputDate.map(function(d) {
+        return self.parseDate(d, format2);
+      });
+    else if (inputDate instanceof Date || typeof inputDate === "number")
+      dates = [self.parseDate(inputDate, format2)];
+    else if (typeof inputDate === "string") {
+      switch (self.config.mode) {
+        case "single":
+        case "time":
+          dates = [self.parseDate(inputDate, format2)];
+          break;
+        case "multiple":
+          dates = inputDate.split(self.config.conjunction).map(function(date) {
+            return self.parseDate(date, format2);
+          });
+          break;
+        case "range":
+          dates = inputDate.split(self.l10n.rangeSeparator).map(function(date) {
+            return self.parseDate(date, format2);
+          });
+          break;
+      }
+    } else
+      self.config.errorHandler(new Error("Invalid date supplied: " + JSON.stringify(inputDate)));
+    self.selectedDates = self.config.allowInvalidPreload ? dates : dates.filter(function(d) {
+      return d instanceof Date && isEnabled(d, false);
+    });
+    if (self.config.mode === "range")
+      self.selectedDates.sort(function(a, b) {
+        return a.getTime() - b.getTime();
+      });
+  }
+  function setDate(date, triggerChange2, format2) {
+    if (triggerChange2 === void 0) {
+      triggerChange2 = false;
+    }
+    if (format2 === void 0) {
+      format2 = self.config.dateFormat;
+    }
+    if (date !== 0 && !date || date instanceof Array && date.length === 0)
+      return self.clear(triggerChange2);
+    setSelectedDate(date, format2);
+    self.latestSelectedDateObj = self.selectedDates[self.selectedDates.length - 1];
+    self.redraw();
+    jumpToDate(void 0, triggerChange2);
+    setHoursFromDate();
+    if (self.selectedDates.length === 0) {
+      self.clear(false);
+    }
+    updateValue2(triggerChange2);
+    if (triggerChange2)
+      triggerEvent("onChange");
+  }
+  function parseDateRules(arr) {
+    return arr.slice().map(function(rule) {
+      if (typeof rule === "string" || typeof rule === "number" || rule instanceof Date) {
+        return self.parseDate(rule, void 0, true);
+      } else if (rule && typeof rule === "object" && rule.from && rule.to)
+        return {
+          from: self.parseDate(rule.from, void 0),
+          to: self.parseDate(rule.to, void 0)
+        };
+      return rule;
+    }).filter(function(x) {
+      return x;
+    });
+  }
+  function setupDates() {
+    self.selectedDates = [];
+    self.now = self.parseDate(self.config.now) || /* @__PURE__ */ new Date();
+    var preloadedDate = self.config.defaultDate || ((self.input.nodeName === "INPUT" || self.input.nodeName === "TEXTAREA") && self.input.placeholder && self.input.value === self.input.placeholder ? null : self.input.value);
+    if (preloadedDate)
+      setSelectedDate(preloadedDate, self.config.dateFormat);
+    self._initialDate = self.selectedDates.length > 0 ? self.selectedDates[0] : self.config.minDate && self.config.minDate.getTime() > self.now.getTime() ? self.config.minDate : self.config.maxDate && self.config.maxDate.getTime() < self.now.getTime() ? self.config.maxDate : self.now;
+    self.currentYear = self._initialDate.getFullYear();
+    self.currentMonth = self._initialDate.getMonth();
+    if (self.selectedDates.length > 0)
+      self.latestSelectedDateObj = self.selectedDates[0];
+    if (self.config.minTime !== void 0)
+      self.config.minTime = self.parseDate(self.config.minTime, "H:i");
+    if (self.config.maxTime !== void 0)
+      self.config.maxTime = self.parseDate(self.config.maxTime, "H:i");
+    self.minDateHasTime = !!self.config.minDate && (self.config.minDate.getHours() > 0 || self.config.minDate.getMinutes() > 0 || self.config.minDate.getSeconds() > 0);
+    self.maxDateHasTime = !!self.config.maxDate && (self.config.maxDate.getHours() > 0 || self.config.maxDate.getMinutes() > 0 || self.config.maxDate.getSeconds() > 0);
+  }
+  function setupInputs() {
+    self.input = getInputElem();
+    if (!self.input) {
+      self.config.errorHandler(new Error("Invalid input element specified"));
+      return;
+    }
+    self.input._type = self.input.type;
+    self.input.type = "text";
+    self.input.classList.add("flatpickr-input");
+    self._input = self.input;
+    if (self.config.altInput) {
+      self.altInput = createElement(self.input.nodeName, self.config.altInputClass);
+      self._input = self.altInput;
+      self.altInput.placeholder = self.input.placeholder;
+      self.altInput.disabled = self.input.disabled;
+      self.altInput.required = self.input.required;
+      self.altInput.tabIndex = self.input.tabIndex;
+      self.altInput.type = "text";
+      self.input.setAttribute("type", "hidden");
+      if (!self.config.static && self.input.parentNode)
+        self.input.parentNode.insertBefore(self.altInput, self.input.nextSibling);
+    }
+    if (!self.config.allowInput)
+      self._input.setAttribute("readonly", "readonly");
+    updatePositionElement();
+  }
+  function updatePositionElement() {
+    self._positionElement = self.config.positionElement || self._input;
+  }
+  function setupMobile() {
+    var inputType = self.config.enableTime ? self.config.noCalendar ? "time" : "datetime-local" : "date";
+    self.mobileInput = createElement("input", self.input.className + " flatpickr-mobile");
+    self.mobileInput.tabIndex = 1;
+    self.mobileInput.type = inputType;
+    self.mobileInput.disabled = self.input.disabled;
+    self.mobileInput.required = self.input.required;
+    self.mobileInput.placeholder = self.input.placeholder;
+    self.mobileFormatStr = inputType === "datetime-local" ? "Y-m-d\\TH:i:S" : inputType === "date" ? "Y-m-d" : "H:i:S";
+    if (self.selectedDates.length > 0) {
+      self.mobileInput.defaultValue = self.mobileInput.value = self.formatDate(self.selectedDates[0], self.mobileFormatStr);
+    }
+    if (self.config.minDate)
+      self.mobileInput.min = self.formatDate(self.config.minDate, "Y-m-d");
+    if (self.config.maxDate)
+      self.mobileInput.max = self.formatDate(self.config.maxDate, "Y-m-d");
+    if (self.input.getAttribute("step"))
+      self.mobileInput.step = String(self.input.getAttribute("step"));
+    self.input.type = "hidden";
+    if (self.altInput !== void 0)
+      self.altInput.type = "hidden";
+    try {
+      if (self.input.parentNode)
+        self.input.parentNode.insertBefore(self.mobileInput, self.input.nextSibling);
+    } catch (_a) {
+    }
+    bind(self.mobileInput, "change", function(e) {
+      self.setDate(getEventTarget(e).value, false, self.mobileFormatStr);
+      triggerEvent("onChange");
+      triggerEvent("onClose");
+    });
+  }
+  function toggle(e) {
+    if (self.isOpen === true)
+      return self.close();
+    self.open(e);
+  }
+  function triggerEvent(event2, data) {
+    if (self.config === void 0)
+      return;
+    var hooks = self.config[event2];
+    if (hooks !== void 0 && hooks.length > 0) {
+      for (var i = 0; hooks[i] && i < hooks.length; i++)
+        hooks[i](self.selectedDates, self.input.value, self, data);
+    }
+    if (event2 === "onChange") {
+      self.input.dispatchEvent(createEvent("change"));
+      self.input.dispatchEvent(createEvent("input"));
+    }
+  }
+  function createEvent(name2) {
+    var e = document.createEvent("Event");
+    e.initEvent(name2, true, true);
+    return e;
+  }
+  function isDateSelected(date) {
+    for (var i = 0; i < self.selectedDates.length; i++) {
+      var selectedDate = self.selectedDates[i];
+      if (selectedDate instanceof Date && compareDates(selectedDate, date) === 0)
+        return "" + i;
+    }
+    return false;
+  }
+  function isDateInRange(date) {
+    if (self.config.mode !== "range" || self.selectedDates.length < 2)
+      return false;
+    return compareDates(date, self.selectedDates[0]) >= 0 && compareDates(date, self.selectedDates[1]) <= 0;
+  }
+  function updateNavigationCurrentMonth() {
+    if (self.config.noCalendar || self.isMobile || !self.monthNav)
+      return;
+    self.yearElements.forEach(function(yearElement, i) {
+      var d = new Date(self.currentYear, self.currentMonth, 1);
+      d.setMonth(self.currentMonth + i);
+      if (self.config.showMonths > 1 || self.config.monthSelectorType === "static") {
+        self.monthElements[i].textContent = monthToStr(d.getMonth(), self.config.shorthandCurrentMonth, self.l10n) + " ";
+      } else {
+        self.monthsDropdownContainer.value = d.getMonth().toString();
+      }
+      yearElement.value = d.getFullYear().toString();
+    });
+    self._hidePrevMonthArrow = self.config.minDate !== void 0 && (self.currentYear === self.config.minDate.getFullYear() ? self.currentMonth <= self.config.minDate.getMonth() : self.currentYear < self.config.minDate.getFullYear());
+    self._hideNextMonthArrow = self.config.maxDate !== void 0 && (self.currentYear === self.config.maxDate.getFullYear() ? self.currentMonth + 1 > self.config.maxDate.getMonth() : self.currentYear > self.config.maxDate.getFullYear());
+  }
+  function getDateStr(specificFormat) {
+    var format2 = specificFormat || (self.config.altInput ? self.config.altFormat : self.config.dateFormat);
+    return self.selectedDates.map(function(dObj) {
+      return self.formatDate(dObj, format2);
+    }).filter(function(d, i, arr) {
+      return self.config.mode !== "range" || self.config.enableTime || arr.indexOf(d) === i;
+    }).join(self.config.mode !== "range" ? self.config.conjunction : self.l10n.rangeSeparator);
+  }
+  function updateValue2(triggerChange2) {
+    if (triggerChange2 === void 0) {
+      triggerChange2 = true;
+    }
+    if (self.mobileInput !== void 0 && self.mobileFormatStr) {
+      self.mobileInput.value = self.latestSelectedDateObj !== void 0 ? self.formatDate(self.latestSelectedDateObj, self.mobileFormatStr) : "";
+    }
+    self.input.value = getDateStr(self.config.dateFormat);
+    if (self.altInput !== void 0) {
+      self.altInput.value = getDateStr(self.config.altFormat);
+    }
+    if (triggerChange2 !== false)
+      triggerEvent("onValueUpdate");
+  }
+  function onMonthNavClick(e) {
+    var eventTarget = getEventTarget(e);
+    var isPrevMonth = self.prevMonthNav.contains(eventTarget);
+    var isNextMonth = self.nextMonthNav.contains(eventTarget);
+    if (isPrevMonth || isNextMonth) {
+      changeMonth(isPrevMonth ? -1 : 1);
+    } else if (self.yearElements.indexOf(eventTarget) >= 0) {
+      eventTarget.select();
+    } else if (eventTarget.classList.contains("arrowUp")) {
+      self.changeYear(self.currentYear + 1);
+    } else if (eventTarget.classList.contains("arrowDown")) {
+      self.changeYear(self.currentYear - 1);
+    }
+  }
+  function timeWrapper(e) {
+    e.preventDefault();
+    var isKeyDown = e.type === "keydown", eventTarget = getEventTarget(e), input = eventTarget;
+    if (self.amPM !== void 0 && eventTarget === self.amPM) {
+      self.amPM.textContent = self.l10n.amPM[int(self.amPM.textContent === self.l10n.amPM[0])];
+    }
+    var min2 = parseFloat(input.getAttribute("min")), max2 = parseFloat(input.getAttribute("max")), step = parseFloat(input.getAttribute("step")), curValue = parseInt(input.value, 10), delta = e.delta || (isKeyDown ? e.which === 38 ? 1 : -1 : 0);
+    var newValue = curValue + step * delta;
+    if (typeof input.value !== "undefined" && input.value.length === 2) {
+      var isHourElem = input === self.hourElement, isMinuteElem = input === self.minuteElement;
+      if (newValue < min2) {
+        newValue = max2 + newValue + int(!isHourElem) + (int(isHourElem) && int(!self.amPM));
+        if (isMinuteElem)
+          incrementNumInput(void 0, -1, self.hourElement);
+      } else if (newValue > max2) {
+        newValue = input === self.hourElement ? newValue - max2 - int(!self.amPM) : min2;
+        if (isMinuteElem)
+          incrementNumInput(void 0, 1, self.hourElement);
+      }
+      if (self.amPM && isHourElem && (step === 1 ? newValue + curValue === 23 : Math.abs(newValue - curValue) > step)) {
+        self.amPM.textContent = self.l10n.amPM[int(self.amPM.textContent === self.l10n.amPM[0])];
+      }
+      input.value = pad(newValue);
+    }
+  }
+  init();
+  return self;
+}
+function _flatpickr(nodeList, config3) {
+  var nodes = Array.prototype.slice.call(nodeList).filter(function(x) {
+    return x instanceof HTMLElement;
+  });
+  var instances = [];
+  for (var i = 0; i < nodes.length; i++) {
+    var node2 = nodes[i];
+    try {
+      if (node2.getAttribute("data-fp-omit") !== null)
+        continue;
+      if (node2._flatpickr !== void 0) {
+        node2._flatpickr.destroy();
+        node2._flatpickr = void 0;
+      }
+      node2._flatpickr = FlatpickrInstance(node2, config3 || {});
+      instances.push(node2._flatpickr);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return instances.length === 1 ? instances[0] : instances;
+}
+if (typeof HTMLElement !== "undefined" && typeof HTMLCollection !== "undefined" && typeof NodeList !== "undefined") {
+  HTMLCollection.prototype.flatpickr = NodeList.prototype.flatpickr = function(config3) {
+    return _flatpickr(this, config3);
+  };
+  HTMLElement.prototype.flatpickr = function(config3) {
+    return _flatpickr([this], config3);
+  };
+}
+var flatpickr = function(selector, config3) {
+  if (typeof selector === "string") {
+    return _flatpickr(window.document.querySelectorAll(selector), config3);
+  } else if (selector instanceof Node) {
+    return _flatpickr([selector], config3);
+  } else {
+    return _flatpickr(selector, config3);
+  }
+};
+flatpickr.defaultConfig = {};
+flatpickr.l10ns = {
+  en: __assign({}, english),
+  default: __assign({}, english)
+};
+flatpickr.localize = function(l10n) {
+  flatpickr.l10ns.default = __assign(__assign({}, flatpickr.l10ns.default), l10n);
+};
+flatpickr.setDefaults = function(config3) {
+  flatpickr.defaultConfig = __assign(__assign({}, flatpickr.defaultConfig), config3);
+};
+flatpickr.parseDate = createDateParser({});
+flatpickr.formatDate = createDateFormatter({});
+flatpickr.compareDates = compareDates;
+if (typeof jQuery !== "undefined" && typeof jQuery.fn !== "undefined") {
+  jQuery.fn.flatpickr = function(config3) {
+    return _flatpickr(this, config3);
+  };
+}
+Date.prototype.fp_incr = function(days) {
+  return new Date(this.getFullYear(), this.getMonth(), this.getDate() + (typeof days === "string" ? parseInt(days, 10) : days));
+};
+if (typeof window !== "undefined") {
+  window.flatpickr = flatpickr;
+}
+class DatePicker extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "input");
+    __publicField(this, "flatpickrInstance");
+    this.input = reactExports.createRef();
+  }
+  componentDidMount() {
+    if (this.input.current) {
+      this.flatpickrInstance = flatpickr(this.input.current, {
+        enableTime: true,
+        dateFormat: "Z",
+        altInput: true,
+        altFormat: "D M J, Y - H:i",
+        onChange: (selectedDates, dateStr) => {
+          this.props.onChange(dateStr);
+        }
+      });
+    }
+  }
+  componentWillUnmount() {
+    if (this.flatpickrInstance) {
+      this.flatpickrInstance.destroy();
+    }
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        disabled: this.props.disabled || false,
+        ref: this.input,
+        id: this.props.id,
+        defaultValue: this.props.default_value
       }
     );
   }
+}
+class CollapsibleText extends ComponentWithToggleDrop {
+  constructor(props) {
+    super(props);
+    __publicField(this, "css_class");
+    __publicField(this, "defaultText");
+    __publicField(this, "text");
+    this.state = {};
+    this.mainDiv = reactExports.createRef();
+    this.css_class = this.props.css_class;
+    this.defaultText = this.props.defaultText;
+    this.text = this.props.text;
+  }
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  componentDidMount() {
+    this.checkSize();
+  }
+  componentDidUpdate() {
+    this.checkSize();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  checkSize() {
+    if (this.state.is_dropped)
+      return;
+    if (this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight) {
+      if (!this.state.overflow)
+        this.setState({ overflow: true });
+    } else {
+      if (this.state.overflow)
+        this.setState({ overflow: false });
+    }
+  }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data;
-    let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
-    let editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "edit",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "view",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "comment",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel$1,
-      {
-        user,
-        type: "student",
-        cannot_change: this.state.cannot_change,
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let share_info;
-    if (data.type === "project") {
-      share_info = window.gettext(
-        "Invite collaborators to project and its workflows"
-      );
-    } else {
-      share_info = window.gettext(
-        "Invite collaborators to workflow and grant view permissions to the project"
-      );
+    let css_class = "";
+    if (this.css_class)
+      css_class = this.css_class + " ";
+    css_class += "title-text collapsible-text";
+    let drop_text = window.gettext("show more");
+    if (this.state.is_dropped) {
+      css_class += " dropped";
+      drop_text = window.gettext("show less");
     }
-    let shared_with;
-    if (editors.length || commentors.length || viewers.length || students.length) {
-      shared_with = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-            window.gettext("Shared With"),
-            ":"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "user-list", children: [
-            editors,
-            commentors,
-            viewers,
-            students
-          ] })
-        ] })
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap user-text", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { children: [
-        window.gettext("Share") + " " + window.gettext(data.type) + " ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTitle,
-          {
-            no_hyperlink: true,
-            data: this.props.data,
-            class_name: "inline"
-          }
-        )
-      ] }),
-      this.getPublication(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-        window.gettext("Owned By"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserAdd$1,
+    let overflow;
+    if (this.state.overflow)
+      overflow = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
         {
-          permissionChange: this.setUserPermission.bind(this),
-          share_info
+          onClick: (evt) => {
+            this.setState({ is_dropped: !this.state.is_dropped });
+            evt.stopPropagation();
+          },
+          className: "collapsed-text-show-more",
+          children: drop_text
         }
-      ),
-      shared_with,
+      );
+    let text = this.text;
+    if ((this.text == null || this.text == "") && this.defaultText != null) {
+      text = this.defaultText;
+    }
+    return [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "close" })
+          ref: this.mainDiv,
+          className: css_class,
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "secondary-button",
-          onClick: this.props.actionFunction,
-          children: window.gettext("Close")
-        }
-      ) })
+      overflow
+    ];
+  }
+}
+class LegendLine extends reactExports.Component {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "Icon", () => {
+      if (this.props.icon) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: `${COURSEFLOW_APP.config.icon_path}${this.props.icon}.svg`,
+            alt: "icon"
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: this.props.divclass, children: this.props.div });
+    });
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-line", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Icon, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.text })
     ] });
   }
 }
@@ -65454,218 +67203,6 @@ class ImportMenu extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
         "The uploading process may take some time. It is not recommended to continue editing until it is complete."
       ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-        }
-      )
-    ] });
-  }
-}
-class ExportMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { type: "outcome" };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getExportTypes() {
-    let type = this.props.data.type;
-    let exports = [];
-    exports.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          name: "export_type",
-          type: "radio",
-          value: "outcome",
-          onChange: this.inputChange.bind(this, "type", ""),
-          checked: this.state.type == "outcome"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Outcomes") })
-    ]);
-    exports.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          name: "export_type",
-          type: "radio",
-          value: "node",
-          onChange: this.inputChange.bind(this, "type", ""),
-          checked: this.state.type == "node"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Nodes") })
-    ]);
-    if (type == "project" || type == "course")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "framework",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "framework"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Course Framework") })
-      ]);
-    if (type == "project" || type == "program")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "matrix",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "matrix"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Competency Matrix") })
-      ]);
-    if (type == "project" || type == "program")
-      exports.push([
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            name: "export_type",
-            type: "radio",
-            value: "sobec",
-            onChange: this.inputChange.bind(this, "type", ""),
-            checked: this.state.type == "sobec"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Sobec Validation") })
-      ]);
-    return exports;
-  }
-  inputChange(type, id, evt) {
-    if (type == "set") {
-      let new_state = {};
-      new_state[id] = !evt.target.checked;
-      this.setState(new_state);
-    } else if (type == "type" && evt.target.checked) {
-      this.setState({ type: evt.target.value });
-    }
-  }
-  click(evt) {
-    if (evt.ctrlKey) {
-      this.ctrlKey = true;
-      $("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
-    }
-  }
-  submit(evt) {
-    $("#submit-button").attr("disabled", true);
-    setTimeout(() => {
-      if (!this.ctrlKey)
-        this.props.actionFunction();
-      alert(
-        window.gettext(
-          "Your file is being generated and will be emailed to you shortly."
-        )
-      );
-    }, 100);
-    return true;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let object_sets;
-    if (this.props.data.object_sets.length > 0) {
-      object_sets = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Object Set Visibility"),
-          ":"
-        ] }),
-        this.props.data.object_sets.map((objectset) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              onChange: this.inputChange.bind(this, "set", objectset.id),
-              name: "object_sets[]",
-              value: objectset.id,
-              type: "checkbox",
-              id: objectset.id,
-              checked: !this.state[objectset.id]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: objectset.title })
-        ] }))
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export files") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Use this menu to export files.") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "form",
-        {
-          id: "export-form",
-          encType: "multipart/form-data",
-          action: COURSEFLOW_APP.config.post_paths.get_export,
-          method: "POST",
-          target: "redirect-iframe",
-          onSubmit: this.submit.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                name: "csrfmiddlewaretoken",
-                value: root.getCsrfToken()
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-              window.gettext("Export Type"),
-              ":"
-            ] }),
-            this.getExportTypes(),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-              window.gettext("Export Format"),
-              ":"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { name: "export_format", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "excel", children: "Excel" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "csv", children: "CSV" })
-            ] }),
-            object_sets,
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectID",
-                name: "objectID",
-                value: JSON.stringify(this.props.data.id)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectType",
-                name: "objectType",
-                value: JSON.stringify(this.props.data.type)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                onClick: this.click.bind(this),
-                id: "submit-button",
-                type: "submit"
-              }
-            )
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -65814,7 +67351,7 @@ class WorkflowsMenu extends reactExports.Component {
           }
         )
       );
-    } else if (this.props.type == "target_project_menu") {
+    } else if (this.props.type === "target_project_menu") {
       actions.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
@@ -65881,9 +67418,9 @@ class WorkflowsMenu extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
           {
-            workflow_data: this.current_project,
+            workflowData: this.current_project,
             selected: this.state.selected === this.current_project.id,
-            no_hyperlink,
+            noHyperlink: no_hyperlink,
             type: this.props.type,
             dispatch: this.props.dispatch,
             selectAction: this.workflowSelected.bind(this)
@@ -65904,2229 +67441,6 @@ class WorkflowsMenu extends reactExports.Component {
     ] });
   }
 }
-class WorkflowVisibility extends WorkflowCard {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    return null;
-  }
-  getButtons() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "select",
-      {
-        value: this.props.visibility,
-        onChange: (evt) => this.props.visibilityFunction(
-          this.props.workflow_data.id,
-          evt.target.value
-        ),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "not_visible", children: window.gettext("Not Visible") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "visible", children: window.gettext("Visible") })
-        ]
-      }
-    ) });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.props.workflow_data;
-    var css_class = "workflow-for-menu workflow-visibility hover-shade " + data.type;
-    if (this.props.selected)
-      css_class += " selected";
-    let creation_text = window.gettext("Created");
-    if (data.author && data.author !== "None")
-      creation_text += " " + window.gettext("by") + " " + data.author;
-    creation_text += " " + data.created_on;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
-        this.getButtons(),
-        this.getTypeIndicator()
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "workflow-description",
-          dangerouslySetInnerHTML: { __html: data.description }
-        }
-      )
-    ] });
-  }
-}
-class LiveProjectSection extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  componentDidMount() {
-    let component = this;
-    if (this.props.role === "teacher") {
-      getLiveProjectData(this.props.objectID, this.props.view_type, (data) => {
-        component.setState({ data: data.data_package });
-      });
-    } else if (this.props.role === "student") {
-      getLiveProjectDataStudent(
-        this.props.objectID,
-        this.props.view_type,
-        (data) => {
-          component.setState({ data: data.data_package });
-        }
-      );
-    }
-  }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
-}
-class WorkflowCardSimple extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.maindiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.props.workflow_data.id);
-    } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
-    }
-  }
-  getTypeIndicator() {
-    let data = this.props.workflow_data;
-    let type = data.type;
-    let type_text = window.gettext(type);
-    if (type === "liveproject")
-      type_text = window.gettext("classroom");
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.props.workflow_data;
-    var css_class = "simple-workflow workflow-for-menu hover-shade " + data.type;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        ref: this.maindiv,
-        className: css_class,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
-          this.getTypeIndicator()
-        ] })
-      }
-    );
-  }
-}
-class LiveProjectOverview extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
-    if (workflows.length === 0)
-      workflows = window.gettext(
-        "No workflows have been made visible to students."
-      );
-    let teachers = this.state.data.teachers.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
-    ] }, index2));
-    let students = this.state.data.students.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
-    ] }, index2));
-    let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentTitle,
-        {
-          data: assignment,
-          user_role: this.props.renderer.user_role
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: assignment.completion_info }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
-    ] }, index));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Teachers"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
-        ] }),
-        teachers
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Students"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
-        ] }),
-        students
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Visible Workflows"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Assignments"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
-        ] }),
-        assignments
-      ] })
-    ] });
-  }
-}
-class UserLabel2 extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.select = reactExports.createRef();
-  }
-  onChange(evt) {
-    switch (evt.target.value) {
-      case "none":
-        if (window.confirm("Are you sure you want to remove this user?")) {
-          this.props.permissionChange(0, this.props.user);
-        }
-        break;
-      default:
-        this.props.permissionChange(
-          role_keys[evt.target.value],
-          this.props.user
-        );
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let permission_select;
-    if (this.props.type !== "owner") {
-      if (this.props.type === "add") {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "permission-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              onClick: () => this.props.addFunction($(this.select.current).val()),
-              children: window.gettext("Share")
-            }
-          )
-        ] });
-      } else {
-        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: this.props.type, onChange: this.onChange.bind(this), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: gettext("Remove user") })
-        ] }) });
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
-      ] }),
-      permission_select
-    ] });
-  }
-}
-class UserAdd2 extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-    this.state = { selected: null };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          let user_list = response.user_list.map((user) => {
-            return {
-              label: user.first_name + " " + user.last_name + " - " + user.username,
-              value: user.username,
-              user
-            };
-          });
-          response_function(user_list);
-        });
-        component.setState({ selected: null });
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user });
-      },
-      minLength: 1
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        role_keys[value],
-        this.state.selected
-      );
-      $(this.input.current).val(null);
-      this.setState({ selected: null });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let user;
-    if (this.state.selected) {
-      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        UserLabel2,
-        {
-          user: this.state.selected,
-          type: "add",
-          addFunction: this.addClick.bind(this)
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        gettext("Add A User"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext(
-        "Begin typing to search users. Select the desired user then click Share."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ref: this.input }),
-      user
-    ] });
-  }
-}
-class StudentManagement extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.tiny_loader = new TinyLoader($("body"));
-    this.state = { owner: null, teacher: [], student: [] };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    getUsersForLiveProject(this.props.data.id, (response) => {
-      this.setState({
-        owner: response.author,
-        student: response.students,
-        teacher: response.teachers
-      });
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  setUserPermission(permission_type, user) {
-    this.tiny_loader.startLoad();
-    setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
-      getUsersForLiveProject(this.props.data.id, (response) => {
-        this.setState({
-          owner: response.author,
-          student: response.students,
-          teacher: response.teachers
-        });
-        this.tiny_loader.endLoad();
-      });
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (this.state.owner == null)
-      return null;
-    let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel2, { user: this.state.owner, type: "owner" });
-    let teachers = this.state.teacher.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel2,
-      {
-        user,
-        type: "teacher",
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      UserLabel2,
-      {
-        user,
-        type: "student",
-        permissionChange: this.setUserPermission.bind(this)
-      }
-    ));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-text", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("Student Management") + ":" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        gettext("Owned By"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Teachers"),
-          ":"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: teachers })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Enrolled Users"),
-          ":"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: students })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(UserAdd2, { permissionChange: this.setUserPermission.bind(this) })
-    ] });
-  }
-}
-class LiveProjectStudents extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let liveproject = this.state.data.liveproject;
-    let register_link;
-    if (liveproject && liveproject.registration_hash) {
-      let register_url = COURSEFLOW_APP.config.registration_path.replace(
-        "project_hash",
-        liveproject.registration_hash
-      );
-      register_link = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-text", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Student Registration:" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Student Registration Link: ") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              id: "copy-text",
-              className: "hover-shade",
-              onClick: () => {
-                navigator.clipboard.writeText(register_url);
-                $("#copy-text").attr(
-                  "src",
-                  COURSEFLOW_APP.config.icon_path + "duplicate_checked.svg"
-                );
-                $("#url-text").text("Copied to Clipboard");
-                setTimeout(() => {
-                  $("#copy-text").attr(
-                    "src",
-                    COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
-                  );
-                  $("#url-text").text(register_url);
-                }, 1e3);
-              },
-              title: window.gettext("Copy to clipboard"),
-              src: COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "url-text", className: "selectable", href: register_url, children: register_url })
-        ] })
-      ] }) });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(StudentManagement, { data: this.state.data.liveproject }),
-      register_link
-    ] });
-  }
-}
-class AssignmentView extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { is_dropped: false };
-    this.user_id = COURSEFLOW_APP.contextData.user_id;
-    if (props.data.user_assignment)
-      this.state.completed = props.data.user_assignment.completed;
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  visitWorkflow(id, evt) {
-    let path = COURSEFLOW_APP.config.update_path["workflow"];
-    evt.stopPropagation();
-    window.open(path.replace("0", id));
-  }
-  toggleDrop() {
-    this.setState((state) => {
-      return { is_dropped: !state.is_dropped };
-    });
-  }
-  changeCompletion(evt) {
-    let checked = evt.target.checked;
-    this.setState({ completed: checked });
-    setAssignmentCompletion(this.props.data.user_assignment.id, checked);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.props.data;
-    let node_data = data.task;
-    let data_override;
-    if (node_data.represents_workflow)
-      data_override = {
-        ...node_data,
-        ...node_data.linked_workflow_data,
-        id: data.id
-      };
-    else
-      data_override = { ...node_data };
-    let lefticon;
-    let righticon;
-    if (node_data.context_classification > 0)
-      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.context_choices.find(
-            (obj) => obj.type == node_data.context_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
-        }
-      );
-    if (node_data.task_classification > 0)
-      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.task_choices.find(
-            (obj) => obj.type == node_data.task_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[node_data.task_classification] + ".svg"
-        }
-      );
-    let style2 = { backgroundColor: getColumnColour(node_data) };
-    let mouseover_actions = [];
-    let css_class = "node assignment";
-    if (this.state.is_dropped)
-      css_class += " dropped";
-    let linkIcon;
-    let linktext = window.gettext("Visit linked workflow");
-    let clickfunc = this.visitWorkflow.bind(this, node_data.linked_workflow);
-    if (node_data.linked_workflow_data) {
-      if (node_data.linked_workflow_data.deleted)
-        linktext = window.gettext("<Deleted Workflow>");
-      if (node_data.linked_workflow_data.deleted)
-        clickfunc = null;
-    }
-    if (data.linked_workflow_access && node_data.linked_workflow)
-      linkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade linked-workflow", onClick: clickfunc, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
-      ] });
-    let parentLinkIcon;
-    let parentlinktext = window.gettext("Visit containing workflow");
-    let parentclickfunc = this.visitWorkflow.bind(this, data.parent_workflow_id);
-    if (data.workflow_access && data.parent_workflow_id)
-      parentLinkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade linked-workflow containing-workflow",
-          onClick: parentclickfunc,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: parentlinktext })
-          ]
-        }
-      );
-    let dropText = "";
-    if (data_override.description && data_override.description.replace(
-      /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
-      ""
-    ) != "")
-      dropText = "...";
-    let dropIcon;
-    if (this.state.is_dropped)
-      dropIcon = "droptriangleup";
-    else
-      dropIcon = "droptriangledown";
-    let completion_data;
-    if (data.user_assignment) {
-      let disabled = true;
-      if (this.props.renderer.user_role == role_keys.teacher || data.self_reporting && data.user_assignment.liveprojectuser.user.id == this.user_id)
-        disabled = false;
-      let extra_data;
-      if (data.single_completion && data.user_assignment.completed) {
-        extra_data = [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            window.gettext("Completed by ") + getUserDisplay(
-              data.user_assignment.liveprojectuser.user
-            ) + window.gettext(" on "),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                default_value: data.user_assignment.completed_on,
-                disabled: true
-              }
-            )
-          ] })
-        ];
-      }
-      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("Completion"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            disabled,
-            checked: this.state.completed,
-            onChange: this.changeCompletion.bind(this)
-          }
-        ),
-        extra_data
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          AssignmentTitle,
-          {
-            user_role: this.props.renderer.user_role,
-            data
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("End Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "end_date",
-                default_value: data.end_date,
-                disabled: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("Start Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "start_date",
-                default_value: data.start_date,
-                disabled: true
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
-      ] }),
-      parentLinkIcon,
-      linkIcon,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        TitleText,
-        {
-          text: data_override.description,
-          defaultText: window.gettext("No description given")
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "node-drop-row hover-shade",
-          onClick: this.toggleDrop.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left", children: dropText }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.props.renderer.time_choices[data_override.time_units].name }) })
-          ]
-        }
-      )
-    ] });
-  }
-}
-class ReportRow extends reactExports.Component {
-  render() {
-    let user = this.props.userassignment.liveprojectuser;
-    let userassignment = this.props.userassignment;
-    let updateFunction = this.props.updateFunction;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          checked: userassignment.completed,
-          onChange: (evt) => updateFunction(userassignment.id, evt.target.checked)
-        }
-      ) })
-    ] });
-  }
-}
-class LiveAssignmentEdit extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...this.props.data,
-      has_changed: false,
-      user_data: { assigned_users: [], other_users: [] }
-    };
-    this.changed_values = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getAssignmentData(
-      component.props.data.id,
-      component.props.view_type,
-      (data) => {
-        component.setState({ user_data: data.data_package });
-      }
-    );
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  switchVisibility(pk, visibility) {
-    let parameter = "workflow_access";
-    if (this.state.task.linked_workflow === pk)
-      parameter = "linked_" + parameter;
-    if (visibility === "visible") {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, true);
-      let new_state = {};
-      new_state[parameter] = true;
-      this.props.updateAssignment(new_state);
-      this.setState(new_state);
-    } else {
-      setWorkflowVisibility(this.props.live_project_data.pk, pk, false);
-      let new_state = {};
-      new_state[parameter] = false;
-      this.props.updateAssignment(new_state);
-      this.setState(new_state);
-    }
-  }
-  delete() {
-    let data = this.state;
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + window.gettext("assignment") + "?"
-    )) {
-      deleteSelfLive(data.id, "liveassignment", (response_data) => {
-        window.location = COURSEFLOW_APP.config.update_path.liveproject.replace(
-          "0",
-          data.liveproject
-        );
-      });
-    }
-  }
-  changeField(type, new_value) {
-    let new_state = { has_changed: true };
-    new_state[type] = new_value;
-    this.changed_values[type] = new_value;
-    this.setState(new_state);
-  }
-  saveChanges() {
-    updateLiveProjectValue(this.state.id, "liveassignment", this.changed_values);
-    this.props.updateAssignment(this.changed_values);
-    this.changed_values = {};
-    this.setState({ has_changed: false });
-  }
-  changeView(workflow_id) {
-    this.setState({ selected_id: workflow_id });
-  }
-  addUser(evt) {
-    let selected = parseInt($("#users_all").val());
-    if (!selected)
-      return;
-    let user_data = { ...this.state.user_data };
-    user_data.assigned_users = user_data.assigned_users.slice();
-    user_data.other_users = user_data.other_users.slice();
-    user_data.assigned_users.push(
-      user_data.other_users.splice(
-        user_data.other_users.findIndex(
-          (element) => element.user.id == selected
-        ),
-        1
-      )[0]
-    );
-    this.setState({ user_data });
-    addUsersToAssignment(this.state.id, [selected], true);
-  }
-  removeUser(evt) {
-    let selected = parseInt($("#users_chosen").val());
-    if (!selected)
-      return;
-    let user_data = { ...this.state.user_data };
-    user_data.assigned_users = user_data.assigned_users.slice();
-    user_data.other_users = user_data.other_users.slice();
-    user_data.other_users.push(
-      user_data.assigned_users.splice(
-        user_data.assigned_users.findIndex(
-          (element) => element.user.id == selected
-        ),
-        1
-      )[0]
-    );
-    this.setState({ user_data });
-    addUsersToAssignment(this.state.id, [selected], false);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.state;
-    let changeField2 = this.changeField.bind(this);
-    let assigned_users = this.state.user_data.assigned_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
-    let other_users = this.state.user_data.other_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
-    let linked_workflow;
-    if (this.state.task.linked_workflow) {
-      let visibility = "not_visible";
-      if (this.state.linked_workflow_access)
-        visibility = "visible";
-      let warning2;
-      if (!this.state.linked_workflow_access)
-        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
-          "Warning: the linked workflow is not visible to those in the classroom"
-        ) });
-      linked_workflow = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Linked Workflow"),
-          ":"
-        ] }),
-        warning2,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowVisibility,
-          {
-            workflow_data: this.state.task.linked_workflow_data,
-            visibility,
-            visibilityFunction: this.switchVisibility.bind(this)
-          }
-        )
-      ];
-    }
-    let parent_workflow;
-    if (this.state.user_data.parent_workflow) {
-      let parent_visibility = "not_visible";
-      if (this.state.workflow_access)
-        parent_visibility = "visible";
-      let warning2;
-      if (!this.state.workflow_access)
-        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
-          "Warning: the workflow the task appears in is not visible to those in the classroom"
-        ) });
-      parent_workflow = [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          window.gettext("Task Workflow"),
-          ":"
-        ] }),
-        warning2,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowVisibility,
-          {
-            workflow_data: this.state.user_data.parent_workflow,
-            visibility: parent_visibility,
-            visibilityFunction: this.switchVisibility.bind(this)
-          }
-        )
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Configuration"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("End Date"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DatePicker,
-          {
-            id: "end_date",
-            default_value: data.end_date,
-            onChange: this.changeField.bind(this, "end_date")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("Start Date"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DatePicker,
-          {
-            id: "start_date",
-            default_value: data.start_date,
-            onChange: this.changeField.bind(this, "start_date")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "single-completion",
-            title: window.gettext(
-              "Whether to mark the assignment as complete if any user has completed it."
-            ),
-            children: window.gettext(
-              "Mark assignment as complete when a single user has completed it:"
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "single-completion",
-            name: "single-completion",
-            type: "checkbox",
-            checked: data.single_completion,
-            onChange: (evt) => changeField2("single_completion", evt.target.checked)
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "self-reporting",
-            title: window.gettext(
-              "Whether students can mark their own assignments as complete."
-            ),
-            children: window.gettext(
-              "Let students self-report their assignment completion:"
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "self-reporting",
-            name: "self-reporting",
-            type: "checkbox",
-            checked: data.self_reporting,
-            onChange: (evt) => changeField2("self_reporting", evt.target.checked)
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          disabled: !this.state.has_changed,
-          onClick: this.saveChanges.bind(this),
-          children: window.gettext("Save Changes")
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Delete") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Users"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Assigned Users") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_chosen", multiple: true, children: assigned_users }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "remove-user", onClick: this.removeUser.bind(this), children: [
-            " ",
-            window.gettext("Remove"),
-            " "
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Other Users") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_all", multiple: true, children: other_users }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "add-user", onClick: this.addUser.bind(this), children: [
-            " ",
-            window.gettext("Add"),
-            " "
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Workflows"),
-        ":"
-      ] }),
-      parent_workflow,
-      linked_workflow
-    ] });
-  }
-}
-class LiveAssignmentReport extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
-  updateCompletion(id, completed) {
-    let userassignments = this.state.userassignments.slice();
-    let index2 = userassignments.findIndex(
-      (userassignment) => userassignment.id == id
-    );
-    userassignments[index2] = { ...userassignments[index2], completed };
-    setAssignmentCompletion(id, completed);
-    this.setState({ userassignments });
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getAssignmentData(
-      component.props.data.id,
-      component.props.view_type,
-      (data) => {
-        component.setState({ ...data.data_package });
-      }
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.userassignments) {
-      return this.defaultRender();
-    }
-    let rows = this.state.userassignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ReportRow,
-      {
-        userassignment: assignment,
-        updateFunction: this.updateCompletion.bind(this)
-      }
-    ));
-    let total_completion = this.state.userassignments.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.completed,
-      0
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Completion"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { children: [
-        rows,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
-            window.gettext("Total"),
-            ":"
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
-            total_completion,
-            "/",
-            this.state.userassignments.length
-          ] })
-        ] })
-      ] })
-    ] });
-  }
-}
-class LiveAssignmentMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { view_type: "edit", assignment_data: props.assignment_data };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getViewButtons() {
-    return [
-      { type: "edit", name: window.gettext("Edit") },
-      { type: "report", name: window.gettext("Report") }
-    ];
-  }
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "edit":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LiveAssignmentEdit,
-          {
-            updateAssignment: this.updateAssignment.bind(this),
-            view_type: this.state.view_type,
-            renderer: this.props.renderer,
-            data: this.props.assignment_data,
-            live_project_data: this.props.live_project_data
-          }
-        );
-      case "report":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LiveAssignmentReport,
-          {
-            view_type: this.state.view_type,
-            renderer: this.props.renderer,
-            data: this.props.assignment_data
-          }
-        );
-    }
-  }
-  updateAssignment(new_values) {
-    this.setState({
-      assignment_data: { ...this.state.assignment_data, ...new_values }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.state.assignment_data;
-    let liveproject = this.props.live_project_data;
-    let view_buttons = this.getViewButtons().map((item) => {
-      let view_class = "hover-shade";
-      if (item.type === this.state.view_type)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "button_" + item.type,
-          className: view_class,
-          onClick: this.changeView.bind(this, item.type),
-          children: item.name
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-        reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "a",
-            {
-              id: "live-project-return",
-              href: COURSEFLOW_APP.config.update_path["liveproject"].replace(
-                0,
-                liveproject.pk
-              ),
-              className: "hover-shade no-underline",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_back_ios" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Classroom") })
-              ]
-            }
-          ),
-          $(".titlebar .title")[0]
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() })
-    ] });
-  }
-}
-class AssignmentViewSmall extends reactExports.Component {
-  render() {
-    let data = this.props.data;
-    let node_data = data.task;
-    let css_class = "node assignment";
-    let style2 = {
-      backgroundColor: getColumnColour(node_data)
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: style2, className: css_class, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      AssignmentTitle,
-      {
-        user_role: this.props.renderer.user_role,
-        data
-      }
-    ) }) });
-  }
-}
-class LiveProjectCompletionTable extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    this.state.liveproject;
-    let head = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentViewSmall, { renderer: this.props.renderer, data: assignment }) }));
-    let assignment_ids = this.state.data.assignments.map(
-      (assignment) => assignment.id
-    );
-    let body2 = this.state.data.table_rows.map((row, row_index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "user-head outcome-head", children: getUserDisplay(row.user) }),
-      assignment_ids.map((id) => {
-        let assignment = row.assignments.find(
-          (row_element) => row_element.assignment == id
-        );
-        if (!assignment)
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell" });
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            onChange: this.toggleCompletion.bind(
-              this,
-              assignment.id,
-              row_index
-            ),
-            type: "checkbox",
-            checked: assignment.completed
-          }
-        ) });
-      }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell total-cell grand-total-cell", children: row.assignments.reduce(
-        (total, assignment) => total + assignment.completed,
-        0
-      ) + "/" + row.assignments.length })
-    ] }));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Table"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "user-table outcome-table node-rows", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row node-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "user-head outcome-head empty" }),
-          head,
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "total-header", children: [
-            window.gettext("Total"),
-            ":"
-          ] }) })
-        ] }),
-        body2
-      ] })
-    ] });
-  }
-  toggleCompletion(id, row_index, evt) {
-    setAssignmentCompletion(id, evt.target.checked);
-    let new_data = { ...this.state.data };
-    new_data.table_rows = new_data.table_rows.slice();
-    new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] };
-    new_data.table_rows[row_index].assignments = new_data.table_rows[row_index].assignments.slice();
-    let index2 = new_data.table_rows[row_index].assignments.findIndex(
-      (assignment) => assignment.id == id
-    );
-    new_data.table_rows[row_index].assignments[index2] = {
-      ...new_data.table_rows[row_index].assignments[index2],
-      completed: evt.target.checked
-    };
-    this.setState({ data: new_data });
-  }
-}
-class LiveProjectSettings extends LiveProjectSection {
-  constructor(props) {
-    super(props);
-    this.state = { has_changed: false, liveproject: null };
-    this.changed_values = {};
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  changeField(type, new_value) {
-    let new_state = { ...this.state.data.liveproject };
-    new_state[type] = new_value;
-    this.changed_values[type] = new_value;
-    this.setState({
-      has_changed: true,
-      data: { ...this.state.data, liveproject: new_state }
-    });
-  }
-  saveChanges() {
-    updateLiveProjectValue(
-      this.state.data.liveproject.id,
-      "liveproject",
-      this.changed_values
-    );
-    this.props.updateLiveProject({
-      liveproject: { ...this.state.data.liveproject, ...this.changed_values }
-    });
-    this.changed_values = {};
-    this.setState({ has_changed: false });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let data = this.state.data.liveproject;
-    let changeField2 = this.changeField.bind(this);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Classroom configuration"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-single-completion",
-            name: "default-single-completion",
-            type: "checkbox",
-            checked: data.default_single_completion,
-            onChange: (evt) => changeField2("default_single_completion", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-signle-completion",
-            title: window.gettext(
-              "Whether to mark the assignment as complete if any user has completed it."
-            ),
-            children: window.gettext(
-              "By default, mark assignments as complete when a single user has completed them"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-assign-to-all",
-            name: "default-assign-to-all",
-            type: "checkbox",
-            checked: data.default_assign_to_all,
-            onChange: (evt) => changeField2("default_assign_to_all", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-assign-to-all",
-            title: window.gettext(
-              "Whether creating an assignment automatically adds all students to it."
-            ),
-            children: window.gettext(
-              "Assign new assignments to all students by default"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-self-reporting",
-            name: "default-self-reporting",
-            type: "checkbox",
-            checked: data.default_self_reporting,
-            onChange: (evt) => changeField2("default_self_reporting", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-self-reporting",
-            title: window.gettext(
-              "Whether students can mark their own assignments as complete."
-            ),
-            children: window.gettext(
-              "Let students self-report their assignment completion by default"
-            )
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            id: "default-all-workflows-visible",
-            name: "default-all-workflows-visible",
-            type: "checkbox",
-            checked: data.default_all_workflows_visible,
-            onChange: (evt) => changeField2("default_all_workflows_visible", evt.target.checked)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "label",
-          {
-            htmlFor: "default-all-workflows-visible",
-            title: window.gettext(
-              "Whether all workflows in the project will be visible to students by default."
-            ),
-            children: window.gettext("All Workflows Visible To Students")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          className: "primary-button",
-          disabled: !this.state.has_changed,
-          onClick: this.saveChanges.bind(this),
-          children: window.gettext("Save classroom changes")
-        }
-      ) })
-    ] });
-  }
-}
-class AssignmentWorkflowNodesDisplay extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.getData();
-  }
-  componentDidUpdate(prevProps) {
-    if (prevProps.objectID != this.props.objectID) {
-      this.setState({ data: null }, this.getData.bind(this));
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  getData() {
-    let component = this;
-    getWorkflowNodes(this.props.objectID, (data) => {
-      component.setState({ data: data.data_package });
-    });
-  }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let weeks = this.state.data.weeks.map((week, i) => {
-      let nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
-      let default_text;
-      default_text = week.week_type_display + " " + (i + 1);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: week.title, defaultText: default_text }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-block-grid", children: nodes })
-      ] });
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: weeks });
-  }
-}
-class AssignmentNode extends reactExports.Component {
-  render() {
-    let data = this.props.data;
-    let lefticon;
-    let righticon;
-    if (data.context_classification > 0)
-      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.context_choices.find(
-            (obj) => obj.type == data.context_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
-        }
-      );
-    if (data.task_classification > 0)
-      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.task_choices.find(
-            (obj) => obj.type == data.task_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
-        }
-      );
-    let style2 = { backgroundColor: getColumnColour(this.props.data) };
-    let mouseover_actions = [this.addCreateAssignment(data)];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: "node", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: this.props.data }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-row" })
-    ] });
-  }
-  addCreateAssignment(data) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        button_icon: "assignment.svg",
-        button_class: "duplicate-self-button",
-        titletext: window.gettext("Create Assignment"),
-        handleClick: this.createAssignment.bind(this, data)
-      }
-    );
-  }
-  createAssignment(data) {
-    let props = this.props;
-    props.renderer.tiny_loader.startLoad();
-    createAssignment(
-      data.id,
-      props.renderer.project_data.id,
-      (response_data) => {
-        props.renderer.tiny_loader.endLoad();
-        window.location = COURSEFLOW_APP.config.update_path.liveassignment.replace(
-          "0",
-          response_data.assignmentPk
-        );
-      }
-    );
-  }
-}
-class LiveProjectAssignments extends LiveProjectSection {
-  changeView(workflow_id) {
-    this.setState({ selected_id: workflow_id });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
-    let workflow_options = this.state.data.workflows.map((workflow) => {
-      let view_class = "hover-shade";
-      if (workflow.id == this.state.selected_id)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "button_" + workflow.id,
-          className: view_class,
-          onClick: this.changeView.bind(this, workflow.id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { no_hyperlink: true, data: workflow })
-        }
-      );
-    });
-    let workflow_nodes;
-    if (this.state.selected_id) {
-      workflow_nodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentWorkflowNodesDisplay,
-        {
-          renderer: this.props.renderer,
-          objectID: this.state.selected_id
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Assigned Tasks") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("All Tasks") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "select-workflow", className: "workflow-view-select", children: workflow_options }),
-      workflow_nodes
-    ] });
-  }
-}
-class LiveProjectWorkflows extends LiveProjectSection {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  switchVisibility(pk, visibility) {
-    let workflows_added = this.state.data.workflows_added.slice();
-    let workflows_not_added = this.state.data.workflows_not_added.slice();
-    if (visibility == "visible") {
-      for (let i = 0; i < workflows_not_added.length; i++) {
-        if (workflows_not_added[i].id == pk) {
-          let removed = workflows_not_added.splice(i, 1);
-          setWorkflowVisibility(this.props.objectID, pk, true);
-          workflows_added.push(removed[0]);
-        }
-      }
-    } else {
-      for (let i = 0; i < workflows_added.length; i++) {
-        if (workflows_added[i].id == pk) {
-          let removed = workflows_added.splice(i, 1);
-          setWorkflowVisibility(this.props.objectID, pk, false);
-          workflows_not_added.push(removed[0]);
-        }
-      }
-    }
-    this.setState({
-      data: {
-        ...this.state.data,
-        workflows_added,
-        workflows_not_added
-      }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows_added = this.state.data.workflows_added.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowVisibility,
-      {
-        workflow_data: workflow,
-        visibility: "visible",
-        visibilityFunction: this.switchVisibility.bind(this)
-      }
-    ));
-    let workflows_not_added = this.state.data.workflows_not_added.map(
-      (workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowVisibility,
-        {
-          workflow_data: workflow,
-          visibility: "not_visible",
-          visibilityFunction: this.switchVisibility.bind(this)
-        }
-      )
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Visible Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Other Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_not_added })
-    ] });
-  }
-}
-class LiveProjectMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...props.project,
-      liveproject: this.props.liveproject,
-      view_type: "overview"
-    };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getViewButtons() {
-    return [
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "students", name: window.gettext("Students") },
-      { type: "assignments", name: window.gettext("Assignments") },
-      { type: "workflows", name: window.gettext("Workflow Visibility") },
-      { type: "completion_table", name: window.gettext("Completion Table") },
-      { type: "settings", name: window.gettext("Classroom Settings") }
-    ];
-  }
-  getRole() {
-    return "teacher";
-  }
-  openEdit() {
-    return null;
-  }
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  getHeader() {
-    return null;
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "overview":
-        return (
-          // @todo renderer IS used in this component
-          // but only user_role, how is that different from getRole?
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectOverview,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "students":
-        return (
-          // @todo  renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectStudents,
-            {
-              role: this.getRole(),
-              liveproject: this.state.liveproject,
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "assignments":
-        return (
-          // @todo  renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectAssignments,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "workflows":
-        return (
-          // @todo  renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectWorkflows,
-            {
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "completion_table":
-        return (
-          //@todo   renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectCompletionTable,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "settings":
-        return (
-          // @todo renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectSettings,
-            {
-              updateLiveProject: this.updateFunction.bind(this),
-              role: this.getRole(),
-              liveproject: this.state.liveproject,
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-    }
-  }
-  updateFunction(new_state) {
-    this.setState(new_state);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let data = this.props.project;
-    let overflow_links = [];
-    if (this.props.renderer.user_permission > 0) {
-      overflow_links.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "project",
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.update_path.project.replace("0", data.id),
-            children: window.gettext("Edit Project")
-          }
-        )
-      );
-    }
-    let view_buttons = this.getViewButtons().map((item) => {
-      let view_class = "hover-shade";
-      if (item.type === this.state.view_type)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "button_" + item.type,
-          className: view_class,
-          onClick: this.changeView.bind(this, item.type),
-          children: item.name
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            no_hyperlink: true,
-            workflow_data: this.state.liveproject,
-            selectAction: this.openEdit.bind(this)
-          }
-        ),
-        this.getHeader()
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() }),
-      reactDomExports.createPortal(overflow_links, $("#overflow-links")[0])
-    ] });
-  }
-}
-class StudentLiveProjectOverview extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
-    if (workflows.length === 0)
-      workflows = window.gettext(
-        "No workflows have been made visible to students."
-      );
-    let assignments = this.state.data.assignments.filter((assignment) => assignment.user_assignment.completed === false).map((assignment, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentTitle,
-        {
-          data: assignment,
-          user_role: this.props.renderer.user_role
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          disabled: !assignment.self_reporting,
-          onChange: this.toggleAssignment.bind(
-            this,
-            assignment.user_assignment.id
-          )
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
-    ] }, index2));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Your Incomplete Assignments"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
-        ] }),
-        assignments
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Visible Workflows"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
-    ] });
-  }
-  toggleAssignment(id, evt) {
-    setAssignmentCompletion(id, evt.target.checked);
-  }
-}
-class StudentLiveProjectWorkflows extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let workflows_added = this.state.data.workflows_added.map(
-      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflow_data: workflow }, index2)
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Workflows") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added })
-    ] });
-  }
-}
-class StudentLiveProjectAssignments extends LiveProjectSection {
-  render() {
-    if (!this.state.data)
-      return this.defaultRender();
-    let assignments_past = this.state.data.assignments_past.map(
-      (assignment) => (
-        // @todo renderer IS used in this component
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
-      )
-    );
-    let assignments_upcoming = this.state.data.assignments_upcoming.map(
-      (assignment) => (
-        // @todo renderer IS used in this component
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
-      )
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        window.gettext("Your Tasks"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Upcoming"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_upcoming }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        window.gettext("Past"),
-        ":"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_past })
-    ] });
-  }
-}
-class StudentLiveProjectMenu extends LiveProjectMenu {
-  getViewButtons() {
-    return [
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "assignments", name: window.gettext("My Assignments") },
-      { type: "workflows", name: window.gettext("My Workflows") }
-    ];
-  }
-  getRole() {
-    return "student";
-  }
-  getContent() {
-    switch (this.state.view_type) {
-      case "overview":
-        return (
-          // @todo renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectOverview,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "assignments":
-        return (
-          // @todo renderer IS used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectAssignments,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-      case "workflows":
-        return (
-          // @todo renderer NOT used in this component
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            StudentLiveProjectWorkflows,
-            {
-              role: this.getRole(),
-              objectID: this.props.project.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-    }
-  }
-  updateFunction(new_state) {
-    this.setState(new_state);
-  }
-}
-class ProjectEditMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...props.data, selected_set: "none" };
-    this.object_set_updates = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  componentDidUpdate() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  deleteTerm(id) {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
-    )) {
-      let new_state_dict = this.state.object_sets.slice();
-      for (let i = 0; i < new_state_dict.length; i++) {
-        if (new_state_dict[i].id === id) {
-          deleteSelf(id, "objectset");
-          new_state_dict.splice(i, 1);
-          this.setState({ object_sets: new_state_dict });
-          break;
-        }
-      }
-    }
-  }
-  addTerm() {
-    let term = $("#nomenclature-select")[0].value;
-    let title = $("#term-singular")[0].value;
-    addTerminology(this.state.id, term, title, "", (response_data) => {
-      this.setState({
-        object_sets: response_data.new_dict,
-        selected_set: "none",
-        termsingular: ""
-      });
-    });
-  }
-  termChanged(id, evt) {
-    let new_sets = this.state.object_sets.slice();
-    for (var i = 0; i < new_sets.length; i++) {
-      if (new_sets[i].id == id) {
-        new_sets[i] = { ...new_sets[i], title: evt.target.value };
-        this.object_set_updates[id] = { title: evt.target.value };
-      }
-    }
-    this.setState({ object_sets: new_sets, changed: true });
-  }
-  updateTerms() {
-    for (var object_set_id in this.object_set_updates) {
-      updateValueInstant(
-        object_set_id,
-        "objectset",
-        this.object_set_updates[object_set_id]
-      );
-    }
-  }
-  addTermDisabled(selected_set) {
-    if (!selected_set)
-      return true;
-    if (!this.state.termsingular)
-      return true;
-    return false;
-  }
-  addDiscipline(id) {
-    this.setState((state, props) => {
-      return { disciplines: [...state.disciplines, id], changed: true };
-    });
-  }
-  removeDiscipline(id) {
-    this.setState((state, props) => {
-      return {
-        disciplines: state.disciplines.filter((value) => value != id),
-        changed: true
-      };
-    });
-  }
-  inputChanged(field, evt) {
-    var new_state = { changed: true };
-    new_state[field] = evt.target.value;
-    if (field === "selected_set")
-      new_state["termsingular"] = "";
-    this.setState(new_state);
-  }
-  getActions() {
-    var actions = [];
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: closeMessageBox, children: window.gettext("Cancel") })
-    );
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          id: "save-changes",
-          className: "primary-button",
-          disabled: !this.state.changed,
-          onClick: () => {
-            updateValueInstant(this.state.id, "project", {
-              title: this.state.title,
-              description: this.state.description,
-              published: this.state.published,
-              disciplines: this.state.disciplines
-            });
-            this.updateTerms();
-            this.props.actionFunction({ ...this.state, changed: false });
-            closeMessageBox();
-          },
-          children: window.gettext("Save Changes")
-        }
-      )
-    );
-    return actions;
-  }
-  getLiveProjectSettings() {
-    if (this.props.data.renderer.user_role === role_keys.teacher) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        LiveProjectSettings,
-        {
-          renderer: this.props.renderer,
-          role: "teacher",
-          objectID: this.state.id,
-          view_type: "settings",
-          updateLiveProject: this.props.actionFunction
-        }
-      ) });
-    }
-    return null;
-  }
-  autocompleteDiscipline() {
-    let choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
-      value: discipline.title,
-      label: discipline.title,
-      id: discipline.id
-    }));
-    $("#project-discipline-input").autocomplete({
-      source: choices,
-      minLength: 0,
-      focus: null,
-      select: (evt, ui) => {
-        this.addDiscipline(ui.item.id);
-        $("#project-discipline-input").val("");
-        return false;
-      }
-    }).focus(function() {
-      $("#project-discipline-input").autocomplete(
-        "search",
-        $("#project-discipline-input").val()
-      );
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.state;
-    let disciplines;
-    if (data.all_disciplines) {
-      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
-        discipline.title,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            className: "material-symbols-rounded green",
-            onClick: this.removeDiscipline.bind(this, discipline.id),
-            children: "close"
-          }
-        )
-      ] }));
-    }
-    let title = unescapeCharacters(data.title || "");
-    let description = unescapeCharacters(data.description || "");
-    let object_sets = object_sets_types();
-    let set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
-    let selected_set;
-    if (this.state.selected_set)
-      selected_set = object_sets[this.state.selected_set];
-    let sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          value: item.title,
-          onChange: this.termChanged.bind(this, item.id)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "nomenclature-delete-button",
-          onClick: this.deleteTerm.bind(this, item.id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
-        }
-      )
-    ] }));
-    let published_enabled = data.title && data.disciplines.length > 0;
-    if (data.published && !published_enabled)
-      this.setState({ published: false });
-    if (!published_enabled)
-      window.gettext(
-        "A title and at least one discipline is required for publishing."
-      );
-    let add_term_css = "material-symbols-rounded filled";
-    let clickEvt;
-    if (this.addTermDisabled(selected_set)) {
-      clickEvt = () => console.log("Disabled");
-      add_term_css += " grey";
-    } else {
-      clickEvt = this.addTerm.bind(this);
-      add_term_css += " green hover-shade";
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-title-input",
-            value: title,
-            onChange: this.inputChanged.bind(this, "title")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-description-input",
-            value: description,
-            onChange: this.inputChanged.bind(this, "description")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            autoComplete: "off",
-            id: "project-discipline-input",
-            placeholder: "Search"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
-        sets_added,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              id: "nomenclature-select",
-              value: this.state.selected_set,
-              onChange: this.inputChanged.bind(this, "selected_set"),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
-                set_options
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              placeholder: window.gettext("Set name"),
-              type: "text",
-              id: "term-singular",
-              maxLength: "50",
-              value: this.state.termsingular,
-              onChange: this.inputChanged.bind(this, "termsingular"),
-              disabled: selected_set == null
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
-        ] })
-      ] }),
-      this.getLiveProjectSettings(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: closeMessageBox, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
-    ] });
-  }
-}
 class MessageBox extends reactExports.Component {
   constructor() {
     super(...arguments);
@@ -68144,34 +67458,9 @@ class MessageBox extends reactExports.Component {
               actionFunction: this.props.actionFunction
             }
           );
-        case "project_edit_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ProjectEditMenu,
-            {
-              type: this.props.message_type,
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
-        case "share_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ShareMenu,
-            {
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
         case "import":
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             ImportMenu,
-            {
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
-        case "export":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ExportMenu,
             {
               data: this.props.message_data,
               actionFunction: this.props.actionFunction
@@ -68394,7 +67683,7 @@ const SimpleOutcome = connect(
   null
 )(SimpleOutcomeUnconnected);
 const SimpleOutcome$1 = SimpleOutcome;
-class OutcomeHorizontalLinkUnconnected extends Component {
+class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcomehorizontallink";
@@ -68443,9 +67732,9 @@ class OutcomeHorizontalLinkUnconnected extends Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: icon,
-        button_class: "delete-self-button",
-        titletext: window.gettext("Delete"),
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Delete"),
         handleClick: this.deleteSelf.bind(this, data)
       }
     );
@@ -69087,10 +68376,10 @@ class MenuBar extends reactExports.Component {
     let viewbar;
     let userbar;
     if (this.props.overflow_links) {
-      overflow_links = this.props.overflow_links();
+      overflow_links = this.props.overflow_links;
     }
     if (this.props.visible_buttons) {
-      visible_buttons = this.props.visible_buttons();
+      visible_buttons = this.props.visible_buttons;
     }
     if (this.props.viewbar)
       viewbar = this.props.viewbar();
@@ -83235,7 +82524,7 @@ class PathGenerator {
     return joined;
   }
 }
-class NodeLinkSVG extends Component {
+class NodeLinkSVG extends ComponentWithToggleDrop {
   componentDidUpdate() {
     if (this.props.hovered || this.state.hovered || this.props.selected || this.props.node_selected)
       ;
@@ -83561,6 +82850,769 @@ class NodeLink extends EditableComponentWithActions {
 }
 const mapNodeLinkStateToProps = (state, own_props) => getNodeLinkByID(state, own_props.objectID);
 const NodeLink$1 = connect(mapNodeLinkStateToProps, null)(NodeLink);
+class AssignmentView extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { is_dropped: false };
+    this.user_id = COURSEFLOW_APP.contextData.user_id;
+    if (props.data.user_assignment)
+      this.state.completed = props.data.user_assignment.completed;
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  visitWorkflow(id, evt) {
+    const path = COURSEFLOW_APP.config.update_path["workflow"];
+    evt.stopPropagation();
+    window.open(path.replace("0", id));
+  }
+  toggleDrop() {
+    this.setState((state) => {
+      return { is_dropped: !state.is_dropped };
+    });
+  }
+  changeCompletion(evt) {
+    const checked = evt.target.checked;
+    this.setState({ completed: checked });
+    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let lefticon;
+    let righticon;
+    let css_class = "node assignment";
+    const data = this.props.data;
+    const node_data = data.task;
+    let data_override = node_data;
+    const mouseover_actions = [];
+    if (node_data.represents_workflow) {
+      data_override = {
+        ...node_data,
+        ...node_data.linked_workflow_data,
+        id: data.id
+      };
+    }
+    if (node_data.context_classification > 0)
+      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: this.props.renderer.context_choices.find(
+            (obj) => obj.type == node_data.context_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+        }
+      );
+    if (node_data.task_classification > 0)
+      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: this.props.renderer.task_choices.find(
+            (obj) => obj.type == node_data.task_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + task_keys[node_data.task_classification] + ".svg"
+        }
+      );
+    const style2 = { backgroundColor: getColumnColour(node_data) };
+    if (this.state.is_dropped)
+      css_class += " dropped";
+    let linkIcon;
+    let linktext = window.gettext("Visit linked workflow");
+    let clickfunc = this.visitWorkflow.bind(this, node_data.linked_workflow);
+    if (node_data.linked_workflow_data) {
+      if (node_data.linked_workflow_data.deleted)
+        linktext = window.gettext("<Deleted Workflow>");
+      if (node_data.linked_workflow_data.deleted)
+        clickfunc = null;
+    }
+    if (data.linked_workflow_access && node_data.linked_workflow)
+      linkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade linked-workflow", onClick: clickfunc, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
+      ] });
+    let parentLinkIcon;
+    const parentlinktext = window.gettext("Visit containing workflow");
+    const parentclickfunc = this.visitWorkflow.bind(
+      this,
+      data.parent_workflow_id
+    );
+    if (data.workflow_access && data.parent_workflow_id)
+      parentLinkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "hover-shade linked-workflow containing-workflow",
+          onClick: parentclickfunc,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: parentlinktext })
+          ]
+        }
+      );
+    let dropText = "";
+    if (data_override.description && data_override.description.replace(
+      /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+      ""
+    ) != "")
+      dropText = "...";
+    let dropIcon;
+    if (this.state.is_dropped)
+      dropIcon = "droptriangleup";
+    else
+      dropIcon = "droptriangledown";
+    let completion_data;
+    if (data.user_assignment) {
+      let disabled = true;
+      if (this.props.renderer.user_role == role_keys.teacher || data.self_reporting && data.user_assignment.liveprojectuser.user.id == this.user_id)
+        disabled = false;
+      let extra_data;
+      if (data.single_completion && data.user_assignment.completed) {
+        extra_data = [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            window.gettext("Completed by ") + getUserDisplay(
+              data.user_assignment.liveprojectuser.user
+            ) + window.gettext(" on "),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                default_value: data.user_assignment.completed_on,
+                disabled: true
+              }
+            )
+          ] })
+        ];
+      }
+      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("Completion"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            disabled,
+            checked: this.state.completed,
+            onChange: this.changeCompletion.bind(this)
+          }
+        ),
+        extra_data
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: css_class, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AssignmentTitle,
+          {
+            user_role: this.props.renderer.user_role,
+            data
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+              window.gettext("End Date"),
+              ": "
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                id: "end_date",
+                default_value: data.end_date,
+                disabled: true
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+              window.gettext("Start Date"),
+              ": "
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DatePicker,
+              {
+                id: "start_date",
+                default_value: data.start_date,
+                disabled: true
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
+      ] }),
+      parentLinkIcon,
+      linkIcon,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        TitleText,
+        {
+          text: data_override.description,
+          defaultText: window.gettext("No description given")
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "node-drop-row hover-shade",
+          onClick: this.toggleDrop.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left", children: dropText }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.props.renderer.time_choices[data_override.time_units].name }) })
+          ]
+        }
+      )
+    ] });
+  }
+}
+class WorkflowVisibility extends WorkflowCard {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    return null;
+  }
+  getButtons() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "select",
+      {
+        value: this.props.visibility,
+        onChange: (evt) => this.props.visibilityFunction(
+          this.props.workflowData.id,
+          evt.target.value
+        ),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "not_visible", children: window.gettext("Not Visible") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "visible", children: window.gettext("Visible") })
+        ]
+      }
+    ) });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.props.workflowData;
+    var css_class = "workflow-for-menu workflow-visibility hover-shade " + data.type;
+    if (this.props.selected)
+      css_class += " selected";
+    let creation_text = window.gettext("Created");
+    if (data.author && data.author !== "None")
+      creation_text += " " + window.gettext("by") + " " + data.author;
+    creation_text += " " + data.created_on;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: css_class, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
+        this.getButtons(),
+        this.getTypeIndicator()
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creation_text }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "workflow-description",
+          dangerouslySetInnerHTML: { __html: data.description }
+        }
+      )
+    ] });
+  }
+}
+class ReportRow extends reactExports.Component {
+  render() {
+    let user = this.props.userassignment.liveprojectuser;
+    let userassignment = this.props.userassignment;
+    let updateFunction = this.props.updateFunction;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          checked: userassignment.completed,
+          onChange: (evt) => updateFunction(userassignment.id, evt.target.checked)
+        }
+      ) })
+    ] });
+  }
+}
+class LiveAssignmentEdit extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...this.props.data,
+      has_changed: false,
+      user_data: { assigned_users: [], other_users: [] }
+    };
+    this.changed_values = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    getAssignmentDataQuery(
+      component.props.data.id,
+      component.props.view_type,
+      (data) => {
+        component.setState({ user_data: data.data_package });
+      }
+    );
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  switchVisibility(pk, visibility) {
+    let parameter = "workflow_access";
+    if (this.state.task.linked_workflow === pk)
+      parameter = "linked_" + parameter;
+    if (visibility === "visible") {
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, true);
+      let new_state = {};
+      new_state[parameter] = true;
+      this.props.updateAssignment(new_state);
+      this.setState(new_state);
+    } else {
+      setWorkflowVisibilityQuery(this.props.live_project_data.pk, pk, false);
+      let new_state = {};
+      new_state[parameter] = false;
+      this.props.updateAssignment(new_state);
+      this.setState(new_state);
+    }
+  }
+  delete() {
+    let data = this.state;
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + window.gettext("assignment") + "?"
+    )) {
+      deleteSelfLive(data.id, "liveassignment", (response_data) => {
+        window.location = COURSEFLOW_APP.config.update_path.liveproject.replace(
+          "0",
+          data.liveproject
+        );
+      });
+    }
+  }
+  changeField(type, new_value) {
+    let new_state = { has_changed: true };
+    new_state[type] = new_value;
+    this.changed_values[type] = new_value;
+    this.setState(new_state);
+  }
+  saveChanges() {
+    updateLiveProjectValueQuery(this.state.id, "liveassignment", this.changed_values);
+    this.props.updateAssignment(this.changed_values);
+    this.changed_values = {};
+    this.setState({ has_changed: false });
+  }
+  changeView(workflow_id) {
+    this.setState({ selected_id: workflow_id });
+  }
+  addUser(evt) {
+    let selected = parseInt($("#users_all").val());
+    if (!selected)
+      return;
+    let user_data = { ...this.state.user_data };
+    user_data.assigned_users = user_data.assigned_users.slice();
+    user_data.other_users = user_data.other_users.slice();
+    user_data.assigned_users.push(
+      user_data.other_users.splice(
+        user_data.other_users.findIndex(
+          (element) => element.user.id == selected
+        ),
+        1
+      )[0]
+    );
+    this.setState({ user_data });
+    addUsersToAssignmentQuery(this.state.id, [selected], true);
+  }
+  removeUser(evt) {
+    let selected = parseInt($("#users_chosen").val());
+    if (!selected)
+      return;
+    let user_data = { ...this.state.user_data };
+    user_data.assigned_users = user_data.assigned_users.slice();
+    user_data.other_users = user_data.other_users.slice();
+    user_data.other_users.push(
+      user_data.assigned_users.splice(
+        user_data.assigned_users.findIndex(
+          (element) => element.user.id == selected
+        ),
+        1
+      )[0]
+    );
+    this.setState({ user_data });
+    addUsersToAssignmentQuery(this.state.id, [selected], false);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.state;
+    let changeField2 = this.changeField.bind(this);
+    let assigned_users = this.state.user_data.assigned_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
+    let other_users = this.state.user_data.other_users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: user.user.id, children: getUserDisplay(user.user) + " (" + user.role_type_display + ")" }));
+    let linked_workflow;
+    if (this.state.task.linked_workflow) {
+      let visibility = "not_visible";
+      if (this.state.linked_workflow_access)
+        visibility = "visible";
+      let warning2;
+      if (!this.state.linked_workflow_access)
+        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
+          "Warning: the linked workflow is not visible to those in the classroom"
+        ) });
+      linked_workflow = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Linked Workflow"),
+          ":"
+        ] }),
+        warning2,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowVisibility,
+          {
+            workflowData: this.state.task.linked_workflow_data,
+            visibility,
+            visibilityFunction: this.switchVisibility.bind(this)
+          }
+        )
+      ];
+    }
+    let parent_workflow;
+    if (this.state.user_data.parent_workflow) {
+      let parent_visibility = "not_visible";
+      if (this.state.workflow_access)
+        parent_visibility = "visible";
+      let warning2;
+      if (!this.state.workflow_access)
+        warning2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "warning", children: window.gettext(
+          "Warning: the workflow the task appears in is not visible to those in the classroom"
+        ) });
+      parent_workflow = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Task Workflow"),
+          ":"
+        ] }),
+        warning2,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowVisibility,
+          {
+            workflowData: this.state.user_data.parent_workflow,
+            visibility: parent_visibility,
+            visibilityFunction: this.switchVisibility.bind(this)
+          }
+        )
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Configuration"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("End Date"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DatePicker,
+          {
+            id: "end_date",
+            default_value: data.end_date,
+            onChange: this.changeField.bind(this, "end_date")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+          window.gettext("Start Date"),
+          ": "
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DatePicker,
+          {
+            id: "start_date",
+            default_value: data.start_date,
+            onChange: this.changeField.bind(this, "start_date")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "single-completion",
+            title: window.gettext(
+              "Whether to mark the assignment as complete if any user has completed it."
+            ),
+            children: window.gettext(
+              "Mark assignment as complete when a single user has completed it:"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "single-completion",
+            name: "single-completion",
+            type: "checkbox",
+            checked: data.single_completion,
+            onChange: (evt) => changeField2("single_completion", evt.target.checked)
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "self-reporting",
+            title: window.gettext(
+              "Whether students can mark their own assignments as complete."
+            ),
+            children: window.gettext(
+              "Let students self-report their assignment completion:"
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "self-reporting",
+            name: "self-reporting",
+            type: "checkbox",
+            checked: data.self_reporting,
+            onChange: (evt) => changeField2("self_reporting", evt.target.checked)
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          disabled: !this.state.has_changed,
+          onClick: this.saveChanges.bind(this),
+          children: window.gettext("Save Changes")
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Delete") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Users"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Assigned Users") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_chosen", multiple: true, children: assigned_users }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "remove-user", onClick: this.removeUser.bind(this), children: [
+            " ",
+            window.gettext("Remove"),
+            " "
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "multi-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: window.gettext("Other Users") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("select", { id: "users_all", multiple: true, children: other_users }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { id: "add-user", onClick: this.addUser.bind(this), children: [
+            " ",
+            window.gettext("Add"),
+            " "
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Workflows"),
+        ":"
+      ] }),
+      parent_workflow,
+      linked_workflow
+    ] });
+  }
+}
+class LiveAssignmentReport extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+  }
+  updateCompletion(id, completed) {
+    let userassignments = this.state.userassignments.slice();
+    let index2 = userassignments.findIndex(
+      (userassignment) => userassignment.id == id
+    );
+    userassignments[index2] = { ...userassignments[index2], completed };
+    setAssignmentCompletionQuery(id, completed);
+    this.setState({ userassignments });
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    getAssignmentDataQuery(
+      component.props.data.id,
+      component.props.view_type,
+      (data) => {
+        component.setState({ ...data.data_package });
+      }
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.userassignments) {
+      return this.defaultRender();
+    }
+    let rows = this.state.userassignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ReportRow,
+      {
+        userassignment: assignment,
+        updateFunction: this.updateCompletion.bind(this)
+      }
+    ));
+    let total_completion = this.state.userassignments.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.completed,
+      0
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Completion"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { children: [
+        rows,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
+            window.gettext("Total"),
+            ":"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { children: [
+            total_completion,
+            "/",
+            this.state.userassignments.length
+          ] })
+        ] })
+      ] })
+    ] });
+  }
+}
+class LiveAssignmentMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { view_type: "edit", assignment_data: props.assignment_data };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getViewButtons() {
+    return [
+      { type: "edit", name: window.gettext("Edit") },
+      { type: "report", name: window.gettext("Report") }
+    ];
+  }
+  changeView(view_type) {
+    this.setState({ view_type });
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "edit":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LiveAssignmentEdit,
+          {
+            updateAssignment: this.updateAssignment.bind(this),
+            view_type: this.state.view_type,
+            renderer: this.props.renderer,
+            data: this.props.assignment_data,
+            live_project_data: this.props.live_project_data
+          }
+        );
+      case "report":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LiveAssignmentReport,
+          {
+            view_type: this.state.view_type,
+            renderer: this.props.renderer,
+            data: this.props.assignment_data
+          }
+        );
+    }
+  }
+  updateAssignment(new_values) {
+    this.setState({
+      assignment_data: { ...this.state.assignment_data, ...new_values }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.state.assignment_data;
+    let liveproject = this.props.live_project_data;
+    let view_buttons = this.getViewButtons().map((item) => {
+      let view_class = "hover-shade";
+      if (item.type === this.state.view_type)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          id: "button_" + item.type,
+          className: view_class,
+          onClick: this.changeView.bind(this, item.type),
+          children: item.name
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+        reactDomExports.createPortal(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "a",
+            {
+              id: "live-project-return",
+              href: COURSEFLOW_APP.config.update_path["liveproject"].replace(
+                0,
+                liveproject.pk
+              ),
+              className: "hover-shade no-underline",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_back_ios" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Classroom") })
+              ]
+            }
+          ),
+          $(".titlebar .title")[0]
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() })
+    ] });
+  }
+}
+class AssignmentViewSmall extends reactExports.Component {
+  render() {
+    let data = this.props.data;
+    let node_data = data.task;
+    let css_class = "node assignment";
+    let style2 = {
+      backgroundColor: getColumnColour(node_data)
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: style2, className: css_class, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AssignmentTitle,
+      {
+        user_role: this.props.renderer.user_role,
+        data
+      }
+    ) }) });
+  }
+}
 class AssignmentForNode extends AssignmentView {
   /*******************************************************
    * RENDER
@@ -83701,7 +83753,7 @@ class AssignmentBox extends reactExports.Component {
   createAssignment() {
     let props = this.props;
     props.renderer.tiny_loader.startLoad();
-    createAssignment(
+    createAssignmentQuery(
       props.node_id,
       props.renderer.project.id,
       (response_data) => {
@@ -83784,7 +83836,7 @@ class AssignmentBox extends reactExports.Component {
     );
   }
 }
-class OutcomeNodeUnconnected extends Component {
+class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcomenode";
@@ -83810,9 +83862,9 @@ class OutcomeNodeUnconnected extends Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
-        button_icon: icon,
-        button_class: "delete-self-button",
-        titletext: gettext("Delete"),
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Delete"),
         handleClick: this.deleteSelf.bind(this, data)
       }
     );
@@ -83994,7 +84046,7 @@ let Index$1 = class Index extends reactExports.Component {
     );
   }
 };
-class Node extends EditableComponentWithActions {
+let Node$1 = class Node2 extends EditableComponentWithActions {
   constructor(props) {
     super(props);
     this.objectType = "node";
@@ -84110,9 +84162,9 @@ class Node extends EditableComponentWithActions {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ActionButton,
         {
-          button_icon: "assignment.svg",
-          button_class: "assignment-button",
-          titletext: window.gettext("Show Assignment Info"),
+          buttonIcon: "assignment.svg",
+          buttonClass: "assignment-button",
+          titleText: window.gettext("Show Assignment Info"),
           handleClick: this.showAssignment.bind(this)
         },
         0
@@ -84350,9 +84402,9 @@ class Node extends EditableComponentWithActions {
       }
     );
   }
-}
+};
 const mapNodeStateToProps$4 = (state, own_props) => getNodeByID(state, own_props.objectID);
-const Node$1 = connect(mapNodeStateToProps$4, null)(Node);
+const Node$2 = connect(mapNodeStateToProps$4, null)(Node$1);
 class NodeWeekUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -84365,7 +84417,7 @@ class NodeWeekUnconnected extends reactExports.Component {
   getNode() {
     let data = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Node$1,
+      Node$2,
       {
         objectID: data.node,
         parentID: this.props.parentID,
@@ -84760,7 +84812,7 @@ class Term extends WeekUnconnected {
 }
 const mapTermStateToProps = (state, own_props) => getTermByID(state, own_props.objectID);
 const Term$1 = connect(mapTermStateToProps, null)(Term);
-class WeekWorkflowUnconnected extends Component {
+class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "weekworkflow";
@@ -85507,7 +85559,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-header", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowCard,
         {
-          workflow_data: data,
+          workflowData: data,
           selectAction: this.openEdit.bind(this, null)
         }
       ) }),
@@ -85526,6 +85578,79 @@ const WorkflowBase = connect(
   mapWorkflowStateToProps$1,
   null
 )(WorkflowBaseUnconnected);
+class SelectionManager {
+  constructor(read_only) {
+    this.currentSelection;
+    this.mouse_isclick = false;
+    this.read_only = read_only;
+    var selector = this;
+    $(document).on("mousedown", () => {
+      selector.mouse_isclick = true;
+      setTimeout(() => {
+        selector.mouse_isclick = false;
+      }, 500);
+    });
+    $(document).on("mousemove", () => {
+      selector.mouse_isclick = false;
+    });
+    $(document).on("mouseup", (evt, newSelection) => {
+      if (selector.mouse_isclick) {
+        selector.changeSelection(evt, null);
+      }
+    });
+    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+  }
+  changeSelection(evt, newSelection) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
+      return;
+    }
+    if (this.currentSelection) {
+      this.currentSelection.setState({ selected: false });
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          false
+        );
+      }
+    }
+    this.currentSelection = newSelection;
+    if (this.currentSelection) {
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          true
+        );
+      }
+      if ($("#sidebar").tabs("option", "active") !== 0) {
+        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+      }
+      $("#sidebar").tabs("enable", 0);
+      $("#sidebar").tabs("option", "active", 0);
+      this.currentSelection.setState({ selected: true });
+    } else {
+      if ($("#sidebar").tabs("option", "active") === 0) {
+        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
+      }
+      $("#sidebar").tabs("disable", 0);
+    }
+  }
+  deleted(selection) {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null, null);
+    }
+  }
+}
 class ConnectionBar extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -86482,7 +86607,7 @@ class TableCell extends reactExports.Component {
     ] });
   }
 }
-let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
+let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "outcome";
@@ -86611,7 +86736,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
 };
 const mapOutcomeStateToProps$1 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
 const Outcome$1 = connect(mapOutcomeStateToProps$1, null)(OutcomeUnconnected$1);
-class OutcomeBaseUnconnected extends Component {
+class OutcomeBaseUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -86744,7 +86869,7 @@ const OutcomeLegend = connect(
   mapWorkflowOutcomeLegendStateToProps,
   null
 )(OutcomeLegendUnconnected);
-class NodeOutcomeViewUnconnected extends Component {
+class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "node";
@@ -86980,7 +87105,7 @@ const mapStateToProps$2 = (state, own_props) => {
   };
 };
 const OutcomeTableView$1 = connect(mapStateToProps$2, null)(OutcomeTableView);
-class MatrixNodeUnconnected extends Component {
+class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "node";
@@ -87028,7 +87153,7 @@ class MatrixNodeUnconnected extends Component {
 }
 const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
 const MatrixNode = connect(mapNodeStateToProps$1, null)(MatrixNodeUnconnected);
-class MatrixWeekUnconnected extends Component {
+class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
     this.objectType = "week";
@@ -87594,12 +87719,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    *******************************************************/
   updateTabs() {
     this.props.renderer.selection_manager.changeSelection(null, null);
-    let disabled_tabs = [];
+    const disabled_tabs = [];
     for (let i = 0; i <= 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0)
         disabled_tabs.push(i);
     $("#sidebar").tabs({ disabled: false });
-    let current_tab = $("#sidebar").tabs("option", "active");
+    const current_tab = $("#sidebar").tabs("option", "active");
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
       if (this.allowed_tabs.length == 0)
         $("#sidebar").tabs({ active: false });
@@ -87614,8 +87739,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     this.props.renderer.render(this.props.renderer.container, type);
   }
   getHeader() {
-    let data = this.props.data;
-    let style2 = {};
+    const data = this.props.data;
+    const style2 = {};
     if (data.lock) {
       style2.border = "2px solid " + data.lock.user_colour;
     }
@@ -87659,7 +87784,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     );
   }
   getTypeIndicator() {
-    let data = this.props.data;
+    const data = this.props.data;
     let type_text = window.gettext(data.type);
     if (data.is_strategy)
       type_text += window.gettext(" strategy");
@@ -87668,10 +87793,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getUsers() {
     if (!this.state.users)
       return null;
-    let author = this.state.users.author;
-    let editors = this.state.users.editors;
-    let commenters = this.state.users.commentors;
-    let viewers = this.state.users.viewers;
+    const author = this.state.users.author;
+    const editors = this.state.users.editors;
+    const commenters = this.state.users.commentors;
+    const viewers = this.state.users.viewers;
     let users_group = [];
     if (this.state.users.published) {
       users_group.push(
@@ -87705,7 +87830,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       ] }))
     ]);
     users_group = users_group.flat(2);
-    let users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+    const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
     if (users_group.length > 4) {
       users.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
@@ -87763,8 +87888,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     return share;
   }
   openShareMenu() {
-    let component = this;
-    let data = this.props.data;
+    const component = this;
+    const data = this.props.data;
     renderMessageBox(data, "share_menu", () => {
       closeMessageBox();
       component.getUserData();
@@ -87773,14 +87898,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getUserData() {
     if (this.props.renderer.public_view || this.props.renderer.is_student)
       return null;
-    let component = this;
-    getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-      component.setState({ users: data });
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+      this.setState({ users: data });
     });
   }
   getOverflowLinks() {
-    this.state.data;
-    let overflow_links = [];
+    const overflow_links = [];
     overflow_links.push(this.getExportButton());
     overflow_links.push(this.getCopyButton());
     overflow_links.push(this.getImportButton());
@@ -87832,7 +87955,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this workflow?")
     )) {
-      deleteSelf(this.props.data.id, "workflow", true, () => {
+      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
       });
     }
   }
@@ -87842,7 +87965,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         "Are you sure you want to permanently delete this workflow?"
       )
     )) {
-      deleteSelf(this.props.data.id, "workflow", false, () => {
+      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
         window.location = COURSEFLOW_APP.config.update_path["project"].replace(
           0,
           renderer.project.id
@@ -87851,7 +87974,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     }
   }
   restoreWorkflow() {
-    restoreSelf(this.props.data.id, "workflow", () => {
+    restoreSelfQuery(this.props.data.id, "workflow", () => {
     });
   }
   getExportButton() {
@@ -87859,7 +87982,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       return null;
     if (this.props.renderer.is_student && !this.props.renderer.can_view)
       return null;
-    let export_button = /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const export_button = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         id: "export-button",
@@ -87877,17 +88000,17 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getCopyButton() {
     if (!this.props.renderer.user_id)
       return null;
-    let export_button = [
+    const export_button = [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           id: "copy-button",
           className: "hover-shade",
           onClick: () => {
-            let loader = this.props.renderer.tiny_loader;
+            const loader = COURSEFLOW_APP.tiny_loader;
             if (this.props.data.is_strategy) {
               loader.startLoad();
-              duplicateBaseItem(
+              duplicateBaseItemQuery(
                 this.props.data.id,
                 this.props.data.type,
                 null,
@@ -87904,7 +88027,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         }
       )
     ];
-    if (!this.props.data.is_strategy && this.props.renderer.project_permission == permission_keys.edit)
+    if (!this.props.data.is_strategy && this.props.renderer.project_permission === permission_keys.edit)
       export_button.unshift(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -87912,7 +88035,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             id: "copy-to-project-button",
             className: "hover-shade",
             onClick: () => {
-              let loader = this.props.renderer.tiny_loader;
+              const loader = COURSEFLOW_APP.tiny_loader;
               duplicateBaseItem(
                 this.props.data.id,
                 this.props.data.type,
@@ -87935,7 +88058,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let disabled;
     if (this.props.data.importing)
       disabled = true;
-    let imports = [/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})];
+    const imports = [/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})];
     this.pushImport(
       imports,
       "outcomes",
@@ -87968,9 +88091,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     );
   }
   getReturnLinks() {
-    let renderer2 = this.props.renderer;
+    const renderer2 = this.props.renderer;
     this.props.data;
-    let return_links = [];
+    const return_links = [];
     if (renderer2.project && !renderer2.is_student && !renderer2.public_view) {
       return_links.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -88026,8 +88149,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     return null;
   }
   getWorkflowContent() {
-    let data = this.props.data;
-    let renderer2 = this.props.renderer;
+    const data = this.props.data;
+    const renderer2 = this.props.renderer;
     let workflow_content;
     if (renderer2.view_type == "outcometable") {
       workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88059,7 +88182,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     }
     if (data.is_strategy)
       return workflow_content;
-    let view_buttons = [
+    const view_buttons = [
       {
         type: "workflowview",
         name: window.gettext("Workflow View"),
@@ -88105,7 +88228,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         }
       );
     });
-    let view_buttons_sorted = view_buttons.slice(0, 2);
+    const view_buttons_sorted = view_buttons.slice(0, 2);
     view_buttons_sorted.push(
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
@@ -88136,8 +88259,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getJump() {
     if (this.props.renderer.view_type != "workflowview")
       return null;
-    let data = this.props.data;
-    let nodebarweekworkflows = data.weekworkflow_set.map(
+    const data = this.props.data;
+    const nodebarweekworkflows = data.weekworkflow_set.map(
       (weekworkflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         JumpToWeekWorkflow,
         {
@@ -88248,13 +88371,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let renderer2 = this.props.renderer;
-    let data = this.props.data;
-    let visible_buttons = (() => {
+    const renderer2 = this.props.renderer;
+    const data = this.props.data;
+    const visible_buttons = (() => {
       return [this.getEdit(), this.getShare()];
     }).bind(this);
-    let overflow_links = this.getOverflowLinks.bind(this);
-    let viewbar = (() => {
+    const overflow_links = this.getOverflowLinks.bind(this);
+    const viewbar = (() => {
       return [this.getJump(), this.getExpand()];
     }).bind(this);
     let userbar;
@@ -88312,7 +88435,7 @@ class WorkflowTableView extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data;
+    const data = this.props.data;
     if (data.table_type == 1)
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         CompetencyMatrixView$1,
@@ -88362,7 +88485,7 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   getTypeIndicator(data) {
-    let type = data.type;
+    const type = data.type;
     let type_text = gettext(type);
     if (data.is_strategy)
       type_text += gettext(" strategy");
@@ -88375,7 +88498,7 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
     if (this.state.has_loaded) {
       if (this.state.parent_workflows.length == 0 && this.props.child_workflows.length == 0)
         return null;
-      let parent_workflows = this.state.parent_workflows.map(
+      const parent_workflows = this.state.parent_workflows.map(
         (parent_workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
           {
@@ -88385,7 +88508,7 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
           `WorkflowTitleParent-${index2}`
         )
       );
-      let child_workflows = this.props.child_workflows.map(
+      const child_workflows = this.props.child_workflows.map(
         (child_workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
           {
@@ -88395,7 +88518,7 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
           `WorkflowTitleChild-${index2}`
         )
       );
-      let return_val = [
+      const return_val = [
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}, "br"),
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Quick Navigation") }, "quick-nav")
       ];
@@ -88435,7 +88558,7 @@ class JumpToWeekWorkflowUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data;
+    const data = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       JumpToWeekView,
       {
@@ -88463,10 +88586,10 @@ class JumpToWeekViewUnconnected extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   jumpTo() {
-    let week_id = this.props.data.id;
-    let week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
+    const week_id = this.props.data.id;
+    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
     if (week.length > 0) {
-      let container2 = $("#container");
+      const container2 = $("#container");
       $("#container").animate(
         {
           scrollTop: week.offset().top + container2[0].scrollTop - container2.offset().top - 200
@@ -88479,8 +88602,8 @@ class JumpToWeekViewUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data;
-    let renderer2 = this.props.renderer;
+    const data = this.props.data;
+    const renderer2 = this.props.renderer;
     let default_text;
     if (!renderer2.is_strategy)
       default_text = data.week_type_display + " " + (this.props.rank + 1);
@@ -88635,7 +88758,6 @@ class Workflow {
     }
   }
   render(container2, view_type = "workflowview") {
-    this.tiny_loader = new TinyLoader($("body")[0]);
     this.selection_manager = new SelectionManager(this.read_only);
     this.child_data_needed = [];
     this.child_data_completed = -1;
@@ -88898,7 +89020,6 @@ class LiveAssignmentRenderer extends React.Component {
   }
   render() {
     this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
     return this.getContents();
   }
   getContents() {
@@ -88912,6 +89033,1179 @@ class LiveAssignmentRenderer extends React.Component {
     );
   }
 }
+class LiveProjectSection extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
+    let component = this;
+    if (this.props.role === "teacher") {
+      getLiveProjectDataQuery(
+        this.props.objectID,
+        this.props.view_type,
+        (data) => {
+          component.setState({ data: data.data_package });
+        }
+      );
+    } else if (this.props.role === "student") {
+      getLiveProjectDataStudentQuery(
+        this.props.objectID,
+        this.props.view_type,
+        (data) => {
+          component.setState({ data: data.data_package });
+        }
+      );
+    }
+  }
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+  }
+}
+class WorkflowCardSimple extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.maindiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    if (this.props.selectAction) {
+      this.props.selectAction(this.props.workflow_data.id);
+    } else {
+      window.location.href = COURSEFLOW_APP.config.update_path[this.props.workflow_data.type].replace("0", this.props.workflow_data.id);
+    }
+  }
+  getTypeIndicator() {
+    let data = this.props.workflow_data;
+    let type = data.type;
+    let type_text = window.gettext(type);
+    if (type === "liveproject")
+      type_text = window.gettext("classroom");
+    if (data.is_strategy)
+      type_text += window.gettext(" strategy");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.props.workflow_data;
+    var css_class = "simple-workflow workflow-for-menu hover-shade " + data.type;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        ref: this.maindiv,
+        className: css_class,
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => {
+          evt.preventDefault();
+        },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { class_name: "workflow-title", data }),
+          this.getTypeIndicator()
+        ] })
+      }
+    );
+  }
+}
+class LiveProjectOverview extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflowData: workflow }, index2));
+    if (workflows.length === 0)
+      workflows = window.gettext(
+        "No workflows have been made visible to students."
+      );
+    let teachers = this.state.data.teachers.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
+    ] }, index2));
+    let students = this.state.data.students.map((user, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-user", children: getUserDisplay(user.user) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: user.completion })
+    ] }, index2));
+    let assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentTitle,
+        {
+          data: assignment,
+          user_role: this.props.userRole
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: assignment.completion_info }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
+    ] }, index));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Teachers"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
+        ] }),
+        teachers
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Students"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("User") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignments Complete") })
+        ] }),
+        students
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Visible Workflows"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Assignments"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
+        ] }),
+        assignments
+      ] })
+    ] });
+  }
+}
+let UserLabel$1 = class UserLabel extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.select = reactExports.createRef();
+  }
+  onChange(evt) {
+    switch (evt.target.value) {
+      case "none":
+        if (window.confirm("Are you sure you want to remove this user?")) {
+          this.props.permissionChange(0, this.props.user);
+        }
+        break;
+      default:
+        this.props.permissionChange(
+          role_keys[evt.target.value],
+          this.props.user
+        );
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let permission_select;
+    if (this.props.type !== "owner") {
+      if (this.props.type === "add") {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "permission-select", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => this.props.addFunction($(this.select.current).val()),
+              children: window.gettext("Share")
+            }
+          )
+        ] });
+      } else {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: this.props.type, onChange: this.onChange.bind(this), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "student", children: gettext("Student") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "teacher", children: gettext("Teacher") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: gettext("Remove user") })
+        ] }) });
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
+      ] }),
+      permission_select
+    ] });
+  }
+};
+let UserAdd$1 = class UserAdd extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.input = reactExports.createRef();
+    this.state = { selected: null };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    let component = this;
+    $(this.input.current).autocomplete({
+      source: (request, response_function) => {
+        getUserList(request.term, (response) => {
+          let user_list = response.user_list.map((user) => {
+            return {
+              label: user.first_name + " " + user.last_name + " - " + user.username,
+              value: user.username,
+              user
+            };
+          });
+          response_function(user_list);
+        });
+        component.setState({ selected: null });
+      },
+      select: (evt, ui) => {
+        this.setState({ selected: ui.item.user });
+      },
+      minLength: 1
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addClick(value) {
+    if (this.state.selected) {
+      this.props.permissionChange(
+        role_keys[value],
+        this.state.selected
+      );
+      $(this.input.current).val(null);
+      this.setState({ selected: null });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let user;
+    if (this.state.selected) {
+      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserLabel$1,
+        {
+          user: this.state.selected,
+          type: "add",
+          addFunction: this.addClick.bind(this)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        gettext("Add A User"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext(
+        "Begin typing to search users. Select the desired user then click Share."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ref: this.input }),
+      user
+    ] });
+  }
+};
+class StudentManagement extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.tiny_loader = new MouseCursorLoader($("body"));
+    this.state = { owner: null, teacher: [], student: [] };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    getUsersForLiveProject(this.props.data.id, (response) => {
+      this.setState({
+        owner: response.author,
+        student: response.students,
+        teacher: response.teachers
+      });
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  setUserPermission(permission_type, user) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    setLiveProjectRole(user.id, this.props.data.id, permission_type, () => {
+      getUsersForLiveProject(this.props.data.id, (response) => {
+        this.setState({
+          owner: response.author,
+          student: response.students,
+          teacher: response.teachers
+        });
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (this.state.owner == null)
+      return null;
+    let owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel$1, { user: this.state.owner, type: "owner" });
+    let teachers = this.state.teacher.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel$1,
+      {
+        user,
+        type: "teacher",
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    let students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel$1,
+      {
+        user,
+        type: "student",
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-text", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("Student Management") + ":" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        gettext("Owned By"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          gettext("Teachers"),
+          ":"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: teachers })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          gettext("Enrolled Users"),
+          ":"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "user-list", children: students })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(UserAdd$1, { permissionChange: this.setUserPermission.bind(this) })
+    ] });
+  }
+}
+class LiveProjectStudents extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let liveproject = this.state.data.liveproject;
+    let register_link;
+    if (liveproject && liveproject.registration_hash) {
+      let register_url = COURSEFLOW_APP.config.registration_path.replace(
+        "project_hash",
+        liveproject.registration_hash
+      );
+      register_link = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-text", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Student Registration:" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Student Registration Link: ") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              id: "copy-text",
+              className: "hover-shade",
+              onClick: () => {
+                navigator.clipboard.writeText(register_url);
+                $("#copy-text").attr(
+                  "src",
+                  COURSEFLOW_APP.config.icon_path + "duplicate_checked.svg"
+                );
+                $("#url-text").text("Copied to Clipboard");
+                setTimeout(() => {
+                  $("#copy-text").attr(
+                    "src",
+                    COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
+                  );
+                  $("#url-text").text(register_url);
+                }, 1e3);
+              },
+              title: window.gettext("Copy to clipboard"),
+              src: COURSEFLOW_APP.config.icon_path + "duplicate_clipboard.svg"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "url-text", className: "selectable", href: register_url, children: register_url })
+        ] })
+      ] }) });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(StudentManagement, { data: this.state.data.liveproject }),
+      register_link
+    ] });
+  }
+}
+class LiveProjectCompletionTable extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    this.state.liveproject;
+    let head = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentViewSmall, { renderer: this.props.renderer, data: assignment }) }));
+    let assignment_ids = this.state.data.assignments.map(
+      (assignment) => assignment.id
+    );
+    let body2 = this.state.data.table_rows.map((row, row_index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "user-head outcome-head", children: getUserDisplay(row.user) }),
+      assignment_ids.map((id) => {
+        let assignment = row.assignments.find(
+          (row_element) => row_element.assignment == id
+        );
+        if (!assignment)
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            onChange: this.toggleCompletion.bind(
+              this,
+              assignment.id,
+              row_index
+            ),
+            type: "checkbox",
+            checked: assignment.completed
+          }
+        ) });
+      }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "table-cell total-cell grand-total-cell", children: row.assignments.reduce(
+        (total, assignment) => total + assignment.completed,
+        0
+      ) + "/" + row.assignments.length })
+    ] }));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Table"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "user-table outcome-table node-rows", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "outcome-row node-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "user-head outcome-head empty" }),
+          head,
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "table-cell nodewrapper total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "total-header", children: [
+            window.gettext("Total"),
+            ":"
+          ] }) })
+        ] }),
+        body2
+      ] })
+    ] });
+  }
+  toggleCompletion(id, row_index, evt) {
+    setAssignmentCompletionQuery(id, evt.target.checked);
+    let new_data = { ...this.state.data };
+    new_data.table_rows = new_data.table_rows.slice();
+    new_data.table_rows[row_index] = { ...new_data.table_rows[row_index] };
+    new_data.table_rows[row_index].assignments = new_data.table_rows[row_index].assignments.slice();
+    let index2 = new_data.table_rows[row_index].assignments.findIndex(
+      (assignment) => assignment.id == id
+    );
+    new_data.table_rows[row_index].assignments[index2] = {
+      ...new_data.table_rows[row_index].assignments[index2],
+      completed: evt.target.checked
+    };
+    this.setState({ data: new_data });
+  }
+}
+class LiveProjectSettings extends LiveProjectSection {
+  constructor(props) {
+    super(props);
+    this.state = { has_changed: false, liveproject: null };
+    this.changed_values = {};
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  changeField(type, new_value) {
+    let new_state = { ...this.state.data.liveproject };
+    new_state[type] = new_value;
+    this.changed_values[type] = new_value;
+    this.setState({
+      has_changed: true,
+      data: { ...this.state.data, liveproject: new_state }
+    });
+  }
+  saveChanges() {
+    updateLiveProjectValueQuery(
+      this.state.data.liveproject.id,
+      "liveproject",
+      this.changed_values
+    );
+    this.props.updateLiveProject({
+      liveproject: { ...this.state.data.liveproject, ...this.changed_values }
+    });
+    this.changed_values = {};
+    this.setState({ has_changed: false });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let data = this.state.data.liveproject;
+    let changeField2 = this.changeField.bind(this);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Classroom configuration"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-single-completion",
+            name: "default-single-completion",
+            type: "checkbox",
+            checked: data.default_single_completion,
+            onChange: (evt) => changeField2("default_single_completion", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-signle-completion",
+            title: window.gettext(
+              "Whether to mark the assignment as complete if any user has completed it."
+            ),
+            children: window.gettext(
+              "By default, mark assignments as complete when a single user has completed them"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-assign-to-all",
+            name: "default-assign-to-all",
+            type: "checkbox",
+            checked: data.default_assign_to_all,
+            onChange: (evt) => changeField2("default_assign_to_all", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-assign-to-all",
+            title: window.gettext(
+              "Whether creating an assignment automatically adds all students to it."
+            ),
+            children: window.gettext(
+              "Assign new assignments to all students by default"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-self-reporting",
+            name: "default-self-reporting",
+            type: "checkbox",
+            checked: data.default_self_reporting,
+            onChange: (evt) => changeField2("default_self_reporting", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-self-reporting",
+            title: window.gettext(
+              "Whether students can mark their own assignments as complete."
+            ),
+            children: window.gettext(
+              "Let students self-report their assignment completion by default"
+            )
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            id: "default-all-workflows-visible",
+            name: "default-all-workflows-visible",
+            type: "checkbox",
+            checked: data.default_all_workflows_visible,
+            onChange: (evt) => changeField2("default_all_workflows_visible", evt.target.checked)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "label",
+          {
+            htmlFor: "default-all-workflows-visible",
+            title: window.gettext(
+              "Whether all workflows in the project will be visible to students by default."
+            ),
+            children: window.gettext("All Workflows Visible To Students")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          className: "primary-button",
+          disabled: !this.state.has_changed,
+          onClick: this.saveChanges.bind(this),
+          children: window.gettext("Save classroom changes")
+        }
+      ) })
+    ] });
+  }
+}
+class AssignmentWorkflowNodesDisplay extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.getData();
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.objectID !== this.props.objectID) {
+      this.setState({ data: null }, this.getData.bind(this));
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  getData() {
+    getWorkflowNodes(this.props.objectID, (data) => {
+      this.setState({ data: data.data_package });
+    });
+  }
+  defaultRender() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    const weeks = this.state.data.weeks.map((week, i) => {
+      const nodes = week.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentNode, { renderer: this.props.renderer, data: node2 }));
+      let default_text;
+      default_text = week.week_type_display + " " + (i + 1);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: week.title, defaultText: default_text }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-block-grid", children: nodes })
+      ] });
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: weeks });
+  }
+}
+class AssignmentNode extends reactExports.Component {
+  render() {
+    const data = this.props.data;
+    let lefticon;
+    let righticon;
+    if (data.context_classification > 0)
+      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.context_choices.find(
+            (obj) => obj.type == data.context_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+        }
+      );
+    if (data.task_classification > 0)
+      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.task_choices.find(
+            (obj) => obj.type == data.task_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
+        }
+      );
+    const style2 = {
+      backgroundColor: getColumnColour(this.props.data)
+    };
+    const mouseover_actions = [this.addCreateAssignment(data)];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: style2, className: "node", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: this.props.data }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-row" })
+    ] });
+  }
+  addCreateAssignment(data) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: "assignment.svg",
+        buttonClass: "duplicate-self-button",
+        titleText: window.gettext("Create Assignment"),
+        handleClick: this.createAssignment.bind(this, data)
+      }
+    );
+  }
+  createAssignment(data) {
+    const props = this.props;
+    props.renderer.tiny_loader.startLoad();
+    createAssignmentQuery$1(
+      data.id,
+      props.renderer.project_data.id,
+      (response_data) => {
+        props.renderer.tiny_loader.endLoad();
+        window.location = COURSEFLOW_APP.config.update_path.liveassignment.replace(
+          "0",
+          response_data.assignmentPk
+        );
+      }
+    );
+  }
+}
+class LiveProjectAssignments extends LiveProjectSection {
+  changeView(workflow_id) {
+    this.setState({ selected_id: workflow_id });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    const assignments = this.state.data.assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment }));
+    const workflow_options = this.state.data.workflows.map((workflow) => {
+      let view_class = "hover-shade";
+      if (workflow.id === this.state.selected_id)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          id: "button_" + workflow.id,
+          className: view_class,
+          onClick: this.changeView.bind(this, workflow.id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowTitle, { no_hyperlink: true, data: workflow })
+        }
+      );
+    });
+    let workflow_nodes;
+    if (this.state.selected_id) {
+      workflow_nodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentWorkflowNodesDisplay,
+        {
+          renderer: this.props.renderer,
+          objectID: this.state.selected_id
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Assigned Tasks") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("All Tasks") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "select-workflow", className: "workflow-view-select", children: workflow_options }),
+      workflow_nodes
+    ] });
+  }
+}
+class LiveProjectWorkflows extends LiveProjectSection {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  switchVisibility(pk, visibility) {
+    let workflows_added = this.state.data.workflows_added.slice();
+    let workflows_not_added = this.state.data.workflows_not_added.slice();
+    if (visibility == "visible") {
+      for (let i = 0; i < workflows_not_added.length; i++) {
+        if (workflows_not_added[i].id == pk) {
+          let removed = workflows_not_added.splice(i, 1);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, true);
+          workflows_added.push(removed[0]);
+        }
+      }
+    } else {
+      for (let i = 0; i < workflows_added.length; i++) {
+        if (workflows_added[i].id == pk) {
+          let removed = workflows_added.splice(i, 1);
+          setWorkflowVisibilityQuery(this.props.objectID, pk, false);
+          workflows_not_added.push(removed[0]);
+        }
+      }
+    }
+    this.setState({
+      data: {
+        ...this.state.data,
+        workflows_added,
+        workflows_not_added
+      }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows_added = this.state.data.workflows_added.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowVisibility,
+      {
+        workflowData: workflow,
+        visibility: "visible",
+        visibilityFunction: this.switchVisibility.bind(this)
+      }
+    ));
+    let workflows_not_added = this.state.data.workflows_not_added.map(
+      (workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowVisibility,
+        {
+          workflowData: workflow,
+          visibility: "not_visible",
+          visibilityFunction: this.switchVisibility.bind(this)
+        }
+      )
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Visible Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Other Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_not_added })
+    ] });
+  }
+}
+class LiveProjectMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...props.project,
+      liveproject: this.props.liveproject,
+      view_type: "overview"
+    };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getViewButtons() {
+    return [
+      { type: "overview", name: window.gettext("Classroom Overview") },
+      { type: "students", name: window.gettext("Students") },
+      { type: "assignments", name: window.gettext("Assignments") },
+      { type: "workflows", name: window.gettext("Workflow Visibility") },
+      { type: "completion_table", name: window.gettext("Completion Table") },
+      { type: "settings", name: window.gettext("Classroom Settings") }
+    ];
+  }
+  getRole() {
+    return "teacher";
+  }
+  openEdit() {
+    return null;
+  }
+  changeView(view_type) {
+    this.setState({ view_type });
+  }
+  getHeader() {
+    return null;
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "overview":
+        return (
+          // @todo renderer IS used in this component
+          // but only user_role, how is that different from getRole?
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectOverview,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "students":
+        return (
+          // @todo  renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectStudents,
+            {
+              role: this.getRole(),
+              liveproject: this.state.liveproject,
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "assignments":
+        return (
+          // @todo  renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectAssignments,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "workflows":
+        return (
+          // @todo  renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectWorkflows,
+            {
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "completion_table":
+        return (
+          //@todo   renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectCompletionTable,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "settings":
+        return (
+          // @todo renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            LiveProjectSettings,
+            {
+              updateLiveProject: this.updateFunction.bind(this),
+              role: this.getRole(),
+              liveproject: this.state.liveproject,
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+    }
+  }
+  updateFunction(new_state) {
+    this.setState(new_state);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let data = this.props.project;
+    let overflow_links = [];
+    if (this.props.renderer.user_permission > 0) {
+      overflow_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            id: "project",
+            className: "hover-shade",
+            href: COURSEFLOW_APP.config.update_path.project.replace("0", data.id),
+            children: window.gettext("Edit Project")
+          }
+        )
+      );
+    }
+    let view_buttons = this.getViewButtons().map((item) => {
+      let view_class = "hover-shade";
+      if (item.type === this.state.view_type)
+        view_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          id: "button_" + item.type,
+          className: view_class,
+          onClick: this.changeView.bind(this, item.type),
+          children: item.name
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCard,
+          {
+            noHyperlink: true,
+            workflowData: this.state.liveproject,
+            selectAction: this.openEdit.bind(this)
+          }
+        ),
+        this.getHeader()
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getContent() }),
+      reactDomExports.createPortal(overflow_links, $("#overflow-links")[0])
+    ] });
+  }
+}
+class StudentLiveProjectOverview extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows = this.state.data.workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardSimple, { workflow_data: workflow }, index2));
+    if (workflows.length === 0)
+      workflows = window.gettext(
+        "No workflows have been made visible to students."
+      );
+    let assignments = this.state.data.assignments.filter((assignment) => assignment.user_assignment.completed === false).map((assignment, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AssignmentTitle,
+        {
+          data: assignment,
+          user_role: this.props.renderer.user_role
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          type: "checkbox",
+          disabled: !assignment.self_reporting,
+          onChange: this.toggleAssignment.bind(
+            this,
+            assignment.user_assignment.id
+          )
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatePicker, { default_value: assignment.end_date, disabled: true }) })
+    ] }, index2));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Your Incomplete Assignments"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "overview-table", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Assignment") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("Completion") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { children: window.gettext("End Date") })
+        ] }),
+        assignments
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Visible Workflows"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
+    ] });
+  }
+  toggleAssignment(id, evt) {
+    setAssignmentCompletionQuery(id, evt.target.checked);
+  }
+}
+class StudentLiveProjectWorkflows extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let workflows_added = this.state.data.workflows_added.map(
+      (workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, index2)
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Workflows") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows_added })
+    ] });
+  }
+}
+class StudentLiveProjectAssignments extends LiveProjectSection {
+  render() {
+    if (!this.state.data)
+      return this.defaultRender();
+    let assignments_past = this.state.data.assignments_past.map(
+      (assignment) => (
+        // @todo renderer IS used in this component
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
+      )
+    );
+    let assignments_upcoming = this.state.data.assignments_upcoming.map(
+      (assignment) => (
+        // @todo renderer IS used in this component
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentView, { renderer: this.props.renderer, data: assignment })
+      )
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
+        window.gettext("Your Tasks"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Upcoming"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_upcoming }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+        window.gettext("Past"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: assignments_past })
+    ] });
+  }
+}
+class StudentLiveProjectMenu extends LiveProjectMenu {
+  getViewButtons() {
+    return [
+      { type: "overview", name: window.gettext("Classroom Overview") },
+      { type: "assignments", name: window.gettext("My Assignments") },
+      { type: "workflows", name: window.gettext("My Workflows") }
+    ];
+  }
+  getRole() {
+    return "student";
+  }
+  getContent() {
+    switch (this.state.view_type) {
+      case "overview":
+        return (
+          // @todo renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectOverview,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "assignments":
+        return (
+          // @todo renderer IS used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectAssignments,
+            {
+              renderer: this.props.renderer,
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+      case "workflows":
+        return (
+          // @todo renderer NOT used in this component
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            StudentLiveProjectWorkflows,
+            {
+              role: this.getRole(),
+              objectID: this.props.project.id,
+              view_type: this.state.view_type
+            }
+          )
+        );
+    }
+  }
+  updateFunction(new_state) {
+    this.setState(new_state);
+  }
+}
 class LiveProjectRenderer extends React.Component {
   constructor(props) {
     super(props);
@@ -88922,7 +90216,6 @@ class LiveProjectRenderer extends React.Component {
   }
   render() {
     this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
     return this.getContents();
   }
   getContents() {
@@ -88950,8 +90243,8 @@ class WorkflowCardCondensed extends WorkflowCard {
     return null;
   }
   getProjectTitle() {
-    if (this.props.workflow_data.project_title) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflow_data.project_title });
+    if (this.props.workflowData.project_title) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
     } else {
       return "-";
     }
@@ -88960,7 +90253,7 @@ class WorkflowCardCondensed extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.workflow_data;
+    let data = this.props.workflowData;
     let css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -88988,15 +90281,23 @@ class WorkflowCardCondensed extends WorkflowCard {
     );
   }
 }
-class WorkflowFilter extends Component {
+class WorkflowFilter extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "filters");
+    __publicField(this, "sorts");
+    __publicField(this, "filterDOM");
+    __publicField(this, "searchDOM");
+    __publicField(this, "sortDOM");
+    console.log("props");
+    console.log(props);
     this.state = {
       workflows: props.workflows,
-      active_filter: 0,
-      active_sort: 0,
+      activeFilter: 0,
+      activeSort: 0,
       reversed: false,
-      search_results: []
+      searchResults: [],
+      searchFilterLock: null
     };
     this.filters = [
       { name: "all", display: window.gettext("All") },
@@ -89011,13 +90312,14 @@ class WorkflowFilter extends Component {
       { name: "created_on", display: window.gettext("Creation date") },
       { name: "type", display: window.gettext("Type") }
     ];
-    let url_params = new URL(window.location.href).searchParams;
+    const url_params = new URL(window.location.href).searchParams;
     if (url_params.get("favourites") === "true")
       this.state.active_filter = this.filters.findIndex(
         (elem) => elem.name === "favourite"
       );
-    if (this.props.context === "library")
-      this.search_without = true;
+    if (this.props.context === "library") {
+      this.searchWithout = true;
+    }
     this.filterDOM = reactExports.createRef();
     this.searchDOM = reactExports.createRef();
     this.sortDOM = reactExports.createRef();
@@ -89034,9 +90336,6 @@ class WorkflowFilter extends Component {
     if (prevProps.workflows !== this.props.workflows)
       this.setState({ workflows: this.props.workflows });
   }
-  /*******************************************************
-   *  FUNCTIONS
-   *******************************************************/
   getPlaceholder() {
     if (this.props.context === "project") {
       return window.gettext("Search the project");
@@ -89044,27 +90343,97 @@ class WorkflowFilter extends Component {
       return window.gettext("Search the library");
     }
   }
+  getFilter() {
+    const activeFilter = this.filters[this.state.activeFilter];
+    const filters = this.filters.map((filter, i) => {
+      let css_class = "filter-option";
+      if (this.state.activeFilter === i)
+        css_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: css_class,
+          onClick: () => this.setState({ activeFilter: i }),
+          children: filter.display
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
+    ] });
+  }
+  getSort() {
+    const activeSort = this.sorts[this.state.activeSort];
+    const sorts = this.sorts.map((sort, i) => {
+      let sort_dir;
+      let css_class = "filter-option";
+      if (this.state.activeSort === i) {
+        css_class += " active";
+        if (this.state.reversed)
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
+        else
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: css_class,
+          onClick: (evt) => {
+            evt.stopPropagation();
+            this.sortChange(i);
+            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+          },
+          children: [
+            sort_dir,
+            sort.display
+          ]
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
+    ] });
+  }
   sortWorkflows(workflows) {
-    let sort = this.sorts[this.state.active_sort].name;
-    if (sort === "last_viewed") {
-      workflows = workflows.sort(
-        (a, b) => ("" + a.object_permission[sort]).localeCompare(
-          b.object_permission[sort]
-        )
-      );
-      if (!this.state.reversed)
-        return workflows.reverse();
-      return workflows;
-    } else
-      workflows = workflows.sort(
-        (a, b) => ("" + a[sort]).localeCompare(b[sort])
-      );
-    if (this.state.reversed)
-      return workflows.reverse();
-    return workflows;
+    const sort = this.sorts[this.state.activeSort].name;
+    const sortedWorkflows = [...workflows].sort((a, b) => {
+      const aValue = sort === "last_viewed" ? a.object_permission[sort] : a[sort];
+      const bValue = sort === "last_viewed" ? b.object_permission[sort] : b[sort];
+      return String(aValue).localeCompare(String(bValue));
+    });
+    if (this.state.reversed) {
+      return sortedWorkflows.reverse();
+    }
+    return sortedWorkflows;
+  }
+  sortChange(index2) {
+    if (this.state.activeSort === index2)
+      this.setState({ reversed: !this.state.reversed });
+    else
+      this.setState({ active_sort: index2, reversed: false });
   }
   filterWorkflows(workflows) {
-    let filter = this.filters[this.state.active_filter].name;
+    const filter = this.filters[this.state.activeFilter].name;
     if (filter !== "archived")
       workflows = workflows.filter((workflow) => !workflow.deleted);
     else
@@ -89077,206 +90446,145 @@ class WorkflowFilter extends Component {
       return workflows.filter((workflow) => workflow.favourite);
     return workflows;
   }
-  getFilter() {
-    let active_filter = this.filters[this.state.active_filter];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_filter,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_filter.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.filters.map((filter, i) => {
-        let css_class = "filter-option";
-        if (this.state.active_filter === i)
-          css_class += " active";
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: css_class,
-            onClick: () => this.setState({ active_filter: i }),
-            children: filter.display
-          }
-        );
-      }) })
-    ] });
-  }
-  getSort() {
-    let active_sort = this.sorts[this.state.active_sort];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_sort,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_sort.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.sorts.map((sort, i) => {
-        let sort_dir;
-        let css_class = "filter-option";
-        if (this.state.active_sort === i) {
-          css_class += " active";
-          if (this.state.reversed)
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
-          else
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
-        }
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: css_class,
-            onClick: (evt) => {
-              evt.stopPropagation();
-              this.sortChange(i);
-              $(this.sortDOM.current).children(".create-dropdown").addClass("active");
-            },
-            children: [
-              sort_dir,
-              sort.display
-            ]
-          }
-        );
-      }) })
-    ] });
-  }
-  sortChange(index2) {
-    if (this.state.active_sort === index2)
-      this.setState({ reversed: !this.state.reversed });
-    else
-      this.setState({ active_sort: index2, reversed: false });
-  }
-  searchChange(evt) {
-    let component = this;
-    if (evt.target.value && evt.target.value !== "") {
-      let filter = evt.target.value.toLowerCase();
-      if (this.search_without)
-        component.searchWithout(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          });
-          $(this.searchDOM.current).addClass("active");
-        });
-      else
-        component.searchWithin(filter, (response) => {
-          component.setState({
-            search_results: response,
-            search_filter: filter
-          });
-          $(this.searchDOM.current).addClass("active");
-        });
-    } else {
-      component.setState({ search_results: [], search_filter: "" });
-      $(this.searchDOM.current).removeClass("active");
-    }
-  }
-  searchWithin(request, response_function) {
-    let workflows = this.state.workflows.filter(
+  searchWithin(request, responseFunction) {
+    const workflows = this.state.workflows.filter(
       (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
     );
-    response_function(workflows);
+    responseFunction(workflows);
   }
-  searchWithout(request, response_function) {
-    searchAllObjects(
+  searchWithout(request, responseFunction) {
+    searchAllObjectsQuery(
       request,
       {
         nresults: 10
       },
-      (response_data) => {
-        response_function(response_data.workflow_list);
+      (responseData) => {
+        responseFunction(responseData.workflow_list);
       }
     );
   }
   seeAll() {
-    this.props.renderer.tiny_loader.startLoad();
-    let search_filter = this.state.search_filter;
-    searchAllObjects(search_filter, { nresults: 0 }, (response_data) => {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    const { searchFilter } = this.state;
+    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
       this.setState({
-        workflows: response_data.workflow_list,
-        search_filter_lock: search_filter
+        workflows: responseData.workflow_list,
+        searchFilterLock: searchFilter
       });
-      this.props.renderer.tiny_loader.endLoad();
-      var dropdowns = document.querySelectorAll(
-        "#workflow-search .create-dropdown"
-      );
-      dropdowns.forEach(function(dropdown) {
-        dropdown.classList.remove("active");
-      });
-      var workflowSearch = document.getElementById("workflow-search");
-      if (workflowSearch) {
-        workflowSearch.setAttribute("disabled", true);
-      }
-      var workflowSearchInput = document.getElementById("workflow-search-input");
-      if (workflowSearchInput) {
-        workflowSearchInput.setAttribute("disabled", true);
-      }
+      COURSEFLOW_APP.tinyLoader.endLoad();
+      this.removeActiveFromDropdowns();
+      this.disableWorkflowSearch();
     });
   }
+  removeActiveFromDropdowns() {
+    const dropdowns = document.querySelectorAll(
+      "#workflow-search .create-dropdown"
+    );
+    dropdowns.forEach((dropdown) => dropdown.classList.remove("active"));
+  }
+  disableWorkflowSearch() {
+    const workflowSearch = document.getElementById("workflow-search");
+    if (workflowSearch) {
+      workflowSearch.setAttribute("disabled", "true");
+    }
+    const workflowSearchInput = document.getElementById("workflow-search-input");
+    if (workflowSearchInput) {
+      workflowSearchInput.setAttribute("disabled", "true");
+    }
+  }
+  searchChange(evt) {
+    const searchTerm = evt.target.value;
+    if (!searchTerm) {
+      this.setState({ searchResults: [], searchFilter: "" });
+      $(this.searchDOM.current).removeClass("active");
+      return;
+    }
+    const searchFunction = this.searchWithout ? this.searchWithout : this.searchWithin;
+    const filter = searchTerm.toLowerCase();
+    searchFunction.call(this, filter, (response) => {
+      this.setState({
+        searchResults: response,
+        searchFilter: filter
+      });
+      $(this.searchDOM.current).addClass("active");
+    });
+  }
+  searchWithout(request, response_function) {
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 10
+      },
+      (responseData) => {
+        response_function(responseData.workflow_list);
+      }
+    );
+  }
   clearSearchLock(evt) {
-    this.setState({ workflows: this.props.workflows, search_filter_lock: null });
+    this.setState({
+      workflows: this.props.workflows,
+      searchFilterLock: null
+    });
     $("#workflow-search").attr("disabled", false);
     $("#workflow-search-input").attr("disabled", false);
     evt.stopPropagation();
   }
-  defaultRender() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
-  }
   /*******************************************************
    * RENDER
    *******************************************************/
-  render() {
-    let workflows;
+  renderWorkflowCards() {
     if (!this.state.workflows)
-      workflows = this.defaultRender();
-    else {
-      workflows = this.sortWorkflows(this.filterWorkflows(this.state.workflows));
-      workflows = workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          renderer: this.props.renderer,
-          workflow_data: workflow,
-          context: this.props.context,
-          updateWorkflow: this.props.updateWorkflow
-        },
-        workflow.type + workflow.id
-      ));
-    }
-    let search_results = this.state.search_results.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader$1, {});
+    const sortedAndFilteredWorkflows = this.sortWorkflows(
+      this.filterWorkflows(this.state.workflows)
+    );
+    return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        workflowData: workflow,
+        updateWorkflow: this.props.updateWorkflow,
+        userRole: this.props.user_role,
+        readOnly: this.props.read_only,
+        projectData: this.props.project_data
+      },
+      workflow.type + workflow.id
+    ));
+  }
+  renderSearchResults() {
+    const { searchResults, searchFilter } = this.state;
+    const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowCardCondensed,
       {
-        workflow_data: workflow,
+        workflowData: workflow,
         context: this.props.context
       },
       workflow.type + workflow.id
     ));
-    if (this.state.search_filter && this.state.search_filter.length > 0 && this.state.search_results.length === 0) {
-      search_results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
-    } else if (search_results.length === 10) {
-      search_results.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: () => this.seeAll(), children: window.gettext("+ See all") })
+    if (searchFilter && !searchResults.length) {
+      results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
+    } else if (results.length === 10) {
+      results.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
       );
     }
-    let search_filter_lock;
-    if (this.state.search_filter_lock) {
-      search_filter_lock = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            onClick: this.clearSearchLock.bind(this),
-            className: "material-symbols-rounded hover-shade",
-            children: "close"
-          }
-        ),
-        window.gettext("Search: " + this.state.search_filter_lock)
-      ] });
-    }
+    return results;
+  }
+  renderSearchFilterLock() {
+    if (!this.state.searchFilterLock)
+      return null;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "span",
+        {
+          onClick: this.clearSearchLock.bind(this),
+          className: "material-symbols-rounded hover-shade",
+          children: "close"
+        }
+      ),
+      window.gettext("Search: " + this.state.searchFilterLock)
+    ] });
+  }
+  render() {
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
@@ -89284,49 +90592,1758 @@ class WorkflowFilter extends Component {
             "input",
             {
               placeholder: this.getPlaceholder(),
-              onChange: debounce(this.searchChange.bind(this)),
+              onChange: debounce$1(this.searchChange.bind(this)),
               id: "workflow-search-input",
               className: "search-input",
               autoComplete: "off"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: search_results }),
-          search_filter_lock
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
+          this.renderSearchFilterLock()
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
           this.getFilter(),
           this.getSort()
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
     ];
   }
 }
-class LibraryMenu extends reactExports.Component {
+const Users = ({ users, readOnly, openShareDialog }) => {
+  let users_group = [];
+  if (!users)
+    return null;
+  const { author, editors, commentors, viewers, published } = users;
+  if (!author)
+    return null;
+  if (published) {
+    users_group.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("view"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+        " ",
+        window.gettext("All CourseFlow")
+      ] })
+    );
+  }
+  users_group.push([
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("author"),
+      getUserDisplay(author)
+    ] }),
+    editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("edit"),
+      getUserDisplay(user)
+    ] })),
+    commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("comment"),
+      getUserDisplay(user)
+    ] })),
+    viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("view"),
+      getUserDisplay(user)
+    ] }))
+  ]);
+  users_group = users_group.flat(2);
+  const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+  if (users_group.length > 4) {
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+        "+",
+        users_group.length - 4,
+        " ",
+        window.gettext("more")
+      ] })
+    );
+  }
+  if (!readOnly)
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "user-name collapsed-text-show-more",
+          onClick: openShareDialog,
+          children: window.gettext("Modify")
+        }
+      )
+    );
+  return usersBlocks;
+};
+const Header = ({
+  allDisciplines,
+  description,
+  disciplines,
+  data,
+  users,
+  readOnly,
+  openShareDialog
+}) => {
+  console.log("discipline");
+  console.log(allDisciplines);
+  console.log(data.disciplines);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowTitle,
+      {
+        data,
+        no_hyperlink: true,
+        class_name: "project-title"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Users,
+          {
+            users,
+            readOnly,
+            openShareDialog
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CollapsibleText,
+            {
+              text: description,
+              defaultText: window.gettext("No description")
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+          allDisciplines.filter(
+            // @ts-ignore
+            (discipline) => disciplines.indexOf(discipline.id) >= 0
+            // @todo don't understand this error yet
+          ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
+        ] })
+      ] })
+    ] })
+  ] });
+};
+class ProjectEditDialog extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.read_only = this.props.renderer.read_only;
-    this.renderer = this.props.renderer;
+    this.state = { ...this.props.data, selected_set: "none" };
+    this.object_set_updates = {};
+    this.close = this.props.closeAction;
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  componentDidUpdate() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  deleteTerm(id) {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
+    )) {
+      const new_state_dict = this.state.object_sets.slice();
+      for (let i = 0; i < new_state_dict.length; i++) {
+        if (new_state_dict[i].id === id) {
+          deleteSelfQuery(id, "objectset");
+          new_state_dict.splice(i, 1);
+          this.setState({ object_sets: new_state_dict });
+          break;
+        }
+      }
+    }
+  }
+  addTerm() {
+    const term = $("#nomenclature-select")[0].value;
+    const title = $("#term-singular")[0].value;
+    addTerminology(this.state.id, term, title, "", (response_data) => {
+      this.setState({
+        object_sets: response_data.new_dict,
+        selected_set: "none",
+        termsingular: ""
+      });
+    });
+  }
+  termChanged(id, evt) {
+    const new_sets = this.state.object_sets.slice();
+    for (var i = 0; i < new_sets.length; i++) {
+      if (new_sets[i].id == id) {
+        new_sets[i] = { ...new_sets[i], title: evt.target.value };
+        this.object_set_updates[id] = { title: evt.target.value };
+      }
+    }
+    this.setState({ object_sets: new_sets, changed: true });
+  }
+  updateTerms() {
+    for (var object_set_id in this.object_set_updates) {
+      updateValueInstant(
+        object_set_id,
+        "objectset",
+        this.object_set_updates[object_set_id]
+      );
+    }
+  }
+  addTermDisabled(selected_set) {
+    if (!selected_set)
+      return true;
+    if (!this.state.termsingular)
+      return true;
+    return false;
+  }
+  addDiscipline(id) {
+    this.setState((state, props) => {
+      return { disciplines: [...state.disciplines, id], changed: true };
+    });
+  }
+  removeDiscipline(id) {
+    this.setState((state, props) => {
+      return {
+        disciplines: state.disciplines.filter((value) => value != id),
+        changed: true
+      };
+    });
+  }
+  inputChanged(field, evt) {
+    var new_state = { changed: true };
+    new_state[field] = evt.target.value;
+    if (field === "selected_set")
+      new_state["termsingular"] = "";
+    this.setState(new_state);
+  }
+  getActions() {
+    var actions = [];
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.close, children: window.gettext("Cancel") })
+    );
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          id: "save-changes",
+          className: "primary-button",
+          disabled: !this.state.changed,
+          onClick: () => {
+            updateValueInstant(this.state.id, "project", {
+              title: this.state.title,
+              description: this.state.description,
+              published: this.state.published,
+              disciplines: this.state.disciplines
+            });
+            this.updateTerms();
+            this.props.actionFunction({ ...this.state, changed: false });
+            this.close();
+          },
+          children: window.gettext("Save Changes")
+        }
+      )
+    );
+    return actions;
+  }
+  getLiveProjectSettings() {
+    if (this.props.user_role === role_keys.teacher) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        LiveProjectSettings,
+        {
+          role: "teacher",
+          objectID: this.state.id,
+          view_type: "settings",
+          updateLiveProject: this.props.actionFunction
+        }
+      ) });
+    }
+    return null;
+  }
+  autocompleteDiscipline() {
+    const choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
+      value: discipline.title,
+      label: discipline.title,
+      id: discipline.id
+    }));
+    $("#project-discipline-input").autocomplete({
+      source: choices,
+      minLength: 0,
+      focus: null,
+      select: (evt, ui) => {
+        this.addDiscipline(ui.item.id);
+        $("#project-discipline-input").val("");
+        return false;
+      }
+    }).focus(function() {
+      $("#project-discipline-input").autocomplete(
+        "search",
+        $("#project-discipline-input").val()
+      );
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.state;
+    let disciplines;
+    if (data.all_disciplines) {
+      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
+        discipline.title,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: "material-symbols-rounded green",
+            onClick: this.removeDiscipline.bind(this, discipline.id),
+            children: "close"
+          }
+        )
+      ] }));
+    }
+    const title = unescapeCharacters(data.title || "");
+    const description = unescapeCharacters(data.description || "");
+    const object_sets = object_sets_types();
+    const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
+    let selected_set;
+    if (this.state.selected_set)
+      selected_set = object_sets[this.state.selected_set];
+    const sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          value: item.title,
+          onChange: this.termChanged.bind(this, item.id)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "nomenclature-delete-button",
+          onClick: this.deleteTerm.bind(this, item.id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
+        }
+      )
+    ] }));
+    const published_enabled = data.title && data.disciplines.length > 0;
+    if (data.published && !published_enabled)
+      this.setState({ published: false });
+    if (!published_enabled)
+      window.gettext(
+        "A title and at least one discipline is required for publishing."
+      );
+    let add_term_css = "material-symbols-rounded filled";
+    let clickEvt;
+    if (this.addTermDisabled(selected_set)) {
+      clickEvt = () => console.log("Disabled");
+      add_term_css += " grey";
+    } else {
+      clickEvt = this.addTerm.bind(this);
+      add_term_css += " green hover-shade";
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-title-input",
+            value: title,
+            onChange: this.inputChanged.bind(this, "title")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-description-input",
+            value: description,
+            onChange: this.inputChanged.bind(this, "description")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            autoComplete: "off",
+            id: "project-discipline-input",
+            placeholder: "Search"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
+        sets_added,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              id: "nomenclature-select",
+              value: this.state.selected_set,
+              onChange: this.inputChanged.bind(this, "selected_set"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
+                set_options
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              placeholder: window.gettext("Set name"),
+              type: "text",
+              id: "term-singular",
+              maxLength: "50",
+              value: this.state.termsingular,
+              onChange: this.inputChanged.bind(this, "termsingular"),
+              disabled: selected_set == null
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
+        ] })
+      ] }),
+      this.getLiveProjectSettings(),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.close, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
+    ] });
+  }
+}
+class UserLabel2 extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.select = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  onChange(evt) {
+    switch (evt.target.value) {
+      case "none":
+        if (window.confirm("Are you sure you want to remove this user?")) {
+          this.props.permissionChange(0, this.props.user);
+        }
+        break;
+      default:
+        this.props.permissionChange(
+          permission_keys[evt.target.value],
+          this.props.user
+        );
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let permission_select;
+    let disabled = false;
+    if (this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id) >= 0)
+      disabled = true;
+    if (this.props.type !== "owner") {
+      if (this.props.type === "add") {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { ref: this.select, disabled, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              className: "primary-button",
+              onClick: () => this.props.addFunction($(this.select.current).val()),
+              children: window.gettext("Share")
+            }
+          )
+        ] });
+      } else {
+        permission_select = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "permission-select", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "select",
+          {
+            value: this.props.type,
+            disabled,
+            onChange: this.onChange.bind(this),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "edit", children: window.gettext("Can edit") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "comment", children: window.gettext("Can comment") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "view", children: window.gettext("Can view") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Remove user") })
+            ]
+          }
+        ) });
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "user-label", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-name", children: this.props.user.first_name + " " + this.props.user.last_name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "user-username", children: this.props.user.username })
+      ] }),
+      permission_select
+    ] });
+  }
+}
+class UserAdd2 extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.input = reactExports.createRef();
+    this.state = { selected: null };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    const component = this;
+    $(this.input.current).autocomplete({
+      source: (request, response_function) => {
+        getUserList(request.term, (response) => {
+          const user_list = response.user_list.map((user) => {
+            return {
+              label: user.first_name + " " + user.last_name + " - " + user.username,
+              value: user.username,
+              user
+            };
+          });
+          response_function(user_list);
+        });
+        component.setState({ selected: null });
+      },
+      select: (evt, ui) => {
+        this.setState({ selected: ui.item.user });
+      },
+      minLength: 1
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addClick(value) {
+    if (this.state.selected) {
+      this.props.permissionChange(
+        permission_keys[value],
+        this.state.selected
+      );
+      $(this.input.current).val(null);
+      this.setState({ selected: null });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let user;
+    if (this.state.selected) {
+      user = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserLabel2,
+        {
+          user: this.state.selected,
+          type: "add",
+          addFunction: this.addClick.bind(this)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-add", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: this.props.share_info }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            className: "search-input",
+            ref: this.input,
+            placeholder: window.gettext("Begin typing to search users")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" })
+      ] }),
+      user
+    ] });
+  }
+}
+class ShareMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      owner: props.data.author,
+      edit: [],
+      view: [],
+      comment: [],
+      student: [],
+      userlist: [],
+      cannot_change: []
+    };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    getUsersForObjectQuery(
+      this.props.data.id,
+      this.props.data.type,
+      (response) => {
+        this.setState({
+          owner: response.author,
+          view: response.viewers,
+          comment: response.commentors,
+          edit: response.editors,
+          student: response.students,
+          published: response.published,
+          public_view: response.public_view,
+          cannot_change: response.cannot_change
+        });
+      }
+    );
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getPublication() {
+    const published = this.state.published;
+    const data = this.props.data;
+    if (data.type === "project" || data.is_strategy) {
+      let public_class = "big-button make-public";
+      let private_class = "big-button hover-shade make-private";
+      if (published)
+        public_class += " active";
+      else
+        private_class += " active";
+      let public_disabled = !(data.title && data.title.length > 0);
+      if (data.type == "project")
+        public_disabled |= data.disciplines.length == 0;
+      if (!public_disabled && !published)
+        public_class += " hover-shade";
+      if (public_disabled)
+        public_class += " disabled";
+      const public_text = window.gettext("Any CourseFlow teacher can view");
+      let disabled_indicator;
+      if (public_disabled) {
+        let disabled_text;
+        if (data.type == "project")
+          disabled_text = window.gettext(
+            "Title and disciplines are required to publish."
+          );
+        else
+          disabled_text = window.gettext("Title is required to publish.");
+        disabled_indicator = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "warning flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red", children: "block" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: disabled_text })
+        ] });
+      }
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-buttons-wrapper", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: public_class,
+              disabled: public_disabled,
+              onClick: this.setPublication.bind(this, !public_disabled),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Public to CourseFlow") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: public_text })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: private_class,
+              onClick: this.setPublication.bind(this, false),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Private") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
+              ]
+            }
+          )
+        ] }),
+        disabled_indicator
+      ];
+    } else {
+      let published_icon;
+      if (published)
+        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project public to CourseFlow") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Any CourseFlow teacher can view") })
+        ] }) });
+      else
+        published_icon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-buttons-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "big-button active", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "visibility_off" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-title", children: window.gettext("Project is private") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "big-button-description", children: window.gettext("Only added collaborators can view") })
+        ] }) });
+      return [published_icon, this.getPublicLink()];
+    }
+  }
+  getPublicLink() {
+    const data = this.props.data;
+    const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
+    if (data.type !== "project") {
+      const public_view = this.state.public_view;
+      if (!public_view)
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "public-link-button  hover-shade",
+            onClick: this.togglePublicView.bind(this, !public_view),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "add_link" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Generate a public link") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
+                  "Anyone with the link will be able to view the workflow"
+                ) })
+              ] })
+            ]
+          }
+        );
+      else
+        return [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                id: "public-page-link",
+                className: "public-link-button  hover-shade",
+                onClick: () => {
+                  navigator.clipboard.writeText(public_link);
+                  const copy_icon_text = $(
+                    "#public-page-link .copy-link-icon .material-symbols-rounded"
+                  ).text();
+                  const copy_description_text = $(
+                    "#public-page-link .copy-link-text"
+                  ).text();
+                  $(
+                    "#public-page-link .copy-link-icon .material-symbols-rounded"
+                  ).text("done");
+                  $("#public-page-link .copy-link-text").text(
+                    "Copied to Clipboard"
+                  );
+                  setTimeout(() => {
+                    $(
+                      "#public-page-link .copy-link-icon .material-symbols-rounded"
+                    ).text(copy_icon_text);
+                    $("#public-page-link .copy-link-text").text(
+                      copy_description_text
+                    );
+                  }, 1e3);
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy public link") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext("Anyone with the link can view the workflow") })
+                  ] })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                id: "public-page-code",
+                className: "public-link-button  hover-shade",
+                onClick: () => {
+                  const iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
+                  navigator.clipboard.writeText(iframe);
+                  const copy_icon_text = $(
+                    "#public-page-code .copy-link-icon .material-symbols-rounded"
+                  ).text();
+                  const copy_description_text = $(
+                    "#public-page-code .copy-link-text"
+                  ).text();
+                  $(
+                    "#public-page-code .copy-link-icon .material-symbols-rounded"
+                  ).text("done");
+                  $("#public-page-code .copy-link-text").text(
+                    "Copied to Clipboard"
+                  );
+                  setTimeout(() => {
+                    $(
+                      "#public-page-code .copy-link-icon .material-symbols-rounded"
+                    ).text(copy_icon_text);
+                    $("#public-page-code .copy-link-text").text(
+                      copy_description_text
+                    );
+                  }, 1e3);
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "frame_source" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "copy-link-text", children: window.gettext("Copy embed code") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-description", children: window.gettext(
+                      "HTML code to embed the workflow in a site or page"
+                    ) })
+                  ] })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "public-link-button public-link-remove  hover-shade",
+              onClick: this.togglePublicView.bind(this, !public_view),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "link_off" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "public-link-text", children: window.gettext("Remove public link") }) })
+              ]
+            }
+          )
+        ];
+    }
+  }
+  togglePublicView(public_view) {
+    if (public_view) {
+      if (window.confirm(
+        window.gettext(
+          "Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."
+        )
+      )) {
+        updateValueInstant(
+          this.props.data.id,
+          "workflow",
+          { public_view },
+          () => {
+            this.setState({ public_view });
+          }
+        );
+      }
+    } else {
+      updateValueInstant(
+        this.props.data.id,
+        "workflow",
+        { public_view },
+        () => {
+          this.setState({ public_view });
+        }
+      );
+    }
+  }
+  setPublication(published) {
+    if (published === this.state.published)
+      return;
+    const component = this;
+    if (!published || window.confirm(
+      window.gettext(
+        "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
+      )
+    )) {
+      updateValueInstant(
+        component.props.data.id,
+        component.props.data.type,
+        { published },
+        () => component.setState({ published })
+      );
+    }
+  }
+  setUserPermission(permission_type, user) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    setUserPermission(
+      user.id,
+      this.props.data.id,
+      this.props.data.type,
+      permission_type,
+      () => {
+        getUsersForObjectQuery(
+          this.props.data.id,
+          this.props.data.type,
+          (response) => {
+            this.setState({
+              view: response.viewers,
+              comment: response.commentors,
+              edit: response.editors,
+              student: response.students
+            });
+            COURSEFLOW_APP.tinyLoader.endLoad();
+          }
+        );
+      }
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    const owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel2, { user: this.state.owner, type: "owner" });
+    const editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "edit",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const viewers = this.state.view.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "view",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const commentors = this.state.comment.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "comment",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    const students = this.state.student.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      UserLabel2,
+      {
+        user,
+        type: "student",
+        cannot_change: this.state.cannot_change,
+        permissionChange: this.setUserPermission.bind(this)
+      }
+    ));
+    let share_info;
+    if (data.type === "project") {
+      share_info = window.gettext(
+        "Invite collaborators to project and its workflows"
+      );
+    } else {
+      share_info = window.gettext(
+        "Invite collaborators to workflow and grant view permissions to the project"
+      );
+    }
+    let shared_with;
+    if (editors.length || commentors.length || viewers.length || students.length) {
+      shared_with = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-panel", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+            window.gettext("Shared With"),
+            ":"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "user-list", children: [
+            editors,
+            commentors,
+            viewers,
+            students
+          ] })
+        ] })
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap user-text", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { children: [
+        window.gettext("Share") + " " + window.gettext(data.type) + " ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            no_hyperlink: true,
+            data: this.props.data,
+            class_name: "inline"
+          }
+        )
+      ] }),
+      this.getPublication(),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+        window.gettext("Owned By"),
+        ":"
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: owner }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        UserAdd2,
+        {
+          permissionChange: this.setUserPermission.bind(this),
+          share_info
+        }
+      ),
+      shared_with,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "close" })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          className: "secondary-button",
+          onClick: this.props.actionFunction,
+          children: window.gettext("Close")
+        }
+      ) })
+    ] });
+  }
+}
+class ExportMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { type: "outcome" };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getExportTypes() {
+    let type = this.props.data.type;
+    const exports = [];
+    exports.push([
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          name: "export_type",
+          type: "radio",
+          value: "outcome",
+          onChange: this.inputChange.bind(this, "type", ""),
+          checked: this.state.type == "outcome"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Outcomes") })
+    ]);
+    exports.push([
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          name: "export_type",
+          type: "radio",
+          value: "node",
+          onChange: this.inputChange.bind(this, "type", ""),
+          checked: this.state.type == "node"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Nodes") })
+    ]);
+    if (type == "project" || type == "course")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "framework",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "framework"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Course Framework") })
+      ]);
+    if (type == "project" || type == "program")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "matrix",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "matrix"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Competency Matrix") })
+      ]);
+    if (type == "project" || type == "program")
+      exports.push([
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            name: "export_type",
+            type: "radio",
+            value: "sobec",
+            onChange: this.inputChange.bind(this, "type", ""),
+            checked: this.state.type == "sobec"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Sobec Validation") })
+      ]);
+    return exports;
+  }
+  inputChange(type, id, evt) {
+    if (type == "set") {
+      let new_state = {};
+      new_state[id] = !evt.target.checked;
+      this.setState(new_state);
+    } else if (type == "type" && evt.target.checked) {
+      this.setState({ type: evt.target.value });
+    }
+  }
+  click(evt) {
+    if (evt.ctrlKey) {
+      this.ctrlKey = true;
+      $("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
+    }
+  }
+  submit(evt) {
+    $("#submit-button").attr("disabled", true);
+    setTimeout(() => {
+      if (!this.ctrlKey)
+        this.props.actionFunction();
+      alert(
+        window.gettext(
+          "Your file is being generated and will be emailed to you shortly."
+        )
+      );
+    }, 100);
+    return true;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let object_sets;
+    if (this.props.data.object_sets.length > 0) {
+      object_sets = [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+          window.gettext("Object Set Visibility"),
+          ":"
+        ] }),
+        this.props.data.object_sets.map((objectset) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              onChange: this.inputChange.bind(this, "set", objectset.id),
+              name: "object_sets[]",
+              value: objectset.id,
+              type: "checkbox",
+              id: objectset.id,
+              checked: !this.state[objectset.id]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: objectset.title })
+        ] }))
+      ];
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export files") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("Use this menu to export files.") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "form",
+        {
+          id: "export-form",
+          encType: "multipart/form-data",
+          action: COURSEFLOW_APP.config.post_paths.get_export,
+          method: "POST",
+          target: "redirect-iframe",
+          onSubmit: this.submit.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                name: "csrfmiddlewaretoken",
+                value: window.getCsrfToken()
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+              window.gettext("Export Type"),
+              ":"
+            ] }),
+            this.getExportTypes(),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+              window.gettext("Export Format"),
+              ":"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { name: "export_format", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "excel", children: "Excel" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "csv", children: "CSV" })
+            ] }),
+            object_sets,
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectID",
+                name: "objectID",
+                value: JSON.stringify(this.props.data.id)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectType",
+                name: "objectType",
+                value: JSON.stringify(this.props.data.type)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                onClick: this.click.bind(this),
+                id: "submit-button",
+                type: "submit"
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+        }
+      )
+    ] });
+  }
+}
+class ProjectMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "readOnly");
+    __publicField(this, "userId");
+    __publicField(this, "createDiv");
+    __publicField(this, "projectPaths");
+    __publicField(this, "userRole");
+    __publicField(this, "allDisciplines");
+    __publicField(this, "viewButtons");
+    __publicField(this, "data");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Share", () => {
+      if (!this.readOnly)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: this.openShareDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return null;
+    });
+    __publicField(this, "DeleteProject", () => {
+      if (!this.state.data.deleted) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
+      }
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
+      ];
+    });
+    __publicField(this, "ExportButton", () => {
+      if (this.userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "export-button",
+            className: "hover-shade",
+            onClick: () => {
+              this.openExportDialog.bind(this);
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
+          }
+        );
+      }
+      return null;
+    });
+    __publicField(this, "CopyButton", () => {
+      if (this.userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "copy-button",
+            className: "hover-shade",
+            onClick: () => {
+              const loader = COURSEFLOW_APP.tinyLoader;
+              loader.startLoad();
+              duplicateBaseItemQuery(
+                this.data.id,
+                this.data.type,
+                null,
+                (response_data) => {
+                  loader.endLoad();
+                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+                }
+              );
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+          }
+        );
+      }
+      return null;
+    });
+    __publicField(this, "OverflowLinks", (data, userId) => {
+      let liveproject;
+      const overflow_links = [];
+      if (data.author_id === userId) {
+        if (data.liveproject) {
+          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              id: "live-project",
+              className: "hover-shade",
+              href: COURSEFLOW_APP.config.update_path.liveproject.replace(
+                "0",
+                data.id
+              ),
+              children: window.gettext("View Classroom")
+            }
+          );
+        } else {
+          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              id: "live-project",
+              className: "hover-shade",
+              onClick: this.makeLive.bind(this),
+              children: window.gettext("Create Classroom")
+            }
+          );
+        }
+      }
+      overflow_links.push(liveproject);
+      overflow_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+      );
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
+      if (data.author_id === userId) {
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProject, {}));
+      }
+      return overflow_links;
+    });
+    __publicField(this, "Edit", () => {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "edit-project-button",
+            title: window.gettext("Edit Project"),
+            onClick: this.openEditDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
+          }
+        );
+      }
+      return null;
+    });
+    __publicField(this, "Create", () => {
+      if (!this.readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "hover-shade",
+            id: "create-project-button",
+            title: window.gettext("Create workflow"),
+            ref: this.createDiv,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "activity-create-project",
+                    href: this.projectPaths.activity,
+                    className: "hover-shade",
+                    children: window.gettext("New activity")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "course-create-project",
+                    href: this.projectPaths.course,
+                    className: "hover-shade",
+                    children: window.gettext("New course")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "program-create-project",
+                    href: this.projectPaths.program,
+                    className: "hover-shade",
+                    children: window.gettext("New program")
+                  }
+                )
+              ] })
+            ]
+          }
+        );
+      }
+      return null;
+    });
+    __publicField(this, "Content", () => {
+      const return_val = [];
+      if (this.state.data.liveproject && this.userRole === role_keys.teacher)
+        return_val.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
+            let view_class = "hover-shade";
+            if (item.type === this.state.view_type)
+              view_class += " active";
+            return /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                id: "button_" + item.type,
+                className: view_class,
+                onClick: this.changeView.bind(this, item.type),
+                children: item.name
+              }
+            );
+          }) })
+        );
+      switch (this.state.view_type) {
+        case "overview":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectOverview,
+              {
+                userRole: this.userRole,
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "students":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectStudents,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "assignments":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectAssignments,
+              {
+                role: this.getRole(),
+                objectID: this.state.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        case "completion_table":
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              LiveProjectCompletionTable,
+              {
+                role: this.getRole(),
+                objectID: this.data.id,
+                view_type: this.state.view_type
+              }
+            )
+          );
+          break;
+        default:
+          return_val.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowFilter,
+              {
+                user_role: this.userRole,
+                read_only: this.readOnly,
+                project_data: this.state.data,
+                workflows: this.state.workflow_data,
+                updateWorkflow: this.updateWorkflow.bind(this),
+                context: "project"
+              }
+            )
+          );
+      }
+      return return_val;
+    });
+    __publicField(this, "ShareDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ShareMenu,
+          {
+            data: this.state.data,
+            actionFunction: () => {
+              this.setState({
+                ...this.state,
+                openShareDialog: false
+              });
+              this.getUserData();
+            }
+          }
+        )
+      ] });
+    });
+    __publicField(this, "EditDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ProjectEditDialog,
+        {
+          type: "project_edit_menu",
+          data: {
+            ...this.state.data,
+            all_disciplines: this.allDisciplines,
+            user_role: this.userRole
+            // renderer: this.props.renderer
+          },
+          actionFunction: this.updateFunction,
+          closeAction: () => this.closeModals()
+        }
+      ) });
+    });
+    __publicField(this, "ExportDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: this.state.data, actionFunction: this.closeModals })
+      ] });
+    });
+    this.viewButtons = [
+      { type: "workflows", name: window.gettext("Workflows") },
+      { type: "overview", name: window.gettext("Classroom Overview") },
+      { type: "students", name: window.gettext("Students") },
+      { type: "assignments", name: window.gettext("Assignments") },
+      { type: "completion_table", name: window.gettext("Completion Table") }
+    ];
+    this.userId = this.props.userId;
+    this.userRole = this.props.userRole;
+    this.readOnly = this.props.readOnly;
+    this.projectPaths = this.props.projectPaths;
+    this.allDisciplines = this.props.allDisciplines;
+    this.data = this.props.data;
+    this.state = {
+      data: this.props.data,
+      view_type: "workflows",
+      users: null,
+      workflow_data: [],
+      openEditDialog: false,
+      openShareDialog: false,
+      openExportDialog: false
+    };
     this.createDiv = reactExports.createRef();
   }
   /*******************************************************
    * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
-    getLibrary((data) => {
-      this.setState({ project_data: data.data_package });
+    const component = this;
+    getWorkflowsForProjectQuery(this.data.id, (data) => {
+      component.setState({
+        workflow_data: data.data_package
+      });
     });
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+    this.getUserData();
+    COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
+  }
+  // @todo this is wrapped because it is called by openShareMenu
+  // so do no unwrap until the renderMessageBox is sorted out
+  getUserData() {
+    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
+      this.setState({ users: data });
+    });
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getCreate() {
-    let create2;
-    if (!this.read_only)
-      create2 = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  changeView(view_type) {
+    this.setState({ view_type });
+  }
+  // @todo, candidate to remove
+  getRole() {
+    return "teacher";
+  }
+  /*******************************************************
+   * ACTION HANDLERS
+   *******************************************************/
+  deleteProject() {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this project?")
+    )) {
+      deleteSelfQuery(this.data.id, "project", true, () => {
+        this.setState({ data: { ...this.data, deleted: true } });
+      });
+    }
+  }
+  deleteProjectHard() {
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently delete this project?"
+      )
+    )) {
+      deleteSelfQuery(this.data.id, "project", false, () => {
+        window.location.href = COURSEFLOW_APP.config.home_path;
+      });
+    }
+  }
+  restoreProject() {
+    restoreSelfQuery(this.data.id, "project", () => {
+      this.setState({ data: { ...this.data, deleted: false } });
+    });
+  }
+  makeLive() {
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to create a live classroom for this project?"
+      )
+    )) {
+      makeProjectLiveQuery(this.data.id, (data) => {
+        location.reload();
+      });
+    }
+  }
+  /*******************************************************
+   * MODAL HANDLERS
+   *******************************************************/
+  updateWorkflow(id, new_values) {
+    for (let i = 0; i < this.state.workflow_data.length; i++) {
+      if (this.state.workflow_data[i].id === id) {
+        const new_state = { ...this.state };
+        new_state.workflow_data = [...this.state.workflow_data];
+        new_state.workflow_data[i] = {
+          ...this.state.workflow_data[i],
+          ...new_values
+        };
+        this.setState(new_state);
+        break;
+      }
+    }
+  }
+  /*******************************************************
+   * MODALS
+   *******************************************************/
+  openEditDialog() {
+    this.setState({
+      ...this.state,
+      openEditDialog: true
+    });
+  }
+  openShareDialog() {
+    this.setState({
+      ...this.state,
+      openShareDialog: true
+    });
+  }
+  openExportDialog() {
+    this.setState({
+      ...this.state,
+      openExportDialog: true
+    });
+  }
+  closeModals() {
+    this.setState({
+      ...this.state,
+      openExportDialog: false,
+      openShareDialog: false,
+      openEditDialog: false
+    });
+  }
+  updateFunction(new_data) {
+    if (new_data.liveproject) {
+      console.log("liveproject updated");
+    } else {
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          ...new_data
+        },
+        openEditDialog: false
+      });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const visible_buttons = [/* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MenuBar,
+        {
+          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, { data: this.state.data, userId: this.userId }),
+          visible_buttons
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Header,
+          {
+            disciplines: this.state.data.disciplines,
+            description: this.state.data.description,
+            allDisciplines: this.allDisciplines,
+            data: this.state.data,
+            users: this.state.users,
+            openShareDialog: () => this.openShareDialog(),
+            readOnly: this.readOnly
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {})
+    ] });
+  }
+}
+class ProjectPage extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "readOnly");
+    __publicField(this, "projectData");
+    __publicField(this, "allDisciplines");
+    __publicField(this, "userRole");
+    __publicField(this, "userPermission");
+    __publicField(this, "userId");
+    __publicField(this, "projectPaths");
+    this.readOnly = true;
+    this.projectData = this.props.project_data;
+    this.allDisciplines = this.props.disciplines;
+    this.userRole = this.props.user_role;
+    this.userPermission = this.props.user_permission;
+    this.userId = this.props.user_id;
+    this.projectPaths = this.props.create_path_this_project;
+    console.log("this.projectData");
+    console.log(this.projectData);
+    if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
+      console.log("readOnly");
+      this.readOnly = false;
+      console.log(this.readOnly);
+    }
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ProjectMenu,
+      {
+        projectPaths: this.projectPaths,
+        allDisciplines: this.allDisciplines,
+        userRole: this.userRole,
+        readOnly: this.readOnly,
+        data: this.projectData,
+        userId: this.userId
+      }
+    );
+  }
+}
+class LibraryPage extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "createDiv");
+    __publicField(this, "read_only");
+    /***
+     * z
+     */
+    __publicField(this, "CreateButton", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           className: "hover-shade",
@@ -89368,12 +92385,9 @@ class LibraryMenu extends reactExports.Component {
           ]
         }
       );
-    return create2;
-  }
-  getOverflowLinks() {
-    let overflow_links = [];
-    overflow_links.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
+    });
+    __publicField(this, "OverflowLinks", () => {
+      const link = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "a",
         {
           id: "import-old",
@@ -89381,28 +92395,39 @@ class LibraryMenu extends reactExports.Component {
           href: COURSEFLOW_APP.config.get_paths.import,
           children: window.gettext("Import from old CourseFlow")
         }
-      )
-    );
-    return overflow_links;
+      );
+      return [link];
+    });
+    this.state = {};
+    this.createDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  componentDidMount() {
+    getLibraryQuery((data) => {
+      this.setState({
+        project_data: data.data_package
+      });
+    });
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let visible_buttons = this.getCreate.bind(this);
-    let overflow_links = this.getOverflowLinks.bind(this);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
         {
-          overflow_links,
-          visible_buttons
+          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
+          visible_buttons: /* @__PURE__ */ jsxRuntimeExports.jsx(this.CreateButton, {})
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowFilter,
         {
-          renderer: this.props.renderer,
+          renderer: this,
           workflows: this.state.project_data,
           context: "library"
         }
@@ -89410,543 +92435,106 @@ class LibraryMenu extends reactExports.Component {
     ] });
   }
 }
-class ProjectMenu extends LibraryMenu {
+class FavouritesPage extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.user_id = props.userId;
-    this.state = {
-      data: props.data,
-      view_type: "workflows"
-    };
+    __publicField(this, "createDiv");
+    this.state = {};
+    this.createDiv = reactExports.createRef();
   }
   /*******************************************************
-   * LIFECYCLE HOOKS
+   * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    let component = this;
-    getWorkflowsForProject(this.props.data.id, (data) => {
-      component.setState({ workflow_data: data.data_package });
+    getFavouritesQuery((data) => {
+      console.log("data");
+      console.log(data);
+      this.setState({ project_data: data.data_package });
     });
-    this.getUserData();
-    COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getViewButtons() {
-    return [
-      { type: "workflows", name: window.gettext("Workflows") },
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "students", name: window.gettext("Students") },
-      { type: "assignments", name: window.gettext("Assignments") },
-      { type: "completion_table", name: window.gettext("Completion Table") }
-    ];
-  }
-  getContent() {
-    let return_val = [];
-    if (this.state.data.liveproject && this.props.renderer.user_role === role_keys.teacher)
-      return_val.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.getViewButtons().map((item) => {
-          let view_class = "hover-shade";
-          if (item.type === this.state.view_type)
-            view_class += " active";
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              id: "button_" + item.type,
-              className: view_class,
-              onClick: this.changeView.bind(this, item.type),
-              children: item.name
-            }
-          );
-        }) })
-      );
-    switch (this.state.view_type) {
-      case "overview":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectOverview,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "students":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectStudents,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "assignments":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectAssignments,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.state.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      case "completion_table":
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            LiveProjectCompletionTable,
-            {
-              renderer: this.props.renderer,
-              role: this.getRole(),
-              objectID: this.props.data.id,
-              view_type: this.state.view_type
-            }
-          )
-        );
-        break;
-      default:
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowFilter,
-            {
-              renderer: this.props.renderer,
-              workflows: this.state.workflow_data,
-              updateWorkflow: this.updateWorkflow.bind(this),
-              context: "project"
-            }
-          )
-        );
-    }
-    return return_val;
-  }
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  // @todo, candidate to remove
-  getRole() {
-    return "teacher";
-  }
-  getOverflowLinks() {
-    let data = this.state.data;
-    let liveproject;
-    if (data.author_id === this.userId) {
-      if (data.liveproject) {
-        liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "live-project",
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.update_path.liveproject.replace(
-              "0",
-              data.id
-            ),
-            children: window.gettext("View Classroom")
-          }
-        );
-      } else {
-        liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "live-project",
-            className: "hover-shade",
-            onClick: this.makeLive.bind(this),
-            children: window.gettext("Create Classroom")
-          }
-        );
-      }
-    }
-    let overflow_links = [liveproject];
-    overflow_links.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
-    );
-    overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-    overflow_links.push(this.getExportButton());
-    overflow_links.push(this.getCopyButton());
-    if (data.author_id === this.user_id) {
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-      overflow_links.push(this.getDeleteProject());
-    }
-    return overflow_links;
-  }
-  getDeleteProject() {
-    if (!this.state.data.deleted) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
-    }
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
-    ];
-  }
-  deleteProject() {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this project?")
-    )) {
-      deleteSelf(this.props.data.id, "project", true, () => {
-        this.setState({ data: { ...this.props.data, deleted: true } });
-      });
-    }
-  }
-  deleteProjectHard() {
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to permanently delete this project?"
-      )
-    )) {
-      deleteSelf(this.props.data.id, "project", false, () => {
-        window.location = COURSEFLOW_APP.config.home_path;
-      });
-    }
-  }
-  restoreProject() {
-    restoreSelf(this.props.data.id, "project", () => {
-      this.setState({ data: { ...this.props.data, deleted: false } });
-    });
-  }
-  makeLive() {
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to create a live classroom for this project?"
-      )
-    )) {
-      makeProjectLive(this.props.data.id, (data) => {
-        location.reload();
-      });
-    }
-  }
-  getExportButton() {
-    if (this.user_id) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "export-button",
-          className: "hover-shade",
-          onClick: () => {
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
-        }
-      );
-    }
-    return null;
-  }
-  getCopyButton() {
-    if (this.user_id) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "copy-button",
-          className: "hover-shade",
-          onClick: () => {
-            let loader = this.props.renderer.tiny_loader;
-            loader.startLoad();
-            duplicateBaseItem(
-              this.props.data.id,
-              this.props.data.type,
-              null,
-              (response_data) => {
-                loader.endLoad();
-                window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-              }
-            );
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-        }
-      );
-    }
-    return null;
-  }
-  getUserData() {
-    getUsersForObject(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data });
-    });
-  }
-  getHeader() {
-    let data = this.state.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowTitle,
-        {
-          data,
-          no_hyperlink: true,
-          class_name: "project-title"
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-          this.getUsers()
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              CollapsibleText,
-              {
-                text: data.description,
-                defaultText: window.gettext("No description")
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-            this.props.renderer.all_disciplines.filter(
-              (discipline) => data.disciplines.indexOf(discipline.id) >= 0
-            ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
-          ] })
-        ] })
-      ] })
-    ] });
-  }
-  // @todo needs work
-  getUsers() {
-    if (!this.state.users)
-      return null;
-    let author = this.state.users.author;
-    let editors = this.state.users.editors;
-    let commenters = this.state.users.commentors;
-    let viewers = this.state.users.viewers;
-    let users_group = [];
-    if (!author)
-      return null;
-    if (this.state.users.published) {
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          " ",
-          window.gettext("All CourseFlow")
-        ] })
-      );
-    }
-    users_group.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("author"),
-        getUserDisplay(author)
-      ] }),
-      editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("edit"),
-        getUserDisplay(user)
-      ] })),
-      commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("comment"),
-        getUserDisplay(user)
-      ] })),
-      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        getUserDisplay(user)
-      ] }))
-    ]);
-    users_group = users_group.flat(2);
-    let users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-    if (users_group.length > 4) {
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-          "+",
-          users_group.length - 4,
-          " ",
-          window.gettext("more")
-        ] })
-      );
-    }
-    if (!this.props.renderer.read_only)
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "user-name collapsed-text-show-more",
-            onClick: this.openShareMenu.bind(this),
-            children: window.gettext("Modify")
-          }
-        )
-      );
-    return users;
-  }
-  getEdit() {
-    if (!this.props.renderer.read_only) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "edit-project-button",
-          title: window.gettext("Edit Project"),
-          onClick: this.openEditMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-        }
-      );
-    }
-    return null;
-  }
-  openEditMenu() {
-    console.log(
-      "openEditMenu in procetmenu.js see function coment for why this doesn't work"
-    );
-  }
-  getCreate() {
-    if (!this.props.renderer.read_only) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade",
-          id: "create-project-button",
-          title: window.gettext("Create workflow"),
-          ref: this.createDiv,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "activity-create-project",
-                  href: create_path_this_project.activity,
-                  className: "hover-shade",
-                  children: window.gettext("New activity")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "course-create-project",
-                  href: create_path_this_project.course,
-                  className: "hover-shade",
-                  children: window.gettext("New course")
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "program-create-project",
-                  href: create_path_this_project.program,
-                  className: "hover-shade",
-                  children: window.gettext("New program")
-                }
-              )
-            ] })
-          ]
-        }
-      );
-    }
-    return null;
-  }
-  updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log("liveproject updated");
-    } else {
-      let new_state = { ...this.state };
-      new_state.data = { ...new_state.data, ...new_data };
-      this.setState(new_state);
-    }
-  }
-  getShare() {
-    let share;
-    if (!this.props.renderer.read_only)
-      share = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "share-button",
-          title: window.gettext("Sharing"),
-          onClick: this.openShareMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-        }
-      );
-    return share;
-  }
-  openShareMenu() {
-    this.state.data;
-  }
-  updateWorkflow(id, new_values) {
-    for (let i = 0; i < this.state.workflow_data.length; i++) {
-      if (this.state.workflow_data[i].id === id) {
-        let new_state = { ...this.state };
-        new_state.workflow_data = [...this.state.workflow_data];
-        new_state.workflow_data[i] = {
-          ...this.state.workflow_data[i],
-          ...new_values
-        };
-        this.setState(new_state);
-        break;
-      }
-    }
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let visible_buttons = (() => [
-      this.getEdit(),
-      this.getCreate(),
-      this.getShare()
-    ]).bind(this);
-    let overflow_links = this.getOverflowLinks.bind(this);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        MenuBar,
-        {
-          overflow_links,
-          visible_buttons
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-        this.getHeader(),
-        this.getContent()
-      ] })
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowFilter,
+      {
+        renderer: this.props.renderer,
+        workflows: this.state.project_data,
+        context: "library"
+      }
+    ) });
+  }
+}
+class HomePage extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "isTeacher");
+    this.isTeacher = props.is_teacher;
+    this.state = { projects: [], favourites: [] };
+  }
+  /*******************************************************
+   * Lifecycle hooks
+   *******************************************************/
+  componentDidMount() {
+    getHomeQuery((data) => {
+      this.setState({
+        projects: data.projects,
+        favourites: data.favourites
+      });
+    });
+  }
+  /*******************************************************
+   * Render
+   *******************************************************/
+  renderWorkflowCards(workflows, keyPrefix) {
+    return workflows.map((workflow, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index2}`));
+  }
+  renderHomeItem(title, content, path) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
+    ] });
+  }
+  render() {
+    const { projects, favourites } = this.state;
+    const projectsContent = this.renderWorkflowCards(projects, "project");
+    const favouritesContent = this.renderWorkflowCards(favourites, "favourite");
+    const projectTitle = this.isTeacher ? "Recent projects" : "Recent classrooms";
+    const projectPath = this.isTeacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
+    const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
+    const projectBox = this.renderHomeItem(
+      projectTitle,
+      projectsContent,
+      projectPath
+    );
+    let favouriteBox;
+    if (this.isTeacher) {
+      favouriteBox = this.renderHomeItem(
+        "Favourites",
+        favouritesContent,
+        favouritePath
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
+      projectBox,
+      favouriteBox
     ] });
   }
 }
-class ProjectRenderer extends reactExports.Component {
+class ExploreFilter extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.read_only = true;
-    this.project_data = this.props.project_data;
-    this.all_disciplines = this.props.disciplines;
-    this.user_role = this.props.user_role;
-    this.user_permission = this.props.user_permission;
-    this.userId = this.props.user_id;
-    if (this.project_data.object_permission && this.project_data.object_permission.permission_type === permission_keys["edit"]) {
-      this.read_only = false;
-    }
-  }
-  render() {
-    this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-    return this.getContents();
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ProjectMenu,
-      {
-        renderer: this,
-        data: this.project_data,
-        userid: this.userId
-      }
-    );
-  }
-}
-class LibraryRenderer extends reactExports.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-    return this.getContents();
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryMenu, { renderer: this });
-  }
-}
-class ExploreFilter extends WorkflowFilter {
-  constructor(props) {
-    super(props);
+    __publicField(this, "filterDOM");
+    __publicField(this, "searchDOM");
+    __publicField(this, "sortDOM");
+    __publicField(this, "disciplineDOM");
+    __publicField(this, "filters");
+    __publicField(this, "sorts");
     this.filters = [
       { name: "activity", display: window.gettext("Activity") },
       { name: "course", display: window.gettext("Course") },
@@ -89959,15 +92547,15 @@ class ExploreFilter extends WorkflowFilter {
       { name: "created_on", display: window.gettext("Creation date") }
     ];
     this.state = {
-      workflows: props.workflows,
-      pages: this.props.renderer.initial_pages,
-      has_searched: false,
-      active_sort: 0,
-      active_filters: [],
-      active_disciplines: [],
+      workflows: this.props.workflows,
+      pages: this.props.pages,
+      hasSearched: false,
+      activeSort: 0,
+      activeFilters: [],
+      activeDisciplines: [],
       reversed: false,
-      from_saltise: false,
-      content_rich: true
+      fromSaltise: false,
+      contentRich: true
     };
     this.filterDOM = reactExports.createRef();
     this.searchDOM = reactExports.createRef();
@@ -89979,114 +92567,23 @@ class ExploreFilter extends WorkflowFilter {
    *******************************************************/
   componentDidMount() {
     COURSEFLOW_APP.makeDropdown(this.disciplineDOM.current);
-    super.componentDidMount();
+    COURSEFLOW_APP.makeDropdown(this.filterDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.sortDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.searchDOM.current);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.workflows !== this.props.workflows)
+      this.setState({ workflows: this.props.workflows });
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  doSearch() {
-    this.searchWithout(
-      $(this.searchDOM.current).children("#workflow-search-input")[0].value,
-      this.searchResults.bind(this)
-    );
-  }
-  getInfo() {
-    if (this.state.workflows === this.props.workflows)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "Enter a search term or filter then click 'search' to get started."
-      ) });
-    return null;
-  }
-  getPages() {
-    if (this.state.workflows.length > 0) {
-      let page_buttons = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "prev-page-button",
-            disabled: this.state.pages.current_page == 1,
-            onClick: this.toPage.bind(this, this.state.pages.current_page - 1),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_left" })
-          }
-        )
-      ];
-      if (this.state.pages.current_page > 3) {
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "page-button", onClick: this.toPage.bind(this, 1), children: 1 })
-        );
-        if (this.state.pages.current_page > 4) {
-          page_buttons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
-        }
-      }
-      for (let i = Math.max(this.state.pages.current_page - 2, 1); i <= Math.min(
-        this.state.pages.current_page + 2,
-        this.state.pages.page_count
-      ); i++) {
-        let button_class = "page-button";
-        if (i === this.state.pages.current_page)
-          button_class += " active-page-button";
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: button_class, onClick: this.toPage.bind(this, i), children: i })
-        );
-      }
-      if (this.state.pages.current_page < this.state.pages.page_count - 2) {
-        if (this.state.pages.current_page < this.state.pages.page_count - 3) {
-          page_buttons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
-        }
-        page_buttons.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "page-button",
-              onClick: this.toPage.bind(this, this.state.pages.page_count),
-              children: this.state.pages.page_count
-            }
-          )
-        );
-      }
-      page_buttons.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "next-page-button",
-            disabled: this.state.pages.current_page == this.state.pages.page_count,
-            onClick: this.toPage.bind(this, this.state.pages.current_page + 1),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_right" })
-          }
-        )
-      );
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-          window.gettext("Showing results"),
-          " ",
-          this.state.pages.results_per_page * (this.state.pages.current_page - 1) + 1,
-          "-",
-          this.state.pages.results_per_page * this.state.pages.current_page,
-          " (",
-          this.state.pages.total_results,
-          " ",
-          window.gettext("total results"),
-          ")"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "explore-page-buttons", children: page_buttons })
-      ];
-    } else {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("No results were found.") });
-    }
-  }
-  toPage(number2) {
-    this.searchWithout(
-      $(this.searchDOM.current).children("#workflow-search-input")[0].value,
-      this.searchResults.bind(this),
-      number2
-    );
-  }
   getFilter() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_filters.length,
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilters.length,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Type") })
@@ -90095,7 +92592,7 @@ class ExploreFilter extends WorkflowFilter {
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.filters.map((filter, i) => {
         let css_class = "filter-option flex-middle";
-        if (this.state.active_filters.indexOf(filter.name) >= 0)
+        if (this.state.activeFilters.indexOf(filter.name) >= 0)
           css_class += " active";
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
@@ -90111,7 +92608,7 @@ class ExploreFilter extends WorkflowFilter {
                 "input",
                 {
                   type: "checkbox",
-                  checked: this.state.active_filters.indexOf(filter.name) >= 0
+                  checked: this.state.activeFilters.indexOf(filter.name) >= 0
                 }
               ),
               filter.display
@@ -90122,20 +92619,20 @@ class ExploreFilter extends WorkflowFilter {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          attr_number: this.state.active_filters.length,
+          "data-attr-number": this.state.activeFilters.length,
           className: "dropdown-number-indicator",
-          children: this.state.active_filters.length
+          children: this.state.activeFilters.length
         }
       )
     ] });
   }
   getSort() {
-    let active_sort = this.sorts[this.state.active_sort];
+    const active_sort = this.sorts[this.state.activeSort];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.active_sort,
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: active_sort.display })
@@ -90145,7 +92642,7 @@ class ExploreFilter extends WorkflowFilter {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.sorts.map((sort, i) => {
         let sort_dir;
         let css_class = "filter-option filter-checkbox";
-        if (this.state.active_sort == i) {
+        if (this.state.activeSort == i) {
           css_class += " active";
           if (this.state.reversed)
             sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
@@ -90170,6 +92667,48 @@ class ExploreFilter extends WorkflowFilter {
       }) })
     ] });
   }
+  sortChange(index2) {
+    if (this.state.activeSort === index2)
+      this.setState({
+        reversed: !this.state.reversed,
+        hasSearched: false
+      });
+    else
+      this.setState({
+        activeSort: index2,
+        reversed: false,
+        hasSearched: false
+      });
+  }
+  searchChange(evt) {
+    this.setState({ hasSearched: false });
+  }
+  searchWithout(request, responseFunction, pageNumber = 1) {
+    this.setState({
+      hasSearched: true
+    });
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 20,
+        published: true,
+        full_search: true,
+        disciplines: this.state.activeDisciplines,
+        types: this.state.activeFilters,
+        sort: this.sorts[this.state.activeSort].name,
+        sort_reversed: this.state.reversed,
+        page: pageNumber,
+        fromSaltise: this.state.fromSaltise,
+        contentRich: this.state.contentRich
+      },
+      (responseData) => {
+        responseFunction(responseData.workflow_list, responseData.pages);
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+  // not common
   getDisciplines() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -90181,7 +92720,7 @@ class ExploreFilter extends WorkflowFilter {
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "workflow-sort-indicator hover-shade item-" + this.state.active_disciplines.length,
+              className: "workflow-sort-indicator hover-shade item-" + this.state.activeDisciplines.length,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "science" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Discipline") })
@@ -90190,7 +92729,7 @@ class ExploreFilter extends WorkflowFilter {
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.props.disciplines.map((discipline, i) => {
             let css_class = "filter-option flex-middle";
-            if (this.state.active_disciplines.indexOf(discipline.id) >= 0)
+            if (this.state.activeDisciplines.indexOf(discipline.id) >= 0)
               css_class += " active";
             return /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
@@ -90206,7 +92745,7 @@ class ExploreFilter extends WorkflowFilter {
                     "input",
                     {
                       type: "checkbox",
-                      checked: this.state.active_disciplines.indexOf(discipline.id) >= 0
+                      checked: this.state.activeDisciplines.indexOf(discipline.id) >= 0
                     }
                   ),
                   discipline.title
@@ -90217,9 +92756,9 @@ class ExploreFilter extends WorkflowFilter {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              attr_number: this.state.active_disciplines.length,
+              "data-attr-number": this.state.activeDisciplines.length,
               className: "dropdown-number-indicator",
-              children: this.state.active_disciplines.length
+              children: this.state.activeDisciplines.length
             }
           )
         ]
@@ -90237,87 +92776,147 @@ class ExploreFilter extends WorkflowFilter {
         className: "hover-shade",
         onClick: () => {
           this.setState({
-            from_saltise: !this.state.from_saltise,
-            has_searched: false
+            fromDaltise: !this.state.fromSaltise,
+            hasSearched: false
           });
           this.doSearch();
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: this.state.from_saltise }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked: this.state.fromSaltise }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: window.gettext("SALTISE content") })
         ]
       }
     );
   }
-  searchResults(response_data, pages) {
-    this.setState({ workflows: response_data, pages });
+  searchResults(responseData, pages) {
+    this.setState({ workflows: responseData, pages });
   }
-  filterChange(filter, evt) {
-    let name2 = filter.name;
-    let new_filter = this.state.active_filters.slice();
-    if (new_filter.indexOf(name2) >= 0)
-      new_filter.splice(new_filter.indexOf(name2), 1);
+  filterChange(filter) {
+    const name2 = filter.name;
+    const newFilter = this.state.activeFilters.slice();
+    if (newFilter.indexOf(name2) >= 0)
+      newFilter.splice(newFilter.indexOf(name2), 1);
     else
-      new_filter.push(name2);
-    this.setState({ active_filters: new_filter, has_searched: false });
-  }
-  sortChange(index2) {
-    if (this.state.active_sort === index2)
-      this.setState({
-        reversed: !this.state.reversed,
-        has_searched: false
-      });
-    else
-      this.setState({
-        active_sort: index2,
-        reversed: false,
-        has_searched: false
-      });
+      newFilter.push(name2);
+    this.setState({ activeFilters: newFilter, hasSearched: false });
   }
   disciplineChange(discipline) {
-    let name2 = discipline.id;
-    let new_filter = this.state.active_disciplines.slice();
-    if (new_filter.indexOf(name2) >= 0)
-      new_filter.splice(new_filter.indexOf(name2), 1);
+    const name2 = discipline.id;
+    const newFilter = this.state.activeDisciplines.slice();
+    if (newFilter.indexOf(name2) >= 0)
+      newFilter.splice(newFilter.indexOf(name2), 1);
     else
-      new_filter.push(name2);
-    this.setState({ active_disciplines: new_filter, has_searched: false });
+      newFilter.push(name2);
+    this.setState({ activeDisciplines: newFilter, hasSearched: false });
   }
-  searchChange(evt) {
-    this.setState({ has_searched: false });
-  }
-  searchWithout(request, response_function, page_number = 1) {
-    this.setState({ has_searched: true });
-    this.props.renderer.tiny_loader.startLoad();
-    searchAllObjects(
-      request,
-      {
-        nresults: 20,
-        published: true,
-        full_search: true,
-        disciplines: this.state.active_disciplines,
-        types: this.state.active_filters,
-        sort: this.sorts[this.state.active_sort].name,
-        sort_reversed: this.state.reversed,
-        page: page_number,
-        from_saltise: this.state.from_saltise,
-        content_rich: this.state.content_rich
-      },
-      (response_data) => {
-        response_function(response_data.workflow_list, response_data.pages);
-        this.props.renderer.tiny_loader.endLoad();
-      }
+  toPage(number2) {
+    const inputElement = $(this.searchDOM.current).children(
+      "#workflow-search-input"
+    )[0];
+    this.searchWithout(
+      inputElement.value,
+      this.searchResults.bind(this),
+      number2
     );
+  }
+  getPages() {
+    if (this.state.workflows.length) {
+      const pageButtons = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "prev-page-button",
+            disabled: this.state.pages.current_page === 1,
+            onClick: this.toPage.bind(this, this.state.pages.current_page - 1),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_left" })
+          }
+        )
+      ];
+      if (this.state.pages.current_page > 3) {
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "page-button", onClick: this.toPage.bind(this, 1), children: 1 })
+        );
+        if (this.state.pages.current_page > 4) {
+          pageButtons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
+        }
+      }
+      for (let i = Math.max(this.state.pages.current_page - 2, 1); i <= Math.min(
+        this.state.pages.current_page + 2,
+        this.state.pages.page_count
+      ); i++) {
+        let buttonClass = "page-button";
+        if (i === this.state.pages.current_page)
+          buttonClass += " active-page-button";
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: buttonClass, onClick: this.toPage.bind(this, i), children: i })
+        );
+      }
+      if (this.state.pages.current_page < this.state.pages.page_count - 2) {
+        if (this.state.pages.current_page < this.state.pages.page_count - 3) {
+          pageButtons.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-button no-button", children: "..." }));
+        }
+        pageButtons.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              className: "page-button",
+              onClick: this.toPage.bind(this, this.state.pages.page_count),
+              children: this.state.pages.page_count
+            }
+          )
+        );
+      }
+      pageButtons.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "next-page-button",
+            disabled: this.state.pages.current_page == this.state.pages.page_count,
+            onClick: this.toPage.bind(this, this.state.pages.current_page + 1),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "arrow_right" })
+          }
+        )
+      );
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          window.gettext("Showing results"),
+          " ",
+          this.state.pages.results_per_page * (this.state.pages.current_page - 1) + 1,
+          "-",
+          this.state.pages.results_per_page * this.state.pages.current_page,
+          " (",
+          this.state.pages.total_results,
+          " ",
+          window.gettext("total results"),
+          ")"
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "explore-page-buttons", children: pageButtons })
+      ];
+    } else {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext("No results were found.") });
+    }
+  }
+  doSearch() {
+    const inputEl = $(this.searchDOM.current).children(
+      "#workflow-search-input"
+    )[0];
+    this.searchWithout(inputEl.value, this.searchResults.bind(this));
+  }
+  getInfo() {
+    if (this.state.workflows === this.props.workflows)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "Enter a search term or filter then click 'search' to get started."
+      ) });
+    return null;
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let workflows = this.state.workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const workflows = this.state.workflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowCard,
       {
-        workflow_data: workflow,
-        context: this.props.context
+        workflowData: workflow
       },
       workflow.type + workflow.id
     ));
@@ -90329,7 +92928,7 @@ class ExploreFilter extends WorkflowFilter {
               "input",
               {
                 placeholder: window.gettext("Search the public library"),
-                onChange: debounce(this.searchChange.bind(this)),
+                onChange: debounce$1(this.searchChange.bind(this)),
                 id: "workflow-search-input",
                 className: "search-input"
               }
@@ -90340,7 +92939,7 @@ class ExploreFilter extends WorkflowFilter {
             "button",
             {
               className: "primary-button",
-              disabled: this.state.has_searched,
+              disabled: this.state.hasSearched,
               onClick: this.doSearch.bind(this),
               children: window.gettext("Search")
             }
@@ -90359,164 +92958,61 @@ class ExploreFilter extends WorkflowFilter {
     ];
   }
 }
-class ExploreMenu extends LibraryMenu {
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ExploreFilter,
-      {
-        disciplines: this.props.disciplines,
-        renderer: this.props.renderer,
-        workflows: this.props.renderer.initial_workflows,
-        pages: this.props.renderer.initial_pages,
-        context: "library"
-      }
-    ) });
-  }
-}
-class FavouritesMenu extends LibraryMenu {
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getFavourites((data) => {
-      component.setState({ project_data: data.data_package });
-    });
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowFilter,
-      {
-        renderer: this.props.renderer,
-        workflows: this.state.project_data,
-        context: "library"
-      }
-    ) });
-  }
-}
-class Favourites extends LibraryRenderer {
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesMenu, { renderer: this });
-  }
-}
-class HomeMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { projects: [], favourites: [] };
-  }
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
-    let component = this;
-    getHome((data) => {
-      component.setState({
-        projects: data.projects,
-        favourites: data.favourites
-      });
-    });
-  }
-  /*******************************************************
-   * Render
-   *******************************************************/
-  render() {
-    let projects = this.state.projects.map((project, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        workflow_data: project,
-        renderer: this.props.renderer
-      },
-      `project-${index2}`
-    ));
-    let favourites = this.state.favourites.map((project, index2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        workflow_data: project,
-        renderer: this.props.renderer
-      },
-      `favourite-${index2}`
-    ));
-    let library_path = COURSEFLOW_APP.config.my_library_path;
-    if (!this.props.renderer.is_teacher)
-      library_path = COURSEFLOW_APP.config.my_liveprojects_path;
-    let project_box;
-    if (this.props.renderer.is_teacher) {
-      project_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Recent projects") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: library_path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: projects })
-      ] });
-    } else {
-      project_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Recent classrooms") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: library_path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: projects })
-      ] });
-    }
-    let favourite_box;
-    if (this.props.renderer.is_teacher) {
-      favourite_box = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext("Favourites") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "collapsed-text-show-more",
-              href: COURSEFLOW_APP.config.my_favourites_path,
-              children: window.gettext("See all")
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: favourites })
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
-      project_box,
-      favourite_box
-    ] });
-  }
-}
-class HomeRenderer extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.is_teacher = this.props.is_teacher;
-  }
-  render() {
-    this.container = container;
-    this.tiny_loader = new TinyLoader($("body")[0]);
-    return this.getContents();
-  }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(HomeMenu, { renderer: this });
-  }
-}
-class ExploreRenderer extends LibraryRenderer {
+class ExplorePage extends reactExports.Component {
   constructor(props) {
     super(props);
     __publicField(this, "disciplines");
     __publicField(this, "initial_pages");
     __publicField(this, "initial_workflows");
-    this.disciplines = props.disciplines;
-    this.initial_workflows = props.initial_workflows;
-    this.initial_pages = props.initial_pages;
-    this.tiny_loader = new TinyLoader($("body")[0]);
+    __publicField(this, "createDiv");
+    this.disciplines = this.props.disciplines;
+    this.initial_workflows = this.props.initial_workflows;
+    this.initial_pages = this.props.initial_pages;
+    this.createDiv = reactExports.createRef();
   }
-  getContents() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(ExploreMenu, { disciplines: this.disciplines, renderer: this });
+  componentDidMount() {
+    getLibraryQuery((data) => {
+      this.setState({ project_data: data.data_package });
+    });
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+    COURSEFLOW_APP.makeDropdown(this.createDiv.current);
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ExploreFilter,
+      {
+        disciplines: this.disciplines,
+        workflows: this.initial_workflows,
+        pages: this.initial_pages,
+        context: "library"
+      }
+    ) });
   }
 }
+let MouseCursorLoader$1 = class MouseCursorLoader2 {
+  constructor(identifier2 = $("body")[0]) {
+    this.identifier = identifier2;
+    this.loadings = 0;
+  }
+  startLoad() {
+    $(this.identifier).addClass("waiting");
+    this.loadings++;
+  }
+  endLoad() {
+    if (this.loadings > 0) {
+      this.loadings--;
+    }
+    if (this.loadings <= 0) {
+      $(this.identifier).removeClass("waiting");
+    }
+  }
+};
 const cache = createCache({
   key: "emotion",
   nonce: document.querySelector("#script-redesign").nonce
 });
+const tinyLoader = new MouseCursorLoader$1($("body")[0]);
+COURSEFLOW_APP.tinyLoader = tinyLoader;
 function renderComponents(components) {
   components.forEach((c) => {
     if (!c.component)
@@ -90530,20 +93026,18 @@ function renderComponents(components) {
     }
   });
 }
-console.log("current path");
-console.log(COURSEFLOW_APP.path_id);
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     case "home":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(HomeRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(HomePage, { ...COURSEFLOW_APP.contextData });
     case "favorites":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Favourites, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesPage, {});
     case "library":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryRenderer, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryPage, {});
     case "explore":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ExploreRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ExplorePage, { ...COURSEFLOW_APP.contextData });
     case "projectDetail":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectRenderer, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ProjectPage, { ...COURSEFLOW_APP.contextData });
     case "notifications":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsPage, { ...COURSEFLOW_APP.contextData });
     case "notificationsSettings":

@@ -1,10 +1,8 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import ShareMenu from './menus/ShareMenu'
-import ImportMenu from './menus/ImportMenu'
-import ExportMenu from './menus/ExportMenu'
-import WorkflowsMenu from './menus/WorkflowsMenu'
-import ProjectEditMenu from './menus/ProjectEditMenu'
+import ImportMenu from '../dialog/ImportMenu'
+import WorkflowsMenu from '../dialog/WorkflowsMenu'
+import { Dialog, DialogTitle } from '@mui/material'
 
 /**
  *
@@ -17,7 +15,7 @@ import ProjectEditMenu from './menus/ProjectEditMenu'
  * The choice of which menu is displayed is determined by props.message_type.
  *
  */
-class MessageBox extends React.Component {
+export class MessageBox extends React.Component {
   getMenu = () => {
     switch (this.props.message_type) {
       case 'linked_workflow_menu':
@@ -31,21 +29,21 @@ class MessageBox extends React.Component {
             actionFunction={this.props.actionFunction}
           />
         )
-      case 'project_edit_menu':
-        return (
-          <ProjectEditMenu
-            type={this.props.message_type}
-            data={this.props.message_data}
-            actionFunction={this.props.actionFunction}
-          />
-        )
-      case 'share_menu':
-        return (
-          <ShareMenu
-            data={this.props.message_data}
-            actionFunction={this.props.actionFunction}
-          />
-        )
+      // case 'project_edit_menu':
+      //   return (
+      //     <ProjectEditMenu
+      //       type={this.props.message_type}
+      //       data={this.props.message_data}
+      //       actionFunction={this.props.actionFunction}
+      //     />
+      //   )
+      // case 'share_menu':
+      //   return (
+      //     <ShareMenu
+      //       data={this.props.message_data}
+      //       actionFunction={this.props.actionFunction}
+      //     />
+      //   )
       case 'import':
         return (
           <ImportMenu
@@ -53,13 +51,13 @@ class MessageBox extends React.Component {
             actionFunction={this.props.actionFunction}
           />
         )
-      case 'export':
-        return (
-          <ExportMenu
-            data={this.props.message_data}
-            actionFunction={this.props.actionFunction}
-          />
-        )
+      // case 'export':
+      //   return (
+      //     <ExportMenu
+      //       data={this.props.message_data}
+      //       actionFunction={this.props.actionFunction}
+      //     />
+      //   )
 
       default:
         return <></>

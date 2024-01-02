@@ -78,7 +78,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
     return [
       <div className="workflow-header" style={style}>
         <WorkflowCard
-          workflow_data={data}
+          workflowData={data}
           selectAction={this.openEdit.bind(this, null)}
         />
       </div>,

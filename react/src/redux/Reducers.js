@@ -1,5 +1,5 @@
 import * as Redux from 'redux'
-import * as Utility from '../utilityFunctions'
+import * as Utility from '@cfUtility'
 
 export const createLockAction = (
   object_id,

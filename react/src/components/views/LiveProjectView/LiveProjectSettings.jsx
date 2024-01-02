@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { updateLiveProjectValue } from '@XMLHTTP/PostFunctions'
+import { updateLiveProjectValueQuery } from '@XMLHTTP/PostFunctions'
 import LiveProjectSection from './LiveProjectSection'
 
 class LiveProjectSettings extends LiveProjectSection {
@@ -24,7 +24,7 @@ class LiveProjectSettings extends LiveProjectSection {
   }
 
   saveChanges() {
-    updateLiveProjectValue(
+    updateLiveProjectValueQuery(
       this.state.data.liveproject.id,
       'liveproject',
       this.changed_values

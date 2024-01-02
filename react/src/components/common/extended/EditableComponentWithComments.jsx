@@ -3,7 +3,6 @@ import * as reactDom from 'react-dom'
 import {
   addComment,
   getCommentsForObject,
-  getUsersForObject,
   removeAllComments,
   removeComment
 } from '@XMLHTTP/PostFunctions'
@@ -11,16 +10,17 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { reloadCommentsAction } from '@cfReducers'
 // @components
-import Component from './Component'
+import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent from '@cfParentComponents/EditableComponent'
+import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
 
 /*******************************************************
  * @CommentBox
  *
  * @todo description
  *******************************************************/
-class CommentBox extends Component {
+class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
     super(props)
     this.input = React.createRef()
@@ -47,12 +47,12 @@ class CommentBox extends Component {
    *******************************************************/
 
   addUserTag(user) {
-    let cursor_pos = this.tag_position
-    let current_value = this.input.current.value
+    const cursor_pos = this.tag_position
+    const current_value = this.input.current.value
     let to_add = ''
     if (cursor_pos > 0 && current_value[cursor_pos - 1] != ' ') to_add += ' '
     to_add += '@' + user.username + ' '
-    let new_value =
+    const new_value =
       current_value.slice(0, cursor_pos) +
       to_add +
       current_value.slice(cursor_pos + 1)
@@ -70,15 +70,15 @@ class CommentBox extends Component {
     } else {
       $(this.submit.current).addClass('hidden')
     }
-    if (evt.nativeEvent && evt.nativeEvent.data == '@') {
+    if (evt.nativeEvent && evt.nativeEvent.data === '@') {
       this.tag_position = this.input.current.selectionStart - 1
-      let renderer = this.props.renderer
-      renderer.tiny_loader.startLoad()
-      getUsersForObject(
+      const loader = COURSEFLOW_APP.tinyLoader
+      loader.startLoad()
+      getUsersForObjectQuery(
         this.props.renderer.workflowID,
         'workflow',
         (response) => {
-          renderer.tiny_loader.endLoad()
+          loader.endLoad()
           this.setState({
             tagging: true,
             user_list: response.editors.concat(response.commentors)
@@ -91,8 +91,8 @@ class CommentBox extends Component {
   }
 
   removeComment(id) {
-    let parent = this.props.parent
-    let props = parent.props
+    const parent = this.props.parent
+    const props = parent.props
     if (
       window.confirm(
         window.gettext(
@@ -110,8 +110,8 @@ class CommentBox extends Component {
   }
 
   removeAllComments() {
-    let parent = this.props.parent
-    let props = parent.props
+    const parent = this.props.parent
+    const props = parent.props
     if (
       window.confirm(
         window.gettext(
@@ -128,10 +128,10 @@ class CommentBox extends Component {
   }
 
   appendComment() {
-    let text = $(this.input.current)[0].value
+    const text = $(this.input.current)[0].value
     if (!text) return
-    let parent = this.props.parent
-    let props = parent.props
+    const parent = this.props.parent
+    const props = parent.props
     $(this.input.current)[0].value = ''
     $(this.submit.current).addClass('hidden')
     addComment(
@@ -143,8 +143,8 @@ class CommentBox extends Component {
   }
 
   commentsSeen() {
-    let unread_comments = this.props.renderer.unread_comments.slice()
-    let comments = this.props.comments.map((comment) => comment.id)
+    const unread_comments = this.props.renderer.unread_comments.slice()
+    const comments = this.props.comments.map((comment) => comment.id)
     this.props.renderer.unread_comments = unread_comments.filter(
       (comment) => comments.indexOf(comment) < 0
     )
@@ -156,7 +156,7 @@ class CommentBox extends Component {
   render() {
     let has_comments = false
 
-    let has_unread =
+    const has_unread =
       this.props.comments.filter((value) => {
         // @todo unread_comments is undefined
         return this.props?.renderer?.unread_comments?.includes(value)
@@ -167,7 +167,7 @@ class CommentBox extends Component {
     }
 
     let render_div
-    let side_actions = $(this.props.parent.maindiv.current)
+    const side_actions = $(this.props.parent.maindiv.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
     if (side_actions.length > 0) render_div = side_actions[0]
@@ -194,11 +194,11 @@ class CommentBox extends Component {
     let comments
     if (this.props.comments)
       comments = this.props.comments.map((comment) => {
-        let is_unread =
+        const is_unread =
           this.props.renderer.unread_comments.indexOf(comment.id) >= 0
         let comment_class = 'comment'
         if (is_unread) comment_class += ' unread'
-        let text = comment.text.replace(
+        const text = comment.text.replace(
           /@\w[@a-zA-Z0-9_.]{1,}/g,
           (val) => '<b>' + val + '</b>'
         )
@@ -229,7 +229,7 @@ class CommentBox extends Component {
         )
       })
 
-    let top_contents = []
+    const top_contents = []
     top_contents.push(
       <div
         className="hover-shade"
@@ -313,9 +313,9 @@ class EditableComponentWithComments extends EditableComponent {
   addCommenting(data) {
     return [
       <ActionButton
-        button_icon="comment_new.svg"
-        button_class="comment-button"
-        titletext={window.gettext('Comments')}
+        buttonIcon="comment_new.svg"
+        buttonClass="comment-button"
+        titleText={window.gettext('Comments')}
         handleClick={this.commentClick.bind(this)}
       />,
       <CommentBox
@@ -335,8 +335,8 @@ class EditableComponentWithComments extends EditableComponent {
   }
 
   reloadComments(show_comments) {
-    let props = this.props
-    let data = props.data
+    const props = this.props
+    const data = props.data
     props.renderer.tiny_loader.startLoad()
     getCommentsForObject(
       data.id,

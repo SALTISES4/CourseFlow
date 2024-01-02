@@ -157,7 +157,7 @@ class AssignmentBox extends React.Component {
   createAssignment() {
     let props = this.props
     props.renderer.tiny_loader.startLoad()
-    createAssignment(
+    createAssignmentQuery(
       props.node_id,
       props.renderer.project.id,
       (response_data) => {

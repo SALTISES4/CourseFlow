@@ -87,7 +87,7 @@ export function updateValue(
   callBackFunction = () => console.log('success')
 ) {
   var t = 1000
-  let previousCall = document.lastUpdateCall
+  const previousCall = document.lastUpdateCall
   document.lastUpdateCall = {
     time: Date.now(),
     id: objectID,
@@ -106,7 +106,7 @@ export function updateValue(
   ) {
     document.lastUpdateCallFunction()
   }
-  let post_object = {
+  const post_object = {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
     data: JSON.stringify(json)
@@ -158,7 +158,7 @@ export function toggleDrop(
   depth = 1
 ) {
   try {
-    let default_drop = Constants.get_default_drop_state(
+    const default_drop = Constants.get_default_drop_state(
       objectID,
       objectType,
       depth
@@ -284,7 +284,7 @@ export function toggleStrategy(
 }
 
 //Causes the specified object to delete itself
-export function deleteSelf(
+export function deleteSelfQuery(
   objectID,
   objectType,
   soft = false,
@@ -299,6 +299,8 @@ export function deleteSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
+      console.log('deleteSelfQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -313,7 +315,7 @@ export function deleteSelfLive(
   objectType,
   callBackFunction = () => console.log('success')
 ) {
-  let path = COURSEFLOW_APP.config.post_paths.delete_self_live
+  const path = COURSEFLOW_APP.config.post_paths.delete_self_live
   try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
@@ -328,7 +330,7 @@ export function deleteSelfLive(
 }
 
 //Causes the specified object to undelete itself
-export function restoreSelf(
+export function restoreSelfQuery(
   objectID,
   objectType,
   callBackFunction = () => console.log('success')
@@ -339,6 +341,8 @@ export function restoreSelf(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
+      console.log('restoreSelfQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -629,50 +633,6 @@ export function toggleFavourite(
   }
 }
 
-//Duplicate a project workflow, strategy, or outcome
-export function duplicateBaseItem(
-  itemPk,
-  objectType,
-  projectID,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: JSON.stringify(itemPk)
-      }).done(function (data) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else window.fail_function(data.action)
-      })
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function (data) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else window.fail_function(data.action)
-      })
-    } else if (!projectID && projectID !== 0) {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
-        workflowPk: JSON.stringify(itemPk)
-      }).done(function (data) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else window.fail_function(data.action)
-      })
-    } else {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
-        workflowPk: JSON.stringify(itemPk),
-        projectPk: JSON.stringify(projectID)
-      }).done(function (data) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-        else window.fail_function(data.action)
-      })
-    }
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
 //Get the data from the workflow
 export function getWorkflowData(
   workflowPk,
@@ -843,26 +803,6 @@ export function setLiveProjectRole(
   }
 }
 
-//Get the list of users for a project
-export function getUsersForObject(
-  objectID,
-  objectType,
-  callBackFunction = () => console.log('success')
-) {
-  if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
-    objectType = 'workflow'
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 //Get the list of users for a liveproject
 export function getUsersForLiveProject(
   liveprojectPk,
@@ -1042,14 +982,16 @@ export function getExport(
 }
 
 //create live project
-export function makeProjectLive(
+export function makeProjectLiveQuery(
   projectPk,
-  callBackFunction = () => console.log('success')
+  callBackFunction = (data) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function (data) {
+      console.log('makeProjectLiveQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1059,7 +1001,7 @@ export function makeProjectLive(
 }
 
 //set visibility of workflow
-export function setWorkflowVisibility(
+export function setWorkflowVisibilityQuery(
   liveprojectPk,
   workflowPk,
   visible,
@@ -1071,16 +1013,19 @@ export function setWorkflowVisibility(
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
     }).done(function (data) {
+      console.log('setWorkflowVisibilityQuery data')
+      console.log(data)
+
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
     window.fail_function()
   }
-}
+} //set visibility of workflow
 
 //get live project data
-export function getLiveProjectData(
+export function getLiveProjectDataQuery(
   projectPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1090,6 +1035,9 @@ export function getLiveProjectData(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getLiveProjectDataQuery data')
+      console.log(data)
+
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1099,7 +1047,7 @@ export function getLiveProjectData(
 }
 
 //get live project data
-export function getLiveProjectDataStudent(
+export function getLiveProjectDataStudentQuery(
   projectPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1109,6 +1057,8 @@ export function getLiveProjectDataStudent(
       liveprojectPk: JSON.stringify(projectPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getLiveProjectDataStudentQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1118,7 +1068,7 @@ export function getLiveProjectDataStudent(
 }
 
 //get assignment data
-export function getAssignmentData(
+export function getAssignmentDataQuery(
   liveassignmentPk,
   data_type,
   callBackFunction = () => console.log('success')
@@ -1128,6 +1078,8 @@ export function getAssignmentData(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getAssignmentDataQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1147,6 +1099,8 @@ export function getAssignmentDataStudent(
       liveassignmentPk: JSON.stringify(liveassignmentPk),
       data_type: JSON.stringify(data_type)
     }).done(function (data) {
+      console.log('getAssignmentDataStudent data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -1173,7 +1127,7 @@ export function getWorkflowNodes(
 }
 
 //get nodes for the workflow
-export function createAssignment(
+export function createAssignmentQuery(
   nodePk,
   liveprojectPk,
   callBackFunction = () => console.log('success')
@@ -1192,7 +1146,7 @@ export function createAssignment(
 }
 
 //add or remove users to/from assignment
-export function addUsersToAssignment(
+export function addUsersToAssignmentQuery(
   liveassignmentPk,
   user_list,
   add,
@@ -1212,7 +1166,7 @@ export function addUsersToAssignment(
   }
 }
 
-export function updateLiveProjectValue(
+export function updateLiveProjectValueQuery(
   objectID,
   objectType,
   json,
@@ -1232,7 +1186,7 @@ export function updateLiveProjectValue(
   }
 }
 
-export function setAssignmentCompletion(
+export function setAssignmentCompletionQuery(
   userassignmentPk,
   completed,
   callBackFunction = () => console.log('success')
@@ -1267,65 +1221,11 @@ export function getAssignmentsForNode(
 }
 
 //Get the library projects
-export function getLibrary(callBackFunction = () => console.log('success')) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the library projects
-export function getFavourites(callBackFunction = () => console.log('success')) {
+export function getFavouritesQuery(
+  callBackFunction = () => console.log('success')
+) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the home projects
-export function getHome(callBackFunction = () => console.log('success')) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the workflows for a project
-export function getWorkflowsForProject(
-  projectPk,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk: projectPk
-    }).done(function (data) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Search entire library
-export function searchAllObjects(
-  filter,
-  data,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function (data) {
       callBackFunction(data)
     })
   } catch (err) {

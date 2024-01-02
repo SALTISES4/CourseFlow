@@ -9,7 +9,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import LiveProjectCompletionTable from './LiveProjectCompletionTable'
 import LiveProjectSettings from './LiveProjectSettings'
 import LiveProjectAssignments from './LiveProjectAssignments'
-import { setWorkflowVisibility } from '@XMLHTTP/PostFunctions'
+import { setWorkflowVisibilityQuery } from '@XMLHTTP/PostFunctions'
 
 /**
  *
@@ -25,7 +25,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
       for (let i = 0; i < workflows_not_added.length; i++) {
         if (workflows_not_added[i].id == pk) {
           let removed = workflows_not_added.splice(i, 1)
-          setWorkflowVisibility(this.props.objectID, pk, true)
+          setWorkflowVisibilityQuery(this.props.objectID, pk, true)
           workflows_added.push(removed[0])
         }
       }
@@ -33,7 +33,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
       for (let i = 0; i < workflows_added.length; i++) {
         if (workflows_added[i].id == pk) {
           let removed = workflows_added.splice(i, 1)
-          setWorkflowVisibility(this.props.objectID, pk, false)
+          setWorkflowVisibilityQuery(this.props.objectID, pk, false)
           workflows_not_added.push(removed[0])
         }
       }
@@ -54,7 +54,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
     if (!this.state.data) return this.defaultRender()
     let workflows_added = this.state.data.workflows_added.map((workflow) => (
       <WorkflowVisibility
-        workflow_data={workflow}
+        workflowData={workflow}
         visibility="visible"
         visibilityFunction={this.switchVisibility.bind(this)}
       />
@@ -62,7 +62,7 @@ class LiveProjectWorkflows extends LiveProjectSection {
     let workflows_not_added = this.state.data.workflows_not_added.map(
       (workflow) => (
         <WorkflowVisibility
-          workflow_data={workflow}
+          workflowData={workflow}
           visibility="not_visible"
           visibilityFunction={this.switchVisibility.bind(this)}
         />
@@ -232,8 +232,8 @@ class LiveProjectMenu extends React.Component {
       <div className="project-menu">
         <div className="project-header">
           <WorkflowCard
-            no_hyperlink={true}
-            workflow_data={this.state.liveproject}
+            noHyperlink={true}
+            workflowData={this.state.liveproject}
             selectAction={this.openEdit.bind(this)}
           />
           {this.getHeader()}

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { restoreSelf, deleteSelf } from '@XMLHTTP/PostFunctions'
-import Component from '@cfParentComponents/Component'
+import { restoreSelfQuery, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
+import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop.tsx'
 
 /**
  * The delete/restore tab of the right sidebar in the workflow view.
@@ -107,7 +107,7 @@ const mapRestoreBarStateToProps = (state) => ({
 })
 export default connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected)
 
-class RestoreBarItem extends Component {
+class RestoreBarItem extends ComponentWithToggleDrop {
   render() {
     return (
       <div ref={this.maindiv} className="restore-bar-item">
@@ -140,7 +140,7 @@ class RestoreBarItem extends Component {
   restore() {
     this.setState({ disabled: true })
     this.props.renderer.tiny_loader.startLoad()
-    restoreSelf(this.props.data.id, this.props.objectType, () => {
+    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
       this.props.renderer.tiny_loader.endLoad()
     })
   }
@@ -153,7 +153,7 @@ class RestoreBarItem extends Component {
     ) {
       $(this.maindiv.current).children('button').attr('disabled', true)
       this.props.renderer.tiny_loader.startLoad()
-      deleteSelf(this.props.data.id, this.props.objectType, false, () => {
+      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
         this.props.renderer.tiny_loader.endLoad()
       })
     }

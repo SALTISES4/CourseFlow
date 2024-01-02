@@ -18,7 +18,7 @@ class WorkflowVisibility extends WorkflowCard {
           value={this.props.visibility}
           onChange={(evt) =>
             this.props.visibilityFunction(
-              this.props.workflow_data.id,
+              this.props.workflowData.id,
               evt.target.value
             )
           }
@@ -34,7 +34,7 @@ class WorkflowVisibility extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    var data = this.props.workflow_data
+    var data = this.props.workflowData
     var css_class =
       'workflow-for-menu workflow-visibility hover-shade ' + data.type
     if (this.props.selected) css_class += ' selected'

@@ -18,10 +18,10 @@ class WorkflowCardCondensed extends WorkflowCard {
   }
 
   getProjectTitle() {
-    if (this.props.workflow_data.project_title) {
+    if (this.props.workflowData.project_title) {
       return (
         <div className="project-title">
-          {this.props.workflow_data.project_title}
+          {this.props.workflowData.project_title}
         </div>
       )
     } else {
@@ -32,7 +32,7 @@ class WorkflowCardCondensed extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.workflow_data
+    let data = this.props.workflowData
     let css_class = 'workflow-for-menu simple-workflow hover-shade ' + data.type
 
     return (

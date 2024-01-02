@@ -1,5 +1,5 @@
 import * as Constants from '../constants'
-import * as Utility from '../utilityFunctions'
+import * as Utility from '@cfUtility'
 
 /*******************************************************
  *
