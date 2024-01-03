@@ -65,7 +65,9 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
       },
       drag: (e, ui) => {
         if (draggable_type == 'nodeweek') {
-          let new_target = $('#' + $(e.target).attr('id') + draggable_selector)
+          const new_target = $(
+            '#' + $(e.target).attr('id') + draggable_selector
+          )
           var delta_x = Math.round(
             (ui.helper.offset().left -
               $('#' + $(e.target).attr('id') + draggable_selector)
@@ -75,7 +77,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
               Constants.columnwidth
           )
           if (delta_x != 0) {
-            let child_id = parseInt($(e.target).attr('data-child-id'))
+            const child_id = parseInt($(e.target).attr('data-child-id'))
             this.sortableColumnChangedFunction(
               child_id,
               delta_x,
@@ -109,7 +111,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
           var old_parent_id = parseInt(drag_item.attr('data-old-parent-id'))
           var old_index = parseInt(drag_item.attr('data-old-index'))
           if (old_parent_id != new_parent_id || old_index != new_index) {
-            let child_id = parseInt(drag_item.attr('data-child-id'))
+            const child_id = parseInt(drag_item.attr('data-child-id'))
 
             if (
               restrictTo &&

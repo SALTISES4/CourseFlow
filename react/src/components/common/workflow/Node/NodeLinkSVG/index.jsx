@@ -51,7 +51,7 @@ class PathGenerator {
   getPathLength() {
     let length = 0
     for (var i = 1; i < this.full_array.length; i++) {
-      let seg_len = mathnorm(
+      const seg_len = mathnorm(
         mathsubtract(this.full_array[i], this.full_array[i - 1])
       )
       length += seg_len
@@ -61,17 +61,17 @@ class PathGenerator {
 
   //gets the point at the given fraction of our path length
   getFractionalPoint(position) {
-    let length = this.getPathLength()
+    const length = this.getPathLength()
     if (length == 0) return [0, 0]
-    let point = this.full_array[1]
+    const point = this.full_array[1]
     let run_length = 0
-    let target_length = length * position
+    const target_length = length * position
     for (var i = 1; i < this.full_array.length; i++) {
-      let seg = mathsubtract(this.full_array[i], this.full_array[i - 1])
-      let seg_len = mathnorm(seg)
+      const seg = mathsubtract(this.full_array[i], this.full_array[i - 1])
+      const seg_len = mathnorm(seg)
       if (run_length + seg_len < target_length) run_length += seg_len
       else {
-        let remaining_len = target_length - run_length
+        const remaining_len = target_length - run_length
         return mathadd(
           this.full_array[i - 1],
           mathmultiply(seg, remaining_len / seg_len)
@@ -134,7 +134,7 @@ class PathGenerator {
       ]),
       mathsubtract(this.last_point[otherport], this.last_point[port])
     )._data
-    let norm = mathnorm(new_direction)
+    const norm = mathnorm(new_direction)
     if (norm == 0) throw 'Non-numeric'
     this.direction[port] = mathmultiply(
       1.0 / mathnorm(new_direction),
@@ -177,15 +177,15 @@ class PathGenerator {
         this.padOut('source')
       }
       //double corner
-      let diff = mathsubtract(
+      const diff = mathsubtract(
         this.last_point['target'],
         this.last_point['source']
       )
-      let mid1 = [
+      const mid1 = [
         (this.direction['source'][0] ** 2 * diff[0]) / 2,
         (this.direction['source'][1] ** 2 * diff[1]) / 2
       ]
-      let mid2 = [
+      const mid2 = [
         (-(this.direction['source'][0] ** 2) * diff[0]) / 2,
         (-(this.direction['source'][1] ** 2) * diff[1]) / 2
       ]
@@ -301,7 +301,7 @@ class NodeLinkSVG extends Component {
 
       let title
       if (this.props.title && this.props.title != '') {
-        let text_position = path_array.getFractionalPoint(
+        const text_position = path_array.getFractionalPoint(
           this.props.text_position / 100.0
         )
         title = (

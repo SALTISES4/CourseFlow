@@ -20,7 +20,7 @@ class OutcomeBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var outcomebaroutcomes = data.map((category) => [
       <hr />,
       <div>
@@ -40,7 +40,7 @@ class OutcomeBarUnconnected extends React.Component {
         'Add outcomes to this workflow in by clicking the button below.'
       )
     }
-    let edittext = Utility.capWords(
+    const edittext = Utility.capWords(
       gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
     )
     return (

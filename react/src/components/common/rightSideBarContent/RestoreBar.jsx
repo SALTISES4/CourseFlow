@@ -14,7 +14,7 @@ class RestoreBarUnconnected extends React.Component {
   }
 
   render() {
-    let columns = this.props.columns.map((column) => (
+    const columns = this.props.columns.map((column) => (
       <RestoreBarItem
         key={column.id}
         objectType="column"
@@ -22,7 +22,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let weeks = this.props.weeks.map((week) => (
+    const weeks = this.props.weeks.map((week) => (
       <RestoreBarItem
         key={week.id}
         objectType="week"
@@ -30,7 +30,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let nodes = this.props.nodes.map((node) => (
+    const nodes = this.props.nodes.map((node) => (
       <RestoreBarItem
         key={node.id}
         objectType="node"
@@ -38,7 +38,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let outcomes = this.props.outcomes.map((outcome) => (
+    const outcomes = this.props.outcomes.map((outcome) => (
       <RestoreBarItem
         key={outcome.id}
         objectType="outcome"
@@ -46,7 +46,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let nodelinks = this.props.nodelinks.map((nodelink) => (
+    const nodelinks = this.props.nodelinks.map((nodelink) => (
       <RestoreBarItem
         key={nodelink.id}
         objectType="nodelink"

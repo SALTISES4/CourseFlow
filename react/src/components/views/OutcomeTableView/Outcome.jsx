@@ -13,7 +13,7 @@ class TableCell extends React.Component {
    * FUNCTIONS
    *******************************************************/
   toggleFunction() {
-    let props = this.props
+    const props = this.props
     let value
     if (props.degree) value = 0
     else value = 1
@@ -29,8 +29,8 @@ class TableCell extends React.Component {
   }
 
   changeFunction(evt) {
-    let props = this.props
-    let value = evt.target.value
+    const props = this.props
+    const value = evt.target.value
     props.renderer.tiny_loader.startLoad()
     updateOutcomenodeDegree(
       props.nodeID,
@@ -44,7 +44,7 @@ class TableCell extends React.Component {
   }
 
   getContents(completion_status, self_completion) {
-    let contents = []
+    const contents = []
     let divclass = ''
 
     if (completion_status === 0) {
@@ -88,7 +88,7 @@ class TableCell extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let degree = this.props.degree
+    const degree = this.props.degree
     let class_name = 'table-cell'
     let input
 
@@ -164,8 +164,8 @@ export class OutcomeUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let is_dropped = this.getIsDropped()
+    const data = this.props.data
+    const is_dropped = this.getIsDropped()
     let dropIcon
     if (is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
@@ -187,7 +187,7 @@ export class OutcomeUnconnected extends Component {
 
     let style
 
-    let outcome_head = (
+    const outcome_head = (
       <div className="outcome-wrapper">
         <div
           className="outcome-head"
@@ -219,9 +219,9 @@ export class OutcomeUnconnected extends Component {
       </div>
     )
 
-    let outcome_row = this.props.outcome_tree.outcomenodes.map(
+    const outcome_row = this.props.outcome_tree.outcomenodes.map(
       (outcomenodegroup) => {
-        let group_row = outcomenodegroup.map((outcomenode) => (
+        const group_row = outcomenodegroup.map((outcomenode) => (
           <TableCell
             outcomes_type={this.props.outcomes_type}
             renderer={this.props.renderer}
@@ -256,7 +256,7 @@ export class OutcomeUnconnected extends Component {
         degree={this.props.outcome_tree.outcomenodes.total}
       />
     )
-    let full_row = (
+    const full_row = (
       <div className={'outcome-row depth-' + data.depth}>
         {outcome_head}
         <div className="outcome-cells">{outcome_row}</div>

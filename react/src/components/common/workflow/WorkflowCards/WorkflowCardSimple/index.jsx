@@ -22,8 +22,8 @@ class WorkflowCardSimple extends React.Component {
   }
 
   getTypeIndicator() {
-    let data = this.props.workflow_data
-    let type = data.type
+    const data = this.props.workflow_data
+    const type = data.type
     let type_text = window.gettext(type)
     if (type === 'liveproject') type_text = window.gettext('classroom')
     if (data.is_strategy) type_text += window.gettext(' strategy')

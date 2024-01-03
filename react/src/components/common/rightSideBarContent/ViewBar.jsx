@@ -34,14 +34,14 @@ class ViewBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let sort_block
     if (
       this.props.renderer.view_type == 'outcometable' ||
       this.props.renderer.view_type == 'horizontaloutcometable'
     ) {
-      let table_type_value = data.table_type || 0
-      let sort_type = (
+      const table_type_value = data.table_type || 0
+      const sort_type = (
         <div className="node-bar-sort-block">
           {this.props.renderer.outcome_sort_choices.map((choice) => (
             <div>
@@ -64,7 +64,7 @@ class ViewBarUnconnected extends React.Component {
           ))}
         </div>
       )
-      let table_type = (
+      const table_type = (
         <div className="node-bar-sort-block">
           <div>
             <input
@@ -102,12 +102,12 @@ class ViewBarUnconnected extends React.Component {
       )
     }
 
-    let sets = (
+    const sets = (
       <div className="node-bar-sort-block">
         {this.props.object_sets
           .sort((a, b) => {
-            let x = a.term
-            let y = b.term
+            const x = a.term
+            const y = b.term
             if (x < y) return -1
             if (x > y) return 1
             return 0

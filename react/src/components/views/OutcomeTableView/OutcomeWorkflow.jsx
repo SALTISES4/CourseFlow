@@ -12,7 +12,7 @@ class TableOutcomeWorkflowUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <div>
         <Outcome

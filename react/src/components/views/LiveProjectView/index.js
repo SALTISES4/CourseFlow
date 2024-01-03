@@ -1,5 +1,0 @@
-export { default as LiveProjectMenu } from './LiveProjectMenu'
-export { default as StudentLiveProjectMenu } from './StudentLiveProjectMenu'
-export { default as LiveProjectAssignments } from './LiveProjectAssignments'
-export { default as LiveProjectCompletionTable } from './LiveProjectCompletionTable'
-export { default as LiveProjectSettings } from './LiveProjectSettings'

@@ -24,7 +24,7 @@ export default class extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let options = this.props.outcome_set.map((outcome) => (
+    const options = this.props.outcome_set.map((outcome) => (
       <OutcomeAdderOption objectID={outcome} />
     ))
 

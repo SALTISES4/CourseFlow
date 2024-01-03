@@ -48,7 +48,7 @@ class Node extends EditableComponentWithActions {
   //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
     if ($(this.maindiv.current).css('display') == 'none') {
-      let week = $(this.maindiv.current).parent('.node-week').parent()
+      const week = $(this.maindiv.current).parent('.node-week').parent()
       if (week.children('.node-week:not(.empty)').length > 1)
         $(this.maindiv.current).parent('.node-week').addClass('empty')
     } else $(this.maindiv.current).parent('.nodeweek').removeClass('empty')
@@ -164,7 +164,7 @@ class Node extends EditableComponentWithActions {
   }
 
   showAssignment(evt) {
-    let props = this.props
+    const props = this.props
     evt.stopPropagation()
     if (!this.state.show_assignments) {
       this.setState({ show_assignments: true })
@@ -175,13 +175,13 @@ class Node extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let data_override
     if (data.represents_workflow)
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
     else data_override = { ...data }
-    let renderer = this.props.renderer
-    let selection_manager = renderer.selection_manager
+    const renderer = this.props.renderer
+    const selection_manager = renderer.selection_manager
     var nodePorts
     var node_links
     var auto_link
@@ -229,7 +229,7 @@ class Node extends EditableComponentWithActions {
         </div>
       )
 
-    let side_actions = []
+    const side_actions = []
     if (data.outcomenode_unique_set.length > 0) {
       side_actions.push(
         <div className="outcome-node-indicator">
@@ -324,9 +324,9 @@ class Node extends EditableComponentWithActions {
       ) != ''
     )
       dropText = '...'
-    let titleText = <NodeTitle data={data} />
+    const titleText = <NodeTitle data={data} />
 
-    let style = {
+    const style = {
       left:
         Constants.columnwidth * this.props.column_order.indexOf(data.column) +
         'px',
@@ -342,7 +342,7 @@ class Node extends EditableComponentWithActions {
     if (data.is_dropped) css_class += ' dropped'
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    let mouseover_actions = []
+    const mouseover_actions = []
     if (!this.props.renderer.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))

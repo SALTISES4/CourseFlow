@@ -169,7 +169,7 @@ const NotificationsPage = () => {
       notification_id: notification.id
     })
       .then(() => {
-        let updated = [...pageState.notifications]
+        const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
         updated.splice(index, 1)
 

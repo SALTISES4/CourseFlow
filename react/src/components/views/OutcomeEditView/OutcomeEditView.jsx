@@ -83,7 +83,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var selector = this
     let outcomes = data.map((category) => (
       <div className="outcome-category">

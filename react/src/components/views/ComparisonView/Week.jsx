@@ -85,7 +85,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
   makeDroppable() {}
 
   getNodes() {
-    let nodes = this.props.data.nodeweek_set.map((nodeweek) => (
+    const nodes = this.props.data.nodeweek_set.map((nodeweek) => (
       <NodeWeek
         key={nodeweek}
         objectID={nodeweek}
@@ -104,14 +104,14 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
   }
 
   alignAllWeeks() {
-    let rank = this.props.rank + 1
+    const rank = this.props.rank + 1
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
       height: ''
     })
     let max_height = 0
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').each(
       function () {
-        let this_height = $(this).height()
+        const this_height = $(this).height()
         if (this_height > max_height) max_height = this_height
       }
     )

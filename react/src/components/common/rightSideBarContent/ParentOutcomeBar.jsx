@@ -15,7 +15,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var outcomebaroutcomes = data.map((category) => [
       <hr />,
       <div>

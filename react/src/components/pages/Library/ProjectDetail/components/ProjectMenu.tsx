@@ -7,12 +7,6 @@ import {
 } from '@XMLHTTP/PostFunctions'
 // @local
 import { MenuBar } from '@cfCommonComponents/components'
-import LiveProjectOverview from '@cfViews/LiveProjectView/LiveProjectOverview'
-import LiveProjectStudents from '@cfViews/LiveProjectView/LiveProjectStudents'
-import {
-  LiveProjectAssignments,
-  LiveProjectCompletionTable
-} from '@cfViews/LiveProjectView'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import {
   duplicateBaseItemQuery,
@@ -405,45 +399,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
     switch (this.state.view_type) {
       // @todo remove view_type
-      case 'overview':
-        return_val.push(
-          <LiveProjectOverview
-            userRole={this.userRole}
-            role={this.getRole()} // @todo what is differtence between this ad userRole and why is one hardcodcded
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'students':
-        return_val.push(
-          <LiveProjectStudents
-            role={this.getRole()}
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'assignments':
-        return_val.push(
-          <LiveProjectAssignments
-            // renderer={this.renderer} @todo i don't think live projects gets kept, if so address renderer
-            role={this.getRole()}
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'completion_table':
-        return_val.push(
-          <LiveProjectCompletionTable
-            // renderer={this.renderer} @todo i don't think live projects gets kept, if so address renderer
-            role={this.getRole()}
-            objectID={this.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
       default:
         return_val.push(
           <WorkflowFilter

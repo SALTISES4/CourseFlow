@@ -38,9 +38,6 @@ const cache = createCache({
 // @WORKFLOW
 import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
-// @LIVE
-import LiveAssignment from '@cfModule/components/pages/Live/LiveAssignment'
-import LiveProject from '@cfModule/components/pages/Live/LiveProject'
 // @LIBRARY
 import Project from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
@@ -118,14 +115,6 @@ const getAppComponent = () => {
       return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':
       return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
-
-    /*******************************************************
-     * LIVE
-     *******************************************************/
-    case 'assignmentDetail':
-      return <LiveAssignment {...COURSEFLOW_APP.contextData} />
-    case 'myLiveProjects':
-      return <LiveProject {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
      * REDUX

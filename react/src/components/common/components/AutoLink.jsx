@@ -96,10 +96,10 @@ class AutoLink extends React.Component {
       height: this.target_node.outerHeight()
     }
 
-    let node_selected =
+    const node_selected =
       this.source_node.attr('data-selected') === 'true' ||
       this.target_node.attr('data-selected') === 'true'
-    let node_hovered =
+    const node_hovered =
       this.source_node.attr('data-hovered') === 'true' ||
       this.target_node.attr('data-hovered') === 'true'
 

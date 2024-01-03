@@ -55,7 +55,7 @@ class RightSideBar extends React.Component {
 
   getOutcomeBar() {
     if (this.props.context == 'comparison') return null
-    let renderer = this.props.renderer
+    const renderer = this.props.renderer
     if (renderer.view_type == 'outcomeedit')
       return <ParentOutcomeBar renderer={renderer} />
     else return <OutcomeBar renderer={renderer} />
@@ -84,7 +84,7 @@ class RightSideBar extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let renderer = this.props.renderer
+    const renderer = this.props.renderer
     return (
       <div id="sidebar" className="side-bar hide-print">
         <ul>

@@ -23,9 +23,9 @@ class ComparisonView extends React.Component {
     this.objectType = 'workflow'
     this.allowed_tabs = [0, 3]
 
-    let querystring = window.location.search
-    let url_params = new URLSearchParams(querystring)
-    let workflows_added = url_params
+    const querystring = window.location.search
+    const url_params = new URLSearchParams(querystring)
+    const workflows_added = url_params
       .getAll('workflows')
       .map((workflow_id) => parseInt(workflow_id))
 
@@ -57,7 +57,7 @@ class ComparisonView extends React.Component {
    * FUNCTIONS
    *******************************************************/
   getHeader() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <div className="project-header">
         <div>{gettext('Comparing workflows for:')}</div>
@@ -93,11 +93,11 @@ class ComparisonView extends React.Component {
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
     this.props.renderer.selection_manager.changeSelection(null, null)
-    let disabled_tabs = []
+    const disabled_tabs = []
     for (let i = 0; i < 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
     $('#sidebar').tabs({ disabled: false })
-    let current_tab = $('#sidebar').tabs('option', 'active')
+    const current_tab = $('#sidebar').tabs('option', 'active')
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
       if (this.allowed_tabs.length == 0) $('#sidebar').tabs({ active: false })
       else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
@@ -115,7 +115,7 @@ class ComparisonView extends React.Component {
   openEdit() {}
 
   loadWorkflow() {
-    let renderer = this.props.renderer
+    const renderer = this.props.renderer
     renderer.tiny_loader.startLoad()
     getWorkflowSelectMenu(
       this.props.data.id,
@@ -124,7 +124,7 @@ class ComparisonView extends React.Component {
       true,
       (response_data) => {
         if (response_data.workflowID != null) {
-          let workflows = this.state.workflows.slice()
+          const workflows = this.state.workflows.slice()
           workflows.push(response_data.workflowID)
           this.setState({ workflows: workflows })
         }
@@ -136,13 +136,13 @@ class ComparisonView extends React.Component {
   }
 
   removeWorkflow(workflow_id) {
-    let workflows = this.state.workflows.slice()
+    const workflows = this.state.workflows.slice()
     workflows.splice(workflows.indexOf(workflow_id), 1)
     this.setState({ workflows: workflows })
   }
 
   toggleObjectSet(id) {
-    let object_sets = this.state.object_sets.slice()
+    const object_sets = this.state.object_sets.slice()
     let hidden
     for (let i = 0; i < object_sets.length; i++) {
       if (object_sets[i].id === id) {
@@ -159,8 +159,8 @@ class ComparisonView extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let renderer = this.props.renderer
+    const data = this.props.data
+    const renderer = this.props.renderer
 
     let share
     if (!this.props.renderer.read_only)
@@ -180,7 +180,7 @@ class ComparisonView extends React.Component {
         </div>
       )
 
-    let view_buttons = [
+    const view_buttons = [
       {
         type: 'workflowview',
         name: window.gettext('Workflow View'),
@@ -207,9 +207,9 @@ class ComparisonView extends React.Component {
         )
       })
 
-    let view_buttons_sorted = view_buttons
+    const view_buttons_sorted = view_buttons
 
-    let workflow_content = this.state.workflows.map((workflowID) => (
+    const workflow_content = this.state.workflows.map((workflowID) => (
       <WorkflowComparisonRendererComponent
         removeFunction={this.removeWorkflow.bind(this, workflowID)}
         view_type={renderer.view_type}
@@ -220,7 +220,7 @@ class ComparisonView extends React.Component {
         object_sets={this.state.object_sets}
       />
     ))
-    let add_button = (
+    const add_button = (
       <div>
         <button
           id="load-workflow"
@@ -235,7 +235,7 @@ class ComparisonView extends React.Component {
       </div>
     )
 
-    let style = {}
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
@@ -283,11 +283,11 @@ class WorkflowComparisonRendererComponent extends Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    let loader = new Utility.Loader('body')
+    const loader = new Utility.Loader('body')
 
-    let querystring = window.location.search
-    let url_params = new URLSearchParams(querystring)
-    let workflows_added = url_params
+    const querystring = window.location.search
+    const url_params = new URLSearchParams(querystring)
+    const workflows_added = url_params
       .getAll('workflows')
       .map((workflow_id) => parseInt(workflow_id))
     if (workflows_added.indexOf(this.props.workflowID) < 0) {
@@ -295,7 +295,7 @@ class WorkflowComparisonRendererComponent extends Component {
 
       // @todo
       if (history.pushState) {
-        let newurl =
+        const newurl =
           window.location.protocol +
           '//' +
           window.location.host +
@@ -307,7 +307,7 @@ class WorkflowComparisonRendererComponent extends Component {
     }
 
     getWorkflowContext(this.props.workflowID, (context_response_data) => {
-      let context_data = context_response_data.data_package
+      const context_data = context_response_data.data_package
 
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
@@ -333,16 +333,16 @@ class WorkflowComparisonRendererComponent extends Component {
   }
 
   componentWillUnmount() {
-    let querystring = window.location.search
-    let url_params = new URLSearchParams(querystring)
-    let workflows_added = url_params
+    const querystring = window.location.search
+    const url_params = new URLSearchParams(querystring)
+    const workflows_added = url_params
       .getAll('workflows')
       .map((workflow_id) => parseInt(workflow_id))
     if (workflows_added.indexOf(this.props.workflowID) >= 0) {
       workflows_added.splice(workflows_added.indexOf(this.props.workflowID), 1)
       url_params.set('workflows', workflows_added)
       if (history.pushState) {
-        let newurl =
+        const newurl =
           window.location.protocol +
           '//' +
           window.location.host +

@@ -55,7 +55,7 @@ class WorkflowLegendUnconnected extends React.Component {
   render() {
     if (!this.state.show_legend) return this.getSlider()
 
-    let contexts = this.props.contexts.map((value) => (
+    const contexts = this.props.contexts.map((value) => (
       <LegendLine
         icon={Constants.context_keys[value]}
         text={
@@ -64,7 +64,7 @@ class WorkflowLegendUnconnected extends React.Component {
         }
       />
     ))
-    let tasks = this.props.tasks.map((value) => (
+    const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
         text={
@@ -72,7 +72,7 @@ class WorkflowLegendUnconnected extends React.Component {
         }
       />
     ))
-    let strategies = this.props.strategies.map((value) => (
+    const strategies = this.props.strategies.map((value) => (
       <LegendLine
         icon={Constants.strategy_keys[value]}
         text={
@@ -119,7 +119,7 @@ const mapStateToProps = (state) => {
   let contexts = []
   let tasks = []
   let strategies = []
-  let uniqueTest = function (value, index, self) {
+  const uniqueTest = function (value, index, self) {
     return self.indexOf(value) === index
   }
   contexts = state.node

@@ -6,7 +6,6 @@ import {
   deleteSelfQuery,
   updateValueInstant
 } from '@XMLHTTP/PostFunctions'
-import { LiveProjectSettings } from '@cfViews/LiveProjectView'
 
 /*
 The menu for editing a project.
@@ -143,22 +142,22 @@ class ProjectEditDialog extends React.Component {
     return actions
   }
 
-  getLiveProjectSettings() {
-    if (this.props.user_role === Constants.role_keys.teacher) {
-      return (
-        <div>
-          <LiveProjectSettings
-            // renderer={this.props.renderer}
-            role={'teacher'}
-            objectID={this.state.id}
-            view_type={'settings'}
-            updateLiveProject={this.props.actionFunction}
-          />
-        </div>
-      )
-    }
-    return null
-  }
+  // getLiveProjectSettings() {
+  //   if (this.props.user_role === Constants.role_keys.teacher) {
+  //     return (
+  //       <div>
+  //         <LiveProjectSettings
+  //           // renderer={this.props.renderer}
+  //           role={'teacher'}
+  //           objectID={this.state.id}
+  //           view_type={'settings'}
+  //           updateLiveProject={this.props.actionFunction}
+  //         />
+  //       </div>
+  //     )
+  //   }
+  //   return null
+  // }
 
   autocompleteDiscipline() {
     const choices = this.state.all_disciplines
@@ -316,7 +315,7 @@ class ProjectEditDialog extends React.Component {
           </div>
         </div>
 
-        {this.getLiveProjectSettings()}
+        {/*{this.getLiveProjectSettings()}*/}
 
         <div className="action-bar">{this.getActions()}</div>
         <div className="window-close-button" onClick={this.close}>

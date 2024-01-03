@@ -19,9 +19,9 @@ class MenuSection extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let section_type = this.props.section_data.object_type
-    let is_strategy = this.props.section_data.is_strategy
-    let parentID = this.props.parentID
+    const section_type = this.props.section_data.object_type
+    const is_strategy = this.props.section_data.is_strategy
+    const parentID = this.props.parentID
     let add_button
 
     let objects = this.props.section_data.objects.map((object) => (
@@ -68,7 +68,7 @@ class MenuSection extends React.Component {
                 false,
                 (response_data) => {
                   if (response_data.workflowID != null) {
-                    let loader = new Utility.Loader('body')
+                    const loader = new Utility.Loader('body')
                     duplicateBaseItem(
                       response_data.workflowID,
                       section_type,

@@ -13,7 +13,7 @@ export class ConnectionBar extends React.Component {
     // this.myColour = props.renderer.myColour
     this.myColour = COURSEFLOW_APP.contextData.user_name
 
-    let connection_bar = this
+    const connection_bar = this
 
     props.renderer.connection_update_received = (user_data) => {
       connection_bar.connection_update_received(user_data)
@@ -22,7 +22,7 @@ export class ConnectionBar extends React.Component {
 
   render() {
     if (this.props.updateSocket.readyState === 1) {
-      let users = this.state.connected_users.map((user) => {
+      const users = this.state.connected_users.map((user) => {
         return <ConnectedUser user_data={user} />
       })
 
@@ -45,8 +45,8 @@ export class ConnectionBar extends React.Component {
   }
 
   componentDidUpdate() {
-    let element = document.querySelector('.users-box')
-    let hasClass = element && element.classList.contains('connection-failed')
+    const element = document.querySelector('.users-box')
+    const hasClass = element && element.classList.contains('connection-failed')
     if (hasClass) {
       this.connection_update()
     }
@@ -79,7 +79,7 @@ export class ConnectionBar extends React.Component {
 
   connection_update_received(user_data) {
     if (user_data.connected) {
-      let connected_users = this.state.connected_users.slice()
+      const connected_users = this.state.connected_users.slice()
       let found_user = false
       for (let i = 0; i < connected_users.length; i++) {
         if (connected_users[i].user_id === user_data.user_id) {
@@ -110,7 +110,7 @@ export class ConnectionBar extends React.Component {
   }
 
   removeConnection(user_data) {
-    let connected_users = this.state.connected_users.slice()
+    const connected_users = this.state.connected_users.slice()
     for (let i = 0; i < connected_users.length; i++) {
       if (connected_users[i].user_id === user_data.user_id) {
         if (connected_users[i].timeout) clearTimeout(connected_users[i].timeout)
@@ -124,7 +124,7 @@ export class ConnectionBar extends React.Component {
 
 export class ConnectedUser extends React.Component {
   render() {
-    let data = this.props.user_data
+    const data = this.props.user_data
     console.log('this.props.user_data')
     console.log(this)
     return (

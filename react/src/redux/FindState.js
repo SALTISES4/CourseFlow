@@ -61,7 +61,7 @@ export const getTermByID = (state, id) => {
         week.is_dropped = getDropped(id, 'week')
       }
       var nodeweeks = week.nodeweek_set
-      let column_order = Utility.filterThenSortByID(
+      const column_order = Utility.filterThenSortByID(
         state.columnworkflow,
         state.workflow.columnworkflow_set
       ).map((columnworkflow) => columnworkflow.column)
@@ -70,8 +70,8 @@ export const getTermByID = (state, id) => {
         nodes_by_column[column_order[j]] = []
       }
       for (var j = 0; j < nodeweeks.length; j++) {
-        let node_week = getNodeWeekByID(state, nodeweeks[j]).data
-        let node = getNodeByID(state, node_week.node).data
+        const node_week = getNodeWeekByID(state, nodeweeks[j]).data
+        const node = getNodeByID(state, node_week.node).data
         if (node.column) nodes_by_column[node.column].push(nodeweeks[j])
         else nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j])
       }
@@ -134,7 +134,7 @@ export const getNodeWeekByID = (state, id) => {
   for (var i in state.nodeweek) {
     var nodeweek = state.nodeweek[i]
     if (nodeweek.id == id) {
-      let node = getNodeByID(state, nodeweek.node).data
+      const node = getNodeByID(state, nodeweek.node).data
       return {
         data: nodeweek,
         order: getWeekByID(state, nodeweek.week).nodeweek_set,
@@ -181,7 +181,7 @@ function findTopRank(state, outcome) {
         )
       }
       for (let k = 0; k < state.child_workflow.length; k++) {
-        let index = state.child_workflow[k].outcomeworkflow_set.indexOf(
+        const index = state.child_workflow[k].outcomeworkflow_set.indexOf(
           state.outcomeworkflow[j].id
         )
         if (index >= 0) {
@@ -189,7 +189,7 @@ function findTopRank(state, outcome) {
         }
       }
       for (let k = 0; k < state.parent_workflow.length; k++) {
-        let index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
+        const index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
           state.outcomeworkflow[j].id
         )
         if (index >= 0) {
@@ -201,7 +201,7 @@ function findTopRank(state, outcome) {
 }
 
 export const getOutcomeByID = (state, id) => {
-  let state_section = state.outcome
+  const state_section = state.outcome
   for (var i in state_section) {
     var outcome = state_section[i]
 
@@ -214,8 +214,8 @@ export const getOutcomeByID = (state, id) => {
       let titles = []
       let top_rank
       if (outcome.depth > 0) {
-        let state_outcomeoutcome_section = state.outcomeoutcome
-        let root_info = findRootOutcome(
+        const state_outcomeoutcome_section = state.outcomeoutcome
+        const root_info = findRootOutcome(
           outcome.id,
           [],
           state_outcomeoutcome_section
@@ -247,10 +247,10 @@ export const getOutcomeByID = (state, id) => {
       if (!top_rank) top_rank = findTopRank(state, root_outcome)
       titles.push(outcome.title)
       rank.unshift(top_rank)
-      let hovertext = rank
+      const hovertext = rank
         .map((rank_i, i) => rank_i + '. ' + titles[i])
         .join(' -> ')
-      let prefix = rank.join('.')
+      const prefix = rank.join('.')
       return {
         data: outcome,
         hovertext: hovertext,
@@ -273,7 +273,7 @@ export const getChildWorkflowByID = (state, id) => {
 }
 
 export const getOutcomeOutcomeByID = (state, id) => {
-  let state_section = state.outcomeoutcome
+  const state_section = state.outcomeoutcome
   for (var i in state_section) {
     var outcomeoutcome = state_section[i]
     if (outcomeoutcome.id == id) return { data: outcomeoutcome }
@@ -309,26 +309,26 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state,
   outcomeworkflow_set
 ) => {
-  let outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
     outcomeworkflow_set
   )
-  let outcome_ids = outcomeworkflows.map(
+  const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
-  let outcomes = Utility.filterThenSortByID(state.outcome, outcome_ids)
+  const outcomes = Utility.filterThenSortByID(state.outcome, outcome_ids)
   for (var i = 0; i < outcomes.length; i++) {
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
   if (outcomes.length == 0) return outcomes
-  let base_title = Utility.capWords(window.gettext('outcomes'))
-  let object_sets = state.objectset.filter(
+  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const object_sets = state.objectset.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
   if (object_sets.length == 0)
     return [{ objectset: { title: base_title }, outcomes: outcomes }]
-  let uncategorized = outcomes.filter((outcome) => outcome.sets.length == 0)
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length == 0)
   let categories = []
   if (uncategorized.length > 0)
     categories = [
@@ -356,22 +356,22 @@ export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
   for (let i = 0; i < nodes.length; i++) {
     outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set)
   }
-  let outcomenodes = Utility.filterThenSortByID(
+  const outcomenodes = Utility.filterThenSortByID(
     state.outcomenode,
     outcomenode_ids
   )
-  let outcomes = Utility.filterThenSortByID(
+  const outcomes = Utility.filterThenSortByID(
     state.outcome,
     outcomenodes.map((outcomenode) => outcomenode.outcome)
   ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
   if (outcomes.length == 0) return outcomes
-  let base_title = Utility.capWords(window.gettext('outcomes'))
-  let object_sets = state.objectset.filter(
+  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const object_sets = state.objectset.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
   if (object_sets.length == 0)
     return [{ objectset: { title: base_title }, outcomes: outcomes }]
-  let categories = [
+  const categories = [
     {
       objectset: { title: window.gettext('Uncategorized') },
       outcomes: outcomes.filter((outcome) => outcome.sets.length == 0)
@@ -392,13 +392,13 @@ export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
  * HELPER
  *******************************************************/
 const getDropped = (objectID, objectType, depth = 1) => {
-  let default_drop = Constants.get_default_drop_state(
+  const default_drop = Constants.get_default_drop_state(
     objectID,
     objectType,
     depth
   )
   try {
-    let stored_drop = JSON.parse(
+    const stored_drop = JSON.parse(
       window.localStorage.getItem(objectType + objectID)
     )
     if (stored_drop === null) return default_drop
@@ -426,21 +426,21 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   outcomeworkflow_set,
   object_sets_unfiltered
 ) => {
-  let outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortByID(
     outcomeworkflows_unsorted,
     outcomeworkflow_set
   )
-  let outcome_ids = outcomeworkflows.map(
+  const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
-  let outcomes = Utility.filterThenSortByID(outcomes_unsorted, outcome_ids)
+  const outcomes = Utility.filterThenSortByID(outcomes_unsorted, outcome_ids)
   for (var i = 0; i < outcomes.length; i++) {
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
   if (outcomes.length == 0) return outcomes.map((outcome) => outcome.id)
-  let base_title = Utility.capWords(window.gettext('outcomes'))
-  let object_sets = object_sets_unfiltered.filter(
+  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const object_sets = object_sets_unfiltered.filter(
     (objectset) => objectset.term == outcomes[0].type
   )
   if (object_sets.length == 0)
@@ -450,7 +450,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
         outcomes: outcomes.map((outcome) => outcome.id)
       }
     ]
-  let uncategorized = outcomes
+  const uncategorized = outcomes
     .filter((outcome) => outcome.sets.length == 0)
     .map((outcome) => outcome.id)
   let categories = []
@@ -478,7 +478,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
 //Used in the Alignment View
 export const getDescendantOutcomes = (state, outcome, outcomes) => {
   if (outcome.depth >= 2) return
-  let children = outcome.child_outcome_links
+  const children = outcome.child_outcome_links
     .map((id) => getOutcomeOutcomeByID(state, id))
     .map(
       (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data

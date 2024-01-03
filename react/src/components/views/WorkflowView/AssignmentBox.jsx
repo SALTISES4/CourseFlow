@@ -1,11 +1,14 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { getAssignmentsForNode } from '@XMLHTTP/PostFunctions'
+import {
+  createAssignmentQuery,
+  getAssignmentsForNode
+} from '@XMLHTTP/PostFunctions'
 import { reloadAssignmentsAction } from '@cfReducers'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
-import { AssignmentView } from '../LiveAssignmentView'
+// import { AssignmentView } from '../LiveAssignmentView'
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 
 /**
@@ -16,8 +19,8 @@ class AssignmentForNode extends AssignmentView {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let node_data = data.task
+    const data = this.props.data
+    const node_data = data.task
     let data_override
     if (node_data.represents_workflow)
       data_override = {
@@ -26,7 +29,7 @@ class AssignmentForNode extends AssignmentView {
         id: data.id
       }
     else data_override = { ...node_data }
-    let css_class = 'assignment-in-node'
+    const css_class = 'assignment-in-node'
     let completion_data
     if (data.user_assignment) {
       let disabled = true
@@ -34,7 +37,7 @@ class AssignmentForNode extends AssignmentView {
         this.props.renderer.user_role == Constants.role_keys.teacher ||
         (data.self_reporting &&
           //check AssignmentView for user defined in global scope
-          data.user_assignment.liveprojectuser.user.id == user_id)
+          data.user_assignment.liveprojectuser.user.id === user_id)
       )
         disabled = false
       let extra_data
@@ -132,8 +135,8 @@ class AssignmentBox extends React.Component {
    * FUNCTIONS
    *******************************************************/
   reloadAssignments() {
-    let node_id = this.props.node_id
-    let props = this.props
+    const node_id = this.props.node_id
+    const props = this.props
     props.renderer.tiny_loader.startLoad()
     getAssignmentsForNode(node_id, (response_data) => {
       props.renderer.tiny_loader.endLoad()
@@ -155,7 +158,7 @@ class AssignmentBox extends React.Component {
   }
 
   createAssignment() {
-    let props = this.props
+    const props = this.props
     props.renderer.tiny_loader.startLoad()
     createAssignmentQuery(
       props.node_id,
@@ -190,7 +193,7 @@ class AssignmentBox extends React.Component {
       return assignment_indicator
     }
 
-    let top_contents = []
+    const top_contents = []
     top_contents.push(
       <div
         className="close-button hover-shade"
@@ -215,7 +218,7 @@ class AssignmentBox extends React.Component {
       top_contents.push(<div>{window.gettext('Not yet assigned')}</div>)
     }
 
-    let my_assignments = this.state.my_assignments.map((assignment) => (
+    const my_assignments = this.state.my_assignments.map((assignment) => (
       <AssignmentForNode data={assignment} renderer={this.props.renderer} />
     ))
     if (my_assignments.length > 0)

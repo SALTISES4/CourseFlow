@@ -112,7 +112,7 @@ class Workflow {
   connect() {
     if (!this.always_static) {
       this.messages_queued = true
-      let renderer = this
+      const renderer = this
 
       let websocket_prefix
       if (window.location.protocol === 'https:') {
@@ -135,7 +135,7 @@ class Workflow {
         this.message_received(e)
       }.bind(this)
 
-      let openfunction = function () {
+      const openfunction = function () {
         this.has_rendered = true
         this.connection_opened()
       }
@@ -183,8 +183,8 @@ class Workflow {
 
     this.view_type = view_type
     reactDom.render(<WorkflowLoader />, container[0])
-    let store = this.store
-    let initial_workflow_data = store.getState()
+    const store = this.store
+    const initial_workflow_data = store.getState()
     var renderer = this
     this.container = container
     this.locks = {}
@@ -207,7 +207,7 @@ class Workflow {
       view_type === 'alignmentanalysis'
     ) {
       // get additional data about child workflows to render in later
-      let node_ids = [
+      const node_ids = [
         ...new Set(
           initial_workflow_data.node
             .filter((x) => !x.deleted && x.linked_workflow)
@@ -275,7 +275,7 @@ class Workflow {
 
   connection_opened(reconnect = false) {
     this.getWorkflowData(this.workflowID, (response) => {
-      let data_flat = response.data_package
+      const data_flat = response.data_package
       this.unread_comments = data_flat.unread_comments
       this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
       this.render($('#container'))
@@ -289,7 +289,7 @@ class Workflow {
   }
 
   attempt_reconnect() {
-    let renderer = this
+    const renderer = this
     setTimeout(() => {
       renderer.connect()
     }, 30000)
@@ -298,7 +298,7 @@ class Workflow {
   clear_queue(edit_count) {
     let started_edits = false
     while (this.message_queue.length > 0) {
-      let message = this.message_queue[0]
+      const message = this.message_queue[0]
       if (started_edits) {
         this.parsemessage(message)
       } else if (
@@ -343,7 +343,7 @@ class Workflow {
 
   parent_workflow_updated(edit_count) {
     this.messages_queued = true
-    let renderer = this
+    const renderer = this
     this.getWorkflowParentData(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       renderer.store.dispatch(
@@ -359,9 +359,9 @@ class Workflow {
 
   child_workflow_updated(edit_count, child_workflow_id) {
     this.messages_queued = true
-    let renderer = this
-    let state = this.store.getState()
-    let node = state.node.find(
+    const renderer = this
+    const state = this.store.getState()
+    const node = state.node.find(
       (node) => node.linked_workflow == child_workflow_id
     )
 
@@ -395,7 +395,7 @@ class Workflow {
   }
 
   change_field(id, object_type, field, value) {
-    let json = {}
+    const json = {}
     json[field] = value
     this.store.dispatch(Reducers.changeField(id, object_type, json))
     updateValue(id, object_type, json, true)
@@ -419,9 +419,9 @@ class Workflow {
   }
 
   lock_update_received(data) {
-    let store = this.store
-    let object_type = data.object_type
-    let object_id = data.object_id
+    const store = this.store
+    const object_type = data.object_type
+    const object_id = data.object_id
 
     if (!this.locks[object_type]) {
       this.locks[object_type] = {}

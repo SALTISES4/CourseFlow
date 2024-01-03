@@ -12,8 +12,8 @@ export default class extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.outcomenode
-    let props = this.props
+    const data = this.props.outcomenode
+    const props = this.props
     return (
       <div className="alignment-row">
         <OutcomeNode

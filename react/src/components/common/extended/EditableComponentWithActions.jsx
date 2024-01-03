@@ -14,7 +14,7 @@ import EditableComponentWithComments from './EditableComponentWithComments'
 class EditableComponentWithActions extends EditableComponentWithComments {
   //Adds a button that restores the item.
   addRestoreSelf(data, alt_icon) {
-    let icon = alt_icon || 'restore.svg'
+    const icon = alt_icon || 'restore.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -39,7 +39,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
 
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
   addDeleteSelf(data, alt_icon) {
-    let icon = alt_icon || 'rubbish.svg'
+    const icon = alt_icon || 'rubbish.svg'
     return (
       <ActionButton
         buttonIcon={icon}

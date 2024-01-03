@@ -34,13 +34,13 @@ class Term extends WeekUnconnected {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var node_blocks = []
     for (var i = 0; i < this.props.column_order.length; i++) {
-      let col = this.props.column_order[i]
-      let nodeweeks = []
+      const col = this.props.column_order[i]
+      const nodeweeks = []
       for (var j = 0; j < data.nodeweek_set.length; j++) {
-        let nodeweek = data.nodeweek_set[j]
+        const nodeweek = data.nodeweek_set[j]
         if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
             <NodeWeek
@@ -76,7 +76,7 @@ class Term extends WeekUnconnected {
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
     if (data.is_dropped) css_class += ' dropped'
 
-    let style = {}
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
@@ -84,7 +84,7 @@ class Term extends WeekUnconnected {
     if (data.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    let mouseover_actions = []
+    const mouseover_actions = []
     if (!this.props.renderer.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))

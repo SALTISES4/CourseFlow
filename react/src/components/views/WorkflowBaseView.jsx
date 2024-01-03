@@ -15,7 +15,7 @@ import {
   getPublicParentWorkflowInfo,
   restoreSelfQuery,
   deleteSelfQuery,
-  toggleDrop,
+  toggleDrop
 } from '@XMLHTTP/PostFunctions'
 import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
 
@@ -26,7 +26,10 @@ import { CompetencyMatrixView } from './CompetencyMatrixView'
 import { OutcomeTableView } from './OutcomeTableView'
 import { GridView } from './GridView'
 import closeMessageBox from '../common/menu/components/closeMessageBox'
-import {duplicateBaseItemQuery, getUsersForObjectQuery} from '@XMLHTTP/APIFunctions'
+import {
+  duplicateBaseItemQuery,
+  getUsersForObjectQuery
+} from '@XMLHTTP/APIFunctions'
 
 /**
  * The base component of our workflow view. This renders the menu bar

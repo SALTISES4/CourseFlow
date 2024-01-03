@@ -309,7 +309,7 @@ export function workflowReducer(state = {}, action) {
       )
       new_state.weekworkflow_set = new_weekworkflow_set
       if (action.payload.columnworkflows_added.length > 0) {
-        let new_columnworkflow_set = state.columnworkflow_set.slice()
+        const new_columnworkflow_set = state.columnworkflow_set.slice()
         new_columnworkflow_set.push(
           ...action.payload.columnworkflows_added.map(
             (columnworkflow) => columnworkflow.id
@@ -377,7 +377,7 @@ export function outcomeworkflowReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.outcomeworkflow) {
         for (var i = 0; i < action.payload.outcomeworkflow.length; i++) {
-          let new_obj = action.payload.outcomeworkflow[i]
+          const new_obj = action.payload.outcomeworkflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -443,7 +443,7 @@ export function columnworkflowReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.columnworkflow) {
         for (var i = 0; i < action.payload.columnworkflow.length; i++) {
-          let new_obj = action.payload.columnworkflow[i]
+          const new_obj = action.payload.columnworkflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -517,7 +517,7 @@ export function columnReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.column) {
         for (var i = 0; i < action.payload.column.length; i++) {
-          let new_obj = action.payload.collumn[i]
+          const new_obj = action.payload.collumn[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -600,7 +600,7 @@ export function columnReducer(state = [], action) {
     case 'column/reloadComments':
       var new_state = state.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let obj = new_state[i]
+        const obj = new_state[i]
         if (obj.id == action.payload.id) {
           new_state[i] = { ...obj, comments: action.payload.comment_data }
           return new_state
@@ -621,7 +621,7 @@ export function weekworkflowReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.weekworkflow) {
         for (var i = 0; i < action.payload.weekworkflow.length; i++) {
-          let new_obj = action.payload.weekworkflow[i]
+          const new_obj = action.payload.weekworkflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -686,7 +686,7 @@ export function weekReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.week) {
         for (var i = 0; i < action.payload.week.length; i++) {
-          let new_obj = action.payload.week[i]
+          const new_obj = action.payload.week[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -712,7 +712,7 @@ export function weekReducer(state = [], action) {
     case 'nodeweek/changeID':
       var new_state = state.slice()
       for (var i = 0; i < state.length; i++) {
-        let old_index = state[i].nodeweek_set.indexOf(action.payload.old_id)
+        const old_index = state[i].nodeweek_set.indexOf(action.payload.old_id)
         if (old_index >= 0) {
           new_state[i] = { ...new_state[i] }
           new_state[i].nodeweek_set = new_state[i].nodeweek_set.slice()
@@ -873,7 +873,7 @@ export function weekReducer(state = [], action) {
     case 'week/reloadComments':
       var new_state = state.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let obj = new_state[i]
+        const obj = new_state[i]
         if (obj.id == action.payload.id) {
           new_state[i] = { ...obj, comments: action.payload.comment_data }
           return new_state
@@ -894,7 +894,7 @@ export function nodeweekReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.nodeweek) {
         for (var i = 0; i < action.payload.nodeweek.length; i++) {
-          let new_obj = action.payload.nodeweek[i]
+          const new_obj = action.payload.nodeweek[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -972,7 +972,7 @@ export function nodeReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.node) {
         for (var i = 0; i < action.payload.node.length; i++) {
-          let new_obj = action.payload.node[i]
+          const new_obj = action.payload.node[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1165,7 +1165,7 @@ export function nodeReducer(state = [], action) {
     case 'outcome_base/restoreSelf':
       new_state = state.slice()
       for (var i = 0; i < action.payload.extra_data.length; i++) {
-        let new_node_data = action.payload.extra_data[i]
+        const new_node_data = action.payload.extra_data[i]
         for (var j = 0; j < new_state.length; j++) {
           if (new_node_data.id == new_state[j].id) {
             new_state[j] = { ...new_state[j], ...new_node_data }
@@ -1176,7 +1176,7 @@ export function nodeReducer(state = [], action) {
     case 'node/reloadComments':
       var new_state = state.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let obj = new_state[i]
+        const obj = new_state[i]
         if (obj.id == action.payload.id) {
           new_state[i] = { ...obj, comments: action.payload.comment_data }
           return new_state
@@ -1186,7 +1186,7 @@ export function nodeReducer(state = [], action) {
     case 'node/reloadAssignments':
       var new_state = state.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let obj = new_state[i]
+        const obj = new_state[i]
         if (obj.id == action.payload.id) {
           new_state[i] = {
             ...obj,
@@ -1227,7 +1227,7 @@ export function nodelinkReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.nodelink) {
         for (var i = 0; i < action.payload.nodelink.length; i++) {
-          let new_obj = action.payload.nodelink[i]
+          const new_obj = action.payload.nodelink[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1324,7 +1324,7 @@ export function outcomeReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.outcome) {
         for (var i = 0; i < action.payload.outcome.length; i++) {
-          let new_obj = action.payload.outcome[i]
+          const new_obj = action.payload.outcome[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1350,7 +1350,7 @@ export function outcomeReducer(state = [], action) {
     case 'outcomeoutcome/changeID':
       var new_state = state.slice()
       for (var i = 0; i < state.length; i++) {
-        let old_index = state[i].child_outcome_links.indexOf(
+        const old_index = state[i].child_outcome_links.indexOf(
           action.payload.old_id
         )
         if (old_index >= 0) {
@@ -1559,7 +1559,7 @@ export function outcomeReducer(state = [], action) {
     case 'outcome/updateHorizontalLinks':
       var new_state = state.slice()
       for (var i = 0; i < action.payload.data.length; i++) {
-        let new_outcome_data = action.payload.data[i]
+        const new_outcome_data = action.payload.data[i]
         for (var j = 0; j < new_state.length; j++) {
           if (new_outcome_data.id == new_state[j].id) {
             new_state[j] = { ...new_state[j], ...new_outcome_data }
@@ -1571,7 +1571,7 @@ export function outcomeReducer(state = [], action) {
     case 'outcome_base/reloadComments':
       var new_state = state.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let obj = new_state[i]
+        const obj = new_state[i]
         if (obj.id == action.payload.id) {
           new_state[i] = { ...obj, comments: action.payload.comment_data }
           return new_state
@@ -1591,7 +1591,7 @@ export function outcomeOutcomeReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.outcomeoutcome) {
         for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
-          let new_obj = action.payload.outcomeoutcome[i]
+          const new_obj = action.payload.outcomeoutcome[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1678,7 +1678,7 @@ export function outcomeNodeReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.outcomenode) {
         for (var i = 0; i < action.payload.outcomenode.length; i++) {
-          let new_obj = action.payload.outcomenode[i]
+          const new_obj = action.payload.outcomenode[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1696,13 +1696,13 @@ export function outcomeNodeReducer(state = [], action) {
       //Returns -1 if the outcome had already been added to the node
       if (action.payload.outcomenode == -1) return state
       var new_state = state.slice()
-      let new_outcomenode_outcomes = action.payload.data_package.map(
+      const new_outcomenode_outcomes = action.payload.data_package.map(
         (outcomenode) =>
           Utility.cantorPairing(outcomenode.node, outcomenode.outcome)
       )
-      let data_package_copy = action.payload.data_package.slice()
+      const data_package_copy = action.payload.data_package.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let new_outcomenode_index = new_outcomenode_outcomes.indexOf(
+        const new_outcomenode_index = new_outcomenode_outcomes.indexOf(
           Utility.cantorPairing(new_state[i].node, new_state[i].outcome)
         )
         if (new_outcomenode_index >= 0) {
@@ -1751,7 +1751,7 @@ export function outcomeHorizontalLinkReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.outcomehorizontallink) {
         for (var i = 0; i < action.payload.outcomehorizontallink.length; i++) {
-          let new_obj = action.payload.outcomehorizontallink[i]
+          const new_obj = action.payload.outcomehorizontallink[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1769,16 +1769,16 @@ export function outcomeHorizontalLinkReducer(state = [], action) {
       //Returns -1 if the outcome had already been added to the node
       if (action.payload.outcomehorizontallink == -1) return state
       var new_state = state.slice()
-      let new_outcomehorizontallink_outcomes = action.payload.data_package.map(
-        (outcomehorizontallink) =>
+      const new_outcomehorizontallink_outcomes =
+        action.payload.data_package.map((outcomehorizontallink) =>
           Utility.cantorPairing(
             outcomehorizontallink.outcome,
             outcomehorizontallink.parent_outcome
           )
-      )
-      let data_package_copy = action.payload.data_package.slice()
+        )
+      const data_package_copy = action.payload.data_package.slice()
       for (var i = 0; i < new_state.length; i++) {
-        let new_outcomehorizontallink_index =
+        const new_outcomehorizontallink_index =
           new_outcomehorizontallink_outcomes.indexOf(
             Utility.cantorPairing(
               new_state[i].outcome,
@@ -1810,7 +1810,7 @@ export function parentNodeReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.parent_node) {
         for (var i = 0; i < action.payload.parent_node.length; i++) {
-          let new_obj = action.payload.parent_node[i]
+          const new_obj = action.payload.parent_node[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1846,7 +1846,7 @@ export function parentNodeReducer(state = [], action) {
     case 'outcome_base/restoreSelf':
       new_state = state.slice()
       for (var i = 0; i < action.payload.extra_data.length; i++) {
-        let new_node_data = action.payload.extra_data[i]
+        const new_node_data = action.payload.extra_data[i]
         for (var j = 0; j < new_state.length; j++) {
           if (new_node_data.id == new_state[j].id) {
             new_state[j] = { ...new_state[j], ...new_node_data }
@@ -1867,7 +1867,7 @@ export function parentWorkflowReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.parent_workflow) {
         for (var i = 0; i < action.payload.parent_workflow.length; i++) {
-          let new_obj = action.payload.parent_workflow[i]
+          const new_obj = action.payload.parent_workflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1895,7 +1895,7 @@ export function childWorkflowReducer(state = [], action) {
       var new_state = state.slice()
       if (action.payload.child_workflow) {
         for (var i = 0; i < action.payload.child_workflow.length; i++) {
-          let new_obj = action.payload.child_workflow[i]
+          const new_obj = action.payload.child_workflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
@@ -1968,7 +1968,7 @@ export function strategyReducer(state = [], action) {
   switch (action.type) {
     case 'strategy/toggleStrategy':
       if (!action.payload.is_strategy) return state
-      let new_state = state.slice()
+      const new_state = state.slice()
       new_state.push(action.payload.strategy)
       return new_state
     default:

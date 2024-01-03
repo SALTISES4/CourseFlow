@@ -27,11 +27,6 @@ def course_flow_patterns():
         path("logout/", views.logout_view, name="logout"),
         path("mylibrary/", views.mylibrary_view, name="my-library"),
         # path("myprojects/", views.myprojects_view, name="my-projects"),
-        path(
-            "myliveprojects/",
-            views.my_live_projects_view,
-            name="my-live-projects",
-        ),
         # path("mytemplates/", views.mytemplates_view, name="my-templates"),
         # path("myshared/", views.myshared_view, name="my-shared"),
         path("myfavourites/", views.myfavourites_view, name="my-favourites"),
@@ -42,11 +37,11 @@ def course_flow_patterns():
             views.ProjectDetailView.as_view(),
             name="project-update",
         ),
-        path(
-            "liveproject/<int:pk>/",
-            views.LiveProjectDetailView.as_view(),
-            name="live-project-update",
-        ),
+        # path(
+        #     "liveproject/<int:pk>/",
+        #     views.LiveProjectDetailView.as_view(),
+        #     name="live-project-update",
+        # ),
         path(
             "assignment/<int:pk>/",
             views.AssignmentDetailView.as_view(),
@@ -124,11 +119,11 @@ def course_flow_patterns():
             views.get_saltise_download,
             name="get-saltise-download",
         ),
-        path(
-            "liveproject/register/student/<project_hash>/",
-            views.register_as_student,
-            name="register-as-student",
-        ),
+        # path(
+        #     "liveproject/register/student/<project_hash>/",
+        #     views.register_as_student,
+        #     name="register-as-student",
+        # ),
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

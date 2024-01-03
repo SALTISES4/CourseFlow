@@ -12,8 +12,8 @@ export default class extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let titlestr = Utility.capWords(
+    const data = this.props.data
+    const titlestr = Utility.capWords(
       gettext(this.props.workflow_type + ' outcome')
     )
     return (

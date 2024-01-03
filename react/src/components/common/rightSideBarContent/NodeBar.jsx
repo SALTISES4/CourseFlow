@@ -22,7 +22,7 @@ class NodeBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
     var nodebarcolumnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => (
@@ -104,7 +104,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     if (data)
       return (
         <div className="node-bar-column-workflow" ref={this.maindiv}>
@@ -155,8 +155,8 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   makeDraggable() {
-    let draggable_selector = 'node-week'
-    let draggable_type = 'nodeweek'
+    const draggable_selector = 'node-week'
+    const draggable_type = 'nodeweek'
     $(this.maindiv.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
@@ -182,7 +182,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var title
     if (data) title = data.title
     if (!title) title = data.column_type_display
@@ -268,8 +268,8 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   makeDraggable() {
-    let draggable_selector = 'week-workflow'
-    let draggable_type = 'weekworkflow'
+    const draggable_selector = 'week-workflow'
+    const draggable_type = 'weekworkflow'
     $(this.maindiv.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
@@ -294,7 +294,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var title
     if (data) title = data.title
     if (!title) title = 'untitled strategy'

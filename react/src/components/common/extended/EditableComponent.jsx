@@ -27,15 +27,15 @@ class QuillDiv extends React.Component {
   }
 
   componentDidMount() {
-    let renderer = this.props.renderer
-    let quill_container = this.maindiv.current
-    let toolbarOptions = [
+    const renderer = this.props.renderer
+    const quill_container = this.maindiv.current
+    const toolbarOptions = [
       ['bold', 'italic', 'underline'],
       [{ script: 'sub' }, { script: 'super' }],
       [{ list: 'bullet' }, { list: 'ordered' }],
       ['link'] /*,['formula']*/
     ]
-    let quill = new Quill(quill_container, {
+    const quill = new Quill(quill_container, {
       theme: 'snow',
       modules: {
         toolbar: toolbarOptions
@@ -45,14 +45,14 @@ class QuillDiv extends React.Component {
     this.quill = quill
     if (this.props.text) quill.clipboard.dangerouslyPasteHTML(this.props.text)
     quill.on('text-change', () => {
-      let text = quill_container.childNodes[0].innerHTML.replace(
+      const text = quill_container.childNodes[0].innerHTML.replace(
         /\<p\>\<br\>\<\/p\>\<ul\>/g,
         '<ul>'
       )
       this.props.textChangeFunction(text)
       this.setState({ charlength: text.length })
     })
-    let toolbar = quill.getModule('toolbar')
+    const toolbar = quill.getModule('toolbar')
     toolbar.defaultLinkFunction = toolbar.handlers['link']
     toolbar.addHandler('link', function customLinkFunction(value) {
       var select = quill.getSelection()
@@ -83,15 +83,15 @@ class QuillDiv extends React.Component {
 class EditableComponent extends ComponentWithToggleDrop {
   //Makes the item selectable
   addEditable(data, no_delete = false) {
-    let read_only = this.props.renderer.read_only
+    const read_only = this.props.renderer.read_only
     if (this.state.selected) {
       var type = Constants.object_dictionary[this.objectType]
       let title_length = '100'
       if (type == 'outcome') title_length = '500'
       var props = this.props
       let override = false
-      let title = Utility.unescapeCharacters(data.title || '')
-      let description = data.description || ''
+      const title = Utility.unescapeCharacters(data.title || '')
+      const description = data.description || ''
       if (data.represents_workflow) override = true
 
       let sets
@@ -99,13 +99,13 @@ class EditableComponent extends ComponentWithToggleDrop {
         let term_type = data.type
         if (type == 'node') term_type = Constants.node_type_keys[data.node_type]
 
-        let allowed_sets = this.props.object_sets.filter(
+        const allowed_sets = this.props.object_sets.filter(
           (set) => set.term == term_type
         )
         if (allowed_sets.length >= 0) {
           let disable_sets = false
           if (data.depth || read_only) disable_sets = true
-          let set_options = allowed_sets.map((set) => (
+          const set_options = allowed_sets.map((set) => (
             <div>
               <input
                 disabled={disable_sets}
@@ -514,7 +514,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                 disabled={read_only}
                 id="toggle-strategy-editor"
                 onClick={() => {
-                  let loader = new Utility.Loader('body')
+                  const loader = new Utility.Loader('body')
                   toggleStrategy(data.id, data.is_strategy, (response_data) => {
                     loader.endLoad()
                   })
@@ -569,7 +569,7 @@ class EditableComponent extends ComponentWithToggleDrop {
   }
 
   checkboxChanged(field, evt) {
-    let do_change = true
+    const do_change = true
     if (do_change)
       this.props.renderer.change_field(
         this.props.data.id,
@@ -589,9 +589,9 @@ class EditableComponent extends ComponentWithToggleDrop {
   }
 
   get_border_style() {
-    let data = this.props.data
+    const data = this.props.data
     if (!data) return
-    let style = {}
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }

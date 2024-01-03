@@ -17,12 +17,12 @@ export default class ComparisonViewBar extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let sets = (
+    const sets = (
       <div className="node-bar-sort-block">
         {this.props.object_sets
           .sort((a, b) => {
-            let x = a.term
-            let y = b.term
+            const x = a.term
+            const y = b.term
             if (x < y) return -1
             if (x > y) return 1
             return 0

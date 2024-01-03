@@ -17,7 +17,7 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
     return (
       <div className="outcome-outcome" id={data.id} ref={this.maindiv}>

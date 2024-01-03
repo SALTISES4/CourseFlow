@@ -45,7 +45,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * FUNCTIONS
    *******************************************************/
   deleteSelf(data) {
-    let props = this.props
+    const props = this.props
     //Temporary confirmation; add better confirmation dialogue later
     if (
       window.confirm(
@@ -75,7 +75,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * @returns {JSX.Element}
    */
   addDeleteSelf(data) {
-    let icon = 'close.svg'
+    const icon = 'close.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -93,9 +93,9 @@ class OutcomeHorizontalLinkUnconnected extends Component {
     if ($(this.maindiv.current).children('.outcome').length == 0)
       $(this.maindiv.current).css('display', 'none')
     else $(this.maindiv.current).css('display', '')
-    let indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
     if (indicator.length >= 0) {
-      let num_outcomenodes = indicator
+      const num_outcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
       indicator
@@ -110,7 +110,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     //It's possible we don't actually have this data, if the horizontal link is dead
     if (!data) return null
     return (
@@ -284,14 +284,14 @@ class Outcome extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let children
     let outcomehorizontallinks
-    let side_actions = []
-    let mouseover_actions = []
+    const side_actions = []
+    const mouseover_actions = []
     let dropIcon
     let droptext
-    let style = {}
+    const style = {}
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
     if (data.is_dropped)

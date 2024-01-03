@@ -37,7 +37,7 @@ class OutcomeNodeUnconnected extends Component {
    *******************************************************/
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
   addDeleteSelf(data) {
-    let icon = 'close.svg'
+    const icon = 'close.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -49,7 +49,7 @@ class OutcomeNodeUnconnected extends Component {
   }
 
   deleteSelf(data) {
-    let props = this.props
+    const props = this.props
     if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
     //Temporary confirmation; add better confirmation dialogue later
     else {
@@ -64,9 +64,9 @@ class OutcomeNodeUnconnected extends Component {
     if ($(this.maindiv.current).children('.outcome').length == 0)
       $(this.maindiv.current).css('display', 'none')
     else $(this.maindiv.current).css('display', '')
-    let indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
     if (indicator.length >= 0) {
-      let num_outcomenodes = indicator
+      const num_outcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
       indicator
@@ -81,7 +81,7 @@ class OutcomeNodeUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     if (data.outcome === -1) return null
 
     return (

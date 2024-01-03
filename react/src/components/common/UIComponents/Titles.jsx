@@ -24,7 +24,7 @@ export class TitleText extends React.Component {
 //Title text for a workflow
 export class WorkflowTitle extends React.Component {
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let text = data.title
 
     if (data.code) text = data.code + ' - ' + text
@@ -73,8 +73,8 @@ export class WorkflowTitle extends React.Component {
 //Title text for a week
 export class WeekTitle extends React.Component {
   render() {
-    let data = this.props.data
-    let default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    const data = this.props.data
+    const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
     return <TitleText text={data.title} defaultText={default_text} />
   }
 }
@@ -82,7 +82,7 @@ export class WeekTitle extends React.Component {
 //Title text for a node
 export class NodeTitle extends React.Component {
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let text
     if (data.represents_workflow && data.linked_workflow_data) {
       text = data.linked_workflow_data.title
@@ -107,7 +107,7 @@ export class NodeTitle extends React.Component {
 //Title text for an assignment
 export class AssignmentTitle extends React.Component {
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let text
     if (data.task.represents_workflow && data.task.linked_workflow_data) {
       text = data.task.linked_workflow_data.title
@@ -145,7 +145,7 @@ export class AssignmentTitle extends React.Component {
 //Title for an outcome
 export class OutcomeTitle extends React.Component {
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let text = data.title
     if (data.title == null || data.title == '') {
       text = window.gettext('Untitled')

@@ -68,8 +68,8 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let renderer = this.props.renderer
+    const data = this.props.data
+    const renderer = this.props.renderer
     var weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
       <WeekWorkflow
         condensed={data.condensed}

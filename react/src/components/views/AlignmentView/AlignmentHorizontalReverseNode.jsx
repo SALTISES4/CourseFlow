@@ -37,12 +37,12 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let data_override
     if (data.represents_workflow)
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
     else data_override = { ...data }
-    let selection_manager = this.props.renderer.selection_manager
+    const selection_manager = this.props.renderer.selection_manager
     let child_outcomes_header
     if (this.props.child_outcomes.length > 0) {
       child_outcomes_header = (
@@ -117,16 +117,17 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     let show_all
 
     //if child outcomes are restricted, we need a show all button that expands to show all of them instead. Otherwise we only need to show the outcomes currently attached to the node.
-    let outcomenodes = this.props.outcomenodes.map((outcomenode) => (
+    const outcomenodes = this.props.outcomenodes.map((outcomenode) => (
       <OutcomeNode
         key={outcomenode.id}
         objectID={outcomenode.id}
         renderer={this.props.renderer}
       />
     ))
-    let outcome_restriction = this.props.restriction_set.parent_outcomes.filter(
-      (oc) => this.props.all_node_outcomes.indexOf(oc) == -1
-    )
+    const outcome_restriction =
+      this.props.restriction_set.parent_outcomes.filter(
+        (oc) => this.props.all_node_outcomes.indexOf(oc) == -1
+      )
     let outcomeadder
     if (!this.props.renderer.read_only)
       outcomeadder = (
@@ -136,7 +137,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           addFunction={updateOutcomenodeDegree.bind(this, this.props.objectID)}
         />
       )
-    let outcomes_for_node = (
+    const outcomes_for_node = (
       <div>
         <div className="node-outcomes-header">
           {Utility.capWords(gettext(this.props.workflow.type + ' outcomes')) +
@@ -200,7 +201,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       )
     }
 
-    let style = {
+    const style = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
@@ -240,8 +241,8 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
 const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
   for (var i = 0; i < state.node.length; i++) {
     if (state.node[i].id == own_props.objectID) {
-      let node = state.node[i]
-      let column = state.column.find((column) => column.id == node.column)
+      const node = state.node[i]
+      const column = state.column.find((column) => column.id == node.column)
       let outcomenodes = Utility.filterThenSortByID(
         state.outcomenode,
         node.outcomenode_unique_set
@@ -255,7 +256,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
             own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome) >= 0
         )
       }
-      let node_outcomes = Utility.filterThenSortByID(
+      const node_outcomes = Utility.filterThenSortByID(
         state.outcomenode,
         node.outcomenode_set
       ).map((ocn) => ocn.outcome)
@@ -269,7 +270,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
           all_node_outcomes: node_outcomes
         }
       }
-      let child_workflow = getChildWorkflowByID(state, node.linked_workflow)
+      const child_workflow = getChildWorkflowByID(state, node.linked_workflow)
       let child_outcomes
       if (child_workflow != -1)
         child_outcomes = Utility.filterThenSortByID(

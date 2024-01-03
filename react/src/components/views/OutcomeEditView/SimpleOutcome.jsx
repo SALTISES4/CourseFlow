@@ -41,7 +41,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
   }
 
   getChildType(outcomeoutcome) {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <SimpleOutcomeOutcome
         key={outcomeoutcome}
@@ -58,7 +58,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let children
     let dropIcon
     let droptext

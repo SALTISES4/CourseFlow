@@ -17,7 +17,7 @@ class OutcomeWorkflowUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let my_class = 'outcome-workflow'
     if (data.no_drag) my_class += ' no-drag'
     return (
