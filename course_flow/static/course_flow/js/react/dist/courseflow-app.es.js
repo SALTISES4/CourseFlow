@@ -61425,6 +61425,7 @@ class ComponentWithToggleDrop extends reactExports.Component {
       );
     });
     this.mainDiv = reactExports.createRef();
+    this.state = {};
   }
 }
 class NodeBarUnconnected extends reactExports.Component {

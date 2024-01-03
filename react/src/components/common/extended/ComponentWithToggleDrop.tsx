@@ -32,6 +32,7 @@ class ComponentWithToggleDrop<
     super(props)
 
     this.mainDiv = React.createRef()
+    this.state = {}
   }
 
   toggleDrop = (evt: React.MouseEvent) => {

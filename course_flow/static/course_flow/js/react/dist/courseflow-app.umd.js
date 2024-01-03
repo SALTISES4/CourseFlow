@@ -61429,6 +61429,7 @@ ${latestSubscriptionCallbackError.current.stack}
         );
       });
       this.mainDiv = reactExports.createRef();
+      this.state = {};
     }
   }
   class NodeBarUnconnected extends reactExports.Component {
