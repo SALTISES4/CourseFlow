@@ -51641,6 +51641,21 @@ function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = () => c
     window.fail_function();
   }
 }
+function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
+      userassignmentPk: JSON.stringify(userassignmentPk),
+      completed: JSON.stringify(completed)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
 function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
@@ -62587,12 +62602,16 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) 
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data) {
+      console.log("data");
+      console.log(data);
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
       else
         window.fail_function(data.action);
     });
   } catch (err) {
+    console.log("err");
+    console.log(err);
     window.fail_function();
   }
 }
@@ -82493,7 +82512,27 @@ class NodeLink extends EditableComponentWithActions {
 }
 const mapNodeLinkStateToProps = (state, own_props) => getNodeLinkByID(state, own_props.objectID);
 const NodeLink$1 = connect(mapNodeLinkStateToProps, null)(NodeLink);
-class AssignmentForNode extends AssignmentView {
+class AssignmentForNode extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { is_dropped: false };
+    this.user_id = COURSEFLOW_APP.contextData.user_id;
+    if (props.data.user_assignment)
+      this.state.completed = props.data.user_assignment.completed;
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  toggleDrop() {
+    this.setState((state) => {
+      return { is_dropped: !state.is_dropped };
+    });
+  }
+  changeCompletion(evt) {
+    const checked = evt.target.checked;
+    this.setState({ completed: checked });
+    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
+  }
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -86609,8 +86648,13 @@ const GridView$1 = connect(mapStateToProps, null)(GridView);
 class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   constructor(props) {
     super(props);
+    console.log("props");
+    console.log(props);
     this.objectType = "workflow";
     this.allowed_tabs = [0, 1, 2, 3, 4];
+    this.state = {
+      users: null
+    };
   }
   /*******************************************************
    * LIFECYCLE
@@ -86626,6 +86670,39 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
+  getUserData() {
+    if (this.props.renderer.public_view || this.props.renderer.is_student)
+      return null;
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+      this.setState({ users: data });
+    });
+  }
+  deleteWorkflow() {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this workflow?")
+    )) {
+      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
+      });
+    }
+  }
+  deleteWorkflowHard() {
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently delete this workflow?"
+      )
+    )) {
+      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
+        window.location = COURSEFLOW_APP.config.update_path["project"].replace(
+          0,
+          renderer.project.id
+        );
+      });
+    }
+  }
+  restoreWorkflow() {
+    restoreSelfQuery(this.props.data.id, "workflow", () => {
+    });
+  }
   updateTabs() {
     this.props.renderer.selection_manager.changeSelection(null, null);
     const disabled_tabs = [];
@@ -86804,13 +86881,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       component.getUserData();
     });
   }
-  getUserData() {
-    if (this.props.renderer.public_view || this.props.renderer.is_student)
-      return null;
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data });
-    });
-  }
   getOverflowLinks() {
     const overflow_links = [];
     overflow_links.push(this.getExportButton());
@@ -86859,32 +86929,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           }
         )
       ];
-  }
-  deleteWorkflow() {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this workflow?")
-    )) {
-      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
-      });
-    }
-  }
-  deleteWorkflowHard() {
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to permanently delete this workflow?"
-      )
-    )) {
-      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
-        window.location = COURSEFLOW_APP.config.update_path["project"].replace(
-          0,
-          renderer.project.id
-        );
-      });
-    }
-  }
-  restoreWorkflow() {
-    restoreSelfQuery(this.props.data.id, "workflow", () => {
-    });
   }
   getExportButton() {
     if (this.props.renderer.public_view && !this.props.renderer.user_id)
@@ -87672,6 +87716,8 @@ class Workflow {
     this.child_data_completed = -1;
     this.fetching_child_data = false;
     this.view_type = view_type;
+    console.log("workdflow render contiainer");
+    console.log(container2[0]);
     reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
     const store = this.store;
     const initial_workflow_data = store.getState();
@@ -87744,6 +87790,8 @@ class Workflow {
     this.getWorkflowData(this.workflowID, (response) => {
       const data_flat = response.data_package;
       this.unread_comments = data_flat.unread_comments;
+      console.log("data_flat");
+      console.log(data_flat);
       this.store = createStore(rootWorkflowReducer, data_flat);
       this.render($("#container"));
       this.clear_queue(data_flat.workflow.edit_count);

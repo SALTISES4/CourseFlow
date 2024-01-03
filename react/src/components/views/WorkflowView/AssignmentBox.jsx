@@ -2,19 +2,43 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import {
   createAssignmentQuery,
-  getAssignmentsForNode
+  getAssignmentsForNode,
+  setAssignmentCompletionQuery
 } from '@XMLHTTP/PostFunctions'
 import { reloadAssignmentsAction } from '@cfReducers'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
-// import { AssignmentView } from '../LiveAssignmentView'
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 
 /**
  *
  */
-class AssignmentForNode extends AssignmentView {
+class AssignmentForNode extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { is_dropped: false }
+    this.user_id = COURSEFLOW_APP.contextData.user_id
+
+    if (props.data.user_assignment)
+      this.state.completed = props.data.user_assignment.completed
+  }
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+
+  toggleDrop() {
+    this.setState((state) => {
+      return { is_dropped: !state.is_dropped }
+    })
+  }
+
+  changeCompletion(evt) {
+    const checked = evt.target.checked
+    this.setState({ completed: checked })
+    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked)
+  }
   /*******************************************************
    * RENDER
    *******************************************************/

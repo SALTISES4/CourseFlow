@@ -39,8 +39,14 @@ import {
 class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   constructor(props) {
     super(props)
+    console.log('props')
+    console.log(props)
+
     this.objectType = 'workflow'
     this.allowed_tabs = [0, 1, 2, 3, 4]
+    this.state = {
+      users: null
+    }
   }
 
   /*******************************************************
@@ -58,6 +64,45 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
+  getUserData() {
+    if (this.props.renderer.public_view || this.props.renderer.is_student)
+      return null
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+      this.setState({ users: data })
+    })
+  }
+
+  deleteWorkflow() {
+    if (
+      window.confirm(
+        window.gettext('Are you sure you want to delete this workflow?')
+      )
+    ) {
+      deleteSelfQuery(this.props.data.id, 'workflow', true, () => {})
+    }
+  }
+
+  deleteWorkflowHard() {
+    if (
+      window.confirm(
+        window.gettext(
+          'Are you sure you want to permanently delete this workflow?'
+        )
+      )
+    ) {
+      deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
+        window.location = COURSEFLOW_APP.config.update_path['project'].replace(
+          0,
+          renderer.project.id
+        )
+      })
+    }
+  }
+
+  restoreWorkflow() {
+    restoreSelfQuery(this.props.data.id, 'workflow', () => {})
+  }
+
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
     this.props.renderer.selection_manager.changeSelection(null, null)
@@ -248,14 +293,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     })
   }
 
-  getUserData() {
-    if (this.props.renderer.public_view || this.props.renderer.is_student)
-      return null
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data })
-    })
-  }
-
   getOverflowLinks() {
     const overflow_links = []
     overflow_links.push(this.getExportButton())
@@ -298,37 +335,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           <div>{window.gettext('Permanently delete workflow')}</div>
         </div>
       ]
-  }
-
-  deleteWorkflow() {
-    if (
-      window.confirm(
-        window.gettext('Are you sure you want to delete this workflow?')
-      )
-    ) {
-      deleteSelfQuery(this.props.data.id, 'workflow', true, () => {})
-    }
-  }
-
-  deleteWorkflowHard() {
-    if (
-      window.confirm(
-        window.gettext(
-          'Are you sure you want to permanently delete this workflow?'
-        )
-      )
-    ) {
-      deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
-        window.location = COURSEFLOW_APP.config.update_path['project'].replace(
-          0,
-          renderer.project.id
-        )
-      })
-    }
-  }
-
-  restoreWorkflow() {
-    restoreSelfQuery(this.props.data.id, 'workflow', () => {})
   }
 
   getExportButton() {

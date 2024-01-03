@@ -182,6 +182,11 @@ class Workflow {
     this.fetching_child_data = false
 
     this.view_type = view_type
+
+    console.log('workdflow render contiainer' )
+    console.log(container[0] )
+
+
     reactDom.render(<WorkflowLoader />, container[0])
     const store = this.store
     const initial_workflow_data = store.getState()
@@ -277,6 +282,8 @@ class Workflow {
     this.getWorkflowData(this.workflowID, (response) => {
       const data_flat = response.data_package
       this.unread_comments = data_flat.unread_comments
+      console.log('data_flat')
+      console.log(data_flat)
       this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
       this.render($('#container'))
 

@@ -107,10 +107,14 @@ export function getUsersForObjectQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data: UsersForObjectQueryResp) {
+      console.log('data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
+    console.log('err')
+    console.log(err)
     window.fail_function()
   }
 }

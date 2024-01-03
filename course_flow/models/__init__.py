@@ -16,6 +16,7 @@ from .objectset import ObjectSet
 from .outcome import Outcome
 from .program import Program
 from .project import Project
+from .relations import *
 from .updateNotification import UpdateNotification
 from .userAssignment import UserAssignment
 from .week import Week
