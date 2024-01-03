@@ -31,7 +31,7 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
  * On mount, this will fetch the workflows for the project. When they have been
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
-type StateType = {
+interface StateType {
   data?: ProjectData
   view_type?: string
   users?: UsersForObjectQueryResp
