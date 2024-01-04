@@ -303,7 +303,7 @@ export default {}
  * @param changeField
  * @param callBackFunction
  */
-export function updateValue(
+export function updateValueQuery(
   objectID,
   objectType,
   json,

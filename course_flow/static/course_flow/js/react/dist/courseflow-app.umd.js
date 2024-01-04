@@ -62105,7 +62105,7 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
-  function updateValue(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
+  function updateValueQuery(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
     const t = 1e3;
     const previousCall = document.lastUpdateCall;
     document.lastUpdateCall = {
@@ -64562,7 +64562,7 @@ ${latestSubscriptionCallbackError.current.stack}
     self.destroy = destroy;
     self.isEnabled = isEnabled;
     self.jumpToDate = jumpToDate;
-    self.updateValue = updateValue2;
+    self.updateValue = updateValue;
     self.open = open;
     self.redraw = redraw;
     self.set = set;
@@ -64598,7 +64598,7 @@ ${latestSubscriptionCallbackError.current.stack}
         if (self.config.enableTime) {
           setHoursFromDate(self.config.noCalendar ? self.latestSelectedDateObj : void 0);
         }
-        updateValue2(false);
+        updateValue(false);
       }
       setCalendarWidth();
       var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -64647,7 +64647,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       var prevValue = self._input.value;
       setHoursFromInputs();
-      updateValue2();
+      updateValue();
       if (self._input.value !== prevValue) {
         self._debouncedChange();
       }
@@ -65529,13 +65529,13 @@ ${latestSubscriptionCallbackError.current.stack}
           case self.l10n.amPM[0].charAt(0).toLowerCase():
             self.amPM.textContent = self.l10n.amPM[0];
             setHoursFromInputs();
-            updateValue2();
+            updateValue();
             break;
           case self.l10n.amPM[1].charAt(0):
           case self.l10n.amPM[1].charAt(0).toLowerCase():
             self.amPM.textContent = self.l10n.amPM[1];
             setHoursFromInputs();
-            updateValue2();
+            updateValue();
             break;
         }
       }
@@ -65642,7 +65642,7 @@ ${latestSubscriptionCallbackError.current.stack}
           });
           if (!self.selectedDates.length && type === "min")
             setHoursFromDate(dateObj);
-          updateValue2();
+          updateValue();
         }
         if (self.daysContainer) {
           redraw();
@@ -65915,7 +65915,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       updateNavigationCurrentMonth();
       buildDays();
-      updateValue2();
+      updateValue();
       if (!shouldChangeMonth && self.config.mode !== "range" && self.config.showMonths === 1)
         focusOnDayElem(target);
       else if (self.selectedDateElem !== void 0 && self.hourElement === void 0) {
@@ -65969,7 +65969,7 @@ ${latestSubscriptionCallbackError.current.stack}
           self.config[option] = arrayify(value);
       }
       self.redraw();
-      updateValue2(true);
+      updateValue(true);
     }
     function setSelectedDate(inputDate, format2) {
       var dates = [];
@@ -66023,7 +66023,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (self.selectedDates.length === 0) {
         self.clear(false);
       }
-      updateValue2(triggerChange2);
+      updateValue(triggerChange2);
       if (triggerChange2)
         triggerEvent("onChange");
     }
@@ -66180,7 +66180,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return self.config.mode !== "range" || self.config.enableTime || arr.indexOf(d) === i2;
       }).join(self.config.mode !== "range" ? self.config.conjunction : self.l10n.rangeSeparator);
     }
-    function updateValue2(triggerChange2) {
+    function updateValue(triggerChange2) {
       if (triggerChange2 === void 0) {
         triggerChange2 = true;
       }
@@ -88474,10 +88474,22 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   class Workflow {
     constructor(props) {
+      __publicField(this, "message_queue");
+      __publicField(this, "messages_queued");
+      __publicField(this, "public_view");
+      __publicField(this, "workflowID");
+      __publicField(this, "column_choices");
+      __publicField(this, "context_choices");
+      __publicField(this, "task_choices");
+      __publicField(this, "time_choices");
+      __publicField(this, "outcome_type_choices");
+      __publicField(this, "can_view");
+      __publicField(this, "outcome_sort_choices");
+      __publicField(this, "strategy_classification_choices");
+      __publicField(this, "is_strategy");
+      __publicField(this, "project");
       __publicField(this, "parsemessage", function(e) {
         const data = JSON.parse(e.data);
-        console.log("parsemessage");
-        console.log(data);
         switch (data.type) {
           case "workflow_action":
             this.store.dispatch(data.action);
@@ -88563,67 +88575,72 @@ ${latestSubscriptionCallbackError.current.stack}
         this.getWorkflowParentData = getWorkflowParentData;
         this.getWorkflowChildData = getWorkflowChildData;
       }
+      this.messages_queued = true;
+      this.has_disconnected = false;
     }
+    /*******************************************************
+     * WEBSOCKET MANAGER
+     *******************************************************/
     connect() {
-      if (!this.always_static) {
-        this.messages_queued = true;
-        const renderer2 = this;
-        let websocket_prefix;
-        if (window.location.protocol === "https:") {
-          websocket_prefix = "wss";
+      const websocket_prefix = window.location.protocol === "https:" ? "wss" : "ws";
+      this.updateSocket = new WebSocket(
+        `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
+      );
+      this.updateSocket.onmessage = (e) => {
+        if (this.messages_queued) {
+          this.message_queue.push(e);
         } else {
-          websocket_prefix = "ws";
+          this.onMessageReceived(e);
         }
-        const updateSocket = new WebSocket(
-          websocket_prefix + "://" + window.location.host + "/ws/update/" + this.workflowID + "/"
-        );
-        this.updateSocket = updateSocket;
-        updateSocket.onmessage = (function(e) {
-          this.message_received(e);
-        }).bind(this);
-        const openfunction = function() {
-          this.has_rendered = true;
-          this.connection_opened();
-        };
-        updateSocket.onopen = openfunction.bind(this);
-        if (updateSocket.readyState === 1) {
-          openfunction.bind(this)();
-        }
-        updateSocket.onclose = function(e) {
-          if (e.code === 1e3) {
-            return;
-          }
-          if (!renderer2.has_rendered) {
-            renderer2.connection_opened(true);
-          } else {
-            renderer2.attempt_reconnect();
-          }
-          renderer2.is_static = true;
-          renderer2.has_rendered = true;
-          if (!renderer2.silent_connect_fail && !renderer2.has_disconnected) {
-            alert(
-              window.gettext(
-                "Unable to establish connection to the server, or connection has been lost."
-              )
-            );
-          }
-          renderer2.has_disconnected = true;
-        };
-      } else {
-        this.connection_opened();
-      }
+      };
+      this.updateSocket.onopen = () => {
+        this.onConnectionOpened();
+        this.has_rendered = true;
+      };
+      this.updateSocket.onclose = (e) => this.handleSocketClose(e);
     }
+    attempt_reconnect() {
+      setTimeout(() => this.connect(), 3e4);
+    }
+    handleSocketClose(e) {
+      if (e.code === 1e3)
+        return;
+      this.onConnectionClosed();
+      this.is_static = true;
+      this.has_disconnected = true;
+      this.attempt_reconnect();
+    }
+    connection_update_received() {
+      console.log("A connection update was received, but not handled.");
+    }
+    clear_queue(edit_count) {
+      let processMessages = false;
+      while (this.message_queue.length > 0) {
+        const message = this.message_queue[0];
+        if (processMessages) {
+          this.parsemessage(message);
+          this.message_queue.shift();
+        } else if (message.edit_count && parseInt(message.edit_count, 10) >= edit_count) {
+          processMessages = true;
+        } else {
+          this.message_queue.shift();
+        }
+      }
+      this.messages_queued = false;
+    }
+    /*******************************************************
+     * REACT TO MOVE
+     *******************************************************/
     render(container2, view_type = "workflowview") {
+      this.locks = {};
       this.selection_manager = new SelectionManager(this.read_only);
       this.child_data_needed = [];
       this.child_data_completed = -1;
       this.fetching_child_data = false;
       this.view_type = view_type;
       reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
-      const renderer2 = this;
       this.container = container2;
-      this.locks = {};
-      this.selection_manager.renderer = renderer2;
+      this.selection_manager.renderer = this;
       if (view_type === "outcomeedit") {
         this.getWorkflowParentData(this.workflowID, (response) => {
           this.store.dispatch(refreshStoreData(response.data_package));
@@ -88684,45 +88701,21 @@ ${latestSubscriptionCallbackError.current.stack}
         }
       });
     }
-    attempt_reconnect() {
-      const renderer2 = this;
-      setTimeout(() => {
-        renderer2.connect();
-      }, 3e4);
-    }
-    clear_queue(edit_count) {
-      let started_edits = false;
-      while (this.message_queue.length > 0) {
-        const message = this.message_queue[0];
-        if (started_edits) {
-          this.parsemessage(message);
-        } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
-          started_edits = true;
-          this.message_queue.splice(0, 1);
-        }
-      }
-      this.messages_queued = false;
-    }
-    connection_update_received() {
-      console.log("A connection update was received, but not handled.");
-    }
     parent_workflow_updated(edit_count) {
       this.messages_queued = true;
-      const renderer2 = this;
       this.getWorkflowParentData(this.workflowID, (response) => {
-        renderer2.store.dispatch(
+        this.store.dispatch(
           replaceStoreData({
             parent_node: [],
             parent_workflow: []
           })
         );
-        renderer2.store.dispatch(refreshStoreData(response.data_package));
-        renderer2.clear_queue(0);
+        this.store.dispatch(refreshStoreData(response.data_package));
+        this.clear_queue(0);
       });
     }
     child_workflow_updated(edit_count, child_workflow_id) {
       this.messages_queued = true;
-      const renderer2 = this;
       const state = this.store.getState();
       const node2 = state.node.find(
         (node22) => node22.linked_workflow == child_workflow_id
@@ -88731,8 +88724,8 @@ ${latestSubscriptionCallbackError.current.stack}
         return;
       }
       this.getWorkflowChildData(node2.id, (response) => {
-        renderer2.store.dispatch(refreshStoreData(response.data_package));
-        renderer2.clear_queue(0);
+        this.store.dispatch(refreshStoreData(response.data_package));
+        this.clear_queue(0);
       });
     }
     message_received(e) {
@@ -88756,7 +88749,7 @@ ${latestSubscriptionCallbackError.current.stack}
       const json = {};
       json[field] = value;
       this.store.dispatch(changeField(id, object_type, json));
-      updateValue(id, object_type, json, true);
+      updateValueQuery(id, object_type, json, true);
     }
     lock_update(obj, time, lock2) {
       if (this.updateSocket) {
@@ -88775,7 +88768,6 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     lock_update_received(data) {
-      const store = this.store;
       const object_type = data.object_type;
       const object_id = data.object_id;
       if (!this.locks[object_type]) {
@@ -88784,7 +88776,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.locks[object_type][object_id]) {
         clearTimeout(this.locks[object_type][object_id]);
       }
-      store.dispatch(
+      this.store.dispatch(
         createLockAction(
           object_id,
           object_type,
@@ -88795,7 +88787,9 @@ ${latestSubscriptionCallbackError.current.stack}
       );
       if (data.lock) {
         this.locks[object_type][object_id] = setTimeout(() => {
-          store.dispatch(createLockAction(object_id, object_type, false));
+          this.store.dispatch(
+            createLockAction(object_id, object_type, false)
+          );
         }, data.expires - Date.now());
       } else {
         this.locks[object_type][object_id] = null;
