@@ -9,12 +9,12 @@ import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
 import { moveOutcomeOutcome } from '@cfReducers'
 import {
   updateOutcomehorizontallinkDegree,
-  insertedAt,
   insertedAtInstant
 } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
+import {insertedAt} from "@XMLHTTP/postTemp.jsx";
 
 /**
  * The link to tagged outcomes. Used when an outcome
@@ -361,7 +361,7 @@ class Outcome extends EditableComponentWithSorting {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext(
+        window.gettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length

@@ -3,8 +3,8 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
 import { toggleStrategy, updateObjectSet } from '@XMLHTTP/PostFunctions'
-import { getLinkedWorkflowMenu } from '@XMLHTTP/postTemp'
 import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
+import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/APIFunctions'
 
 //Quill div for inputs, as a react component
 class QuillDiv extends React.Component {
@@ -360,7 +360,7 @@ class EditableComponent extends ComponentWithToggleDrop {
               </div>
             </div>
           )}
-          {type == 'node' && data.node_type != 0 && (
+          {type === 'node' && data.node_type !== 0 && (
             <div>
               <h4>{window.gettext('Linked Workflow')}</h4>
               <div>
@@ -371,14 +371,14 @@ class EditableComponent extends ComponentWithToggleDrop {
                 disabled={read_only}
                 id="linked-workflow-editor"
                 onClick={() => {
-                  props.renderer.tiny_loader.startLoad()
-                  getLinkedWorkflowMenu(
+                  COURSEFLOW_APP.tinyLoader.startLoad()
+                  getLinkedWorkflowMenuQuery(
                     data,
                     (response_data) => {
                       console.log('linked a workflow')
                     },
                     () => {
-                      props.renderer.tiny_loader.endLoad()
+                      COURSEFLOW_APP.tinyLoader.endLoad()
                     }
                   )
                 }}

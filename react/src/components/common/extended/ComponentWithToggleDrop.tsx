@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import { toggleDrop } from '@XMLHTTP/PostFunctions'
+import {toggleDropReduxAction} from "@cfRedux/helpers";
 /**
  *  Extends the react component to add a few features
  *  that are used in a large number of components
@@ -26,18 +26,20 @@ class ComponentWithToggleDrop<
   P extends ComponentWithToggleProps,
   S = NonNullable<unknown>
 > extends React.Component<P, S> {
-  protected mainDiv: React.RefObject<HTMLDivElement>
+  mainDiv: React.RefObject<HTMLDivElement>
+  maindiv: React.RefObject<HTMLDivElement>
 
   constructor(props: P) {
     super(props)
 
     this.mainDiv = React.createRef()
+    this.maindiv = React.createRef() // @todo we recreated this since all the components which inherit from ComponentWithToggleDrop currently break, unify it / just spelling issue
     this.state = {} as S
   }
 
   toggleDrop = (evt: React.MouseEvent) => {
     evt.stopPropagation()
-    toggleDrop(
+    toggleDropReduxAction(
       this.props.objectID,
       // @ts-ignore
       Constants.object_dictionary[this.objectType],

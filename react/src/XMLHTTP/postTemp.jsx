@@ -1,6 +1,7 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
 // import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents'
 import { DATA_ACTIONS } from './common'
+import { dragAction } from '@XMLHTTP/PostFunctions.js'
 
 /**
  *
@@ -97,25 +98,6 @@ export function getTargetProjectMenu(
   )
 }
 
-//Get the list of workflows we can link to a node
-export function getLinkedWorkflowMenu(
-  nodeData,
-  updateFunction,
-  callBackFunction = () => console.log('success')
-) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (data) => {
-      callBackFunction()
-      // @TODO call to react render
-      //  openLinkedWorkflowMenu(data, updateFunction)
-    }
-  )
-}
-
 // not sure where this lives yet
 export function createNew(create_url) {
   COURSEFLOW_APP.tinyLoader.startLoad()
@@ -133,4 +115,57 @@ export function createNew(create_url) {
       COURSEFLOW_APP.tinyLoader.endLoad()
     }
   )
+}
+
+//Called when a node should have its column changed
+export function columnChanged(renderer, objectID, columnID) {
+  // @todo ?? dragAction is never defined outside this file
+  if (!renderer.dragAction) renderer.dragAction = {}
+  if (!renderer.dragAction['nodeweek']) renderer.dragAction['nodeweek'] = {}
+
+  renderer.dragAction['nodeweek'] = {
+    ...renderer.dragAction['nodeweek'],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify('node'),
+    columnPk: JSON.stringify(columnID),
+    columnChange: JSON.stringify(true)
+  }
+
+  $(document).off('nodeweek-dropped')
+  $(document).on('nodeweek-dropped', () => {
+    dragAction(renderer, renderer.dragAction['nodeweek'])
+    renderer.dragAction['nodeweek'] = null
+    $(document).off('nodeweek-dropped')
+  })
+}
+
+//Called when an object in a list is reordered
+export function insertedAt(
+  renderer,
+  objectID,
+  objectType,
+  parentID,
+  parentType,
+  newPosition,
+  throughType
+) {
+  if (!renderer.dragAction) renderer.dragAction = {}
+  if (!renderer.dragAction[throughType]) renderer.dragAction[throughType] = {}
+  renderer.dragAction[throughType] = {
+    ...renderer.dragAction[throughType],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true)
+  }
+  $(document).off(throughType + '-dropped')
+  if (objectID)
+    $(document).on(throughType + '-dropped', () => {
+      dragAction(renderer, renderer.dragAction[throughType])
+      renderer.dragAction[throughType] = null
+      $(document).off(throughType + '-dropped')
+    })
 }

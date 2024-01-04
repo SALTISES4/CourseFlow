@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
-import { createStore } from '@reduxjs/toolkit'
+import { applyMiddleware, compose, createStore } from '@reduxjs/toolkit'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import {
@@ -10,12 +11,19 @@ import {
   getPublicWorkflowData,
   getPublicWorkflowParentData,
   getWorkflowChildData,
-  getWorkflowData,
-  getWorkflowParentData,
-  updateValue
+  getWorkflowParentData
 } from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
-import { WorkflowBaseView } from '@cfViews/WorkflowBaseView'
+import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
+import { getWorkflowDataQuery, updateValue } from '@XMLHTTP/APIFunctions'
+
+enum DATA_TYPE {
+  WORKFLOW_ACTION = 'workflow_action',
+  LOCK_UPDATE = 'lock_update',
+  CONNECTION_UPDATE = 'connection_update',
+  WORKFLOW_PARENT_UPDATED = 'workflow_parent_updated',
+  WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'
+}
 
 /****************************************
  *
@@ -103,7 +111,7 @@ class Workflow {
       this.getWorkflowParentData = getPublicWorkflowParentData
       this.getWorkflowChildData = getPublicWorkflowChildData
     } else {
-      this.getWorkflowData = getWorkflowData
+      this.getWorkflowData = getWorkflowDataQuery
       this.getWorkflowParentData = getWorkflowParentData
       this.getWorkflowChildData = getWorkflowChildData
     }
@@ -183,14 +191,13 @@ class Workflow {
 
     this.view_type = view_type
 
-    console.log('workdflow render contiainer' )
-    console.log(container[0] )
-
+    console.log('workdflow render contiainer')
+    console.log(container[0])
 
     reactDom.render(<WorkflowLoader />, container[0])
     const store = this.store
     const initial_workflow_data = store.getState()
-    var renderer = this
+    const renderer = this
     this.container = container
     this.locks = {}
 
@@ -282,9 +289,13 @@ class Workflow {
     this.getWorkflowData(this.workflowID, (response) => {
       const data_flat = response.data_package
       this.unread_comments = data_flat.unread_comments
-      console.log('data_flat')
-      console.log(data_flat)
-      this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
+      const composeEnhancers =
+        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+      this.store = createStore(
+        Reducers.rootWorkflowReducer,
+        data_flat,
+        composeEnhancers()
+      )
       this.render($('#container'))
 
       this.clear_queue(data_flat.workflow.edit_count)
@@ -322,7 +333,8 @@ class Workflow {
 
   parsemessage = function (e) {
     const data = JSON.parse(e.data)
-
+    console.log('parsemessage')
+    console.log(data)
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
         this.store.dispatch(data.action)

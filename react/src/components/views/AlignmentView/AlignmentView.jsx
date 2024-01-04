@@ -146,9 +146,9 @@ class AlignmentView extends React.Component {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Filters')}:</h3>
+        <h3>{window.gettext('Filters')}:</h3>
         {view_buttons_outcomes}
-        <h4>{gettext('Sections')}:</h4>
+        <h4>{window.gettext('Sections')}:</h4>
         <div className="workflow-view-select hide-print">
           {view_buttons_terms}
         </div>

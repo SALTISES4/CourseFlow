@@ -37,7 +37,7 @@ class WorkflowLegendUnconnected extends React.Component {
     if (this.state.show_slider) {
       return reactDom.createPortal(
         [
-          <div>{gettext('Legend')}</div>,
+          <div>{window.gettext('Legend')}</div>,
           <Slider
             checked={this.state.show_legend}
             toggleAction={this.toggle.bind(this)}

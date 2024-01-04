@@ -92,7 +92,7 @@ class RightSideBar extends React.Component {
             <a href="#edit-menu">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Edit')}
+                title={window.gettext('Edit')}
               >
                 edit
               </span>
@@ -102,7 +102,7 @@ class RightSideBar extends React.Component {
             <a href="#node-bar">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Add')}
+                title={window.gettext('Add')}
               >
                 add_circle
               </span>
@@ -115,7 +115,7 @@ class RightSideBar extends React.Component {
                 <a href="#outcome-bar">
                   <span
                     className="material-symbols-rounded filled"
-                    title={gettext('Outcomes')}
+                    title={window.gettext('Outcomes')}
                   >
                     spoke
                   </span>
@@ -125,7 +125,7 @@ class RightSideBar extends React.Component {
                 <a href="#view-bar">
                   <span
                     className="material-symbols-rounded filled"
-                    title={gettext('View Options')}
+                    title={window.gettext('View Options')}
                   >
                     remove_red_eye
                   </span>
@@ -138,7 +138,7 @@ class RightSideBar extends React.Component {
             <a href="#restore-bar">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Restore Deleted')}
+                title={window.gettext('Restore Deleted')}
               >
                 restore_from_trash
               </span>

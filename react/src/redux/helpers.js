@@ -1,5 +1,6 @@
 import React from 'react'
 import * as Constants from '../constants'
+import { changeField } from '@cfReducers'
 
 /**
  * Manages the current selection, ensuring we only have one at a time
@@ -95,4 +96,42 @@ export class SelectionManager {
       this.changeSelection(null, null)
     }
   }
+}
+
+/**
+ *
+ *  @toggleDrop
+ *
+ *  Toggles whether an object is dropped. No longer sent to database.
+ * @param objectID
+ * @param objectType
+ * @param is_dropped
+ * @param dispatch
+ * @param depth
+ */
+export function toggleDropReduxAction(
+  objectID,
+  objectType,
+  is_dropped,
+  dispatch,
+  depth = 1
+) {
+  try {
+    const default_drop = Constants.get_default_drop_state(
+      objectID,
+      objectType,
+      depth
+    )
+    if (is_dropped !== default_drop)
+      window.localStorage.setItem(objectType + objectID, is_dropped)
+    else window.localStorage.removeItem(objectType + objectID)
+  } catch (err) {
+    if (
+      err.name === 'QuotaExceededError' ||
+      err.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+    ) {
+      window.localStorage.clear()
+    }
+  }
+  dispatch(changeField(objectID, objectType, { is_dropped: is_dropped }))
 }

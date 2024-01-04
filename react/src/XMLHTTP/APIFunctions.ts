@@ -3,10 +3,17 @@ import {
   HomeQueryResp,
   LibraryQueryResp,
   SearchAllObjectsQueryResp,
+  SuccessPost,
   UsersForObjectQueryResp,
+  WorkflowDataQueryResp,
   WorkflowsForProjectQueryResp
 } from '@XMLHTTP/types'
 import { DATA_ACTIONS, OBJECT_TYPE } from '@XMLHTTP/common'
+import { LinkedWorkflowMenuQueryResp } from '@XMLHTTP/types/query'
+
+/*******************************************************
+ * LIBRARY PAGES
+ *******************************************************/
 
 /**
  * Get the library projects
@@ -69,27 +76,10 @@ export function getHomeQuery(
 }
 
 /**
- * Get the workflows for a project
- * @param projectPk
- * @param callBackFunction
- */
-export function getWorkflowsForProjectQuery(
-  projectPk,
-  callBackFunction = (data: WorkflowsForProjectQueryResp) =>
-    console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk: projectPk
-    }).done(function (data: WorkflowsForProjectQueryResp) {
-      callBackFunction(data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-/**
+ *  @getUsersForObjectQuery
+ *
+ *  endpoint project/get-users-for-object/
+ *
  *  Get the list of users for a project
  * @param objectID
  * @param objectType
@@ -119,7 +109,19 @@ export function getUsersForObjectQuery(
   }
 }
 
-//Duplicate a project workflow, strategy, or outcome
+/**
+ *
+ * @duplicateBaseItemQuery
+ *
+ *
+ *
+ * Duplicate a project workflow, strategy, or outcome
+ *
+ * @param itemPk
+ * @param objectType
+ * @param projectID
+ * @param callBackFunction
+ */
 export function duplicateBaseItemQuery(
   itemPk: number,
   objectType: string,
@@ -169,4 +171,216 @@ export function duplicateBaseItemQuery(
   }
 }
 
+/*******************************************************
+ * WORKFLOWS
+ *******************************************************/
+
+/**
+ * @getWorkflowsForProjectQuery
+ *
+ *
+ *
+ * Get the workflows for a project
+ * @param projectPk
+ * @param callBackFunction
+ */
+export function getWorkflowsForProjectQuery(
+  projectPk,
+  callBackFunction = (data: WorkflowsForProjectQueryResp) =>
+    console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk: projectPk
+    }).done(function (data: WorkflowsForProjectQueryResp) {
+      callBackFunction(data)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/**
+ * @getWorkflowDataQuery
+ *
+ * endpoint: workflow/get-workflow-data/
+ *
+ * Get the data from the workflow
+ * @param workflowPk
+ * @param callBackFunction
+ */
+export function getWorkflowDataQuery(
+  workflowPk,
+  callBackFunction = (data: WorkflowDataQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function (data: WorkflowDataQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/**
+ * Get the list of workflows we can link to a node
+ *
+ * endpoint: workflow/get-possible-linked-workflows
+ *
+ * @param nodeData
+ * @param updateFunction
+ * @param callBackFunction
+ */
+export function getLinkedWorkflowMenuQuery(
+  nodeData,
+  updateFunction,
+  callBackFunction = (data?: LinkedWorkflowMenuQueryResp) =>
+    console.log('success')
+) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (data: LinkedWorkflowMenuQueryResp) => {
+      callBackFunction()
+      // @TODO call to react render
+      //  openLinkedWorkflowMenu(data, updateFunction)
+    }
+  )
+}
+
+/*******************************************************
+ * OUTCOME
+ *******************************************************/
+/**
+ * @newOutcome
+ *
+ * Add a new outcome to a workflow
+ *
+ * endpoint: workflow/outcome/new
+ *
+ * @param workflowPk
+ * @param object_set_id
+ * @param callBackFunction
+ */
+export function newOutcomeQuery(
+  workflowPk: number,
+  object_set_id: number,
+  callBackFunction = (data: SuccessPost) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function (data: SuccessPost) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
 export default {}
+
+/*******************************************************
+ * UPDATE
+ *******************************************************/
+
+//
+/**
+ * @updateValue
+ * Update the value of an object in database. JSON may be partial. Debounced in case the user is typing a lot.
+ *
+ * endpoint: workflow/updatevalue/
+ *
+ * @param objectID
+ * @param objectType
+ * @param json
+ * @param changeField
+ * @param callBackFunction
+ */
+export function updateValue(
+  objectID,
+  objectType,
+  json,
+  changeField = false,
+  callBackFunction = () => console.log('success')
+) {
+  const t = 1000
+  const previousCall = document.lastUpdateCall
+
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  }
+
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer)
+  }
+  if (
+    previousCall &&
+    (previousCall.id !== document.lastUpdateCall.id ||
+      previousCall.type !== document.lastUpdateCall.type ||
+      previousCall.field !== document.lastUpdateCall.field)
+  ) {
+    document.lastUpdateCallFunction()
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  }
+
+  if (changeField) {
+    // @ts-ignore
+    post_object.changeFieldID = COURSEFLOW_APP.contextData
+    // @ts-ignore
+      .changeFieldID as number
+  }
+
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function (data) {
+          // @ts-ignore
+          if (data.action === DATA_ACTIONS.POSTED) {
+            // @ts-ignore
+            callBackFunction(data)
+          } else window.fail_function(data.action)
+        }
+      )
+    } catch (err) {
+      window.fail_function()
+    }
+  }
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
+}
+
+//As above, but not debounced
+export function updateValueInstant(
+  objectID,
+  objectType,
+  json,
+  callBackFunction = () => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function (data) {
+      // @ts-ignore
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}

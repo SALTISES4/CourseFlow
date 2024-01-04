@@ -27,7 +27,7 @@ class GridView extends React.Component {
     return (
       <div className="workflow-details">
         <div className="grid-ponderation">
-          {gettext('Times in hours shown in format') +
+          {window.gettext('Times in hours shown in format') +
             ': ' +
             gettext('Theory') +
             '/' +

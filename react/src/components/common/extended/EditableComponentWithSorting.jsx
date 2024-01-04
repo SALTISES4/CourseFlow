@@ -45,14 +45,13 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
           return false
         }
         if (
-          drag_item.children('.locked:not(.locked-' + user_id + ')').length > 0
+          drag_item.children('.locked:not(.locked-' + COURSEFLOW_APP.contextData.user_id + ')').length > 0
         ) {
           e.preventDefault()
           return false
         }
         $('.workflow-canvas').addClass('dragging-' + draggable_type)
         $(draggable_selector).addClass('dragging')
-        var old_parent_id = parent_id
         drag_item.attr('data-old-parent-id', parent_id)
         drag_item.attr('data-restrict-to', restrictTo)
         var old_index = drag_item.prevAll().length

@@ -3,10 +3,11 @@ import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getWeekByID } from '@cfFindState'
 import { moveNodeWeek } from '@cfReducers'
-import { insertedAt, insertedAtInstant } from '@XMLHTTP/PostFunctions'
+import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 // @components
 import NodeWeek from './NodeWeek'
 import { WeekUnconnected } from '../WorkflowView'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 
 /**
  * In the comparison view, the week should be only a single column

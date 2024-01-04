@@ -60,7 +60,7 @@ class ComparisonView extends React.Component {
     const data = this.props.data
     return (
       <div className="project-header">
-        <div>{gettext('Comparing workflows for:')}</div>
+        <div>{window.gettext('Comparing workflows for:')}</div>
         <WorkflowTitle
           data={data}
           no_hyperlink={true}
@@ -75,7 +75,7 @@ class ComparisonView extends React.Component {
             <span className="green material-symbols-rounded">
               arrow_back_ios
             </span>
-            <div>{gettext('Return to project')}</div>
+            <div>{window.gettext('Return to project')}</div>
           </a>,
           $('.titlebar .title')[0]
         )}

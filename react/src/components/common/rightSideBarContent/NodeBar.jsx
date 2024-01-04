@@ -56,7 +56,7 @@ class NodeBarUnconnected extends React.Component {
     let nodebar_nodes
     if (!this.props.renderer.read_only)
       nodebar_nodes = [
-        <h4>{gettext('Nodes')}</h4>,
+        <h4>{window.gettext('Nodes')}</h4>,
         <div className="node-bar-column-block">{nodebarcolumnworkflows}</div>
       ]
 
@@ -69,14 +69,14 @@ class NodeBarUnconnected extends React.Component {
 
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{gettext('Add to workflow')}</h3>
+        <h3 className="drag-and-drop">{window.gettext('Add to workflow')}</h3>
         <hr />
         {nodebar_nodes}
         <hr />
-        <h4>{gettext('My strategies')}</h4>
+        <h4>{window.gettext('My strategies')}</h4>
         <div className="strategy-bar-strategy-block">{strategies}</div>
         {saltise_strategies.length > 0 && [
-          <h4>{gettext('SALTISE strategies')}</h4>,
+          <h4>{window.gettext('SALTISE strategies')}</h4>,
           <div className="strategy-bar-strategy-block">
             {saltise_strategies}
           </div>
@@ -157,7 +157,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   makeDraggable() {
     const draggable_selector = 'node-week'
     const draggable_type = 'nodeweek'
-    $(this.maindiv.current).draggable({
+    $(this.maindiv?.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
         helper.addClass('node-ghost')
@@ -270,7 +270,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
   makeDraggable() {
     const draggable_selector = 'week-workflow'
     const draggable_type = 'weekworkflow'
-    $(this.maindiv.current).draggable({
+    $(this.maindiv?.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
         helper.addClass('week-ghost')

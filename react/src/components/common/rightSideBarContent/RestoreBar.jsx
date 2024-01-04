@@ -57,21 +57,21 @@ class RestoreBarUnconnected extends React.Component {
 
     return (
       <div id="restore-bar-workflow" className="right-panel-inner">
-        <h3>{gettext('Restore items')}</h3>
+        <h3>{window.gettext('Restore items')}</h3>
         <hr />
-        <h4>{gettext('Nodes')}</h4>
+        <h4>{window.gettext('Nodes')}</h4>
         <div className="node-bar-column-block">{nodes}</div>
         <hr />
-        <h4>{gettext('Weeks')}</h4>
+        <h4>{window.gettext('Weeks')}</h4>
         <div className="node-bar-column-block">{weeks}</div>
         <hr />
-        <h4>{gettext('Columns')}</h4>
+        <h4>{window.gettext('Columns')}</h4>
         <div className="node-bar-column-block">{columns}</div>
         <hr />
-        <h4>{gettext('Outcomes')}</h4>
+        <h4>{window.gettext('Outcomes')}</h4>
         <div className="node-bar-column-block">{outcomes}</div>
         <hr />
-        <h4>{gettext('Node Links')}</h4>
+        <h4>{window.gettext('Node Links')}</h4>
         <div className="node-bar-column-block">{nodelinks}</div>
       </div>
     )
@@ -113,11 +113,11 @@ class RestoreBarItem extends ComponentWithToggleDrop {
       <div ref={this.maindiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
         <div className="workflow-created">
-          {gettext('Deleted') + ' ' + this.props.data.deleted_on}
+          {window.gettext('Deleted') + ' ' + this.props.data.deleted_on}
         </div>
-        <button onClick={this.restore.bind(this)}>{gettext('Restore')}</button>
+        <button onClick={this.restore.bind(this)}>{window.gettext('Restore')}</button>
         <button onClick={this.delete.bind(this)}>
-          {gettext('Permanently Delete')}
+          {window.gettext('Permanently Delete')}
         </button>
       </div>
     )

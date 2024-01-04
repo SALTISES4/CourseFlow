@@ -48,7 +48,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
     if (this.props.renderer.read_only) return
     const draggable_selector = 'outcome'
     const draggable_type = 'outcome'
-    $(this.maindiv.current).draggable({
+    $(this.maindiv?.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
         helper.addClass('outcome-ghost')
@@ -130,7 +130,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext(
+        window.gettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length

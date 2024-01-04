@@ -30,38 +30,36 @@ class MenuBar extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let overflow_links
-    let visible_buttons
-    let viewbar
-    let userbar
-
-    if (this.props.overflow_links) {
-      overflow_links = this.props.overflow_links
-    }
-    if (this.props.visible_buttons) {
-      visible_buttons = this.props.visible_buttons
-    }
-    if (this.props.viewbar) viewbar = this.props.viewbar()
-    if (this.props.userbar) userbar = this.props.userbar()
+    const viewBar = this.props?.viewbar ? this.props?.viewbar() : null
+    const userBar = this.props?.userbar ? this.props?.userbar() : null
+    const visibleButtons = this.props?.visibleButtons
+      ? this.props?.visibleButtons()
+      : null
+    const overflowLinks = this.props?.overflowLinks
+      ? this.props?.overflowLinks()
+      : null
 
     return (
       <div className="menubar">
         <div id="floatbar" className="floatbar">
-          <div id="visible-icons">{visible_buttons}</div>
-          <div id="overflow-options">
-            <span className="hover-shade green material-symbols-rounded">
-              more_horiz
-            </span>
-            <div id="overflow-links" className="create-dropdown">
-              {overflow_links}
+          {visibleButtons && <div id="visible-icons">{visibleButtons}</div>}
+          {overflowLinks && (
+            <div id="overflow-options">
+              <span className="hover-shade green material-symbols-rounded">
+                more_horiz
+              </span>
+
+              <div id="overflow-links" className="create-dropdown">
+                {overflowLinks}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div id="userbar" className="floatbar">
-          {userbar}
+          {userBar}
         </div>
         <div id="viewbar" className="floatbar">
-          {viewbar}
+          {viewBar}
         </div>
       </div>
     )

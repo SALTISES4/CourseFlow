@@ -319,9 +319,9 @@ export function workflowReducer(state = {}, action) {
       }
       return new_state
     case 'column/deleteSelf':
-    case 'column/deleteSelfSoft':
+    case 'column/deleteSelfSoft': {
       if (state.columnworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state }
+        const new_state = { ...state }
         new_state.columnworkflow_set = state.columnworkflow_set.slice()
         new_state.columnworkflow_set.splice(
           new_state.columnworkflow_set.indexOf(action.payload.parent_id),
@@ -330,8 +330,9 @@ export function workflowReducer(state = {}, action) {
         return new_state
       }
       return state
-    case 'column/restoreSelf':
-      var new_state = { ...state }
+    }
+    case 'column/restoreSelf': {
+      const new_state = { ...state }
       new_state.columnworkflow_set = state.columnworkflow_set.slice()
       new_state.columnworkflow_set.splice(
         action.payload.throughparent_index,
@@ -339,19 +340,21 @@ export function workflowReducer(state = {}, action) {
         action.payload.throughparent_id
       )
       return new_state
-    case 'node/newNode':
+    }
+    case 'node/newNode': {
       if (
         state.columnworkflow_set.indexOf(action.payload.columnworkflow.id) >= 0
       )
         return state
-      new_state = { ...state }
-      var new_columnworkflow_set = state.columnworkflow_set.slice()
+      const new_state = { ...state }
+      const new_columnworkflow_set = state.columnworkflow_set.slice()
       new_columnworkflow_set.push(action.payload.columnworkflow.id)
       new_state.columnworkflow_set = new_columnworkflow_set
       return new_state
-    case 'column/insertBelow':
-      new_state = { ...state }
-      var new_columnworkflow_set = state.columnworkflow_set.slice()
+    }
+    case 'column/insertBelow': {
+      const new_state = { ...state }
+      const new_columnworkflow_set = state.columnworkflow_set.slice()
       new_columnworkflow_set.splice(
         action.payload.new_through.rank,
         0,
@@ -359,28 +362,45 @@ export function workflowReducer(state = {}, action) {
       )
       new_state.columnworkflow_set = new_columnworkflow_set
       return new_state
-    case 'workflow/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
-      var new_state = { ...state, ...action.payload.json }
-      return new_state
+    }
+    case 'workflow/changeField': {
+      if (
+        action.payload.changeFieldID ===
+        COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
+      return { ...state, ...action.payload.json }
+    }
     default:
       return state
   }
 }
 
 export function outcomeworkflowReducer(state = [], action) {
+  // @todo implement when we move to TS
+  // enum ACTIONS = {
+  //
+  //   REPLACESTOREDATA = 'replaceStoreData',
+  //
+  //   OUTCOMEWORKFLOW__MOVEDTO = 'outcomeworkflow/movedTo',
+  // OUTCOMEWORKFLOW_CHANGEID = 'outcomeworkflow/changeID',
+  // OUTCOME_BASE__INSERTBELOW = 'outcome_base/insertBelow',
+  //
+  // OUTCOME___NEWOUTCOME = 'outcome/newOutcome'
+  // }
+
   switch (action.type) {
     case 'replaceStoreData':
       if (action.payload.outcomeworkflow) return action.payload.outcomeworkflow
       return state
-    case 'refreshStoreData':
-      var new_state = state.slice()
+    case 'refreshStoreData': {
+      const new_state = state.slice()
       if (action.payload.outcomeworkflow) {
-        for (var i = 0; i < action.payload.outcomeworkflow.length; i++) {
+        for (let i = 0; i < action.payload.outcomeworkflow.length; i++) {
           const new_obj = action.payload.outcomeworkflow[i]
           let added = false
           for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
+            if (new_state[j].id === new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
               break
@@ -391,18 +411,20 @@ export function outcomeworkflowReducer(state = [], action) {
         }
       }
       return new_state
-    case 'outcomeworkflow/movedTo':
-      new_state = state.slice()
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
+    }
+    case 'outcomeworkflow/movedTo': {
+      const new_state = state.slice()
+      for (let i = 0; i < state.length; i++) {
+        if (state[i].id === action.payload.id) {
           new_state[i] = { ...state[i], no_drag: true }
         }
       }
       return new_state
-    case 'outcomeworkflow/changeID':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice()
+    }
+    case 'outcomeworkflow/changeID': {
+      for (let i = 0; i < state.length; i++) {
+        if (state[i].id === action.payload.old_id) {
+          const new_state = state.slice()
           new_state[i] = {
             ...new_state[i],
             id: action.payload.new_id,
@@ -412,23 +434,27 @@ export function outcomeworkflowReducer(state = [], action) {
         }
       }
       return state
-    case 'outcome_base/deleteSelf':
+    }
+    case 'outcome_base/deleteSelf': {
       for (var i = 0; i < state.length; i++) {
         if (state[i].outcome == action.payload.id) {
-          var new_state = state.slice()
+          const new_state = state.slice()
           new_state.splice(i, 1)
           return new_state
         }
       }
       return state
-    case 'outcome_base/insertBelow':
-      new_state = state.slice()
+    }
+    case 'outcome_base/insertBelow': {
+      const new_state = state.slice()
       new_state.push(action.payload.new_through)
       return new_state
-    case 'outcome/newOutcome':
-      new_state = state.slice()
+    }
+    case 'outcome/newOutcome': {
+      const new_state = state.slice()
       new_state.push(action.payload.new_through)
       return new_state
+    }
     default:
       return state
   }
@@ -583,7 +609,10 @@ export function columnReducer(state = [], action) {
       new_state.push(action.payload.new_model)
       return new_state
     case 'column/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
           var new_state = state.slice()
@@ -847,7 +876,10 @@ export function weekReducer(state = [], action) {
       }
       return state
     case 'week/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
           var new_state = state.slice()
@@ -1105,7 +1137,10 @@ export function nodeReducer(state = [], action) {
       new_state.push(action.payload.new_model)
       return new_state
     case 'node/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
           var new_state = state.slice()
@@ -1251,7 +1286,10 @@ export function nodelinkReducer(state = [], action) {
       }
       return state
     case 'nodelink/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
           var new_state = state.slice()
@@ -1522,7 +1560,10 @@ export function outcomeReducer(state = [], action) {
       return state
     case 'outcome/changeField':
     case 'outcome_base/changeField':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
           var new_state = state.slice()
@@ -1533,7 +1574,10 @@ export function outcomeReducer(state = [], action) {
       return state
     case 'outcome/changeFieldMany':
     case 'outcome_base/changeFieldMany':
-      if (action.payload.changeFieldID == changeFieldID) return state
+      if (
+        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      )
+        return state
       var new_state = state.slice()
       for (var i = 0; i < state.length; i++) {
         if (action.payload.ids.indexOf(state[i].id) >= 0) {

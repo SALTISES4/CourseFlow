@@ -43,7 +43,7 @@ export default class ComparisonViewBar extends React.Component {
     )
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h4>{gettext('Object Sets') + ':'}</h4>
+        <h4>{window.gettext('Object Sets') + ':'}</h4>
         {sets}
       </div>
     )

@@ -1,12 +1,11 @@
 import * as React from 'react'
-import {
-  setUserPermission,
-  getUserList,
-  updateValueInstant
-} from '@XMLHTTP/PostFunctions'
+import { setUserPermission, getUserList } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
 import * as Constants from '@cfConstants'
-import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
+import {
+  getUsersForObjectQuery,
+  updateValueInstant
+} from '@XMLHTTP/APIFunctions'
 
 class UserLabel extends React.Component {
   constructor(props) {

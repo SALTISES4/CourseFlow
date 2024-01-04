@@ -32,12 +32,12 @@ class LibraryPage extends React.Component {
   }
 
   /***
-   * z
+   *
    */
   CreateButton = () => {
     /**
      * NOTE: this create button previously had a condition where
-     * would only render it props.readonly was not dfined, but read only not set for libary path ever
+     * would only render it props.readonly was not defined, but read only not set for library path ever
      *  (??) verify
      */
     return (
@@ -79,7 +79,7 @@ class LibraryPage extends React.Component {
   }
 
   OverflowLinks = () => {
-    const link = (
+    return (
       <a
         id="import-old"
         className="hover-shade"
@@ -88,7 +88,6 @@ class LibraryPage extends React.Component {
         {window.gettext('Import from old CourseFlow')}
       </a>
     )
-    return [link]
   }
 
   /*******************************************************
@@ -98,8 +97,8 @@ class LibraryPage extends React.Component {
     return (
       <div className="main-block">
         <MenuBar
-          overflow_links={<this.OverflowLinks />}
-          visible_buttons={<this.CreateButton />}
+          overflowLinks={() => <this.OverflowLinks />}
+          visibleButtons={() => <this.CreateButton />}
         />
         <div className="project-menu">
           <WorkflowFilter

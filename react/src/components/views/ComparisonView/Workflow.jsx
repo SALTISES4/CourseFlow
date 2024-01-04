@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import * as Utility from '@cfUtility'
 
-import { insertedAt } from '@XMLHTTP/PostFunctions'
 import WeekWorkflow from './WeekWorkflow'
 import { moveWeekWorkflow } from '@cfReducers'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 
 //Basic component representing the workflow
 class WorkflowUnconnected extends EditableComponentWithSorting {
@@ -48,7 +48,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    if (type == 'weekworkflow') {
+    if (type === 'weekworkflow') {
       this.props.renderer.micro_update(
         moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
@@ -70,7 +70,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   render() {
     const data = this.props.data
     const renderer = this.props.renderer
-    var weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
+    const weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
       <WeekWorkflow
         condensed={data.condensed}
         key={weekworkflow}

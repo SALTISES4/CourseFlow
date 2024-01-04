@@ -1,5 +1,3 @@
-import { changeField } from '@cfRedux/Reducers'
-import * as Constants from '../constants'
 import { DATA_ACTIONS } from './common'
 
 /*
@@ -24,7 +22,7 @@ export function API_POST(url = '', data = {}) {
       headers: {
         'Content-Type': 'application/json',
         // 'root' comes from the csrf-setup script
-        'X-CSRFToken': root.getCsrfToken()
+        'X-CSRFToken': window.getCsrfToken()
       },
       body: JSON.stringify(data)
     })
@@ -78,104 +76,9 @@ export function setLinkedWorkflow(
   })
 }
 
-//Update the value of an object in database. JSON may be partial. Debounced in case the user is typing a lot.
-export function updateValue(
-  objectID,
-  objectType,
-  json,
-  changeField = false,
-  callBackFunction = () => console.log('success')
-) {
-  var t = 1000
-  const previousCall = document.lastUpdateCall
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  }
 
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer)
-  }
-  if (
-    previousCall &&
-    (previousCall.id !== document.lastUpdateCall.id ||
-      previousCall.type !== document.lastUpdateCall.type ||
-      previousCall.field !== document.lastUpdateCall.field)
-  ) {
-    document.lastUpdateCallFunction()
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json)
-  }
-  if (changeField) post_object.changeFieldID = changeFieldID
-  else post_object.changeFieldID = 0
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function (data) {
-          if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-          else window.fail_function(data.action)
-        }
-      )
-    } catch (err) {
-      window.fail_function()
-    }
-  }
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
-}
 
-//As above, but not debounced
-export function updateValueInstant(
-  objectID,
-  objectType,
-  json,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 
-//Toggles whether or not an object is dropped. No longer sent to database.
-export function toggleDrop(
-  objectID,
-  objectType,
-  is_dropped,
-  dispatch,
-  depth = 1
-) {
-  try {
-    const default_drop = Constants.get_default_drop_state(
-      objectID,
-      objectType,
-      depth
-    )
-    if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, is_dropped)
-    else window.localStorage.removeItem(objectType + objectID)
-  } catch (err) {
-    if (
-      err.name === 'QuotaExceededError' ||
-      err.name === 'NS_ERROR_DOM_QUOTA_REACHED'
-    ) {
-      window.localStorage.clear()
-    }
-  }
-  dispatch(changeField(objectID, objectType, { is_dropped: is_dropped }))
-}
 
 //Add a new node to a week
 export function newNode(
@@ -191,25 +94,6 @@ export function newNode(
       position: JSON.stringify(position),
       columnPk: JSON.stringify(column),
       columnType: JSON.stringify(column_type)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Add a new outcome to a workflow
-export function newOutcome(
-  workflowPk,
-  object_set_id,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
@@ -480,56 +364,6 @@ export function insertChild(
   }
 }
 
-//Called when a node should have its column changed
-export function columnChanged(renderer, objectID, columnID) {
-  if (!renderer.dragAction) renderer.dragAction = {}
-  if (!renderer.dragAction['nodeweek']) renderer.dragAction['nodeweek'] = {}
-  renderer.dragAction['nodeweek'] = {
-    ...renderer.dragAction['nodeweek'],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify('node'),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
-  }
-  $(document).off('nodeweek-dropped')
-  $(document).on('nodeweek-dropped', () => {
-    dragAction(renderer, renderer.dragAction['nodeweek'])
-    renderer.dragAction['nodeweek'] = null
-    $(document).off('nodeweek-dropped')
-  })
-}
-
-//Called when an object in a list is reordered
-export function insertedAt(
-  renderer,
-  objectID,
-  objectType,
-  parentID,
-  parentType,
-  newPosition,
-  throughType
-) {
-  if (!renderer.dragAction) renderer.dragAction = {}
-  if (!renderer.dragAction[throughType]) renderer.dragAction[throughType] = {}
-  renderer.dragAction[throughType] = {
-    ...renderer.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
-  }
-  $(document).off(throughType + '-dropped')
-  if (objectID)
-    $(document).on(throughType + '-dropped', () => {
-      dragAction(renderer, renderer.dragAction[throughType])
-      renderer.dragAction[throughType] = null
-      $(document).off(throughType + '-dropped')
-    })
-}
-
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
   renderer,
@@ -624,23 +458,6 @@ export function toggleFavourite(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the data from the workflow
-export function getWorkflowData(
-  workflowPk,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-      workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
@@ -982,6 +799,7 @@ export function getExport(
 }
 
 //create live project
+// @todo can this be removed ?
 export function makeProjectLiveQuery(
   projectPk,
   callBackFunction = (data) => console.log('success')
@@ -1001,6 +819,7 @@ export function makeProjectLiveQuery(
 }
 
 //set visibility of workflow
+// @todo can this be removed ?
 export function setWorkflowVisibilityQuery(
   liveprojectPk,
   workflowPk,
@@ -1025,6 +844,7 @@ export function setWorkflowVisibilityQuery(
 } //set visibility of workflow
 
 //get live project data
+// @todo can this be removed ?
 export function getLiveProjectDataQuery(
   projectPk,
   data_type,
@@ -1047,6 +867,7 @@ export function getLiveProjectDataQuery(
 }
 
 //get live project data
+// @todo can this be removed ?
 export function getLiveProjectDataStudentQuery(
   projectPk,
   data_type,
@@ -1166,6 +987,7 @@ export function addUsersToAssignmentQuery(
   }
 }
 
+// @todo can this be removed ?
 export function updateLiveProjectValueQuery(
   objectID,
   objectType,

@@ -30,7 +30,7 @@ export default class extends React.Component {
 
     return (
       <select className="outcome-adder" onChange={this.onChange.bind(this)}>
-        <option value={0}>{gettext('Add outcome')}</option>
+        <option value={0}>{window.gettext('Add outcome')}</option>
         {options}
       </select>
     )

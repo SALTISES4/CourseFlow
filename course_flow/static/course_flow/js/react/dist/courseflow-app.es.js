@@ -5216,11 +5216,11 @@ var length = 0;
 var position = 0;
 var character = 0;
 var characters = "";
-function node(value, root2, parent, type, props, children, length2) {
-  return { value, root: root2, parent, type, props, children, line, column: column$1, length: length2, return: "" };
+function node(value, root, parent, type, props, children, length2) {
+  return { value, root, parent, type, props, children, line, column: column$1, length: length2, return: "" };
 }
-function copy(root2, props) {
-  return assign(node("", null, null, "", null, null, 0), root2, { length: -root2.length }, props);
+function copy(root, props) {
+  return assign(node("", null, null, "", null, null, 0), root, { length: -root.length }, props);
 }
 function char() {
   return character;
@@ -5337,7 +5337,7 @@ function identifier(index) {
 function compile(value) {
   return dealloc(parse("", null, null, null, [""], value = alloc(value), 0, [0], value));
 }
-function parse(value, root2, parent, rule, rules, rulesets, pseudo, points, declarations) {
+function parse(value, root, parent, rule, rules, rulesets, pseudo, points, declarations) {
   var index = 0;
   var offset = 0;
   var length2 = pseudo;
@@ -5379,7 +5379,7 @@ function parse(value, root2, parent, rule, rules, rulesets, pseudo, points, decl
         switch (peek()) {
           case 42:
           case 47:
-            append(comment(commenter(next(), caret()), root2, parent), declarations);
+            append(comment(commenter(next(), caret()), root, parent), declarations);
             break;
           default:
             characters2 += "/";
@@ -5403,10 +5403,10 @@ function parse(value, root2, parent, rule, rules, rulesets, pseudo, points, decl
           case 59:
             characters2 += ";";
           default:
-            append(reference = ruleset(characters2, root2, parent, index, offset, rules, points, type, props = [], children = [], length2), rulesets);
+            append(reference = ruleset(characters2, root, parent, index, offset, rules, points, type, props = [], children = [], length2), rulesets);
             if (character2 === 123)
               if (offset === 0)
-                parse(characters2, root2, reference, reference, props, rulesets, length2, points, children);
+                parse(characters2, root, reference, reference, props, rulesets, length2, points, children);
               else
                 switch (atrule === 99 && charat(characters2, 3) === 110 ? 100 : atrule) {
                   case 100:
@@ -5449,7 +5449,7 @@ function parse(value, root2, parent, rule, rules, rulesets, pseudo, points, decl
     }
   return rulesets;
 }
-function ruleset(value, root2, parent, index, offset, rules, points, type, props, children, length2) {
+function ruleset(value, root, parent, index, offset, rules, points, type, props, children, length2) {
   var post = offset - 1;
   var rule = offset === 0 ? rules : [""];
   var size2 = sizeof(rule);
@@ -5457,13 +5457,13 @@ function ruleset(value, root2, parent, index, offset, rules, points, type, props
     for (var x = 0, y = substr(value, post + 1, post = abs$2(j = points[i])), z = value; x < size2; ++x)
       if (z = trim(j > 0 ? rule[x] + " " + y : replace(y, /&\f/g, rule[x])))
         props[k++] = z;
-  return node(value, root2, parent, offset === 0 ? RULESET : type, props, children, length2);
+  return node(value, root, parent, offset === 0 ? RULESET : type, props, children, length2);
 }
-function comment(value, root2, parent) {
-  return node(value, root2, parent, COMMENT, from(char()), substr(value, 2, -2), 0);
+function comment(value, root, parent) {
+  return node(value, root, parent, COMMENT, from(char()), substr(value, 2, -2), 0);
 }
-function declaration(value, root2, parent, length2) {
-  return node(value, root2, parent, DECLARATION, substr(value, 0, length2), substr(value, length2 + 1, -1), length2);
+function declaration(value, root, parent, length2) {
+  return node(value, root, parent, DECLARATION, substr(value, 0, length2), substr(value, length2 + 1, -1), length2);
 }
 function serialize(children, callback) {
   var output = "";
@@ -7769,7 +7769,7 @@ function createSpacing(spacingInput = 8) {
   spacing.mui = true;
   return spacing;
 }
-function compose(...styles2) {
+function compose$1(...styles2) {
   const handlers = styles2.reduce((acc, style2) => {
     style2.filterProps.forEach((prop) => {
       acc[prop] = style2;
@@ -7853,7 +7853,7 @@ borderRadius.propTypes = process.env.NODE_ENV !== "production" ? {
   borderRadius: responsivePropType$1
 } : {};
 borderRadius.filterProps = ["borderRadius"];
-compose(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
+compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
 const gap = (props) => {
   if (props.gap !== void 0 && props.gap !== null) {
     const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
@@ -7923,7 +7923,7 @@ const gridTemplateAreas = style$2({
 const gridArea = style$2({
   prop: "gridArea"
 });
-compose(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
+compose$1(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
 function paletteTransform(value, userValue) {
   if (userValue === "grey") {
     return userValue;
@@ -7946,7 +7946,7 @@ const backgroundColor = style$2({
   themeKey: "palette",
   transform: paletteTransform
 });
-compose(color, bgcolor, backgroundColor);
+compose$1(color, bgcolor, backgroundColor);
 function sizingTransform(value) {
   return value <= 1 && value !== 0 ? `${value * 100}%` : value;
 }
@@ -8007,7 +8007,7 @@ style$2({
 const boxSizing = style$2({
   prop: "boxSizing"
 });
-compose(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
+compose$1(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
 const defaultSxConfig = {
   // borders
   border: {
@@ -14527,11 +14527,11 @@ function requireReactDom_development() {
           return false;
         }
       }
-      function onScheduleRoot(root3, children) {
+      function onScheduleRoot(root2, children) {
         {
           if (injectedHook && typeof injectedHook.onScheduleFiberRoot === "function") {
             try {
-              injectedHook.onScheduleFiberRoot(rendererID, root3, children);
+              injectedHook.onScheduleFiberRoot(rendererID, root2, children);
             } catch (err) {
               if (!hasLoggedError) {
                 hasLoggedError = true;
@@ -14541,10 +14541,10 @@ function requireReactDom_development() {
           }
         }
       }
-      function onCommitRoot(root3, eventPriority) {
+      function onCommitRoot(root2, eventPriority) {
         if (injectedHook && typeof injectedHook.onCommitFiberRoot === "function") {
           try {
-            var didError = (root3.current.flags & DidCapture) === DidCapture;
+            var didError = (root2.current.flags & DidCapture) === DidCapture;
             if (enableProfilerTimer) {
               var schedulerPriority;
               switch (eventPriority) {
@@ -14564,7 +14564,7 @@ function requireReactDom_development() {
                   schedulerPriority = NormalPriority;
                   break;
               }
-              injectedHook.onCommitFiberRoot(rendererID, root3, schedulerPriority, didError);
+              injectedHook.onCommitFiberRoot(rendererID, root2, schedulerPriority, didError);
             }
           } catch (err) {
             {
@@ -14576,10 +14576,10 @@ function requireReactDom_development() {
           }
         }
       }
-      function onPostCommitRoot(root3) {
+      function onPostCommitRoot(root2) {
         if (injectedHook && typeof injectedHook.onPostCommitFiberRoot === "function") {
           try {
-            injectedHook.onPostCommitFiberRoot(rendererID, root3);
+            injectedHook.onPostCommitFiberRoot(rendererID, root2);
           } catch (err) {
             {
               if (!hasLoggedError) {
@@ -15078,14 +15078,14 @@ function requireReactDom_development() {
             return lanes;
         }
       }
-      function getNextLanes(root3, wipLanes) {
-        var pendingLanes = root3.pendingLanes;
+      function getNextLanes(root2, wipLanes) {
+        var pendingLanes = root2.pendingLanes;
         if (pendingLanes === NoLanes) {
           return NoLanes;
         }
         var nextLanes = NoLanes;
-        var suspendedLanes = root3.suspendedLanes;
-        var pingedLanes = root3.pingedLanes;
+        var suspendedLanes = root2.suspendedLanes;
+        var pingedLanes = root2.pingedLanes;
         var nonIdlePendingLanes = pendingLanes & NonIdleLanes;
         if (nonIdlePendingLanes !== NoLanes) {
           var nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
@@ -15129,9 +15129,9 @@ function requireReactDom_development() {
         if ((nextLanes & InputContinuousLane) !== NoLanes) {
           nextLanes |= pendingLanes & DefaultLane;
         }
-        var entangledLanes = root3.entangledLanes;
+        var entangledLanes = root2.entangledLanes;
         if (entangledLanes !== NoLanes) {
-          var entanglements = root3.entanglements;
+          var entanglements = root2.entanglements;
           var lanes = nextLanes & entangledLanes;
           while (lanes > 0) {
             var index2 = pickArbitraryLaneIndex(lanes);
@@ -15142,8 +15142,8 @@ function requireReactDom_development() {
         }
         return nextLanes;
       }
-      function getMostRecentEventTime(root3, lanes) {
-        var eventTimes = root3.eventTimes;
+      function getMostRecentEventTime(root2, lanes) {
+        var eventTimes = root2.eventTimes;
         var mostRecentEventTime = NoTimestamp;
         while (lanes > 0) {
           var index2 = pickArbitraryLaneIndex(lanes);
@@ -15200,11 +15200,11 @@ function requireReactDom_development() {
             return NoTimestamp;
         }
       }
-      function markStarvedLanesAsExpired(root3, currentTime) {
-        var pendingLanes = root3.pendingLanes;
-        var suspendedLanes = root3.suspendedLanes;
-        var pingedLanes = root3.pingedLanes;
-        var expirationTimes = root3.expirationTimes;
+      function markStarvedLanesAsExpired(root2, currentTime) {
+        var pendingLanes = root2.pendingLanes;
+        var suspendedLanes = root2.suspendedLanes;
+        var pingedLanes = root2.pingedLanes;
+        var expirationTimes = root2.expirationTimes;
         var lanes = pendingLanes;
         while (lanes > 0) {
           var index2 = pickArbitraryLaneIndex(lanes);
@@ -15215,16 +15215,16 @@ function requireReactDom_development() {
               expirationTimes[index2] = computeExpirationTime(lane, currentTime);
             }
           } else if (expirationTime <= currentTime) {
-            root3.expiredLanes |= lane;
+            root2.expiredLanes |= lane;
           }
           lanes &= ~lane;
         }
       }
-      function getHighestPriorityPendingLanes(root3) {
-        return getHighestPriorityLanes(root3.pendingLanes);
+      function getHighestPriorityPendingLanes(root2) {
+        return getHighestPriorityLanes(root2.pendingLanes);
       }
-      function getLanesToRetrySynchronouslyOnError(root3) {
-        var everythingButOffscreen = root3.pendingLanes & ~OffscreenLane;
+      function getLanesToRetrySynchronouslyOnError(root2) {
+        var everythingButOffscreen = root2.pendingLanes & ~OffscreenLane;
         if (everythingButOffscreen !== NoLanes) {
           return everythingButOffscreen;
         }
@@ -15249,12 +15249,12 @@ function requireReactDom_development() {
       function includesOnlyTransitions(lanes) {
         return (lanes & TransitionLanes) === lanes;
       }
-      function includesBlockingLane(root3, lanes) {
+      function includesBlockingLane(root2, lanes) {
         var SyncDefaultLanes = InputContinuousHydrationLane | InputContinuousLane | DefaultHydrationLane | DefaultLane;
         return (lanes & SyncDefaultLanes) !== NoLanes;
       }
-      function includesExpiredLane(root3, lanes) {
-        return (lanes & root3.expiredLanes) !== NoLanes;
+      function includesExpiredLane(root2, lanes) {
+        return (lanes & root2.expiredLanes) !== NoLanes;
       }
       function isTransitionLane(lane) {
         return (lane & TransitionLanes) !== NoLanes;
@@ -15315,20 +15315,20 @@ function requireReactDom_development() {
         }
         return laneMap;
       }
-      function markRootUpdated(root3, updateLane, eventTime) {
-        root3.pendingLanes |= updateLane;
+      function markRootUpdated(root2, updateLane, eventTime) {
+        root2.pendingLanes |= updateLane;
         if (updateLane !== IdleLane) {
-          root3.suspendedLanes = NoLanes;
-          root3.pingedLanes = NoLanes;
+          root2.suspendedLanes = NoLanes;
+          root2.pingedLanes = NoLanes;
         }
-        var eventTimes = root3.eventTimes;
+        var eventTimes = root2.eventTimes;
         var index2 = laneToIndex(updateLane);
         eventTimes[index2] = eventTime;
       }
-      function markRootSuspended(root3, suspendedLanes) {
-        root3.suspendedLanes |= suspendedLanes;
-        root3.pingedLanes &= ~suspendedLanes;
-        var expirationTimes = root3.expirationTimes;
+      function markRootSuspended(root2, suspendedLanes) {
+        root2.suspendedLanes |= suspendedLanes;
+        root2.pingedLanes &= ~suspendedLanes;
+        var expirationTimes = root2.expirationTimes;
         var lanes = suspendedLanes;
         while (lanes > 0) {
           var index2 = pickArbitraryLaneIndex(lanes);
@@ -15337,20 +15337,20 @@ function requireReactDom_development() {
           lanes &= ~lane;
         }
       }
-      function markRootPinged(root3, pingedLanes, eventTime) {
-        root3.pingedLanes |= root3.suspendedLanes & pingedLanes;
+      function markRootPinged(root2, pingedLanes, eventTime) {
+        root2.pingedLanes |= root2.suspendedLanes & pingedLanes;
       }
-      function markRootFinished(root3, remainingLanes) {
-        var noLongerPendingLanes = root3.pendingLanes & ~remainingLanes;
-        root3.pendingLanes = remainingLanes;
-        root3.suspendedLanes = NoLanes;
-        root3.pingedLanes = NoLanes;
-        root3.expiredLanes &= remainingLanes;
-        root3.mutableReadLanes &= remainingLanes;
-        root3.entangledLanes &= remainingLanes;
-        var entanglements = root3.entanglements;
-        var eventTimes = root3.eventTimes;
-        var expirationTimes = root3.expirationTimes;
+      function markRootFinished(root2, remainingLanes) {
+        var noLongerPendingLanes = root2.pendingLanes & ~remainingLanes;
+        root2.pendingLanes = remainingLanes;
+        root2.suspendedLanes = NoLanes;
+        root2.pingedLanes = NoLanes;
+        root2.expiredLanes &= remainingLanes;
+        root2.mutableReadLanes &= remainingLanes;
+        root2.entangledLanes &= remainingLanes;
+        var entanglements = root2.entanglements;
+        var eventTimes = root2.eventTimes;
+        var expirationTimes = root2.expirationTimes;
         var lanes = noLongerPendingLanes;
         while (lanes > 0) {
           var index2 = pickArbitraryLaneIndex(lanes);
@@ -15361,9 +15361,9 @@ function requireReactDom_development() {
           lanes &= ~lane;
         }
       }
-      function markRootEntangled(root3, entangledLanes) {
-        var rootEntangledLanes = root3.entangledLanes |= entangledLanes;
-        var entanglements = root3.entanglements;
+      function markRootEntangled(root2, entangledLanes) {
+        var rootEntangledLanes = root2.entangledLanes |= entangledLanes;
+        var entanglements = root2.entanglements;
         var lanes = rootEntangledLanes;
         while (lanes) {
           var index2 = pickArbitraryLaneIndex(lanes);
@@ -15378,7 +15378,7 @@ function requireReactDom_development() {
           lanes &= ~lane;
         }
       }
-      function getBumpedLaneForHydration(root3, renderLanes2) {
+      function getBumpedLaneForHydration(root2, renderLanes2) {
         var renderLane = getHighestPriorityLane(renderLanes2);
         var lane;
         switch (renderLane) {
@@ -15418,16 +15418,16 @@ function requireReactDom_development() {
             lane = NoLane;
             break;
         }
-        if ((lane & (root3.suspendedLanes | renderLanes2)) !== NoLane) {
+        if ((lane & (root2.suspendedLanes | renderLanes2)) !== NoLane) {
           return NoLane;
         }
         return lane;
       }
-      function addFiberToLanesMap(root3, fiber, lanes) {
+      function addFiberToLanesMap(root2, fiber, lanes) {
         if (!isDevToolsPresent) {
           return;
         }
-        var pendingUpdatersLaneMap = root3.pendingUpdatersLaneMap;
+        var pendingUpdatersLaneMap = root2.pendingUpdatersLaneMap;
         while (lanes > 0) {
           var index2 = laneToIndex(lanes);
           var lane = 1 << index2;
@@ -15436,12 +15436,12 @@ function requireReactDom_development() {
           lanes &= ~lane;
         }
       }
-      function movePendingFibersToMemoized(root3, lanes) {
+      function movePendingFibersToMemoized(root2, lanes) {
         if (!isDevToolsPresent) {
           return;
         }
-        var pendingUpdatersLaneMap = root3.pendingUpdatersLaneMap;
-        var memoizedUpdaters = root3.memoizedUpdaters;
+        var pendingUpdatersLaneMap = root2.pendingUpdatersLaneMap;
+        var memoizedUpdaters = root2.memoizedUpdaters;
         while (lanes > 0) {
           var index2 = laneToIndex(lanes);
           var lane = 1 << index2;
@@ -15458,7 +15458,7 @@ function requireReactDom_development() {
           lanes &= ~lane;
         }
       }
-      function getTransitionsForLanes(root3, lanes) {
+      function getTransitionsForLanes(root2, lanes) {
         {
           return null;
         }
@@ -15505,8 +15505,8 @@ function requireReactDom_development() {
         }
         return IdleEventPriority;
       }
-      function isRootDehydrated(root3) {
-        var currentState = root3.current.memoizedState;
+      function isRootDehydrated(root2) {
+        var currentState = root2.current.memoizedState;
         return currentState.isDehydrated;
       }
       var _attemptSynchronousHydration;
@@ -15677,8 +15677,8 @@ function requireReactDom_development() {
                 return;
               }
             } else if (tag2 === HostRoot) {
-              var root3 = nearestMounted.stateNode;
-              if (isRootDehydrated(root3)) {
+              var root2 = nearestMounted.stateNode;
+              if (isRootDehydrated(root2)) {
                 queuedTarget.blockedOn = getContainerFromFiber(nearestMounted);
                 return;
               }
@@ -15912,8 +15912,8 @@ function requireReactDom_development() {
               }
               targetInst = null;
             } else if (tag2 === HostRoot) {
-              var root3 = nearestMounted.stateNode;
-              if (isRootDehydrated(root3)) {
+              var root2 = nearestMounted.stateNode;
+              if (isRootDehydrated(root2)) {
                 return getContainerFromFiber(nearestMounted);
               }
               targetInst = null;
@@ -16040,16 +16040,16 @@ function requireReactDom_development() {
         });
         return listener;
       }
-      var root2 = null;
+      var root = null;
       var startText = null;
       var fallbackText = null;
       function initialize(nativeEventTarget) {
-        root2 = nativeEventTarget;
+        root = nativeEventTarget;
         startText = getText();
         return true;
       }
       function reset() {
-        root2 = null;
+        root = null;
         startText = null;
         fallbackText = null;
       }
@@ -16079,10 +16079,10 @@ function requireReactDom_development() {
         return fallbackText;
       }
       function getText() {
-        if ("value" in root2) {
-          return root2.value;
+        if ("value" in root) {
+          return root.value;
         }
-        return root2.textContent;
+        return root.textContent;
       }
       function getEventCharCode(nativeEvent) {
         var charCode;
@@ -16913,8 +16913,8 @@ function requireReactDom_development() {
           node2 = node2.parentNode;
         }
       }
-      function getNodeForCharacterOffset(root3, offset) {
-        var node2 = getLeafNode(root3);
+      function getNodeForCharacterOffset(root2, offset) {
+        var node2 = getLeafNode(root2);
         var nodeStart = 0;
         var nodeEnd = 0;
         while (node2) {
@@ -18684,8 +18684,8 @@ function requireReactDom_development() {
           case DOCUMENT_NODE:
           case DOCUMENT_FRAGMENT_NODE: {
             type = nodeType === DOCUMENT_NODE ? "#document" : "#fragment";
-            var root3 = rootContainerInstance.documentElement;
-            namespace = root3 ? root3.namespaceURI : getChildNamespace(null, "");
+            var root2 = rootContainerInstance.documentElement;
+            namespace = root2 ? root2.namespaceURI : getChildNamespace(null, "");
             break;
           }
           default: {
@@ -20563,8 +20563,8 @@ function requireReactDom_development() {
           parent = parent.return;
         }
         if (node2.tag === HostRoot) {
-          var root3 = node2.stateNode;
-          return root3;
+          var root2 = node2.stateNode;
+          return root2;
         } else {
           return null;
         }
@@ -20645,7 +20645,7 @@ function requireReactDom_development() {
           return enqueueConcurrentClassUpdate(fiber, sharedQueue, update, lane);
         }
       }
-      function entangleTransitions(root3, fiber, lane) {
+      function entangleTransitions(root2, fiber, lane) {
         var updateQueue = fiber.updateQueue;
         if (updateQueue === null) {
           return;
@@ -20653,10 +20653,10 @@ function requireReactDom_development() {
         var sharedQueue = updateQueue.shared;
         if (isTransitionLane(lane)) {
           var queueLanes = sharedQueue.lanes;
-          queueLanes = intersectLanes(queueLanes, root3.pendingLanes);
+          queueLanes = intersectLanes(queueLanes, root2.pendingLanes);
           var newQueueLanes = mergeLanes(queueLanes, lane);
           sharedQueue.lanes = newQueueLanes;
-          markRootEntangled(root3, newQueueLanes);
+          markRootEntangled(root2, newQueueLanes);
         }
       }
       function enqueueCapturedUpdate(workInProgress2, capturedUpdate) {
@@ -21014,10 +21014,10 @@ function requireReactDom_development() {
             }
             update.callback = callback;
           }
-          var root3 = enqueueUpdate(fiber, update, lane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
-            entangleTransitions(root3, fiber, lane);
+          var root2 = enqueueUpdate(fiber, update, lane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+            entangleTransitions(root2, fiber, lane);
           }
           {
             markStateUpdateScheduled(fiber, lane);
@@ -21036,10 +21036,10 @@ function requireReactDom_development() {
             }
             update.callback = callback;
           }
-          var root3 = enqueueUpdate(fiber, update, lane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
-            entangleTransitions(root3, fiber, lane);
+          var root2 = enqueueUpdate(fiber, update, lane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+            entangleTransitions(root2, fiber, lane);
           }
           {
             markStateUpdateScheduled(fiber, lane);
@@ -21057,10 +21057,10 @@ function requireReactDom_development() {
             }
             update.callback = callback;
           }
-          var root3 = enqueueUpdate(fiber, update, lane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
-            entangleTransitions(root3, fiber, lane);
+          var root2 = enqueueUpdate(fiber, update, lane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+            entangleTransitions(root2, fiber, lane);
           }
           {
             markForceUpdateScheduled(fiber, lane);
@@ -22441,13 +22441,13 @@ function requireReactDom_development() {
         }
         workInProgressSources.length = 0;
       }
-      function registerMutableSourceForHydration(root3, mutableSource) {
+      function registerMutableSourceForHydration(root2, mutableSource) {
         var getVersion = mutableSource._getVersion;
         var version = getVersion(mutableSource._source);
-        if (root3.mutableSourceEagerHydrationData == null) {
-          root3.mutableSourceEagerHydrationData = [mutableSource, version];
+        if (root2.mutableSourceEagerHydrationData == null) {
+          root2.mutableSourceEagerHydrationData = [mutableSource, version];
         } else {
-          root3.mutableSourceEagerHydrationData.push(mutableSource, version);
+          root2.mutableSourceEagerHydrationData.push(mutableSource, version);
         }
       }
       var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher, ReactCurrentBatchConfig$2 = ReactSharedInternals.ReactCurrentBatchConfig;
@@ -22916,11 +22916,11 @@ function requireReactDom_development() {
               }
             }
           }
-          var root3 = getWorkInProgressRoot();
-          if (root3 === null) {
+          var root2 = getWorkInProgressRoot();
+          if (root2 === null) {
             throw new Error("Expected a work-in-progress root. This is a bug in React. Please file an issue.");
           }
-          if (!includesBlockingLane(root3, renderLanes)) {
+          if (!includesBlockingLane(root2, renderLanes)) {
             pushStoreConsistencyCheck(fiber, getSnapshot, nextSnapshot);
           }
         }
@@ -22961,11 +22961,11 @@ function requireReactDom_development() {
         workInProgressHook !== null && workInProgressHook.memoizedState.tag & HasEffect) {
           fiber.flags |= Passive;
           pushEffect(HasEffect | Passive$1, updateStoreInstance.bind(null, fiber, inst, nextSnapshot, getSnapshot), void 0, null);
-          var root3 = getWorkInProgressRoot();
-          if (root3 === null) {
+          var root2 = getWorkInProgressRoot();
+          if (root2 === null) {
             throw new Error("Expected a work-in-progress root. This is a bug in React. Please file an issue.");
           }
-          if (!includesBlockingLane(root3, renderLanes)) {
+          if (!includesBlockingLane(root2, renderLanes)) {
             pushStoreConsistencyCheck(fiber, getSnapshot, nextSnapshot);
           }
         }
@@ -23017,9 +23017,9 @@ function requireReactDom_development() {
         }
       }
       function forceStoreRerender(fiber) {
-        var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-        if (root3 !== null) {
-          scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+        var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+        if (root2 !== null) {
+          scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
         }
       }
       function mountState(initialState) {
@@ -23328,8 +23328,8 @@ function requireReactDom_development() {
       }
       function mountId() {
         var hook = mountWorkInProgressHook();
-        var root3 = getWorkInProgressRoot();
-        var identifierPrefix = root3.identifierPrefix;
+        var root2 = getWorkInProgressRoot();
+        var identifierPrefix = root2.identifierPrefix;
         var id;
         if (getIsHydrating()) {
           var treeId = getTreeId();
@@ -23368,11 +23368,11 @@ function requireReactDom_development() {
         if (isRenderPhaseUpdate(fiber)) {
           enqueueRenderPhaseUpdate(queue, update);
         } else {
-          var root3 = enqueueConcurrentHookUpdate(fiber, queue, update, lane);
-          if (root3 !== null) {
+          var root2 = enqueueConcurrentHookUpdate(fiber, queue, update, lane);
+          if (root2 !== null) {
             var eventTime = requestEventTime();
-            scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
-            entangleTransitionUpdate(root3, queue, lane);
+            scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+            entangleTransitionUpdate(root2, queue, lane);
           }
         }
         markUpdateInDevTools(fiber, lane);
@@ -23420,11 +23420,11 @@ function requireReactDom_development() {
               }
             }
           }
-          var root3 = enqueueConcurrentHookUpdate(fiber, queue, update, lane);
-          if (root3 !== null) {
+          var root2 = enqueueConcurrentHookUpdate(fiber, queue, update, lane);
+          if (root2 !== null) {
             var eventTime = requestEventTime();
-            scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
-            entangleTransitionUpdate(root3, queue, lane);
+            scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
+            entangleTransitionUpdate(root2, queue, lane);
           }
         }
         markUpdateInDevTools(fiber, lane);
@@ -23444,13 +23444,13 @@ function requireReactDom_development() {
         }
         queue.pending = update;
       }
-      function entangleTransitionUpdate(root3, queue, lane) {
+      function entangleTransitionUpdate(root2, queue, lane) {
         if (isTransitionLane(lane)) {
           var queueLanes = queue.lanes;
-          queueLanes = intersectLanes(queueLanes, root3.pendingLanes);
+          queueLanes = intersectLanes(queueLanes, root2.pendingLanes);
           var newQueueLanes = mergeLanes(queueLanes, lane);
           queue.lanes = newQueueLanes;
-          markRootEntangled(root3, newQueueLanes);
+          markRootEntangled(root2, newQueueLanes);
         }
       }
       function markUpdateInDevTools(fiber, lane, action) {
@@ -24338,8 +24338,8 @@ function requireReactDom_development() {
           while (parentFiber !== null) {
             switch (parentFiber.tag) {
               case HostRoot:
-                var root3 = parentFiber.stateNode;
-                root3.effectDuration += elapsedTime;
+                var root2 = parentFiber.stateNode;
+                root2.effectDuration += elapsedTime;
                 return;
               case Profiler:
                 var parentStateNode = parentFiber.stateNode;
@@ -24358,9 +24358,9 @@ function requireReactDom_development() {
           while (parentFiber !== null) {
             switch (parentFiber.tag) {
               case HostRoot:
-                var root3 = parentFiber.stateNode;
-                if (root3 !== null) {
-                  root3.passiveEffectDuration += elapsedTime;
+                var root2 = parentFiber.stateNode;
+                if (root2 !== null) {
+                  root2.passiveEffectDuration += elapsedTime;
                 }
                 return;
               case Profiler:
@@ -24497,11 +24497,11 @@ function requireReactDom_development() {
         }
         return update;
       }
-      function attachPingListener(root3, wakeable, lanes) {
-        var pingCache = root3.pingCache;
+      function attachPingListener(root2, wakeable, lanes) {
+        var pingCache = root2.pingCache;
         var threadIDs;
         if (pingCache === null) {
-          pingCache = root3.pingCache = new PossiblyWeakMap$1();
+          pingCache = root2.pingCache = new PossiblyWeakMap$1();
           threadIDs = /* @__PURE__ */ new Set();
           pingCache.set(wakeable, threadIDs);
         } else {
@@ -24513,16 +24513,16 @@ function requireReactDom_development() {
         }
         if (!threadIDs.has(lanes)) {
           threadIDs.add(lanes);
-          var ping = pingSuspendedRoot.bind(null, root3, wakeable, lanes);
+          var ping = pingSuspendedRoot.bind(null, root2, wakeable, lanes);
           {
             if (isDevToolsPresent) {
-              restorePendingUpdaters(root3, lanes);
+              restorePendingUpdaters(root2, lanes);
             }
           }
           wakeable.then(ping, ping);
         }
       }
-      function attachRetryListener(suspenseBoundary, root3, wakeable, lanes) {
+      function attachRetryListener(suspenseBoundary, root2, wakeable, lanes) {
         var wakeables = suspenseBoundary.updateQueue;
         if (wakeables === null) {
           var updateQueue = /* @__PURE__ */ new Set();
@@ -24556,7 +24556,7 @@ function requireReactDom_development() {
         } while (node2 !== null);
         return null;
       }
-      function markSuspenseBoundaryShouldCapture(suspenseBoundary, returnFiber, sourceFiber, root3, rootRenderLanes) {
+      function markSuspenseBoundaryShouldCapture(suspenseBoundary, returnFiber, sourceFiber, root2, rootRenderLanes) {
         if ((suspenseBoundary.mode & ConcurrentMode) === NoMode) {
           if (suspenseBoundary === returnFiber) {
             suspenseBoundary.flags |= ShouldCapture;
@@ -24582,11 +24582,11 @@ function requireReactDom_development() {
         suspenseBoundary.lanes = rootRenderLanes;
         return suspenseBoundary;
       }
-      function throwException(root3, returnFiber, sourceFiber, value, rootRenderLanes) {
+      function throwException(root2, returnFiber, sourceFiber, value, rootRenderLanes) {
         sourceFiber.flags |= Incomplete;
         {
           if (isDevToolsPresent) {
-            restorePendingUpdaters(root3, rootRenderLanes);
+            restorePendingUpdaters(root2, rootRenderLanes);
           }
         }
         if (value !== null && typeof value === "object" && typeof value.then === "function") {
@@ -24600,15 +24600,15 @@ function requireReactDom_development() {
           var suspenseBoundary = getNearestSuspenseBoundaryToCapture(returnFiber);
           if (suspenseBoundary !== null) {
             suspenseBoundary.flags &= ~ForceClientRender;
-            markSuspenseBoundaryShouldCapture(suspenseBoundary, returnFiber, sourceFiber, root3, rootRenderLanes);
+            markSuspenseBoundaryShouldCapture(suspenseBoundary, returnFiber, sourceFiber, root2, rootRenderLanes);
             if (suspenseBoundary.mode & ConcurrentMode) {
-              attachPingListener(root3, wakeable, rootRenderLanes);
+              attachPingListener(root2, wakeable, rootRenderLanes);
             }
-            attachRetryListener(suspenseBoundary, root3, wakeable);
+            attachRetryListener(suspenseBoundary, root2, wakeable);
             return;
           } else {
             if (!includesSyncLane(rootRenderLanes)) {
-              attachPingListener(root3, wakeable, rootRenderLanes);
+              attachPingListener(root2, wakeable, rootRenderLanes);
               renderDidSuspendDelayIfPossible();
               return;
             }
@@ -24623,7 +24623,7 @@ function requireReactDom_development() {
               if ((_suspenseBoundary.flags & ShouldCapture) === NoFlags) {
                 _suspenseBoundary.flags |= ForceClientRender;
               }
-              markSuspenseBoundaryShouldCapture(_suspenseBoundary, returnFiber, sourceFiber, root3, rootRenderLanes);
+              markSuspenseBoundaryShouldCapture(_suspenseBoundary, returnFiber, sourceFiber, root2, rootRenderLanes);
               queueHydrationError(createCapturedValueAtFiber(value, sourceFiber));
               return;
             }
@@ -25117,13 +25117,13 @@ function requireReactDom_development() {
         return workInProgress2.child;
       }
       function pushHostRootContext(workInProgress2) {
-        var root3 = workInProgress2.stateNode;
-        if (root3.pendingContext) {
-          pushTopLevelContextObject(workInProgress2, root3.pendingContext, root3.pendingContext !== root3.context);
-        } else if (root3.context) {
-          pushTopLevelContextObject(workInProgress2, root3.context, false);
+        var root2 = workInProgress2.stateNode;
+        if (root2.pendingContext) {
+          pushTopLevelContextObject(workInProgress2, root2.pendingContext, root2.pendingContext !== root2.context);
+        } else if (root2.context) {
+          pushTopLevelContextObject(workInProgress2, root2.context, false);
         }
-        pushHostContainer(workInProgress2, root3.containerInfo);
+        pushHostContainer(workInProgress2, root2.containerInfo);
       }
       function updateHostRoot(current2, workInProgress2, renderLanes2) {
         pushHostRootContext(workInProgress2);
@@ -25717,14 +25717,14 @@ function requireReactDom_development() {
           }
           var hasContextChanged2 = includesSomeLane(renderLanes2, current2.childLanes);
           if (didReceiveUpdate || hasContextChanged2) {
-            var root3 = getWorkInProgressRoot();
-            if (root3 !== null) {
-              var attemptHydrationAtLane = getBumpedLaneForHydration(root3, renderLanes2);
+            var root2 = getWorkInProgressRoot();
+            if (root2 !== null) {
+              var attemptHydrationAtLane = getBumpedLaneForHydration(root2, renderLanes2);
               if (attemptHydrationAtLane !== NoLane && attemptHydrationAtLane !== suspenseState.retryLane) {
                 suspenseState.retryLane = attemptHydrationAtLane;
                 var eventTime = NoTimestamp;
                 enqueueConcurrentRenderForLane(current2, attemptHydrationAtLane);
-                scheduleUpdateOnFiber(root3, current2, attemptHydrationAtLane, eventTime);
+                scheduleUpdateOnFiber(root2, current2, attemptHydrationAtLane, eventTime);
               }
             }
             renderDidSuspendDelayIfPossible();
@@ -27138,8 +27138,8 @@ function requireReactDom_development() {
         }
       }
       var shouldFireAfterActiveInstanceBlur = false;
-      function commitBeforeMutationEffects(root3, firstChild) {
-        prepareForCommit(root3.containerInfo);
+      function commitBeforeMutationEffects(root2, firstChild) {
+        prepareForCommit(root2.containerInfo);
         nextEffect = firstChild;
         commitBeforeMutationEffects_begin();
         var shouldFire = shouldFireAfterActiveInstanceBlur;
@@ -27217,8 +27217,8 @@ function requireReactDom_development() {
             }
             case HostRoot: {
               {
-                var root3 = finishedWork.stateNode;
-                clearContainer(root3.containerInfo);
+                var root2 = finishedWork.stateNode;
+                clearContainer(root2.containerInfo);
               }
               break;
             }
@@ -27359,8 +27359,8 @@ function requireReactDom_development() {
                   while (parentFiber !== null) {
                     switch (parentFiber.tag) {
                       case HostRoot:
-                        var root3 = parentFiber.stateNode;
-                        root3.passiveEffectDuration += passiveEffectDuration;
+                        var root2 = parentFiber.stateNode;
+                        root2.passiveEffectDuration += passiveEffectDuration;
                         break outer;
                       case Profiler:
                         var parentStateNode = parentFiber.stateNode;
@@ -27519,8 +27519,8 @@ function requireReactDom_development() {
                     while (parentFiber !== null) {
                       switch (parentFiber.tag) {
                         case HostRoot:
-                          var root3 = parentFiber.stateNode;
-                          root3.effectDuration += effectDuration;
+                          var root2 = parentFiber.stateNode;
+                          root2.effectDuration += effectDuration;
                           break outer;
                         case Profiler:
                           var parentStateNode = parentFiber.stateNode;
@@ -27839,7 +27839,7 @@ function requireReactDom_development() {
       }
       var hostParent = null;
       var hostParentIsContainer = false;
-      function commitDeletionEffects(root3, returnFiber, deletedFiber) {
+      function commitDeletionEffects(root2, returnFiber, deletedFiber) {
         {
           var parent = returnFiber;
           findParent:
@@ -27866,7 +27866,7 @@ function requireReactDom_development() {
           if (hostParent === null) {
             throw new Error("Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue.");
           }
-          commitDeletionEffectsOnFiber(root3, returnFiber, deletedFiber);
+          commitDeletionEffectsOnFiber(root2, returnFiber, deletedFiber);
           hostParent = null;
           hostParentIsContainer = false;
         }
@@ -28048,22 +28048,22 @@ function requireReactDom_development() {
           });
         }
       }
-      function commitMutationEffects(root3, finishedWork, committedLanes) {
+      function commitMutationEffects(root2, finishedWork, committedLanes) {
         inProgressLanes = committedLanes;
-        inProgressRoot = root3;
+        inProgressRoot = root2;
         setCurrentFiber(finishedWork);
-        commitMutationEffectsOnFiber(finishedWork, root3);
+        commitMutationEffectsOnFiber(finishedWork, root2);
         setCurrentFiber(finishedWork);
         inProgressLanes = null;
         inProgressRoot = null;
       }
-      function recursivelyTraverseMutationEffects(root3, parentFiber, lanes) {
+      function recursivelyTraverseMutationEffects(root2, parentFiber, lanes) {
         var deletions = parentFiber.deletions;
         if (deletions !== null) {
           for (var i = 0; i < deletions.length; i++) {
             var childToDelete = deletions[i];
             try {
-              commitDeletionEffects(root3, parentFiber, childToDelete);
+              commitDeletionEffects(root2, parentFiber, childToDelete);
             } catch (error2) {
               captureCommitPhaseError(childToDelete, parentFiber, error2);
             }
@@ -28074,13 +28074,13 @@ function requireReactDom_development() {
           var child = parentFiber.child;
           while (child !== null) {
             setCurrentFiber(child);
-            commitMutationEffectsOnFiber(child, root3);
+            commitMutationEffectsOnFiber(child, root2);
             child = child.sibling;
           }
         }
         setCurrentFiber(prevDebugFiber);
       }
-      function commitMutationEffectsOnFiber(finishedWork, root3, lanes) {
+      function commitMutationEffectsOnFiber(finishedWork, root2, lanes) {
         var current2 = finishedWork.alternate;
         var flags = finishedWork.flags;
         switch (finishedWork.tag) {
@@ -28088,7 +28088,7 @@ function requireReactDom_development() {
           case ForwardRef:
           case MemoComponent:
           case SimpleMemoComponent: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Update) {
               try {
@@ -28116,7 +28116,7 @@ function requireReactDom_development() {
             return;
           }
           case ClassComponent: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Ref) {
               if (current2 !== null) {
@@ -28126,7 +28126,7 @@ function requireReactDom_development() {
             return;
           }
           case HostComponent: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Ref) {
               if (current2 !== null) {
@@ -28163,7 +28163,7 @@ function requireReactDom_development() {
             return;
           }
           case HostText: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Update) {
               {
@@ -28183,7 +28183,7 @@ function requireReactDom_development() {
             return;
           }
           case HostRoot: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Update) {
               {
@@ -28191,7 +28191,7 @@ function requireReactDom_development() {
                   var prevRootState = current2.memoizedState;
                   if (prevRootState.isDehydrated) {
                     try {
-                      commitHydratedContainer(root3.containerInfo);
+                      commitHydratedContainer(root2.containerInfo);
                     } catch (error2) {
                       captureCommitPhaseError(finishedWork, finishedWork.return, error2);
                     }
@@ -28202,12 +28202,12 @@ function requireReactDom_development() {
             return;
           }
           case HostPortal: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             return;
           }
           case SuspenseComponent: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             var offscreenFiber = finishedWork.child;
             if (offscreenFiber.flags & Visibility) {
@@ -28240,10 +28240,10 @@ function requireReactDom_development() {
             ) {
               var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
               offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden || _wasHidden;
-              recursivelyTraverseMutationEffects(root3, finishedWork);
+              recursivelyTraverseMutationEffects(root2, finishedWork);
               offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
             } else {
-              recursivelyTraverseMutationEffects(root3, finishedWork);
+              recursivelyTraverseMutationEffects(root2, finishedWork);
             }
             commitReconciliationEffects(finishedWork);
             if (flags & Visibility) {
@@ -28274,7 +28274,7 @@ function requireReactDom_development() {
             return;
           }
           case SuspenseListComponent: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             if (flags & Update) {
               attachSuspenseRetryListeners(finishedWork);
@@ -28285,7 +28285,7 @@ function requireReactDom_development() {
             return;
           }
           default: {
-            recursivelyTraverseMutationEffects(root3, finishedWork);
+            recursivelyTraverseMutationEffects(root2, finishedWork);
             commitReconciliationEffects(finishedWork);
             return;
           }
@@ -28305,15 +28305,15 @@ function requireReactDom_development() {
           finishedWork.flags &= ~Hydrating;
         }
       }
-      function commitLayoutEffects(finishedWork, root3, committedLanes) {
+      function commitLayoutEffects(finishedWork, root2, committedLanes) {
         inProgressLanes = committedLanes;
-        inProgressRoot = root3;
+        inProgressRoot = root2;
         nextEffect = finishedWork;
-        commitLayoutEffects_begin(finishedWork, root3, committedLanes);
+        commitLayoutEffects_begin(finishedWork, root2, committedLanes);
         inProgressLanes = null;
         inProgressRoot = null;
       }
-      function commitLayoutEffects_begin(subtreeRoot, root3, committedLanes) {
+      function commitLayoutEffects_begin(subtreeRoot, root2, committedLanes) {
         var isModernRoot = (subtreeRoot.mode & ConcurrentMode) !== NoMode;
         while (nextEffect !== null) {
           var fiber = nextEffect;
@@ -28322,7 +28322,7 @@ function requireReactDom_development() {
             var isHidden = fiber.memoizedState !== null;
             var newOffscreenSubtreeIsHidden = isHidden || offscreenSubtreeIsHidden;
             if (newOffscreenSubtreeIsHidden) {
-              commitLayoutMountEffects_complete(subtreeRoot, root3, committedLanes);
+              commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes);
               continue;
             } else {
               var current2 = fiber.alternate;
@@ -28342,7 +28342,7 @@ function requireReactDom_development() {
                 commitLayoutEffects_begin(
                   child,
                   // New root; bubble back up to here and stop.
-                  root3,
+                  root2,
                   committedLanes
                 );
                 child = child.sibling;
@@ -28350,7 +28350,7 @@ function requireReactDom_development() {
               nextEffect = fiber;
               offscreenSubtreeIsHidden = prevOffscreenSubtreeIsHidden;
               offscreenSubtreeWasHidden = prevOffscreenSubtreeWasHidden;
-              commitLayoutMountEffects_complete(subtreeRoot, root3, committedLanes);
+              commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes);
               continue;
             }
           }
@@ -28358,18 +28358,18 @@ function requireReactDom_development() {
             firstChild.return = fiber;
             nextEffect = firstChild;
           } else {
-            commitLayoutMountEffects_complete(subtreeRoot, root3, committedLanes);
+            commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes);
           }
         }
       }
-      function commitLayoutMountEffects_complete(subtreeRoot, root3, committedLanes) {
+      function commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes) {
         while (nextEffect !== null) {
           var fiber = nextEffect;
           if ((fiber.flags & LayoutMask) !== NoFlags) {
             var current2 = fiber.alternate;
             setCurrentFiber(fiber);
             try {
-              commitLayoutEffectOnFiber(root3, current2, fiber, committedLanes);
+              commitLayoutEffectOnFiber(root2, current2, fiber, committedLanes);
             } catch (error2) {
               captureCommitPhaseError(fiber, fiber.return, error2);
             }
@@ -28496,11 +28496,11 @@ function requireReactDom_development() {
           nextEffect = fiber.return;
         }
       }
-      function commitPassiveMountEffects(root3, finishedWork, committedLanes, committedTransitions) {
+      function commitPassiveMountEffects(root2, finishedWork, committedLanes, committedTransitions) {
         nextEffect = finishedWork;
-        commitPassiveMountEffects_begin(finishedWork, root3, committedLanes, committedTransitions);
+        commitPassiveMountEffects_begin(finishedWork, root2, committedLanes, committedTransitions);
       }
-      function commitPassiveMountEffects_begin(subtreeRoot, root3, committedLanes, committedTransitions) {
+      function commitPassiveMountEffects_begin(subtreeRoot, root2, committedLanes, committedTransitions) {
         while (nextEffect !== null) {
           var fiber = nextEffect;
           var firstChild = fiber.child;
@@ -28508,17 +28508,17 @@ function requireReactDom_development() {
             firstChild.return = fiber;
             nextEffect = firstChild;
           } else {
-            commitPassiveMountEffects_complete(subtreeRoot, root3, committedLanes, committedTransitions);
+            commitPassiveMountEffects_complete(subtreeRoot, root2, committedLanes, committedTransitions);
           }
         }
       }
-      function commitPassiveMountEffects_complete(subtreeRoot, root3, committedLanes, committedTransitions) {
+      function commitPassiveMountEffects_complete(subtreeRoot, root2, committedLanes, committedTransitions) {
         while (nextEffect !== null) {
           var fiber = nextEffect;
           if ((fiber.flags & Passive) !== NoFlags) {
             setCurrentFiber(fiber);
             try {
-              commitPassiveMountOnFiber(root3, fiber, committedLanes, committedTransitions);
+              commitPassiveMountOnFiber(root2, fiber, committedLanes, committedTransitions);
             } catch (error2) {
               captureCommitPhaseError(fiber, fiber.return, error2);
             }
@@ -28915,7 +28915,7 @@ function requireReactDom_development() {
         }
         return claimNextRetryLane();
       }
-      function scheduleUpdateOnFiber(root3, fiber, lane, eventTime) {
+      function scheduleUpdateOnFiber(root2, fiber, lane, eventTime) {
         checkForNestedUpdates();
         {
           if (isRunningInsertionEffect) {
@@ -28927,25 +28927,25 @@ function requireReactDom_development() {
             didScheduleUpdateDuringPassiveEffects = true;
           }
         }
-        markRootUpdated(root3, lane, eventTime);
-        if ((executionContext & RenderContext) !== NoLanes && root3 === workInProgressRoot) {
+        markRootUpdated(root2, lane, eventTime);
+        if ((executionContext & RenderContext) !== NoLanes && root2 === workInProgressRoot) {
           warnAboutRenderPhaseUpdatesInDEV(fiber);
         } else {
           {
             if (isDevToolsPresent) {
-              addFiberToLanesMap(root3, fiber, lane);
+              addFiberToLanesMap(root2, fiber, lane);
             }
           }
           warnIfUpdatesNotWrappedWithActDEV(fiber);
-          if (root3 === workInProgressRoot) {
+          if (root2 === workInProgressRoot) {
             if ((executionContext & RenderContext) === NoContext) {
               workInProgressRootInterleavedUpdatedLanes = mergeLanes(workInProgressRootInterleavedUpdatedLanes, lane);
             }
             if (workInProgressRootExitStatus === RootSuspendedWithDelay) {
-              markRootSuspended$1(root3, workInProgressRootRenderLanes);
+              markRootSuspended$1(root2, workInProgressRootRenderLanes);
             }
           }
-          ensureRootIsScheduled(root3, eventTime);
+          ensureRootIsScheduled(root2, eventTime);
           if (lane === SyncLane && executionContext === NoContext && (fiber.mode & ConcurrentMode) === NoMode && // Treat `act` as if it's inside `batchedUpdates`, even in legacy mode.
           !ReactCurrentActQueue$1.isBatchingLegacy) {
             resetRenderTimer();
@@ -28953,11 +28953,11 @@ function requireReactDom_development() {
           }
         }
       }
-      function scheduleInitialHydrationOnRoot(root3, lane, eventTime) {
-        var current2 = root3.current;
+      function scheduleInitialHydrationOnRoot(root2, lane, eventTime) {
+        var current2 = root2.current;
         current2.lanes = lane;
-        markRootUpdated(root3, lane, eventTime);
-        ensureRootIsScheduled(root3, eventTime);
+        markRootUpdated(root2, lane, eventTime);
+        ensureRootIsScheduled(root2, eventTime);
       }
       function isUnsafeClassRenderPhaseUpdate(fiber) {
         return (
@@ -28966,20 +28966,20 @@ function requireReactDom_development() {
           (executionContext & RenderContext) !== NoContext
         );
       }
-      function ensureRootIsScheduled(root3, currentTime) {
-        var existingCallbackNode = root3.callbackNode;
-        markStarvedLanesAsExpired(root3, currentTime);
-        var nextLanes = getNextLanes(root3, root3 === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes);
+      function ensureRootIsScheduled(root2, currentTime) {
+        var existingCallbackNode = root2.callbackNode;
+        markStarvedLanesAsExpired(root2, currentTime);
+        var nextLanes = getNextLanes(root2, root2 === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes);
         if (nextLanes === NoLanes) {
           if (existingCallbackNode !== null) {
             cancelCallback$1(existingCallbackNode);
           }
-          root3.callbackNode = null;
-          root3.callbackPriority = NoLane;
+          root2.callbackNode = null;
+          root2.callbackPriority = NoLane;
           return;
         }
         var newCallbackPriority = getHighestPriorityLane(nextLanes);
-        var existingCallbackPriority = root3.callbackPriority;
+        var existingCallbackPriority = root2.callbackPriority;
         if (existingCallbackPriority === newCallbackPriority && // Special case related to `act`. If the currently scheduled task is a
         // Scheduler task, rather than an `act` task, cancel it and re-scheduled
         // on the `act` queue.
@@ -28996,13 +28996,13 @@ function requireReactDom_development() {
         }
         var newCallbackNode;
         if (newCallbackPriority === SyncLane) {
-          if (root3.tag === LegacyRoot) {
+          if (root2.tag === LegacyRoot) {
             if (ReactCurrentActQueue$1.isBatchingLegacy !== null) {
               ReactCurrentActQueue$1.didScheduleLegacyUpdate = true;
             }
-            scheduleLegacySyncCallback(performSyncWorkOnRoot.bind(null, root3));
+            scheduleLegacySyncCallback(performSyncWorkOnRoot.bind(null, root2));
           } else {
-            scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root3));
+            scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root2));
           }
           {
             if (ReactCurrentActQueue$1.current !== null) {
@@ -29035,12 +29035,12 @@ function requireReactDom_development() {
               schedulerPriorityLevel = NormalPriority;
               break;
           }
-          newCallbackNode = scheduleCallback$1(schedulerPriorityLevel, performConcurrentWorkOnRoot.bind(null, root3));
+          newCallbackNode = scheduleCallback$1(schedulerPriorityLevel, performConcurrentWorkOnRoot.bind(null, root2));
         }
-        root3.callbackPriority = newCallbackPriority;
-        root3.callbackNode = newCallbackNode;
+        root2.callbackPriority = newCallbackPriority;
+        root2.callbackNode = newCallbackNode;
       }
-      function performConcurrentWorkOnRoot(root3, didTimeout) {
+      function performConcurrentWorkOnRoot(root2, didTimeout) {
         {
           resetNestedUpdateFlag();
         }
@@ -29049,77 +29049,77 @@ function requireReactDom_development() {
         if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
           throw new Error("Should not already be working.");
         }
-        var originalCallbackNode = root3.callbackNode;
+        var originalCallbackNode = root2.callbackNode;
         var didFlushPassiveEffects = flushPassiveEffects();
         if (didFlushPassiveEffects) {
-          if (root3.callbackNode !== originalCallbackNode) {
+          if (root2.callbackNode !== originalCallbackNode) {
             return null;
           }
         }
-        var lanes = getNextLanes(root3, root3 === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes);
+        var lanes = getNextLanes(root2, root2 === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes);
         if (lanes === NoLanes) {
           return null;
         }
-        var shouldTimeSlice = !includesBlockingLane(root3, lanes) && !includesExpiredLane(root3, lanes) && !didTimeout;
-        var exitStatus = shouldTimeSlice ? renderRootConcurrent(root3, lanes) : renderRootSync(root3, lanes);
+        var shouldTimeSlice = !includesBlockingLane(root2, lanes) && !includesExpiredLane(root2, lanes) && !didTimeout;
+        var exitStatus = shouldTimeSlice ? renderRootConcurrent(root2, lanes) : renderRootSync(root2, lanes);
         if (exitStatus !== RootInProgress) {
           if (exitStatus === RootErrored) {
-            var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root3);
+            var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root2);
             if (errorRetryLanes !== NoLanes) {
               lanes = errorRetryLanes;
-              exitStatus = recoverFromConcurrentError(root3, errorRetryLanes);
+              exitStatus = recoverFromConcurrentError(root2, errorRetryLanes);
             }
           }
           if (exitStatus === RootFatalErrored) {
             var fatalError = workInProgressRootFatalError;
-            prepareFreshStack(root3, NoLanes);
-            markRootSuspended$1(root3, lanes);
-            ensureRootIsScheduled(root3, now());
+            prepareFreshStack(root2, NoLanes);
+            markRootSuspended$1(root2, lanes);
+            ensureRootIsScheduled(root2, now());
             throw fatalError;
           }
           if (exitStatus === RootDidNotComplete) {
-            markRootSuspended$1(root3, lanes);
+            markRootSuspended$1(root2, lanes);
           } else {
-            var renderWasConcurrent = !includesBlockingLane(root3, lanes);
-            var finishedWork = root3.current.alternate;
+            var renderWasConcurrent = !includesBlockingLane(root2, lanes);
+            var finishedWork = root2.current.alternate;
             if (renderWasConcurrent && !isRenderConsistentWithExternalStores(finishedWork)) {
-              exitStatus = renderRootSync(root3, lanes);
+              exitStatus = renderRootSync(root2, lanes);
               if (exitStatus === RootErrored) {
-                var _errorRetryLanes = getLanesToRetrySynchronouslyOnError(root3);
+                var _errorRetryLanes = getLanesToRetrySynchronouslyOnError(root2);
                 if (_errorRetryLanes !== NoLanes) {
                   lanes = _errorRetryLanes;
-                  exitStatus = recoverFromConcurrentError(root3, _errorRetryLanes);
+                  exitStatus = recoverFromConcurrentError(root2, _errorRetryLanes);
                 }
               }
               if (exitStatus === RootFatalErrored) {
                 var _fatalError = workInProgressRootFatalError;
-                prepareFreshStack(root3, NoLanes);
-                markRootSuspended$1(root3, lanes);
-                ensureRootIsScheduled(root3, now());
+                prepareFreshStack(root2, NoLanes);
+                markRootSuspended$1(root2, lanes);
+                ensureRootIsScheduled(root2, now());
                 throw _fatalError;
               }
             }
-            root3.finishedWork = finishedWork;
-            root3.finishedLanes = lanes;
-            finishConcurrentRender(root3, exitStatus, lanes);
+            root2.finishedWork = finishedWork;
+            root2.finishedLanes = lanes;
+            finishConcurrentRender(root2, exitStatus, lanes);
           }
         }
-        ensureRootIsScheduled(root3, now());
-        if (root3.callbackNode === originalCallbackNode) {
-          return performConcurrentWorkOnRoot.bind(null, root3);
+        ensureRootIsScheduled(root2, now());
+        if (root2.callbackNode === originalCallbackNode) {
+          return performConcurrentWorkOnRoot.bind(null, root2);
         }
         return null;
       }
-      function recoverFromConcurrentError(root3, errorRetryLanes) {
+      function recoverFromConcurrentError(root2, errorRetryLanes) {
         var errorsFromFirstAttempt = workInProgressRootConcurrentErrors;
-        if (isRootDehydrated(root3)) {
-          var rootWorkInProgress = prepareFreshStack(root3, errorRetryLanes);
+        if (isRootDehydrated(root2)) {
+          var rootWorkInProgress = prepareFreshStack(root2, errorRetryLanes);
           rootWorkInProgress.flags |= ForceClientRender;
           {
-            errorHydratingContainer(root3.containerInfo);
+            errorHydratingContainer(root2.containerInfo);
           }
         }
-        var exitStatus = renderRootSync(root3, errorRetryLanes);
+        var exitStatus = renderRootSync(root2, errorRetryLanes);
         if (exitStatus !== RootErrored) {
           var errorsFromSecondAttempt = workInProgressRootRecoverableErrors;
           workInProgressRootRecoverableErrors = errorsFromFirstAttempt;
@@ -29136,59 +29136,59 @@ function requireReactDom_development() {
           workInProgressRootRecoverableErrors.push.apply(workInProgressRootRecoverableErrors, errors);
         }
       }
-      function finishConcurrentRender(root3, exitStatus, lanes) {
+      function finishConcurrentRender(root2, exitStatus, lanes) {
         switch (exitStatus) {
           case RootInProgress:
           case RootFatalErrored: {
             throw new Error("Root did not complete. This is a bug in React.");
           }
           case RootErrored: {
-            commitRoot(root3, workInProgressRootRecoverableErrors, workInProgressTransitions);
+            commitRoot(root2, workInProgressRootRecoverableErrors, workInProgressTransitions);
             break;
           }
           case RootSuspended: {
-            markRootSuspended$1(root3, lanes);
+            markRootSuspended$1(root2, lanes);
             if (includesOnlyRetries(lanes) && // do not delay if we're inside an act() scope
             !shouldForceFlushFallbacksInDEV()) {
               var msUntilTimeout = globalMostRecentFallbackTime + FALLBACK_THROTTLE_MS - now();
               if (msUntilTimeout > 10) {
-                var nextLanes = getNextLanes(root3, NoLanes);
+                var nextLanes = getNextLanes(root2, NoLanes);
                 if (nextLanes !== NoLanes) {
                   break;
                 }
-                var suspendedLanes = root3.suspendedLanes;
+                var suspendedLanes = root2.suspendedLanes;
                 if (!isSubsetOfLanes(suspendedLanes, lanes)) {
                   requestEventTime();
-                  markRootPinged(root3, suspendedLanes);
+                  markRootPinged(root2, suspendedLanes);
                   break;
                 }
-                root3.timeoutHandle = scheduleTimeout(commitRoot.bind(null, root3, workInProgressRootRecoverableErrors, workInProgressTransitions), msUntilTimeout);
+                root2.timeoutHandle = scheduleTimeout(commitRoot.bind(null, root2, workInProgressRootRecoverableErrors, workInProgressTransitions), msUntilTimeout);
                 break;
               }
             }
-            commitRoot(root3, workInProgressRootRecoverableErrors, workInProgressTransitions);
+            commitRoot(root2, workInProgressRootRecoverableErrors, workInProgressTransitions);
             break;
           }
           case RootSuspendedWithDelay: {
-            markRootSuspended$1(root3, lanes);
+            markRootSuspended$1(root2, lanes);
             if (includesOnlyTransitions(lanes)) {
               break;
             }
             if (!shouldForceFlushFallbacksInDEV()) {
-              var mostRecentEventTime = getMostRecentEventTime(root3, lanes);
+              var mostRecentEventTime = getMostRecentEventTime(root2, lanes);
               var eventTimeMs = mostRecentEventTime;
               var timeElapsedMs = now() - eventTimeMs;
               var _msUntilTimeout = jnd(timeElapsedMs) - timeElapsedMs;
               if (_msUntilTimeout > 10) {
-                root3.timeoutHandle = scheduleTimeout(commitRoot.bind(null, root3, workInProgressRootRecoverableErrors, workInProgressTransitions), _msUntilTimeout);
+                root2.timeoutHandle = scheduleTimeout(commitRoot.bind(null, root2, workInProgressRootRecoverableErrors, workInProgressTransitions), _msUntilTimeout);
                 break;
               }
             }
-            commitRoot(root3, workInProgressRootRecoverableErrors, workInProgressTransitions);
+            commitRoot(root2, workInProgressRootRecoverableErrors, workInProgressTransitions);
             break;
           }
           case RootCompleted: {
-            commitRoot(root3, workInProgressRootRecoverableErrors, workInProgressTransitions);
+            commitRoot(root2, workInProgressRootRecoverableErrors, workInProgressTransitions);
             break;
           }
           default: {
@@ -29239,12 +29239,12 @@ function requireReactDom_development() {
         }
         return true;
       }
-      function markRootSuspended$1(root3, suspendedLanes) {
+      function markRootSuspended$1(root2, suspendedLanes) {
         suspendedLanes = removeLanes(suspendedLanes, workInProgressRootPingedLanes);
         suspendedLanes = removeLanes(suspendedLanes, workInProgressRootInterleavedUpdatedLanes);
-        markRootSuspended(root3, suspendedLanes);
+        markRootSuspended(root2, suspendedLanes);
       }
-      function performSyncWorkOnRoot(root3) {
+      function performSyncWorkOnRoot(root2) {
         {
           syncNestedUpdateFlag();
         }
@@ -29252,40 +29252,40 @@ function requireReactDom_development() {
           throw new Error("Should not already be working.");
         }
         flushPassiveEffects();
-        var lanes = getNextLanes(root3, NoLanes);
+        var lanes = getNextLanes(root2, NoLanes);
         if (!includesSomeLane(lanes, SyncLane)) {
-          ensureRootIsScheduled(root3, now());
+          ensureRootIsScheduled(root2, now());
           return null;
         }
-        var exitStatus = renderRootSync(root3, lanes);
-        if (root3.tag !== LegacyRoot && exitStatus === RootErrored) {
-          var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root3);
+        var exitStatus = renderRootSync(root2, lanes);
+        if (root2.tag !== LegacyRoot && exitStatus === RootErrored) {
+          var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root2);
           if (errorRetryLanes !== NoLanes) {
             lanes = errorRetryLanes;
-            exitStatus = recoverFromConcurrentError(root3, errorRetryLanes);
+            exitStatus = recoverFromConcurrentError(root2, errorRetryLanes);
           }
         }
         if (exitStatus === RootFatalErrored) {
           var fatalError = workInProgressRootFatalError;
-          prepareFreshStack(root3, NoLanes);
-          markRootSuspended$1(root3, lanes);
-          ensureRootIsScheduled(root3, now());
+          prepareFreshStack(root2, NoLanes);
+          markRootSuspended$1(root2, lanes);
+          ensureRootIsScheduled(root2, now());
           throw fatalError;
         }
         if (exitStatus === RootDidNotComplete) {
           throw new Error("Root did not complete. This is a bug in React.");
         }
-        var finishedWork = root3.current.alternate;
-        root3.finishedWork = finishedWork;
-        root3.finishedLanes = lanes;
-        commitRoot(root3, workInProgressRootRecoverableErrors, workInProgressTransitions);
-        ensureRootIsScheduled(root3, now());
+        var finishedWork = root2.current.alternate;
+        root2.finishedWork = finishedWork;
+        root2.finishedLanes = lanes;
+        commitRoot(root2, workInProgressRootRecoverableErrors, workInProgressTransitions);
+        ensureRootIsScheduled(root2, now());
         return null;
       }
-      function flushRoot(root3, lanes) {
+      function flushRoot(root2, lanes) {
         if (lanes !== NoLanes) {
-          markRootEntangled(root3, mergeLanes(lanes, SyncLane));
-          ensureRootIsScheduled(root3, now());
+          markRootEntangled(root2, mergeLanes(lanes, SyncLane));
+          ensureRootIsScheduled(root2, now());
           if ((executionContext & (RenderContext | CommitContext)) === NoContext) {
             resetRenderTimer();
             flushSyncCallbacks();
@@ -29357,12 +29357,12 @@ function requireReactDom_development() {
         subtreeRenderLanes = subtreeRenderLanesCursor.current;
         pop(subtreeRenderLanesCursor, fiber);
       }
-      function prepareFreshStack(root3, lanes) {
-        root3.finishedWork = null;
-        root3.finishedLanes = NoLanes;
-        var timeoutHandle = root3.timeoutHandle;
+      function prepareFreshStack(root2, lanes) {
+        root2.finishedWork = null;
+        root2.finishedLanes = NoLanes;
+        var timeoutHandle = root2.timeoutHandle;
         if (timeoutHandle !== noTimeout) {
-          root3.timeoutHandle = noTimeout;
+          root2.timeoutHandle = noTimeout;
           cancelTimeout(timeoutHandle);
         }
         if (workInProgress !== null) {
@@ -29373,8 +29373,8 @@ function requireReactDom_development() {
             interruptedWork = interruptedWork.return;
           }
         }
-        workInProgressRoot = root3;
-        var rootWorkInProgress = createWorkInProgress(root3.current, null);
+        workInProgressRoot = root2;
+        var rootWorkInProgress = createWorkInProgress(root2.current, null);
         workInProgress = rootWorkInProgress;
         workInProgressRootRenderLanes = subtreeRenderLanes = lanes;
         workInProgressRootExitStatus = RootInProgress;
@@ -29390,7 +29390,7 @@ function requireReactDom_development() {
         }
         return rootWorkInProgress;
       }
-      function handleError(root3, thrownValue) {
+      function handleError(root2, thrownValue) {
         do {
           var erroredWork = workInProgress;
           try {
@@ -29416,7 +29416,7 @@ function requireReactDom_development() {
                 markComponentErrored(erroredWork, thrownValue, workInProgressRootRenderLanes);
               }
             }
-            throwException(root3, erroredWork.return, erroredWork, thrownValue, workInProgressRootRenderLanes);
+            throwException(root2, erroredWork.return, erroredWork, thrownValue, workInProgressRootRenderLanes);
             completeUnitOfWork(erroredWork);
           } catch (yetAnotherThrownValue) {
             thrownValue = yetAnotherThrownValue;
@@ -29475,23 +29475,23 @@ function requireReactDom_development() {
       function renderHasNotSuspendedYet() {
         return workInProgressRootExitStatus === RootInProgress;
       }
-      function renderRootSync(root3, lanes) {
+      function renderRootSync(root2, lanes) {
         var prevExecutionContext = executionContext;
         executionContext |= RenderContext;
         var prevDispatcher = pushDispatcher();
-        if (workInProgressRoot !== root3 || workInProgressRootRenderLanes !== lanes) {
+        if (workInProgressRoot !== root2 || workInProgressRootRenderLanes !== lanes) {
           {
             if (isDevToolsPresent) {
-              var memoizedUpdaters = root3.memoizedUpdaters;
+              var memoizedUpdaters = root2.memoizedUpdaters;
               if (memoizedUpdaters.size > 0) {
-                restorePendingUpdaters(root3, workInProgressRootRenderLanes);
+                restorePendingUpdaters(root2, workInProgressRootRenderLanes);
                 memoizedUpdaters.clear();
               }
-              movePendingFibersToMemoized(root3, lanes);
+              movePendingFibersToMemoized(root2, lanes);
             }
           }
           workInProgressTransitions = getTransitionsForLanes();
-          prepareFreshStack(root3, lanes);
+          prepareFreshStack(root2, lanes);
         }
         {
           markRenderStarted(lanes);
@@ -29501,7 +29501,7 @@ function requireReactDom_development() {
             workLoopSync();
             break;
           } catch (thrownValue) {
-            handleError(root3, thrownValue);
+            handleError(root2, thrownValue);
           }
         } while (true);
         resetContextDependencies();
@@ -29522,24 +29522,24 @@ function requireReactDom_development() {
           performUnitOfWork(workInProgress);
         }
       }
-      function renderRootConcurrent(root3, lanes) {
+      function renderRootConcurrent(root2, lanes) {
         var prevExecutionContext = executionContext;
         executionContext |= RenderContext;
         var prevDispatcher = pushDispatcher();
-        if (workInProgressRoot !== root3 || workInProgressRootRenderLanes !== lanes) {
+        if (workInProgressRoot !== root2 || workInProgressRootRenderLanes !== lanes) {
           {
             if (isDevToolsPresent) {
-              var memoizedUpdaters = root3.memoizedUpdaters;
+              var memoizedUpdaters = root2.memoizedUpdaters;
               if (memoizedUpdaters.size > 0) {
-                restorePendingUpdaters(root3, workInProgressRootRenderLanes);
+                restorePendingUpdaters(root2, workInProgressRootRenderLanes);
                 memoizedUpdaters.clear();
               }
-              movePendingFibersToMemoized(root3, lanes);
+              movePendingFibersToMemoized(root2, lanes);
             }
           }
           workInProgressTransitions = getTransitionsForLanes();
           resetRenderTimer();
-          prepareFreshStack(root3, lanes);
+          prepareFreshStack(root2, lanes);
         }
         {
           markRenderStarted(lanes);
@@ -29549,7 +29549,7 @@ function requireReactDom_development() {
             workLoopConcurrent();
             break;
           } catch (thrownValue) {
-            handleError(root3, thrownValue);
+            handleError(root2, thrownValue);
           }
         } while (true);
         resetContextDependencies();
@@ -29653,20 +29653,20 @@ function requireReactDom_development() {
           workInProgressRootExitStatus = RootCompleted;
         }
       }
-      function commitRoot(root3, recoverableErrors, transitions) {
+      function commitRoot(root2, recoverableErrors, transitions) {
         var previousUpdateLanePriority = getCurrentUpdatePriority();
         var prevTransition = ReactCurrentBatchConfig$3.transition;
         try {
           ReactCurrentBatchConfig$3.transition = null;
           setCurrentUpdatePriority(DiscreteEventPriority);
-          commitRootImpl(root3, recoverableErrors, transitions, previousUpdateLanePriority);
+          commitRootImpl(root2, recoverableErrors, transitions, previousUpdateLanePriority);
         } finally {
           ReactCurrentBatchConfig$3.transition = prevTransition;
           setCurrentUpdatePriority(previousUpdateLanePriority);
         }
         return null;
       }
-      function commitRootImpl(root3, recoverableErrors, transitions, renderPriorityLevel) {
+      function commitRootImpl(root2, recoverableErrors, transitions, renderPriorityLevel) {
         do {
           flushPassiveEffects();
         } while (rootWithPendingPassiveEffects !== null);
@@ -29674,8 +29674,8 @@ function requireReactDom_development() {
         if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
           throw new Error("Should not already be working.");
         }
-        var finishedWork = root3.finishedWork;
-        var lanes = root3.finishedLanes;
+        var finishedWork = root2.finishedWork;
+        var lanes = root2.finishedLanes;
         {
           markCommitStarted(lanes);
         }
@@ -29691,16 +29691,16 @@ function requireReactDom_development() {
             }
           }
         }
-        root3.finishedWork = null;
-        root3.finishedLanes = NoLanes;
-        if (finishedWork === root3.current) {
+        root2.finishedWork = null;
+        root2.finishedLanes = NoLanes;
+        if (finishedWork === root2.current) {
           throw new Error("Cannot commit the same tree as before. This error is likely caused by a bug in React. Please file an issue.");
         }
-        root3.callbackNode = null;
-        root3.callbackPriority = NoLane;
+        root2.callbackNode = null;
+        root2.callbackPriority = NoLane;
         var remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
-        markRootFinished(root3, remainingLanes);
-        if (root3 === workInProgressRoot) {
+        markRootFinished(root2, remainingLanes);
+        if (root2 === workInProgressRoot) {
           workInProgressRoot = null;
           workInProgress = null;
           workInProgressRootRenderLanes = NoLanes;
@@ -29725,17 +29725,17 @@ function requireReactDom_development() {
           var prevExecutionContext = executionContext;
           executionContext |= CommitContext;
           ReactCurrentOwner$2.current = null;
-          commitBeforeMutationEffects(root3, finishedWork);
+          commitBeforeMutationEffects(root2, finishedWork);
           {
             recordCommitTime();
           }
-          commitMutationEffects(root3, finishedWork, lanes);
-          resetAfterCommit(root3.containerInfo);
-          root3.current = finishedWork;
+          commitMutationEffects(root2, finishedWork, lanes);
+          resetAfterCommit(root2.containerInfo);
+          root2.current = finishedWork;
           {
             markLayoutEffectsStarted(lanes);
           }
-          commitLayoutEffects(finishedWork, root3, lanes);
+          commitLayoutEffects(finishedWork, root2, lanes);
           {
             markLayoutEffectsStopped();
           }
@@ -29744,7 +29744,7 @@ function requireReactDom_development() {
           setCurrentUpdatePriority(previousPriority);
           ReactCurrentBatchConfig$3.transition = prevTransition;
         } else {
-          root3.current = finishedWork;
+          root2.current = finishedWork;
           {
             recordCommitTime();
           }
@@ -29752,7 +29752,7 @@ function requireReactDom_development() {
         var rootDidHavePassiveEffects = rootDoesHavePassiveEffects;
         if (rootDoesHavePassiveEffects) {
           rootDoesHavePassiveEffects = false;
-          rootWithPendingPassiveEffects = root3;
+          rootWithPendingPassiveEffects = root2;
           pendingPassiveEffectsLanes = lanes;
         } else {
           {
@@ -29760,27 +29760,27 @@ function requireReactDom_development() {
             rootWithPassiveNestedUpdates = null;
           }
         }
-        remainingLanes = root3.pendingLanes;
+        remainingLanes = root2.pendingLanes;
         if (remainingLanes === NoLanes) {
           legacyErrorBoundariesThatAlreadyFailed = null;
         }
         {
           if (!rootDidHavePassiveEffects) {
-            commitDoubleInvokeEffectsInDEV(root3.current, false);
+            commitDoubleInvokeEffectsInDEV(root2.current, false);
           }
         }
         onCommitRoot(finishedWork.stateNode, renderPriorityLevel);
         {
           if (isDevToolsPresent) {
-            root3.memoizedUpdaters.clear();
+            root2.memoizedUpdaters.clear();
           }
         }
         {
           onCommitRoot$1();
         }
-        ensureRootIsScheduled(root3, now());
+        ensureRootIsScheduled(root2, now());
         if (recoverableErrors !== null) {
-          var onRecoverableError = root3.onRecoverableError;
+          var onRecoverableError = root2.onRecoverableError;
           for (var i = 0; i < recoverableErrors.length; i++) {
             var recoverableError = recoverableErrors[i];
             var componentStack = recoverableError.stack;
@@ -29797,19 +29797,19 @@ function requireReactDom_development() {
           firstUncaughtError = null;
           throw error$1;
         }
-        if (includesSomeLane(pendingPassiveEffectsLanes, SyncLane) && root3.tag !== LegacyRoot) {
+        if (includesSomeLane(pendingPassiveEffectsLanes, SyncLane) && root2.tag !== LegacyRoot) {
           flushPassiveEffects();
         }
-        remainingLanes = root3.pendingLanes;
+        remainingLanes = root2.pendingLanes;
         if (includesSomeLane(remainingLanes, SyncLane)) {
           {
             markNestedUpdateScheduled();
           }
-          if (root3 === rootWithNestedUpdates) {
+          if (root2 === rootWithNestedUpdates) {
             nestedUpdateCount++;
           } else {
             nestedUpdateCount = 0;
-            rootWithNestedUpdates = root3;
+            rootWithNestedUpdates = root2;
           }
         } else {
           nestedUpdateCount = 0;
@@ -29855,7 +29855,7 @@ function requireReactDom_development() {
         }
         var transitions = pendingPassiveTransitions;
         pendingPassiveTransitions = null;
-        var root3 = rootWithPendingPassiveEffects;
+        var root2 = rootWithPendingPassiveEffects;
         var lanes = pendingPassiveEffectsLanes;
         rootWithPendingPassiveEffects = null;
         pendingPassiveEffectsLanes = NoLanes;
@@ -29871,31 +29871,31 @@ function requireReactDom_development() {
         }
         var prevExecutionContext = executionContext;
         executionContext |= CommitContext;
-        commitPassiveUnmountEffects(root3.current);
-        commitPassiveMountEffects(root3, root3.current, lanes, transitions);
+        commitPassiveUnmountEffects(root2.current);
+        commitPassiveMountEffects(root2, root2.current, lanes, transitions);
         {
           var profilerEffects = pendingPassiveProfilerEffects;
           pendingPassiveProfilerEffects = [];
           for (var i = 0; i < profilerEffects.length; i++) {
             var _fiber = profilerEffects[i];
-            commitPassiveEffectDurations(root3, _fiber);
+            commitPassiveEffectDurations(root2, _fiber);
           }
         }
         {
           markPassiveEffectsStopped();
         }
         {
-          commitDoubleInvokeEffectsInDEV(root3.current, true);
+          commitDoubleInvokeEffectsInDEV(root2.current, true);
         }
         executionContext = prevExecutionContext;
         flushSyncCallbacks();
         {
           if (didScheduleUpdateDuringPassiveEffects) {
-            if (root3 === rootWithPassiveNestedUpdates) {
+            if (root2 === rootWithPassiveNestedUpdates) {
               nestedPassiveUpdateCount++;
             } else {
               nestedPassiveUpdateCount = 0;
-              rootWithPassiveNestedUpdates = root3;
+              rootWithPassiveNestedUpdates = root2;
             }
           } else {
             nestedPassiveUpdateCount = 0;
@@ -29903,9 +29903,9 @@ function requireReactDom_development() {
           isFlushingPassiveEffects = false;
           didScheduleUpdateDuringPassiveEffects = false;
         }
-        onPostCommitRoot(root3);
+        onPostCommitRoot(root2);
         {
-          var stateNode = root3.current.stateNode;
+          var stateNode = root2.current.stateNode;
           stateNode.effectDuration = 0;
           stateNode.passiveEffectDuration = 0;
         }
@@ -29931,11 +29931,11 @@ function requireReactDom_development() {
       function captureCommitPhaseErrorOnRoot(rootFiber, sourceFiber, error2) {
         var errorInfo = createCapturedValueAtFiber(error2, sourceFiber);
         var update = createRootErrorUpdate(rootFiber, errorInfo, SyncLane);
-        var root3 = enqueueUpdate(rootFiber, update, SyncLane);
+        var root2 = enqueueUpdate(rootFiber, update, SyncLane);
         var eventTime = requestEventTime();
-        if (root3 !== null) {
-          markRootUpdated(root3, SyncLane, eventTime);
-          ensureRootIsScheduled(root3, eventTime);
+        if (root2 !== null) {
+          markRootUpdated(root2, SyncLane, eventTime);
+          ensureRootIsScheduled(root2, eventTime);
         }
       }
       function captureCommitPhaseError(sourceFiber, nearestMountedAncestor, error$1) {
@@ -29961,11 +29961,11 @@ function requireReactDom_development() {
             if (typeof ctor.getDerivedStateFromError === "function" || typeof instance.componentDidCatch === "function" && !isAlreadyFailedLegacyErrorBoundary(instance)) {
               var errorInfo = createCapturedValueAtFiber(error$1, sourceFiber);
               var update = createClassErrorUpdate(fiber, errorInfo, SyncLane);
-              var root3 = enqueueUpdate(fiber, update, SyncLane);
+              var root2 = enqueueUpdate(fiber, update, SyncLane);
               var eventTime = requestEventTime();
-              if (root3 !== null) {
-                markRootUpdated(root3, SyncLane, eventTime);
-                ensureRootIsScheduled(root3, eventTime);
+              if (root2 !== null) {
+                markRootUpdated(root2, SyncLane, eventTime);
+                ensureRootIsScheduled(root2, eventTime);
               }
               return;
             }
@@ -29976,32 +29976,32 @@ function requireReactDom_development() {
           error("Internal React error: Attempted to capture a commit phase error inside a detached tree. This indicates a bug in React. Likely causes include deleting the same fiber more than once, committing an already-finished tree, or an inconsistent return pointer.\n\nError message:\n\n%s", error$1);
         }
       }
-      function pingSuspendedRoot(root3, wakeable, pingedLanes) {
-        var pingCache = root3.pingCache;
+      function pingSuspendedRoot(root2, wakeable, pingedLanes) {
+        var pingCache = root2.pingCache;
         if (pingCache !== null) {
           pingCache.delete(wakeable);
         }
         var eventTime = requestEventTime();
-        markRootPinged(root3, pingedLanes);
-        warnIfSuspenseResolutionNotWrappedWithActDEV(root3);
-        if (workInProgressRoot === root3 && isSubsetOfLanes(workInProgressRootRenderLanes, pingedLanes)) {
+        markRootPinged(root2, pingedLanes);
+        warnIfSuspenseResolutionNotWrappedWithActDEV(root2);
+        if (workInProgressRoot === root2 && isSubsetOfLanes(workInProgressRootRenderLanes, pingedLanes)) {
           if (workInProgressRootExitStatus === RootSuspendedWithDelay || workInProgressRootExitStatus === RootSuspended && includesOnlyRetries(workInProgressRootRenderLanes) && now() - globalMostRecentFallbackTime < FALLBACK_THROTTLE_MS) {
-            prepareFreshStack(root3, NoLanes);
+            prepareFreshStack(root2, NoLanes);
           } else {
             workInProgressRootPingedLanes = mergeLanes(workInProgressRootPingedLanes, pingedLanes);
           }
         }
-        ensureRootIsScheduled(root3, eventTime);
+        ensureRootIsScheduled(root2, eventTime);
       }
       function retryTimedOutBoundary(boundaryFiber, retryLane) {
         if (retryLane === NoLane) {
           retryLane = requestRetryLane(boundaryFiber);
         }
         var eventTime = requestEventTime();
-        var root3 = enqueueConcurrentRenderForLane(boundaryFiber, retryLane);
-        if (root3 !== null) {
-          markRootUpdated(root3, retryLane, eventTime);
-          ensureRootIsScheduled(root3, eventTime);
+        var root2 = enqueueConcurrentRenderForLane(boundaryFiber, retryLane);
+        if (root2 !== null) {
+          markRootUpdated(root2, retryLane, eventTime);
+          ensureRootIsScheduled(root2, eventTime);
         }
       }
       function retryDehydratedSuspenseBoundary(boundaryFiber) {
@@ -30190,12 +30190,12 @@ function requireReactDom_development() {
           }
         }
       }
-      function restorePendingUpdaters(root3, lanes) {
+      function restorePendingUpdaters(root2, lanes) {
         {
           if (isDevToolsPresent) {
-            var memoizedUpdaters = root3.memoizedUpdaters;
+            var memoizedUpdaters = root2.memoizedUpdaters;
             memoizedUpdaters.forEach(function(schedulingFiber) {
-              addFiberToLanesMap(root3, schedulingFiber, lanes);
+              addFiberToLanesMap(root2, schedulingFiber, lanes);
             });
           }
         }
@@ -30253,9 +30253,9 @@ function requireReactDom_development() {
           }
         }
       }
-      function warnIfSuspenseResolutionNotWrappedWithActDEV(root3) {
+      function warnIfSuspenseResolutionNotWrappedWithActDEV(root2) {
         {
-          if (root3.tag !== LegacyRoot && isConcurrentActEnvironment() && ReactCurrentActQueue$1.current === null) {
+          if (root2.tag !== LegacyRoot && isConcurrentActEnvironment() && ReactCurrentActQueue$1.current === null) {
             error("A suspended resource finished loading inside a test, but the event was not wrapped in act(...).\n\nWhen testing, code that resolves suspended data should be wrapped into act(...):\n\nact(() => {\n  /* finish loading suspended data */\n});\n/* assert on the output */\n\nThis ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act");
           }
         }
@@ -30379,7 +30379,7 @@ function requireReactDom_development() {
           failedBoundaries.add(fiber);
         }
       }
-      var scheduleRefresh = function(root3, update) {
+      var scheduleRefresh = function(root2, update) {
         {
           if (resolveFamily === null) {
             return;
@@ -30387,18 +30387,18 @@ function requireReactDom_development() {
           var staleFamilies = update.staleFamilies, updatedFamilies = update.updatedFamilies;
           flushPassiveEffects();
           flushSync(function() {
-            scheduleFibersWithFamiliesRecursively(root3.current, updatedFamilies, staleFamilies);
+            scheduleFibersWithFamiliesRecursively(root2.current, updatedFamilies, staleFamilies);
           });
         }
       };
-      var scheduleRoot = function(root3, element) {
+      var scheduleRoot = function(root2, element) {
         {
-          if (root3.context !== emptyContextObject) {
+          if (root2.context !== emptyContextObject) {
             return;
           }
           flushPassiveEffects();
           flushSync(function() {
-            updateContainer(element, root3, null, null);
+            updateContainer(element, root2, null, null);
           });
         }
       };
@@ -30457,13 +30457,13 @@ function requireReactDom_development() {
           }
         }
       }
-      var findHostInstancesForRefresh = function(root3, families) {
+      var findHostInstancesForRefresh = function(root2, families) {
         {
           var hostInstances = /* @__PURE__ */ new Set();
           var types = new Set(families.map(function(family) {
             return family.current;
           }));
-          findHostInstancesForMatchingFibersRecursively(root3.current, types, hostInstances);
+          findHostInstancesForMatchingFibersRecursively(root2.current, types, hostInstances);
           return hostInstances;
         }
       };
@@ -31012,10 +31012,10 @@ function requireReactDom_development() {
         }
       }
       function createFiberRoot(containerInfo, tag2, hydrate2, initialChildren, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError, transitionCallbacks) {
-        var root3 = new FiberRootNode(containerInfo, tag2, hydrate2, identifierPrefix, onRecoverableError);
+        var root2 = new FiberRootNode(containerInfo, tag2, hydrate2, identifierPrefix, onRecoverableError);
         var uninitializedFiber = createHostRootFiber(tag2, isStrictMode);
-        root3.current = uninitializedFiber;
-        uninitializedFiber.stateNode = root3;
+        root2.current = uninitializedFiber;
+        uninitializedFiber.stateNode = root2;
         {
           var _initialState = {
             element: initialChildren,
@@ -31028,7 +31028,7 @@ function requireReactDom_development() {
           uninitializedFiber.memoizedState = _initialState;
         }
         initializeUpdateQueue(uninitializedFiber);
-        return root3;
+        return root2;
       }
       var ReactVersion = "18.2.0";
       function createPortal(children, containerInfo, implementation) {
@@ -31111,16 +31111,16 @@ function requireReactDom_development() {
       }
       function createHydrationContainer(initialChildren, callback, containerInfo, tag2, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError, transitionCallbacks) {
         var hydrate2 = true;
-        var root3 = createFiberRoot(containerInfo, tag2, hydrate2, initialChildren, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
-        root3.context = getContextForSubtree(null);
-        var current2 = root3.current;
+        var root2 = createFiberRoot(containerInfo, tag2, hydrate2, initialChildren, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
+        root2.context = getContextForSubtree(null);
+        var current2 = root2.current;
         var eventTime = requestEventTime();
         var lane = requestUpdateLane(current2);
         var update = createUpdate(eventTime, lane);
         update.callback = callback !== void 0 && callback !== null ? callback : null;
         enqueueUpdate(current2, update, lane);
-        scheduleInitialHydrationOnRoot(root3, lane, eventTime);
-        return root3;
+        scheduleInitialHydrationOnRoot(root2, lane, eventTime);
+        return root2;
       }
       function updateContainer(element, container2, parentComponent, callback) {
         {
@@ -31157,10 +31157,10 @@ function requireReactDom_development() {
           }
           update.callback = callback;
         }
-        var root3 = enqueueUpdate(current$1, update, lane);
-        if (root3 !== null) {
-          scheduleUpdateOnFiber(root3, current$1, lane, eventTime);
-          entangleTransitions(root3, current$1, lane);
+        var root2 = enqueueUpdate(current$1, update, lane);
+        if (root2 !== null) {
+          scheduleUpdateOnFiber(root2, current$1, lane, eventTime);
+          entangleTransitions(root2, current$1, lane);
         }
         return lane;
       }
@@ -31179,19 +31179,19 @@ function requireReactDom_development() {
       function attemptSynchronousHydration$1(fiber) {
         switch (fiber.tag) {
           case HostRoot: {
-            var root3 = fiber.stateNode;
-            if (isRootDehydrated(root3)) {
-              var lanes = getHighestPriorityPendingLanes(root3);
-              flushRoot(root3, lanes);
+            var root2 = fiber.stateNode;
+            if (isRootDehydrated(root2)) {
+              var lanes = getHighestPriorityPendingLanes(root2);
+              flushRoot(root2, lanes);
             }
             break;
           }
           case SuspenseComponent: {
             flushSync(function() {
-              var root4 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-              if (root4 !== null) {
+              var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+              if (root3 !== null) {
                 var eventTime = requestEventTime();
-                scheduleUpdateOnFiber(root4, fiber, SyncLane, eventTime);
+                scheduleUpdateOnFiber(root3, fiber, SyncLane, eventTime);
               }
             });
             var retryLane = SyncLane;
@@ -31218,10 +31218,10 @@ function requireReactDom_development() {
           return;
         }
         var lane = SelectiveHydrationLane;
-        var root3 = enqueueConcurrentRenderForLane(fiber, lane);
-        if (root3 !== null) {
+        var root2 = enqueueConcurrentRenderForLane(fiber, lane);
+        if (root2 !== null) {
           var eventTime = requestEventTime();
-          scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
+          scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
         }
         markRetryLaneIfNotHydrated(fiber, lane);
       }
@@ -31230,10 +31230,10 @@ function requireReactDom_development() {
           return;
         }
         var lane = requestUpdateLane(fiber);
-        var root3 = enqueueConcurrentRenderForLane(fiber, lane);
-        if (root3 !== null) {
+        var root2 = enqueueConcurrentRenderForLane(fiber, lane);
+        if (root2 !== null) {
           var eventTime = requestEventTime();
-          scheduleUpdateOnFiber(root3, fiber, lane, eventTime);
+          scheduleUpdateOnFiber(root2, fiber, lane, eventTime);
         }
         markRetryLaneIfNotHydrated(fiber, lane);
       }
@@ -31346,9 +31346,9 @@ function requireReactDom_development() {
             hook.memoizedState = newState;
             hook.baseState = newState;
             fiber.memoizedProps = assign2({}, fiber.memoizedProps);
-            var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-            if (root3 !== null) {
-              scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+            var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
             }
           }
         };
@@ -31359,9 +31359,9 @@ function requireReactDom_development() {
             hook.memoizedState = newState;
             hook.baseState = newState;
             fiber.memoizedProps = assign2({}, fiber.memoizedProps);
-            var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-            if (root3 !== null) {
-              scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+            var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
             }
           }
         };
@@ -31372,9 +31372,9 @@ function requireReactDom_development() {
             hook.memoizedState = newState;
             hook.baseState = newState;
             fiber.memoizedProps = assign2({}, fiber.memoizedProps);
-            var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-            if (root3 !== null) {
-              scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+            var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+            if (root2 !== null) {
+              scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
             }
           }
         };
@@ -31383,9 +31383,9 @@ function requireReactDom_development() {
           if (fiber.alternate) {
             fiber.alternate.pendingProps = fiber.pendingProps;
           }
-          var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+          var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
           }
         };
         overridePropsDeletePath = function(fiber, path) {
@@ -31393,9 +31393,9 @@ function requireReactDom_development() {
           if (fiber.alternate) {
             fiber.alternate.pendingProps = fiber.pendingProps;
           }
-          var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+          var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
           }
         };
         overridePropsRenamePath = function(fiber, oldPath, newPath) {
@@ -31403,15 +31403,15 @@ function requireReactDom_development() {
           if (fiber.alternate) {
             fiber.alternate.pendingProps = fiber.pendingProps;
           }
-          var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+          var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
           }
         };
         scheduleUpdate = function(fiber) {
-          var root3 = enqueueConcurrentRenderForLane(fiber, SyncLane);
-          if (root3 !== null) {
-            scheduleUpdateOnFiber(root3, fiber, SyncLane, NoTimestamp);
+          var root2 = enqueueConcurrentRenderForLane(fiber, SyncLane);
+          if (root2 !== null) {
+            scheduleUpdateOnFiber(root2, fiber, SyncLane, NoTimestamp);
           }
         };
         setErrorHandler = function(newShouldErrorImpl) {
@@ -31477,8 +31477,8 @@ function requireReactDom_development() {
         this._internalRoot = internalRoot;
       }
       ReactDOMHydrationRoot.prototype.render = ReactDOMRoot.prototype.render = function(children) {
-        var root3 = this._internalRoot;
-        if (root3 === null) {
+        var root2 = this._internalRoot;
+        if (root2 === null) {
           throw new Error("Cannot update an unmounted root.");
         }
         {
@@ -31489,9 +31489,9 @@ function requireReactDom_development() {
           } else if (typeof arguments[1] !== "undefined") {
             error("You passed a second argument to root.render(...) but it only accepts one argument.");
           }
-          var container2 = root3.containerInfo;
+          var container2 = root2.containerInfo;
           if (container2.nodeType !== COMMENT_NODE) {
-            var hostInstance = findHostInstanceWithNoPortals(root3.current);
+            var hostInstance = findHostInstanceWithNoPortals(root2.current);
             if (hostInstance) {
               if (hostInstance.parentNode !== container2) {
                 error("render(...): It looks like the React-rendered content of the root container was removed without using React. This is not supported and will cause errors. Instead, call root.unmount() to empty a root's container.");
@@ -31499,7 +31499,7 @@ function requireReactDom_development() {
             }
           }
         }
-        updateContainer(children, root3, null, null);
+        updateContainer(children, root2, null, null);
       };
       ReactDOMHydrationRoot.prototype.unmount = ReactDOMRoot.prototype.unmount = function() {
         {
@@ -31507,17 +31507,17 @@ function requireReactDom_development() {
             error("unmount(...): does not support a callback argument. To execute a side effect after rendering, declare it in a component body with useEffect().");
           }
         }
-        var root3 = this._internalRoot;
-        if (root3 !== null) {
+        var root2 = this._internalRoot;
+        if (root2 !== null) {
           this._internalRoot = null;
-          var container2 = root3.containerInfo;
+          var container2 = root2.containerInfo;
           {
             if (isAlreadyRendering()) {
               error("Attempted to synchronously unmount a root while React was already rendering. React cannot finish unmounting the root until the current render has completed, which may lead to a race condition.");
             }
           }
           flushSync(function() {
-            updateContainer(null, root3, null, null);
+            updateContainer(null, root2, null, null);
           });
           unmarkContainerAsRoot(container2);
         }
@@ -31554,11 +31554,11 @@ function requireReactDom_development() {
             options2.transitionCallbacks;
           }
         }
-        var root3 = createContainer(container2, ConcurrentRoot, null, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
-        markContainerAsRoot(root3.current, container2);
+        var root2 = createContainer(container2, ConcurrentRoot, null, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
+        markContainerAsRoot(root2.current, container2);
         var rootContainerElement = container2.nodeType === COMMENT_NODE ? container2.parentNode : container2;
         listenToAllSupportedEvents(rootContainerElement);
-        return new ReactDOMRoot(root3);
+        return new ReactDOMRoot(root2);
       }
       function ReactDOMHydrationRoot(internalRoot) {
         this._internalRoot = internalRoot;
@@ -31596,16 +31596,16 @@ function requireReactDom_development() {
             onRecoverableError = options2.onRecoverableError;
           }
         }
-        var root3 = createHydrationContainer(initialChildren, null, container2, ConcurrentRoot, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
-        markContainerAsRoot(root3.current, container2);
+        var root2 = createHydrationContainer(initialChildren, null, container2, ConcurrentRoot, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
+        markContainerAsRoot(root2.current, container2);
         listenToAllSupportedEvents(container2);
         if (mutableSources) {
           for (var i = 0; i < mutableSources.length; i++) {
             var mutableSource = mutableSources[i];
-            registerMutableSourceForHydration(root3, mutableSource);
+            registerMutableSourceForHydration(root2, mutableSource);
           }
         }
-        return new ReactDOMHydrationRoot(root3);
+        return new ReactDOMHydrationRoot(root2);
       }
       function isValidContainer(node2) {
         return !!(node2 && (node2.nodeType === ELEMENT_NODE || node2.nodeType === DOCUMENT_NODE || node2.nodeType === DOCUMENT_FRAGMENT_NODE || !disableCommentsAsDOMContainers));
@@ -31667,11 +31667,11 @@ function requireReactDom_development() {
           if (typeof callback === "function") {
             var originalCallback = callback;
             callback = function() {
-              var instance = getPublicRootInstance(root3);
+              var instance = getPublicRootInstance(root2);
               originalCallback.call(instance);
             };
           }
-          var root3 = createHydrationContainer(
+          var root2 = createHydrationContainer(
             initialChildren,
             callback,
             container2,
@@ -31686,12 +31686,12 @@ function requireReactDom_development() {
             // identifierPrefix
             noopOnRecoverableError
           );
-          container2._reactRootContainer = root3;
-          markContainerAsRoot(root3.current, container2);
+          container2._reactRootContainer = root2;
+          markContainerAsRoot(root2.current, container2);
           var rootContainerElement = container2.nodeType === COMMENT_NODE ? container2.parentNode : container2;
           listenToAllSupportedEvents(rootContainerElement);
           flushSync();
-          return root3;
+          return root2;
         } else {
           var rootSibling;
           while (rootSibling = container2.lastChild) {
@@ -31740,21 +31740,21 @@ function requireReactDom_development() {
           warnOnInvalidCallback$1(callback === void 0 ? null : callback, "render");
         }
         var maybeRoot = container2._reactRootContainer;
-        var root3;
+        var root2;
         if (!maybeRoot) {
-          root3 = legacyCreateRootFromDOMContainer(container2, children, parentComponent, callback, forceHydrate);
+          root2 = legacyCreateRootFromDOMContainer(container2, children, parentComponent, callback, forceHydrate);
         } else {
-          root3 = maybeRoot;
+          root2 = maybeRoot;
           if (typeof callback === "function") {
             var originalCallback = callback;
             callback = function() {
-              var instance = getPublicRootInstance(root3);
+              var instance = getPublicRootInstance(root2);
               originalCallback.call(instance);
             };
           }
-          updateContainer(children, root3, parentComponent, callback);
+          updateContainer(children, root2, parentComponent, callback);
         }
-        return getPublicRootInstance(root3);
+        return getPublicRootInstance(root2);
       }
       function findDOMNode(componentOrElement) {
         {
@@ -39311,10 +39311,10 @@ function isNodeMatchingSelectorFocusable(node2) {
   }
   return true;
 }
-function defaultGetTabbable(root2) {
+function defaultGetTabbable(root) {
   const regularTabNodes = [];
   const orderedTabNodes = [];
-  Array.from(root2.querySelectorAll(candidatesSelector)).forEach((node2, i) => {
+  Array.from(root.querySelectorAll(candidatesSelector)).forEach((node2, i) => {
     const nodeTabIndex = getTabIndex(node2);
     if (nodeTabIndex === -1 || !isNodeMatchingSelectorFocusable(node2)) {
       return;
@@ -47689,315 +47689,6 @@ function useApi(url, debug = false) {
   }, []);
   return [{ ...state.data }, state.loading, state.error];
 }
-function formatProdErrorMessage(code) {
-  return "Minified Redux error #" + code + "; visit https://redux.js.org/Errors?code=" + code + " for the full message or use the non-minified dev environment for full errors. ";
-}
-var $$observable = function() {
-  return typeof Symbol === "function" && Symbol.observable || "@@observable";
-}();
-var randomString = function randomString2() {
-  return Math.random().toString(36).substring(7).split("").join(".");
-};
-var ActionTypes = {
-  INIT: "@@redux/INIT" + randomString(),
-  REPLACE: "@@redux/REPLACE" + randomString(),
-  PROBE_UNKNOWN_ACTION: function PROBE_UNKNOWN_ACTION() {
-    return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
-  }
-};
-function isPlainObject$2(obj) {
-  if (typeof obj !== "object" || obj === null)
-    return false;
-  var proto = obj;
-  while (Object.getPrototypeOf(proto) !== null) {
-    proto = Object.getPrototypeOf(proto);
-  }
-  return Object.getPrototypeOf(obj) === proto;
-}
-function miniKindOf(val) {
-  if (val === void 0)
-    return "undefined";
-  if (val === null)
-    return "null";
-  var type = typeof val;
-  switch (type) {
-    case "boolean":
-    case "string":
-    case "number":
-    case "symbol":
-    case "function": {
-      return type;
-    }
-  }
-  if (Array.isArray(val))
-    return "array";
-  if (isDate$1(val))
-    return "date";
-  if (isError(val))
-    return "error";
-  var constructorName = ctorName(val);
-  switch (constructorName) {
-    case "Symbol":
-    case "Promise":
-    case "WeakMap":
-    case "WeakSet":
-    case "Map":
-    case "Set":
-      return constructorName;
-  }
-  return type.slice(8, -1).toLowerCase().replace(/\s/g, "");
-}
-function ctorName(val) {
-  return typeof val.constructor === "function" ? val.constructor.name : null;
-}
-function isError(val) {
-  return val instanceof Error || typeof val.message === "string" && val.constructor && typeof val.constructor.stackTraceLimit === "number";
-}
-function isDate$1(val) {
-  if (val instanceof Date)
-    return true;
-  return typeof val.toDateString === "function" && typeof val.getDate === "function" && typeof val.setDate === "function";
-}
-function kindOf(val) {
-  var typeOfVal = typeof val;
-  if (process.env.NODE_ENV !== "production") {
-    typeOfVal = miniKindOf(val);
-  }
-  return typeOfVal;
-}
-function createStore(reducer2, preloadedState, enhancer) {
-  var _ref2;
-  if (typeof preloadedState === "function" && typeof enhancer === "function" || typeof enhancer === "function" && typeof arguments[3] === "function") {
-    throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(0) : "It looks like you are passing several store enhancers to createStore(). This is not supported. Instead, compose them together to a single function. See https://redux.js.org/tutorials/fundamentals/part-4-store#creating-a-store-with-enhancers for an example.");
-  }
-  if (typeof preloadedState === "function" && typeof enhancer === "undefined") {
-    enhancer = preloadedState;
-    preloadedState = void 0;
-  }
-  if (typeof enhancer !== "undefined") {
-    if (typeof enhancer !== "function") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(1) : "Expected the enhancer to be a function. Instead, received: '" + kindOf(enhancer) + "'");
-    }
-    return enhancer(createStore)(reducer2, preloadedState);
-  }
-  if (typeof reducer2 !== "function") {
-    throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(2) : "Expected the root reducer to be a function. Instead, received: '" + kindOf(reducer2) + "'");
-  }
-  var currentReducer = reducer2;
-  var currentState = preloadedState;
-  var currentListeners = [];
-  var nextListeners = currentListeners;
-  var isDispatching = false;
-  function ensureCanMutateNextListeners() {
-    if (nextListeners === currentListeners) {
-      nextListeners = currentListeners.slice();
-    }
-  }
-  function getState() {
-    if (isDispatching) {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(3) : "You may not call store.getState() while the reducer is executing. The reducer has already received the state as an argument. Pass it down from the top reducer instead of reading it from the store.");
-    }
-    return currentState;
-  }
-  function subscribe(listener) {
-    if (typeof listener !== "function") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(4) : "Expected the listener to be a function. Instead, received: '" + kindOf(listener) + "'");
-    }
-    if (isDispatching) {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(5) : "You may not call store.subscribe() while the reducer is executing. If you would like to be notified after the store has been updated, subscribe from a component and invoke store.getState() in the callback to access the latest state. See https://redux.js.org/api/store#subscribelistener for more details.");
-    }
-    var isSubscribed = true;
-    ensureCanMutateNextListeners();
-    nextListeners.push(listener);
-    return function unsubscribe() {
-      if (!isSubscribed) {
-        return;
-      }
-      if (isDispatching) {
-        throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(6) : "You may not unsubscribe from a store listener while the reducer is executing. See https://redux.js.org/api/store#subscribelistener for more details.");
-      }
-      isSubscribed = false;
-      ensureCanMutateNextListeners();
-      var index = nextListeners.indexOf(listener);
-      nextListeners.splice(index, 1);
-      currentListeners = null;
-    };
-  }
-  function dispatch(action) {
-    if (!isPlainObject$2(action)) {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(7) : "Actions must be plain objects. Instead, the actual type was: '" + kindOf(action) + "'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.");
-    }
-    if (typeof action.type === "undefined") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(8) : 'Actions may not have an undefined "type" property. You may have misspelled an action type string constant.');
-    }
-    if (isDispatching) {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(9) : "Reducers may not dispatch actions.");
-    }
-    try {
-      isDispatching = true;
-      currentState = currentReducer(currentState, action);
-    } finally {
-      isDispatching = false;
-    }
-    var listeners = currentListeners = nextListeners;
-    for (var i = 0; i < listeners.length; i++) {
-      var listener = listeners[i];
-      listener();
-    }
-    return action;
-  }
-  function replaceReducer(nextReducer) {
-    if (typeof nextReducer !== "function") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(10) : "Expected the nextReducer to be a function. Instead, received: '" + kindOf(nextReducer));
-    }
-    currentReducer = nextReducer;
-    dispatch({
-      type: ActionTypes.REPLACE
-    });
-  }
-  function observable() {
-    var _ref;
-    var outerSubscribe = subscribe;
-    return _ref = {
-      /**
-       * The minimal observable subscription method.
-       * @param {Object} observer Any object that can be used as an observer.
-       * The observer object should have a `next` method.
-       * @returns {subscription} An object with an `unsubscribe` method that can
-       * be used to unsubscribe the observable from the store, and prevent further
-       * emission of values from the observable.
-       */
-      subscribe: function subscribe2(observer) {
-        if (typeof observer !== "object" || observer === null) {
-          throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(11) : "Expected the observer to be an object. Instead, received: '" + kindOf(observer) + "'");
-        }
-        function observeState() {
-          if (observer.next) {
-            observer.next(getState());
-          }
-        }
-        observeState();
-        var unsubscribe = outerSubscribe(observeState);
-        return {
-          unsubscribe
-        };
-      }
-    }, _ref[$$observable] = function() {
-      return this;
-    }, _ref;
-  }
-  dispatch({
-    type: ActionTypes.INIT
-  });
-  return _ref2 = {
-    dispatch,
-    subscribe,
-    getState,
-    replaceReducer
-  }, _ref2[$$observable] = observable, _ref2;
-}
-function warning$1(message) {
-  if (typeof console !== "undefined" && typeof console.error === "function") {
-    console.error(message);
-  }
-  try {
-    throw new Error(message);
-  } catch (e) {
-  }
-}
-function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
-  var reducerKeys = Object.keys(reducers);
-  var argumentName = action && action.type === ActionTypes.INIT ? "preloadedState argument passed to createStore" : "previous state received by the reducer";
-  if (reducerKeys.length === 0) {
-    return "Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.";
-  }
-  if (!isPlainObject$2(inputState)) {
-    return "The " + argumentName + ' has unexpected type of "' + kindOf(inputState) + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
-  }
-  var unexpectedKeys = Object.keys(inputState).filter(function(key) {
-    return !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key];
-  });
-  unexpectedKeys.forEach(function(key) {
-    unexpectedKeyCache[key] = true;
-  });
-  if (action && action.type === ActionTypes.REPLACE)
-    return;
-  if (unexpectedKeys.length > 0) {
-    return "Unexpected " + (unexpectedKeys.length > 1 ? "keys" : "key") + " " + ('"' + unexpectedKeys.join('", "') + '" found in ' + argumentName + ". ") + "Expected to find one of the known reducer keys instead: " + ('"' + reducerKeys.join('", "') + '". Unexpected keys will be ignored.');
-  }
-}
-function assertReducerShape(reducers) {
-  Object.keys(reducers).forEach(function(key) {
-    var reducer2 = reducers[key];
-    var initialState = reducer2(void 0, {
-      type: ActionTypes.INIT
-    });
-    if (typeof initialState === "undefined") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(12) : 'The slice reducer for key "' + key + `" returned undefined during initialization. If the state passed to the reducer is undefined, you must explicitly return the initial state. The initial state may not be undefined. If you don't want to set a value for this reducer, you can use null instead of undefined.`);
-    }
-    if (typeof reducer2(void 0, {
-      type: ActionTypes.PROBE_UNKNOWN_ACTION()
-    }) === "undefined") {
-      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(13) : 'The slice reducer for key "' + key + '" returned undefined when probed with a random type. ' + ("Don't try to handle '" + ActionTypes.INIT + `' or other actions in "redux/*" `) + "namespace. They are considered private. Instead, you must return the current state for any unknown actions, unless it is undefined, in which case you must return the initial state, regardless of the action type. The initial state may not be undefined, but can be null.");
-    }
-  });
-}
-function combineReducers(reducers) {
-  var reducerKeys = Object.keys(reducers);
-  var finalReducers = {};
-  for (var i = 0; i < reducerKeys.length; i++) {
-    var key = reducerKeys[i];
-    if (process.env.NODE_ENV !== "production") {
-      if (typeof reducers[key] === "undefined") {
-        warning$1('No reducer provided for key "' + key + '"');
-      }
-    }
-    if (typeof reducers[key] === "function") {
-      finalReducers[key] = reducers[key];
-    }
-  }
-  var finalReducerKeys = Object.keys(finalReducers);
-  var unexpectedKeyCache;
-  if (process.env.NODE_ENV !== "production") {
-    unexpectedKeyCache = {};
-  }
-  var shapeAssertionError;
-  try {
-    assertReducerShape(finalReducers);
-  } catch (e) {
-    shapeAssertionError = e;
-  }
-  return function combination(state, action) {
-    if (state === void 0) {
-      state = {};
-    }
-    if (shapeAssertionError) {
-      throw shapeAssertionError;
-    }
-    if (process.env.NODE_ENV !== "production") {
-      var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache);
-      if (warningMessage) {
-        warning$1(warningMessage);
-      }
-    }
-    var hasChanged = false;
-    var nextState = {};
-    for (var _i = 0; _i < finalReducerKeys.length; _i++) {
-      var _key = finalReducerKeys[_i];
-      var reducer2 = finalReducers[_key];
-      var previousStateForKey = state[_key];
-      var nextStateForKey = reducer2(previousStateForKey, action);
-      if (typeof nextStateForKey === "undefined") {
-        var actionType = action && action.type;
-        throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(14) : "When called with an action of type " + (actionType ? '"' + String(actionType) + '"' : "(unknown type)") + ', the slice reducer for key "' + _key + '" returned undefined. To ignore an action, you must explicitly return the previous state. If you want this reducer to hold no value, you can return null instead of undefined.');
-      }
-      nextState[_key] = nextStateForKey;
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-    }
-    hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length;
-    return hasChanged ? nextState : state;
-  };
-}
 const lock_times = {
   move: 5e3,
   update: 5e3,
@@ -48876,2043 +48567,6 @@ function getCompletionImg(completion_status, outcomes_type) {
   }
   return contents;
 }
-const createLockAction = (object_id, object_type, lock2, user_id2, user_colour) => {
-  if (lock2)
-    return {
-      type: object_type + "/createLock",
-      payload: {
-        id: object_id,
-        lock: { user_id: user_id2, user_colour }
-      }
-    };
-  else
-    return {
-      type: object_type + "/createLock",
-      payload: { id: object_id, lock: null }
-    };
-};
-const reloadCommentsAction = (id, objectType, comment_data) => {
-  return {
-    type: objectType + "/reloadComments",
-    payload: { id, objectType, comment_data }
-  };
-};
-const reloadAssignmentsAction = (id, has_assignment) => {
-  return {
-    type: "node/reloadAssignments",
-    payload: { id, has_assignment }
-  };
-};
-const moveColumnWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "columnworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const moveWeekWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "weekworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const columnChangeNode = (id, new_column) => {
-  return {
-    type: "node/changedColumn",
-    payload: { id, new_column }
-  };
-};
-const moveNodeWeek = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "nodeweek/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const changeField = (id, objectType, json) => {
-  return {
-    type: objectType + "/changeField",
-    payload: { id, objectType, json }
-  };
-};
-const moveOutcomeOutcome = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "outcomeoutcome/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const moveOutcomeWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "outcomeworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const toggleObjectSet = (id, hidden) => {
-  return {
-    type: "objectset/toggleObjectSet",
-    payload: { id, hidden }
-  };
-};
-const replaceStoreData = (data_package) => {
-  return {
-    type: "replaceStoreData",
-    payload: data_package
-  };
-};
-const refreshStoreData = (data_package) => {
-  return {
-    type: "refreshStoreData",
-    payload: data_package
-  };
-};
-function workflowReducer(state = {}, action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.workflow)
-        return action.payload.workflow;
-      return state;
-    case "refreshStoreData":
-      if (action.payload.workflow)
-        return action.payload.workflow;
-      return state;
-    case "workflow/createLock":
-      if (state.id == action.payload.id) {
-        var new_state = { ...state, lock: action.payload.lock };
-        return new_state;
-      }
-      return state;
-    case "weekworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.weekworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.weekworklow_set = new_state.weekworkflow_set.slice();
-        new_state.weekworkflow_set.splice(old_index, 1, action.payload.new_id);
-      }
-      return new_state;
-    case "outcomeworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.outcomeworklow_set = new_state.outcomeworkflow_set.slice();
-        new_state.outcomeworkflow_set.splice(
-          old_index,
-          1,
-          action.payload.new_id
-        );
-      }
-      return new_state;
-    case "columnworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.columnworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.columnworklow_set = new_state.columnworkflow_set.slice();
-        new_state.columnworkflow_set.splice(old_index, 1, action.payload.new_id);
-      }
-      return new_state;
-    case "columnworkflow/movedTo":
-      var new_columnworkflow_set = state.columnworkflow_set.slice();
-      for (var i = 0; i < new_columnworkflow_set.length; i++) {
-        if (new_columnworkflow_set[i] == action.payload.id) {
-          new_columnworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_columnworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        columnworkflow_set: new_columnworkflow_set
-      };
-    case "weekworkflow/movedTo":
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      for (var i = 0; i < new_weekworkflow_set.length; i++) {
-        if (new_weekworkflow_set[i] == action.payload.id) {
-          new_weekworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_weekworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        weekworkflow_set: new_weekworkflow_set
-      };
-    case "outcomeworkflow/movedTo":
-      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      for (var i = 0; i < new_outcomeworkflow_set.length; i++) {
-        if (new_outcomeworkflow_set[i] == action.payload.id) {
-          new_outcomeworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_outcomeworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        outcomeworkflow_set: new_outcomeworkflow_set
-      };
-    case "workflow/deleteSelfSoft":
-      return { ...state, deleted: true };
-    case "workflow/restoreSelf":
-      return { ...state, deleted: false };
-    case "week/deleteSelf":
-    case "week/deleteSelfSoft":
-      if (state.weekworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state };
-        new_state.weekworkflow_set = state.weekworkflow_set.slice();
-        new_state.weekworkflow_set.splice(
-          new_state.weekworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state;
-      }
-      return state;
-    case "week/restoreSelf":
-      var new_state = { ...state };
-      new_state.weekworkflow_set = state.weekworkflow_set.slice();
-      new_state.weekworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state;
-    case "week/insertBelow":
-      new_state = { ...state };
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      new_weekworkflow_set.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.weekworkflow_set = new_weekworkflow_set;
-      return new_state;
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-      if (state.outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state };
-        new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
-        new_state.outcomeworkflow_set.splice(
-          new_state.outcomeworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state;
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      var new_state = { ...state };
-      new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      new_state.outcomeworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      if (state.id != action.payload.new_through.workflow)
-        return state;
-      new_state = { ...state };
-      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      new_outcomeworkflow_set.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.outcomeworkflow_set = new_outcomeworkflow_set;
-      return new_state;
-    case "strategy/addStrategy":
-      new_state = { ...state };
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      new_weekworkflow_set.splice(
-        action.payload.index,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.weekworkflow_set = new_weekworkflow_set;
-      if (action.payload.columnworkflows_added.length > 0) {
-        const new_columnworkflow_set2 = state.columnworkflow_set.slice();
-        new_columnworkflow_set2.push(
-          ...action.payload.columnworkflows_added.map(
-            (columnworkflow) => columnworkflow.id
-          )
-        );
-        new_state.columnworkflow_set = new_columnworkflow_set2;
-      }
-      return new_state;
-    case "column/deleteSelf":
-    case "column/deleteSelfSoft":
-      if (state.columnworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state };
-        new_state.columnworkflow_set = state.columnworkflow_set.slice();
-        new_state.columnworkflow_set.splice(
-          new_state.columnworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state;
-      }
-      return state;
-    case "column/restoreSelf":
-      var new_state = { ...state };
-      new_state.columnworkflow_set = state.columnworkflow_set.slice();
-      new_state.columnworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state;
-    case "node/newNode":
-      if (state.columnworkflow_set.indexOf(action.payload.columnworkflow.id) >= 0)
-        return state;
-      new_state = { ...state };
-      var new_columnworkflow_set = state.columnworkflow_set.slice();
-      new_columnworkflow_set.push(action.payload.columnworkflow.id);
-      new_state.columnworkflow_set = new_columnworkflow_set;
-      return new_state;
-    case "column/insertBelow":
-      new_state = { ...state };
-      var new_columnworkflow_set = state.columnworkflow_set.slice();
-      new_columnworkflow_set.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.columnworkflow_set = new_columnworkflow_set;
-      return new_state;
-    case "workflow/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      var new_state = { ...state, ...action.payload.json };
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomeworkflow)
-        return action.payload.outcomeworkflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomeworkflow) {
-        for (var i = 0; i < action.payload.outcomeworkflow.length; i++) {
-          const new_obj = action.payload.outcomeworkflow[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomeworkflow/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    case "outcomeworkflow/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outcome == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "outcome/newOutcome":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function columnworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.columnworkflow)
-        return action.payload.columnworkflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.columnworkflow) {
-        for (var i = 0; i < action.payload.columnworkflow.length; i++) {
-          const new_obj = action.payload.columnworkflow[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "columnworkflow/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "columnworkflow/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    case "column/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.columnworkflow.id)
-          return state;
-      }
-      new_state = state.slice();
-      new_state.push(action.payload.columnworkflow);
-      return new_state;
-    case "column/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.columnworkflows_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.columnworkflows_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function columnReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.column)
-        return action.payload.column;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.column) {
-        for (var i = 0; i < action.payload.column.length; i++) {
-          const new_obj = action.payload.collumn[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "column/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.column.id)
-          return state;
-      }
-      new_state = state.slice();
-      new_state.push(action.payload.column);
-      return new_state;
-    case "column/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "column/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      if (action.payload.columns_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.columns_added);
-      return new_state;
-    case "column/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function weekworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.weekworkflow)
-        return action.payload.weekworkflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.weekworkflow) {
-        for (var i = 0; i < action.payload.weekworkflow.length; i++) {
-          const new_obj = action.payload.weekworkflow[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "weekworkflow/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    case "weekworkflow/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function weekReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.week)
-        return action.payload.week;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.week) {
-        for (var i = 0; i < action.payload.week.length; i++) {
-          const new_obj = action.payload.week[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "week/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodeweek/changeID":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        const old_index = state[i].nodeweek_set.indexOf(action.payload.old_id);
-        if (old_index >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = new_state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(old_index, 1, action.payload.new_id);
-        }
-      }
-      return new_state;
-    case "nodeweek/movedTo":
-      let old_parent, old_parent_index, new_parent, new_parent_index;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].nodeweek_set.indexOf(action.payload.id) >= 0) {
-          old_parent_index = i;
-          old_parent = { ...state[i] };
-        }
-        if (state[i].id == action.payload.new_parent) {
-          new_parent_index = i;
-          new_parent = { ...state[i] };
-        }
-      }
-      var new_index = action.payload.new_index;
-      var new_state = state.slice();
-      old_parent.nodeweek_set = old_parent.nodeweek_set.slice();
-      old_parent.nodeweek_set.splice(
-        old_parent.nodeweek_set.indexOf(action.payload.id),
-        1
-      );
-      if (old_parent_index == new_parent_index) {
-        old_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
-      } else {
-        new_parent.nodeweek_set = new_parent.nodeweek_set.slice();
-        new_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
-        new_state.splice(new_parent_index, 1, new_parent);
-      }
-      new_state.splice(old_parent_index, 1, old_parent);
-      return new_state;
-    case "node/deleteSelf":
-    case "node/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].nodeweek_set.indexOf(action.payload.parent_id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(
-            new_state[i].nodeweek_set.indexOf(action.payload.parent_id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "node/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "node/insertBelow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_nodeweek_set = state[i].nodeweek_set.slice();
-          new_nodeweek_set.splice(
-            action.payload.new_through.rank,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].nodeweek_set = new_nodeweek_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_nodeweek_set = state[i].nodeweek_set.slice();
-          new_nodeweek_set.splice(
-            action.payload.index,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].nodeweek_set = new_nodeweek_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "week/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/toggleStrategy":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].is_strategy = action.payload.is_strategy;
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      new_state = state.slice();
-      new_state.push(action.payload.strategy);
-      return new_state;
-    case "week/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function nodeweekReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.nodeweek)
-        return action.payload.nodeweek;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.nodeweek) {
-        for (var i = 0; i < action.payload.nodeweek.length; i++) {
-          const new_obj = action.payload.nodeweek[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "nodeweek/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "nodeweek/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...state[i],
-            week: action.payload.new_parent,
-            no_drag: true
-          };
-        }
-      }
-      return new_state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.nodeweek.length; i++) {
-        new_state.push(action.payload.children.nodeweek[i]);
-      }
-      return new_state;
-    case "node/insertBelow":
-    case "node/newNode":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.nodeweeks_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodeweeks_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function nodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.node)
-        return action.payload.node;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.node) {
-        for (var i = 0; i < action.payload.node.length; i++) {
-          const new_obj = action.payload.node[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "node/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelf":
-    case "column/deleteSelfSoft":
-      var new_state = state.slice();
-      var new_column;
-      if (action.payload.extra_data) {
-        new_column = action.payload.extra_data;
-      }
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].column == action.payload.id) {
-          new_state[i] = { ...state[i], column: new_column };
-        }
-      }
-      triggerHandlerEach($(".week .node"), "component-updated");
-      return new_state;
-    case "column/restoreSelf":
-      var new_state = state.slice();
-      var new_column;
-      if (action.payload.id) {
-        new_column = action.payload.id;
-      }
-      for (var i = 0; i < state.length; i++) {
-        if (action.payload.extra_data.indexOf(state[i].id) >= 0) {
-          new_state[i] = { ...state[i], column: new_column };
-        }
-      }
-      triggerHandlerEach($(".week .node"), "component-updated");
-      return new_state;
-    case "node/changedColumn":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], column: action.payload.new_column };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "node/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/deleteSelf":
-    case "nodelink/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outgoing_links.indexOf(action.payload.id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outgoing_links = state[i].outgoing_links.slice();
-          new_state[i].outgoing_links.splice(
-            new_state[i].outgoing_links.indexOf(action.payload.id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outgoing_links = state[i].outgoing_links.slice();
-          new_state[i].outgoing_links.push(action.payload.id);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.node.length; i++) {
-        new_state.push(action.payload.children.node[i]);
-      }
-      return new_state;
-    case "node/insertBelow":
-    case "node/newNode":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "node/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/setLinkedWorkflow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].linked_workflow = action.payload.linked_workflow;
-          new_state[i].linked_workflow_data = action.payload.linked_workflow_data;
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/newNodeLink":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.new_model.source_node) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_outgoing_links = state[i].outgoing_links.slice();
-          new_outgoing_links.push(action.payload.new_model.id);
-          new_state[i].outgoing_links = new_outgoing_links;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].node) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
-          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      if (action.payload.nodes_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodes_added);
-      return new_state;
-    case "outcome/deleteSelf":
-    case "outcome/deleteSelfSoft":
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-    case "outcome/restoreSelf":
-    case "outcome_base/restoreSelf":
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.extra_data.length; i++) {
-        const new_node_data = action.payload.extra_data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_node_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_node_data };
-          }
-        }
-      }
-      return new_state;
-    case "node/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/reloadAssignments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = {
-            ...obj,
-            has_assignment: action.payload.has_assignment
-          };
-          return new_state;
-        }
-      }
-    case "outcome/insertChild":
-    case "outcome/insertBelow":
-    case "outcome_base/insertChild":
-    case "outcomeoutcome/changeID":
-      if (action.payload.node_updates.length == 0)
-        return state;
-      var new_state = state.slice();
-      for (var i = 0; i < action.payload.node_updates.length; i++) {
-        for (var j = 0; j < state.length; j++) {
-          if (action.payload.node_updates[i].id == state[j].id) {
-            new_state[j] = {
-              ...new_state[j],
-              outcomenode_set: action.payload.node_updates[i].outcomenode_set,
-              outcomenode_unique_set: action.payload.node_updates[i].outcomenode_unique_set
-            };
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function nodelinkReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.nodelink)
-        return action.payload.nodelink;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.nodelink) {
-        for (var i = 0; i < action.payload.nodelink.length; i++) {
-          const new_obj = action.payload.nodelink[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "nodelink/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/insertBelow":
-    case "node/newNode":
-    case "node/deleteSelf":
-      return state;
-    case "nodelink/newNodeLink":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "nodelink/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.nodelink.length; i++) {
-        new_state.push(action.payload.children.nodelink[i]);
-      }
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.nodelinks_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodelinks_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcome)
-        return action.payload.outcome;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcome) {
-        for (var i = 0; i < action.payload.outcome.length; i++) {
-          const new_obj = action.payload.outcome[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcome/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomeoutcome/changeID":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        const old_index = state[i].child_outcome_links.indexOf(
-          action.payload.old_id
-        );
-        if (old_index >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            old_index,
-            1,
-            action.payload.new_id
-          );
-        }
-      }
-      return new_state;
-    case "outcomeoutcome/movedTo":
-      let old_parent, old_parent_index, new_parent, new_parent_index;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].child_outcome_links.indexOf(action.payload.id) >= 0) {
-          old_parent_index = i;
-          old_parent = { ...state[i] };
-        }
-        if (state[i].id == action.payload.new_parent) {
-          new_parent_index = i;
-          new_parent = { ...state[i] };
-        }
-      }
-      var new_index = action.payload.new_index;
-      var new_state = state.slice();
-      old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
-      old_parent.child_outcome_links.splice(
-        old_parent.child_outcome_links.indexOf(action.payload.id),
-        1
-      );
-      if (old_parent_index == new_parent_index) {
-        old_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
-      } else {
-        new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
-        new_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
-        new_state.splice(new_parent_index, 1, new_parent);
-      }
-      new_state.splice(old_parent_index, 1, old_parent);
-      return new_state;
-    case "outcome_base/deleteSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/deleteSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        if (new_state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
-            1
-          );
-        } else if (new_state[i].id == action.payload.id) {
-          new_state.splice(i, 1);
-          i--;
-        }
-      }
-      return new_state;
-    case "outcome/deleteSelfSoft":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
-            1
-          );
-        } else if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-        }
-      }
-      return new_state;
-    case "outcome/restoreSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-        } else if (state[i].id == action.payload.id) {
-          new_state[i] = { ...new_state[i], deleted: false };
-        }
-      }
-      return new_state;
-    case "outcome_base/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      var new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcome.length; i++) {
-          new_state.push(action.payload.children.outcome[i]);
-        }
-      }
-      return new_state;
-    case "outcome/insertChild":
-    case "outcome_base/insertChild":
-    case "outcome/insertBelow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_child_outcome_links = state[i].child_outcome_links.slice();
-          let new_index2;
-          new_index2 = action.payload.new_through.rank;
-          new_child_outcome_links.splice(
-            new_index2,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].child_outcome_links = new_child_outcome_links;
-          new_state.push(action.payload.new_model);
-          if (action.payload.children) {
-            for (var i = 0; i < action.payload.children.outcome.length; i++) {
-              new_state.push(action.payload.children.outcome[i]);
-            }
-          }
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/changeField":
-    case "outcome_base/changeField":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/changeFieldMany":
-    case "outcome_base/changeFieldMany":
-      if (action.payload.changeFieldID == changeFieldID)
-        return state;
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (action.payload.ids.indexOf(state[i].id) >= 0) {
-          new_state[i] = { ...state[i], ...action.payload.json };
-        }
-      }
-      return new_state;
-    case "outcomehorizontallink/updateDegree":
-      if (action.payload.outcomehorizontallink == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].outcome) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcome_horizontal_links = action.payload.new_outcome_horizontal_links;
-          new_state[i].outcome_horizontal_links_unique = action.payload.new_outcome_horizontal_links_unique;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/updateHorizontalLinks":
-      var new_state = state.slice();
-      for (var i = 0; i < action.payload.data.length; i++) {
-        const new_outcome_data = action.payload.data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_outcome_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_outcome_data };
-          }
-        }
-      }
-      return new_state;
-    case "outcome/reloadComments":
-    case "outcome_base/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function outcomeOutcomeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomeoutcome)
-        return action.payload.outcomeoutcome;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomeoutcome) {
-        for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
-          const new_obj = action.payload.outcomeoutcome[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomeoutcome/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomeoutcome/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...state[i],
-            parent: action.payload.new_parent,
-            no_drag: true
-          };
-        }
-      }
-      return new_state;
-    case "outcome/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-      var new_state = state.slice();
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
-          new_state.push(action.payload.children.outcomeoutcome[i]);
-        }
-      }
-      return new_state;
-    case "outcome/insertChild":
-    case "outcome/insertBelow":
-      var new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
-          new_state.push(action.payload.children.outcomeoutcome[i]);
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeNodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomenode)
-        return action.payload.outcomenode;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomenode) {
-        for (var i = 0; i < action.payload.outcomenode.length; i++) {
-          const new_obj = action.payload.outcomenode[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      var new_state = state.slice();
-      const new_outcomenode_outcomes = action.payload.data_package.map(
-        (outcomenode) => cantorPairing(outcomenode.node, outcomenode.outcome)
-      );
-      const data_package_copy = action.payload.data_package.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const new_outcomenode_index = new_outcomenode_outcomes.indexOf(
-          cantorPairing(new_state[i].node, new_state[i].outcome)
-        );
-        if (new_outcomenode_index >= 0) {
-          new_state[i] = data_package_copy[new_outcomenode_index];
-          data_package_copy[new_outcomenode_index] = null;
-        }
-      }
-      for (var i = 0; i < data_package_copy.length; i++) {
-        if (data_package_copy[i] != null)
-          new_state.push(data_package_copy[i]);
-      }
-      new_state = new_state.filter((outcomenode) => outcomenode.degree > 0);
-      return new_state;
-    case "outcome/deleteSelf":
-    case "outcome_base/deleteSelf":
-      new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        if (new_state[i].outcome == action.payload.id) {
-          new_state.splice(i, 1);
-          i--;
-        }
-      }
-      return new_state;
-    case "week/insertBelow":
-    case "node/insertBelow":
-    case "outcome/insertChild":
-    case "outcome_base/insertChild":
-    case "outcome/insertBelow":
-    case "outcomeoutcome/changeID":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.outcomenode.length; i++) {
-        new_state.push(action.payload.children.outcomenode[i]);
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeHorizontalLinkReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomehorizontallink)
-        return action.payload.outcomehorizontallink;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomehorizontallink) {
-        for (var i = 0; i < action.payload.outcomehorizontallink.length; i++) {
-          const new_obj = action.payload.outcomehorizontallink[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomehorizontallink/updateDegree":
-      if (action.payload.outcomehorizontallink == -1)
-        return state;
-      var new_state = state.slice();
-      const new_outcomehorizontallink_outcomes = action.payload.data_package.map(
-        (outcomehorizontallink) => cantorPairing(
-          outcomehorizontallink.outcome,
-          outcomehorizontallink.parent_outcome
-        )
-      );
-      const data_package_copy = action.payload.data_package.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(
-          cantorPairing(
-            new_state[i].outcome,
-            new_state[i].parent_outcome
-          )
-        );
-        if (new_outcomehorizontallink_index >= 0) {
-          new_state[i] = data_package_copy[new_outcomehorizontallink_index];
-          data_package_copy[new_outcomehorizontallink_index] = null;
-        }
-      }
-      for (var i = 0; i < data_package_copy.length; i++) {
-        if (data_package_copy[i] != null)
-          new_state.push(data_package_copy[i]);
-      }
-      new_state = new_state.filter(
-        (outcomehorizontallink) => outcomehorizontallink.degree > 0
-      );
-      return new_state;
-    default:
-      return state;
-  }
-}
-function parentNodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.parent_node)
-        return action.payload.parent_node;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.parent_node) {
-        for (var i = 0; i < action.payload.parent_node.length; i++) {
-          const new_obj = action.payload.parent_node[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].node) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
-          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/deleteSelf":
-    case "outcome/deleteSelfSoft":
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-    case "outcome/restoreSelf":
-    case "outcome_base/restoreSelf":
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.extra_data.length; i++) {
-        const new_node_data = action.payload.extra_data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_node_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_node_data };
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function parentWorkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.parent_workflow)
-        return action.payload.parent_workflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.parent_workflow) {
-        for (var i = 0; i < action.payload.parent_workflow.length; i++) {
-          const new_obj = action.payload.parent_workflow[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function childWorkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.child_workflow)
-        return action.payload.child_workflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.child_workflow) {
-        for (var i = 0; i < action.payload.child_workflow.length; i++) {
-          const new_obj = action.payload.child_workflow[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_state[i].outcomeworkflow_set.splice(
-            new_state[i].outcomeworkflow_set.indexOf(action.payload.parent_id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_state[i].outcomeworkflow_set.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.new_through.workflow) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_outcomeworkflow_set.splice(
-            action.payload.new_through.rank,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].outcomeworkflow_set = new_outcomeworkflow_set;
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function strategyReducer(state = [], action) {
-  switch (action.type) {
-    case "strategy/toggleStrategy":
-      if (!action.payload.is_strategy)
-        return state;
-      const new_state = state.slice();
-      new_state.push(action.payload.strategy);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function saltiseStrategyReducer(state = [], action) {
-  switch (action.type) {
-    default:
-      return state;
-  }
-}
-function objectSetReducer(state = [], action) {
-  switch (action.type) {
-    case "objectset/toggleObjectSet":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], hidden: action.payload.hidden };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function gridMenuReducer(state = {}, action) {
-  switch (action.type) {
-    case "gridmenu/itemAdded":
-      var new_state = { ...state };
-      if (action.payload.type != "project") {
-        new_state.owned_strategies = { ...new_state.owned_strategies };
-        new_state.owned_strategies.sections = new_state.owned_strategies.sections.slice();
-        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
-          if (new_state.owned_strategies.sections[i].object_type == action.payload.type) {
-            new_state.owned_strategies.sections[i].objects = new_state.owned_strategies.sections[i].objects.slice();
-            new_state.owned_strategies.sections[i].objects.push(
-              action.payload.new_item
-            );
-          }
-        }
-      } else {
-        new_state.owned_projects = { ...new_state.owned_projects };
-        new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
-        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
-          if (new_state.owned_projects.sections[i].object_type == action.payload.type) {
-            new_state.owned_projects.sections[i].objects = new_state.owned_projects.sections[i].objects.slice();
-            new_state.owned_projects.sections[i].objects.push(
-              action.payload.new_item
-            );
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-const rootWorkflowReducer = combineReducers({
-  workflow: workflowReducer,
-  outcomeworkflow: outcomeworkflowReducer,
-  columnworkflow: columnworkflowReducer,
-  column: columnReducer,
-  weekworkflow: weekworkflowReducer,
-  week: weekReducer,
-  nodeweek: nodeweekReducer,
-  node: nodeReducer,
-  nodelink: nodelinkReducer,
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
-  outcomenode: outcomeNodeReducer,
-  parent_workflow: parentWorkflowReducer,
-  parent_node: parentNodeReducer,
-  outcomehorizontallink: outcomeHorizontalLinkReducer,
-  child_workflow: childWorkflowReducer,
-  strategy: strategyReducer,
-  saltise_strategy: saltiseStrategyReducer,
-  objectset: objectSetReducer
-});
-combineReducers({
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer
-});
 const DATA_ACTIONS = Enum({
   POSTED: "posted"
 });
@@ -50931,7 +48585,7 @@ function API_POST(url = "", data = {}) {
       headers: {
         "Content-Type": "application/json",
         // 'root' comes from the csrf-setup script
-        "X-CSRFToken": root.getCsrfToken()
+        "X-CSRFToken": window.getCsrfToken()
       },
       body: JSON.stringify(data)
     }).then((response) => response.json()).then((data2) => {
@@ -50956,80 +48610,6 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => consol
       window.fail_function(data.action);
   });
 }
-function updateValue(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
-  var t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
-  }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json)
-  };
-  if (changeField2)
-    post_object.changeFieldID = changeFieldID;
-  else
-    post_object.changeFieldID = 0;
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === DATA_ACTIONS.POSTED)
-            callBackFunction(data);
-          else
-            window.fail_function(data.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function toggleDrop(objectID, objectType, is_dropped, dispatch, depth = 1) {
-  try {
-    const default_drop = get_default_drop_state(
-      objectID,
-      objectType,
-      depth
-    );
-    if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, is_dropped);
-    else
-      window.localStorage.removeItem(objectType + objectID);
-  } catch (err) {
-    if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
-      window.localStorage.clear();
-    }
-  }
-  dispatch(changeField(objectID, objectType, { is_dropped }));
-}
 function newNode(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_node, {
@@ -51037,21 +48617,6 @@ function newNode(weekPk, position2 = -1, column2 = -1, column_type = -1, callBac
       position: JSON.stringify(position2),
       columnPk: JSON.stringify(column2),
       columnType: JSON.stringify(column_type)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function newOutcome(workflowPk, object_set_id, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
     }).done(function(data) {
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
@@ -51249,48 +48814,6 @@ function insertChild(objectID, objectType, callBackFunction = () => console.log(
     window.fail_function();
   }
 }
-function columnChanged(renderer2, objectID, columnID) {
-  if (!renderer2.dragAction)
-    renderer2.dragAction = {};
-  if (!renderer2.dragAction["nodeweek"])
-    renderer2.dragAction["nodeweek"] = {};
-  renderer2.dragAction["nodeweek"] = {
-    ...renderer2.dragAction["nodeweek"],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify("node"),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
-  };
-  $(document).off("nodeweek-dropped");
-  $(document).on("nodeweek-dropped", () => {
-    dragAction(renderer2, renderer2.dragAction["nodeweek"]);
-    renderer2.dragAction["nodeweek"] = null;
-    $(document).off("nodeweek-dropped");
-  });
-}
-function insertedAt(renderer2, objectID, objectType, parentID, parentType, newPosition, throughType) {
-  if (!renderer2.dragAction)
-    renderer2.dragAction = {};
-  if (!renderer2.dragAction[throughType])
-    renderer2.dragAction[throughType] = {};
-  renderer2.dragAction[throughType] = {
-    ...renderer2.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
-  };
-  $(document).off(throughType + "-dropped");
-  if (objectID)
-    $(document).on(throughType + "-dropped", () => {
-      dragAction(renderer2, renderer2.dragAction[throughType]);
-      renderer2.dragAction[throughType] = null;
-      $(document).off(throughType + "-dropped");
-    });
-}
 function dragAction(renderer2, action_data, callBackFunction = () => console.log("success")) {
   try {
     renderer2.tiny_loader.startLoad();
@@ -51362,20 +48885,6 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = () 
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowData(workflowPk, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-      workflowPk: JSON.stringify(workflowPk)
     }).done(function(data) {
       if (data.action === DATA_ACTIONS.POSTED)
         callBackFunction(data);
@@ -59519,17 +57028,6 @@ function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () 
     }
   );
 }
-function getLinkedWorkflowMenu(nodeData, updateFunction, callBackFunction = () => console.log("success")) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (data) => {
-      callBackFunction();
-    }
-  );
-}
 function createNew(create_url) {
   COURSEFLOW_APP.tinyLoader.startLoad();
   getTargetProjectMenu(
@@ -59546,6 +57044,48 @@ function createNew(create_url) {
       COURSEFLOW_APP.tinyLoader.endLoad();
     }
   );
+}
+function columnChanged(renderer2, objectID, columnID) {
+  if (!renderer2.dragAction)
+    renderer2.dragAction = {};
+  if (!renderer2.dragAction["nodeweek"])
+    renderer2.dragAction["nodeweek"] = {};
+  renderer2.dragAction["nodeweek"] = {
+    ...renderer2.dragAction["nodeweek"],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify("node"),
+    columnPk: JSON.stringify(columnID),
+    columnChange: JSON.stringify(true)
+  };
+  $(document).off("nodeweek-dropped");
+  $(document).on("nodeweek-dropped", () => {
+    dragAction(renderer2, renderer2.dragAction["nodeweek"]);
+    renderer2.dragAction["nodeweek"] = null;
+    $(document).off("nodeweek-dropped");
+  });
+}
+function insertedAt(renderer2, objectID, objectType, parentID, parentType, newPosition, throughType) {
+  if (!renderer2.dragAction)
+    renderer2.dragAction = {};
+  if (!renderer2.dragAction[throughType])
+    renderer2.dragAction[throughType] = {};
+  renderer2.dragAction[throughType] = {
+    ...renderer2.dragAction[throughType],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true)
+  };
+  $(document).off(throughType + "-dropped");
+  if (objectID)
+    $(document).on(throughType + "-dropped", () => {
+      dragAction(renderer2, renderer2.dragAction[throughType]);
+      renderer2.dragAction[throughType] = null;
+      $(document).off(throughType + "-dropped");
+    });
 }
 const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
   "& .MuiPaper-root": {
@@ -60229,7 +57769,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   }
   return target;
 }
-function warning(message) {
+function warning$1(message) {
   if (typeof console !== "undefined" && typeof console.error === "function") {
     console.error(message);
   }
@@ -60243,7 +57783,7 @@ function verify(selector, methodName) {
     throw new Error(`Unexpected value for ${methodName} in connect.`);
   } else if (methodName === "mapStateToProps" || methodName === "mapDispatchToProps") {
     if (!Object.prototype.hasOwnProperty.call(selector, "dependsOnOwnProps")) {
-      warning(`The selector for ${methodName} of connect did not specify a value for dependsOnOwnProps.`);
+      warning$1(`The selector for ${methodName} of connect did not specify a value for dependsOnOwnProps.`);
     }
   }
 }
@@ -60337,7 +57877,7 @@ function bindActionCreators(actionCreators, dispatch) {
   }
   return boundActionCreators;
 }
-function isPlainObject$1(obj) {
+function isPlainObject$2(obj) {
   if (typeof obj !== "object" || obj === null)
     return false;
   let proto = Object.getPrototypeOf(obj);
@@ -60350,8 +57890,8 @@ function isPlainObject$1(obj) {
   return proto === baseProto;
 }
 function verifyPlainObject(value, displayName, methodName) {
-  if (!isPlainObject$1(value)) {
-    warning(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
+  if (!isPlainObject$2(value)) {
+    warning$1(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
   }
 }
 function wrapMapToPropsConstant(getConstant) {
@@ -60661,7 +58201,7 @@ function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
   if (process.env.NODE_ENV !== "production") {
     if (pure !== void 0 && !hasWarnedAboutDeprecatedPureOption) {
       hasWarnedAboutDeprecatedPureOption = true;
-      warning('The `pure` option has been removed. `connect` is now always a "pure/memoized" component');
+      warning$1('The `pure` option has been removed. `connect` is now always a "pure/memoized" component');
     }
   }
   const Context = context;
@@ -60875,6 +58415,2380 @@ function Provider({
 }
 initializeConnect(shimExports.useSyncExternalStore);
 setBatch(reactDomExports.unstable_batchedUpdates);
+function formatProdErrorMessage(code) {
+  return "Minified Redux error #" + code + "; visit https://redux.js.org/Errors?code=" + code + " for the full message or use the non-minified dev environment for full errors. ";
+}
+var $$observable = function() {
+  return typeof Symbol === "function" && Symbol.observable || "@@observable";
+}();
+var randomString = function randomString2() {
+  return Math.random().toString(36).substring(7).split("").join(".");
+};
+var ActionTypes = {
+  INIT: "@@redux/INIT" + randomString(),
+  REPLACE: "@@redux/REPLACE" + randomString(),
+  PROBE_UNKNOWN_ACTION: function PROBE_UNKNOWN_ACTION() {
+    return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
+  }
+};
+function isPlainObject$1(obj) {
+  if (typeof obj !== "object" || obj === null)
+    return false;
+  var proto = obj;
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+  return Object.getPrototypeOf(obj) === proto;
+}
+function miniKindOf(val) {
+  if (val === void 0)
+    return "undefined";
+  if (val === null)
+    return "null";
+  var type = typeof val;
+  switch (type) {
+    case "boolean":
+    case "string":
+    case "number":
+    case "symbol":
+    case "function": {
+      return type;
+    }
+  }
+  if (Array.isArray(val))
+    return "array";
+  if (isDate$1(val))
+    return "date";
+  if (isError(val))
+    return "error";
+  var constructorName = ctorName(val);
+  switch (constructorName) {
+    case "Symbol":
+    case "Promise":
+    case "WeakMap":
+    case "WeakSet":
+    case "Map":
+    case "Set":
+      return constructorName;
+  }
+  return type.slice(8, -1).toLowerCase().replace(/\s/g, "");
+}
+function ctorName(val) {
+  return typeof val.constructor === "function" ? val.constructor.name : null;
+}
+function isError(val) {
+  return val instanceof Error || typeof val.message === "string" && val.constructor && typeof val.constructor.stackTraceLimit === "number";
+}
+function isDate$1(val) {
+  if (val instanceof Date)
+    return true;
+  return typeof val.toDateString === "function" && typeof val.getDate === "function" && typeof val.setDate === "function";
+}
+function kindOf(val) {
+  var typeOfVal = typeof val;
+  if (process.env.NODE_ENV !== "production") {
+    typeOfVal = miniKindOf(val);
+  }
+  return typeOfVal;
+}
+function createStore(reducer2, preloadedState, enhancer) {
+  var _ref2;
+  if (typeof preloadedState === "function" && typeof enhancer === "function" || typeof enhancer === "function" && typeof arguments[3] === "function") {
+    throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(0) : "It looks like you are passing several store enhancers to createStore(). This is not supported. Instead, compose them together to a single function. See https://redux.js.org/tutorials/fundamentals/part-4-store#creating-a-store-with-enhancers for an example.");
+  }
+  if (typeof preloadedState === "function" && typeof enhancer === "undefined") {
+    enhancer = preloadedState;
+    preloadedState = void 0;
+  }
+  if (typeof enhancer !== "undefined") {
+    if (typeof enhancer !== "function") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(1) : "Expected the enhancer to be a function. Instead, received: '" + kindOf(enhancer) + "'");
+    }
+    return enhancer(createStore)(reducer2, preloadedState);
+  }
+  if (typeof reducer2 !== "function") {
+    throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(2) : "Expected the root reducer to be a function. Instead, received: '" + kindOf(reducer2) + "'");
+  }
+  var currentReducer = reducer2;
+  var currentState = preloadedState;
+  var currentListeners = [];
+  var nextListeners = currentListeners;
+  var isDispatching = false;
+  function ensureCanMutateNextListeners() {
+    if (nextListeners === currentListeners) {
+      nextListeners = currentListeners.slice();
+    }
+  }
+  function getState() {
+    if (isDispatching) {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(3) : "You may not call store.getState() while the reducer is executing. The reducer has already received the state as an argument. Pass it down from the top reducer instead of reading it from the store.");
+    }
+    return currentState;
+  }
+  function subscribe(listener) {
+    if (typeof listener !== "function") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(4) : "Expected the listener to be a function. Instead, received: '" + kindOf(listener) + "'");
+    }
+    if (isDispatching) {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(5) : "You may not call store.subscribe() while the reducer is executing. If you would like to be notified after the store has been updated, subscribe from a component and invoke store.getState() in the callback to access the latest state. See https://redux.js.org/api/store#subscribelistener for more details.");
+    }
+    var isSubscribed = true;
+    ensureCanMutateNextListeners();
+    nextListeners.push(listener);
+    return function unsubscribe() {
+      if (!isSubscribed) {
+        return;
+      }
+      if (isDispatching) {
+        throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(6) : "You may not unsubscribe from a store listener while the reducer is executing. See https://redux.js.org/api/store#subscribelistener for more details.");
+      }
+      isSubscribed = false;
+      ensureCanMutateNextListeners();
+      var index = nextListeners.indexOf(listener);
+      nextListeners.splice(index, 1);
+      currentListeners = null;
+    };
+  }
+  function dispatch(action) {
+    if (!isPlainObject$1(action)) {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(7) : "Actions must be plain objects. Instead, the actual type was: '" + kindOf(action) + "'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.");
+    }
+    if (typeof action.type === "undefined") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(8) : 'Actions may not have an undefined "type" property. You may have misspelled an action type string constant.');
+    }
+    if (isDispatching) {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(9) : "Reducers may not dispatch actions.");
+    }
+    try {
+      isDispatching = true;
+      currentState = currentReducer(currentState, action);
+    } finally {
+      isDispatching = false;
+    }
+    var listeners = currentListeners = nextListeners;
+    for (var i = 0; i < listeners.length; i++) {
+      var listener = listeners[i];
+      listener();
+    }
+    return action;
+  }
+  function replaceReducer(nextReducer) {
+    if (typeof nextReducer !== "function") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(10) : "Expected the nextReducer to be a function. Instead, received: '" + kindOf(nextReducer));
+    }
+    currentReducer = nextReducer;
+    dispatch({
+      type: ActionTypes.REPLACE
+    });
+  }
+  function observable() {
+    var _ref;
+    var outerSubscribe = subscribe;
+    return _ref = {
+      /**
+       * The minimal observable subscription method.
+       * @param {Object} observer Any object that can be used as an observer.
+       * The observer object should have a `next` method.
+       * @returns {subscription} An object with an `unsubscribe` method that can
+       * be used to unsubscribe the observable from the store, and prevent further
+       * emission of values from the observable.
+       */
+      subscribe: function subscribe2(observer) {
+        if (typeof observer !== "object" || observer === null) {
+          throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(11) : "Expected the observer to be an object. Instead, received: '" + kindOf(observer) + "'");
+        }
+        function observeState() {
+          if (observer.next) {
+            observer.next(getState());
+          }
+        }
+        observeState();
+        var unsubscribe = outerSubscribe(observeState);
+        return {
+          unsubscribe
+        };
+      }
+    }, _ref[$$observable] = function() {
+      return this;
+    }, _ref;
+  }
+  dispatch({
+    type: ActionTypes.INIT
+  });
+  return _ref2 = {
+    dispatch,
+    subscribe,
+    getState,
+    replaceReducer
+  }, _ref2[$$observable] = observable, _ref2;
+}
+function warning(message) {
+  if (typeof console !== "undefined" && typeof console.error === "function") {
+    console.error(message);
+  }
+  try {
+    throw new Error(message);
+  } catch (e) {
+  }
+}
+function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
+  var reducerKeys = Object.keys(reducers);
+  var argumentName = action && action.type === ActionTypes.INIT ? "preloadedState argument passed to createStore" : "previous state received by the reducer";
+  if (reducerKeys.length === 0) {
+    return "Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.";
+  }
+  if (!isPlainObject$1(inputState)) {
+    return "The " + argumentName + ' has unexpected type of "' + kindOf(inputState) + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
+  }
+  var unexpectedKeys = Object.keys(inputState).filter(function(key) {
+    return !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key];
+  });
+  unexpectedKeys.forEach(function(key) {
+    unexpectedKeyCache[key] = true;
+  });
+  if (action && action.type === ActionTypes.REPLACE)
+    return;
+  if (unexpectedKeys.length > 0) {
+    return "Unexpected " + (unexpectedKeys.length > 1 ? "keys" : "key") + " " + ('"' + unexpectedKeys.join('", "') + '" found in ' + argumentName + ". ") + "Expected to find one of the known reducer keys instead: " + ('"' + reducerKeys.join('", "') + '". Unexpected keys will be ignored.');
+  }
+}
+function assertReducerShape(reducers) {
+  Object.keys(reducers).forEach(function(key) {
+    var reducer2 = reducers[key];
+    var initialState = reducer2(void 0, {
+      type: ActionTypes.INIT
+    });
+    if (typeof initialState === "undefined") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(12) : 'The slice reducer for key "' + key + `" returned undefined during initialization. If the state passed to the reducer is undefined, you must explicitly return the initial state. The initial state may not be undefined. If you don't want to set a value for this reducer, you can use null instead of undefined.`);
+    }
+    if (typeof reducer2(void 0, {
+      type: ActionTypes.PROBE_UNKNOWN_ACTION()
+    }) === "undefined") {
+      throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(13) : 'The slice reducer for key "' + key + '" returned undefined when probed with a random type. ' + ("Don't try to handle '" + ActionTypes.INIT + `' or other actions in "redux/*" `) + "namespace. They are considered private. Instead, you must return the current state for any unknown actions, unless it is undefined, in which case you must return the initial state, regardless of the action type. The initial state may not be undefined, but can be null.");
+    }
+  });
+}
+function combineReducers(reducers) {
+  var reducerKeys = Object.keys(reducers);
+  var finalReducers = {};
+  for (var i = 0; i < reducerKeys.length; i++) {
+    var key = reducerKeys[i];
+    if (process.env.NODE_ENV !== "production") {
+      if (typeof reducers[key] === "undefined") {
+        warning('No reducer provided for key "' + key + '"');
+      }
+    }
+    if (typeof reducers[key] === "function") {
+      finalReducers[key] = reducers[key];
+    }
+  }
+  var finalReducerKeys = Object.keys(finalReducers);
+  var unexpectedKeyCache;
+  if (process.env.NODE_ENV !== "production") {
+    unexpectedKeyCache = {};
+  }
+  var shapeAssertionError;
+  try {
+    assertReducerShape(finalReducers);
+  } catch (e) {
+    shapeAssertionError = e;
+  }
+  return function combination(state, action) {
+    if (state === void 0) {
+      state = {};
+    }
+    if (shapeAssertionError) {
+      throw shapeAssertionError;
+    }
+    if (process.env.NODE_ENV !== "production") {
+      var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache);
+      if (warningMessage) {
+        warning(warningMessage);
+      }
+    }
+    var hasChanged = false;
+    var nextState = {};
+    for (var _i = 0; _i < finalReducerKeys.length; _i++) {
+      var _key = finalReducerKeys[_i];
+      var reducer2 = finalReducers[_key];
+      var previousStateForKey = state[_key];
+      var nextStateForKey = reducer2(previousStateForKey, action);
+      if (typeof nextStateForKey === "undefined") {
+        var actionType = action && action.type;
+        throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(14) : "When called with an action of type " + (actionType ? '"' + String(actionType) + '"' : "(unknown type)") + ', the slice reducer for key "' + _key + '" returned undefined. To ignore an action, you must explicitly return the previous state. If you want this reducer to hold no value, you can return null instead of undefined.');
+      }
+      nextState[_key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
+    hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length;
+    return hasChanged ? nextState : state;
+  };
+}
+function compose() {
+  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
+    funcs[_key] = arguments[_key];
+  }
+  if (funcs.length === 0) {
+    return function(arg) {
+      return arg;
+    };
+  }
+  if (funcs.length === 1) {
+    return funcs[0];
+  }
+  return funcs.reduce(function(a, b) {
+    return function() {
+      return a(b.apply(void 0, arguments));
+    };
+  });
+}
+const createLockAction = (object_id, object_type, lock2, user_id2, user_colour) => {
+  if (lock2)
+    return {
+      type: object_type + "/createLock",
+      payload: {
+        id: object_id,
+        lock: { user_id: user_id2, user_colour }
+      }
+    };
+  else
+    return {
+      type: object_type + "/createLock",
+      payload: { id: object_id, lock: null }
+    };
+};
+const reloadCommentsAction = (id, objectType, comment_data) => {
+  return {
+    type: objectType + "/reloadComments",
+    payload: { id, objectType, comment_data }
+  };
+};
+const reloadAssignmentsAction = (id, has_assignment) => {
+  return {
+    type: "node/reloadAssignments",
+    payload: { id, has_assignment }
+  };
+};
+const moveColumnWorkflow = (id, new_position, new_parent, child_id) => {
+  return {
+    type: "columnworkflow/movedTo",
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+};
+const moveWeekWorkflow = (id, new_position, new_parent, child_id) => {
+  return {
+    type: "weekworkflow/movedTo",
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+};
+const columnChangeNode = (id, new_column) => {
+  return {
+    type: "node/changedColumn",
+    payload: { id, new_column }
+  };
+};
+const moveNodeWeek = (id, new_position, new_parent, child_id) => {
+  return {
+    type: "nodeweek/movedTo",
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+};
+const changeField = (id, objectType, json) => {
+  return {
+    type: objectType + "/changeField",
+    payload: { id, objectType, json }
+  };
+};
+const moveOutcomeOutcome = (id, new_position, new_parent, child_id) => {
+  return {
+    type: "outcomeoutcome/movedTo",
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+};
+const moveOutcomeWorkflow = (id, new_position, new_parent, child_id) => {
+  return {
+    type: "outcomeworkflow/movedTo",
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+};
+const toggleObjectSet = (id, hidden) => {
+  return {
+    type: "objectset/toggleObjectSet",
+    payload: { id, hidden }
+  };
+};
+const replaceStoreData = (data_package) => {
+  return {
+    type: "replaceStoreData",
+    payload: data_package
+  };
+};
+const refreshStoreData = (data_package) => {
+  return {
+    type: "refreshStoreData",
+    payload: data_package
+  };
+};
+function workflowReducer(state = {}, action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.workflow)
+        return action.payload.workflow;
+      return state;
+    case "refreshStoreData":
+      if (action.payload.workflow)
+        return action.payload.workflow;
+      return state;
+    case "workflow/createLock":
+      if (state.id == action.payload.id) {
+        var new_state = { ...state, lock: action.payload.lock };
+        return new_state;
+      }
+      return state;
+    case "weekworkflow/changeID":
+      var new_state = { ...state };
+      var old_index = state.weekworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        new_state.weekworklow_set = new_state.weekworkflow_set.slice();
+        new_state.weekworkflow_set.splice(old_index, 1, action.payload.new_id);
+      }
+      return new_state;
+    case "outcomeworkflow/changeID":
+      var new_state = { ...state };
+      var old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        new_state.outcomeworklow_set = new_state.outcomeworkflow_set.slice();
+        new_state.outcomeworkflow_set.splice(
+          old_index,
+          1,
+          action.payload.new_id
+        );
+      }
+      return new_state;
+    case "columnworkflow/changeID":
+      var new_state = { ...state };
+      var old_index = state.columnworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        new_state.columnworklow_set = new_state.columnworkflow_set.slice();
+        new_state.columnworkflow_set.splice(old_index, 1, action.payload.new_id);
+      }
+      return new_state;
+    case "columnworkflow/movedTo":
+      var new_columnworkflow_set = state.columnworkflow_set.slice();
+      for (var i = 0; i < new_columnworkflow_set.length; i++) {
+        if (new_columnworkflow_set[i] == action.payload.id) {
+          new_columnworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_columnworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        columnworkflow_set: new_columnworkflow_set
+      };
+    case "weekworkflow/movedTo":
+      var new_weekworkflow_set = state.weekworkflow_set.slice();
+      for (var i = 0; i < new_weekworkflow_set.length; i++) {
+        if (new_weekworkflow_set[i] == action.payload.id) {
+          new_weekworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_weekworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        weekworkflow_set: new_weekworkflow_set
+      };
+    case "outcomeworkflow/movedTo":
+      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      for (var i = 0; i < new_outcomeworkflow_set.length; i++) {
+        if (new_outcomeworkflow_set[i] == action.payload.id) {
+          new_outcomeworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_outcomeworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        outcomeworkflow_set: new_outcomeworkflow_set
+      };
+    case "workflow/deleteSelfSoft":
+      return { ...state, deleted: true };
+    case "workflow/restoreSelf":
+      return { ...state, deleted: false };
+    case "week/deleteSelf":
+    case "week/deleteSelfSoft":
+      if (state.weekworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+        var new_state = { ...state };
+        new_state.weekworkflow_set = state.weekworkflow_set.slice();
+        new_state.weekworkflow_set.splice(
+          new_state.weekworkflow_set.indexOf(action.payload.parent_id),
+          1
+        );
+        return new_state;
+      }
+      return state;
+    case "week/restoreSelf":
+      var new_state = { ...state };
+      new_state.weekworkflow_set = state.weekworkflow_set.slice();
+      new_state.weekworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state;
+    case "week/insertBelow":
+      new_state = { ...state };
+      var new_weekworkflow_set = state.weekworkflow_set.slice();
+      new_weekworkflow_set.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.weekworkflow_set = new_weekworkflow_set;
+      return new_state;
+    case "outcome_base/deleteSelf":
+    case "outcome_base/deleteSelfSoft":
+      if (state.outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+        var new_state = { ...state };
+        new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
+        new_state.outcomeworkflow_set.splice(
+          new_state.outcomeworkflow_set.indexOf(action.payload.parent_id),
+          1
+        );
+        return new_state;
+      }
+      return state;
+    case "outcome_base/restoreSelf":
+      var new_state = { ...state };
+      new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      new_state.outcomeworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state;
+    case "outcome_base/insertBelow":
+    case "outcome/newOutcome":
+      if (state.id != action.payload.new_through.workflow)
+        return state;
+      new_state = { ...state };
+      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      new_outcomeworkflow_set.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.outcomeworkflow_set = new_outcomeworkflow_set;
+      return new_state;
+    case "strategy/addStrategy":
+      new_state = { ...state };
+      var new_weekworkflow_set = state.weekworkflow_set.slice();
+      new_weekworkflow_set.splice(
+        action.payload.index,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.weekworkflow_set = new_weekworkflow_set;
+      if (action.payload.columnworkflows_added.length > 0) {
+        const new_columnworkflow_set2 = state.columnworkflow_set.slice();
+        new_columnworkflow_set2.push(
+          ...action.payload.columnworkflows_added.map(
+            (columnworkflow) => columnworkflow.id
+          )
+        );
+        new_state.columnworkflow_set = new_columnworkflow_set2;
+      }
+      return new_state;
+    case "column/deleteSelf":
+    case "column/deleteSelfSoft": {
+      if (state.columnworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+        const new_state2 = { ...state };
+        new_state2.columnworkflow_set = state.columnworkflow_set.slice();
+        new_state2.columnworkflow_set.splice(
+          new_state2.columnworkflow_set.indexOf(action.payload.parent_id),
+          1
+        );
+        return new_state2;
+      }
+      return state;
+    }
+    case "column/restoreSelf": {
+      const new_state2 = { ...state };
+      new_state2.columnworkflow_set = state.columnworkflow_set.slice();
+      new_state2.columnworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state2;
+    }
+    case "node/newNode": {
+      if (state.columnworkflow_set.indexOf(action.payload.columnworkflow.id) >= 0)
+        return state;
+      const new_state2 = { ...state };
+      const new_columnworkflow_set2 = state.columnworkflow_set.slice();
+      new_columnworkflow_set2.push(action.payload.columnworkflow.id);
+      new_state2.columnworkflow_set = new_columnworkflow_set2;
+      return new_state2;
+    }
+    case "column/insertBelow": {
+      const new_state2 = { ...state };
+      const new_columnworkflow_set2 = state.columnworkflow_set.slice();
+      new_columnworkflow_set2.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state2.columnworkflow_set = new_columnworkflow_set2;
+      return new_state2;
+    }
+    case "workflow/changeField": {
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      return { ...state, ...action.payload.json };
+    }
+    default:
+      return state;
+  }
+}
+function outcomeworkflowReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.outcomeworkflow)
+        return action.payload.outcomeworkflow;
+      return state;
+    case "refreshStoreData": {
+      const new_state = state.slice();
+      if (action.payload.outcomeworkflow) {
+        for (let i2 = 0; i2 < action.payload.outcomeworkflow.length; i2++) {
+          const new_obj = action.payload.outcomeworkflow[i2];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id === new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    }
+    case "outcomeworkflow/movedTo": {
+      const new_state = state.slice();
+      for (let i2 = 0; i2 < state.length; i2++) {
+        if (state[i2].id === action.payload.id) {
+          new_state[i2] = { ...state[i2], no_drag: true };
+        }
+      }
+      return new_state;
+    }
+    case "outcomeworkflow/changeID": {
+      for (let i2 = 0; i2 < state.length; i2++) {
+        if (state[i2].id === action.payload.old_id) {
+          const new_state = state.slice();
+          new_state[i2] = {
+            ...new_state[i2],
+            id: action.payload.new_id,
+            no_drag: false
+          };
+          return new_state;
+        }
+      }
+      return state;
+    }
+    case "outcome_base/deleteSelf": {
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].outcome == action.payload.id) {
+          const new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    }
+    case "outcome_base/insertBelow": {
+      const new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    }
+    case "outcome/newOutcome": {
+      const new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    }
+    default:
+      return state;
+  }
+}
+function columnworkflowReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.columnworkflow)
+        return action.payload.columnworkflow;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.columnworkflow) {
+        for (var i = 0; i < action.payload.columnworkflow.length; i++) {
+          const new_obj = action.payload.columnworkflow[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "columnworkflow/changeID":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.old_id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            id: action.payload.new_id,
+            no_drag: false
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "columnworkflow/movedTo":
+      new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          new_state[i] = { ...state[i], no_drag: true };
+        }
+      }
+      return new_state;
+    case "column/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "node/newNode":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.columnworkflow.id)
+          return state;
+      }
+      new_state = state.slice();
+      new_state.push(action.payload.columnworkflow);
+      return new_state;
+    case "column/insertBelow":
+      new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    case "strategy/addStrategy":
+      if (action.payload.columnworkflows_added.length == 0)
+        return state;
+      new_state = state.slice();
+      new_state.push(...action.payload.columnworkflows_added);
+      return new_state;
+    default:
+      return state;
+  }
+}
+function columnReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.column)
+        return action.payload.column;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.column) {
+        for (var i = 0; i < action.payload.column.length; i++) {
+          const new_obj = action.payload.collumn[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "column/createLock":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], lock: action.payload.lock };
+          return new_state;
+        }
+      }
+      return state;
+    case "column/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "column/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "column/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], deleted: false };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/newNode":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.column.id)
+          return state;
+      }
+      new_state = state.slice();
+      new_state.push(action.payload.column);
+      return new_state;
+    case "column/insertBelow":
+      new_state = state.slice();
+      new_state.push(action.payload.new_model);
+      return new_state;
+    case "column/changeField":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i], ...action.payload.json };
+          return new_state;
+        }
+      }
+      return state;
+    case "strategy/addStrategy":
+      if (action.payload.columns_added.length == 0)
+        return state;
+      new_state = state.slice();
+      new_state.push(...action.payload.columns_added);
+      return new_state;
+    case "column/reloadComments":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const obj = new_state[i];
+        if (obj.id == action.payload.id) {
+          new_state[i] = { ...obj, comments: action.payload.comment_data };
+          return new_state;
+        }
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+function weekworkflowReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.weekworkflow)
+        return action.payload.weekworkflow;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.weekworkflow) {
+        for (var i = 0; i < action.payload.weekworkflow.length; i++) {
+          const new_obj = action.payload.weekworkflow[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "weekworkflow/movedTo":
+      new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          new_state[i] = { ...state[i], no_drag: true };
+        }
+      }
+      return new_state;
+    case "weekworkflow/changeID":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.old_id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            id: action.payload.new_id,
+            no_drag: false
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "week/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "week/insertBelow":
+      new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    case "strategy/addStrategy":
+      new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    default:
+      return state;
+  }
+}
+function weekReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.week)
+        return action.payload.week;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.week) {
+        for (var i = 0; i < action.payload.week.length; i++) {
+          const new_obj = action.payload.week[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "week/createLock":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], lock: action.payload.lock };
+          return new_state;
+        }
+      }
+      return state;
+    case "nodeweek/changeID":
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        const old_index = state[i].nodeweek_set.indexOf(action.payload.old_id);
+        if (old_index >= 0) {
+          new_state[i] = { ...new_state[i] };
+          new_state[i].nodeweek_set = new_state[i].nodeweek_set.slice();
+          new_state[i].nodeweek_set.splice(old_index, 1, action.payload.new_id);
+        }
+      }
+      return new_state;
+    case "nodeweek/movedTo":
+      let old_parent, old_parent_index, new_parent, new_parent_index;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].nodeweek_set.indexOf(action.payload.id) >= 0) {
+          old_parent_index = i;
+          old_parent = { ...state[i] };
+        }
+        if (state[i].id == action.payload.new_parent) {
+          new_parent_index = i;
+          new_parent = { ...state[i] };
+        }
+      }
+      var new_index = action.payload.new_index;
+      var new_state = state.slice();
+      old_parent.nodeweek_set = old_parent.nodeweek_set.slice();
+      old_parent.nodeweek_set.splice(
+        old_parent.nodeweek_set.indexOf(action.payload.id),
+        1
+      );
+      if (old_parent_index == new_parent_index) {
+        old_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
+      } else {
+        new_parent.nodeweek_set = new_parent.nodeweek_set.slice();
+        new_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
+        new_state.splice(new_parent_index, 1, new_parent);
+      }
+      new_state.splice(old_parent_index, 1, old_parent);
+      return new_state;
+    case "node/deleteSelf":
+    case "node/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].nodeweek_set.indexOf(action.payload.parent_id) >= 0) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
+          new_state[i].nodeweek_set.splice(
+            new_state[i].nodeweek_set.indexOf(action.payload.parent_id),
+            1
+          );
+          return new_state;
+        }
+      }
+      return state;
+    case "node/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
+          new_state[i].nodeweek_set.splice(
+            action.payload.throughparent_index,
+            0,
+            action.payload.throughparent_id
+          );
+          return new_state;
+        }
+      }
+      return state;
+    case "node/insertBelow":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parentID) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          var new_nodeweek_set = state[i].nodeweek_set.slice();
+          new_nodeweek_set.splice(
+            action.payload.new_through.rank,
+            0,
+            action.payload.new_through.id
+          );
+          new_state[i].nodeweek_set = new_nodeweek_set;
+          return new_state;
+        }
+      }
+      return state;
+    case "node/newNode":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parentID) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          var new_nodeweek_set = state[i].nodeweek_set.slice();
+          new_nodeweek_set.splice(
+            action.payload.index,
+            0,
+            action.payload.new_through.id
+          );
+          new_state[i].nodeweek_set = new_nodeweek_set;
+          return new_state;
+        }
+      }
+      return state;
+    case "week/insertBelow":
+      new_state = state.slice();
+      new_state.push(action.payload.new_model);
+      return new_state;
+    case "week/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "week/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "week/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], deleted: false };
+          return new_state;
+        }
+      }
+      return state;
+    case "week/changeField":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i], ...action.payload.json };
+          return new_state;
+        }
+      }
+      return state;
+    case "strategy/toggleStrategy":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          new_state[i].is_strategy = action.payload.is_strategy;
+          return new_state;
+        }
+      }
+      return state;
+    case "strategy/addStrategy":
+      new_state = state.slice();
+      new_state.push(action.payload.strategy);
+      return new_state;
+    case "week/reloadComments":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const obj = new_state[i];
+        if (obj.id == action.payload.id) {
+          new_state[i] = { ...obj, comments: action.payload.comment_data };
+          return new_state;
+        }
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+function nodeweekReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.nodeweek)
+        return action.payload.nodeweek;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.nodeweek) {
+        for (var i = 0; i < action.payload.nodeweek.length; i++) {
+          const new_obj = action.payload.nodeweek[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "nodeweek/changeID":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.old_id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            id: action.payload.new_id,
+            no_drag: false
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "nodeweek/movedTo":
+      new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          new_state[i] = {
+            ...state[i],
+            week: action.payload.new_parent,
+            no_drag: true
+          };
+        }
+      }
+      return new_state;
+    case "week/insertBelow":
+      if (!action.payload.children)
+        return state;
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.children.nodeweek.length; i++) {
+        new_state.push(action.payload.children.nodeweek[i]);
+      }
+      return new_state;
+    case "node/insertBelow":
+    case "node/newNode":
+      new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    case "strategy/addStrategy":
+      if (action.payload.nodeweeks_added.length == 0)
+        return state;
+      new_state = state.slice();
+      new_state.push(...action.payload.nodeweeks_added);
+      return new_state;
+    default:
+      return state;
+  }
+}
+function nodeReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.node)
+        return action.payload.node;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.node) {
+        for (var i = 0; i < action.payload.node.length; i++) {
+          const new_obj = action.payload.node[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "node/createLock":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], lock: action.payload.lock };
+          return new_state;
+        }
+      }
+      return state;
+    case "column/deleteSelf":
+    case "column/deleteSelfSoft":
+      var new_state = state.slice();
+      var new_column;
+      if (action.payload.extra_data) {
+        new_column = action.payload.extra_data;
+      }
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].column == action.payload.id) {
+          new_state[i] = { ...state[i], column: new_column };
+        }
+      }
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return new_state;
+    case "column/restoreSelf":
+      var new_state = state.slice();
+      var new_column;
+      if (action.payload.id) {
+        new_column = action.payload.id;
+      }
+      for (var i = 0; i < state.length; i++) {
+        if (action.payload.extra_data.indexOf(state[i].id) >= 0) {
+          new_state[i] = { ...state[i], column: new_column };
+        }
+      }
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return new_state;
+    case "node/changedColumn":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], column: action.payload.new_column };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          triggerHandlerEach($(".week .node"), "component-updated");
+          return new_state;
+        }
+      }
+      return state;
+    case "node/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+          triggerHandlerEach($(".week .node"), "component-updated");
+          return new_state;
+        }
+      }
+      return state;
+    case "node/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], deleted: false };
+          triggerHandlerEach($(".week .node"), "component-updated");
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/deleteSelf":
+    case "nodelink/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].outgoing_links.indexOf(action.payload.id) >= 0) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].outgoing_links = state[i].outgoing_links.slice();
+          new_state[i].outgoing_links.splice(
+            new_state[i].outgoing_links.indexOf(action.payload.id),
+            1
+          );
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].outgoing_links = state[i].outgoing_links.slice();
+          new_state[i].outgoing_links.push(action.payload.id);
+          return new_state;
+        }
+      }
+      return state;
+    case "week/insertBelow":
+      if (!action.payload.children)
+        return state;
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.children.node.length; i++) {
+        new_state.push(action.payload.children.node[i]);
+      }
+      return new_state;
+    case "node/insertBelow":
+    case "node/newNode":
+      new_state = state.slice();
+      new_state.push(action.payload.new_model);
+      return new_state;
+    case "node/changeField":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i], ...action.payload.json };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/setLinkedWorkflow":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          new_state[i].linked_workflow = action.payload.linked_workflow;
+          new_state[i].linked_workflow_data = action.payload.linked_workflow_data;
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/newNodeLink":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.new_model.source_node) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          var new_outgoing_links = state[i].outgoing_links.slice();
+          new_outgoing_links.push(action.payload.new_model.id);
+          new_state[i].outgoing_links = new_outgoing_links;
+          return new_state;
+        }
+      }
+      return state;
+    case "outcomenode/updateDegree":
+      if (action.payload.outcomenode == -1)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.data_package[0].node) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
+          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
+          return new_state;
+        }
+      }
+      return state;
+    case "strategy/addStrategy":
+      if (action.payload.nodes_added.length == 0)
+        return state;
+      new_state = state.slice();
+      new_state.push(...action.payload.nodes_added);
+      return new_state;
+    case "outcome/deleteSelf":
+    case "outcome/deleteSelfSoft":
+    case "outcome_base/deleteSelf":
+    case "outcome_base/deleteSelfSoft":
+    case "outcome/restoreSelf":
+    case "outcome_base/restoreSelf":
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.extra_data.length; i++) {
+        const new_node_data = action.payload.extra_data[i];
+        for (var j = 0; j < new_state.length; j++) {
+          if (new_node_data.id == new_state[j].id) {
+            new_state[j] = { ...new_state[j], ...new_node_data };
+          }
+        }
+      }
+      return new_state;
+    case "node/reloadComments":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const obj = new_state[i];
+        if (obj.id == action.payload.id) {
+          new_state[i] = { ...obj, comments: action.payload.comment_data };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/reloadAssignments":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const obj = new_state[i];
+        if (obj.id == action.payload.id) {
+          new_state[i] = {
+            ...obj,
+            has_assignment: action.payload.has_assignment
+          };
+          return new_state;
+        }
+      }
+    case "outcome/insertChild":
+    case "outcome/insertBelow":
+    case "outcome_base/insertChild":
+    case "outcomeoutcome/changeID":
+      if (action.payload.node_updates.length == 0)
+        return state;
+      var new_state = state.slice();
+      for (var i = 0; i < action.payload.node_updates.length; i++) {
+        for (var j = 0; j < state.length; j++) {
+          if (action.payload.node_updates[i].id == state[j].id) {
+            new_state[j] = {
+              ...new_state[j],
+              outcomenode_set: action.payload.node_updates[i].outcomenode_set,
+              outcomenode_unique_set: action.payload.node_updates[i].outcomenode_unique_set
+            };
+          }
+        }
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+function nodelinkReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.nodelink)
+        return action.payload.nodelink;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.nodelink) {
+        for (var i = 0; i < action.payload.nodelink.length; i++) {
+          const new_obj = action.payload.nodelink[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "nodelink/createLock":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], lock: action.payload.lock };
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/changeField":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i], ...action.payload.json };
+          return new_state;
+        }
+      }
+      return state;
+    case "node/insertBelow":
+    case "node/newNode":
+    case "node/deleteSelf":
+      return state;
+    case "nodelink/newNodeLink":
+      new_state = state.slice();
+      new_state.push(action.payload.new_model);
+      return new_state;
+    case "nodelink/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "nodelink/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], deleted: false };
+          return new_state;
+        }
+      }
+      return state;
+    case "week/insertBelow":
+      if (!action.payload.children)
+        return state;
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.children.nodelink.length; i++) {
+        new_state.push(action.payload.children.nodelink[i]);
+      }
+      return new_state;
+    case "strategy/addStrategy":
+      if (action.payload.nodelinks_added.length == 0)
+        return state;
+      new_state = state.slice();
+      new_state.push(...action.payload.nodelinks_added);
+      return new_state;
+    default:
+      return state;
+  }
+}
+function outcomeReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.outcome)
+        return action.payload.outcome;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.outcome) {
+        for (var i = 0; i < action.payload.outcome.length; i++) {
+          const new_obj = action.payload.outcome[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcome/createLock":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], lock: action.payload.lock };
+          return new_state;
+        }
+      }
+      return state;
+    case "outcomeoutcome/changeID":
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        const old_index = state[i].child_outcome_links.indexOf(
+          action.payload.old_id
+        );
+        if (old_index >= 0) {
+          new_state[i] = { ...new_state[i] };
+          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
+          new_state[i].child_outcome_links.splice(
+            old_index,
+            1,
+            action.payload.new_id
+          );
+        }
+      }
+      return new_state;
+    case "outcomeoutcome/movedTo":
+      let old_parent, old_parent_index, new_parent, new_parent_index;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].child_outcome_links.indexOf(action.payload.id) >= 0) {
+          old_parent_index = i;
+          old_parent = { ...state[i] };
+        }
+        if (state[i].id == action.payload.new_parent) {
+          new_parent_index = i;
+          new_parent = { ...state[i] };
+        }
+      }
+      var new_index = action.payload.new_index;
+      var new_state = state.slice();
+      old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
+      old_parent.child_outcome_links.splice(
+        old_parent.child_outcome_links.indexOf(action.payload.id),
+        1
+      );
+      if (old_parent_index == new_parent_index) {
+        old_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
+      } else {
+        new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
+        new_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
+        new_state.splice(new_parent_index, 1, new_parent);
+      }
+      new_state.splice(old_parent_index, 1, old_parent);
+      return new_state;
+    case "outcome_base/deleteSelf":
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome/deleteSelf":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        if (new_state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
+          new_state[i] = { ...new_state[i] };
+          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
+          new_state[i].child_outcome_links.splice(
+            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
+            1
+          );
+        } else if (new_state[i].id == action.payload.id) {
+          new_state.splice(i, 1);
+          i--;
+        }
+      }
+      return new_state;
+    case "outcome/deleteSelfSoft":
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
+          new_state[i] = { ...new_state[i] };
+          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
+          new_state[i].child_outcome_links.splice(
+            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
+            1
+          );
+        } else if (state[i].id == action.payload.id) {
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+        }
+      }
+      return new_state;
+    case "outcome/restoreSelf":
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          new_state[i] = { ...new_state[i] };
+          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
+          new_state[i].child_outcome_links.splice(
+            action.payload.throughparent_index,
+            0,
+            action.payload.throughparent_id
+          );
+        } else if (state[i].id == action.payload.id) {
+          new_state[i] = { ...new_state[i], deleted: false };
+        }
+      }
+      return new_state;
+    case "outcome_base/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            deleted: true,
+            deleted_on: window.gettext("This session")
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome_base/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], deleted: false };
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome_base/insertBelow":
+    case "outcome/newOutcome":
+      var new_state = state.slice();
+      new_state.push(action.payload.new_model);
+      if (action.payload.children) {
+        for (var i = 0; i < action.payload.children.outcome.length; i++) {
+          new_state.push(action.payload.children.outcome[i]);
+        }
+      }
+      return new_state;
+    case "outcome/insertChild":
+    case "outcome_base/insertChild":
+    case "outcome/insertBelow":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parentID) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          var new_child_outcome_links = state[i].child_outcome_links.slice();
+          let new_index2;
+          new_index2 = action.payload.new_through.rank;
+          new_child_outcome_links.splice(
+            new_index2,
+            0,
+            action.payload.new_through.id
+          );
+          new_state[i].child_outcome_links = new_child_outcome_links;
+          new_state.push(action.payload.new_model);
+          if (action.payload.children) {
+            for (var i = 0; i < action.payload.children.outcome.length; i++) {
+              new_state.push(action.payload.children.outcome[i]);
+            }
+          }
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome/changeField":
+    case "outcome_base/changeField":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i], ...action.payload.json };
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome/changeFieldMany":
+    case "outcome_base/changeFieldMany":
+      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      var new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (action.payload.ids.indexOf(state[i].id) >= 0) {
+          new_state[i] = { ...state[i], ...action.payload.json };
+        }
+      }
+      return new_state;
+    case "outcomehorizontallink/updateDegree":
+      if (action.payload.outcomehorizontallink == -1)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.data_package[0].outcome) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].outcome_horizontal_links = action.payload.new_outcome_horizontal_links;
+          new_state[i].outcome_horizontal_links_unique = action.payload.new_outcome_horizontal_links_unique;
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome/updateHorizontalLinks":
+      var new_state = state.slice();
+      for (var i = 0; i < action.payload.data.length; i++) {
+        const new_outcome_data = action.payload.data[i];
+        for (var j = 0; j < new_state.length; j++) {
+          if (new_outcome_data.id == new_state[j].id) {
+            new_state[j] = { ...new_state[j], ...new_outcome_data };
+          }
+        }
+      }
+      return new_state;
+    case "outcome/reloadComments":
+    case "outcome_base/reloadComments":
+      var new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const obj = new_state[i];
+        if (obj.id == action.payload.id) {
+          new_state[i] = { ...obj, comments: action.payload.comment_data };
+          return new_state;
+        }
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+function outcomeOutcomeReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.outcomeoutcome)
+        return action.payload.outcomeoutcome;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.outcomeoutcome) {
+        for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
+          const new_obj = action.payload.outcomeoutcome[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcomeoutcome/changeID":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.old_id) {
+          var new_state = state.slice();
+          new_state[i] = {
+            ...new_state[i],
+            id: action.payload.new_id,
+            no_drag: false
+          };
+          return new_state;
+        }
+      }
+      return state;
+    case "outcomeoutcome/movedTo":
+      new_state = state.slice();
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          new_state[i] = {
+            ...state[i],
+            parent: action.payload.new_parent,
+            no_drag: true
+          };
+        }
+      }
+      return new_state;
+    case "outcome/deleteSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state.splice(i, 1);
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome_base/insertBelow":
+      var new_state = state.slice();
+      if (action.payload.children) {
+        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
+          new_state.push(action.payload.children.outcomeoutcome[i]);
+        }
+      }
+      return new_state;
+    case "outcome/insertChild":
+    case "outcome/insertBelow":
+      var new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      if (action.payload.children) {
+        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
+          new_state.push(action.payload.children.outcomeoutcome[i]);
+        }
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+function outcomeNodeReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.outcomenode)
+        return action.payload.outcomenode;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.outcomenode) {
+        for (var i = 0; i < action.payload.outcomenode.length; i++) {
+          const new_obj = action.payload.outcomenode[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcomenode/updateDegree":
+      if (action.payload.outcomenode == -1)
+        return state;
+      var new_state = state.slice();
+      const new_outcomenode_outcomes = action.payload.data_package.map(
+        (outcomenode) => cantorPairing(outcomenode.node, outcomenode.outcome)
+      );
+      const data_package_copy = action.payload.data_package.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const new_outcomenode_index = new_outcomenode_outcomes.indexOf(
+          cantorPairing(new_state[i].node, new_state[i].outcome)
+        );
+        if (new_outcomenode_index >= 0) {
+          new_state[i] = data_package_copy[new_outcomenode_index];
+          data_package_copy[new_outcomenode_index] = null;
+        }
+      }
+      for (var i = 0; i < data_package_copy.length; i++) {
+        if (data_package_copy[i] != null)
+          new_state.push(data_package_copy[i]);
+      }
+      new_state = new_state.filter((outcomenode) => outcomenode.degree > 0);
+      return new_state;
+    case "outcome/deleteSelf":
+    case "outcome_base/deleteSelf":
+      new_state = state.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        if (new_state[i].outcome == action.payload.id) {
+          new_state.splice(i, 1);
+          i--;
+        }
+      }
+      return new_state;
+    case "week/insertBelow":
+    case "node/insertBelow":
+    case "outcome/insertChild":
+    case "outcome_base/insertChild":
+    case "outcome/insertBelow":
+    case "outcomeoutcome/changeID":
+      if (!action.payload.children)
+        return state;
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.children.outcomenode.length; i++) {
+        new_state.push(action.payload.children.outcomenode[i]);
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+function outcomeHorizontalLinkReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.outcomehorizontallink)
+        return action.payload.outcomehorizontallink;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.outcomehorizontallink) {
+        for (var i = 0; i < action.payload.outcomehorizontallink.length; i++) {
+          const new_obj = action.payload.outcomehorizontallink[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcomehorizontallink/updateDegree":
+      if (action.payload.outcomehorizontallink == -1)
+        return state;
+      var new_state = state.slice();
+      const new_outcomehorizontallink_outcomes = action.payload.data_package.map(
+        (outcomehorizontallink) => cantorPairing(
+          outcomehorizontallink.outcome,
+          outcomehorizontallink.parent_outcome
+        )
+      );
+      const data_package_copy = action.payload.data_package.slice();
+      for (var i = 0; i < new_state.length; i++) {
+        const new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(
+          cantorPairing(
+            new_state[i].outcome,
+            new_state[i].parent_outcome
+          )
+        );
+        if (new_outcomehorizontallink_index >= 0) {
+          new_state[i] = data_package_copy[new_outcomehorizontallink_index];
+          data_package_copy[new_outcomehorizontallink_index] = null;
+        }
+      }
+      for (var i = 0; i < data_package_copy.length; i++) {
+        if (data_package_copy[i] != null)
+          new_state.push(data_package_copy[i]);
+      }
+      new_state = new_state.filter(
+        (outcomehorizontallink) => outcomehorizontallink.degree > 0
+      );
+      return new_state;
+    default:
+      return state;
+  }
+}
+function parentNodeReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.parent_node)
+        return action.payload.parent_node;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.parent_node) {
+        for (var i = 0; i < action.payload.parent_node.length; i++) {
+          const new_obj = action.payload.parent_node[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcomenode/updateDegree":
+      if (action.payload.outcomenode == -1)
+        return state;
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.data_package[0].node) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i] };
+          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
+          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome/deleteSelf":
+    case "outcome/deleteSelfSoft":
+    case "outcome_base/deleteSelf":
+    case "outcome_base/deleteSelfSoft":
+    case "outcome/restoreSelf":
+    case "outcome_base/restoreSelf":
+      new_state = state.slice();
+      for (var i = 0; i < action.payload.extra_data.length; i++) {
+        const new_node_data = action.payload.extra_data[i];
+        for (var j = 0; j < new_state.length; j++) {
+          if (new_node_data.id == new_state[j].id) {
+            new_state[j] = { ...new_state[j], ...new_node_data };
+          }
+        }
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+function parentWorkflowReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.parent_workflow)
+        return action.payload.parent_workflow;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.parent_workflow) {
+        for (var i = 0; i < action.payload.parent_workflow.length; i++) {
+          const new_obj = action.payload.parent_workflow[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+function childWorkflowReducer(state = [], action) {
+  switch (action.type) {
+    case "replaceStoreData":
+      if (action.payload.child_workflow)
+        return action.payload.child_workflow;
+      return state;
+    case "refreshStoreData":
+      var new_state = state.slice();
+      if (action.payload.child_workflow) {
+        for (var i = 0; i < action.payload.child_workflow.length; i++) {
+          const new_obj = action.payload.child_workflow[i];
+          let added = false;
+          for (var j = 0; j < new_state.length; j++) {
+            if (new_state[j].id == new_obj.id) {
+              new_state.splice(j, 1, new_obj);
+              added = true;
+              break;
+            }
+          }
+          if (added)
+            continue;
+          new_state.push(new_obj);
+        }
+      }
+      return new_state;
+    case "outcome_base/deleteSelf":
+    case "outcome_base/deleteSelfSoft":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
+          new_state[i].outcomeworkflow_set.splice(
+            new_state[i].outcomeworkflow_set.indexOf(action.payload.parent_id),
+            1
+          );
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome_base/restoreSelf":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.parent_id) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
+          new_state[i].outcomeworkflow_set.splice(
+            action.payload.throughparent_index,
+            0,
+            action.payload.throughparent_id
+          );
+          return new_state;
+        }
+      }
+      return state;
+    case "outcome_base/insertBelow":
+    case "outcome/newOutcome":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.new_through.workflow) {
+          var new_state = state.slice();
+          new_state[i] = { ...state[i] };
+          var new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
+          new_outcomeworkflow_set.splice(
+            action.payload.new_through.rank,
+            0,
+            action.payload.new_through.id
+          );
+          new_state[i].outcomeworkflow_set = new_outcomeworkflow_set;
+          return new_state;
+        }
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+function strategyReducer(state = [], action) {
+  switch (action.type) {
+    case "strategy/toggleStrategy":
+      if (!action.payload.is_strategy)
+        return state;
+      const new_state = state.slice();
+      new_state.push(action.payload.strategy);
+      return new_state;
+    default:
+      return state;
+  }
+}
+function saltiseStrategyReducer(state = [], action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+function objectSetReducer(state = [], action) {
+  switch (action.type) {
+    case "objectset/toggleObjectSet":
+      for (var i = 0; i < state.length; i++) {
+        if (state[i].id == action.payload.id) {
+          var new_state = state.slice();
+          new_state[i] = { ...new_state[i], hidden: action.payload.hidden };
+          return new_state;
+        }
+      }
+      return state;
+    default:
+      return state;
+  }
+}
+function gridMenuReducer(state = {}, action) {
+  switch (action.type) {
+    case "gridmenu/itemAdded":
+      var new_state = { ...state };
+      if (action.payload.type != "project") {
+        new_state.owned_strategies = { ...new_state.owned_strategies };
+        new_state.owned_strategies.sections = new_state.owned_strategies.sections.slice();
+        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
+          if (new_state.owned_strategies.sections[i].object_type == action.payload.type) {
+            new_state.owned_strategies.sections[i].objects = new_state.owned_strategies.sections[i].objects.slice();
+            new_state.owned_strategies.sections[i].objects.push(
+              action.payload.new_item
+            );
+          }
+        }
+      } else {
+        new_state.owned_projects = { ...new_state.owned_projects };
+        new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
+        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
+          if (new_state.owned_projects.sections[i].object_type == action.payload.type) {
+            new_state.owned_projects.sections[i].objects = new_state.owned_projects.sections[i].objects.slice();
+            new_state.owned_projects.sections[i].objects.push(
+              action.payload.new_item
+            );
+          }
+        }
+      }
+      return new_state;
+    default:
+      return state;
+  }
+}
+const rootWorkflowReducer = combineReducers({
+  workflow: workflowReducer,
+  outcomeworkflow: outcomeworkflowReducer,
+  columnworkflow: columnworkflowReducer,
+  column: columnReducer,
+  weekworkflow: weekworkflowReducer,
+  week: weekReducer,
+  nodeweek: nodeweekReducer,
+  node: nodeReducer,
+  nodelink: nodelinkReducer,
+  outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
+  outcomenode: outcomeNodeReducer,
+  parent_workflow: parentWorkflowReducer,
+  parent_node: parentNodeReducer,
+  outcomehorizontallink: outcomeHorizontalLinkReducer,
+  child_workflow: childWorkflowReducer,
+  strategy: strategyReducer,
+  saltise_strategy: saltiseStrategyReducer,
+  objectset: objectSetReducer
+});
+combineReducers({
+  outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer
+});
 class TitleText extends reactExports.Component {
   render() {
     var text = this.props.text;
@@ -61409,13 +61323,105 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
+class SelectionManager {
+  constructor(read_only) {
+    this.currentSelection;
+    this.mouse_isclick = false;
+    this.read_only = read_only;
+    var selector = this;
+    $(document).on("mousedown", () => {
+      selector.mouse_isclick = true;
+      setTimeout(() => {
+        selector.mouse_isclick = false;
+      }, 500);
+    });
+    $(document).on("mousemove", () => {
+      selector.mouse_isclick = false;
+    });
+    $(document).on("mouseup", (evt, newSelection) => {
+      if (selector.mouse_isclick) {
+        selector.changeSelection(evt, null);
+      }
+    });
+    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+  }
+  changeSelection(evt, newSelection) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
+      return;
+    }
+    if (this.currentSelection) {
+      this.currentSelection.setState({ selected: false });
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          false
+        );
+      }
+    }
+    this.currentSelection = newSelection;
+    if (this.currentSelection) {
+      if (!this.read_only) {
+        this.currentSelection.props.renderer.lock_update(
+          {
+            object_id: this.currentSelection.props.data.id,
+            object_type: object_dictionary[this.currentSelection.objectType]
+          },
+          60 * 1e3,
+          true
+        );
+      }
+      if ($("#sidebar").tabs("option", "active") !== 0) {
+        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
+      }
+      $("#sidebar").tabs("enable", 0);
+      $("#sidebar").tabs("option", "active", 0);
+      this.currentSelection.setState({ selected: true });
+    } else {
+      if ($("#sidebar").tabs("option", "active") === 0) {
+        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
+      }
+      $("#sidebar").tabs("disable", 0);
+    }
+  }
+  deleted(selection) {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null, null);
+    }
+  }
+}
+function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth = 1) {
+  try {
+    const default_drop = get_default_drop_state(
+      objectID,
+      objectType,
+      depth
+    );
+    if (is_dropped !== default_drop)
+      window.localStorage.setItem(objectType + objectID, is_dropped);
+    else
+      window.localStorage.removeItem(objectType + objectID);
+  } catch (err) {
+    if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
+      window.localStorage.clear();
+    }
+  }
+  dispatch(changeField(objectID, objectType, { is_dropped }));
+}
 class ComponentWithToggleDrop extends reactExports.Component {
   constructor(props) {
     super(props);
     __publicField(this, "mainDiv");
+    __publicField(this, "maindiv");
     __publicField(this, "toggleDrop", (evt) => {
       evt.stopPropagation();
-      toggleDrop(
+      toggleDropReduxAction(
         this.props.objectID,
         // @ts-ignore
         object_dictionary[this.objectType],
@@ -61425,6 +61431,7 @@ class ComponentWithToggleDrop extends reactExports.Component {
       );
     });
     this.mainDiv = reactExports.createRef();
+    this.maindiv = reactExports.createRef();
     this.state = {};
   }
 }
@@ -61476,20 +61483,20 @@ class NodeBarUnconnected extends reactExports.Component {
     let nodebar_nodes;
     if (!this.props.renderer.read_only)
       nodebar_nodes = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Nodes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarcolumnworkflows })
       ];
     var strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
     var saltise_strategies = this.props.saltise_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: gettext("Add to workflow") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       nodebar_nodes,
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("My strategies") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies }),
       saltise_strategies.length > 0 && [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("SALTISE strategies") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("SALTISE strategies") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: saltise_strategies })
       ]
     ] });
@@ -61548,9 +61555,10 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   makeDraggable() {
+    var _a;
     const draggable_selector = "node-week";
     const draggable_type = "nodeweek";
-    $(this.maindiv.current).draggable({
+    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement("div"));
         helper.addClass("node-ghost");
@@ -61646,9 +61654,10 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   makeDraggable() {
+    var _a;
     const draggable_selector = "week-workflow";
     const draggable_type = "weekworkflow";
-    $(this.maindiv.current).draggable({
+    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement("div"));
         helper.addClass("week-ghost");
@@ -61758,7 +61767,7 @@ class ViewBarUnconnected extends reactExports.Component {
               onChange: this.changeTableType.bind(this)
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_table", children: gettext("Table Style") })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_table", children: window.gettext("Table Style") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -61772,17 +61781,17 @@ class ViewBarUnconnected extends reactExports.Component {
               onChange: this.changeTableType.bind(this)
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_matrix", children: gettext("Competency Matrix Style") })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_matrix", children: window.gettext("Competency Matrix Style") })
         ] })
       ] });
       sort_block = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Sort Nodes"),
+          window.gettext("Sort Nodes"),
           ":"
         ] }),
         sort_type,
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-          gettext("Table Type"),
+          window.gettext("Table Type"),
           ":"
         ] }),
         table_type
@@ -61810,10 +61819,10 @@ class ViewBarUnconnected extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
     ] })) });
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("View options") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("View options") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       sort_block,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Object Sets") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") }),
       sets
     ] });
   }
@@ -61876,21 +61885,21 @@ class RestoreBarUnconnected extends reactExports.Component {
       nodelink.id
     ));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "restore-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: gettext("Restore items") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Restore items") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Nodes") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodes }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Weeks") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Weeks") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: weeks }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Columns") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Columns") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: columns }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Outcomes") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Outcomes") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: outcomes }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Node Links") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Node Links") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodelinks })
     ] });
   }
@@ -61920,9 +61929,9 @@ class RestoreBarItem extends ComponentWithToggleDrop {
   render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "restore-bar-item", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: gettext("Deleted") + " " + this.props.data.deleted_on }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: gettext("Restore") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: gettext("Permanently Delete") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: window.gettext("Deleted") + " " + this.props.data.deleted_on }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: window.gettext("Restore") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Permanently Delete") })
     ] });
   }
   getTitle() {
@@ -61949,6 +61958,203 @@ class RestoreBarItem extends ComponentWithToggleDrop {
         this.props.renderer.tiny_loader.endLoad();
       });
     }
+  }
+}
+function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data)
+    }).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getHomeQuery(callBackFunction = (data) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) => console.log("success")) {
+  if (["program", "course", "activity"].indexOf(objectType) >= 0)
+    objectType = "workflow";
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      console.log("data");
+      console.log(data);
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    console.log("err");
+    console.log(err);
+    window.fail_function();
+  }
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+        outcomePk: itemPkString,
+        projectPk: projectPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowDataQuery(workflowPk, callBackFunction = (data) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data) => console.log("success")) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (data) => {
+      callBackFunction();
+    }
+  );
+}
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateValue(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField2) {
+    post_object.changeFieldID = COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data) {
+          if (data.action === DATA_ACTIONS.POSTED) {
+            callBackFunction(data);
+          } else
+            window.fail_function(data.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function(data) {
+      if (data.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
   }
 }
 class QuillDiv extends reactExports.Component {
@@ -62027,7 +62233,7 @@ class EditableComponent extends ComponentWithToggleDrop {
       let title_length = "100";
       if (type == "outcome")
         title_length = "500";
-      var props = this.props;
+      this.props;
       let override = false;
       const title = unescapeCharacters(data.title || "");
       const description = data.description || "";
@@ -62297,7 +62503,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Specific Education") })
               ] }),
-              type == "node" && data.node_type != 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type === "node" && data.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data.linked_workflow && data.linked_workflow_data.title }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -62307,14 +62513,14 @@ class EditableComponent extends ComponentWithToggleDrop {
                     disabled: read_only,
                     id: "linked-workflow-editor",
                     onClick: () => {
-                      props.renderer.tiny_loader.startLoad();
-                      getLinkedWorkflowMenu(
+                      COURSEFLOW_APP.tinyLoader.startLoad();
+                      getLinkedWorkflowMenuQuery(
                         data,
                         (response_data) => {
                           console.log("linked a workflow");
                         },
                         () => {
-                          props.renderer.tiny_loader.endLoad();
+                          COURSEFLOW_APP.tinyLoader.endLoad();
                         }
                       );
                     },
@@ -62554,107 +62760,6 @@ class ActionButton extends reactExports.Component {
     );
   }
 }
-function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getHomeQuery(callBackFunction = (data) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) => console.log("success")) {
-  if (["program", "course", "activity"].indexOf(objectType) >= 0)
-    objectType = "workflow";
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      console.log("data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    console.log("err");
-    console.log(err);
-    window.fail_function();
-  }
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data) => console.log("success")) {
-  const sendPostRequest = (url, data) => {
-    $.post(url, data).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === DATA_ACTIONS.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    });
-  };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: itemPkString,
-        projectPk: projectPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
 class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
@@ -62772,20 +62877,21 @@ class CommentBox extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
+    var _a, _b, _c, _d;
     let has_comments = false;
     const has_unread = this.props.comments.filter((value) => {
-      var _a, _b, _c;
-      return (_c = (_b = (_a = this.props) == null ? void 0 : _a.renderer) == null ? void 0 : _b.unread_comments) == null ? void 0 : _c.includes(value);
+      var _a2, _b2, _c2;
+      return (_c2 = (_b2 = (_a2 = this.props) == null ? void 0 : _a2.renderer) == null ? void 0 : _b2.unread_comments) == null ? void 0 : _c2.includes(value);
     }).length > 0;
     if (this.state.has_rendered) {
       has_comments = this.props.comments.length > 0;
     }
     let render_div;
-    const side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
+    const side_actions = $((_b = (_a = this.props.parent) == null ? void 0 : _a.maindiv) == null ? void 0 : _b.current).children(".side-actions").children(".comment-indicator-container");
     if (side_actions.length > 0)
       render_div = side_actions[0];
     else
-      render_div = this.props.parent.maindiv.current;
+      render_div = (_d = (_c = this.props.parent) == null ? void 0 : _c.maindiv) == null ? void 0 : _d.current;
     let comment_indicator = null;
     if (has_comments) {
       let indicator_class = "comment-indicator hover-shade";
@@ -63145,7 +63251,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
           e.preventDefault();
           return false;
         }
-        if (drag_item.children(".locked:not(.locked-" + user_id + ")").length > 0) {
+        if (drag_item.children(".locked:not(.locked-" + COURSEFLOW_APP.contextData.user_id + ")").length > 0) {
           e.preventDefault();
           return false;
         }
@@ -63316,11 +63422,12 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
     this.setState({ is_dropped: !this.state.is_dropped });
   }
   makeDraggable() {
+    var _a;
     if (this.props.renderer.read_only)
       return;
     const draggable_selector = "outcome";
     const draggable_type = "outcome";
-    $(this.maindiv.current).draggable({
+    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement("div"));
         helper.addClass("outcome-ghost");
@@ -63397,7 +63504,7 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
     if (this.state.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + nwindow.gettext(
+      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
         data.child_outcome_links.length
@@ -63513,7 +63620,7 @@ class OutcomeBarUnconnected extends reactExports.Component {
       gettext("Edit") + " " + gettext(this.props.workflow_type + " outcomes")
     );
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: gettext("Outcomes") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomebaroutcomes }),
       !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
@@ -63665,13 +63772,13 @@ class ParentOutcomeBarUnconnected extends reactExports.Component {
     if (this.props.parent_nodes.length > 1) {
       multiple_parent_warning = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled small-inline red", children: "error" }),
-        gettext(
+        window.gettext(
           "Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes."
         )
       ] });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: gettext("Outcomes from Parent Workflow") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes from Parent Workflow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-bar-outcome-block", children: [
         multiple_parent_warning,
         outcomebaroutcomes
@@ -63723,7 +63830,7 @@ class ComparisonViewBar extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
     ] })) });
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: gettext("Object Sets") + ":" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") + ":" }),
       sets
     ] });
   }
@@ -63807,7 +63914,7 @@ class RightSideBar extends reactExports.Component {
           "span",
           {
             className: "material-symbols-rounded filled",
-            title: gettext("Edit"),
+            title: window.gettext("Edit"),
             children: "edit"
           }
         ) }) }),
@@ -63815,7 +63922,7 @@ class RightSideBar extends reactExports.Component {
           "span",
           {
             className: "material-symbols-rounded filled",
-            title: gettext("Add"),
+            title: window.gettext("Add"),
             children: "add_circle"
           }
         ) }) }),
@@ -63824,7 +63931,7 @@ class RightSideBar extends reactExports.Component {
             "span",
             {
               className: "material-symbols-rounded filled",
-              title: gettext("Outcomes"),
+              title: window.gettext("Outcomes"),
               children: "spoke"
             }
           ) }) }),
@@ -63832,7 +63939,7 @@ class RightSideBar extends reactExports.Component {
             "span",
             {
               className: "material-symbols-rounded filled",
-              title: gettext("View Options"),
+              title: window.gettext("View Options"),
               children: "remove_red_eye"
             }
           ) }) })
@@ -63841,7 +63948,7 @@ class RightSideBar extends reactExports.Component {
           "span",
           {
             className: "material-symbols-rounded filled",
-            title: gettext("Restore Deleted"),
+            title: window.gettext("Restore Deleted"),
             children: "restore_from_trash"
           }
         ) }) })
@@ -66371,7 +66478,7 @@ class ImportMenu extends reactExports.Component {
               {
                 type: "hidden",
                 name: "csrfmiddlewaretoken",
-                value: root.getCsrfToken()
+                value: window.getCsrfToken()
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67121,14 +67228,6 @@ class MessageBox extends reactExports.Component {
               actionFunction: this.props.actionFunction
             }
           );
-        case "import":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImportMenu,
-            {
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
         default:
           return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
       }
@@ -67288,7 +67387,7 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     if (this.state.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + nwindow.gettext(
+      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
         data.child_outcome_links.length
@@ -67656,7 +67755,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
     if (data.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + nwindow.gettext(
+      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
         data.child_outcome_links.length
@@ -67758,7 +67857,7 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
                 src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext("Add new") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Add new") })
           ]
         }
       );
@@ -67791,7 +67890,7 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     );
   }
   addNew(objectset) {
-    newOutcome(this.props.workflow.id, objectset.id);
+    newOutcomeQuery(this.props.workflow.id, objectset.id);
   }
   /*******************************************************
    * RENDER
@@ -67828,9 +67927,9 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
         this.getAddNew(category.objectset)
       ] })
     ] }));
-    if (outcomes.length == 0)
+    if (outcomes.length === 0)
       outcomes = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "emptytext", children: gettext(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "emptytext", children: window.gettext(
           "Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar."
         ) }),
         this.getAddNew({})
@@ -67873,12 +67972,12 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
       false,
       "#workflow-" + this.props.workflow.id
     );
-    if (this.props.data.depth == 0)
+    if (this.props.data.depth === 0)
       this.makeDroppable();
   }
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
-    if (type == "outcomeworkflow" && confirm(
-      gettext(
+    if (type === "outcomeworkflow" && confirm(
+      window.gettext(
         "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
       )
     )) {
@@ -68034,30 +68133,21 @@ class MenuBar extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    let overflow_links;
-    let visible_buttons;
-    let viewbar;
-    let userbar;
-    if (this.props.overflow_links) {
-      overflow_links = this.props.overflow_links;
-    }
-    if (this.props.visible_buttons) {
-      visible_buttons = this.props.visible_buttons;
-    }
-    if (this.props.viewbar)
-      viewbar = this.props.viewbar();
-    if (this.props.userbar)
-      userbar = this.props.userbar();
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    const viewBar = ((_a = this.props) == null ? void 0 : _a.viewbar) ? (_b = this.props) == null ? void 0 : _b.viewbar() : null;
+    const userBar = ((_c = this.props) == null ? void 0 : _c.userbar) ? (_d = this.props) == null ? void 0 : _d.userbar() : null;
+    const visibleButtons = ((_e = this.props) == null ? void 0 : _e.visibleButtons) ? (_f = this.props) == null ? void 0 : _f.visibleButtons() : null;
+    const overflowLinks = ((_g = this.props) == null ? void 0 : _g.overflowLinks) ? (_h = this.props) == null ? void 0 : _h.overflowLinks() : null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menubar", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "floatbar", className: "floatbar", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "visible-icons", children: visible_buttons }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "overflow-options", children: [
+        visibleButtons && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "visible-icons", children: visibleButtons }),
+        overflowLinks && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "overflow-options", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hover-shade green material-symbols-rounded", children: "more_horiz" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "overflow-links", className: "create-dropdown", children: overflow_links })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "overflow-links", className: "create-dropdown", children: overflowLinks })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "userbar", className: "floatbar", children: userbar }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "viewbar", className: "floatbar", children: viewbar })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "userbar", className: "floatbar", children: userBar }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "viewbar", className: "floatbar", children: viewBar })
     ] });
   }
 }
@@ -73194,7 +73284,7 @@ var complex$1 = { exports: {} };
  * Dual licensed under the MIT or GPL Version 2 licenses.
  **/
 (function(module, exports) {
-  (function(root2) {
+  (function(root) {
     var cosh2 = Math.cosh || function(x) {
       return Math.abs(x) < 1e-9 ? 1 - x : (Math.exp(x) + Math.exp(-x)) * 0.5;
     };
@@ -74315,7 +74405,7 @@ var fraction$1 = { exports: {} };
  * Dual licensed under the MIT or GPL Version 2 licenses.
  **/
 (function(module, exports) {
-  (function(root2) {
+  (function(root) {
     var MAX_CYCLE_LEN = 2e3;
     var P2 = {
       "s": 1,
@@ -83432,7 +83522,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       return;
     const new_column = columns[new_column_index];
     if (this.recently_sent_column_change) {
-      if (this.recently_sent_column_change.column == new_column && Date.now() - this.recently_sent_column_change.lastCall <= 500) {
+      if (this.recently_sent_column_change.column === new_column && Date.now() - this.recently_sent_column_change.lastCall <= 500) {
         this.recently_sent_column_change.lastCall = Date.now();
         return;
       }
@@ -83468,8 +83558,9 @@ class WeekUnconnected extends EditableComponentWithSorting {
     );
   }
   makeDroppable() {
+    var _a;
     this.props;
-    $(this.maindiv.current).droppable({
+    $((_a = this.maindiv) == null ? void 0 : _a.current).droppable({
       tolerance: "pointer",
       droppable: ".strategy-ghost",
       over: (e, ui) => {
@@ -83742,11 +83833,12 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
+    var _a;
     const data = this.props.data;
     let my_class = "week-workflow";
     if (data.no_drag)
       my_class += " no-drag";
-    if ($(this.maindiv.current).hasClass("dragging"))
+    if ($((_a = this.maindiv) == null ? void 0 : _a.current).hasClass("dragging"))
       my_class += " dragging";
     var week;
     if (this.props.condensed)
@@ -83817,7 +83909,7 @@ class WorkflowLegendUnconnected extends reactExports.Component {
     if (this.state.show_slider) {
       return reactDomExports.createPortal(
         [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext("Legend") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Legend") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Slider,
             {
@@ -83941,7 +84033,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     triggerHandlerEach($(".week .node"), "component-updated");
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    if (type == "columnworkflow") {
+    if (type === "columnworkflow") {
       this.props.renderer.micro_update(
         moveColumnWorkflow(id, new_position, new_parent, child_id)
       );
@@ -83955,7 +84047,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
         "columnworkflow"
       );
     }
-    if (type == "weekworkflow") {
+    if (type === "weekworkflow") {
       this.props.renderer.micro_update(
         moveWeekWorkflow(id, new_position, new_parent, child_id)
       );
@@ -83976,7 +84068,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
   render() {
     const data = this.props.data;
     const renderer2 = this.props.renderer;
-    var columnworkflows = data.columnworkflow_set.map(
+    const columnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         ColumnWorkflow$1,
         {
@@ -83987,7 +84079,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
         `columnworkflow-${index}`
       )
     );
-    var weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekWorkflow,
       {
         condensed: data.condensed,
@@ -84379,7 +84471,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
     triggerHandlerEach($(".week .node"), "component-updated");
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    if (type == "weekworkflow") {
+    if (type === "weekworkflow") {
       this.props.renderer.micro_update(
         moveWeekWorkflow(id, new_position, new_parent, child_id)
       );
@@ -84400,7 +84492,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   render() {
     const data = this.props.data;
     const renderer2 = this.props.renderer;
-    var weekworkflows = data.weekworkflow_set.map((weekworkflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const weekworkflows = data.weekworkflow_set.map((weekworkflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekWorkflowComparison,
       {
         condensed: data.condensed,
@@ -84498,79 +84590,6 @@ const WorkflowBase = connect(
   mapWorkflowStateToProps$1,
   null
 )(WorkflowBaseUnconnected);
-class SelectionManager {
-  constructor(read_only) {
-    this.currentSelection;
-    this.mouse_isclick = false;
-    this.read_only = read_only;
-    var selector = this;
-    $(document).on("mousedown", () => {
-      selector.mouse_isclick = true;
-      setTimeout(() => {
-        selector.mouse_isclick = false;
-      }, 500);
-    });
-    $(document).on("mousemove", () => {
-      selector.mouse_isclick = false;
-    });
-    $(document).on("mouseup", (evt, newSelection) => {
-      if (selector.mouse_isclick) {
-        selector.changeSelection(evt, null);
-      }
-    });
-    this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-  }
-  changeSelection(evt, newSelection) {
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
-      return;
-    }
-    if (this.currentSelection) {
-      this.currentSelection.setState({ selected: false });
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          false
-        );
-      }
-    }
-    this.currentSelection = newSelection;
-    if (this.currentSelection) {
-      if (!this.read_only) {
-        this.currentSelection.props.renderer.lock_update(
-          {
-            object_id: this.currentSelection.props.data.id,
-            object_type: object_dictionary[this.currentSelection.objectType]
-          },
-          60 * 1e3,
-          true
-        );
-      }
-      if ($("#sidebar").tabs("option", "active") !== 0) {
-        this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-      }
-      $("#sidebar").tabs("enable", 0);
-      $("#sidebar").tabs("option", "active", 0);
-      this.currentSelection.setState({ selected: true });
-    } else {
-      if ($("#sidebar").tabs("option", "active") === 0) {
-        $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
-      }
-      $("#sidebar").tabs("disable", 0);
-    }
-  }
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null, null);
-    }
-  }
-}
 class ConnectionBar extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -84755,7 +84774,7 @@ class OutcomeAdder extends reactExports.Component {
   render() {
     const options = this.props.outcome_set.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeAdderOption, { objectID: outcome }));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { className: "outcome-adder", onChange: this.onChange.bind(this), children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 0, children: gettext("Add outcome") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 0, children: window.gettext("Add outcome") }),
       options
     ] });
   }
@@ -84879,7 +84898,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
    * Adds a new outcome to the linked workflow
    */
   addNewChildOutcome() {
-    newOutcome(this.props.data.linked_workflow, null);
+    newOutcomeQuery(this.props.data.linked_workflow, null);
   }
   /*******************************************************
    * RENDER
@@ -84896,26 +84915,26 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     if (this.props.child_outcomes.length > 0) {
       child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "child-outcome child-outcome-header", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: capWords(
-          gettext(data.linked_workflow_data.type + " outcomes")
-        ) + gettext(" From Linked Workflow") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: gettext("Associated ") + capWords(gettext(this.props.workflow.type + " outcomes")) })
+          window.gettext(data.linked_workflow_data.type + " outcomes")
+        ) + window.gettext(" From Linked Workflow") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: window.gettext("Associated ") + capWords(window.gettext(this.props.workflow.type + " outcomes")) })
       ] });
     } else {
       if (data.linked_workflow) {
         if (this.props.child_outcomes == -1) {
-          child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: gettext("... LOADING") });
+          child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext("... LOADING") });
           this.props.renderer.childWorkflowDataNeeded(this.props.data.id);
         } else {
           if (data.linked_workflow_data.deleted) {
-            child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: gettext("The linked workflow has been deleted.") });
+            child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext("The linked workflow has been deleted.") });
           } else {
-            child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: gettext(
+            child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext(
               "No outcomes have been added to the linked workflow. When added, they will appear here."
             ) });
           }
         }
       } else {
-        child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: gettext(
+        child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext(
           "No workflow has been linked to this node. If you link a workflow, its outcomes will appear here."
         ) });
       }
@@ -84923,7 +84942,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     let child_outcomes;
     if (this.props.child_outcomes != -1)
       child_outcomes = this.props.child_outcomes.map((child_outcome) => {
-        if (!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome) == -1)
+        if (!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome) === -1)
           return null;
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           AlignmentHorizontalReverseChildOutcome,
@@ -84945,7 +84964,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       outcomenode.id
     ));
     const outcome_restriction = this.props.restriction_set.parent_outcomes.filter(
-      (oc) => this.props.all_node_outcomes.indexOf(oc) == -1
+      (oc) => this.props.all_node_outcomes.indexOf(oc) === -1
     );
     let outcomeadder;
     if (!this.props.renderer.read_only)
@@ -84958,7 +84977,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
         }
       );
     const outcomes_for_node = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-outcomes-header", children: capWords(gettext(this.props.workflow.type + " outcomes")) + gettext(" for node:") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-outcomes-header", children: capWords(gettext(this.props.workflow.type + " outcomes")) + window.gettext(" for node:") }),
       outcomenodes,
       outcomeadder
     ] });
@@ -84978,7 +84997,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
                 src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: gettext("Add new") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Add new") })
           ]
         }
       );
@@ -85371,12 +85390,12 @@ class AlignmentView extends reactExports.Component {
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { children: [
-        gettext("Filters"),
+        window.gettext("Filters"),
         ":"
       ] }),
       view_buttons_outcomes,
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-        gettext("Sections"),
+        window.gettext("Sections"),
         ":"
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons_terms }),
@@ -85407,6 +85426,355 @@ const mapAlignmentStateToProps = (state) => {
   };
 };
 const AlignmentView$1 = connect(mapAlignmentStateToProps, null)(AlignmentView);
+class GridNodeUnconnected extends EditableComponentWithComments {
+  constructor(props) {
+    super(props);
+    this.objectType = "node";
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const renderer2 = this.props.renderer;
+    const selection_manager = renderer2.selection_manager;
+    const data = this.props.data;
+    let data_override;
+    if (data.represents_workflow)
+      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
+    else
+      data_override = data;
+    let ponderation;
+    ponderation = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: data_override.ponderation_theory + "/" + data_override.ponderation_practical + "/" + data_override.ponderation_individual });
+    const style2 = {
+      backgroundColor: getColumnColour(this.props.column)
+    };
+    if (data.lock) {
+      style2.outline = "2px solid " + data.lock.user_colour;
+    }
+    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
+    if (data.is_dropped)
+      css_class += " dropped";
+    if (data.lock)
+      css_class += " locked locked-" + data.lock.user_id;
+    let comments;
+    if (this.props.renderer.view_comments)
+      comments = this.addCommenting();
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        style: style2,
+        id: data.id,
+        ref: this.maindiv,
+        onClick: (evt) => selection_manager.changeSelection(evt, this),
+        className: css_class,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data }),
+            ponderation
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) }),
+          this.addEditable(data_override, true)
+        ]
+      }
+    );
+  }
+}
+const mapNodeStateToProps$2 = (state, own_props) => ({
+  column: state.column.find((column2) => column2.id == own_props.data.column)
+});
+const GridNode = connect(mapNodeStateToProps$2, null)(GridNodeUnconnected);
+class GridWeekUnconnected extends EditableComponentWithComments {
+  constructor(props) {
+    super(props);
+    this.objectType = "week";
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    const default_text = data.week_type_display + " " + (this.props.rank + 1);
+    const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridNode, { renderer: this.props.renderer, data: node2 }));
+    let comments;
+    if (this.props.renderer.view_comments)
+      comments = this.addCommenting();
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "week",
+        ref: this.maindiv,
+        style: this.get_border_style(),
+        onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week-title", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { title: data.title, defaultText: default_text }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: this.props.total_theory + "/" + this.props.total_practical + "/" + this.props.total_individual })
+          ] }),
+          nodes,
+          this.addEditable(data, true),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
+        ]
+      }
+    );
+  }
+}
+const mapWeekStateToProps$2 = (state, own_props) => {
+  const data = own_props.data;
+  const node_weeks = filterThenSortByID(
+    state.nodeweek,
+    data.nodeweek_set
+  );
+  const nodes_data = node_weeks.map((nodeweek) => getNodeByID(state, nodeweek.node).data).filter((node2) => !checkSetHidden(node2, state.objectset));
+  const override_data = nodes_data.map((node2) => {
+    if (node2.represents_workflow)
+      return { ...node2, ...node2.linked_workflow_data };
+    else
+      return node2;
+  });
+  const general_education = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.time_general_hours)
+        return previousValue + currentValue.time_general_hours;
+      return previousValue;
+    },
+    0
+  );
+  const specific_education = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.time_specific_hours)
+        return previousValue + currentValue.time_specific_hours;
+      return previousValue;
+    },
+    0
+  );
+  const total_theory = override_data.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderation_theory)
+      return previousValue + currentValue.ponderation_theory;
+    return previousValue;
+  }, 0);
+  const total_practical = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.ponderation_practical)
+        return previousValue + currentValue.ponderation_practical;
+      return previousValue;
+    },
+    0
+  );
+  const total_individual = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.ponderation_individual)
+        return previousValue + currentValue.ponderation_individual;
+      return previousValue;
+    },
+    0
+  );
+  const total_time = total_theory + total_practical + total_individual;
+  const total_required = override_data.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.time_required)
+      return previousValue + parseInt(currentValue.time_required);
+    return previousValue;
+  }, 0);
+  return {
+    nodes: override_data,
+    general_education,
+    specific_education,
+    total_theory,
+    total_practical,
+    total_individual,
+    total_time,
+    total_required
+  };
+};
+const GridWeek = connect(mapWeekStateToProps$2, null)(GridWeekUnconnected);
+class GridView extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.objectType = "workflow";
+    this.state = { dropped_list: [] };
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    this.props.workflow;
+    const weeks = this.props.weeks.map((week, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridWeek, { renderer: this.props.renderer, data: week.data, rank: i }));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: window.gettext("Times in hours shown in format") + ": " + gettext("Theory") + "/" + gettext("Practical") + "/" + gettext("Individual") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-grid", children: weeks })
+    ] });
+  }
+}
+const mapStateToProps$2 = (state, own_props) => {
+  const weeks = state.workflow.weekworkflow_set.map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week).map((week) => getWeekByID(state, week));
+  return { workflow: state.workflow, weeks };
+};
+const GridView$1 = connect(mapStateToProps$2, null)(GridView);
+class JumpToWeekViewUnconnected extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.objectType = "week";
+    this.objectClass = ".week";
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  jumpTo() {
+    const week_id = this.props.data.id;
+    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
+    if (week.length > 0) {
+      const container2 = $("#container");
+      $("#container").animate(
+        {
+          scrollTop: week.offset().top + container2[0].scrollTop - container2.offset().top - 200
+        },
+        300
+      );
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    const renderer2 = this.props.renderer;
+    let default_text;
+    if (!renderer2.is_strategy)
+      default_text = data.week_type_display + " " + (this.props.rank + 1);
+    COURSEFLOW_APP.config.icon_path + "plus.svg";
+    if (data.is_dropped)
+      COURSEFLOW_APP.config.icon_path + "minus.svg";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.jumpTo.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }) });
+  }
+}
+const mapWeekStateToProps$1 = (state, own_props) => getWeekByID(state, own_props.objectID);
+const JumpToWeekView = connect(
+  mapWeekStateToProps$1,
+  null
+)(JumpToWeekViewUnconnected);
+class JumpToWeekWorkflowUnconnected extends reactExports.Component {
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      JumpToWeekView,
+      {
+        objectID: data.week,
+        rank: this.props.order.indexOf(data.id),
+        parentID: this.props.parentID,
+        throughParentID: data.id,
+        renderer: this.props.renderer
+      }
+    );
+  }
+}
+const mapWeekWorkflowStateToProps = (state, own_props) => getWeekWorkflowByID(state, own_props.objectID);
+const JumpToWeekWorkflow = connect(
+  mapWeekWorkflowStateToProps,
+  null
+)(JumpToWeekWorkflowUnconnected);
+class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    if (this.props.renderer.public_view) {
+      getPublicParentWorkflowInfo(
+        this.props.workflow_id,
+        (response_data) => this.setState({
+          parent_workflows: response_data.parent_workflows,
+          has_loaded: true
+        })
+      );
+    } else {
+      getParentWorkflowInfo(
+        this.props.workflow_id,
+        (response_data) => this.setState({
+          parent_workflows: response_data.parent_workflows,
+          has_loaded: true
+        })
+      );
+    }
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getTypeIndicator(data) {
+    const type = data.type;
+    let type_text = gettext(type);
+    if (data.is_strategy)
+      type_text += gettext(" strategy");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (this.state.has_loaded) {
+      if (this.state.parent_workflows.length == 0 && this.props.child_workflows.length == 0)
+        return null;
+      const parent_workflows = this.state.parent_workflows.map(
+        (parent_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            data: parent_workflow,
+            test_id: "panel-favourite"
+          },
+          `WorkflowTitleParent-${index}`
+        )
+      );
+      const child_workflows = this.props.child_workflows.map(
+        (child_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            data: child_workflow,
+            test_id: "panel-favourite"
+          },
+          `WorkflowTitleChild-${index}`
+        )
+      );
+      const return_val = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}, "br"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Quick Navigation") }, "quick-nav")
+      ];
+      if (parent_workflows.length > 0)
+        return_val.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Used in:") }),
+          ...parent_workflows
+        );
+      if (child_workflows.length > 0)
+        return_val.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Workflows Used:") }),
+          ...child_workflows
+        );
+      return reactDomExports.createPortal(
+        return_val,
+        $("#react-portal-left-panel-extra")[0]
+      );
+    }
+    return null;
+  }
+}
+const mapParentWorkflowIndicatorStateToProps = (state) => ({
+  child_workflows: state.node.filter((node2) => node2.linked_workflow_data).map((node2) => ({
+    id: node2.linked_workflow,
+    title: node2.linked_workflow_data.title,
+    description: node2.linked_workflow_data.description,
+    url: node2.linked_workflow_data.url,
+    deleted: node2.linked_workflow_data.deleted
+  }))
+});
+const ParentWorkflowIndicator = connect(
+  mapParentWorkflowIndicatorStateToProps,
+  null
+)(ParentWorkflowIndicatorUnconnected);
 class TableCell extends reactExports.Component {
   /*******************************************************
    * FUNCTIONS
@@ -85566,7 +85934,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
     if (is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + nwindow.gettext(
+      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
         data.child_outcome_links.length
@@ -85825,8 +86193,8 @@ class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
     ] });
   }
 }
-const mapNodeStateToProps$2 = (state, own_props) => getNodeByID(state, own_props.objectID);
-const Index2 = connect(mapNodeStateToProps$2, null)(NodeOutcomeViewUnconnected);
+const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
+const Index2 = connect(mapNodeStateToProps$1, null)(NodeOutcomeViewUnconnected);
 class OutcomeTableView extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -86010,7 +86378,7 @@ class OutcomeTableView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps$2 = (state, own_props) => {
+const mapStateToProps$1 = (state, own_props) => {
   return {
     workflow_type: state.workflow.type,
     outcomes_type: state.workflow.outcomes_type,
@@ -86029,7 +86397,7 @@ const mapStateToProps$2 = (state, own_props) => {
     outcomes: state.outcome
   };
 };
-const OutcomeTableView$1 = connect(mapStateToProps$2, null)(OutcomeTableView);
+const OutcomeTableView$1 = connect(mapStateToProps$1, null)(OutcomeTableView);
 class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
@@ -86076,8 +86444,8 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop {
     ] });
   }
 }
-const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
-const MatrixNode = connect(mapNodeStateToProps$1, null)(MatrixNodeUnconnected);
+const mapNodeStateToProps = (state, own_props) => getNodeByID(state, own_props.objectID);
+const MatrixNode = connect(mapNodeStateToProps, null)(MatrixNodeUnconnected);
 class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
@@ -86103,7 +86471,7 @@ class MatrixWeekUnconnected extends ComponentWithToggleDrop {
     ] });
   }
 }
-const mapWeekStateToProps$2 = (state, own_props) => {
+const mapWeekStateToProps = (state, own_props) => {
   const data = getWeekByID(state, own_props.objectID).data;
   const node_weeks = filterThenSortByID(
     state.nodeweek,
@@ -86177,7 +86545,7 @@ const mapWeekStateToProps$2 = (state, own_props) => {
     nodes: nodes_data
   };
 };
-const MatrixWeek = connect(mapWeekStateToProps$2, null)(MatrixWeekUnconnected);
+const MatrixWeek = connect(mapWeekStateToProps, null)(MatrixWeekUnconnected);
 class CompetencyMatrixView extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -86421,7 +86789,7 @@ class CompetencyMatrixView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps$1 = (state, own_props) => {
+const mapStateToProps = (state, own_props) => {
   return {
     weekworkflows: state.weekworkflow,
     weeks: state.week,
@@ -86435,7 +86803,7 @@ const mapStateToProps$1 = (state, own_props) => {
     outcomes: state.outcome
   };
 };
-const CompetencyMatrixView$1 = connect(mapStateToProps$1, null)(CompetencyMatrixView);
+const CompetencyMatrixView$1 = connect(mapStateToProps, null)(CompetencyMatrixView);
 class OutcomeUnconnected2 extends OutcomeUnconnected$1 {
   /*******************************************************
    * FUNCTIONS
@@ -86461,936 +86829,13 @@ class OutcomeUnconnected2 extends OutcomeUnconnected$1 {
 const mapOutcomeStateToProps = (state, own_props) => getOutcomeByID(state, own_props.objectID);
 const Outcome2 = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected2);
 const MatrixOutcome = Outcome2;
-class GridNodeUnconnected extends EditableComponentWithComments {
-  constructor(props) {
-    super(props);
-    this.objectType = "node";
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const renderer2 = this.props.renderer;
-    const selection_manager = renderer2.selection_manager;
-    const data = this.props.data;
-    let data_override;
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
-    else
-      data_override = data;
-    let ponderation;
-    ponderation = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: data_override.ponderation_theory + "/" + data_override.ponderation_practical + "/" + data_override.ponderation_individual });
-    const style2 = {
-      backgroundColor: getColumnColour(this.props.column)
-    };
-    if (data.lock) {
-      style2.outline = "2px solid " + data.lock.user_colour;
-    }
-    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
-    if (data.is_dropped)
-      css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
-    let comments;
-    if (this.props.renderer.view_comments)
-      comments = this.addCommenting();
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        style: style2,
-        id: data.id,
-        ref: this.maindiv,
-        onClick: (evt) => selection_manager.changeSelection(evt, this),
-        className: css_class,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data }),
-            ponderation
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) }),
-          this.addEditable(data_override, true)
-        ]
-      }
-    );
-  }
-}
-const mapNodeStateToProps = (state, own_props) => ({
-  column: state.column.find((column2) => column2.id == own_props.data.column)
-});
-const GridNode = connect(mapNodeStateToProps, null)(GridNodeUnconnected);
-class GridWeekUnconnected extends EditableComponentWithComments {
-  constructor(props) {
-    super(props);
-    this.objectType = "week";
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    const default_text = data.week_type_display + " " + (this.props.rank + 1);
-    const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridNode, { renderer: this.props.renderer, data: node2 }));
-    let comments;
-    if (this.props.renderer.view_comments)
-      comments = this.addCommenting();
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "week",
-        ref: this.maindiv,
-        style: this.get_border_style(),
-        onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week-title", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { title: data.title, defaultText: default_text }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: this.props.total_theory + "/" + this.props.total_practical + "/" + this.props.total_individual })
-          ] }),
-          nodes,
-          this.addEditable(data, true),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
-        ]
-      }
-    );
-  }
-}
-const mapWeekStateToProps$1 = (state, own_props) => {
-  const data = own_props.data;
-  const node_weeks = filterThenSortByID(
-    state.nodeweek,
-    data.nodeweek_set
-  );
-  const nodes_data = node_weeks.map((nodeweek) => getNodeByID(state, nodeweek.node).data).filter((node2) => !checkSetHidden(node2, state.objectset));
-  const override_data = nodes_data.map((node2) => {
-    if (node2.represents_workflow)
-      return { ...node2, ...node2.linked_workflow_data };
-    else
-      return node2;
-  });
-  const general_education = override_data.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.time_general_hours)
-        return previousValue + currentValue.time_general_hours;
-      return previousValue;
-    },
-    0
-  );
-  const specific_education = override_data.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.time_specific_hours)
-        return previousValue + currentValue.time_specific_hours;
-      return previousValue;
-    },
-    0
-  );
-  const total_theory = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderation_theory)
-      return previousValue + currentValue.ponderation_theory;
-    return previousValue;
-  }, 0);
-  const total_practical = override_data.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderation_practical)
-        return previousValue + currentValue.ponderation_practical;
-      return previousValue;
-    },
-    0
-  );
-  const total_individual = override_data.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderation_individual)
-        return previousValue + currentValue.ponderation_individual;
-      return previousValue;
-    },
-    0
-  );
-  const total_time = total_theory + total_practical + total_individual;
-  const total_required = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.time_required)
-      return previousValue + parseInt(currentValue.time_required);
-    return previousValue;
-  }, 0);
-  return {
-    nodes: override_data,
-    general_education,
-    specific_education,
-    total_theory,
-    total_practical,
-    total_individual,
-    total_time,
-    total_required
-  };
-};
-const GridWeek = connect(mapWeekStateToProps$1, null)(GridWeekUnconnected);
-class GridView extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.objectType = "workflow";
-    this.state = { dropped_list: [] };
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    this.props.workflow;
-    const weeks = this.props.weeks.map((week, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridWeek, { renderer: this.props.renderer, data: week.data, rank: i }));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: gettext("Times in hours shown in format") + ": " + gettext("Theory") + "/" + gettext("Practical") + "/" + gettext("Individual") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-grid", children: weeks })
-    ] });
-  }
-}
-const mapStateToProps = (state, own_props) => {
-  const weeks = state.workflow.weekworkflow_set.map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week).map((week) => getWeekByID(state, week));
-  return { workflow: state.workflow, weeks };
-};
-const GridView$1 = connect(mapStateToProps, null)(GridView);
-class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
-  constructor(props) {
-    super(props);
-    console.log("props");
-    console.log(props);
-    this.objectType = "workflow";
-    this.allowed_tabs = [0, 1, 2, 3, 4];
-    this.state = {
-      users: null
-    };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.getUserData();
-    this.updateTabs();
-    COURSEFLOW_APP.makeDropdown("#jump-to");
-    COURSEFLOW_APP.makeDropdown("#expand-collapse-all");
-  }
-  componentDidUpdate(prev_props) {
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getUserData() {
-    if (this.props.renderer.public_view || this.props.renderer.is_student)
-      return null;
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data });
-    });
-  }
-  deleteWorkflow() {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this workflow?")
-    )) {
-      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
-      });
-    }
-  }
-  deleteWorkflowHard() {
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to permanently delete this workflow?"
-      )
-    )) {
-      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
-        window.location = COURSEFLOW_APP.config.update_path["project"].replace(
-          0,
-          renderer.project.id
-        );
-      });
-    }
-  }
-  restoreWorkflow() {
-    restoreSelfQuery(this.props.data.id, "workflow", () => {
-    });
-  }
-  updateTabs() {
-    this.props.renderer.selection_manager.changeSelection(null, null);
-    const disabled_tabs = [];
-    for (let i = 0; i <= 4; i++)
-      if (this.allowed_tabs.indexOf(i) < 0)
-        disabled_tabs.push(i);
-    $("#sidebar").tabs({ disabled: false });
-    const current_tab = $("#sidebar").tabs("option", "active");
-    if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0)
-        $("#sidebar").tabs({ active: false });
-      else
-        $("#sidebar").tabs({ active: this.allowed_tabs[0] });
-    }
-    if (this.props.renderer.read_only)
-      disabled_tabs.push(5);
-    $("#sidebar").tabs({ disabled: disabled_tabs });
-  }
-  changeView(type) {
-    this.props.renderer.render(this.props.renderer.container, type);
-  }
-  getHeader() {
-    const data = this.props.data;
-    const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "project-header",
-        style: style2,
-        onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
-        children: [
-          this.getProjectLink(),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-top-line", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowTitle,
-              {
-                data,
-                no_hyperlink: true,
-                class_name: "project-title"
-              }
-            ),
-            this.getTypeIndicator()
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-              this.getUsers()
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-other", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                CollapsibleText,
-                {
-                  text: data.description,
-                  defaultText: window.gettext("No description")
-                }
-              )
-            ] }) })
-          ] })
-        ]
-      }
-    );
-  }
-  getTypeIndicator() {
-    const data = this.props.data;
-    let type_text = window.gettext(data.type);
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data.type, children: type_text });
-  }
-  getUsers() {
-    if (!this.state.users)
-      return null;
-    const author = this.state.users.author;
-    const editors = this.state.users.editors;
-    const commenters = this.state.users.commentors;
-    const viewers = this.state.users.viewers;
-    let users_group = [];
-    if (this.state.users.published) {
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          " ",
-          window.gettext("All CourseFlow")
-        ] })
-      );
-    }
-    if (author)
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("author"),
-          getUserDisplay(author)
-        ] })
-      );
-    users_group.push([
-      editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("edit"),
-        getUserDisplay(user)
-      ] })),
-      commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("comment"),
-        getUserDisplay(user)
-      ] })),
-      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        getUserDisplay(user)
-      ] }))
-    ]);
-    users_group = users_group.flat(2);
-    const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-    if (users_group.length > 4) {
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-          "+",
-          users_group.length - 4,
-          " ",
-          window.gettext("more")
-        ] })
-      );
-    }
-    if (!this.props.renderer.read_only)
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "user-name collapsed-text-show-more",
-            onClick: this.openShareMenu.bind(this),
-            children: window.gettext("Modify")
-          }
-        )
-      );
-    return users;
-  }
-  getEdit() {
-    let edit;
-    if (!this.props.renderer.read_only)
-      edit = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "edit-project-button",
-          title: window.gettext("Edit Workflow"),
-          onClick: this.openEditMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-        }
-      );
-    return edit;
-  }
-  openEditMenu(evt) {
-    this.props.renderer.selection_manager.changeSelection(evt, this);
-  }
-  getShare() {
-    let share;
-    if (!this.props.renderer.read_only)
-      share = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "hover-shade",
-          id: "share-button",
-          title: window.gettext("Sharing"),
-          onClick: this.openShareMenu.bind(this),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-        }
-      );
-    return share;
-  }
-  openShareMenu() {
-    const component = this;
-    const data = this.props.data;
-    renderMessageBox(data, "share_menu", () => {
-      closeMessageBox();
-      component.getUserData();
-    });
-  }
-  getOverflowLinks() {
-    const overflow_links = [];
-    overflow_links.push(this.getExportButton());
-    overflow_links.push(this.getCopyButton());
-    overflow_links.push(this.getImportButton());
-    overflow_links.push(this.getDeleteWorkflow());
-    if (overflow_links.filter((x) => x != null).length == 0)
-      $("#overflow-options").addClass("hidden");
-    return overflow_links;
-  }
-  getDeleteWorkflow() {
-    if (this.props.renderer.read_only)
-      return null;
-    if (!this.props.data.deleted)
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "delete-workflow",
-            className: "hover-shade",
-            onClick: this.deleteWorkflow.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive workflow") })
-          }
-        )
-      ];
-    else
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "restore-workflow",
-            className: "hover-shade",
-            onClick: this.restoreWorkflow.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore workflow") })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "permanently-delete-workflow",
-            className: "hover-shade",
-            onClick: this.deleteWorkflowHard.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete workflow") })
-          }
-        )
-      ];
-  }
-  getExportButton() {
-    if (this.props.renderer.public_view && !this.props.renderer.user_id)
-      return null;
-    if (this.props.renderer.is_student && !this.props.renderer.can_view)
-      return null;
-    const export_button = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        id: "export-button",
-        className: "hover-shade",
-        onClick: () => renderMessageBox(
-          { ...this.props.data, object_sets: this.props.object_sets },
-          "export",
-          closeMessageBox
-        ),
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
-      }
-    );
-    return export_button;
-  }
-  getCopyButton() {
-    if (!this.props.renderer.user_id)
-      return null;
-    const export_button = [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          id: "copy-button",
-          className: "hover-shade",
-          onClick: () => {
-            const loader = COURSEFLOW_APP.tiny_loader;
-            if (this.props.data.is_strategy) {
-              loader.startLoad();
-              duplicateBaseItemQuery(
-                this.props.data.id,
-                this.props.data.type,
-                null,
-                (response_data) => {
-                  loader.endLoad();
-                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-                }
-              );
-            } else {
-              getTargetProjectMenu(-1);
-            }
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-        }
-      )
-    ];
-    if (!this.props.data.is_strategy && this.props.renderer.project_permission === permission_keys.edit)
-      export_button.unshift(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "copy-to-project-button",
-            className: "hover-shade",
-            onClick: () => {
-              const loader = COURSEFLOW_APP.tiny_loader;
-              duplicateBaseItem(
-                this.props.data.id,
-                this.props.data.type,
-                this.props.renderer.project.id,
-                (response_data) => {
-                  loader.endLoad();
-                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-                }
-              );
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy into current project") })
-          }
-        )
-      );
-    return export_button;
-  }
-  getImportButton() {
-    if (this.props.renderer.read_only)
-      return null;
-    let disabled;
-    if (this.props.data.importing)
-      disabled = true;
-    const imports = [/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})];
-    this.pushImport(
-      imports,
-      "outcomes",
-      window.gettext("Import Outcomes"),
-      disabled
-    );
-    this.pushImport(imports, "nodes", window.gettext("Import Nodes"), disabled);
-    return imports;
-  }
-  pushImport(imports, import_type, text, disabled) {
-    let a_class = "hover-shade";
-    if (disabled)
-      a_class = " disabled";
-    imports.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: a_class, onClick: this.clickImport.bind(this, import_type), children: text })
-    );
-  }
-  clickImport(import_type, evt) {
-    evt.preventDefault();
-    renderMessageBox(
-      {
-        object_id: this.props.data.id,
-        object_type: this.objectType,
-        import_type
-      },
-      "import",
-      () => {
-        closeMessageBox();
-      }
-    );
-  }
-  getReturnLinks() {
-    const renderer2 = this.props.renderer;
-    this.props.data;
-    const return_links = [];
-    if (renderer2.project && !renderer2.is_student && !renderer2.public_view) {
-      return_links.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "a",
-          {
-            className: "hover-shade no-underline",
-            id: "project-return",
-            href: COURSEFLOW_APP.config.update_path["project"].replace(
-              0,
-              renderer2.project.id
-            ),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                window.gettext("Return to"),
-                " ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  WorkflowTitle,
-                  {
-                    class_name: "inline",
-                    no_hyperlink: true,
-                    data: renderer2.project
-                  }
-                )
-              ] })
-            ]
-          }
-        )
-      );
-    }
-    if (renderer2.public_view && renderer2.can_view) {
-      return_links.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "a",
-          {
-            className: "hover-shade no-underline",
-            id: "project-return",
-            href: COURSEFLOW_APP.config.update_path["project"].replace(
-              0,
-              renderer2.project.id
-            ),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Editable Workflow") })
-            ]
-          }
-        )
-      );
-    }
-    return reactDomExports.createPortal(return_links, $(".titlebar .title")[0]);
-  }
-  getProjectLink() {
-    return null;
-  }
-  getWorkflowContent() {
-    const data = this.props.data;
-    const renderer2 = this.props.renderer;
-    let workflow_content;
-    if (renderer2.view_type == "outcometable") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowTableView,
-        {
-          data,
-          renderer: renderer2,
-          view_type: renderer2.view_type
-        }
-      );
-      this.allowed_tabs = [3];
-    } else if (renderer2.view_type == "outcomeedit") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer: renderer2 });
-      if (data.type == "program")
-        this.allowed_tabs = [3];
-      else
-        this.allowed_tabs = [2, 3];
-    } else if (renderer2.view_type == "alignmentanalysis") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer: renderer2, view_type: renderer2.view_type });
-      this.allowed_tabs = [3];
-    } else if (renderer2.view_type == "grid") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer: renderer2, view_type: renderer2.view_type });
-      this.allowed_tabs = [3];
-    } else {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer: renderer2 });
-      this.allowed_tabs = [1, 2, 3, 4];
-      if (renderer2.read_only)
-        this.allowed_tabs = [2, 3];
-    }
-    if (data.is_strategy)
-      return workflow_content;
-    const view_buttons = [
-      {
-        type: "workflowview",
-        name: window.gettext("Workflow View"),
-        disabled: []
-      },
-      {
-        type: "outcomeedit",
-        name: capWords(
-          window.gettext("View") + " " + window.gettext(data.type + " outcomes")
-        ),
-        disabled: []
-      },
-      {
-        type: "outcometable",
-        name: capWords(
-          window.gettext(data.type + " outcome") + " " + window.gettext("Table")
-        ),
-        disabled: []
-      },
-      {
-        type: "alignmentanalysis",
-        name: capWords(
-          window.gettext(data.type + " outcome") + " " + window.gettext("Analytics")
-        ),
-        disabled: ["activity"]
-      },
-      {
-        type: "grid",
-        name: window.gettext("Grid View"),
-        disabled: ["activity", "course"]
-      }
-    ].filter((item) => item.disabled.indexOf(data.type) == -1).map((item) => {
-      let view_class = "hover-shade";
-      if (item.type == renderer2.view_type)
-        view_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          id: "button_" + item.type,
-          className: view_class,
-          onClick: this.changeView.bind(this, item.type),
-          children: item.name
-        }
-      );
-    });
-    const view_buttons_sorted = view_buttons.slice(0, 2);
-    view_buttons_sorted.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "hover-shade other-views",
-          onClick: () => $(".views-dropdown")[0].classList.toggle("toggled"),
-          children: [
-            window.gettext("Other Views"),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "views-dropdown", children: view_buttons.slice(2) })
-          ]
-        }
-      )
-    );
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons_sorted }),
-      workflow_content
-    ];
-  }
-  getParentWorkflowIndicator() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ParentWorkflowIndicator,
-      {
-        renderer: this.props.renderer,
-        workflow_id: this.props.data.id
-      }
-    );
-  }
-  getJump() {
-    if (this.props.renderer.view_type != "workflowview")
-      return null;
-    const data = this.props.data;
-    const nodebarweekworkflows = data.weekworkflow_set.map(
-      (weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        JumpToWeekWorkflow,
-        {
-          order: data.weekworkflow_set,
-          renderer: this.props.renderer,
-          objectID: weekworkflow
-        },
-        `weekworkflow-${index}`
-      )
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "jump-to", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade flex-middle", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "keyboard_double_arrow_down" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Jump to") })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: nodebarweekworkflows })
-    ] });
-  }
-  getExpand() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "expand-collapse-all", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade flex-middle", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand/Collapse") })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "create-dropdown", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.expandAll.bind(this, "week"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all weeks") })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.collapseAll.bind(this, "week"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all weeks") })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.expandAll.bind(this, "node"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all nodes") })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.collapseAll.bind(this, "node"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all nodes") })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.expandAll.bind(this, "outcome"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all outcomes") })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "flex-middle hover-shade",
-            onClick: this.collapseAll.bind(this, "outcome"),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all outcomes") })
-            ]
-          }
-        )
-      ] })
-    ] });
-  }
-  expandAll(type) {
-    this.props[type].forEach(
-      (week) => toggleDrop(week.id, type, true, this.props.dispatch)
-    );
-  }
-  collapseAll(type) {
-    this.props[type].forEach(
-      (week) => toggleDrop(week.id, type, false, this.props.dispatch)
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const renderer2 = this.props.renderer;
-    const data = this.props.data;
-    const visible_buttons = (() => {
-      return [this.getEdit(), this.getShare()];
-    }).bind(this);
-    const overflow_links = this.getOverflowLinks.bind(this);
-    const viewbar = (() => {
-      return [this.getJump(), this.getExpand()];
-    }).bind(this);
-    let userbar;
-    if (!renderer2.always_static)
-      userbar = (() => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ConnectionBar,
-        {
-          updateSocket: renderer2.updateSocket,
-          renderer: renderer2
-        }
-      )).bind(this);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        MenuBar,
-        {
-          overflow_links,
-          visible_buttons,
-          viewbar,
-          userbar
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
-          this.getHeader(),
-          this.addEditable(data),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: this.getWorkflowContent() }),
-          this.getReturnLinks(),
-          this.getParentWorkflowIndicator()
-        ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          RightSideBar,
-          {
-            context: "workflow",
-            renderer: this.props.renderer,
-            data
-          }
-        )
-      ] })
-    ] });
-  }
-}
-const mapWorkflowStateToProps = (state) => ({
-  data: state.workflow,
-  object_sets: state.objectset,
-  week: state.week,
-  node: state.node,
-  outcome: state.outcome
-});
-const WorkflowBaseView = connect(
-  mapWorkflowStateToProps,
-  null
-)(WorkflowBaseViewUnconnected);
 class WorkflowTableView extends reactExports.Component {
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data = this.props.data;
-    if (data.table_type == 1)
+    if (data.table_type === 1)
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         CompetencyMatrixView$1,
         {
@@ -87406,1354 +86851,6 @@ class WorkflowTableView extends reactExports.Component {
           renderer: this.props.renderer
         }
       );
-  }
-}
-class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    if (this.props.renderer.public_view) {
-      getPublicParentWorkflowInfo(
-        this.props.workflow_id,
-        (response_data) => this.setState({
-          parent_workflows: response_data.parent_workflows,
-          has_loaded: true
-        })
-      );
-    } else {
-      getParentWorkflowInfo(
-        this.props.workflow_id,
-        (response_data) => this.setState({
-          parent_workflows: response_data.parent_workflows,
-          has_loaded: true
-        })
-      );
-    }
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getTypeIndicator(data) {
-    const type = data.type;
-    let type_text = gettext(type);
-    if (data.is_strategy)
-      type_text += gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (this.state.has_loaded) {
-      if (this.state.parent_workflows.length == 0 && this.props.child_workflows.length == 0)
-        return null;
-      const parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTitle,
-          {
-            data: parent_workflow,
-            test_id: "panel-favourite"
-          },
-          `WorkflowTitleParent-${index}`
-        )
-      );
-      const child_workflows = this.props.child_workflows.map(
-        (child_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTitle,
-          {
-            data: child_workflow,
-            test_id: "panel-favourite"
-          },
-          `WorkflowTitleChild-${index}`
-        )
-      );
-      const return_val = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}, "br"),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Quick Navigation") }, "quick-nav")
-      ];
-      if (parent_workflows.length > 0)
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Used in:") }),
-          ...parent_workflows
-        );
-      if (child_workflows.length > 0)
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "panel-item", children: window.gettext("Workflows Used:") }),
-          ...child_workflows
-        );
-      return reactDomExports.createPortal(
-        return_val,
-        $("#react-portal-left-panel-extra")[0]
-      );
-    }
-    return null;
-  }
-}
-const mapParentWorkflowIndicatorStateToProps = (state) => ({
-  child_workflows: state.node.filter((node2) => node2.linked_workflow_data).map((node2) => ({
-    id: node2.linked_workflow,
-    title: node2.linked_workflow_data.title,
-    description: node2.linked_workflow_data.description,
-    url: node2.linked_workflow_data.url,
-    deleted: node2.linked_workflow_data.deleted
-  }))
-});
-const ParentWorkflowIndicator = connect(
-  mapParentWorkflowIndicatorStateToProps,
-  null
-)(ParentWorkflowIndicatorUnconnected);
-class JumpToWeekWorkflowUnconnected extends reactExports.Component {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      JumpToWeekView,
-      {
-        objectID: data.week,
-        rank: this.props.order.indexOf(data.id),
-        parentID: this.props.parentID,
-        throughParentID: data.id,
-        renderer: this.props.renderer
-      }
-    );
-  }
-}
-const mapWeekWorkflowStateToProps = (state, own_props) => getWeekWorkflowByID(state, own_props.objectID);
-const JumpToWeekWorkflow = connect(
-  mapWeekWorkflowStateToProps,
-  null
-)(JumpToWeekWorkflowUnconnected);
-class JumpToWeekViewUnconnected extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.objectType = "week";
-    this.objectClass = ".week";
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  jumpTo() {
-    const week_id = this.props.data.id;
-    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
-    if (week.length > 0) {
-      const container2 = $("#container");
-      $("#container").animate(
-        {
-          scrollTop: week.offset().top + container2[0].scrollTop - container2.offset().top - 200
-        },
-        300
-      );
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    const renderer2 = this.props.renderer;
-    let default_text;
-    if (!renderer2.is_strategy)
-      default_text = data.week_type_display + " " + (this.props.rank + 1);
-    COURSEFLOW_APP.config.icon_path + "plus.svg";
-    if (data.is_dropped)
-      COURSEFLOW_APP.config.icon_path + "minus.svg";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.jumpTo.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }) });
-  }
-}
-const mapWeekStateToProps = (state, own_props) => getWeekByID(state, own_props.objectID);
-const JumpToWeekView = connect(
-  mapWeekStateToProps,
-  null
-)(JumpToWeekViewUnconnected);
-class Workflow {
-  constructor(props) {
-    __publicField(this, "parsemessage", function(e) {
-      const data = JSON.parse(e.data);
-      switch (data.type) {
-        case DATA_TYPE.WORKFLOW_ACTION:
-          this.store.dispatch(data.action);
-          break;
-        case DATA_TYPE.LOCK_UPDATE:
-          this.lock_update_received(data.action);
-          break;
-        case DATA_TYPE.CONNECTION_UPDATE:
-          this.connection_update_received(data.action);
-          break;
-        case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
-          this.parent_workflow_updated(data.edit_count);
-          break;
-        case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-          this.child_workflow_updated(data.edit_count, data.child_workflow_id);
-          break;
-      }
-    });
-    const {
-      column_choices,
-      context_choices,
-      task_choices,
-      time_choices,
-      outcome_type_choices,
-      outcome_sort_choices,
-      strategy_classification_choices,
-      is_strategy,
-      project
-    } = props.workflow_data_package;
-    this.message_queue = [];
-    this.messages_queued = true;
-    this.public_view = props.public_view;
-    this.workflowID = props.workflow_model_id;
-    this.column_choices = column_choices;
-    this.context_choices = context_choices;
-    this.task_choices = task_choices;
-    this.time_choices = time_choices;
-    this.outcome_type_choices = outcome_type_choices;
-    this.outcome_sort_choices = outcome_sort_choices;
-    this.strategy_classification_choices = strategy_classification_choices;
-    this.is_strategy = is_strategy;
-    this.project = project;
-    this.user_permission = props.user_permission;
-    this.user_role = props.user_role;
-    this.user_id = props.user_id;
-    if (!this.is_strategy && this.project.object_permission) {
-      this.project_permission = this.project.object_permission.permission_type;
-    }
-    switch (props.user_permission) {
-      case permission_keys["view"]:
-        this.can_view = true;
-        break;
-      case permission_keys["comment"]:
-        this.view_comments = true;
-        this.add_comments = true;
-        this.can_view = true;
-        break;
-      case permission_keys["edit"]:
-        this.read_only = false;
-        this.view_comments = true;
-        this.add_comments = true;
-        this.can_view = true;
-        break;
-    }
-    switch (props.user_role) {
-      case role_keys["none"]:
-        break;
-      case role_keys["student"]:
-        this.is_student = true;
-        this.show_assignments = true;
-        break;
-      case role_keys["teacher"]:
-        this.is_teacher = true;
-        this.show_assignments = true;
-        break;
-    }
-    if (this.public_view) {
-      this.getWorkflowData = getPublicWorkflowData;
-      this.getWorkflowParentData = getPublicWorkflowParentData;
-      this.getWorkflowChildData = getPublicWorkflowChildData;
-    } else {
-      this.getWorkflowData = getWorkflowData;
-      this.getWorkflowParentData = getWorkflowParentData;
-      this.getWorkflowChildData = getWorkflowChildData;
-    }
-  }
-  connect() {
-    if (!this.always_static) {
-      this.messages_queued = true;
-      const renderer2 = this;
-      let websocket_prefix;
-      if (window.location.protocol === "https:") {
-        websocket_prefix = "wss";
-      } else {
-        websocket_prefix = "ws";
-      }
-      const updateSocket = new WebSocket(
-        websocket_prefix + "://" + window.location.host + "/ws/update/" + this.workflowID + "/"
-      );
-      this.updateSocket = updateSocket;
-      updateSocket.onmessage = (function(e) {
-        this.message_received(e);
-      }).bind(this);
-      const openfunction = function() {
-        this.has_rendered = true;
-        this.connection_opened();
-      };
-      updateSocket.onopen = openfunction.bind(this);
-      if (updateSocket.readyState === 1) {
-        openfunction.bind(this)();
-      }
-      updateSocket.onclose = function(e) {
-        if (e.code === 1e3) {
-          return;
-        }
-        if (!renderer2.has_rendered) {
-          renderer2.connection_opened(true);
-        } else {
-          renderer2.attempt_reconnect();
-        }
-        renderer2.is_static = true;
-        renderer2.has_rendered = true;
-        if (!renderer2.silent_connect_fail && !renderer2.has_disconnected) {
-          alert(
-            window.gettext(
-              "Unable to establish connection to the server, or connection has been lost."
-            )
-          );
-        }
-        renderer2.has_disconnected = true;
-      };
-    } else {
-      this.connection_opened();
-    }
-  }
-  render(container2, view_type = "workflowview") {
-    this.selection_manager = new SelectionManager(this.read_only);
-    this.child_data_needed = [];
-    this.child_data_completed = -1;
-    this.fetching_child_data = false;
-    this.view_type = view_type;
-    console.log("workdflow render contiainer");
-    console.log(container2[0]);
-    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
-    const store = this.store;
-    const initial_workflow_data = store.getState();
-    var renderer2 = this;
-    this.container = container2;
-    this.locks = {};
-    this.selection_manager.renderer = renderer2;
-    if (view_type === "outcomeedit") {
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(refreshStoreData(response.data_package));
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      });
-    } else if (view_type === "horizontaloutcometable" || view_type === "alignmentanalysis") {
-      [
-        ...new Set(
-          initial_workflow_data.node.filter((x) => !x.deleted && x.linked_workflow).map((node2) => node2.id)
-        )
-      ];
-      setTimeout(() => {
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      }, 50);
-    } else if (view_type === "outcometable") {
-      setTimeout(() => {
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      }, 50);
-    } else {
-      setTimeout(() => {
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      }, 50);
-    }
-  }
-  // Fetches the data for the given child workflow
-  getDataForChildWorkflow() {
-    if (this.child_data_completed === this.child_data_needed.length - 1) {
-      this.fetching_child_data = false;
-      return;
-    }
-    this.fetching_child_data = true;
-    this.child_data_completed++;
-    this.getWorkflowChildData(
-      this.child_data_needed[this.child_data_completed],
-      (response) => {
-        this.store.dispatch(refreshStoreData(response.data_package));
-        setTimeout(() => this.getDataForChildWorkflow(), 50);
-      }
-    );
-  }
-  // Lets the renderer know that it must load the child data for that workflow
-  childWorkflowDataNeeded(node_id) {
-    if (this.child_data_needed.indexOf(node_id) < 0) {
-      this.child_data_needed.push(node_id);
-      if (!this.fetching_child_data) {
-        setTimeout(() => this.getDataForChildWorkflow(), 50);
-      }
-    }
-  }
-  connection_opened(reconnect = false) {
-    this.getWorkflowData(this.workflowID, (response) => {
-      const data_flat = response.data_package;
-      this.unread_comments = data_flat.unread_comments;
-      console.log("data_flat");
-      console.log(data_flat);
-      this.store = createStore(rootWorkflowReducer, data_flat);
-      this.render($("#container"));
-      this.clear_queue(data_flat.workflow.edit_count);
-      if (reconnect) {
-        this.attempt_reconnect();
-      }
-    });
-  }
-  attempt_reconnect() {
-    const renderer2 = this;
-    setTimeout(() => {
-      renderer2.connect();
-    }, 3e4);
-  }
-  clear_queue(edit_count) {
-    let started_edits = false;
-    while (this.message_queue.length > 0) {
-      const message = this.message_queue[0];
-      if (started_edits) {
-        this.parsemessage(message);
-      } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
-        started_edits = true;
-        this.message_queue.splice(0, 1);
-      }
-    }
-    this.messages_queued = false;
-  }
-  connection_update_received() {
-    console.log("A connection update was received, but not handled.");
-  }
-  parent_workflow_updated(edit_count) {
-    this.messages_queued = true;
-    const renderer2 = this;
-    this.getWorkflowParentData(this.workflowID, (response) => {
-      renderer2.store.dispatch(
-        replaceStoreData({
-          parent_node: [],
-          parent_workflow: []
-        })
-      );
-      renderer2.store.dispatch(refreshStoreData(response.data_package));
-      renderer2.clear_queue(0);
-    });
-  }
-  child_workflow_updated(edit_count, child_workflow_id) {
-    this.messages_queued = true;
-    const renderer2 = this;
-    const state = this.store.getState();
-    const node2 = state.node.find(
-      (node22) => node22.linked_workflow == child_workflow_id
-    );
-    if (!node2) {
-      return;
-    }
-    this.getWorkflowChildData(node2.id, (response) => {
-      renderer2.store.dispatch(refreshStoreData(response.data_package));
-      renderer2.clear_queue(0);
-    });
-  }
-  message_received(e) {
-    if (this.messages_queued) {
-      this.message_queue.push(e);
-    } else {
-      this.parsemessage(e);
-    }
-  }
-  micro_update(obj) {
-    if (this.updateSocket) {
-      this.updateSocket.send(
-        JSON.stringify({
-          type: "micro_update",
-          action: obj
-        })
-      );
-    }
-  }
-  change_field(id, object_type, field, value) {
-    const json = {};
-    json[field] = value;
-    this.store.dispatch(changeField(id, object_type, json));
-    updateValue(id, object_type, json, true);
-  }
-  lock_update(obj, time, lock2) {
-    if (this.updateSocket) {
-      this.updateSocket.send(
-        JSON.stringify({
-          type: "lock_update",
-          lock: {
-            ...obj,
-            expires: Date.now() + time,
-            user_id: this.user_id,
-            user_colour: COURSEFLOW_APP.contextData.myColour,
-            lock: lock2
-          }
-        })
-      );
-    }
-  }
-  lock_update_received(data) {
-    const store = this.store;
-    const object_type = data.object_type;
-    const object_id = data.object_id;
-    if (!this.locks[object_type]) {
-      this.locks[object_type] = {};
-    }
-    if (this.locks[object_type][object_id]) {
-      clearTimeout(this.locks[object_type][object_id]);
-    }
-    store.dispatch(
-      createLockAction(
-        object_id,
-        object_type,
-        data.lock,
-        data.user_id,
-        data.user_colour
-      )
-    );
-    if (data.lock) {
-      this.locks[object_type][object_id] = setTimeout(() => {
-        store.dispatch(createLockAction(object_id, object_type, false));
-      }, data.expires - Date.now());
-    } else {
-      this.locks[object_type][object_id] = null;
-    }
-  }
-}
-class WorkflowComparison extends Workflow {
-  constructor(workflowID, data_package, container2, selection_manager, tiny_loader, view_type, initial_object_sets) {
-    super(workflowID, data_package);
-    this.selection_manager = selection_manager;
-    this.tiny_loader = tiny_loader;
-    this.container = container2;
-    this.view_type = view_type;
-    this.initial_object_sets = initial_object_sets;
-  }
-  render(view_type = "workflowview") {
-    this.view_type = view_type;
-    const store = this.store;
-    this.locks = {};
-    const el = document.querySelector(this.container);
-    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), el);
-    if (view_type === "outcomeedit") {
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(refreshStoreData(response.data_package));
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
-          el
-        );
-      });
-    } else if (view_type === "workflowview") {
-      reactDomExports.render(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
-        el
-      );
-    }
-  }
-  connection_opened(reconnect = false) {
-    const loader = new Loader(this.container);
-    this.getWorkflowData(this.workflowID, (response) => {
-      let data_flat = response.data_package;
-      if (this.initial_object_sets) {
-        data_flat = {
-          ...data_flat,
-          objectset: this.initial_object_sets
-        };
-      }
-      this.store = createStore(rootWorkflowReducer, data_flat);
-      this.render(this.view_type);
-      this.clear_queue(data_flat.workflow.edit_count);
-      loader.endLoad();
-      if (reconnect) {
-        this.attempt_reconnect();
-      }
-    });
-  }
-}
-class WorkflowCardCondensed extends WorkflowCard {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getButtons() {
-    return null;
-  }
-  getProjectTitle() {
-    if (this.props.workflowData.project_title) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
-    } else {
-      return "-";
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.workflowData;
-    const css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        ref: this.maindiv,
-        className: css_class,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-          this.getTypeIndicator(),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowTitle,
-            {
-              no_hyperlink: this.props.no_hyperlink,
-              class_name: "workflow-title",
-              data
-            }
-          ),
-          this.getButtons(),
-          this.getProjectTitle()
-        ] })
-      }
-    );
-  }
-}
-class WorkflowFilter extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "filters");
-    __publicField(this, "sorts");
-    __publicField(this, "filterDOM");
-    __publicField(this, "searchDOM");
-    __publicField(this, "sortDOM");
-    console.log("props");
-    console.log(props);
-    this.state = {
-      workflows: props.workflows,
-      activeFilter: 0,
-      activeSort: 0,
-      reversed: false,
-      searchResults: [],
-      searchFilterLock: null
-    };
-    this.filters = [
-      { name: "all", display: window.gettext("All") },
-      { name: "owned", display: window.gettext("Owned") },
-      { name: "shared", display: window.gettext("Shared") },
-      { name: "favourite", display: window.gettext("My Favourites") },
-      { name: "archived", display: window.gettext("Archived") }
-    ];
-    this.sorts = [
-      { name: "last_viewed", display: window.gettext("Recent") },
-      { name: "title", display: window.gettext("A-Z") },
-      { name: "created_on", display: window.gettext("Creation date") },
-      { name: "type", display: window.gettext("Type") }
-    ];
-    const url_params = new URL(window.location.href).searchParams;
-    if (url_params.get("favourites") === "true")
-      this.state.active_filter = this.filters.findIndex(
-        (elem) => elem.name === "favourite"
-      );
-    if (this.props.context === "library") {
-      this.searchWithout = true;
-    }
-    this.filterDOM = reactExports.createRef();
-    this.searchDOM = reactExports.createRef();
-    this.sortDOM = reactExports.createRef();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    COURSEFLOW_APP.makeDropdown(this.filterDOM.current);
-    COURSEFLOW_APP.makeDropdown(this.sortDOM.current);
-    COURSEFLOW_APP.makeDropdown(this.searchDOM.current);
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.workflows !== this.props.workflows)
-      this.setState({ workflows: this.props.workflows });
-  }
-  getPlaceholder() {
-    if (this.props.context === "project") {
-      return window.gettext("Search the project");
-    } else {
-      return window.gettext("Search the library");
-    }
-  }
-  getFilter() {
-    const activeFilter = this.filters[this.state.activeFilter];
-    const filters = this.filters.map((filter, i) => {
-      let css_class = "filter-option";
-      if (this.state.activeFilter === i)
-        css_class += " active";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: css_class,
-          onClick: () => this.setState({ activeFilter: i }),
-          children: filter.display
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
-    ] });
-  }
-  getSort() {
-    const activeSort = this.sorts[this.state.activeSort];
-    const sorts = this.sorts.map((sort, i) => {
-      let sort_dir;
-      let css_class = "filter-option";
-      if (this.state.activeSort === i) {
-        css_class += " active";
-        if (this.state.reversed)
-          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
-        else
-          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: css_class,
-          onClick: (evt) => {
-            evt.stopPropagation();
-            this.sortChange(i);
-            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
-          },
-          children: [
-            sort_dir,
-            sort.display
-          ]
-        }
-      );
-    });
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
-    ] });
-  }
-  sortWorkflows(workflows) {
-    const sort = this.sorts[this.state.activeSort].name;
-    const sortedWorkflows = [...workflows].sort((a, b) => {
-      const aValue = sort === "last_viewed" ? a.object_permission[sort] : a[sort];
-      const bValue = sort === "last_viewed" ? b.object_permission[sort] : b[sort];
-      return String(aValue).localeCompare(String(bValue));
-    });
-    if (this.state.reversed) {
-      return sortedWorkflows.reverse();
-    }
-    return sortedWorkflows;
-  }
-  sortChange(index) {
-    if (this.state.activeSort === index)
-      this.setState({ reversed: !this.state.reversed });
-    else
-      this.setState({ active_sort: index, reversed: false });
-  }
-  filterWorkflows(workflows) {
-    const filter = this.filters[this.state.activeFilter].name;
-    if (filter !== "archived")
-      workflows = workflows.filter((workflow) => !workflow.deleted);
-    else
-      return workflows.filter((workflow) => workflow.deleted);
-    if (filter === "owned")
-      return workflows.filter((workflow) => workflow.is_owned);
-    if (filter === "shared")
-      return workflows.filter((workflow) => !workflow.is_owned);
-    if (filter === "favourite")
-      return workflows.filter((workflow) => workflow.favourite);
-    return workflows;
-  }
-  searchWithin(request, responseFunction) {
-    const workflows = this.state.workflows.filter(
-      (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
-    );
-    responseFunction(workflows);
-  }
-  searchWithout(request, responseFunction) {
-    searchAllObjectsQuery(
-      request,
-      {
-        nresults: 10
-      },
-      (responseData) => {
-        responseFunction(responseData.workflow_list);
-      }
-    );
-  }
-  seeAll() {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    const { searchFilter } = this.state;
-    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
-      this.setState({
-        workflows: responseData.workflow_list,
-        searchFilterLock: searchFilter
-      });
-      COURSEFLOW_APP.tinyLoader.endLoad();
-      this.removeActiveFromDropdowns();
-      this.disableWorkflowSearch();
-    });
-  }
-  removeActiveFromDropdowns() {
-    const dropdowns = document.querySelectorAll(
-      "#workflow-search .create-dropdown"
-    );
-    dropdowns.forEach((dropdown) => dropdown.classList.remove("active"));
-  }
-  disableWorkflowSearch() {
-    const workflowSearch = document.getElementById("workflow-search");
-    if (workflowSearch) {
-      workflowSearch.setAttribute("disabled", "true");
-    }
-    const workflowSearchInput = document.getElementById("workflow-search-input");
-    if (workflowSearchInput) {
-      workflowSearchInput.setAttribute("disabled", "true");
-    }
-  }
-  searchChange(evt) {
-    const searchTerm = evt.target.value;
-    if (!searchTerm) {
-      this.setState({ searchResults: [], searchFilter: "" });
-      $(this.searchDOM.current).removeClass("active");
-      return;
-    }
-    const searchFunction = this.searchWithout ? this.searchWithout : this.searchWithin;
-    const filter = searchTerm.toLowerCase();
-    searchFunction.call(this, filter, (response) => {
-      this.setState({
-        searchResults: response,
-        searchFilter: filter
-      });
-      $(this.searchDOM.current).addClass("active");
-    });
-  }
-  searchWithout(request, response_function) {
-    searchAllObjectsQuery(
-      request,
-      {
-        nresults: 10
-      },
-      (responseData) => {
-        response_function(responseData.workflow_list);
-      }
-    );
-  }
-  clearSearchLock(evt) {
-    this.setState({
-      workflows: this.props.workflows,
-      searchFilterLock: null
-    });
-    $("#workflow-search").attr("disabled", false);
-    $("#workflow-search-input").attr("disabled", false);
-    evt.stopPropagation();
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  renderWorkflowCards() {
-    if (!this.state.workflows)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
-    const sortedAndFilteredWorkflows = this.sortWorkflows(
-      this.filterWorkflows(this.state.workflows)
-    );
-    return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        workflowData: workflow,
-        updateWorkflow: this.props.updateWorkflow,
-        userRole: this.props.user_role,
-        readOnly: this.props.read_only,
-        projectData: this.props.project_data
-      },
-      workflow.type + workflow.id
-    ));
-  }
-  renderSearchResults() {
-    const { searchResults, searchFilter } = this.state;
-    const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCardCondensed,
-      {
-        workflowData: workflow,
-        context: this.props.context
-      },
-      workflow.type + workflow.id
-    ));
-    if (searchFilter && !searchResults.length) {
-      results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
-    } else if (results.length === 10) {
-      results.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
-      );
-    }
-    return results;
-  }
-  renderSearchFilterLock() {
-    if (!this.state.searchFilterLock)
-      return null;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "span",
-        {
-          onClick: this.clearSearchLock.bind(this),
-          className: "material-symbols-rounded hover-shade",
-          children: "close"
-        }
-      ),
-      window.gettext("Search: " + this.state.searchFilterLock)
-    ] });
-  }
-  render() {
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              placeholder: this.getPlaceholder(),
-              onChange: debounce$1(this.searchChange.bind(this)),
-              id: "workflow-search-input",
-              className: "search-input",
-              autoComplete: "off"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
-          this.renderSearchFilterLock()
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
-          this.getFilter(),
-          this.getSort()
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
-    ];
-  }
-}
-const Users = ({ users, readOnly, openShareDialog }) => {
-  let users_group = [];
-  if (!users)
-    return null;
-  const { author, editors, commentors, viewers, published } = users;
-  if (!author)
-    return null;
-  if (published) {
-    users_group.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-        " ",
-        window.gettext("All CourseFlow")
-      ] })
-    );
-  }
-  users_group.push([
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-      getUserTag("author"),
-      getUserDisplay(author)
-    ] }),
-    editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-      getUserTag("edit"),
-      getUserDisplay(user)
-    ] })),
-    commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-      getUserTag("comment"),
-      getUserDisplay(user)
-    ] })),
-    viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-      getUserTag("view"),
-      getUserDisplay(user)
-    ] }))
-  ]);
-  users_group = users_group.flat(2);
-  const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-  if (users_group.length > 4) {
-    usersBlocks.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-        "+",
-        users_group.length - 4,
-        " ",
-        window.gettext("more")
-      ] })
-    );
-  }
-  if (!readOnly)
-    usersBlocks.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "user-name collapsed-text-show-more",
-          onClick: openShareDialog,
-          children: window.gettext("Modify")
-        }
-      )
-    );
-  return usersBlocks;
-};
-const Header = ({
-  allDisciplines,
-  description,
-  disciplines,
-  data,
-  users,
-  readOnly,
-  openShareDialog
-}) => {
-  console.log("discipline");
-  console.log(allDisciplines);
-  console.log(data.disciplines);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowTitle,
-      {
-        data,
-        no_hyperlink: true,
-        class_name: "project-title"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Users,
-          {
-            users,
-            readOnly,
-            openShareDialog
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            CollapsibleText,
-            {
-              text: description,
-              defaultText: window.gettext("No description")
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-          allDisciplines.filter(
-            // @ts-ignore
-            (discipline) => disciplines.indexOf(discipline.id) >= 0
-            // @todo don't understand this error yet
-          ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
-        ] })
-      ] })
-    ] })
-  ] });
-};
-class ProjectEditDialog extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...this.props.data, selected_set: "none" };
-    this.object_set_updates = {};
-    this.close = this.props.closeAction;
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  componentDidUpdate() {
-    if (this.state.all_disciplines)
-      this.autocompleteDiscipline();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  deleteTerm(id) {
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
-    )) {
-      const new_state_dict = this.state.object_sets.slice();
-      for (let i = 0; i < new_state_dict.length; i++) {
-        if (new_state_dict[i].id === id) {
-          deleteSelfQuery(id, "objectset");
-          new_state_dict.splice(i, 1);
-          this.setState({ object_sets: new_state_dict });
-          break;
-        }
-      }
-    }
-  }
-  addTerm() {
-    const term = $("#nomenclature-select")[0].value;
-    const title = $("#term-singular")[0].value;
-    addTerminology(this.state.id, term, title, "", (response_data) => {
-      this.setState({
-        object_sets: response_data.new_dict,
-        selected_set: "none",
-        termsingular: ""
-      });
-    });
-  }
-  termChanged(id, evt) {
-    const new_sets = this.state.object_sets.slice();
-    for (var i = 0; i < new_sets.length; i++) {
-      if (new_sets[i].id == id) {
-        new_sets[i] = { ...new_sets[i], title: evt.target.value };
-        this.object_set_updates[id] = { title: evt.target.value };
-      }
-    }
-    this.setState({ object_sets: new_sets, changed: true });
-  }
-  updateTerms() {
-    for (var object_set_id in this.object_set_updates) {
-      updateValueInstant(
-        object_set_id,
-        "objectset",
-        this.object_set_updates[object_set_id]
-      );
-    }
-  }
-  addTermDisabled(selected_set) {
-    if (!selected_set)
-      return true;
-    if (!this.state.termsingular)
-      return true;
-    return false;
-  }
-  addDiscipline(id) {
-    this.setState((state, props) => {
-      return { disciplines: [...state.disciplines, id], changed: true };
-    });
-  }
-  removeDiscipline(id) {
-    this.setState((state, props) => {
-      return {
-        disciplines: state.disciplines.filter((value) => value != id),
-        changed: true
-      };
-    });
-  }
-  inputChanged(field, evt) {
-    var new_state = { changed: true };
-    new_state[field] = evt.target.value;
-    if (field === "selected_set")
-      new_state["termsingular"] = "";
-    this.setState(new_state);
-  }
-  getActions() {
-    var actions = [];
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.close, children: window.gettext("Cancel") })
-    );
-    actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          id: "save-changes",
-          className: "primary-button",
-          disabled: !this.state.changed,
-          onClick: () => {
-            updateValueInstant(this.state.id, "project", {
-              title: this.state.title,
-              description: this.state.description,
-              published: this.state.published,
-              disciplines: this.state.disciplines
-            });
-            this.updateTerms();
-            this.props.actionFunction({ ...this.state, changed: false });
-            this.close();
-          },
-          children: window.gettext("Save Changes")
-        }
-      )
-    );
-    return actions;
-  }
-  // getLiveProjectSettings() {
-  //   if (this.props.user_role === Constants.role_keys.teacher) {
-  //     return (
-  //       <div>
-  //         <LiveProjectSettings
-  //           // renderer={this.props.renderer}
-  //           role={'teacher'}
-  //           objectID={this.state.id}
-  //           view_type={'settings'}
-  //           updateLiveProject={this.props.actionFunction}
-  //         />
-  //       </div>
-  //     )
-  //   }
-  //   return null
-  // }
-  autocompleteDiscipline() {
-    const choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
-      value: discipline.title,
-      label: discipline.title,
-      id: discipline.id
-    }));
-    $("#project-discipline-input").autocomplete({
-      source: choices,
-      minLength: 0,
-      focus: null,
-      select: (evt, ui) => {
-        this.addDiscipline(ui.item.id);
-        $("#project-discipline-input").val("");
-        return false;
-      }
-    }).focus(function() {
-      $("#project-discipline-input").autocomplete(
-        "search",
-        $("#project-discipline-input").val()
-      );
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data = this.state;
-    let disciplines;
-    if (data.all_disciplines) {
-      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
-        discipline.title,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            className: "material-symbols-rounded green",
-            onClick: this.removeDiscipline.bind(this, discipline.id),
-            children: "close"
-          }
-        )
-      ] }));
-    }
-    const title = unescapeCharacters(data.title || "");
-    const description = unescapeCharacters(data.description || "");
-    const object_sets = object_sets_types();
-    const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
-    let selected_set;
-    if (this.state.selected_set)
-      selected_set = object_sets[this.state.selected_set];
-    const sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          value: item.title,
-          onChange: this.termChanged.bind(this, item.id)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "nomenclature-delete-button",
-          onClick: this.deleteTerm.bind(this, item.id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
-        }
-      )
-    ] }));
-    const published_enabled = data.title && data.disciplines.length > 0;
-    if (data.published && !published_enabled)
-      this.setState({ published: false });
-    if (!published_enabled)
-      window.gettext(
-        "A title and at least one discipline is required for publishing."
-      );
-    let add_term_css = "material-symbols-rounded filled";
-    let clickEvt;
-    if (this.addTermDisabled(selected_set)) {
-      clickEvt = () => console.log("Disabled");
-      add_term_css += " grey";
-    } else {
-      clickEvt = this.addTerm.bind(this);
-      add_term_css += " green hover-shade";
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-title-input",
-            value: title,
-            onChange: this.inputChanged.bind(this, "title")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            autoComplete: "off",
-            id: "project-description-input",
-            value: description,
-            onChange: this.inputChanged.bind(this, "description")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            autoComplete: "off",
-            id: "project-discipline-input",
-            placeholder: "Search"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
-        sets_added,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
-            {
-              id: "nomenclature-select",
-              value: this.state.selected_set,
-              onChange: this.inputChanged.bind(this, "selected_set"),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
-                set_options
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              placeholder: window.gettext("Set name"),
-              type: "text",
-              id: "term-singular",
-              maxLength: "50",
-              value: this.state.termsingular,
-              onChange: this.inputChanged.bind(this, "termsingular"),
-              disabled: selected_set == null
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.close, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
-    ] });
   }
 }
 class UserLabel extends reactExports.Component {
@@ -89535,6 +87632,2026 @@ class ExportMenu extends reactExports.Component {
     ] });
   }
 }
+class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
+  constructor(props) {
+    super(props);
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Header", () => {
+      const data = this.props.data;
+      const style2 = {};
+      if (data.lock) {
+        style2.border = "2px solid " + data.lock.user_colour;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "project-header",
+          style: style2,
+          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-top-line", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                WorkflowTitle,
+                {
+                  data,
+                  no_hyperlink: true,
+                  class_name: "project-title"
+                }
+              ),
+              this.getTypeIndicator()
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
+                this.getUsers()
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-other", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  CollapsibleText,
+                  {
+                    text: data.description,
+                    defaultText: window.gettext("No description")
+                  }
+                )
+              ] }) })
+            ] })
+          ]
+        }
+      );
+    });
+    __publicField(this, "Content", () => {
+      const data = this.props.data;
+      const renderer2 = this.props.renderer;
+      let workflow_content;
+      if (renderer2.view_type == "outcometable") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTableView,
+          {
+            data,
+            renderer: renderer2,
+            view_type: renderer2.view_type
+          }
+        );
+        this.allowed_tabs = [3];
+      } else if (renderer2.view_type == "outcomeedit") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer: renderer2 });
+        if (data.type == "program")
+          this.allowed_tabs = [3];
+        else
+          this.allowed_tabs = [2, 3];
+      } else if (renderer2.view_type == "alignmentanalysis") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer: renderer2, view_type: renderer2.view_type });
+        this.allowed_tabs = [3];
+      } else if (renderer2.view_type == "grid") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer: renderer2, view_type: renderer2.view_type });
+        this.allowed_tabs = [3];
+      } else {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer: renderer2 });
+        this.allowed_tabs = [1, 2, 3, 4];
+        if (renderer2.read_only)
+          this.allowed_tabs = [2, 3];
+      }
+      if (data.is_strategy)
+        return workflow_content;
+      const view_buttons = [
+        {
+          type: "workflowview",
+          name: window.gettext("Workflow View"),
+          disabled: []
+        },
+        {
+          type: "outcomeedit",
+          name: capWords(
+            window.gettext("View") + " " + window.gettext(data.type + " outcomes")
+          ),
+          disabled: []
+        },
+        {
+          type: "outcometable",
+          name: capWords(
+            window.gettext(data.type + " outcome") + " " + window.gettext("Table")
+          ),
+          disabled: []
+        },
+        {
+          type: "alignmentanalysis",
+          name: capWords(
+            window.gettext(data.type + " outcome") + " " + window.gettext("Analytics")
+          ),
+          disabled: ["activity"]
+        },
+        {
+          type: "grid",
+          name: window.gettext("Grid View"),
+          disabled: ["activity", "course"]
+        }
+      ].filter((item) => item.disabled.indexOf(data.type) == -1).map((item) => {
+        let view_class = "hover-shade";
+        if (item.type === renderer2.view_type)
+          view_class += " active";
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            id: "button_" + item.type,
+            className: view_class,
+            onClick: this.changeView.bind(this, item.type),
+            children: item.name
+          }
+        );
+      });
+      const view_buttons_sorted = view_buttons.slice(0, 2);
+      view_buttons_sorted.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "hover-shade other-views",
+            onClick: () => $(".views-dropdown")[0].classList.toggle("toggled"),
+            children: [
+              window.gettext("Other Views"),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "views-dropdown", children: view_buttons.slice(2) })
+            ]
+          }
+        )
+      );
+      return [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons_sorted }),
+        workflow_content
+      ];
+    });
+    /*******************************************************
+     * VIEW BAR
+     *******************************************************/
+    __publicField(this, "Jump", () => {
+      if (this.props.renderer.view_type !== "workflowview")
+        return null;
+      const data = this.props.data;
+      const nodebarweekworkflows = data.weekworkflow_set.map(
+        (weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          JumpToWeekWorkflow,
+          {
+            order: data.weekworkflow_set,
+            renderer: this.props.renderer,
+            objectID: weekworkflow
+          },
+          `weekworkflow-${index}`
+        )
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "jump-to", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "keyboard_double_arrow_down" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Jump to") })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: nodebarweekworkflows })
+      ] });
+    });
+    __publicField(this, "Expand", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "expand-collapse-all", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hover-shade flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand/Collapse") })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "create-dropdown", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.expandAll.bind(this, "week"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all weeks") })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.collapseAll.bind(this, "week"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all weeks") })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.expandAll.bind(this, "node"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all nodes") })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.collapseAll.bind(this, "node"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all nodes") })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.expandAll.bind(this, "outcome"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_out_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Expand all outcomes") })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "flex-middle hover-shade",
+              onClick: this.collapseAll.bind(this, "outcome"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "zoom_in_map" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Collapse all outcomes") })
+              ]
+            }
+          )
+        ] })
+      ] });
+    });
+    __publicField(this, "ViewBar", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Jump, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Expand, {})
+      ] });
+    });
+    /*******************************************************
+     * USERBAR
+     *******************************************************/
+    __publicField(this, "UserBar", () => {
+      const renderer2 = this.props.renderer;
+      if (!renderer2.always_static) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ConnectionBar,
+          {
+            updateSocket: renderer2.updateSocket,
+            renderer: renderer2
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    });
+    /*******************************************************
+     * VISIBLE BUTTONS
+     *******************************************************/
+    __publicField(this, "ShareButton", () => {
+      let share;
+      if (!this.props.renderer.read_only)
+        share = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: this.openShareDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return share;
+    });
+    __publicField(this, "EditButton", () => {
+      let edit;
+      if (!this.props.renderer.read_only)
+        edit = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "edit-project-button",
+            title: window.gettext("Edit Workflow"),
+            onClick: this.openEditMenu.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
+          }
+        );
+      return edit;
+    });
+    __publicField(this, "VisibleButtons", () => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditButton, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareButton, {})
+    ] }));
+    /*******************************************************
+     *OVERFLOW LINKS
+     *******************************************************/
+    __publicField(this, "ExportButton", () => {
+      if (this.props.renderer.public_view && !this.props.renderer.user_id)
+        return null;
+      if (this.props.renderer.is_student && !this.props.renderer.can_view)
+        return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          id: "export-button",
+          className: "hover-shade",
+          onClick: this.openExportDialog.bind(this),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
+        }
+      );
+    });
+    __publicField(this, "CopyButton", () => {
+      if (!this.props.renderer.user_id)
+        return nullz;
+      const export_button = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "copy-button",
+            className: "hover-shade",
+            onClick: () => {
+              const loader = COURSEFLOW_APP.tiny_loader;
+              if (this.props.data.is_strategy) {
+                duplicateBaseItemQuery(
+                  this.props.data.id,
+                  this.props.data.type,
+                  null,
+                  (response_data) => {
+                    loader.endLoad();
+                    window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+                  }
+                );
+              } else {
+                getTargetProjectMenu(-1);
+              }
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+          }
+        )
+      ];
+      if (!this.props.data.is_strategy && this.props.renderer.project_permission === permission_keys.edit)
+        export_button.unshift(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "copy-to-project-button",
+              className: "hover-shade",
+              onClick: () => {
+                const loader = COURSEFLOW_APP.tiny_loader;
+                loader.startLoad();
+                duplicateBaseItemQuery(
+                  this.props.data.id,
+                  this.props.data.type,
+                  this.props.renderer.project.id,
+                  (response_data) => {
+                    loader.endLoad();
+                    window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+                  }
+                );
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy into current project") })
+            }
+          )
+        );
+      return export_button;
+    });
+    __publicField(this, "ImportButton", () => {
+      if (this.props.renderer.read_only)
+        return null;
+      const disabled = !!this.props.data.importing;
+      const aClass = disabled ? " disabled" : "hover-shade";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "outcomes"), children: window.gettext("Import Outcomes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "nodes"), children: window.gettext("Import Nodes") })
+      ] });
+    });
+    __publicField(this, "DeleteWorkflowButton", () => {
+      if (this.props.renderer.read_only)
+        return null;
+      if (!this.props.data.deleted)
+        return [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "delete-workflow",
+              className: "hover-shade",
+              onClick: this.deleteWorkflow.bind(this),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive workflow") })
+            }
+          )
+        ];
+      else
+        return [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "restore-workflow",
+              className: "hover-shade",
+              onClick: this.restoreWorkflow.bind(this),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore workflow") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              id: "permanently-delete-workflow",
+              className: "hover-shade",
+              onClick: this.deleteWorkflowHard.bind(this),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete workflow") })
+            }
+          )
+        ];
+    });
+    __publicField(this, "OverflowLinks", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportButton, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteWorkflowButton, {})
+      ] });
+    });
+    __publicField(this, "ShareDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ShareMenu,
+          {
+            data: this.props.data,
+            actionFunction: () => {
+              this.setState({
+                ...this.state,
+                openShareDialog: false
+              });
+              this.getUserData();
+            }
+          }
+        )
+      ] });
+    });
+    __publicField(this, "ExportDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ExportMenu,
+          {
+            data: { ...this.props.data, object_sets: this.props.object_sets },
+            actionFunction: this.closeModals
+          }
+        )
+      ] });
+    });
+    __publicField(this, "ImportDialog", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openImportDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ImportMenu,
+          {
+            data: {
+              object_id: this.props.data.id,
+              object_type: this.objectType,
+              import_type: "outcomes"
+            },
+            actionFunction: this.closeModals
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ImportMenu,
+          {
+            data: {
+              object_id: this.props.data.id,
+              object_type: this.objectType,
+              import_type: "nodes"
+            },
+            actionFunction: this.closeModals
+          }
+        )
+      ] }) });
+    });
+    console.log("props");
+    console.log(props);
+    this.objectType = "workflow";
+    this.allowed_tabs = [0, 1, 2, 3, 4];
+    this.state = {
+      users: null,
+      openShareDialog: false,
+      openExportDialog: false,
+      openImportDialog: false
+    };
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.getUserData();
+    this.updateTabs();
+    COURSEFLOW_APP.makeDropdown("#jump-to");
+    COURSEFLOW_APP.makeDropdown("#expand-collapse-all");
+  }
+  componentDidUpdate(prev_props) {
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getUserData() {
+    if (this.props.renderer.public_view || this.props.renderer.is_student)
+      return null;
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+      this.setState({ users: data });
+    });
+  }
+  deleteWorkflow() {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this workflow?")
+    )) {
+      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
+      });
+    }
+  }
+  deleteWorkflowHard() {
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently delete this workflow?"
+      )
+    )) {
+      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
+        window.location = COURSEFLOW_APP.config.update_path["project"].replace(
+          0,
+          renderer.project.id
+        );
+      });
+    }
+  }
+  restoreWorkflow() {
+    restoreSelfQuery(this.props.data.id, "workflow", () => {
+    });
+  }
+  updateTabs() {
+    this.props.renderer.selection_manager.changeSelection(null, null);
+    const disabled_tabs = [];
+    for (let i = 0; i <= 4; i++)
+      if (this.allowed_tabs.indexOf(i) < 0)
+        disabled_tabs.push(i);
+    $("#sidebar").tabs({ disabled: false });
+    const current_tab = $("#sidebar").tabs("option", "active");
+    if (this.allowed_tabs.indexOf(current_tab) < 0) {
+      if (this.allowed_tabs.length == 0)
+        $("#sidebar").tabs({ active: false });
+      else
+        $("#sidebar").tabs({ active: this.allowed_tabs[0] });
+    }
+    if (this.props.renderer.read_only)
+      disabled_tabs.push(5);
+    $("#sidebar").tabs({ disabled: disabled_tabs });
+  }
+  changeView(type) {
+    this.props.renderer.render(this.props.renderer.container, type);
+  }
+  expandAll(type) {
+    this.props[type].forEach(
+      (week) => toggleDropReduxAction(week.id, type, true, this.props.dispatch)
+    );
+  }
+  collapseAll(type) {
+    this.props[type].forEach(
+      (week) => toggleDropReduxAction(week.id, type, false, this.props.dispatch)
+    );
+  }
+  openEditMenu(evt) {
+    this.props.renderer.selection_manager.changeSelection(evt, this);
+  }
+  clickImport(import_type, evt) {
+    evt.preventDefault();
+    renderMessageBox(
+      {
+        object_id: this.props.data.id,
+        object_type: this.objectType,
+        import_type
+      },
+      "import",
+      () => {
+        closeMessageBox();
+      }
+    );
+  }
+  getTypeIndicator() {
+    const data = this.props.data;
+    let type_text = window.gettext(data.type);
+    if (data.is_strategy)
+      type_text += window.gettext(" strategy");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data.type, children: type_text });
+  }
+  getUsers() {
+    if (!this.state.users)
+      return null;
+    const author = this.state.users.author;
+    const editors = this.state.users.editors;
+    const commenters = this.state.users.commentors;
+    const viewers = this.state.users.viewers;
+    let users_group = [];
+    if (this.state.users.published) {
+      users_group.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("view"),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+          " ",
+          window.gettext("All CourseFlow")
+        ] })
+      );
+    }
+    if (author)
+      users_group.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("author"),
+          getUserDisplay(author)
+        ] })
+      );
+    users_group.push([
+      editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("edit"),
+        getUserDisplay(user)
+      ] })),
+      commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("comment"),
+        getUserDisplay(user)
+      ] })),
+      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("view"),
+        getUserDisplay(user)
+      ] }))
+    ]);
+    users_group = users_group.flat(2);
+    const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+    if (users_group.length > 4) {
+      users.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+          "+",
+          users_group.length - 4,
+          " ",
+          window.gettext("more")
+        ] })
+      );
+    }
+    if (!this.props.renderer.read_only)
+      users.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "user-name collapsed-text-show-more",
+            onClick: this.openShareDialog.bind(this),
+            children: window.gettext("Modify")
+          }
+        )
+      );
+    return users;
+  }
+  pushImport(imports, import_type, text, disabled) {
+    imports.push();
+  }
+  getReturnLinks() {
+    const renderer2 = this.props.renderer;
+    const return_links = [];
+    if (renderer2.project && !renderer2.is_student && !renderer2.public_view) {
+      return_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "a",
+          {
+            className: "hover-shade no-underline",
+            id: "project-return",
+            href: COURSEFLOW_APP.config.update_path["project"].replace(
+              0,
+              renderer2.project.id
+            ),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                window.gettext("Return to"),
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  WorkflowTitle,
+                  {
+                    class_name: "inline",
+                    no_hyperlink: true,
+                    data: renderer2.project
+                  }
+                )
+              ] })
+            ]
+          }
+        )
+      );
+    }
+    if (renderer2.public_view && renderer2.can_view) {
+      return_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "a",
+          {
+            className: "hover-shade no-underline",
+            id: "project-return",
+            href: COURSEFLOW_APP.config.update_path["project"].replace(
+              0,
+              renderer2.project.id
+            ),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Return to Editable Workflow") })
+            ]
+          }
+        )
+      );
+    }
+    return reactDomExports.createPortal(return_links, $(".titlebar .title")[0]);
+  }
+  /*******************************************************
+   * MODALS
+   *******************************************************/
+  openShareDialog() {
+    this.setState({
+      ...this.state,
+      openShareDialog: true
+    });
+  }
+  openExportDialog() {
+    this.setState({
+      ...this.state,
+      openExportDialog: true
+    });
+  }
+  closeModals() {
+    this.setState({
+      ...this.state,
+      openExportDialog: false,
+      openShareDialog: false,
+      openEditDialog: false
+    });
+  }
+  openImportDialog() {
+    this.setState({
+      ...this.state,
+      openEditDialog: true
+    });
+  }
+  updateFunction(new_data) {
+    if (new_data.liveproject) {
+      console.log("liveproject updated");
+    } else {
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          ...new_data
+        },
+        openEditDialog: false
+      });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MenuBar,
+        {
+          overflowLinks: this.OverflowLinks,
+          visibleButtons: this.VisibleButtons,
+          viewbar: this.ViewBar,
+          userbar: this.UserBar
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+          this.addEditable(data),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
+          this.getReturnLinks(),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ParentWorkflowIndicator,
+            {
+              renderer: this.props.renderer,
+              workflow_id: this.props.data.id
+            }
+          )
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          RightSideBar,
+          {
+            context: "workflow",
+            renderer: this.props.renderer,
+            data
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+    ] });
+  }
+}
+const mapWorkflowStateToProps = (state) => ({
+  data: state.workflow,
+  object_sets: state.objectset,
+  week: state.week,
+  node: state.node,
+  outcome: state.outcome
+});
+const WorkflowBaseView = connect(
+  mapWorkflowStateToProps,
+  null
+)(WorkflowBaseViewUnconnected);
+class Workflow {
+  constructor(props) {
+    __publicField(this, "parsemessage", function(e) {
+      const data = JSON.parse(e.data);
+      console.log("parsemessage");
+      console.log(data);
+      switch (data.type) {
+        case "workflow_action":
+          this.store.dispatch(data.action);
+          break;
+        case "lock_update":
+          this.lock_update_received(data.action);
+          break;
+        case "connection_update":
+          this.connection_update_received(data.action);
+          break;
+        case "workflow_parent_updated":
+          this.parent_workflow_updated(data.edit_count);
+          break;
+        case "workflow_child_updated":
+          this.child_workflow_updated(data.edit_count, data.child_workflow_id);
+          break;
+      }
+    });
+    const {
+      column_choices,
+      context_choices,
+      task_choices,
+      time_choices,
+      outcome_type_choices,
+      outcome_sort_choices,
+      strategy_classification_choices,
+      is_strategy,
+      project
+    } = props.workflow_data_package;
+    this.message_queue = [];
+    this.messages_queued = true;
+    this.public_view = props.public_view;
+    this.workflowID = props.workflow_model_id;
+    this.column_choices = column_choices;
+    this.context_choices = context_choices;
+    this.task_choices = task_choices;
+    this.time_choices = time_choices;
+    this.outcome_type_choices = outcome_type_choices;
+    this.outcome_sort_choices = outcome_sort_choices;
+    this.strategy_classification_choices = strategy_classification_choices;
+    this.is_strategy = is_strategy;
+    this.project = project;
+    this.user_permission = props.user_permission;
+    this.user_role = props.user_role;
+    this.user_id = props.user_id;
+    if (!this.is_strategy && this.project.object_permission) {
+      this.project_permission = this.project.object_permission.permission_type;
+    }
+    switch (props.user_permission) {
+      case permission_keys["view"]:
+        this.can_view = true;
+        break;
+      case permission_keys["comment"]:
+        this.view_comments = true;
+        this.add_comments = true;
+        this.can_view = true;
+        break;
+      case permission_keys["edit"]:
+        this.read_only = false;
+        this.view_comments = true;
+        this.add_comments = true;
+        this.can_view = true;
+        break;
+    }
+    switch (props.user_role) {
+      case role_keys["none"]:
+        break;
+      case role_keys["student"]:
+        this.is_student = true;
+        this.show_assignments = true;
+        break;
+      case role_keys["teacher"]:
+        this.is_teacher = true;
+        this.show_assignments = true;
+        break;
+    }
+    if (this.public_view) {
+      this.getWorkflowData = getPublicWorkflowData;
+      this.getWorkflowParentData = getPublicWorkflowParentData;
+      this.getWorkflowChildData = getPublicWorkflowChildData;
+    } else {
+      this.getWorkflowData = getWorkflowDataQuery;
+      this.getWorkflowParentData = getWorkflowParentData;
+      this.getWorkflowChildData = getWorkflowChildData;
+    }
+  }
+  connect() {
+    if (!this.always_static) {
+      this.messages_queued = true;
+      const renderer2 = this;
+      let websocket_prefix;
+      if (window.location.protocol === "https:") {
+        websocket_prefix = "wss";
+      } else {
+        websocket_prefix = "ws";
+      }
+      const updateSocket = new WebSocket(
+        websocket_prefix + "://" + window.location.host + "/ws/update/" + this.workflowID + "/"
+      );
+      this.updateSocket = updateSocket;
+      updateSocket.onmessage = (function(e) {
+        this.message_received(e);
+      }).bind(this);
+      const openfunction = function() {
+        this.has_rendered = true;
+        this.connection_opened();
+      };
+      updateSocket.onopen = openfunction.bind(this);
+      if (updateSocket.readyState === 1) {
+        openfunction.bind(this)();
+      }
+      updateSocket.onclose = function(e) {
+        if (e.code === 1e3) {
+          return;
+        }
+        if (!renderer2.has_rendered) {
+          renderer2.connection_opened(true);
+        } else {
+          renderer2.attempt_reconnect();
+        }
+        renderer2.is_static = true;
+        renderer2.has_rendered = true;
+        if (!renderer2.silent_connect_fail && !renderer2.has_disconnected) {
+          alert(
+            window.gettext(
+              "Unable to establish connection to the server, or connection has been lost."
+            )
+          );
+        }
+        renderer2.has_disconnected = true;
+      };
+    } else {
+      this.connection_opened();
+    }
+  }
+  render(container2, view_type = "workflowview") {
+    this.selection_manager = new SelectionManager(this.read_only);
+    this.child_data_needed = [];
+    this.child_data_completed = -1;
+    this.fetching_child_data = false;
+    this.view_type = view_type;
+    console.log("workdflow render contiainer");
+    console.log(container2[0]);
+    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
+    const store = this.store;
+    const initial_workflow_data = store.getState();
+    const renderer2 = this;
+    this.container = container2;
+    this.locks = {};
+    this.selection_manager.renderer = renderer2;
+    if (view_type === "outcomeedit") {
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        store.dispatch(refreshStoreData(response.data_package));
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          container2[0]
+        );
+      });
+    } else if (view_type === "horizontaloutcometable" || view_type === "alignmentanalysis") {
+      [
+        ...new Set(
+          initial_workflow_data.node.filter((x) => !x.deleted && x.linked_workflow).map((node2) => node2.id)
+        )
+      ];
+      setTimeout(() => {
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          container2[0]
+        );
+      }, 50);
+    } else if (view_type === "outcometable") {
+      setTimeout(() => {
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          container2[0]
+        );
+      }, 50);
+    } else {
+      setTimeout(() => {
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          container2[0]
+        );
+      }, 50);
+    }
+  }
+  // Fetches the data for the given child workflow
+  getDataForChildWorkflow() {
+    if (this.child_data_completed === this.child_data_needed.length - 1) {
+      this.fetching_child_data = false;
+      return;
+    }
+    this.fetching_child_data = true;
+    this.child_data_completed++;
+    this.getWorkflowChildData(
+      this.child_data_needed[this.child_data_completed],
+      (response) => {
+        this.store.dispatch(refreshStoreData(response.data_package));
+        setTimeout(() => this.getDataForChildWorkflow(), 50);
+      }
+    );
+  }
+  // Lets the renderer know that it must load the child data for that workflow
+  childWorkflowDataNeeded(node_id) {
+    if (this.child_data_needed.indexOf(node_id) < 0) {
+      this.child_data_needed.push(node_id);
+      if (!this.fetching_child_data) {
+        setTimeout(() => this.getDataForChildWorkflow(), 50);
+      }
+    }
+  }
+  connection_opened(reconnect = false) {
+    this.getWorkflowData(this.workflowID, (response) => {
+      const data_flat = response.data_package;
+      this.unread_comments = data_flat.unread_comments;
+      const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+      this.store = createStore(
+        rootWorkflowReducer,
+        data_flat,
+        composeEnhancers()
+      );
+      this.render($("#container"));
+      this.clear_queue(data_flat.workflow.edit_count);
+      if (reconnect) {
+        this.attempt_reconnect();
+      }
+    });
+  }
+  attempt_reconnect() {
+    const renderer2 = this;
+    setTimeout(() => {
+      renderer2.connect();
+    }, 3e4);
+  }
+  clear_queue(edit_count) {
+    let started_edits = false;
+    while (this.message_queue.length > 0) {
+      const message = this.message_queue[0];
+      if (started_edits) {
+        this.parsemessage(message);
+      } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
+        started_edits = true;
+        this.message_queue.splice(0, 1);
+      }
+    }
+    this.messages_queued = false;
+  }
+  connection_update_received() {
+    console.log("A connection update was received, but not handled.");
+  }
+  parent_workflow_updated(edit_count) {
+    this.messages_queued = true;
+    const renderer2 = this;
+    this.getWorkflowParentData(this.workflowID, (response) => {
+      renderer2.store.dispatch(
+        replaceStoreData({
+          parent_node: [],
+          parent_workflow: []
+        })
+      );
+      renderer2.store.dispatch(refreshStoreData(response.data_package));
+      renderer2.clear_queue(0);
+    });
+  }
+  child_workflow_updated(edit_count, child_workflow_id) {
+    this.messages_queued = true;
+    const renderer2 = this;
+    const state = this.store.getState();
+    const node2 = state.node.find(
+      (node22) => node22.linked_workflow == child_workflow_id
+    );
+    if (!node2) {
+      return;
+    }
+    this.getWorkflowChildData(node2.id, (response) => {
+      renderer2.store.dispatch(refreshStoreData(response.data_package));
+      renderer2.clear_queue(0);
+    });
+  }
+  message_received(e) {
+    if (this.messages_queued) {
+      this.message_queue.push(e);
+    } else {
+      this.parsemessage(e);
+    }
+  }
+  micro_update(obj) {
+    if (this.updateSocket) {
+      this.updateSocket.send(
+        JSON.stringify({
+          type: "micro_update",
+          action: obj
+        })
+      );
+    }
+  }
+  change_field(id, object_type, field, value) {
+    const json = {};
+    json[field] = value;
+    this.store.dispatch(changeField(id, object_type, json));
+    updateValue(id, object_type, json, true);
+  }
+  lock_update(obj, time, lock2) {
+    if (this.updateSocket) {
+      this.updateSocket.send(
+        JSON.stringify({
+          type: "lock_update",
+          lock: {
+            ...obj,
+            expires: Date.now() + time,
+            user_id: this.user_id,
+            user_colour: COURSEFLOW_APP.contextData.myColour,
+            lock: lock2
+          }
+        })
+      );
+    }
+  }
+  lock_update_received(data) {
+    const store = this.store;
+    const object_type = data.object_type;
+    const object_id = data.object_id;
+    if (!this.locks[object_type]) {
+      this.locks[object_type] = {};
+    }
+    if (this.locks[object_type][object_id]) {
+      clearTimeout(this.locks[object_type][object_id]);
+    }
+    store.dispatch(
+      createLockAction(
+        object_id,
+        object_type,
+        data.lock,
+        data.user_id,
+        data.user_colour
+      )
+    );
+    if (data.lock) {
+      this.locks[object_type][object_id] = setTimeout(() => {
+        store.dispatch(createLockAction(object_id, object_type, false));
+      }, data.expires - Date.now());
+    } else {
+      this.locks[object_type][object_id] = null;
+    }
+  }
+}
+class WorkflowComparison extends Workflow {
+  constructor(workflowID, data_package, container2, selection_manager, tiny_loader, view_type, initial_object_sets) {
+    super(workflowID, data_package);
+    this.selection_manager = selection_manager;
+    this.tiny_loader = tiny_loader;
+    this.container = container2;
+    this.view_type = view_type;
+    this.initial_object_sets = initial_object_sets;
+  }
+  render(view_type = "workflowview") {
+    this.view_type = view_type;
+    const store = this.store;
+    this.locks = {};
+    const el = document.querySelector(this.container);
+    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), el);
+    if (view_type === "outcomeedit") {
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        store.dispatch(refreshStoreData(response.data_package));
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
+          el
+        );
+      });
+    } else if (view_type === "workflowview") {
+      reactDomExports.render(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
+        el
+      );
+    }
+  }
+  connection_opened(reconnect = false) {
+    const loader = new Loader(this.container);
+    this.getWorkflowData(this.workflowID, (response) => {
+      let data_flat = response.data_package;
+      if (this.initial_object_sets) {
+        data_flat = {
+          ...data_flat,
+          objectset: this.initial_object_sets
+        };
+      }
+      this.store = createStore(rootWorkflowReducer, data_flat);
+      this.render(this.view_type);
+      this.clear_queue(data_flat.workflow.edit_count);
+      loader.endLoad();
+      if (reconnect) {
+        this.attempt_reconnect();
+      }
+    });
+  }
+}
+class WorkflowCardCondensed extends WorkflowCard {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getButtons() {
+    return null;
+  }
+  getProjectTitle() {
+    if (this.props.workflowData.project_title) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
+    } else {
+      return "-";
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.workflowData;
+    const css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        ref: this.maindiv,
+        className: css_class,
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => {
+          evt.preventDefault();
+        },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+          this.getTypeIndicator(),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowTitle,
+            {
+              no_hyperlink: this.props.no_hyperlink,
+              class_name: "workflow-title",
+              data
+            }
+          ),
+          this.getButtons(),
+          this.getProjectTitle()
+        ] })
+      }
+    );
+  }
+}
+class WorkflowFilter extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "filters");
+    __publicField(this, "sorts");
+    __publicField(this, "filterDOM");
+    __publicField(this, "searchDOM");
+    __publicField(this, "sortDOM");
+    console.log("props");
+    console.log(props);
+    this.state = {
+      workflows: props.workflows,
+      activeFilter: 0,
+      activeSort: 0,
+      reversed: false,
+      searchResults: [],
+      searchFilterLock: null
+    };
+    this.filters = [
+      { name: "all", display: window.gettext("All") },
+      { name: "owned", display: window.gettext("Owned") },
+      { name: "shared", display: window.gettext("Shared") },
+      { name: "favourite", display: window.gettext("My Favourites") },
+      { name: "archived", display: window.gettext("Archived") }
+    ];
+    this.sorts = [
+      { name: "last_viewed", display: window.gettext("Recent") },
+      { name: "title", display: window.gettext("A-Z") },
+      { name: "created_on", display: window.gettext("Creation date") },
+      { name: "type", display: window.gettext("Type") }
+    ];
+    const url_params = new URL(window.location.href).searchParams;
+    if (url_params.get("favourites") === "true")
+      this.state.active_filter = this.filters.findIndex(
+        (elem) => elem.name === "favourite"
+      );
+    if (this.props.context === "library") {
+      this.searchWithout = true;
+    }
+    this.filterDOM = reactExports.createRef();
+    this.searchDOM = reactExports.createRef();
+    this.sortDOM = reactExports.createRef();
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    COURSEFLOW_APP.makeDropdown(this.filterDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.sortDOM.current);
+    COURSEFLOW_APP.makeDropdown(this.searchDOM.current);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.workflows !== this.props.workflows)
+      this.setState({ workflows: this.props.workflows });
+  }
+  getPlaceholder() {
+    if (this.props.context === "project") {
+      return window.gettext("Search the project");
+    } else {
+      return window.gettext("Search the library");
+    }
+  }
+  getFilter() {
+    const activeFilter = this.filters[this.state.activeFilter];
+    const filters = this.filters.map((filter, i) => {
+      let css_class = "filter-option";
+      if (this.state.activeFilter === i)
+        css_class += " active";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: css_class,
+          onClick: () => this.setState({ activeFilter: i }),
+          children: filter.display
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
+    ] });
+  }
+  getSort() {
+    const activeSort = this.sorts[this.state.activeSort];
+    const sorts = this.sorts.map((sort, i) => {
+      let sort_dir;
+      let css_class = "filter-option";
+      if (this.state.activeSort === i) {
+        css_class += " active";
+        if (this.state.reversed)
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
+        else
+          sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: css_class,
+          onClick: (evt) => {
+            evt.stopPropagation();
+            this.sortChange(i);
+            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+          },
+          children: [
+            sort_dir,
+            sort.display
+          ]
+        }
+      );
+    });
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
+    ] });
+  }
+  sortWorkflows(workflows) {
+    const sort = this.sorts[this.state.activeSort].name;
+    const sortedWorkflows = [...workflows].sort((a, b) => {
+      const aValue = sort === "last_viewed" ? a.object_permission[sort] : a[sort];
+      const bValue = sort === "last_viewed" ? b.object_permission[sort] : b[sort];
+      return String(aValue).localeCompare(String(bValue));
+    });
+    if (this.state.reversed) {
+      return sortedWorkflows.reverse();
+    }
+    return sortedWorkflows;
+  }
+  sortChange(index) {
+    if (this.state.activeSort === index)
+      this.setState({ reversed: !this.state.reversed });
+    else
+      this.setState({ active_sort: index, reversed: false });
+  }
+  filterWorkflows(workflows) {
+    const filter = this.filters[this.state.activeFilter].name;
+    if (filter !== "archived")
+      workflows = workflows.filter((workflow) => !workflow.deleted);
+    else
+      return workflows.filter((workflow) => workflow.deleted);
+    if (filter === "owned")
+      return workflows.filter((workflow) => workflow.is_owned);
+    if (filter === "shared")
+      return workflows.filter((workflow) => !workflow.is_owned);
+    if (filter === "favourite")
+      return workflows.filter((workflow) => workflow.favourite);
+    return workflows;
+  }
+  searchWithin(request, responseFunction) {
+    const workflows = this.state.workflows.filter(
+      (workflow) => workflow.title.toLowerCase().indexOf(request) >= 0
+    );
+    responseFunction(workflows);
+  }
+  searchWithout(request, responseFunction) {
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 10
+      },
+      (responseData) => {
+        responseFunction(responseData.workflow_list);
+      }
+    );
+  }
+  seeAll() {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    const { searchFilter } = this.state;
+    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
+      this.setState({
+        workflows: responseData.workflow_list,
+        searchFilterLock: searchFilter
+      });
+      COURSEFLOW_APP.tinyLoader.endLoad();
+      this.removeActiveFromDropdowns();
+      this.disableWorkflowSearch();
+    });
+  }
+  removeActiveFromDropdowns() {
+    const dropdowns = document.querySelectorAll(
+      "#workflow-search .create-dropdown"
+    );
+    dropdowns.forEach((dropdown) => dropdown.classList.remove("active"));
+  }
+  disableWorkflowSearch() {
+    const workflowSearch = document.getElementById("workflow-search");
+    if (workflowSearch) {
+      workflowSearch.setAttribute("disabled", "true");
+    }
+    const workflowSearchInput = document.getElementById("workflow-search-input");
+    if (workflowSearchInput) {
+      workflowSearchInput.setAttribute("disabled", "true");
+    }
+  }
+  searchChange(evt) {
+    const searchTerm = evt.target.value;
+    if (!searchTerm) {
+      this.setState({ searchResults: [], searchFilter: "" });
+      $(this.searchDOM.current).removeClass("active");
+      return;
+    }
+    const searchFunction = this.searchWithout ? this.searchWithout : this.searchWithin;
+    const filter = searchTerm.toLowerCase();
+    searchFunction.call(this, filter, (response) => {
+      this.setState({
+        searchResults: response,
+        searchFilter: filter
+      });
+      $(this.searchDOM.current).addClass("active");
+    });
+  }
+  searchWithout(request, response_function) {
+    searchAllObjectsQuery(
+      request,
+      {
+        nresults: 10
+      },
+      (responseData) => {
+        response_function(responseData.workflow_list);
+      }
+    );
+  }
+  clearSearchLock(evt) {
+    this.setState({
+      workflows: this.props.workflows,
+      searchFilterLock: null
+    });
+    $("#workflow-search").attr("disabled", false);
+    $("#workflow-search-input").attr("disabled", false);
+    evt.stopPropagation();
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  renderWorkflowCards() {
+    if (!this.state.workflows)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
+    const sortedAndFilteredWorkflows = this.sortWorkflows(
+      this.filterWorkflows(this.state.workflows)
+    );
+    return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        workflowData: workflow,
+        updateWorkflow: this.props.updateWorkflow,
+        userRole: this.props.user_role,
+        readOnly: this.props.read_only,
+        projectData: this.props.project_data
+      },
+      workflow.type + workflow.id
+    ));
+  }
+  renderSearchResults() {
+    const { searchResults, searchFilter } = this.state;
+    const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCardCondensed,
+      {
+        workflowData: workflow,
+        context: this.props.context
+      },
+      workflow.type + workflow.id
+    ));
+    if (searchFilter && !searchResults.length) {
+      results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
+    } else if (results.length === 10) {
+      results.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
+      );
+    }
+    return results;
+  }
+  renderSearchFilterLock() {
+    if (!this.state.searchFilterLock)
+      return null;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "span",
+        {
+          onClick: this.clearSearchLock.bind(this),
+          className: "material-symbols-rounded hover-shade",
+          children: "close"
+        }
+      ),
+      window.gettext("Search: " + this.state.searchFilterLock)
+    ] });
+  }
+  render() {
+    return [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              placeholder: this.getPlaceholder(),
+              onChange: debounce$1(this.searchChange.bind(this)),
+              id: "workflow-search-input",
+              className: "search-input",
+              autoComplete: "off"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
+          this.renderSearchFilterLock()
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
+          this.getFilter(),
+          this.getSort()
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
+    ];
+  }
+}
+const Users = ({ users, readOnly, openShareDialog }) => {
+  let users_group = [];
+  if (!users)
+    return null;
+  const { author, editors, commentors, viewers, published } = users;
+  if (!author)
+    return null;
+  if (published) {
+    users_group.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("view"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+        " ",
+        window.gettext("All CourseFlow")
+      ] })
+    );
+  }
+  users_group.push([
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("author"),
+      getUserDisplay(author)
+    ] }),
+    editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("edit"),
+      getUserDisplay(user)
+    ] })),
+    commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("comment"),
+      getUserDisplay(user)
+    ] })),
+    viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+      getUserTag("view"),
+      getUserDisplay(user)
+    ] }))
+  ]);
+  users_group = users_group.flat(2);
+  const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+  if (users_group.length > 4) {
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+        "+",
+        users_group.length - 4,
+        " ",
+        window.gettext("more")
+      ] })
+    );
+  }
+  if (!readOnly)
+    usersBlocks.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "user-name collapsed-text-show-more",
+          onClick: openShareDialog,
+          children: window.gettext("Modify")
+        }
+      )
+    );
+  return usersBlocks;
+};
+const Header = ({
+  allDisciplines,
+  description,
+  disciplines,
+  data,
+  users,
+  readOnly,
+  openShareDialog
+}) => {
+  console.log("discipline");
+  console.log(allDisciplines);
+  console.log(data.disciplines);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowTitle,
+      {
+        data,
+        no_hyperlink: true,
+        class_name: "project-title"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Users,
+          {
+            users,
+            readOnly,
+            openShareDialog
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-other", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CollapsibleText,
+            {
+              text: description,
+              defaultText: window.gettext("No description")
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+          allDisciplines.filter(
+            // @ts-ignore
+            (discipline) => disciplines.indexOf(discipline.id) >= 0
+            // @todo don't understand this error yet
+          ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
+        ] })
+      ] })
+    ] })
+  ] });
+};
+class ProjectEditDialog extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    this.state = { ...this.props.data, selected_set: "none" };
+    this.object_set_updates = {};
+    this.close = this.props.closeAction;
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  componentDidUpdate() {
+    if (this.state.all_disciplines)
+      this.autocompleteDiscipline();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  deleteTerm(id) {
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + window.gettext("set") + "?"
+    )) {
+      const new_state_dict = this.state.object_sets.slice();
+      for (let i = 0; i < new_state_dict.length; i++) {
+        if (new_state_dict[i].id === id) {
+          deleteSelfQuery(id, "objectset");
+          new_state_dict.splice(i, 1);
+          this.setState({ object_sets: new_state_dict });
+          break;
+        }
+      }
+    }
+  }
+  addTerm() {
+    const term = $("#nomenclature-select")[0].value;
+    const title = $("#term-singular")[0].value;
+    addTerminology(this.state.id, term, title, "", (response_data) => {
+      this.setState({
+        object_sets: response_data.new_dict,
+        selected_set: "none",
+        termsingular: ""
+      });
+    });
+  }
+  termChanged(id, evt) {
+    const new_sets = this.state.object_sets.slice();
+    for (var i = 0; i < new_sets.length; i++) {
+      if (new_sets[i].id === id) {
+        new_sets[i] = { ...new_sets[i], title: evt.target.value };
+        this.object_set_updates[id] = { title: evt.target.value };
+      }
+    }
+    this.setState({ object_sets: new_sets, changed: true });
+  }
+  updateTerms() {
+    for (var object_set_id in this.object_set_updates) {
+      updateValueInstant(
+        object_set_id,
+        "objectset",
+        this.object_set_updates[object_set_id]
+      );
+    }
+  }
+  addTermDisabled(selected_set) {
+    if (!selected_set)
+      return true;
+    if (!this.state.termsingular)
+      return true;
+    return false;
+  }
+  addDiscipline(id) {
+    this.setState((state, props) => {
+      return { disciplines: [...state.disciplines, id], changed: true };
+    });
+  }
+  removeDiscipline(id) {
+    this.setState((state, props) => {
+      return {
+        disciplines: state.disciplines.filter((value) => value != id),
+        changed: true
+      };
+    });
+  }
+  inputChanged(field, evt) {
+    var new_state = { changed: true };
+    new_state[field] = evt.target.value;
+    if (field === "selected_set")
+      new_state["termsingular"] = "";
+    this.setState(new_state);
+  }
+  getActions() {
+    var actions = [];
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.close, children: window.gettext("Cancel") })
+    );
+    actions.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          id: "save-changes",
+          className: "primary-button",
+          disabled: !this.state.changed,
+          onClick: () => {
+            updateValueInstant(this.state.id, "project", {
+              title: this.state.title,
+              description: this.state.description,
+              published: this.state.published,
+              disciplines: this.state.disciplines
+            });
+            this.updateTerms();
+            this.props.actionFunction({ ...this.state, changed: false });
+            this.close();
+          },
+          children: window.gettext("Save Changes")
+        }
+      )
+    );
+    return actions;
+  }
+  // getLiveProjectSettings() {
+  //   if (this.props.user_role === Constants.role_keys.teacher) {
+  //     return (
+  //       <div>
+  //         <LiveProjectSettings
+  //           // renderer={this.props.renderer}
+  //           role={'teacher'}
+  //           objectID={this.state.id}
+  //           view_type={'settings'}
+  //           updateLiveProject={this.props.actionFunction}
+  //         />
+  //       </div>
+  //     )
+  //   }
+  //   return null
+  // }
+  autocompleteDiscipline() {
+    const choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
+      value: discipline.title,
+      label: discipline.title,
+      id: discipline.id
+    }));
+    $("#project-discipline-input").autocomplete({
+      source: choices,
+      minLength: 0,
+      focus: null,
+      select: (evt, ui) => {
+        this.addDiscipline(ui.item.id);
+        $("#project-discipline-input").val("");
+        return false;
+      }
+    }).focus(function() {
+      $("#project-discipline-input").autocomplete(
+        "search",
+        $("#project-discipline-input").val()
+      );
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var data = this.state;
+    let disciplines;
+    if (data.all_disciplines) {
+      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
+        discipline.title,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: "material-symbols-rounded green",
+            onClick: this.removeDiscipline.bind(this, discipline.id),
+            children: "close"
+          }
+        )
+      ] }));
+    }
+    const title = unescapeCharacters(data.title || "");
+    const description = unescapeCharacters(data.description || "");
+    const object_sets = object_sets_types();
+    const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
+    let selected_set;
+    if (this.state.selected_set)
+      selected_set = object_sets[this.state.selected_set];
+    const sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          value: item.title,
+          onChange: this.termChanged.bind(this, item.id)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "nomenclature-delete-button",
+          onClick: this.deleteTerm.bind(this, item.id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green hover-shade", children: "delete" })
+        }
+      )
+    ] }));
+    const published_enabled = data.title && data.disciplines.length > 0;
+    if (data.published && !published_enabled)
+      this.setState({ published: false });
+    if (!published_enabled)
+      window.gettext(
+        "A title and at least one discipline is required for publishing."
+      );
+    let add_term_css = "material-symbols-rounded filled";
+    let clickEvt;
+    if (this.addTermDisabled(selected_set)) {
+      clickEvt = () => console.log("Disabled");
+      add_term_css += " grey";
+    } else {
+      clickEvt = this.addTerm.bind(this);
+      add_term_css += " green hover-shade";
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Edit project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-title-input",
+            value: title,
+            onChange: this.inputChanged.bind(this, "title")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            autoComplete: "off",
+            id: "project-description-input",
+            value: description,
+            onChange: this.inputChanged.bind(this, "description")
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-middle disciplines-div", children: disciplines }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            autoComplete: "off",
+            id: "project-discipline-input",
+            placeholder: "Search"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object sets") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: "Define categories for outcomes or nodes" }),
+        sets_added,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              id: "nomenclature-select",
+              value: this.state.selected_set,
+              onChange: this.inputChanged.bind(this, "selected_set"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "none", children: window.gettext("Select a type") }),
+                set_options
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              placeholder: window.gettext("Set name"),
+              type: "text",
+              id: "term-singular",
+              maxLength: "50",
+              value: this.state.termsingular,
+              onChange: this.inputChanged.bind(this, "termsingular"),
+              disabled: selected_set == null
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nomenclature-add-button", onClick: clickEvt, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: add_term_css, children: "add_circle" }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.close, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
+    ] });
+  }
+}
 class ProjectMenu extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -89549,21 +89666,10 @@ class ProjectMenu extends reactExports.Component {
     /*******************************************************
      * COMPONENTS
      *******************************************************/
-    __publicField(this, "Share", () => {
-      if (!this.readOnly)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "share-button",
-            title: window.gettext("Sharing"),
-            onClick: this.openShareDialog.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-          }
-        );
-      return null;
-    });
-    __publicField(this, "DeleteProject", () => {
+    /*******************************************************
+     * OVERFLOW LINKS
+     *******************************************************/
+    __publicField(this, "DeleteProjectButton", () => {
       if (!this.state.data.deleted) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
       }
@@ -89614,7 +89720,9 @@ class ProjectMenu extends reactExports.Component {
       }
       return null;
     });
-    __publicField(this, "OverflowLinks", (data, userId) => {
+    __publicField(this, "OverflowLinks", () => {
+      const data = this.state.data;
+      const userId = this.userId;
       let liveproject;
       const overflow_links = [];
       if (data.author_id === userId) {
@@ -89626,7 +89734,7 @@ class ProjectMenu extends reactExports.Component {
               className: "hover-shade",
               href: COURSEFLOW_APP.config.update_path.liveproject.replace(
                 "0",
-                data.id
+                String(data.id)
               ),
               children: window.gettext("View Classroom")
             }
@@ -89652,10 +89760,13 @@ class ProjectMenu extends reactExports.Component {
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
       if (data.author_id === userId) {
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProject, {}));
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
       }
       return overflow_links;
     });
+    /*******************************************************
+     * VISIBLE BUTTONS
+     *******************************************************/
     __publicField(this, "Edit", () => {
       if (!this.readOnly) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -89717,6 +89828,30 @@ class ProjectMenu extends reactExports.Component {
       }
       return null;
     });
+    __publicField(this, "Share", () => {
+      if (!this.readOnly)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: this.openShareDialog.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return null;
+    });
+    __publicField(this, "VisibleButtons", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})
+      ] });
+    });
+    /*******************************************************
+     *
+     *******************************************************/
     __publicField(this, "Content", () => {
       const return_val = [];
       if (this.state.data.liveproject && this.userRole === role_keys.teacher)
@@ -89736,23 +89871,17 @@ class ProjectMenu extends reactExports.Component {
             );
           }) })
         );
-      switch (this.state.view_type) {
-        default:
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowFilter,
-              {
-                user_role: this.userRole,
-                read_only: this.readOnly,
-                project_data: this.state.data,
-                workflows: this.state.workflow_data,
-                updateWorkflow: this.updateWorkflow.bind(this),
-                context: "project"
-              }
-            )
-          );
-      }
-      return return_val;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowFilter,
+        {
+          user_role: this.userRole,
+          read_only: this.readOnly,
+          project_data: this.state.data,
+          workflows: this.state.workflow_data,
+          updateWorkflow: this.updateWorkflow.bind(this),
+          context: "project"
+        }
+      );
     });
     __publicField(this, "ShareDialog", () => {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
@@ -89876,6 +90005,7 @@ class ProjectMenu extends reactExports.Component {
       this.setState({ data: { ...this.data, deleted: false } });
     });
   }
+  //@todo can this be removed now?
   makeLive() {
     if (window.confirm(
       window.gettext(
@@ -89951,13 +90081,12 @@ class ProjectMenu extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const visible_buttons = [/* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
         {
-          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, { data: this.state.data, userId: this.userId }),
-          visible_buttons
+          overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
+          visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.VisibleButtons, {})
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
@@ -89978,7 +90107,7 @@ class ProjectMenu extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {})
-    ] });
+    ] }) });
   }
 }
 class ProjectPage extends reactExports.Component {
@@ -90022,7 +90151,7 @@ class LibraryPage extends reactExports.Component {
     __publicField(this, "createDiv");
     __publicField(this, "read_only");
     /***
-     * z
+     *
      */
     __publicField(this, "CreateButton", () => {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -90069,7 +90198,7 @@ class LibraryPage extends reactExports.Component {
       );
     });
     __publicField(this, "OverflowLinks", () => {
-      const link = /* @__PURE__ */ jsxRuntimeExports.jsx(
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "a",
         {
           id: "import-old",
@@ -90078,7 +90207,6 @@ class LibraryPage extends reactExports.Component {
           children: window.gettext("Import from old CourseFlow")
         }
       );
-      return [link];
     });
     this.state = {};
     this.createDiv = reactExports.createRef();
@@ -90102,8 +90230,8 @@ class LibraryPage extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
         {
-          overflow_links: /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
-          visible_buttons: /* @__PURE__ */ jsxRuntimeExports.jsx(this.CreateButton, {})
+          overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
+          visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.CreateButton, {})
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(

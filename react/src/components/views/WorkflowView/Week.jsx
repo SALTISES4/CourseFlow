@@ -3,11 +3,12 @@ import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getWeekByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import { insertedAt, columnChanged, addStrategy } from '@XMLHTTP/PostFunctions'
+import { addStrategy } from '@XMLHTTP/PostFunctions'
 import { columnChangeNode, moveNodeWeek } from '@cfReducers'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
 import NodeWeek from './NodeWeek'
+import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.jsx'
 
 /**
  * Renders a standard 'week-style' block of nodes, wherein the
@@ -84,7 +85,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
     //A little hack to stop ourselves from sending this update a hundred times per second
     if (this.recently_sent_column_change) {
       if (
-        this.recently_sent_column_change.column == new_column &&
+        this.recently_sent_column_change.column === new_column &&
         Date.now() - this.recently_sent_column_change.lastCall <= 500
       ) {
         this.recently_sent_column_change.lastCall = Date.now()
@@ -127,7 +128,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
 
   makeDroppable() {
     var props = this.props
-    $(this.maindiv.current).droppable({
+    $(this.maindiv?.current).droppable({
       tolerance: 'pointer',
       droppable: '.strategy-ghost',
       over: (e, ui) => {

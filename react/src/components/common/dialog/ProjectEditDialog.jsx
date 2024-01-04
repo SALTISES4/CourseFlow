@@ -1,11 +1,8 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import {
-  addTerminology,
-  deleteSelfQuery,
-  updateValueInstant
-} from '@XMLHTTP/PostFunctions'
+import { addTerminology, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
+import { updateValueInstant } from '@XMLHTTP/APIFunctions'
 
 /*
 The menu for editing a project.
@@ -66,7 +63,7 @@ class ProjectEditDialog extends React.Component {
   termChanged(id, evt) {
     const new_sets = this.state.object_sets.slice()
     for (var i = 0; i < new_sets.length; i++) {
-      if (new_sets[i].id == id) {
+      if (new_sets[i].id === id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value }
         this.object_set_updates[id] = { title: evt.target.value }
       }

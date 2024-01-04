@@ -46,7 +46,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
           <span className="material-symbols-rounded filled small-inline red">
             error
           </span>
-          {gettext(
+          {window.gettext(
             'Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes.'
           )}
         </div>
@@ -56,7 +56,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">
-          {gettext('Outcomes from Parent Workflow')}
+          {window.gettext('Outcomes from Parent Workflow')}
         </h3>
         <div className="outcome-bar-outcome-block">
           {multiple_parent_warning}

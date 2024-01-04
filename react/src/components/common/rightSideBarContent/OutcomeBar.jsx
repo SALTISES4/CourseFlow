@@ -45,7 +45,7 @@ class OutcomeBarUnconnected extends React.Component {
     )
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{gettext('Outcomes')}</h3>
+        <h3 className="drag-and-drop">{window.gettext('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
         {!this.props.renderer.read_only && (
           <button
