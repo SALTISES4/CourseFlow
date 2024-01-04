@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
+import { compose, createStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
-import { applyMiddleware, compose, createStore } from '@reduxjs/toolkit'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import {
@@ -16,6 +16,16 @@ import {
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import { getWorkflowDataQuery, updateValue } from '@XMLHTTP/APIFunctions'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+// import theme from './mui/theme'
+
+const cache = createCache({
+  key: 'emotion',
+  // @ts-ignore
+  nonce: document.querySelector('#script-redesign').nonce
+})
 
 enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
@@ -191,12 +201,7 @@ class Workflow {
 
     this.view_type = view_type
 
-    console.log('workdflow render contiainer')
-    console.log(container[0])
-
     reactDom.render(<WorkflowLoader />, container[0])
-    const store = this.store
-    const initial_workflow_data = store.getState()
     const renderer = this
     this.container = container
     this.locks = {}
@@ -206,51 +211,25 @@ class Workflow {
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(Reducers.refreshStoreData(response.data_package))
+        this.store.dispatch(Reducers.refreshStoreData(response.data_package))
         reactDom.render(
-          <Provider store={store}>
+          <Provider store={this.store}>
             <WorkflowBaseView view_type={view_type} renderer={this} />
           </Provider>,
           container[0]
         )
       })
-    } else if (
-      view_type === 'horizontaloutcometable' ||
-      view_type === 'alignmentanalysis'
-    ) {
-      // get additional data about child workflows to render in later
-      const node_ids = [
-        ...new Set(
-          initial_workflow_data.node
-            .filter((x) => !x.deleted && x.linked_workflow)
-            .map((node) => node.id)
-        )
-      ]
-
-      setTimeout(() => {
-        reactDom.render(
-          <Provider store={store}>
-            <WorkflowBaseView view_type={view_type} renderer={this} />
-          </Provider>,
-          container[0]
-        )
-      }, 50)
-    } else if (view_type === 'outcometable') {
-      // TODO: This doesn't differ at all from the "else" statement below
-      setTimeout(() => {
-        reactDom.render(
-          <Provider store={this.store}>
-            <WorkflowBaseView view_type={view_type} renderer={this} />
-          </Provider>,
-          container[0]
-        )
-      }, 50)
     } else {
       setTimeout(() => {
+        const theme = createTheme({})
         reactDom.render(
-          <Provider store={this.store}>
-            <WorkflowBaseView view_type={view_type} renderer={this} />
-          </Provider>,
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <Provider store={this.store}>
+                <WorkflowBaseView view_type={view_type} renderer={this} />
+              </Provider>
+            </ThemeProvider>
+          </CacheProvider>,
           container[0]
         )
       }, 50)

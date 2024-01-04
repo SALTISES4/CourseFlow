@@ -30,6 +30,7 @@ import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 
+
 /**
  * The base component of our workflow view. This renders the menu bar
  * above itself, the right sidebar, the header (description, sharing etc),
@@ -860,7 +861,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    *******************************************************/
   render() {
     const data = this.props.data
-
     return (
       <div className="main-block">
         <MenuBar

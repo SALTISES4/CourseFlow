@@ -88463,6 +88463,11 @@ const WorkflowBaseView = connect(
   mapWorkflowStateToProps,
   null
 )(WorkflowBaseViewUnconnected);
+const cache$1 = createCache({
+  key: "emotion",
+  // @ts-ignore
+  nonce: document.querySelector("#script-redesign").nonce
+});
 class Workflow {
   constructor(props) {
     __publicField(this, "parsemessage", function(e) {
@@ -88610,46 +88615,24 @@ class Workflow {
     this.child_data_completed = -1;
     this.fetching_child_data = false;
     this.view_type = view_type;
-    console.log("workdflow render contiainer");
-    console.log(container2[0]);
     reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
-    const store = this.store;
-    const initial_workflow_data = store.getState();
     const renderer2 = this;
     this.container = container2;
     this.locks = {};
     this.selection_manager.renderer = renderer2;
     if (view_type === "outcomeedit") {
       this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(refreshStoreData(response.data_package));
+        this.store.dispatch(refreshStoreData(response.data_package));
         reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
           container2[0]
         );
       });
-    } else if (view_type === "horizontaloutcometable" || view_type === "alignmentanalysis") {
-      [
-        ...new Set(
-          initial_workflow_data.node.filter((x) => !x.deleted && x.linked_workflow).map((node2) => node2.id)
-        )
-      ];
-      setTimeout(() => {
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      }, 50);
-    } else if (view_type === "outcometable") {
-      setTimeout(() => {
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
-          container2[0]
-        );
-      }, 50);
     } else {
       setTimeout(() => {
+        const theme2 = createTheme({});
         reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }) }) }),
           container2[0]
         );
       }, 50);
@@ -90817,12 +90800,12 @@ class MouseCursorLoader {
     }
   }
 }
+const tinyLoader = new MouseCursorLoader($("body")[0]);
+COURSEFLOW_APP.tinyLoader = tinyLoader;
 const cache = createCache({
   key: "emotion",
   nonce: document.querySelector("#script-redesign").nonce
 });
-const tinyLoader = new MouseCursorLoader($("body")[0]);
-COURSEFLOW_APP.tinyLoader = tinyLoader;
 function renderComponents(components) {
   components.forEach((c) => {
     if (!c.component)
