@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
-import { compose, createStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
+import { applyMiddleware, compose, createStore } from '@reduxjs/toolkit'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import {
@@ -15,17 +15,7 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
-import { getWorkflowDataQuery, updateValueQuery } from '@XMLHTTP/APIFunctions'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
-// import theme from './mui/theme'
-
-const cache = createCache({
-  key: 'emotion',
-  // @ts-ignore
-  nonce: document.querySelector('#script-redesign').nonce
-})
+import { getWorkflowDataQuery, updateValue } from '@XMLHTTP/APIFunctions'
 
 enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
@@ -39,21 +29,6 @@ enum DATA_TYPE {
  *
  * ****************************************/
 class Workflow {
-  private message_queue: any[]
-  private messages_queued: boolean
-  private public_view: any
-  private workflowID: any
-  private column_choices: any
-  private context_choices: any
-  private task_choices: any
-  private time_choices: any
-  private outcome_type_choices: any
-  private can_view: boolean
-  private outcome_sort_choices: any
-  private strategy_classification_choices: any
-  private is_strategy: any
-  private project: any
-
   constructor(props) {
     const {
       column_choices,
@@ -140,87 +115,73 @@ class Workflow {
       this.getWorkflowParentData = getWorkflowParentData
       this.getWorkflowChildData = getWorkflowChildData
     }
-
-    this.messages_queued = true
-    this.has_disconnected = false
   }
 
-  /*******************************************************
-   * WEBSOCKET MANAGER
-   *******************************************************/
   connect() {
-    const websocket_prefix =
-      window.location.protocol === 'https:' ? 'wss' : 'ws'
-    this.updateSocket = new WebSocket(
-      `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
-    )
+    if (!this.always_static) {
+      this.messages_queued = true
+      const renderer = this
 
-    this.updateSocket.onmessage = (e) => {
-      if (this.messages_queued) {
-        this.message_queue.push(e)
+      let websocket_prefix
+      if (window.location.protocol === 'https:') {
+        websocket_prefix = 'wss'
       } else {
-        this.onMessageReceived(e)
+        websocket_prefix = 'ws'
       }
-    }
 
-    this.updateSocket.onopen = () => {
-      this.onConnectionOpened()
-      this.has_rendered = true
-    }
+      const updateSocket = new WebSocket(
+        websocket_prefix +
+          '://' +
+          window.location.host +
+          '/ws/update/' +
+          this.workflowID +
+          '/'
+      )
+      this.updateSocket = updateSocket
 
-    this.updateSocket.onclose = (e) => this.handleSocketClose(e)
-  }
+      updateSocket.onmessage = function (e) {
+        this.message_received(e)
+      }.bind(this)
 
-  attempt_reconnect() {
-    setTimeout(() => this.connect(), 30000)
-  }
-
-  handleSocketClose(e) {
-    if (e.code === 1000) return
-    this.onConnectionClosed()
-    this.is_static = true
-    this.has_disconnected = true
-    this.attempt_reconnect()
-  }
-
-  connection_update_received() {
-    console.log('A connection update was received, but not handled.')
-  }
-
-  clear_queue(edit_count) {
-    // Flag to indicate if message processing should start
-    let processMessages = false
-
-    // Iterate over the message queue
-    while (this.message_queue.length > 0) {
-      const message = this.message_queue[0] // Get the first message
-
-      if (processMessages) {
-        // If processing started, parse each message
-        this.parsemessage(message)
-        this.message_queue.shift() // Remove the processed message
-      } else if (
-        message.edit_count &&
-        parseInt(message.edit_count, 10) >= edit_count
-      ) {
-        // Start processing messages when the condition is met
-        processMessages = true
-      } else {
-        // If the condition is not met, remove the message and continue
-        this.message_queue.shift()
+      const openfunction = function () {
+        this.has_rendered = true
+        this.connection_opened()
       }
-    }
 
-    // Reset the flag after processing the queue
-    this.messages_queued = false
+      updateSocket.onopen = openfunction.bind(this)
+      if (updateSocket.readyState === 1) {
+        openfunction.bind(this)()
+      }
+
+      updateSocket.onclose = function (e) {
+        if (e.code === 1000) {
+          return
+        }
+
+        if (!renderer.has_rendered) {
+          renderer.connection_opened(true)
+        } else {
+          renderer.attempt_reconnect()
+        }
+
+        renderer.is_static = true
+        renderer.has_rendered = true
+
+        if (!renderer.silent_connect_fail && !renderer.has_disconnected) {
+          alert(
+            window.gettext(
+              'Unable to establish connection to the server, or connection has been lost.'
+            )
+          )
+        }
+        renderer.has_disconnected = true
+      }
+    } else {
+      this.connection_opened()
+    }
   }
 
-  /*******************************************************
-   * REACT TO MOVE
-   *******************************************************/
   render(container, view_type = 'workflowview') {
-    this.locks = {}
-
     this.selection_manager = new SelectionManager(this.read_only)
 
     // In case we need to get child workflows
@@ -230,33 +191,66 @@ class Workflow {
 
     this.view_type = view_type
 
-    reactDom.render(<WorkflowLoader />, container[0])
+    console.log('workdflow render contiainer')
+    console.log(container[0])
 
+    reactDom.render(<WorkflowLoader />, container[0])
+    const store = this.store
+    const initial_workflow_data = store.getState()
+    const renderer = this
     this.container = container
-    this.selection_manager.renderer = this
+    this.locks = {}
+
+    this.selection_manager.renderer = renderer
 
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(Reducers.refreshStoreData(response.data_package))
+        store.dispatch(Reducers.refreshStoreData(response.data_package))
+        reactDom.render(
+          <Provider store={store}>
+            <WorkflowBaseView view_type={view_type} renderer={this} />
+          </Provider>,
+          container[0]
+        )
+      })
+    } else if (
+      view_type === 'horizontaloutcometable' ||
+      view_type === 'alignmentanalysis'
+    ) {
+      // get additional data about child workflows to render in later
+      const node_ids = [
+        ...new Set(
+          initial_workflow_data.node
+            .filter((x) => !x.deleted && x.linked_workflow)
+            .map((node) => node.id)
+        )
+      ]
+
+      setTimeout(() => {
+        reactDom.render(
+          <Provider store={store}>
+            <WorkflowBaseView view_type={view_type} renderer={this} />
+          </Provider>,
+          container[0]
+        )
+      }, 50)
+    } else if (view_type === 'outcometable') {
+      // TODO: This doesn't differ at all from the "else" statement below
+      setTimeout(() => {
         reactDom.render(
           <Provider store={this.store}>
             <WorkflowBaseView view_type={view_type} renderer={this} />
           </Provider>,
           container[0]
         )
-      })
+      }, 50)
     } else {
       setTimeout(() => {
-        const theme = createTheme({})
         reactDom.render(
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <Provider store={this.store}>
-                <WorkflowBaseView view_type={view_type} renderer={this} />
-              </Provider>
-            </ThemeProvider>
-          </CacheProvider>,
+          <Provider store={this.store}>
+            <WorkflowBaseView view_type={view_type} renderer={this} />
+          </Provider>,
           container[0]
         )
       }, 50)
@@ -312,8 +306,35 @@ class Workflow {
     })
   }
 
+  attempt_reconnect() {
+    const renderer = this
+    setTimeout(() => {
+      renderer.connect()
+    }, 30000)
+  }
+
+  clear_queue(edit_count) {
+    let started_edits = false
+    while (this.message_queue.length > 0) {
+      const message = this.message_queue[0]
+      if (started_edits) {
+        this.parsemessage(message)
+      } else if (
+        message.edit_count &&
+        parseInt(message.edit_count) >= edit_count
+      ) {
+        started_edits = true
+        this.message_queue.splice(0, 1)
+      }
+    }
+
+    this.messages_queued = false
+  }
+
   parsemessage = function (e) {
     const data = JSON.parse(e.data)
+    console.log('parsemessage')
+    console.log(data)
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
         this.store.dispatch(data.action)
@@ -335,24 +356,29 @@ class Workflow {
     }
   }
 
+  connection_update_received() {
+    console.log('A connection update was received, but not handled.')
+  }
+
   parent_workflow_updated(edit_count) {
     this.messages_queued = true
-
+    const renderer = this
     this.getWorkflowParentData(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
-      this.store.dispatch(
+      renderer.store.dispatch(
         Reducers.replaceStoreData({
           parent_node: [],
           parent_workflow: []
         })
       )
-      this.store.dispatch(Reducers.refreshStoreData(response.data_package))
-      this.clear_queue(0)
+      renderer.store.dispatch(Reducers.refreshStoreData(response.data_package))
+      renderer.clear_queue(0)
     })
   }
 
   child_workflow_updated(edit_count, child_workflow_id) {
     this.messages_queued = true
+    const renderer = this
     const state = this.store.getState()
     const node = state.node.find(
       (node) => node.linked_workflow == child_workflow_id
@@ -363,8 +389,8 @@ class Workflow {
     }
 
     this.getWorkflowChildData(node.id, (response) => {
-      this.store.dispatch(Reducers.refreshStoreData(response.data_package))
-      this.clear_queue(0)
+      renderer.store.dispatch(Reducers.refreshStoreData(response.data_package))
+      renderer.clear_queue(0)
     })
   }
 
@@ -391,7 +417,7 @@ class Workflow {
     const json = {}
     json[field] = value
     this.store.dispatch(Reducers.changeField(id, object_type, json))
-    updateValueQuery(id, object_type, json, true)
+    updateValue(id, object_type, json, true)
   }
 
   lock_update(obj, time, lock) {
@@ -412,6 +438,7 @@ class Workflow {
   }
 
   lock_update_received(data) {
+    const store = this.store
     const object_type = data.object_type
     const object_id = data.object_id
 
@@ -423,7 +450,7 @@ class Workflow {
       clearTimeout(this.locks[object_type][object_id])
     }
 
-    this.store.dispatch(
+    store.dispatch(
       Reducers.createLockAction(
         object_id,
         object_type,
@@ -435,9 +462,7 @@ class Workflow {
 
     if (data.lock) {
       this.locks[object_type][object_id] = setTimeout(() => {
-        this.store.dispatch(
-          Reducers.createLockAction(object_id, object_type, false)
-        )
+        store.dispatch(Reducers.createLockAction(object_id, object_type, false))
       }, data.expires - Date.now())
     } else {
       this.locks[object_type][object_id] = null
