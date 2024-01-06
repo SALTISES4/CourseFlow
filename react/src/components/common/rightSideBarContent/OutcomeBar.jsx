@@ -10,9 +10,15 @@ import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
  */
 class OutcomeBarUnconnected extends React.Component {
   /*******************************************************
+   * .renderer.render
+   * renderer.read_only
+   *******************************************************/
+
+  /*******************************************************
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
+    // @todo, no
     this.props.renderer.render($('#container'), 'outcomeedit')
   }
 
@@ -21,7 +27,7 @@ class OutcomeBarUnconnected extends React.Component {
    *******************************************************/
   render() {
     const data = this.props.data
-    var outcomebaroutcomes = data.map((category) => [
+    let outcomebaroutcomes = data.map((category) => [
       <hr />,
       <div>
         <h4>{category.objectset.title}</h4>
@@ -36,12 +42,12 @@ class OutcomeBarUnconnected extends React.Component {
     ])
 
     if (outcomebaroutcomes.length == 0) {
-      outcomebaroutcomes = gettext(
+      outcomebaroutcomes = window.gettext(
         'Add outcomes to this workflow in by clicking the button below.'
       )
     }
     const edittext = Utility.capWords(
-      gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
+      window.gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
     )
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">

@@ -284,20 +284,20 @@ var __publicField = (obj, key, value) => {
           {
             Object.freeze(emptyObject);
           }
-          function Component(props, context, updater) {
-            this.props = props;
+          function Component2(props2, context, updater) {
+            this.props = props2;
             this.context = context;
             this.refs = emptyObject;
             this.updater = updater || ReactNoopUpdateQueue;
           }
-          Component.prototype.isReactComponent = {};
-          Component.prototype.setState = function(partialState, callback) {
+          Component2.prototype.isReactComponent = {};
+          Component2.prototype.setState = function(partialState, callback) {
             if (typeof partialState !== "object" && typeof partialState !== "function" && partialState != null) {
               throw new Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
             }
             this.updater.enqueueSetState(this, partialState, callback, "setState");
           };
-          Component.prototype.forceUpdate = function(callback) {
+          Component2.prototype.forceUpdate = function(callback) {
             this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
           };
           {
@@ -306,7 +306,7 @@ var __publicField = (obj, key, value) => {
               replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
             };
             var defineDeprecationWarning = function(methodName, info) {
-              Object.defineProperty(Component.prototype, methodName, {
+              Object.defineProperty(Component2.prototype, methodName, {
                 get: function() {
                   warn("%s(...) is deprecated in plain JavaScript React classes. %s", info[0], info[1]);
                   return void 0;
@@ -321,16 +321,16 @@ var __publicField = (obj, key, value) => {
           }
           function ComponentDummy() {
           }
-          ComponentDummy.prototype = Component.prototype;
-          function PureComponent(props, context, updater) {
-            this.props = props;
+          ComponentDummy.prototype = Component2.prototype;
+          function PureComponent(props2, context, updater) {
+            this.props = props2;
             this.context = context;
             this.refs = emptyObject;
             this.updater = updater || ReactNoopUpdateQueue;
           }
           var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
           pureComponentPrototype.constructor = PureComponent;
-          assign2(pureComponentPrototype, Component.prototype);
+          assign2(pureComponentPrototype, Component2.prototype);
           pureComponentPrototype.isPureReactComponent = true;
           function createRef() {
             var refObject = {
@@ -476,7 +476,7 @@ var __publicField = (obj, key, value) => {
             }
             return config2.key !== void 0;
           }
-          function defineKeyPropWarningGetter(props, displayName) {
+          function defineKeyPropWarningGetter(props2, displayName) {
             var warnAboutAccessingKey = function() {
               {
                 if (!specialPropKeyWarningShown) {
@@ -486,12 +486,12 @@ var __publicField = (obj, key, value) => {
               }
             };
             warnAboutAccessingKey.isReactWarning = true;
-            Object.defineProperty(props, "key", {
+            Object.defineProperty(props2, "key", {
               get: warnAboutAccessingKey,
               configurable: true
             });
           }
-          function defineRefPropWarningGetter(props, displayName) {
+          function defineRefPropWarningGetter(props2, displayName) {
             var warnAboutAccessingRef = function() {
               {
                 if (!specialPropRefWarningShown) {
@@ -501,7 +501,7 @@ var __publicField = (obj, key, value) => {
               }
             };
             warnAboutAccessingRef.isReactWarning = true;
-            Object.defineProperty(props, "ref", {
+            Object.defineProperty(props2, "ref", {
               get: warnAboutAccessingRef,
               configurable: true
             });
@@ -517,7 +517,7 @@ var __publicField = (obj, key, value) => {
               }
             }
           }
-          var ReactElement = function(type, key, ref, self, source, owner, props) {
+          var ReactElement = function(type, key, ref, self, source, owner, props2) {
             var element = {
               // This tag allows us to uniquely identify this as a React Element
               $$typeof: REACT_ELEMENT_TYPE,
@@ -525,7 +525,7 @@ var __publicField = (obj, key, value) => {
               type,
               key,
               ref,
-              props,
+              props: props2,
               // Record the component responsible for creating this element.
               _owner: owner
             };
@@ -558,7 +558,7 @@ var __publicField = (obj, key, value) => {
           };
           function createElement2(type, config2, children) {
             var propName;
-            var props = {};
+            var props2 = {};
             var key = null;
             var ref = null;
             var self = null;
@@ -580,13 +580,13 @@ var __publicField = (obj, key, value) => {
               source = config2.__source === void 0 ? null : config2.__source;
               for (propName in config2) {
                 if (hasOwnProperty2.call(config2, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
-                  props[propName] = config2[propName];
+                  props2[propName] = config2[propName];
                 }
               }
             }
             var childrenLength = arguments.length - 2;
             if (childrenLength === 1) {
-              props.children = children;
+              props2.children = children;
             } else if (childrenLength > 1) {
               var childArray = Array(childrenLength);
               for (var i2 = 0; i2 < childrenLength; i2++) {
@@ -597,13 +597,13 @@ var __publicField = (obj, key, value) => {
                   Object.freeze(childArray);
                 }
               }
-              props.children = childArray;
+              props2.children = childArray;
             }
             if (type && type.defaultProps) {
               var defaultProps2 = type.defaultProps;
               for (propName in defaultProps2) {
-                if (props[propName] === void 0) {
-                  props[propName] = defaultProps2[propName];
+                if (props2[propName] === void 0) {
+                  props2[propName] = defaultProps2[propName];
                 }
               }
             }
@@ -611,14 +611,14 @@ var __publicField = (obj, key, value) => {
               if (key || ref) {
                 var displayName = typeof type === "function" ? type.displayName || type.name || "Unknown" : type;
                 if (key) {
-                  defineKeyPropWarningGetter(props, displayName);
+                  defineKeyPropWarningGetter(props2, displayName);
                 }
                 if (ref) {
-                  defineRefPropWarningGetter(props, displayName);
+                  defineRefPropWarningGetter(props2, displayName);
                 }
               }
             }
-            return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props);
+            return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props2);
           }
           function cloneAndReplaceKey(oldElement, newKey) {
             var newElement = ReactElement(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
@@ -629,7 +629,7 @@ var __publicField = (obj, key, value) => {
               throw new Error("React.cloneElement(...): The argument must be a React element, but you passed " + element + ".");
             }
             var propName;
-            var props = assign2({}, element.props);
+            var props2 = assign2({}, element.props);
             var key = element.key;
             var ref = element.ref;
             var self = element._self;
@@ -653,24 +653,24 @@ var __publicField = (obj, key, value) => {
               for (propName in config2) {
                 if (hasOwnProperty2.call(config2, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
                   if (config2[propName] === void 0 && defaultProps2 !== void 0) {
-                    props[propName] = defaultProps2[propName];
+                    props2[propName] = defaultProps2[propName];
                   } else {
-                    props[propName] = config2[propName];
+                    props2[propName] = config2[propName];
                   }
                 }
               }
             }
             var childrenLength = arguments.length - 2;
             if (childrenLength === 1) {
-              props.children = children;
+              props2.children = children;
             } else if (childrenLength > 1) {
               var childArray = Array(childrenLength);
               for (var i2 = 0; i2 < childrenLength; i2++) {
                 childArray[i2] = arguments[i2 + 2];
               }
-              props.children = childArray;
+              props2.children = childArray;
             }
-            return ReactElement(element.type, key, ref, self, source, owner, props);
+            return ReactElement(element.type, key, ref, self, source, owner, props2);
           }
           function isValidElement(object) {
             return typeof object === "object" && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
@@ -1209,20 +1209,20 @@ var __publicField = (obj, key, value) => {
                 prevGroup = console.group;
                 prevGroupCollapsed = console.groupCollapsed;
                 prevGroupEnd = console.groupEnd;
-                var props = {
+                var props2 = {
                   configurable: true,
                   enumerable: true,
                   value: disabledLog,
                   writable: true
                 };
                 Object.defineProperties(console, {
-                  info: props,
-                  log: props,
-                  warn: props,
-                  error: props,
-                  group: props,
-                  groupCollapsed: props,
-                  groupEnd: props
+                  info: props2,
+                  log: props2,
+                  warn: props2,
+                  error: props2,
+                  group: props2,
+                  groupCollapsed: props2,
+                  groupEnd: props2
                 });
               }
               disabledDepth++;
@@ -1232,31 +1232,31 @@ var __publicField = (obj, key, value) => {
             {
               disabledDepth--;
               if (disabledDepth === 0) {
-                var props = {
+                var props2 = {
                   configurable: true,
                   enumerable: true,
                   writable: true
                 };
                 Object.defineProperties(console, {
-                  log: assign2({}, props, {
+                  log: assign2({}, props2, {
                     value: prevLog
                   }),
-                  info: assign2({}, props, {
+                  info: assign2({}, props2, {
                     value: prevInfo
                   }),
-                  warn: assign2({}, props, {
+                  warn: assign2({}, props2, {
                     value: prevWarn
                   }),
-                  error: assign2({}, props, {
+                  error: assign2({}, props2, {
                     value: prevError
                   }),
-                  group: assign2({}, props, {
+                  group: assign2({}, props2, {
                     value: prevGroup
                   }),
-                  groupCollapsed: assign2({}, props, {
+                  groupCollapsed: assign2({}, props2, {
                     value: prevGroupCollapsed
                   }),
-                  groupEnd: assign2({}, props, {
+                  groupEnd: assign2({}, props2, {
                     value: prevGroupEnd
                   })
                 });
@@ -1395,8 +1395,8 @@ var __publicField = (obj, key, value) => {
               return describeNativeComponentFrame(fn, false);
             }
           }
-          function shouldConstruct(Component2) {
-            var prototype = Component2.prototype;
+          function shouldConstruct(Component3) {
+            var prototype = Component3.prototype;
             return !!(prototype && prototype.isReactComponent);
           }
           function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -1627,14 +1627,14 @@ var __publicField = (obj, key, value) => {
               }
             }
           }
-          function createElementWithValidation(type, props, children) {
+          function createElementWithValidation(type, props2, children) {
             var validType = isValidElementType(type);
             if (!validType) {
               var info = "";
               if (type === void 0 || typeof type === "object" && type !== null && Object.keys(type).length === 0) {
                 info += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.";
               }
-              var sourceInfo = getSourceInfoErrorAddendumForProps(props);
+              var sourceInfo = getSourceInfoErrorAddendumForProps(props2);
               if (sourceInfo) {
                 info += sourceInfo;
               } else {
@@ -1693,7 +1693,7 @@ var __publicField = (obj, key, value) => {
             }
             return validatedFactory;
           }
-          function cloneElementWithValidation(element, props, children) {
+          function cloneElementWithValidation(element, props2, children) {
             var newElement = cloneElement.apply(this, arguments);
             for (var i2 = 2; i2 < arguments.length; i2++) {
               validateChildKeys(arguments[i2], newElement.type);
@@ -1902,7 +1902,7 @@ var __publicField = (obj, key, value) => {
             only: onlyChild
           };
           exports.Children = Children;
-          exports.Component = Component;
+          exports.Component = Component2;
           exports.Fragment = REACT_FRAGMENT_TYPE;
           exports.Profiler = REACT_PROFILER_TYPE;
           exports.PureComponent = PureComponent;
@@ -2431,20 +2431,20 @@ var __publicField = (obj, key, value) => {
               prevGroup = console.group;
               prevGroupCollapsed = console.groupCollapsed;
               prevGroupEnd = console.groupEnd;
-              var props = {
+              var props2 = {
                 configurable: true,
                 enumerable: true,
                 value: disabledLog,
                 writable: true
               };
               Object.defineProperties(console, {
-                info: props,
-                log: props,
-                warn: props,
-                error: props,
-                group: props,
-                groupCollapsed: props,
-                groupEnd: props
+                info: props2,
+                log: props2,
+                warn: props2,
+                error: props2,
+                group: props2,
+                groupCollapsed: props2,
+                groupEnd: props2
               });
             }
             disabledDepth++;
@@ -2454,31 +2454,31 @@ var __publicField = (obj, key, value) => {
           {
             disabledDepth--;
             if (disabledDepth === 0) {
-              var props = {
+              var props2 = {
                 configurable: true,
                 enumerable: true,
                 writable: true
               };
               Object.defineProperties(console, {
-                log: assign2({}, props, {
+                log: assign2({}, props2, {
                   value: prevLog
                 }),
-                info: assign2({}, props, {
+                info: assign2({}, props2, {
                   value: prevInfo
                 }),
-                warn: assign2({}, props, {
+                warn: assign2({}, props2, {
                   value: prevWarn
                 }),
-                error: assign2({}, props, {
+                error: assign2({}, props2, {
                   value: prevError
                 }),
-                group: assign2({}, props, {
+                group: assign2({}, props2, {
                   value: prevGroup
                 }),
-                groupCollapsed: assign2({}, props, {
+                groupCollapsed: assign2({}, props2, {
                   value: prevGroupCollapsed
                 }),
-                groupEnd: assign2({}, props, {
+                groupEnd: assign2({}, props2, {
                   value: prevGroupEnd
                 })
               });
@@ -2617,8 +2617,8 @@ var __publicField = (obj, key, value) => {
             return describeNativeComponentFrame(fn, false);
           }
         }
-        function shouldConstruct(Component) {
-          var prototype = Component.prototype;
+        function shouldConstruct(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -2781,7 +2781,7 @@ var __publicField = (obj, key, value) => {
             }
           }
         }
-        function defineKeyPropWarningGetter(props, displayName) {
+        function defineKeyPropWarningGetter(props2, displayName) {
           {
             var warnAboutAccessingKey = function() {
               if (!specialPropKeyWarningShown) {
@@ -2790,13 +2790,13 @@ var __publicField = (obj, key, value) => {
               }
             };
             warnAboutAccessingKey.isReactWarning = true;
-            Object.defineProperty(props, "key", {
+            Object.defineProperty(props2, "key", {
               get: warnAboutAccessingKey,
               configurable: true
             });
           }
         }
-        function defineRefPropWarningGetter(props, displayName) {
+        function defineRefPropWarningGetter(props2, displayName) {
           {
             var warnAboutAccessingRef = function() {
               if (!specialPropRefWarningShown) {
@@ -2805,13 +2805,13 @@ var __publicField = (obj, key, value) => {
               }
             };
             warnAboutAccessingRef.isReactWarning = true;
-            Object.defineProperty(props, "ref", {
+            Object.defineProperty(props2, "ref", {
               get: warnAboutAccessingRef,
               configurable: true
             });
           }
         }
-        var ReactElement = function(type, key, ref, self, source, owner, props) {
+        var ReactElement = function(type, key, ref, self, source, owner, props2) {
           var element = {
             // This tag allows us to uniquely identify this as a React Element
             $$typeof: REACT_ELEMENT_TYPE,
@@ -2819,7 +2819,7 @@ var __publicField = (obj, key, value) => {
             type,
             key,
             ref,
-            props,
+            props: props2,
             // Record the component responsible for creating this element.
             _owner: owner
           };
@@ -2853,7 +2853,7 @@ var __publicField = (obj, key, value) => {
         function jsxDEV(type, config2, maybeKey, source, self) {
           {
             var propName;
-            var props = {};
+            var props2 = {};
             var key = null;
             var ref = null;
             if (maybeKey !== void 0) {
@@ -2874,27 +2874,27 @@ var __publicField = (obj, key, value) => {
             }
             for (propName in config2) {
               if (hasOwnProperty2.call(config2, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
-                props[propName] = config2[propName];
+                props2[propName] = config2[propName];
               }
             }
             if (type && type.defaultProps) {
               var defaultProps2 = type.defaultProps;
               for (propName in defaultProps2) {
-                if (props[propName] === void 0) {
-                  props[propName] = defaultProps2[propName];
+                if (props2[propName] === void 0) {
+                  props2[propName] = defaultProps2[propName];
                 }
               }
             }
             if (key || ref) {
               var displayName = typeof type === "function" ? type.displayName || type.name || "Unknown" : type;
               if (key) {
-                defineKeyPropWarningGetter(props, displayName);
+                defineKeyPropWarningGetter(props2, displayName);
               }
               if (ref) {
-                defineRefPropWarningGetter(props, displayName);
+                defineRefPropWarningGetter(props2, displayName);
               }
             }
-            return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props);
+            return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props2);
           }
         }
         var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
@@ -3053,7 +3053,7 @@ var __publicField = (obj, key, value) => {
             }
           }
         }
-        function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
+        function jsxWithValidation(type, props2, key, isStaticChildren, source, self) {
           {
             var validType = isValidElementType(type);
             if (!validType) {
@@ -3080,12 +3080,12 @@ var __publicField = (obj, key, value) => {
               }
               error("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
             }
-            var element = jsxDEV(type, props, key, source, self);
+            var element = jsxDEV(type, props2, key, source, self);
             if (element == null) {
               return element;
             }
             if (validType) {
-              var children = props.children;
+              var children = props2.children;
               if (children !== void 0) {
                 if (isStaticChildren) {
                   if (isArray2(children)) {
@@ -3111,14 +3111,14 @@ var __publicField = (obj, key, value) => {
             return element;
           }
         }
-        function jsxWithValidationStatic(type, props, key) {
+        function jsxWithValidationStatic(type, props2, key) {
           {
-            return jsxWithValidation(type, props, key, true);
+            return jsxWithValidation(type, props2, key, true);
           }
         }
-        function jsxWithValidationDynamic(type, props, key) {
+        function jsxWithValidationDynamic(type, props2, key) {
           {
-            return jsxWithValidation(type, props, key, false);
+            return jsxWithValidation(type, props2, key, false);
           }
         }
         var jsx = jsxWithValidationDynamic;
@@ -3221,7 +3221,7 @@ var __publicField = (obj, key, value) => {
     }
     emptyFunctionWithReset.resetWarningCache = emptyFunction;
     factoryWithThrowingShims = function() {
-      function shim2(props, propName, componentName, location2, propFullName, secret) {
+      function shim2(props2, propName, componentName, location2, propFullName, secret) {
         if (secret === ReactPropTypesSecret) {
           return;
         }
@@ -3769,7 +3769,7 @@ var __publicField = (obj, key, value) => {
           var manualPropTypeCallCache = {};
           var manualPropTypeWarningCount = 0;
         }
-        function checkType(isRequired, props, propName, componentName, location2, propFullName, secret) {
+        function checkType(isRequired, props2, propName, componentName, location2, propFullName, secret) {
           componentName = componentName || ANONYMOUS;
           propFullName = propFullName || propName;
           if (secret !== ReactPropTypesSecret) {
@@ -3791,16 +3791,16 @@ var __publicField = (obj, key, value) => {
               }
             }
           }
-          if (props[propName] == null) {
+          if (props2[propName] == null) {
             if (isRequired) {
-              if (props[propName] === null) {
+              if (props2[propName] === null) {
                 return new PropTypeError("The " + location2 + " `" + propFullName + "` is marked as required " + ("in `" + componentName + "`, but its value is `null`."));
               }
               return new PropTypeError("The " + location2 + " `" + propFullName + "` is marked as required in " + ("`" + componentName + "`, but its value is `undefined`."));
             }
             return null;
           } else {
-            return validate2(props, propName, componentName, location2, propFullName);
+            return validate2(props2, propName, componentName, location2, propFullName);
           }
         }
         var chainedCheckType = checkType.bind(null, false);
@@ -3808,8 +3808,8 @@ var __publicField = (obj, key, value) => {
         return chainedCheckType;
       }
       function createPrimitiveTypeChecker(expectedType) {
-        function validate2(props, propName, componentName, location2, propFullName, secret) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName, secret) {
+          var propValue = props2[propName];
           var propType = getPropType(propValue);
           if (propType !== expectedType) {
             var preciseType = getPreciseType(propValue);
@@ -3826,11 +3826,11 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(emptyFunctionThatReturnsNull);
       }
       function createArrayOfTypeChecker(typeChecker) {
-        function validate2(props, propName, componentName, location2, propFullName) {
+        function validate2(props2, propName, componentName, location2, propFullName) {
           if (typeof typeChecker !== "function") {
             return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside arrayOf.");
           }
-          var propValue = props[propName];
+          var propValue = props2[propName];
           if (!Array.isArray(propValue)) {
             var propType = getPropType(propValue);
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an array."));
@@ -3846,8 +3846,8 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createElementTypeChecker() {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          var propValue = props2[propName];
           if (!isValidElement(propValue)) {
             var propType = getPropType(propValue);
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement."));
@@ -3857,8 +3857,8 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createElementTypeTypeChecker() {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          var propValue = props2[propName];
           if (!ReactIs2.isValidElementType(propValue)) {
             var propType = getPropType(propValue);
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement type."));
@@ -3868,10 +3868,10 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createInstanceTypeChecker(expectedClass) {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          if (!(props[propName] instanceof expectedClass)) {
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          if (!(props2[propName] instanceof expectedClass)) {
             var expectedClassName = expectedClass.name || ANONYMOUS;
-            var actualClassName = getClassName(props[propName]);
+            var actualClassName = getClassName(props2[propName]);
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + actualClassName + "` supplied to `" + componentName + "`, expected ") + ("instance of `" + expectedClassName + "`."));
           }
           return null;
@@ -3891,8 +3891,8 @@ var __publicField = (obj, key, value) => {
           }
           return emptyFunctionThatReturnsNull;
         }
-        function validate2(props, propName, componentName, location2, propFullName) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          var propValue = props2[propName];
           for (var i2 = 0; i2 < expectedValues.length; i2++) {
             if (is2(propValue, expectedValues[i2])) {
               return null;
@@ -3910,11 +3910,11 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createObjectOfTypeChecker(typeChecker) {
-        function validate2(props, propName, componentName, location2, propFullName) {
+        function validate2(props2, propName, componentName, location2, propFullName) {
           if (typeof typeChecker !== "function") {
             return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside objectOf.");
           }
-          var propValue = props[propName];
+          var propValue = props2[propName];
           var propType = getPropType(propValue);
           if (propType !== "object") {
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an object."));
@@ -3945,11 +3945,11 @@ var __publicField = (obj, key, value) => {
             return emptyFunctionThatReturnsNull;
           }
         }
-        function validate2(props, propName, componentName, location2, propFullName) {
+        function validate2(props2, propName, componentName, location2, propFullName) {
           var expectedTypes = [];
           for (var i3 = 0; i3 < arrayOfTypeCheckers.length; i3++) {
             var checker2 = arrayOfTypeCheckers[i3];
-            var checkerResult = checker2(props, propName, componentName, location2, propFullName, ReactPropTypesSecret);
+            var checkerResult = checker2(props2, propName, componentName, location2, propFullName, ReactPropTypesSecret);
             if (checkerResult == null) {
               return null;
             }
@@ -3963,8 +3963,8 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createNodeChecker() {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          if (!isNode2(props[propName])) {
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          if (!isNode2(props2[propName])) {
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` supplied to " + ("`" + componentName + "`, expected a ReactNode."));
           }
           return null;
@@ -3977,8 +3977,8 @@ var __publicField = (obj, key, value) => {
         );
       }
       function createShapeTypeChecker(shapeTypes) {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          var propValue = props2[propName];
           var propType = getPropType(propValue);
           if (propType !== "object") {
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
@@ -3998,13 +3998,13 @@ var __publicField = (obj, key, value) => {
         return createChainableTypeChecker(validate2);
       }
       function createStrictShapeTypeChecker(shapeTypes) {
-        function validate2(props, propName, componentName, location2, propFullName) {
-          var propValue = props[propName];
+        function validate2(props2, propName, componentName, location2, propFullName) {
+          var propValue = props2[propName];
           var propType = getPropType(propValue);
           if (propType !== "object") {
             return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
           }
-          var allKeys = assign2({}, props[propName], shapeTypes);
+          var allKeys = assign2({}, props2[propName], shapeTypes);
           for (var key in allKeys) {
             var checker = shapeTypes[key];
             if (has2(shapeTypes, key) && typeof checker !== "function") {
@@ -4012,7 +4012,7 @@ var __publicField = (obj, key, value) => {
             }
             if (!checker) {
               return new PropTypeError(
-                "Invalid " + location2 + " `" + propFullName + "` key `" + key + "` supplied to `" + componentName + "`.\nBad object: " + JSON.stringify(props[propName], null, "  ") + "\nValid keys: " + JSON.stringify(Object.keys(shapeTypes), null, "  ")
+                "Invalid " + location2 + " `" + propFullName + "` key `" + key + "` supplied to `" + componentName + "`.\nBad object: " + JSON.stringify(props2[propName], null, "  ") + "\nValid keys: " + JSON.stringify(Object.keys(shapeTypes), null, "  ")
               );
             }
             var error = checker(propValue, key, componentName, location2, propFullName + "." + key, ReactPropTypesSecret);
@@ -4210,8 +4210,8 @@ var __publicField = (obj, key, value) => {
     } = elementType;
     return Boolean(prototype.isReactComponent);
   }
-  function acceptingRef(props, propName, componentName, location2, propFullName) {
-    const element = props[propName];
+  function acceptingRef(props2, propName, componentName, location2, propFullName) {
+    const element = props2[propName];
     const safePropName = propFullName || propName;
     if (element == null || // When server-side rendering React doesn't warn either.
     // This is not an accurate check for SSR.
@@ -4239,8 +4239,8 @@ var __publicField = (obj, key, value) => {
     } = elementType;
     return Boolean(prototype.isReactComponent);
   }
-  function elementTypeAcceptingRef(props, propName, componentName, location2, propFullName) {
-    const propValue = props[propName];
+  function elementTypeAcceptingRef(props2, propName, componentName, location2, propFullName) {
+    const propValue = props2[propName];
     const safePropName = propFullName || propName;
     if (propValue == null || // When server-side rendering React doesn't warn either.
     // This is not an accurate check for SSR.
@@ -4265,8 +4265,8 @@ var __publicField = (obj, key, value) => {
       return propTypes2;
     }
     return _extends$2({}, propTypes2, {
-      [specialProperty]: (props) => {
-        const unsupportedProps = Object.keys(props).filter((prop) => !propTypes2.hasOwnProperty(prop));
+      [specialProperty]: (props2) => {
+        const unsupportedProps = Object.keys(props2).filter((prop) => !propTypes2.hasOwnProperty(prop));
         if (unsupportedProps.length > 0) {
           return new Error(`The following props are not supported: ${unsupportedProps.map((prop) => `\`${prop}\``).join(", ")}. Please remove them.`);
         }
@@ -4592,40 +4592,40 @@ var __publicField = (obj, key, value) => {
     const name2 = match2 && match2[1];
     return name2 || "";
   }
-  function getFunctionComponentName(Component, fallback = "") {
-    return Component.displayName || Component.name || getFunctionName(Component) || fallback;
+  function getFunctionComponentName(Component2, fallback = "") {
+    return Component2.displayName || Component2.name || getFunctionName(Component2) || fallback;
   }
   function getWrappedName(outerType, innerType, wrapperName) {
     const functionName = getFunctionComponentName(innerType);
     return outerType.displayName || (functionName !== "" ? `${wrapperName}(${functionName})` : wrapperName);
   }
-  function getDisplayName(Component) {
-    if (Component == null) {
+  function getDisplayName(Component2) {
+    if (Component2 == null) {
       return void 0;
     }
-    if (typeof Component === "string") {
-      return Component;
+    if (typeof Component2 === "string") {
+      return Component2;
     }
-    if (typeof Component === "function") {
-      return getFunctionComponentName(Component, "Component");
+    if (typeof Component2 === "function") {
+      return getFunctionComponentName(Component2, "Component");
     }
-    if (typeof Component === "object") {
-      switch (Component.$$typeof) {
+    if (typeof Component2 === "object") {
+      switch (Component2.$$typeof) {
         case reactIsExports$1.ForwardRef:
-          return getWrappedName(Component, Component.render, "ForwardRef");
+          return getWrappedName(Component2, Component2.render, "ForwardRef");
         case reactIsExports$1.Memo:
-          return getWrappedName(Component, Component.type, "memo");
+          return getWrappedName(Component2, Component2.type, "memo");
         default:
           return void 0;
       }
     }
     return void 0;
   }
-  function HTMLElementType(props, propName, componentName, location2, propFullName) {
+  function HTMLElementType(props2, propName, componentName, location2, propFullName) {
     if (process.env.NODE_ENV === "production") {
       return null;
     }
-    const propValue = props[propName];
+    const propValue = props2[propName];
     const safePropName = propFullName || propName;
     if (propValue == null) {
       return null;
@@ -4673,10 +4673,10 @@ var __publicField = (obj, key, value) => {
     if (process.env.NODE_ENV === "production") {
       return () => null;
     }
-    return (props, propName, componentName, location2, propFullName) => {
+    return (props2, propName, componentName, location2, propFullName) => {
       const componentNameSafe = componentName || "<<anonymous>>";
       const propFullNameSafe = propFullName || propName;
-      if (typeof props[propName] !== "undefined") {
+      if (typeof props2[propName] !== "undefined") {
         return new Error(`The ${location2} \`${propFullNameSafe}\` of \`${componentNameSafe}\` is deprecated. ${reason}`);
       }
       return null;
@@ -4698,21 +4698,21 @@ var __publicField = (obj, key, value) => {
     const doc = ownerDocument(node2);
     return doc.defaultView || window;
   }
-  function requirePropFactory(componentNameInError, Component) {
+  function requirePropFactory(componentNameInError, Component2) {
     if (process.env.NODE_ENV === "production") {
       return () => null;
     }
-    const prevPropTypes = Component ? _extends$2({}, Component.propTypes) : null;
-    const requireProp = (requiredProp) => (props, propName, componentName, location2, propFullName, ...args) => {
+    const prevPropTypes = Component2 ? _extends$2({}, Component2.propTypes) : null;
+    const requireProp = (requiredProp) => (props2, propName, componentName, location2, propFullName, ...args) => {
       const propFullNameSafe = propFullName || propName;
       const defaultTypeChecker = prevPropTypes == null ? void 0 : prevPropTypes[propFullNameSafe];
       if (defaultTypeChecker) {
-        const typeCheckerResult = defaultTypeChecker(props, propName, componentName, location2, propFullName, ...args);
+        const typeCheckerResult = defaultTypeChecker(props2, propName, componentName, location2, propFullName, ...args);
         if (typeCheckerResult) {
           return typeCheckerResult;
         }
       }
-      if (typeof props[propName] !== "undefined" && !props[requiredProp]) {
+      if (typeof props2[propName] !== "undefined" && !props2[requiredProp]) {
         return new Error(`The prop \`${propFullNameSafe}\` of \`${componentNameInError}\` can only be used together with the \`${requiredProp}\` prop.`);
       }
       return null;
@@ -4748,12 +4748,12 @@ var __publicField = (obj, key, value) => {
     }
     return useGlobalId(idOverride);
   }
-  function unsupportedProp(props, propName, componentName, location2, propFullName) {
+  function unsupportedProp(props2, propName, componentName, location2, propFullName) {
     if (process.env.NODE_ENV === "production") {
       return null;
     }
     const propFullNameSafe = propFullName || propName;
-    if (typeof props[propName] !== "undefined") {
+    if (typeof props2[propName] !== "undefined") {
       return new Error(`The prop \`${propFullNameSafe}\` is not supported. Please remove it.`);
     }
     return null;
@@ -4953,20 +4953,20 @@ var __publicField = (obj, key, value) => {
     return typeof x === "number" && isFinite(x) && Math.floor(x) === x;
   }
   const isInteger$2 = Number.isInteger || ponyfillIsInteger;
-  function requiredInteger(props, propName, componentName, location2) {
-    const propValue = props[propName];
+  function requiredInteger(props2, propName, componentName, location2) {
+    const propValue = props2[propName];
     if (propValue == null || !isInteger$2(propValue)) {
       const propType = getTypeByValue(propValue);
       return new RangeError(`Invalid ${location2} \`${propName}\` of type \`${propType}\` supplied to \`${componentName}\`, expected \`integer\`.`);
     }
     return null;
   }
-  function validator(props, propName, ...other) {
-    const propValue = props[propName];
+  function validator(props2, propName, ...other) {
+    const propValue = props2[propName];
     if (propValue === void 0) {
       return null;
     }
-    return requiredInteger(props, propName, ...other);
+    return requiredInteger(props2, propName, ...other);
   }
   function validatorNoop() {
     return null;
@@ -4974,14 +4974,14 @@ var __publicField = (obj, key, value) => {
   validator.isRequired = requiredInteger;
   validatorNoop.isRequired = validatorNoop;
   const integerPropType = process.env.NODE_ENV === "production" ? validatorNoop : validator;
-  function resolveProps(defaultProps2, props) {
-    const output = _extends$2({}, props);
+  function resolveProps(defaultProps2, props2) {
+    const output = _extends$2({}, props2);
     Object.keys(defaultProps2).forEach((propName) => {
       if (propName.toString().match(/^(components|slots)$/)) {
         output[propName] = _extends$2({}, defaultProps2[propName], output[propName]);
       } else if (propName.toString().match(/^(componentsProps|slotProps)$/)) {
         const defaultSlotProps = defaultProps2[propName] || {};
-        const slotProps = props[propName];
+        const slotProps = props2[propName];
         output[propName] = {};
         if (!slotProps || !Object.keys(slotProps)) {
           output[propName] = defaultSlotProps;
@@ -5220,11 +5220,11 @@ var __publicField = (obj, key, value) => {
   var position = 0;
   var character = 0;
   var characters = "";
-  function node(value, root, parent, type, props, children, length2) {
-    return { value, root, parent, type, props, children, line, column: column$1, length: length2, return: "" };
+  function node(value, root, parent, type, props2, children, length2) {
+    return { value, root, parent, type, props: props2, children, line, column: column$1, length: length2, return: "" };
   }
-  function copy(root, props) {
-    return assign(node("", null, null, "", null, null, 0), root, { length: -root.length }, props);
+  function copy(root, props2) {
+    return assign(node("", null, null, "", null, null, 0), root, { length: -root.length }, props2);
   }
   function char() {
     return character;
@@ -5353,7 +5353,7 @@ var __publicField = (obj, key, value) => {
     var ampersand = 1;
     var character2 = 0;
     var type = "";
-    var props = rules;
+    var props2 = rules;
     var children = rulesets;
     var reference = rule;
     var characters2 = type;
@@ -5407,17 +5407,17 @@ var __publicField = (obj, key, value) => {
             case 59:
               characters2 += ";";
             default:
-              append(reference = ruleset(characters2, root, parent, index, offset, rules, points, type, props = [], children = [], length2), rulesets);
+              append(reference = ruleset(characters2, root, parent, index, offset, rules, points, type, props2 = [], children = [], length2), rulesets);
               if (character2 === 123)
                 if (offset === 0)
-                  parse(characters2, root, reference, reference, props, rulesets, length2, points, children);
+                  parse(characters2, root, reference, reference, props2, rulesets, length2, points, children);
                 else
                   switch (atrule === 99 && charat(characters2, 3) === 110 ? 100 : atrule) {
                     case 100:
                     case 108:
                     case 109:
                     case 115:
-                      parse(value, reference, reference, rule && append(ruleset(value, reference, reference, 0, 0, rules, points, type, rules, props = [], length2), children), rules, children, length2, points, rule ? props : children);
+                      parse(value, reference, reference, rule && append(ruleset(value, reference, reference, 0, 0, rules, points, type, rules, props2 = [], length2), children), rules, children, length2, points, rule ? props2 : children);
                       break;
                     default:
                       parse(characters2, reference, reference, reference, [""], children, 0, points, children);
@@ -5453,15 +5453,15 @@ var __publicField = (obj, key, value) => {
       }
     return rulesets;
   }
-  function ruleset(value, root, parent, index, offset, rules, points, type, props, children, length2) {
+  function ruleset(value, root, parent, index, offset, rules, points, type, props2, children, length2) {
     var post = offset - 1;
     var rule = offset === 0 ? rules : [""];
     var size2 = sizeof(rule);
     for (var i2 = 0, j = 0, k = 0; i2 < index; ++i2)
       for (var x = 0, y = substr(value, post + 1, post = abs$2(j = points[i2])), z = value; x < size2; ++x)
         if (z = trim(j > 0 ? rule[x] + " " + y : replace(y, /&\f/g, rule[x])))
-          props[k++] = z;
-    return node(value, root, parent, offset === 0 ? RULESET : type, props, children, length2);
+          props2[k++] = z;
+    return node(value, root, parent, offset === 0 ? RULESET : type, props2, children, length2);
   }
   function comment(value, root, parent) {
     return node(value, root, parent, COMMENT, from(char()), substr(value, 2, -2), 0);
@@ -6650,9 +6650,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
   var CacheProvider = EmotionCacheContext.Provider;
   var withEmotionCache = function withEmotionCache2(func) {
-    return /* @__PURE__ */ reactExports.forwardRef(function(props, ref) {
+    return /* @__PURE__ */ reactExports.forwardRef(function(props2, ref) {
       var cache2 = reactExports.useContext(EmotionCacheContext);
-      return func(props, cache2, ref);
+      return func(props2, cache2, ref);
     });
   };
   var ThemeContext$2 = /* @__PURE__ */ reactExports.createContext({});
@@ -6669,31 +6669,31 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return null;
   };
-  var Emotion = /* @__PURE__ */ withEmotionCache(function(props, cache2, ref) {
-    var cssProp = props.css;
+  var Emotion = /* @__PURE__ */ withEmotionCache(function(props2, cache2, ref) {
+    var cssProp = props2.css;
     if (typeof cssProp === "string" && cache2.registered[cssProp] !== void 0) {
       cssProp = cache2.registered[cssProp];
     }
-    var WrappedComponent = props[typePropName];
+    var WrappedComponent = props2[typePropName];
     var registeredStyles = [cssProp];
     var className = "";
-    if (typeof props.className === "string") {
-      className = getRegisteredStyles(cache2.registered, registeredStyles, props.className);
-    } else if (props.className != null) {
-      className = props.className + " ";
+    if (typeof props2.className === "string") {
+      className = getRegisteredStyles(cache2.registered, registeredStyles, props2.className);
+    } else if (props2.className != null) {
+      className = props2.className + " ";
     }
     var serialized = serializeStyles(registeredStyles, void 0, reactExports.useContext(ThemeContext$2));
     if (process.env.NODE_ENV !== "production" && serialized.name.indexOf("-") === -1) {
-      var labelFromStack = props[labelPropName];
+      var labelFromStack = props2[labelPropName];
       if (labelFromStack) {
         serialized = serializeStyles([serialized, "label:" + labelFromStack + ";"]);
       }
     }
     className += cache2.key + "-" + serialized.name;
     var newProps = {};
-    for (var key in props) {
-      if (hasOwnProperty$1.call(props, key) && key !== "css" && key !== typePropName && (process.env.NODE_ENV === "production" || key !== labelPropName)) {
-        newProps[key] = props[key];
+    for (var key in props2) {
+      if (hasOwnProperty$1.call(props2, key) && key !== "css" && key !== typePropName && (process.env.NODE_ENV === "production" || key !== labelPropName)) {
+        newProps[key] = props2[key];
       }
     }
     newProps.ref = ref;
@@ -6839,16 +6839,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
   };
   var warnedAboutCssPropForGlobal = false;
-  var Global = /* @__PURE__ */ withEmotionCache(function(props, cache2) {
+  var Global = /* @__PURE__ */ withEmotionCache(function(props2, cache2) {
     if (process.env.NODE_ENV !== "production" && !warnedAboutCssPropForGlobal && // check for className as well since the user is
     // probably using the custom createElement which
     // means it will be turned into a className prop
     // $FlowFixMe I don't really want to add it to the type since it shouldn't be used
-    (props.className || props.css)) {
+    (props2.className || props2.css)) {
       console.error("It looks like you're using the css prop on Global, did you mean to use the styles prop instead?");
       warnedAboutCssPropForGlobal = true;
     }
-    var styles2 = props.styles;
+    var styles2 = props2.styles;
     var serialized = serializeStyles([styles2], void 0, reactExports.useContext(ThemeContext$2));
     var sheetRef = reactExports.useRef();
     useInsertionEffectWithLayoutFallback(function() {
@@ -6971,7 +6971,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return null;
   };
-  var ClassNames = /* @__PURE__ */ withEmotionCache(function(props, cache2) {
+  var ClassNames = /* @__PURE__ */ withEmotionCache(function(props2, cache2) {
     var hasRendered = false;
     var serializedArr = [];
     var css2 = function css3() {
@@ -7000,7 +7000,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       cx,
       theme: reactExports.useContext(ThemeContext$2)
     };
-    var ele = props.children(content);
+    var ele = props2.children(content);
     hasRendered = true;
     return /* @__PURE__ */ reactExports.createElement(reactExports.Fragment, null, /* @__PURE__ */ reactExports.createElement(Insertion$1, {
       cache: cache2,
@@ -7099,22 +7099,22 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           styles2.push(args[i2], args[0][i2]);
         }
       }
-      var Styled = withEmotionCache(function(props, cache2, ref) {
-        var FinalTag = shouldUseAs && props.as || baseTag;
+      var Styled = withEmotionCache(function(props2, cache2, ref) {
+        var FinalTag = shouldUseAs && props2.as || baseTag;
         var className = "";
         var classInterpolations = [];
-        var mergedProps = props;
-        if (props.theme == null) {
+        var mergedProps = props2;
+        if (props2.theme == null) {
           mergedProps = {};
-          for (var key in props) {
-            mergedProps[key] = props[key];
+          for (var key in props2) {
+            mergedProps[key] = props2[key];
           }
           mergedProps.theme = reactExports.useContext(ThemeContext$2);
         }
-        if (typeof props.className === "string") {
-          className = getRegisteredStyles(cache2.registered, classInterpolations, props.className);
-        } else if (props.className != null) {
-          className = props.className + " ";
+        if (typeof props2.className === "string") {
+          className = getRegisteredStyles(cache2.registered, classInterpolations, props2.className);
+        } else if (props2.className != null) {
+          className = props2.className + " ";
         }
         var serialized = serializeStyles(styles2.concat(classInterpolations), cache2.registered, mergedProps);
         className += cache2.key + "-" + serialized.name;
@@ -7123,14 +7123,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         }
         var finalShouldForwardProp = shouldUseAs && shouldForwardProp2 === void 0 ? getDefaultShouldForwardProp(FinalTag) : defaultShouldForwardProp;
         var newProps = {};
-        for (var _key in props) {
+        for (var _key in props2) {
           if (shouldUseAs && _key === "as")
             continue;
           if (
             // $FlowFixMe
             finalShouldForwardProp(_key)
           ) {
-            newProps[_key] = props[_key];
+            newProps[_key] = props2[_key];
           }
         }
         newProps.className = className;
@@ -7307,11 +7307,11 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   function isEmpty$4(obj) {
     return obj === void 0 || obj === null || Object.keys(obj).length === 0;
   }
-  function GlobalStyles$2(props) {
+  function GlobalStyles$2(props2) {
     const {
       styles: styles2,
       defaultTheme: defaultTheme2 = {}
-    } = props;
+    } = props2;
     const globalStyles = typeof styles2 === "function" ? (themeInput) => styles2(isEmpty$4(themeInput) ? defaultTheme2 : themeInput) : styles2;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Global, {
       styles: globalStyles
@@ -7454,8 +7454,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     keys: ["xs", "sm", "md", "lg", "xl"],
     up: (key) => `@media (min-width:${values$1[key]}px)`
   };
-  function handleBreakpoints(props, propValue, styleFromPropValue) {
-    const theme2 = props.theme || {};
+  function handleBreakpoints(props2, propValue, styleFromPropValue) {
+    const theme2 = props2.theme || {};
     if (Array.isArray(propValue)) {
       const themeBreakpoints = theme2.breakpoints || defaultBreakpoints;
       return propValue.reduce((acc, item, index) => {
@@ -7586,12 +7586,12 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       themeKey,
       transform
     } = options;
-    const fn = (props) => {
-      if (props[prop] == null) {
+    const fn = (props2) => {
+      if (props2[prop] == null) {
         return null;
       }
-      const propValue = props[prop];
-      const theme2 = props.theme;
+      const propValue = props2[prop];
+      const theme2 = props2.theme;
       const themeMapping = getPath(theme2, themeKey) || {};
       const styleFromPropValue = (propValueFinal) => {
         let value = getStyleValue$1(themeMapping, transform, propValueFinal);
@@ -7605,7 +7605,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           [cssProperty]: value
         };
       };
-      return handleBreakpoints(props, propValue, styleFromPropValue);
+      return handleBreakpoints(props2, propValue, styleFromPropValue);
     };
     fn.propTypes = process.env.NODE_ENV !== "production" ? {
       [prop]: responsivePropType$1
@@ -7718,29 +7718,29 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       return acc;
     }, {});
   }
-  function resolveCssProperty(props, keys, prop, transformer) {
+  function resolveCssProperty(props2, keys, prop, transformer) {
     if (keys.indexOf(prop) === -1) {
       return null;
     }
     const cssProperties = getCssProperties(prop);
     const styleFromPropValue = getStyleFromPropValue(cssProperties, transformer);
-    const propValue = props[prop];
-    return handleBreakpoints(props, propValue, styleFromPropValue);
+    const propValue = props2[prop];
+    return handleBreakpoints(props2, propValue, styleFromPropValue);
   }
-  function style$1(props, keys) {
-    const transformer = createUnarySpacing(props.theme);
-    return Object.keys(props).map((prop) => resolveCssProperty(props, keys, prop, transformer)).reduce(merge, {});
+  function style$1(props2, keys) {
+    const transformer = createUnarySpacing(props2.theme);
+    return Object.keys(props2).map((prop) => resolveCssProperty(props2, keys, prop, transformer)).reduce(merge, {});
   }
-  function margin(props) {
-    return style$1(props, marginKeys);
+  function margin(props2) {
+    return style$1(props2, marginKeys);
   }
   margin.propTypes = process.env.NODE_ENV !== "production" ? marginKeys.reduce((obj, key) => {
     obj[key] = responsivePropType$1;
     return obj;
   }, {}) : {};
   margin.filterProps = marginKeys;
-  function padding(props) {
-    return style$1(props, paddingKeys);
+  function padding(props2) {
+    return style$1(props2, paddingKeys);
   }
   padding.propTypes = process.env.NODE_ENV !== "production" ? paddingKeys.reduce((obj, key) => {
     obj[key] = responsivePropType$1;
@@ -7780,10 +7780,10 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       });
       return acc;
     }, {});
-    const fn = (props) => {
-      return Object.keys(props).reduce((acc, prop) => {
+    const fn = (props2) => {
+      return Object.keys(props2).reduce((acc, prop) => {
         if (handlers[prop]) {
-          return merge(acc, handlers[prop](props));
+          return merge(acc, handlers[prop](props2));
         }
         return acc;
       }, {});
@@ -7843,13 +7843,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     prop: "borderLeftColor",
     themeKey: "palette"
   });
-  const borderRadius = (props) => {
-    if (props.borderRadius !== void 0 && props.borderRadius !== null) {
-      const transformer = createUnaryUnit(props.theme, "shape.borderRadius", 4, "borderRadius");
+  const borderRadius = (props2) => {
+    if (props2.borderRadius !== void 0 && props2.borderRadius !== null) {
+      const transformer = createUnaryUnit(props2.theme, "shape.borderRadius", 4, "borderRadius");
       const styleFromPropValue = (propValue) => ({
         borderRadius: getValue(transformer, propValue)
       });
-      return handleBreakpoints(props, props.borderRadius, styleFromPropValue);
+      return handleBreakpoints(props2, props2.borderRadius, styleFromPropValue);
     }
     return null;
   };
@@ -7858,13 +7858,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   } : {};
   borderRadius.filterProps = ["borderRadius"];
   compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
-  const gap = (props) => {
-    if (props.gap !== void 0 && props.gap !== null) {
-      const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
+  const gap = (props2) => {
+    if (props2.gap !== void 0 && props2.gap !== null) {
+      const transformer = createUnaryUnit(props2.theme, "spacing", 8, "gap");
       const styleFromPropValue = (propValue) => ({
         gap: getValue(transformer, propValue)
       });
-      return handleBreakpoints(props, props.gap, styleFromPropValue);
+      return handleBreakpoints(props2, props2.gap, styleFromPropValue);
     }
     return null;
   };
@@ -7872,13 +7872,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     gap: responsivePropType$1
   } : {};
   gap.filterProps = ["gap"];
-  const columnGap = (props) => {
-    if (props.columnGap !== void 0 && props.columnGap !== null) {
-      const transformer = createUnaryUnit(props.theme, "spacing", 8, "columnGap");
+  const columnGap = (props2) => {
+    if (props2.columnGap !== void 0 && props2.columnGap !== null) {
+      const transformer = createUnaryUnit(props2.theme, "spacing", 8, "columnGap");
       const styleFromPropValue = (propValue) => ({
         columnGap: getValue(transformer, propValue)
       });
-      return handleBreakpoints(props, props.columnGap, styleFromPropValue);
+      return handleBreakpoints(props2, props2.columnGap, styleFromPropValue);
     }
     return null;
   };
@@ -7886,13 +7886,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     columnGap: responsivePropType$1
   } : {};
   columnGap.filterProps = ["columnGap"];
-  const rowGap = (props) => {
-    if (props.rowGap !== void 0 && props.rowGap !== null) {
-      const transformer = createUnaryUnit(props.theme, "spacing", 8, "rowGap");
+  const rowGap = (props2) => {
+    if (props2.rowGap !== void 0 && props2.rowGap !== null) {
+      const transformer = createUnaryUnit(props2.theme, "spacing", 8, "rowGap");
       const styleFromPropValue = (propValue) => ({
         rowGap: getValue(transformer, propValue)
       });
-      return handleBreakpoints(props, props.rowGap, styleFromPropValue);
+      return handleBreakpoints(props2, props2.rowGap, styleFromPropValue);
     }
     return null;
   };
@@ -7958,26 +7958,26 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     prop: "width",
     transform: sizingTransform
   });
-  const maxWidth = (props) => {
-    if (props.maxWidth !== void 0 && props.maxWidth !== null) {
+  const maxWidth = (props2) => {
+    if (props2.maxWidth !== void 0 && props2.maxWidth !== null) {
       const styleFromPropValue = (propValue) => {
         var _props$theme, _props$theme2;
-        const breakpoint = ((_props$theme = props.theme) == null || (_props$theme = _props$theme.breakpoints) == null || (_props$theme = _props$theme.values) == null ? void 0 : _props$theme[propValue]) || values$1[propValue];
+        const breakpoint = ((_props$theme = props2.theme) == null || (_props$theme = _props$theme.breakpoints) == null || (_props$theme = _props$theme.values) == null ? void 0 : _props$theme[propValue]) || values$1[propValue];
         if (!breakpoint) {
           return {
             maxWidth: sizingTransform(propValue)
           };
         }
-        if (((_props$theme2 = props.theme) == null || (_props$theme2 = _props$theme2.breakpoints) == null ? void 0 : _props$theme2.unit) !== "px") {
+        if (((_props$theme2 = props2.theme) == null || (_props$theme2 = _props$theme2.breakpoints) == null ? void 0 : _props$theme2.unit) !== "px") {
           return {
-            maxWidth: `${breakpoint}${props.theme.breakpoints.unit}`
+            maxWidth: `${breakpoint}${props2.theme.breakpoints.unit}`
           };
         }
         return {
           maxWidth: breakpoint
         };
       };
-      return handleBreakpoints(props, props.maxWidth, styleFromPropValue);
+      return handleBreakpoints(props2, props2.maxWidth, styleFromPropValue);
     }
     return null;
   };
@@ -8301,7 +8301,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
   function unstable_createStyleFunctionSx() {
     function getThemeValue(prop, val, theme2, config2) {
-      const props = {
+      const props2 = {
         [prop]: val,
         theme: theme2
       };
@@ -8327,7 +8327,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       }
       const themeMapping = getPath(theme2, themeKey) || {};
       if (style2) {
-        return style2(props);
+        return style2(props2);
       }
       const styleFromPropValue = (propValueFinal) => {
         let value = getStyleValue$1(themeMapping, transform, propValueFinal);
@@ -8341,14 +8341,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           [cssProperty]: value
         };
       };
-      return handleBreakpoints(props, val, styleFromPropValue);
+      return handleBreakpoints(props2, val, styleFromPropValue);
     }
-    function styleFunctionSx2(props) {
+    function styleFunctionSx2(props2) {
       var _theme$unstable_sxCon;
       const {
         sx,
         theme: theme2 = {}
-      } = props || {};
+      } = props2 || {};
       if (!sx) {
         return null;
       }
@@ -8424,9 +8424,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }, other);
     muiTheme = args.reduce((acc, argument) => deepmerge(acc, argument), muiTheme);
     muiTheme.unstable_sxConfig = _extends$2({}, defaultSxConfig$1, other == null ? void 0 : other.unstable_sxConfig);
-    muiTheme.unstable_sx = function sx(props) {
+    muiTheme.unstable_sx = function sx(props2) {
       return styleFunctionSx$1({
-        sx: props,
+        sx: props2,
         theme: this
       });
     };
@@ -8473,26 +8473,26 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     themeId: PropTypes.string
   } : void 0;
   const _excluded$16 = ["sx"];
-  const splitProps = (props) => {
+  const splitProps = (props2) => {
     var _props$theme$unstable, _props$theme;
     const result = {
       systemProps: {},
       otherProps: {}
     };
-    const config2 = (_props$theme$unstable = props == null || (_props$theme = props.theme) == null ? void 0 : _props$theme.unstable_sxConfig) != null ? _props$theme$unstable : defaultSxConfig$1;
-    Object.keys(props).forEach((prop) => {
+    const config2 = (_props$theme$unstable = props2 == null || (_props$theme = props2.theme) == null ? void 0 : _props$theme.unstable_sxConfig) != null ? _props$theme$unstable : defaultSxConfig$1;
+    Object.keys(props2).forEach((prop) => {
       if (config2[prop]) {
-        result.systemProps[prop] = props[prop];
+        result.systemProps[prop] = props2[prop];
       } else {
-        result.otherProps[prop] = props[prop];
+        result.otherProps[prop] = props2[prop];
       }
     });
     return result;
   };
-  function extendSxProp(props) {
+  function extendSxProp(props2) {
     const {
       sx: inSx
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$16);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$16);
     const {
       systemProps,
       otherProps
@@ -8545,16 +8545,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   function isEmpty$3(string) {
     return string.length === 0;
   }
-  function propsToClassKey(props) {
+  function propsToClassKey(props2) {
     const {
       variant
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$14);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$14);
     let classKey = variant || "";
     Object.keys(other).sort().forEach((key) => {
       if (key === "color") {
-        classKey += isEmpty$3(classKey) ? props[key] : capitalize(props[key]);
+        classKey += isEmpty$3(classKey) ? props2[key] : capitalize(props2[key]);
       } else {
-        classKey += `${isEmpty$3(classKey) ? key : capitalize(key)}${capitalize(props[key].toString())}`;
+        classKey += `${isEmpty$3(classKey) ? key : capitalize(key)}${capitalize(props2[key].toString())}`;
       }
     });
     return classKey;
@@ -8592,16 +8592,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return transformVariants(variants);
   };
-  const variantsResolver = (props, styles2, variants) => {
+  const variantsResolver = (props2, styles2, variants) => {
     const {
       ownerState = {}
-    } = props;
+    } = props2;
     const variantsStyles = [];
     if (variants) {
       variants.forEach((variant) => {
         let isMatch = true;
         Object.keys(variant.props).forEach((key) => {
-          if (ownerState[key] !== variant.props[key] && props[key] !== variant.props[key]) {
+          if (ownerState[key] !== variant.props[key] && props2[key] !== variant.props[key]) {
             isMatch = false;
           }
         });
@@ -8612,10 +8612,10 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return variantsStyles;
   };
-  const themeVariantsResolver = (props, styles2, theme2, name2) => {
+  const themeVariantsResolver = (props2, styles2, theme2, name2) => {
     var _theme$components;
     const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[name2]) == null ? void 0 : _theme$components.variants;
-    return variantsResolver(props, styles2, themeVariants);
+    return variantsResolver(props2, styles2, themeVariants);
   };
   function shouldForwardProp(prop) {
     return prop !== "ownerState" && prop !== "theme" && prop !== "sx" && prop !== "as";
@@ -8638,16 +8638,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     if (!slot) {
       return null;
     }
-    return (props, styles2) => styles2[slot];
+    return (props2, styles2) => styles2[slot];
   }
   const muiStyledFunctionResolver = ({
     styledArg,
-    props,
+    props: props2,
     defaultTheme: defaultTheme2,
     themeId
   }) => {
-    const resolvedStyles = styledArg(_extends$2({}, props, {
-      theme: resolveTheme(_extends$2({}, props, {
+    const resolvedStyles = styledArg(_extends$2({}, props2, {
+      theme: resolveTheme(_extends$2({}, props2, {
         defaultTheme: defaultTheme2,
         themeId
       }))
@@ -8658,7 +8658,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       delete resolvedStyles.variants;
     }
     if (optionalVariants) {
-      const variantsStyles = variantsResolver(props, transformVariants(optionalVariants), optionalVariants);
+      const variantsStyles = variantsResolver(props2, transformVariants(optionalVariants), optionalVariants);
       return [resolvedStyles, ...variantsStyles];
     }
     return resolvedStyles;
@@ -8670,9 +8670,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       rootShouldForwardProp: rootShouldForwardProp2 = shouldForwardProp,
       slotShouldForwardProp: slotShouldForwardProp2 = shouldForwardProp
     } = input;
-    const systemSx = (props) => {
-      return styleFunctionSx$1(_extends$2({}, props, {
-        theme: resolveTheme(_extends$2({}, props, {
+    const systemSx = (props2) => {
+      return styleFunctionSx$1(_extends$2({}, props2, {
+        theme: resolveTheme(_extends$2({}, props2, {
           defaultTheme: defaultTheme2,
           themeId
         }))
@@ -8717,9 +8717,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       const muiStyledResolver = (styleArg, ...expressions) => {
         const expressionsWithDefaultTheme = expressions ? expressions.map((stylesArg) => {
           if (typeof stylesArg === "function" && stylesArg.__emotion_real !== stylesArg) {
-            return (props) => muiStyledFunctionResolver({
+            return (props2) => muiStyledFunctionResolver({
               styledArg: stylesArg,
-              props,
+              props: props2,
               defaultTheme: defaultTheme2,
               themeId
             });
@@ -8730,9 +8730,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
             if (stylesArg && stylesArg.variants) {
               styledArgVariants = stylesArg.variants;
               delete transformedStylesArg.variants;
-              transformedStylesArg = (props) => {
+              transformedStylesArg = (props2) => {
                 let result = stylesArg;
-                const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
+                const variantStyles = variantsResolver(props2, transformVariants(styledArgVariants), styledArgVariants);
                 variantStyles.forEach((variantStyle) => {
                   result = deepmerge(result, variantStyle);
                 });
@@ -8749,9 +8749,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           if (styleArg && styleArg.variants) {
             styledArgVariants = styleArg.variants;
             delete transformedStyleArg.variants;
-            transformedStyleArg = (props) => {
+            transformedStyleArg = (props2) => {
               let result = styleArg;
-              const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
+              const variantStyles = variantsResolver(props2, transformVariants(styledArgVariants), styledArgVariants);
               variantStyles.forEach((variantStyle) => {
                 result = deepmerge(result, variantStyle);
               });
@@ -8762,16 +8762,16 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         // component stays as a function. This condition makes sure that we do not interpolate functions
         // which are basically components used as a selectors.
         styleArg.__emotion_real !== styleArg) {
-          transformedStyleArg = (props) => muiStyledFunctionResolver({
+          transformedStyleArg = (props2) => muiStyledFunctionResolver({
             styledArg: styleArg,
-            props,
+            props: props2,
             defaultTheme: defaultTheme2,
             themeId
           });
         }
         if (componentName && overridesResolver2) {
-          expressionsWithDefaultTheme.push((props) => {
-            const theme2 = resolveTheme(_extends$2({}, props, {
+          expressionsWithDefaultTheme.push((props2) => {
+            const theme2 = resolveTheme(_extends$2({}, props2, {
               defaultTheme: defaultTheme2,
               themeId
             }));
@@ -8779,22 +8779,22 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
             if (styleOverrides) {
               const resolvedStyleOverrides = {};
               Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
-                resolvedStyleOverrides[slotKey] = typeof slotStyle === "function" ? slotStyle(_extends$2({}, props, {
+                resolvedStyleOverrides[slotKey] = typeof slotStyle === "function" ? slotStyle(_extends$2({}, props2, {
                   theme: theme2
                 })) : slotStyle;
               });
-              return overridesResolver2(props, resolvedStyleOverrides);
+              return overridesResolver2(props2, resolvedStyleOverrides);
             }
             return null;
           });
         }
         if (componentName && !skipVariantsResolver) {
-          expressionsWithDefaultTheme.push((props) => {
-            const theme2 = resolveTheme(_extends$2({}, props, {
+          expressionsWithDefaultTheme.push((props2) => {
+            const theme2 = resolveTheme(_extends$2({}, props2, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            return themeVariantsResolver(props, getVariantStyles(componentName, theme2), theme2, componentName);
+            return themeVariantsResolver(props2, getVariantStyles(componentName, theme2), theme2, componentName);
           });
         }
         if (!skipSx) {
@@ -8806,7 +8806,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           transformedStyleArg = [...styleArg, ...placeholders];
           transformedStyleArg.raw = [...styleArg.raw, ...placeholders];
         }
-        const Component = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
+        const Component2 = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
         if (process.env.NODE_ENV !== "production") {
           let displayName;
           if (componentName) {
@@ -8815,12 +8815,12 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           if (displayName === void 0) {
             displayName = `Styled(${getDisplayName(tag2)})`;
           }
-          Component.displayName = displayName;
+          Component2.displayName = displayName;
         }
         if (tag2.muiName) {
-          Component.muiName = tag2.muiName;
+          Component2.muiName = tag2.muiName;
         }
-        return Component;
+        return Component2;
       };
       if (defaultStyledResolver.withConfig) {
         muiStyledResolver.withConfig = defaultStyledResolver.withConfig;
@@ -8834,15 +8834,15 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     const {
       theme: theme2,
       name: name2,
-      props
+      props: props2
     } = params;
     if (!theme2 || !theme2.components || !theme2.components[name2] || !theme2.components[name2].defaultProps) {
-      return props;
+      return props2;
     }
-    return resolveProps(theme2.components[name2].defaultProps, props);
+    return resolveProps(theme2.components[name2].defaultProps, props2);
   }
   function useThemeProps$1({
-    props,
+    props: props2,
     name: name2,
     defaultTheme: defaultTheme2,
     themeId
@@ -8854,7 +8854,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     const mergedProps = getThemeProps({
       theme: theme2,
       name: name2,
-      props
+      props: props2
     });
     return mergedProps;
   }
@@ -9040,11 +9040,11 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     }
     return _extends$2({}, outerTheme, localTheme);
   }
-  function ThemeProvider$2(props) {
+  function ThemeProvider$2(props2) {
     const {
       children,
       theme: localTheme
-    } = props;
+    } = props2;
     const outerTheme = useTheme$1();
     if (process.env.NODE_ENV !== "production") {
       if (outerTheme === null && typeof localTheme === "function") {
@@ -9095,12 +9095,12 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       }) : _extends$2({}, upperTheme, localTheme);
     }, [themeId, upperTheme, localTheme, isPrivate]);
   }
-  function ThemeProvider$1(props) {
+  function ThemeProvider$1(props2) {
     const {
       children,
       theme: localTheme,
       themeId
-    } = props;
+    } = props2;
     const upperTheme = useTheme$3(EMPTY_THEME);
     const upperPrivateTheme = useTheme$1() || EMPTY_THEME;
     if (process.env.NODE_ENV !== "production") {
@@ -9144,11 +9144,11 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   const defaultCreateStyledComponent = systemStyled("div", {
     name: "MuiStack",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   });
-  function useThemePropsDefault(props) {
+  function useThemePropsDefault(props2) {
     return useThemeProps$1({
-      props,
+      props: props2,
       name: "MuiStack",
       defaultTheme: defaultTheme$3
     });
@@ -9253,7 +9253,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     const StackRoot = createStyledComponent(style);
     const Stack2 = /* @__PURE__ */ reactExports.forwardRef(function Grid(inProps, ref) {
       const themeProps = useThemeProps2(inProps);
-      const props = extendSxProp(themeProps);
+      const props2 = extendSxProp(themeProps);
       const {
         component = "div",
         direction = "column",
@@ -9262,7 +9262,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
         children,
         className,
         useFlexGap = false
-      } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$12);
+      } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$12);
       const ownerState = {
         direction,
         spacing,
@@ -9840,7 +9840,7 @@ const theme2 = createTheme({ palette: {
   function createTransitions(inputTransitions) {
     const mergedEasing = _extends$2({}, easing, inputTransitions.easing);
     const mergedDuration = _extends$2({}, duration$1, inputTransitions.duration);
-    const create2 = (props = ["all"], options = {}) => {
+    const create2 = (props2 = ["all"], options = {}) => {
       const {
         duration: durationOption = mergedDuration.standard,
         easing: easingOption = mergedEasing.easeInOut,
@@ -9849,7 +9849,7 @@ const theme2 = createTheme({ palette: {
       if (process.env.NODE_ENV !== "production") {
         const isString2 = (value) => typeof value === "string";
         const isNumber2 = (value) => !isNaN(parseFloat(value));
-        if (!isString2(props) && !Array.isArray(props)) {
+        if (!isString2(props2) && !Array.isArray(props2)) {
           console.error('MUI: Argument "props" must be a string or Array.');
         }
         if (!isNumber2(durationOption) && !isString2(durationOption)) {
@@ -9868,7 +9868,7 @@ const theme2 = createTheme({ palette: {
           console.error(`MUI: Unrecognized argument(s) [${Object.keys(other).join(",")}].`);
         }
       }
-      return (Array.isArray(props) ? props : [props]).map((animatedProp) => `${animatedProp} ${typeof durationOption === "string" ? durationOption : formatMs(durationOption)} ${easingOption} ${typeof delay === "string" ? delay : formatMs(delay)}`).join(",");
+      return (Array.isArray(props2) ? props2 : [props2]).map((animatedProp) => `${animatedProp} ${typeof durationOption === "string" ? durationOption : formatMs(durationOption)} ${easingOption} ${typeof delay === "string" ? delay : formatMs(delay)}`).join(",");
     };
     return _extends$2({
       getAutoHeightDuration,
@@ -9941,9 +9941,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       });
     }
     muiTheme.unstable_sxConfig = _extends$2({}, defaultSxConfig$1, other == null ? void 0 : other.unstable_sxConfig);
-    muiTheme.unstable_sx = function sx(props) {
+    muiTheme.unstable_sx = function sx(props2) {
       return styleFunctionSx$1({
-        sx: props,
+        sx: props2,
         theme: this
       });
     };
@@ -9953,11 +9953,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultTheme$2 = defaultTheme$1;
   const THEME_ID = "$$material";
   function useThemeProps({
-    props,
+    props: props2,
     name: name2
   }) {
     return useThemeProps$1({
-      props,
+      props: props2,
       name: name2,
       defaultTheme: defaultTheme$2,
       themeId: THEME_ID
@@ -9971,8 +9971,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     rootShouldForwardProp
   });
   const styled$1 = styled;
-  function GlobalStyles(props) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalStyles$1, _extends$2({}, props, {
+  function GlobalStyles(props2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalStyles$1, _extends$2({}, props2, {
       defaultTheme: defaultTheme$2,
       themeId: THEME_ID
     }));
@@ -10043,7 +10043,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ScopedCssBaselineRoot = styled$1("div", {
     name: "MuiScopedCssBaseline",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })(({
     theme: theme2,
     ownerState
@@ -10067,15 +10067,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, colorSchemeStyles);
   });
   const ScopedCssBaseline = /* @__PURE__ */ reactExports.forwardRef(function ScopedCssBaseline2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiScopedCssBaseline"
     });
     const {
       className,
       component = "div"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Z);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$Z);
+    const ownerState = _extends$2({}, props2, {
       component
     });
     const classes = useUtilityClasses$N(ownerState);
@@ -11717,20 +11717,20 @@ Please use another name.` : formatMuiErrorMessage(18));
               prevGroup = console.group;
               prevGroupCollapsed = console.groupCollapsed;
               prevGroupEnd = console.groupEnd;
-              var props = {
+              var props2 = {
                 configurable: true,
                 enumerable: true,
                 value: disabledLog,
                 writable: true
               };
               Object.defineProperties(console, {
-                info: props,
-                log: props,
-                warn: props,
-                error: props,
-                group: props,
-                groupCollapsed: props,
-                groupEnd: props
+                info: props2,
+                log: props2,
+                warn: props2,
+                error: props2,
+                group: props2,
+                groupCollapsed: props2,
+                groupEnd: props2
               });
             }
             disabledDepth++;
@@ -11740,31 +11740,31 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             disabledDepth--;
             if (disabledDepth === 0) {
-              var props = {
+              var props2 = {
                 configurable: true,
                 enumerable: true,
                 writable: true
               };
               Object.defineProperties(console, {
-                log: assign2({}, props, {
+                log: assign2({}, props2, {
                   value: prevLog
                 }),
-                info: assign2({}, props, {
+                info: assign2({}, props2, {
                   value: prevInfo
                 }),
-                warn: assign2({}, props, {
+                warn: assign2({}, props2, {
                   value: prevWarn
                 }),
-                error: assign2({}, props, {
+                error: assign2({}, props2, {
                   value: prevError
                 }),
-                group: assign2({}, props, {
+                group: assign2({}, props2, {
                   value: prevGroup
                 }),
-                groupCollapsed: assign2({}, props, {
+                groupCollapsed: assign2({}, props2, {
                   value: prevGroupCollapsed
                 }),
-                groupEnd: assign2({}, props, {
+                groupEnd: assign2({}, props2, {
                   value: prevGroupEnd
                 })
               });
@@ -11908,8 +11908,8 @@ Please use another name.` : formatMuiErrorMessage(18));
             return describeNativeComponentFrame(fn, false);
           }
         }
-        function shouldConstruct(Component) {
-          var prototype = Component.prototype;
+        function shouldConstruct(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -12198,12 +12198,12 @@ Please use another name.` : formatMuiErrorMessage(18));
           reset: true,
           submit: true
         };
-        function checkControlledValueProps(tagName, props) {
+        function checkControlledValueProps(tagName, props2) {
           {
-            if (!(hasReadOnlyValue[props.type] || props.onChange || props.onInput || props.readOnly || props.disabled || props.value == null)) {
+            if (!(hasReadOnlyValue[props2.type] || props2.onChange || props2.onInput || props2.readOnly || props2.disabled || props2.value == null)) {
               error("You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.");
             }
-            if (!(props.onChange || props.readOnly || props.disabled || props.checked == null)) {
+            if (!(props2.onChange || props2.readOnly || props2.disabled || props2.checked == null)) {
               error("You provided a `checked` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultChecked`. Otherwise, set either `onChange` or `readOnly`.");
             }
           }
@@ -12312,14 +12312,14 @@ Please use another name.` : formatMuiErrorMessage(18));
         var didWarnCheckedDefaultChecked = false;
         var didWarnControlledToUncontrolled = false;
         var didWarnUncontrolledToControlled = false;
-        function isControlled(props) {
-          var usesChecked = props.type === "checkbox" || props.type === "radio";
-          return usesChecked ? props.checked != null : props.value != null;
+        function isControlled(props2) {
+          var usesChecked = props2.type === "checkbox" || props2.type === "radio";
+          return usesChecked ? props2.checked != null : props2.value != null;
         }
-        function getHostProps(element, props) {
+        function getHostProps(element, props2) {
           var node2 = element;
-          var checked = props.checked;
-          var hostProps = assign2({}, props, {
+          var checked = props2.checked;
+          var hostProps = assign2({}, props2, {
             defaultChecked: void 0,
             defaultValue: void 0,
             value: void 0,
@@ -12327,37 +12327,37 @@ Please use another name.` : formatMuiErrorMessage(18));
           });
           return hostProps;
         }
-        function initWrapperState(element, props) {
+        function initWrapperState(element, props2) {
           {
-            checkControlledValueProps("input", props);
-            if (props.checked !== void 0 && props.defaultChecked !== void 0 && !didWarnCheckedDefaultChecked) {
-              error("%s contains an input of type %s with both checked and defaultChecked props. Input elements must be either controlled or uncontrolled (specify either the checked prop, or the defaultChecked prop, but not both). Decide between using a controlled or uncontrolled input element and remove one of these props. More info: https://reactjs.org/link/controlled-components", getCurrentFiberOwnerNameInDevOrNull() || "A component", props.type);
+            checkControlledValueProps("input", props2);
+            if (props2.checked !== void 0 && props2.defaultChecked !== void 0 && !didWarnCheckedDefaultChecked) {
+              error("%s contains an input of type %s with both checked and defaultChecked props. Input elements must be either controlled or uncontrolled (specify either the checked prop, or the defaultChecked prop, but not both). Decide between using a controlled or uncontrolled input element and remove one of these props. More info: https://reactjs.org/link/controlled-components", getCurrentFiberOwnerNameInDevOrNull() || "A component", props2.type);
               didWarnCheckedDefaultChecked = true;
             }
-            if (props.value !== void 0 && props.defaultValue !== void 0 && !didWarnValueDefaultValue) {
-              error("%s contains an input of type %s with both value and defaultValue props. Input elements must be either controlled or uncontrolled (specify either the value prop, or the defaultValue prop, but not both). Decide between using a controlled or uncontrolled input element and remove one of these props. More info: https://reactjs.org/link/controlled-components", getCurrentFiberOwnerNameInDevOrNull() || "A component", props.type);
+            if (props2.value !== void 0 && props2.defaultValue !== void 0 && !didWarnValueDefaultValue) {
+              error("%s contains an input of type %s with both value and defaultValue props. Input elements must be either controlled or uncontrolled (specify either the value prop, or the defaultValue prop, but not both). Decide between using a controlled or uncontrolled input element and remove one of these props. More info: https://reactjs.org/link/controlled-components", getCurrentFiberOwnerNameInDevOrNull() || "A component", props2.type);
               didWarnValueDefaultValue = true;
             }
           }
           var node2 = element;
-          var defaultValue = props.defaultValue == null ? "" : props.defaultValue;
+          var defaultValue = props2.defaultValue == null ? "" : props2.defaultValue;
           node2._wrapperState = {
-            initialChecked: props.checked != null ? props.checked : props.defaultChecked,
-            initialValue: getToStringValue(props.value != null ? props.value : defaultValue),
-            controlled: isControlled(props)
+            initialChecked: props2.checked != null ? props2.checked : props2.defaultChecked,
+            initialValue: getToStringValue(props2.value != null ? props2.value : defaultValue),
+            controlled: isControlled(props2)
           };
         }
-        function updateChecked(element, props) {
+        function updateChecked(element, props2) {
           var node2 = element;
-          var checked = props.checked;
+          var checked = props2.checked;
           if (checked != null) {
             setValueForProperty(node2, "checked", checked, false);
           }
         }
-        function updateWrapper(element, props) {
+        function updateWrapper(element, props2) {
           var node2 = element;
           {
-            var controlled = isControlled(props);
+            var controlled = isControlled(props2);
             if (!node2._wrapperState.controlled && controlled && !didWarnUncontrolledToControlled) {
               error("A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://reactjs.org/link/controlled-components");
               didWarnUncontrolledToControlled = true;
@@ -12367,9 +12367,9 @@ Please use another name.` : formatMuiErrorMessage(18));
               didWarnControlledToUncontrolled = true;
             }
           }
-          updateChecked(element, props);
-          var value = getToStringValue(props.value);
-          var type = props.type;
+          updateChecked(element, props2);
+          var value = getToStringValue(props2.value);
+          var type = props2.type;
           if (value != null) {
             if (type === "number") {
               if (value === 0 && node2.value === "" || // We explicitly want to coerce to number here if possible.
@@ -12385,24 +12385,24 @@ Please use another name.` : formatMuiErrorMessage(18));
             return;
           }
           {
-            if (props.hasOwnProperty("value")) {
-              setDefaultValue(node2, props.type, value);
-            } else if (props.hasOwnProperty("defaultValue")) {
-              setDefaultValue(node2, props.type, getToStringValue(props.defaultValue));
+            if (props2.hasOwnProperty("value")) {
+              setDefaultValue(node2, props2.type, value);
+            } else if (props2.hasOwnProperty("defaultValue")) {
+              setDefaultValue(node2, props2.type, getToStringValue(props2.defaultValue));
             }
           }
           {
-            if (props.checked == null && props.defaultChecked != null) {
-              node2.defaultChecked = !!props.defaultChecked;
+            if (props2.checked == null && props2.defaultChecked != null) {
+              node2.defaultChecked = !!props2.defaultChecked;
             }
           }
         }
-        function postMountWrapper(element, props, isHydrating2) {
+        function postMountWrapper(element, props2, isHydrating2) {
           var node2 = element;
-          if (props.hasOwnProperty("value") || props.hasOwnProperty("defaultValue")) {
-            var type = props.type;
+          if (props2.hasOwnProperty("value") || props2.hasOwnProperty("defaultValue")) {
+            var type = props2.type;
             var isButton = type === "submit" || type === "reset";
-            if (isButton && (props.value === void 0 || props.value === null)) {
+            if (isButton && (props2.value === void 0 || props2.value === null)) {
               return;
             }
             var initialValue = toString(node2._wrapperState.initialValue);
@@ -12429,14 +12429,14 @@ Please use another name.` : formatMuiErrorMessage(18));
             node2.name = name2;
           }
         }
-        function restoreControlledState(element, props) {
+        function restoreControlledState(element, props2) {
           var node2 = element;
-          updateWrapper(node2, props);
-          updateNamedCousins(node2, props);
+          updateWrapper(node2, props2);
+          updateNamedCousins(node2, props2);
         }
-        function updateNamedCousins(rootNode, props) {
-          var name2 = props.name;
-          if (props.type === "radio" && name2 != null) {
+        function updateNamedCousins(rootNode, props2) {
+          var name2 = props2.name;
+          if (props2.type === "radio" && name2 != null) {
             var queryRoot = rootNode;
             while (queryRoot.parentNode) {
               queryRoot = queryRoot.parentNode;
@@ -12474,11 +12474,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         var didWarnSelectedSetOnOption = false;
         var didWarnInvalidChild = false;
         var didWarnInvalidInnerHTML = false;
-        function validateProps(element, props) {
+        function validateProps(element, props2) {
           {
-            if (props.value == null) {
-              if (typeof props.children === "object" && props.children !== null) {
-                React2.Children.forEach(props.children, function(child) {
+            if (props2.value == null) {
+              if (typeof props2.children === "object" && props2.children !== null) {
+                React2.Children.forEach(props2.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -12490,22 +12490,22 @@ Please use another name.` : formatMuiErrorMessage(18));
                     error("Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>.");
                   }
                 });
-              } else if (props.dangerouslySetInnerHTML != null) {
+              } else if (props2.dangerouslySetInnerHTML != null) {
                 if (!didWarnInvalidInnerHTML) {
                   didWarnInvalidInnerHTML = true;
                   error("Pass a `value` prop if you set dangerouslyInnerHTML so React knows which value should be selected.");
                 }
               }
             }
-            if (props.selected != null && !didWarnSelectedSetOnOption) {
+            if (props2.selected != null && !didWarnSelectedSetOnOption) {
               error("Use the `defaultValue` or `value` props on <select> instead of setting `selected` on <option>.");
               didWarnSelectedSetOnOption = true;
             }
           }
         }
-        function postMountWrapper$1(element, props) {
-          if (props.value != null) {
-            element.setAttribute("value", toString(getToStringValue(props.value)));
+        function postMountWrapper$1(element, props2) {
+          if (props2.value != null) {
+            element.setAttribute("value", toString(getToStringValue(props2.value)));
           }
         }
         var isArrayImpl = Array.isArray;
@@ -12524,18 +12524,18 @@ Please use another name.` : formatMuiErrorMessage(18));
           return "";
         }
         var valuePropNames = ["value", "defaultValue"];
-        function checkSelectPropTypes(props) {
+        function checkSelectPropTypes(props2) {
           {
-            checkControlledValueProps("select", props);
+            checkControlledValueProps("select", props2);
             for (var i2 = 0; i2 < valuePropNames.length; i2++) {
               var propName = valuePropNames[i2];
-              if (props[propName] == null) {
+              if (props2[propName] == null) {
                 continue;
               }
-              var propNameIsArray = isArray2(props[propName]);
-              if (props.multiple && !propNameIsArray) {
+              var propNameIsArray = isArray2(props2[propName]);
+              if (props2.multiple && !propNameIsArray) {
                 error("The `%s` prop supplied to <select> must be an array if `multiple` is true.%s", propName, getDeclarationErrorAddendum());
-              } else if (!props.multiple && propNameIsArray) {
+              } else if (!props2.multiple && propNameIsArray) {
                 error("The `%s` prop supplied to <select> must be a scalar value if `multiple` is false.%s", propName, getDeclarationErrorAddendum());
               }
             }
@@ -12578,83 +12578,83 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function getHostProps$1(element, props) {
-          return assign2({}, props, {
+        function getHostProps$1(element, props2) {
+          return assign2({}, props2, {
             value: void 0
           });
         }
-        function initWrapperState$1(element, props) {
+        function initWrapperState$1(element, props2) {
           var node2 = element;
           {
-            checkSelectPropTypes(props);
+            checkSelectPropTypes(props2);
           }
           node2._wrapperState = {
-            wasMultiple: !!props.multiple
+            wasMultiple: !!props2.multiple
           };
           {
-            if (props.value !== void 0 && props.defaultValue !== void 0 && !didWarnValueDefaultValue$1) {
+            if (props2.value !== void 0 && props2.defaultValue !== void 0 && !didWarnValueDefaultValue$1) {
               error("Select elements must be either controlled or uncontrolled (specify either the value prop, or the defaultValue prop, but not both). Decide between using a controlled or uncontrolled select element and remove one of these props. More info: https://reactjs.org/link/controlled-components");
               didWarnValueDefaultValue$1 = true;
             }
           }
         }
-        function postMountWrapper$2(element, props) {
+        function postMountWrapper$2(element, props2) {
           var node2 = element;
-          node2.multiple = !!props.multiple;
-          var value = props.value;
+          node2.multiple = !!props2.multiple;
+          var value = props2.value;
           if (value != null) {
-            updateOptions(node2, !!props.multiple, value, false);
-          } else if (props.defaultValue != null) {
-            updateOptions(node2, !!props.multiple, props.defaultValue, true);
+            updateOptions(node2, !!props2.multiple, value, false);
+          } else if (props2.defaultValue != null) {
+            updateOptions(node2, !!props2.multiple, props2.defaultValue, true);
           }
         }
-        function postUpdateWrapper(element, props) {
+        function postUpdateWrapper(element, props2) {
           var node2 = element;
           var wasMultiple = node2._wrapperState.wasMultiple;
-          node2._wrapperState.wasMultiple = !!props.multiple;
-          var value = props.value;
+          node2._wrapperState.wasMultiple = !!props2.multiple;
+          var value = props2.value;
           if (value != null) {
-            updateOptions(node2, !!props.multiple, value, false);
-          } else if (wasMultiple !== !!props.multiple) {
-            if (props.defaultValue != null) {
-              updateOptions(node2, !!props.multiple, props.defaultValue, true);
+            updateOptions(node2, !!props2.multiple, value, false);
+          } else if (wasMultiple !== !!props2.multiple) {
+            if (props2.defaultValue != null) {
+              updateOptions(node2, !!props2.multiple, props2.defaultValue, true);
             } else {
-              updateOptions(node2, !!props.multiple, props.multiple ? [] : "", false);
+              updateOptions(node2, !!props2.multiple, props2.multiple ? [] : "", false);
             }
           }
         }
-        function restoreControlledState$1(element, props) {
+        function restoreControlledState$1(element, props2) {
           var node2 = element;
-          var value = props.value;
+          var value = props2.value;
           if (value != null) {
-            updateOptions(node2, !!props.multiple, value, false);
+            updateOptions(node2, !!props2.multiple, value, false);
           }
         }
         var didWarnValDefaultVal = false;
-        function getHostProps$2(element, props) {
+        function getHostProps$2(element, props2) {
           var node2 = element;
-          if (props.dangerouslySetInnerHTML != null) {
+          if (props2.dangerouslySetInnerHTML != null) {
             throw new Error("`dangerouslySetInnerHTML` does not make sense on <textarea>.");
           }
-          var hostProps = assign2({}, props, {
+          var hostProps = assign2({}, props2, {
             value: void 0,
             defaultValue: void 0,
             children: toString(node2._wrapperState.initialValue)
           });
           return hostProps;
         }
-        function initWrapperState$2(element, props) {
+        function initWrapperState$2(element, props2) {
           var node2 = element;
           {
-            checkControlledValueProps("textarea", props);
-            if (props.value !== void 0 && props.defaultValue !== void 0 && !didWarnValDefaultVal) {
+            checkControlledValueProps("textarea", props2);
+            if (props2.value !== void 0 && props2.defaultValue !== void 0 && !didWarnValDefaultVal) {
               error("%s contains a textarea with both value and defaultValue props. Textarea elements must be either controlled or uncontrolled (specify either the value prop, or the defaultValue prop, but not both). Decide between using a controlled or uncontrolled textarea and remove one of these props. More info: https://reactjs.org/link/controlled-components", getCurrentFiberOwnerNameInDevOrNull() || "A component");
               didWarnValDefaultVal = true;
             }
           }
-          var initialValue = props.value;
+          var initialValue = props2.value;
           if (initialValue == null) {
-            var children = props.children, defaultValue = props.defaultValue;
+            var children = props2.children, defaultValue = props2.defaultValue;
             if (children != null) {
               {
                 error("Use the `defaultValue` or `value` props instead of setting children on <textarea>.");
@@ -12681,16 +12681,16 @@ Please use another name.` : formatMuiErrorMessage(18));
             initialValue: getToStringValue(initialValue)
           };
         }
-        function updateWrapper$1(element, props) {
+        function updateWrapper$1(element, props2) {
           var node2 = element;
-          var value = getToStringValue(props.value);
-          var defaultValue = getToStringValue(props.defaultValue);
+          var value = getToStringValue(props2.value);
+          var defaultValue = getToStringValue(props2.defaultValue);
           if (value != null) {
             var newValue = toString(value);
             if (newValue !== node2.value) {
               node2.value = newValue;
             }
-            if (props.defaultValue == null && node2.defaultValue !== newValue) {
+            if (props2.defaultValue == null && node2.defaultValue !== newValue) {
               node2.defaultValue = newValue;
             }
           }
@@ -12698,7 +12698,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             node2.defaultValue = toString(defaultValue);
           }
         }
-        function postMountWrapper$3(element, props) {
+        function postMountWrapper$3(element, props2) {
           var node2 = element;
           var textContent = node2.textContent;
           if (textContent === node2._wrapperState.initialValue) {
@@ -12707,8 +12707,8 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function restoreControlledState$2(element, props) {
-          updateWrapper$1(element, props);
+        function restoreControlledState$2(element, props2) {
+          updateWrapper$1(element, props2);
         }
         var HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
         var MATH_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
@@ -13073,35 +13073,35 @@ Please use another name.` : formatMuiErrorMessage(18));
           menuitem: true
         }, omittedCloseTags);
         var HTML = "__html";
-        function assertValidProps(tag2, props) {
-          if (!props) {
+        function assertValidProps(tag2, props2) {
+          if (!props2) {
             return;
           }
           if (voidElementTags[tag2]) {
-            if (props.children != null || props.dangerouslySetInnerHTML != null) {
+            if (props2.children != null || props2.dangerouslySetInnerHTML != null) {
               throw new Error(tag2 + " is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`.");
             }
           }
-          if (props.dangerouslySetInnerHTML != null) {
-            if (props.children != null) {
+          if (props2.dangerouslySetInnerHTML != null) {
+            if (props2.children != null) {
               throw new Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`.");
             }
-            if (typeof props.dangerouslySetInnerHTML !== "object" || !(HTML in props.dangerouslySetInnerHTML)) {
+            if (typeof props2.dangerouslySetInnerHTML !== "object" || !(HTML in props2.dangerouslySetInnerHTML)) {
               throw new Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.");
             }
           }
           {
-            if (!props.suppressContentEditableWarning && props.contentEditable && props.children != null) {
+            if (!props2.suppressContentEditableWarning && props2.contentEditable && props2.children != null) {
               error("A component is `contentEditable` and contains `children` managed by React. It is now your responsibility to guarantee that none of those nodes are unexpectedly modified or duplicated. This is probably not intentional.");
             }
           }
-          if (props.style != null && typeof props.style !== "object") {
+          if (props2.style != null && typeof props2.style !== "object") {
             throw new Error("The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + 'em'}} when using JSX.");
           }
         }
-        function isCustomComponent(tagName, props) {
+        function isCustomComponent(tagName, props2) {
           if (tagName.indexOf("-") === -1) {
-            return typeof props.is === "string";
+            return typeof props2.is === "string";
           }
           switch (tagName) {
             case "annotation-xml":
@@ -13703,10 +13703,10 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           return true;
         }
-        function warnInvalidARIAProps(type, props) {
+        function warnInvalidARIAProps(type, props2) {
           {
             var invalidProps = [];
-            for (var key in props) {
+            for (var key in props2) {
               var isValid = validateProperty(type, key);
               if (!isValid) {
                 invalidProps.push(key);
@@ -13722,21 +13722,21 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function validateProperties(type, props) {
-          if (isCustomComponent(type, props)) {
+        function validateProperties(type, props2) {
+          if (isCustomComponent(type, props2)) {
             return;
           }
-          warnInvalidARIAProps(type, props);
+          warnInvalidARIAProps(type, props2);
         }
         var didWarnValueNull = false;
-        function validateProperties$1(type, props) {
+        function validateProperties$1(type, props2) {
           {
             if (type !== "input" && type !== "textarea" && type !== "select") {
               return;
             }
-            if (props != null && props.value === null && !didWarnValueNull) {
+            if (props2 != null && props2.value === null && !didWarnValueNull) {
               didWarnValueNull = true;
-              if (type === "select" && props.multiple) {
+              if (type === "select" && props2.multiple) {
                 error("`value` prop on `%s` should not be null. Consider using an empty array when `multiple` is set to `true` to clear the component or `undefined` for uncontrolled components.", type);
               } else {
                 error("`value` prop on `%s` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components.", type);
@@ -13846,11 +13846,11 @@ Please use another name.` : formatMuiErrorMessage(18));
             return true;
           };
         }
-        var warnUnknownProperties = function(type, props, eventRegistry) {
+        var warnUnknownProperties = function(type, props2, eventRegistry) {
           {
             var unknownProps = [];
-            for (var key in props) {
-              var isValid = validateProperty$1(type, key, props[key], eventRegistry);
+            for (var key in props2) {
+              var isValid = validateProperty$1(type, key, props2[key], eventRegistry);
               if (!isValid) {
                 unknownProps.push(key);
               }
@@ -13865,11 +13865,11 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         };
-        function validateProperties$2(type, props, eventRegistry) {
-          if (isCustomComponent(type, props)) {
+        function validateProperties$2(type, props2, eventRegistry) {
+          if (isCustomComponent(type, props2)) {
             return;
           }
-          warnUnknownProperties(type, props, eventRegistry);
+          warnUnknownProperties(type, props2, eventRegistry);
         }
         var IS_EVENT_HANDLE_NON_MANAGED_NODE = 1;
         var IS_NON_DELEGATED = 1 << 1;
@@ -13983,7 +13983,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         function isInteractive(tag2) {
           return tag2 === "button" || tag2 === "input" || tag2 === "select" || tag2 === "textarea";
         }
-        function shouldPreventMouseEvent(name2, type, props) {
+        function shouldPreventMouseEvent(name2, type, props2) {
           switch (name2) {
             case "onClick":
             case "onClickCapture":
@@ -13996,7 +13996,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             case "onMouseUp":
             case "onMouseUpCapture":
             case "onMouseEnter":
-              return !!(props.disabled && isInteractive(type));
+              return !!(props2.disabled && isInteractive(type));
             default:
               return false;
           }
@@ -14006,12 +14006,12 @@ Please use another name.` : formatMuiErrorMessage(18));
           if (stateNode === null) {
             return null;
           }
-          var props = getFiberCurrentPropsFromNode(stateNode);
-          if (props === null) {
+          var props2 = getFiberCurrentPropsFromNode(stateNode);
+          if (props2 === null) {
             return null;
           }
-          var listener = props[registrationName];
-          if (shouldPreventMouseEvent(registrationName, inst.type, props)) {
+          var listener = props2[registrationName];
+          if (shouldPreventMouseEvent(registrationName, inst.type, props2)) {
             return null;
           }
           if (listener && typeof listener !== "function") {
@@ -17747,10 +17747,10 @@ Please use another name.` : formatMuiErrorMessage(18));
             // @see https://electronjs.org/docs/api/webview-tag
             webview: true
           };
-          validatePropertiesInDevelopment = function(type, props) {
-            validateProperties(type, props);
-            validateProperties$1(type, props);
-            validateProperties$2(type, props, {
+          validatePropertiesInDevelopment = function(type, props2) {
+            validateProperties(type, props2);
+            validateProperties$1(type, props2);
+            validateProperties$2(type, props2, {
               registrationNameDependencies,
               possibleRegistrationNames
             });
@@ -17887,7 +17887,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function createElement2(type, props, rootContainerElement, parentNamespace) {
+        function createElement2(type, props2, rootContainerElement, parentNamespace) {
           var isCustomComponentTag;
           var ownerDocument2 = getOwnerDocumentFromRootContainer(rootContainerElement);
           var domElement;
@@ -17897,7 +17897,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           if (namespaceURI === HTML_NAMESPACE) {
             {
-              isCustomComponentTag = isCustomComponent(type, props);
+              isCustomComponentTag = isCustomComponent(type, props2);
               if (!isCustomComponentTag && type !== type.toLowerCase()) {
                 error("<%s /> is using incorrect casing. Use PascalCase for React components, or lowercase for HTML elements.", type);
               }
@@ -17907,18 +17907,18 @@ Please use another name.` : formatMuiErrorMessage(18));
               div2.innerHTML = "<script><\/script>";
               var firstChild = div2.firstChild;
               domElement = div2.removeChild(firstChild);
-            } else if (typeof props.is === "string") {
+            } else if (typeof props2.is === "string") {
               domElement = ownerDocument2.createElement(type, {
-                is: props.is
+                is: props2.is
               });
             } else {
               domElement = ownerDocument2.createElement(type);
               if (type === "select") {
                 var node2 = domElement;
-                if (props.multiple) {
+                if (props2.multiple) {
                   node2.multiple = true;
-                } else if (props.size) {
-                  node2.size = props.size;
+                } else if (props2.size) {
+                  node2.size = props2.size;
                 }
               }
             }
@@ -17943,65 +17943,65 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             validatePropertiesInDevelopment(tag2, rawProps);
           }
-          var props;
+          var props2;
           switch (tag2) {
             case "dialog":
               listenToNonDelegatedEvent("cancel", domElement);
               listenToNonDelegatedEvent("close", domElement);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "iframe":
             case "object":
             case "embed":
               listenToNonDelegatedEvent("load", domElement);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "video":
             case "audio":
               for (var i2 = 0; i2 < mediaEventTypes.length; i2++) {
                 listenToNonDelegatedEvent(mediaEventTypes[i2], domElement);
               }
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "source":
               listenToNonDelegatedEvent("error", domElement);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "img":
             case "image":
             case "link":
               listenToNonDelegatedEvent("error", domElement);
               listenToNonDelegatedEvent("load", domElement);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "details":
               listenToNonDelegatedEvent("toggle", domElement);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "input":
               initWrapperState(domElement, rawProps);
-              props = getHostProps(domElement, rawProps);
+              props2 = getHostProps(domElement, rawProps);
               listenToNonDelegatedEvent("invalid", domElement);
               break;
             case "option":
               validateProps(domElement, rawProps);
-              props = rawProps;
+              props2 = rawProps;
               break;
             case "select":
               initWrapperState$1(domElement, rawProps);
-              props = getHostProps$1(domElement, rawProps);
+              props2 = getHostProps$1(domElement, rawProps);
               listenToNonDelegatedEvent("invalid", domElement);
               break;
             case "textarea":
               initWrapperState$2(domElement, rawProps);
-              props = getHostProps$2(domElement, rawProps);
+              props2 = getHostProps$2(domElement, rawProps);
               listenToNonDelegatedEvent("invalid", domElement);
               break;
             default:
-              props = rawProps;
+              props2 = rawProps;
           }
-          assertValidProps(tag2, props);
-          setInitialDOMProperties(tag2, domElement, rootContainerElement, props, isCustomComponentTag);
+          assertValidProps(tag2, props2);
+          setInitialDOMProperties(tag2, domElement, rootContainerElement, props2, isCustomComponentTag);
           switch (tag2) {
             case "input":
               track(domElement);
@@ -18018,7 +18018,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               postMountWrapper$2(domElement, rawProps);
               break;
             default:
-              if (typeof props.onClick === "function") {
+              if (typeof props2.onClick === "function") {
                 trapClickOnNonInteractiveElement(domElement);
               }
               break;
@@ -18406,7 +18406,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             error('Did not expect server HTML to contain the text node "%s" in <%s>.', child.nodeValue, parentNode.nodeName.toLowerCase());
           }
         }
-        function warnForInsertedHydratedElement(parentNode, tag2, props) {
+        function warnForInsertedHydratedElement(parentNode, tag2, props2) {
           {
             if (didWarnInvalidHydration) {
               return;
@@ -18427,16 +18427,16 @@ Please use another name.` : formatMuiErrorMessage(18));
             error('Expected server HTML to contain a matching text node for "%s" in <%s>.', text, parentNode.nodeName.toLowerCase());
           }
         }
-        function restoreControlledState$3(domElement, tag2, props) {
+        function restoreControlledState$3(domElement, tag2, props2) {
           switch (tag2) {
             case "input":
-              restoreControlledState(domElement, props);
+              restoreControlledState(domElement, props2);
               return;
             case "textarea":
-              restoreControlledState$2(domElement, props);
+              restoreControlledState$2(domElement, props2);
               return;
             case "select":
-              restoreControlledState$1(domElement, props);
+              restoreControlledState$1(domElement, props2);
               return;
           }
         }
@@ -18736,34 +18736,34 @@ Please use another name.` : formatMuiErrorMessage(18));
           eventsEnabled = null;
           selectionInformation = null;
         }
-        function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
+        function createInstance(type, props2, rootContainerInstance, hostContext, internalInstanceHandle) {
           var parentNamespace;
           {
             var hostContextDev = hostContext;
             validateDOMNesting(type, null, hostContextDev.ancestorInfo);
-            if (typeof props.children === "string" || typeof props.children === "number") {
-              var string = "" + props.children;
+            if (typeof props2.children === "string" || typeof props2.children === "number") {
+              var string = "" + props2.children;
               var ownAncestorInfo = updatedAncestorInfo(hostContextDev.ancestorInfo, type);
               validateDOMNesting(null, string, ownAncestorInfo);
             }
             parentNamespace = hostContextDev.namespace;
           }
-          var domElement = createElement2(type, props, rootContainerInstance, parentNamespace);
+          var domElement = createElement2(type, props2, rootContainerInstance, parentNamespace);
           precacheFiberNode(internalInstanceHandle, domElement);
-          updateFiberProps(domElement, props);
+          updateFiberProps(domElement, props2);
           return domElement;
         }
         function appendInitialChild(parentInstance, child) {
           parentInstance.appendChild(child);
         }
-        function finalizeInitialChildren(domElement, type, props, rootContainerInstance, hostContext) {
-          setInitialProperties(domElement, type, props, rootContainerInstance);
+        function finalizeInitialChildren(domElement, type, props2, rootContainerInstance, hostContext) {
+          setInitialProperties(domElement, type, props2, rootContainerInstance);
           switch (type) {
             case "button":
             case "input":
             case "select":
             case "textarea":
-              return !!props.autoFocus;
+              return !!props2.autoFocus;
             case "img":
               return true;
             default:
@@ -18781,8 +18781,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           return diffProperties(domElement, type, oldProps, newProps);
         }
-        function shouldSetTextContent(type, props) {
-          return type === "textarea" || type === "noscript" || typeof props.children === "string" || typeof props.children === "number" || typeof props.dangerouslySetInnerHTML === "object" && props.dangerouslySetInnerHTML !== null && props.dangerouslySetInnerHTML.__html != null;
+        function shouldSetTextContent(type, props2) {
+          return type === "textarea" || type === "noscript" || typeof props2.children === "string" || typeof props2.children === "number" || typeof props2.dangerouslySetInnerHTML === "object" && props2.dangerouslySetInnerHTML !== null && props2.dangerouslySetInnerHTML.__html != null;
         }
         function createTextInstance(text, rootContainerInstance, hostContext, internalInstanceHandle) {
           {
@@ -18921,9 +18921,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         function hideTextInstance(textInstance) {
           textInstance.nodeValue = "";
         }
-        function unhideInstance(instance, props) {
+        function unhideInstance(instance, props2) {
           instance = instance;
-          var styleProp = props[STYLE$1];
+          var styleProp = props2[STYLE$1];
           var display = styleProp !== void 0 && styleProp !== null && styleProp.hasOwnProperty("display") ? styleProp.display : null;
           instance.style.display = dangerousStyleValue("display", display);
         }
@@ -18939,7 +18939,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function canHydrateInstance(instance, type, props) {
+        function canHydrateInstance(instance, type, props2) {
           if (instance.nodeType !== ELEMENT_NODE || type.toLowerCase() !== instance.nodeName.toLowerCase()) {
             return null;
           }
@@ -19014,16 +19014,16 @@ Please use another name.` : formatMuiErrorMessage(18));
         function getFirstHydratableChildWithinSuspenseInstance(parentInstance) {
           return getNextHydratable(parentInstance.nextSibling);
         }
-        function hydrateInstance(instance, type, props, rootContainerInstance, hostContext, internalInstanceHandle, shouldWarnDev) {
+        function hydrateInstance(instance, type, props2, rootContainerInstance, hostContext, internalInstanceHandle, shouldWarnDev) {
           precacheFiberNode(internalInstanceHandle, instance);
-          updateFiberProps(instance, props);
+          updateFiberProps(instance, props2);
           var parentNamespace;
           {
             var hostContextDev = hostContext;
             parentNamespace = hostContextDev.namespace;
           }
           var isConcurrentMode = (internalInstanceHandle.mode & ConcurrentMode) !== NoMode;
-          return diffHydratedProperties(instance, type, props, parentNamespace, rootContainerInstance, isConcurrentMode, shouldWarnDev);
+          return diffHydratedProperties(instance, type, props2, parentNamespace, rootContainerInstance, isConcurrentMode, shouldWarnDev);
         }
         function hydrateTextInstance(textInstance, text, internalInstanceHandle, shouldWarnDev) {
           precacheFiberNode(internalInstanceHandle, textInstance);
@@ -19130,7 +19130,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function didNotFindHydratableInstanceWithinContainer(parentContainer, type, props) {
+        function didNotFindHydratableInstanceWithinContainer(parentContainer, type, props2) {
           {
             warnForInsertedHydratedElement(parentContainer, type);
           }
@@ -19140,7 +19140,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             warnForInsertedHydratedText(parentContainer, text);
           }
         }
-        function didNotFindHydratableInstanceWithinSuspenseInstance(parentInstance, type, props) {
+        function didNotFindHydratableInstanceWithinSuspenseInstance(parentInstance, type, props2) {
           {
             var parentNode = parentInstance.parentNode;
             if (parentNode !== null)
@@ -19154,7 +19154,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               warnForInsertedHydratedText(parentNode, text);
           }
         }
-        function didNotFindHydratableInstance(parentType, parentProps, parentInstance, type, props, isConcurrentMode) {
+        function didNotFindHydratableInstance(parentType, parentProps, parentInstance, type, props2, isConcurrentMode) {
           {
             if (isConcurrentMode || parentProps[SUPPRESS_HYDRATION_WARNING$1] !== true) {
               warnForInsertedHydratedElement(parentInstance, type);
@@ -19249,8 +19249,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         function getFiberCurrentPropsFromNode(node2) {
           return node2[internalPropsKey] || null;
         }
-        function updateFiberProps(node2, props) {
-          node2[internalPropsKey] = props;
+        function updateFiberProps(node2, props2) {
+          node2[internalPropsKey] = props2;
         }
         function getEventListenerSet(node2) {
           var elementListenerSet = node2[internalEventHandlersKey];
@@ -19352,9 +19352,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         var contextStackCursor = createCursor(emptyContextObject);
         var didPerformWorkStackCursor = createCursor(false);
         var previousContext = emptyContextObject;
-        function getUnmaskedContext(workInProgress2, Component, didPushOwnContextIfProvider) {
+        function getUnmaskedContext(workInProgress2, Component2, didPushOwnContextIfProvider) {
           {
-            if (didPushOwnContextIfProvider && isContextProvider(Component)) {
+            if (didPushOwnContextIfProvider && isContextProvider(Component2)) {
               return previousContext;
             }
             return contextStackCursor.current;
@@ -19491,8 +19491,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 case HostRoot:
                   return node2.stateNode.context;
                 case ClassComponent: {
-                  var Component = node2.type;
-                  if (isContextProvider(Component)) {
+                  var Component2 = node2.type;
+                  if (isContextProvider(Component2)) {
                     return node2.stateNode.__reactInternalMemoizedMergedChildContext;
                   }
                   break;
@@ -20254,16 +20254,16 @@ Please use another name.` : formatMuiErrorMessage(18));
             pendingLegacyContextWarning = /* @__PURE__ */ new Map();
           };
         }
-        function resolveDefaultProps(Component, baseProps) {
-          if (Component && Component.defaultProps) {
-            var props = assign2({}, baseProps);
-            var defaultProps2 = Component.defaultProps;
+        function resolveDefaultProps(Component2, baseProps) {
+          if (Component2 && Component2.defaultProps) {
+            var props2 = assign2({}, baseProps);
+            var defaultProps2 = Component2.defaultProps;
             for (var propName in defaultProps2) {
-              if (props[propName] === void 0) {
-                props[propName] = defaultProps2[propName];
+              if (props2[propName] === void 0) {
+                props2[propName] = defaultProps2[propName];
               }
             }
-            return props;
+            return props2;
           }
           return baseProps;
         }
@@ -20780,7 +20780,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           return prevState;
         }
-        function processUpdateQueue(workInProgress2, props, instance, renderLanes2) {
+        function processUpdateQueue(workInProgress2, props2, instance, renderLanes2) {
           var queue = workInProgress2.updateQueue;
           hasForceUpdate = false;
           {
@@ -20855,7 +20855,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   };
                   newLastBaseUpdate = newLastBaseUpdate.next = _clone;
                 }
-                newState = getStateFromUpdate(workInProgress2, queue, update, newState, props, instance);
+                newState = getStateFromUpdate(workInProgress2, queue, update, newState, props2, instance);
                 var callback = update.callback;
                 if (callback !== null && // If the update was already committed, we should not queue its
                 // callback again.
@@ -21183,7 +21183,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             instance._reactInternalInstance = fakeInternalInstance;
           }
         }
-        function constructClassInstance(workInProgress2, ctor, props) {
+        function constructClassInstance(workInProgress2, ctor, props2) {
           var isLegacyContextConsumer = false;
           var unmaskedContext = emptyContextObject;
           var context = emptyContextObject;
@@ -21220,12 +21220,12 @@ Please use another name.` : formatMuiErrorMessage(18));
             isLegacyContextConsumer = contextTypes !== null && contextTypes !== void 0;
             context = isLegacyContextConsumer ? getMaskedContext(workInProgress2, unmaskedContext) : emptyContextObject;
           }
-          var instance = new ctor(props, context);
+          var instance = new ctor(props2, context);
           {
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                instance = new ctor(props, context);
+                instance = new ctor(props2, context);
               } finally {
                 setIsStrictModeForDevtools(false);
               }
@@ -22552,7 +22552,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           return true;
         }
-        function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
+        function renderWithHooks(current2, workInProgress2, Component2, props2, secondArg, nextRenderLanes) {
           renderLanes = nextRenderLanes;
           currentlyRenderingFiber$1 = workInProgress2;
           {
@@ -22572,7 +22572,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               ReactCurrentDispatcher$1.current = HooksDispatcherOnMountInDEV;
             }
           }
-          var children = Component(props, secondArg);
+          var children = Component2(props2, secondArg);
           if (didScheduleRenderPhaseUpdateDuringThisPass) {
             var numberOfReRenders = 0;
             do {
@@ -22592,7 +22592,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 hookTypesUpdateIndexDev = -1;
               }
               ReactCurrentDispatcher$1.current = HooksDispatcherOnRerenderInDEV;
-              children = Component(props, secondArg);
+              children = Component2(props2, secondArg);
             } while (didScheduleRenderPhaseUpdateDuringThisPass);
           }
           ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -24700,22 +24700,22 @@ Please use another name.` : formatMuiErrorMessage(18));
           workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
           workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
         }
-        function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateForwardRef(current2, workInProgress2, Component2, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
-              var innerPropTypes = Component.propTypes;
+              var innerPropTypes = Component2.propTypes;
               if (innerPropTypes) {
                 checkPropTypes(
                   innerPropTypes,
                   nextProps,
                   // Resolved props
                   "prop",
-                  getComponentNameFromType(Component)
+                  getComponentNameFromType(Component2)
                 );
               }
             }
           }
-          var render2 = Component.render;
+          var render2 = Component2.render;
           var ref = workInProgress2.ref;
           var nextChildren;
           var hasId;
@@ -24753,11 +24753,11 @@ Please use another name.` : formatMuiErrorMessage(18));
           reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
           if (current2 === null) {
-            var type = Component.type;
-            if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
-            Component.defaultProps === void 0) {
+            var type = Component2.type;
+            if (isSimpleFunctionComponent(type) && Component2.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
+            Component2.defaultProps === void 0) {
               var resolvedType = type;
               {
                 resolvedType = resolveFunctionForHotReloading(type);
@@ -24781,14 +24781,14 @@ Please use another name.` : formatMuiErrorMessage(18));
                 );
               }
             }
-            var child = createFiberFromTypeAndProps(Component.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
+            var child = createFiberFromTypeAndProps(Component2.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
             child.ref = workInProgress2.ref;
             child.return = workInProgress2;
             workInProgress2.child = child;
             return child;
           }
           {
-            var _type = Component.type;
+            var _type = Component2.type;
             var _innerPropTypes = _type.propTypes;
             if (_innerPropTypes) {
               checkPropTypes(
@@ -24804,7 +24804,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
           if (!hasScheduledUpdateOrContext) {
             var prevProps = currentChild.memoizedProps;
-            var compare = Component.compare;
+            var compare = Component2.compare;
             compare = compare !== null ? compare : shallowEqual2;
             if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
               return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
@@ -24817,7 +24817,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           workInProgress2.child = newChild;
           return newChild;
         }
-        function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateSimpleMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var outerMemoType = workInProgress2.elementType;
@@ -24857,7 +24857,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             }
           }
-          return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
+          return updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2);
         }
         function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
@@ -24947,24 +24947,24 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           }
         }
-        function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
-              var innerPropTypes = Component.propTypes;
+              var innerPropTypes = Component2.propTypes;
               if (innerPropTypes) {
                 checkPropTypes(
                   innerPropTypes,
                   nextProps,
                   // Resolved props
                   "prop",
-                  getComponentNameFromType(Component)
+                  getComponentNameFromType(Component2)
                 );
               }
             }
           }
           var context;
           {
-            var unmaskedContext = getUnmaskedContext(workInProgress2, Component, true);
+            var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, true);
             context = getMaskedContext(workInProgress2, unmaskedContext);
           }
           var nextChildren;
@@ -24976,12 +24976,12 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             ReactCurrentOwner$1.current = workInProgress2;
             setIsRendering(true);
-            nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+            nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
             hasId = checkDidRenderIdHook();
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+                nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
                 hasId = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -25003,7 +25003,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateClassComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
           {
             switch (shouldError(workInProgress2)) {
               case false: {
@@ -25026,20 +25026,20 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             }
             if (workInProgress2.type !== workInProgress2.elementType) {
-              var innerPropTypes = Component.propTypes;
+              var innerPropTypes = Component2.propTypes;
               if (innerPropTypes) {
                 checkPropTypes(
                   innerPropTypes,
                   nextProps,
                   // Resolved props
                   "prop",
-                  getComponentNameFromType(Component)
+                  getComponentNameFromType(Component2)
                 );
               }
             }
           }
           var hasContext;
-          if (isContextProvider(Component)) {
+          if (isContextProvider(Component2)) {
             hasContext = true;
             pushContextProvider(workInProgress2);
           } else {
@@ -25050,15 +25050,15 @@ Please use another name.` : formatMuiErrorMessage(18));
           var shouldUpdate;
           if (instance === null) {
             resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
-            constructClassInstance(workInProgress2, Component, nextProps);
-            mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
+            constructClassInstance(workInProgress2, Component2, nextProps);
+            mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
             shouldUpdate = true;
           } else if (current2 === null) {
-            shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
+            shouldUpdate = resumeMountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
           } else {
-            shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
+            shouldUpdate = updateClassInstance(current2, workInProgress2, Component2, nextProps, renderLanes2);
           }
-          var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
+          var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2);
           {
             var inst = workInProgress2.stateNode;
             if (shouldUpdate && inst.props !== nextProps) {
@@ -25070,19 +25070,19 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           return nextUnitOfWork;
         }
-        function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
+        function finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2) {
           markRef(current2, workInProgress2);
           var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
           if (!shouldUpdate && !didCaptureError) {
             if (hasContext) {
-              invalidateContextProvider(workInProgress2, Component, false);
+              invalidateContextProvider(workInProgress2, Component2, false);
             }
             return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
           }
           var instance = workInProgress2.stateNode;
           ReactCurrentOwner$1.current = workInProgress2;
           var nextChildren;
-          if (didCaptureError && typeof Component.getDerivedStateFromError !== "function") {
+          if (didCaptureError && typeof Component2.getDerivedStateFromError !== "function") {
             nextChildren = null;
             {
               stopProfilerTimerIfRunning();
@@ -25116,7 +25116,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           workInProgress2.memoizedState = instance.state;
           if (hasContext) {
-            invalidateContextProvider(workInProgress2, Component, true);
+            invalidateContextProvider(workInProgress2, Component2, true);
           }
           return workInProgress2.child;
         }
@@ -25212,49 +25212,49 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
         function mountLazyComponent(_current, workInProgress2, elementType, renderLanes2) {
           resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
-          var props = workInProgress2.pendingProps;
+          var props2 = workInProgress2.pendingProps;
           var lazyComponent = elementType;
           var payload = lazyComponent._payload;
           var init = lazyComponent._init;
-          var Component = init(payload);
-          workInProgress2.type = Component;
-          var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component);
-          var resolvedProps = resolveDefaultProps(Component, props);
+          var Component2 = init(payload);
+          workInProgress2.type = Component2;
+          var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component2);
+          var resolvedProps = resolveDefaultProps(Component2, props2);
           var child;
           switch (resolvedTag) {
             case FunctionComponent: {
               {
-                validateFunctionComponentInDev(workInProgress2, Component);
-                workInProgress2.type = Component = resolveFunctionForHotReloading(Component);
+                validateFunctionComponentInDev(workInProgress2, Component2);
+                workInProgress2.type = Component2 = resolveFunctionForHotReloading(Component2);
               }
-              child = updateFunctionComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
+              child = updateFunctionComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
               return child;
             }
             case ClassComponent: {
               {
-                workInProgress2.type = Component = resolveClassForHotReloading(Component);
+                workInProgress2.type = Component2 = resolveClassForHotReloading(Component2);
               }
-              child = updateClassComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
+              child = updateClassComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
               return child;
             }
             case ForwardRef: {
               {
-                workInProgress2.type = Component = resolveForwardRefForHotReloading(Component);
+                workInProgress2.type = Component2 = resolveForwardRefForHotReloading(Component2);
               }
-              child = updateForwardRef(null, workInProgress2, Component, resolvedProps, renderLanes2);
+              child = updateForwardRef(null, workInProgress2, Component2, resolvedProps, renderLanes2);
               return child;
             }
             case MemoComponent: {
               {
                 if (workInProgress2.type !== workInProgress2.elementType) {
-                  var outerPropTypes = Component.propTypes;
+                  var outerPropTypes = Component2.propTypes;
                   if (outerPropTypes) {
                     checkPropTypes(
                       outerPropTypes,
                       resolvedProps,
                       // Resolved for outer only
                       "prop",
-                      getComponentNameFromType(Component)
+                      getComponentNameFromType(Component2)
                     );
                   }
                 }
@@ -25262,8 +25262,8 @@ Please use another name.` : formatMuiErrorMessage(18));
               child = updateMemoComponent(
                 null,
                 workInProgress2,
-                Component,
-                resolveDefaultProps(Component.type, resolvedProps),
+                Component2,
+                resolveDefaultProps(Component2.type, resolvedProps),
                 // The inner type can have defaults too
                 renderLanes2
               );
@@ -25272,33 +25272,33 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           var hint = "";
           {
-            if (Component !== null && typeof Component === "object" && Component.$$typeof === REACT_LAZY_TYPE) {
+            if (Component2 !== null && typeof Component2 === "object" && Component2.$$typeof === REACT_LAZY_TYPE) {
               hint = " Did you wrap a component in React.lazy() more than once?";
             }
           }
-          throw new Error("Element type is invalid. Received a promise that resolves to: " + Component + ". " + ("Lazy element type must resolve to a class or function." + hint));
+          throw new Error("Element type is invalid. Received a promise that resolves to: " + Component2 + ". " + ("Lazy element type must resolve to a class or function." + hint));
         }
-        function mountIncompleteClassComponent(_current, workInProgress2, Component, nextProps, renderLanes2) {
+        function mountIncompleteClassComponent(_current, workInProgress2, Component2, nextProps, renderLanes2) {
           resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
           workInProgress2.tag = ClassComponent;
           var hasContext;
-          if (isContextProvider(Component)) {
+          if (isContextProvider(Component2)) {
             hasContext = true;
             pushContextProvider(workInProgress2);
           } else {
             hasContext = false;
           }
           prepareToReadContext(workInProgress2, renderLanes2);
-          constructClassInstance(workInProgress2, Component, nextProps);
-          mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
-          return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
+          constructClassInstance(workInProgress2, Component2, nextProps);
+          mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
         }
-        function mountIndeterminateComponent(_current, workInProgress2, Component, renderLanes2) {
+        function mountIndeterminateComponent(_current, workInProgress2, Component2, renderLanes2) {
           resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
-          var props = workInProgress2.pendingProps;
+          var props2 = workInProgress2.pendingProps;
           var context;
           {
-            var unmaskedContext = getUnmaskedContext(workInProgress2, Component, false);
+            var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, false);
             context = getMaskedContext(workInProgress2, unmaskedContext);
           }
           prepareToReadContext(workInProgress2, renderLanes2);
@@ -25308,8 +25308,8 @@ Please use another name.` : formatMuiErrorMessage(18));
             markComponentRenderStarted(workInProgress2);
           }
           {
-            if (Component.prototype && typeof Component.prototype.render === "function") {
-              var componentName = getComponentNameFromType(Component) || "Unknown";
+            if (Component2.prototype && typeof Component2.prototype.render === "function") {
+              var componentName = getComponentNameFromType(Component2) || "Unknown";
               if (!didWarnAboutBadClass[componentName]) {
                 error("The <%s /> component appears to have a render method, but doesn't extend React.Component. This is likely to cause errors. Change %s to extend React.Component instead.", componentName, componentName);
                 didWarnAboutBadClass[componentName] = true;
@@ -25320,7 +25320,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
             setIsRendering(true);
             ReactCurrentOwner$1.current = workInProgress2;
-            value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
+            value = renderWithHooks(null, workInProgress2, Component2, props2, context, renderLanes2);
             hasId = checkDidRenderIdHook();
             setIsRendering(false);
           }
@@ -25330,7 +25330,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           workInProgress2.flags |= PerformedWork;
           {
             if (typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0) {
-              var _componentName = getComponentNameFromType(Component) || "Unknown";
+              var _componentName = getComponentNameFromType(Component2) || "Unknown";
               if (!didWarnAboutModulePatternComponent[_componentName]) {
                 error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName, _componentName, _componentName);
                 didWarnAboutModulePatternComponent[_componentName] = true;
@@ -25343,7 +25343,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0
           ) {
             {
-              var _componentName2 = getComponentNameFromType(Component) || "Unknown";
+              var _componentName2 = getComponentNameFromType(Component2) || "Unknown";
               if (!didWarnAboutModulePatternComponent[_componentName2]) {
                 error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName2, _componentName2, _componentName2);
                 didWarnAboutModulePatternComponent[_componentName2] = true;
@@ -25353,7 +25353,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             workInProgress2.memoizedState = null;
             workInProgress2.updateQueue = null;
             var hasContext = false;
-            if (isContextProvider(Component)) {
+            if (isContextProvider(Component2)) {
               hasContext = true;
               pushContextProvider(workInProgress2);
             } else {
@@ -25362,15 +25362,15 @@ Please use another name.` : formatMuiErrorMessage(18));
             workInProgress2.memoizedState = value.state !== null && value.state !== void 0 ? value.state : null;
             initializeUpdateQueue(workInProgress2);
             adoptClassInstance(workInProgress2, value);
-            mountClassInstance(workInProgress2, Component, props, renderLanes2);
-            return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
+            mountClassInstance(workInProgress2, Component2, props2, renderLanes2);
+            return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
           } else {
             workInProgress2.tag = FunctionComponent;
             {
               if (workInProgress2.mode & StrictLegacyMode) {
                 setIsStrictModeForDevtools(true);
                 try {
-                  value = renderWithHooks(null, workInProgress2, Component, props, context, renderLanes2);
+                  value = renderWithHooks(null, workInProgress2, Component2, props2, context, renderLanes2);
                   hasId = checkDidRenderIdHook();
                 } finally {
                   setIsStrictModeForDevtools(false);
@@ -25382,16 +25382,16 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
             reconcileChildren(null, workInProgress2, value, renderLanes2);
             {
-              validateFunctionComponentInDev(workInProgress2, Component);
+              validateFunctionComponentInDev(workInProgress2, Component2);
             }
             return workInProgress2.child;
           }
         }
-        function validateFunctionComponentInDev(workInProgress2, Component) {
+        function validateFunctionComponentInDev(workInProgress2, Component2) {
           {
-            if (Component) {
-              if (Component.childContextTypes) {
-                error("%s(...): childContextTypes cannot be defined on a function component.", Component.displayName || Component.name || "Component");
+            if (Component2) {
+              if (Component2.childContextTypes) {
+                error("%s(...): childContextTypes cannot be defined on a function component.", Component2.displayName || Component2.name || "Component");
               }
             }
             if (workInProgress2.ref !== null) {
@@ -25410,15 +25410,15 @@ Please use another name.` : formatMuiErrorMessage(18));
                 error("Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s", info);
               }
             }
-            if (typeof Component.getDerivedStateFromProps === "function") {
-              var _componentName3 = getComponentNameFromType(Component) || "Unknown";
+            if (typeof Component2.getDerivedStateFromProps === "function") {
+              var _componentName3 = getComponentNameFromType(Component2) || "Unknown";
               if (!didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3]) {
                 error("%s: Function components do not support getDerivedStateFromProps.", _componentName3);
                 didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3] = true;
               }
             }
-            if (typeof Component.contextType === "object" && Component.contextType !== null) {
-              var _componentName4 = getComponentNameFromType(Component) || "Unknown";
+            if (typeof Component2.contextType === "object" && Component2.contextType !== null) {
+              var _componentName4 = getComponentNameFromType(Component2) || "Unknown";
               if (!didWarnAboutContextTypeOnFunctionComponent[_componentName4]) {
                 error("%s: Function components do not support contextType.", _componentName4);
                 didWarnAboutContextTypeOnFunctionComponent[_componentName4] = true;
@@ -26180,8 +26180,8 @@ Please use another name.` : formatMuiErrorMessage(18));
               pushHostContext(workInProgress2);
               break;
             case ClassComponent: {
-              var Component = workInProgress2.type;
-              if (isContextProvider(Component)) {
+              var Component2 = workInProgress2.type;
+              if (isContextProvider(Component2)) {
                 pushContextProvider(workInProgress2);
               }
               break;
@@ -26308,10 +26308,10 @@ Please use another name.` : formatMuiErrorMessage(18));
               return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
             }
             case FunctionComponent: {
-              var Component = workInProgress2.type;
+              var Component2 = workInProgress2.type;
               var unresolvedProps = workInProgress2.pendingProps;
-              var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
-              return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
+              var resolvedProps = workInProgress2.elementType === Component2 ? unresolvedProps : resolveDefaultProps(Component2, unresolvedProps);
+              return updateFunctionComponent(current2, workInProgress2, Component2, resolvedProps, renderLanes2);
             }
             case ClassComponent: {
               var _Component = workInProgress2.type;
@@ -26616,8 +26616,8 @@ Please use another name.` : formatMuiErrorMessage(18));
               bubbleProperties(workInProgress2);
               return null;
             case ClassComponent: {
-              var Component = workInProgress2.type;
-              if (isContextProvider(Component)) {
+              var Component2 = workInProgress2.type;
+              if (isContextProvider(Component2)) {
                 popContext(workInProgress2);
               }
               bubbleProperties(workInProgress2);
@@ -26935,8 +26935,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           popTreeContext(workInProgress2);
           switch (workInProgress2.tag) {
             case ClassComponent: {
-              var Component = workInProgress2.type;
-              if (isContextProvider(Component)) {
+              var Component2 = workInProgress2.type;
+              if (isContextProvider(Component2)) {
                 popContext(workInProgress2);
               }
               var flags = workInProgress2.flags;
@@ -27488,8 +27488,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 var _instance2 = finishedWork.stateNode;
                 if (current2 === null && finishedWork.flags & Update) {
                   var type = finishedWork.type;
-                  var props = finishedWork.memoizedProps;
-                  commitMount(_instance2, type, props);
+                  var props2 = finishedWork.memoizedProps;
+                  commitMount(_instance2, type, props2);
                 }
                 break;
               }
@@ -30614,18 +30614,18 @@ Please use another name.` : formatMuiErrorMessage(18));
         var createFiber = function(tag2, pendingProps, key, mode) {
           return new FiberNode(tag2, pendingProps, key, mode);
         };
-        function shouldConstruct$1(Component) {
-          var prototype = Component.prototype;
+        function shouldConstruct$1(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function isSimpleFunctionComponent(type) {
           return typeof type === "function" && !shouldConstruct$1(type) && type.defaultProps === void 0;
         }
-        function resolveLazyComponentTag(Component) {
-          if (typeof Component === "function") {
-            return shouldConstruct$1(Component) ? ClassComponent : FunctionComponent;
-          } else if (Component !== void 0 && Component !== null) {
-            var $$typeof = Component.$$typeof;
+        function resolveLazyComponentTag(Component2) {
+          if (typeof Component2 === "function") {
+            return shouldConstruct$1(Component2) ? ClassComponent : FunctionComponent;
+          } else if (Component2 !== void 0 && Component2 !== null) {
+            var $$typeof = Component2.$$typeof;
             if ($$typeof === REACT_FORWARD_REF_TYPE) {
               return ForwardRef;
             }
@@ -31062,9 +31062,9 @@ Please use another name.` : formatMuiErrorMessage(18));
           var fiber = get(parentComponent);
           var parentContext = findCurrentUnmaskedContext(fiber);
           if (fiber.tag === ClassComponent) {
-            var Component = fiber.type;
-            if (isContextProvider(Component)) {
-              return processChildContext(fiber, Component, parentContext);
+            var Component2 = fiber.type;
+            if (isContextProvider(Component2)) {
+              return processChildContext(fiber, Component2, parentContext);
             }
           }
           return parentContext;
@@ -38943,9 +38943,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   function ThemeProvider(_ref) {
     let {
       theme: themeInput
-    } = _ref, props = _objectWithoutPropertiesLoose$1(_ref, _excluded$Y);
+    } = _ref, props2 = _objectWithoutPropertiesLoose$1(_ref, _excluded$Y);
     const scopedTheme = themeInput[THEME_ID];
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$2({}, props, {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$2({}, props2, {
       themeId: scopedTheme ? THEME_ID : void 0,
       theme: scopedTheme || themeInput
     }));
@@ -39094,15 +39094,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (!getSlotProps) {
       const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
       const mergedStyle2 = _extends$2({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-      const props2 = _extends$2({}, additionalProps, externalForwardedProps, externalSlotProps);
+      const props3 = _extends$2({}, additionalProps, externalForwardedProps, externalSlotProps);
       if (joinedClasses2.length > 0) {
-        props2.className = joinedClasses2;
+        props3.className = joinedClasses2;
       }
       if (Object.keys(mergedStyle2).length > 0) {
-        props2.style = mergedStyle2;
+        props3.style = mergedStyle2;
       }
       return {
-        props: props2,
+        props: props3,
         internalRef: void 0
       };
     }
@@ -39112,15 +39112,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     const internalSlotProps = getSlotProps(eventHandlers);
     const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
     const mergedStyle = _extends$2({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-    const props = _extends$2({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
+    const props2 = _extends$2({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
     if (joinedClasses.length > 0) {
-      props.className = joinedClasses;
+      props2.className = joinedClasses;
     }
     if (Object.keys(mergedStyle).length > 0) {
-      props.style = mergedStyle;
+      props2.style = mergedStyle;
     }
     return {
-      props,
+      props: props2,
       internalRef: internalSlotProps.ref
     };
   }
@@ -39141,10 +39141,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       externalSlotProps: resolvedComponentsProps
     }));
     const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
-    const props = appendOwnerState(elementType, _extends$2({}, mergedProps, {
+    const props2 = appendOwnerState(elementType, _extends$2({}, mergedProps, {
       ref
     }), ownerState);
-    return props;
+    return props2;
   }
   function mapEventPropToEvent(eventProp) {
     return eventProp.substring(2).toLowerCase();
@@ -39152,14 +39152,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   function clickedRootScrollbar(event2, doc) {
     return doc.documentElement.clientWidth < event2.clientX || doc.documentElement.clientHeight < event2.clientY;
   }
-  function ClickAwayListener(props) {
+  function ClickAwayListener(props2) {
     const {
       children,
       disableReactTree = false,
       mouseEvent = "onClick",
       onClickAway,
       touchEvent = "onTouchEnd"
-    } = props;
+    } = props2;
     const movedRef = reactExports.useRef(false);
     const nodeRef = reactExports.useRef(null);
     const activatedRef = reactExports.useRef(false);
@@ -39338,7 +39338,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function defaultIsEnabled() {
     return true;
   }
-  function FocusTrap(props) {
+  function FocusTrap(props2) {
     const {
       children,
       disableAutoFocus = false,
@@ -39347,7 +39347,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       getTabbable = defaultGetTabbable,
       isEnabled = defaultIsEnabled,
       open
-    } = props;
+    } = props2;
     const ignoreNextEnforceFocus = reactExports.useRef(false);
     const sentinelStart = reactExports.useRef(null);
     const sentinelEnd = reactExports.useRef(null);
@@ -39556,12 +39556,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   function getContainer$1(container2) {
     return typeof container2 === "function" ? container2() : container2;
   }
-  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props, forwardedRef) {
+  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props2, forwardedRef) {
     const {
       children,
       container: container2,
       disablePortal = false
-    } = props;
+    } = props2;
     const [mountNode, setMountNode] = reactExports.useState(null);
     const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
     useEnhancedEffect$1(() => {
@@ -39663,10 +39663,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     return idx;
   }
-  function handleContainer(containerInfo, props) {
+  function handleContainer(containerInfo, props2) {
     const restoreStyle = [];
     const container2 = containerInfo.container;
-    if (!props.disableScrollLock) {
+    if (!props2.disableScrollLock) {
       if (isOverflowing(container2)) {
         const scrollbarSize = getScrollbarSize(ownerDocument(container2));
         restoreStyle.push({
@@ -39764,11 +39764,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       });
       return modalIndex;
     }
-    mount(modal, props) {
+    mount(modal, props2) {
       const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
       const containerInfo = this.containers[containerIndex];
       if (!containerInfo.restore) {
-        containerInfo.restore = handleContainer(containerInfo, props);
+        containerInfo.restore = handleContainer(containerInfo, props2);
       }
     }
     remove(modal, ariaHiddenState = true) {
@@ -40084,14 +40084,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   function isEmpty$1(obj) {
     return obj === void 0 || obj === null || Object.keys(obj).length === 0 || obj.outerHeightStyle === 0 && !obj.overflow;
   }
-  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props, forwardedRef) {
+  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props2, forwardedRef) {
     const {
       onChange,
       maxRows,
       minRows = 1,
       style: style2,
       value
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$W);
     const {
       current: isControlled
     } = reactExports.useRef(value != null);
@@ -40113,7 +40113,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
       const inputShallow = shadowRef.current;
       inputShallow.style.width = computedStyle.width;
-      inputShallow.value = input.value || props.placeholder || "x";
+      inputShallow.value = input.value || props2.placeholder || "x";
       if (inputShallow.value.slice(-1) === "\n") {
         inputShallow.value += " ";
       }
@@ -40137,7 +40137,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         outerHeightStyle,
         overflow
       };
-    }, [maxRows, minRows, props.placeholder]);
+    }, [maxRows, minRows, props2.placeholder]);
     const updateState = (prevState, newState) => {
       const {
         outerHeightStyle,
@@ -40232,7 +40232,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         }, style2)
       }, other)), /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", {
         "aria-hidden": true,
-        className: props.className,
+        className: props2.className,
         readOnly: true,
         ref: shadowRef,
         tabIndex: -1,
@@ -40331,7 +40331,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const BadgeRoot = styled$1("span", {
     name: "MuiBadge",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({
     position: "relative",
     display: "inline-flex",
@@ -40342,10 +40342,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const BadgeBadge = styled$1("span", {
     name: "MuiBadge",
     slot: "Badge",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.badge, styles2[ownerState.variant], styles2[`anchorOrigin${capitalize(ownerState.anchorOrigin.vertical)}${capitalize(ownerState.anchorOrigin.horizontal)}${capitalize(ownerState.overlap)}`], ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`], ownerState.invisible && styles2.invisible];
     }
   })(({
@@ -40454,7 +40454,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$badge, _slotProps$root, _slotProps$badge;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiBadge"
     });
@@ -40477,7 +40477,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       showZero = false,
       variant: variantProp = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$V);
     const {
       badgeContent,
       invisible: invisibleFromHook,
@@ -40502,9 +40502,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       overlap = overlapProp,
       anchorOrigin = anchorOriginProp,
       variant = variantProp
-    } = invisible ? prevProps : props;
+    } = invisible ? prevProps : props2;
     const displayValue = variant !== "dot" ? displayValueFromHook : void 0;
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       badgeContent,
       invisible,
       max: max2,
@@ -40682,10 +40682,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const TypographyRoot = styled$1("span", {
     name: "MuiTypography",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
     }
   })(({
@@ -40736,7 +40736,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       name: "MuiTypography"
     });
     const color2 = transformDeprecatedColors$1(themeProps.color);
-    const props = extendSxProp(_extends$2({}, themeProps, {
+    const props2 = extendSxProp(_extends$2({}, themeProps, {
       color: color2
     }));
     const {
@@ -40748,8 +40748,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$U);
+    const ownerState = _extends$2({}, props2, {
       align,
       color: color2,
       className,
@@ -40760,10 +40760,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant,
       variantMapping
     });
-    const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+    const Component2 = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
     const classes = useUtilityClasses$L(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$2({
-      as: Component,
+      as: Component2,
       ref,
       ownerState,
       className: clsx(classes.root, className)
@@ -40889,10 +40889,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const LinkRoot = styled$1(Typography$1, {
     name: "MuiLink",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[`underline${capitalize(ownerState.underline)}`], ownerState.component === "button" && styles2.button];
     }
   })(({
@@ -40947,7 +40947,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiLink"
     });
@@ -40961,7 +40961,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       underline = "always",
       variant = "inherit",
       sx
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$T);
     const {
       isFocusVisibleRef,
       onBlur: handleBlurVisible,
@@ -40988,7 +40988,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         onFocus(event2);
       }
     };
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       component,
       focusVisible,
@@ -41091,10 +41091,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListRoot = styled$1("ul", {
     name: "MuiList",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, !ownerState.disablePadding && styles2.padding, ownerState.dense && styles2.dense, ownerState.subheader && styles2.subheader];
     }
   })(({
@@ -41111,7 +41111,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingTop: 0
   }));
   const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiList"
     });
@@ -41122,11 +41122,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       dense = false,
       disablePadding = false,
       subheader
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$S);
     const context = reactExports.useMemo(() => ({
       dense
     }), [dense]);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       component,
       dense,
       disablePadding
@@ -41231,14 +41231,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   var EXITING = "exiting";
   var Transition = /* @__PURE__ */ function(_React$Component) {
     _inheritsLoose(Transition2, _React$Component);
-    function Transition2(props, context) {
+    function Transition2(props2, context) {
       var _this;
-      _this = _React$Component.call(this, props, context) || this;
+      _this = _React$Component.call(this, props2, context) || this;
       var parentGroup = context;
-      var appear = parentGroup && !parentGroup.isMounting ? props.enter : props.appear;
+      var appear = parentGroup && !parentGroup.isMounting ? props2.enter : props2.appear;
       var initialStatus;
       _this.appearStatus = null;
-      if (props.in) {
+      if (props2.in) {
         if (appear) {
           initialStatus = EXITED;
           _this.appearStatus = ENTERING;
@@ -41246,7 +41246,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           initialStatus = ENTERED;
         }
       } else {
-        if (props.unmountOnExit || props.mountOnEnter) {
+        if (props2.unmountOnExit || props2.mountOnEnter) {
           initialStatus = UNMOUNTED;
         } else {
           initialStatus = EXITED;
@@ -41551,14 +41551,14 @@ Please use another name.` : formatMuiErrorMessage(18));
      *
      * @type {number | { enter?: number, exit?: number, appear?: number }}
      */
-    timeout: function timeout(props) {
+    timeout: function timeout(props2) {
       var pt = timeoutsShape;
-      if (!props.addEndListener)
+      if (!props2.addEndListener)
         pt = pt.isRequired;
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-      return pt.apply(void 0, [props].concat(args));
+      return pt.apply(void 0, [props2].concat(args));
     },
     /**
      * Add a custom transition end trigger. Called with the transitioning
@@ -41702,17 +41702,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return childMapping;
   }
-  function getProp(child, prop, props) {
-    return props[prop] != null ? props[prop] : child.props[prop];
+  function getProp(child, prop, props2) {
+    return props2[prop] != null ? props2[prop] : child.props[prop];
   }
-  function getInitialChildMapping(props, onExited) {
-    return getChildMapping(props.children, function(child) {
+  function getInitialChildMapping(props2, onExited) {
+    return getChildMapping(props2.children, function(child) {
       return reactExports.cloneElement(child, {
         onExited: onExited.bind(null, child),
         in: true,
-        appear: getProp(child, "appear", props),
-        enter: getProp(child, "enter", props),
-        exit: getProp(child, "exit", props)
+        appear: getProp(child, "appear", props2),
+        enter: getProp(child, "enter", props2),
+        exit: getProp(child, "exit", props2)
       });
     });
   }
@@ -41762,9 +41762,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   var TransitionGroup = /* @__PURE__ */ function(_React$Component) {
     _inheritsLoose(TransitionGroup2, _React$Component);
-    function TransitionGroup2(props, context) {
+    function TransitionGroup2(props2, context) {
       var _this;
-      _this = _React$Component.call(this, props, context) || this;
+      _this = _React$Component.call(this, props2, context) || this;
       var handleExited = _this.handleExited.bind(_assertThisInitialized(_this));
       _this.state = {
         contextValue: {
@@ -41812,20 +41812,20 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     };
     _proto.render = function render() {
-      var _this$props = this.props, Component = _this$props.component, childFactory = _this$props.childFactory, props = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
+      var _this$props = this.props, Component2 = _this$props.component, childFactory = _this$props.childFactory, props2 = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
       var contextValue = this.state.contextValue;
       var children = values(this.state.children).map(childFactory);
-      delete props.appear;
-      delete props.enter;
-      delete props.exit;
-      if (Component === null) {
+      delete props2.appear;
+      delete props2.enter;
+      delete props2.exit;
+      if (Component2 === null) {
         return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
           value: contextValue
         }, children);
       }
       return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
         value: contextValue
-      }, /* @__PURE__ */ React.createElement(Component, props, children));
+      }, /* @__PURE__ */ React.createElement(Component2, props2, children));
     };
     return TransitionGroup2;
   }(React.Component);
@@ -41884,7 +41884,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : {};
   TransitionGroup.defaultProps = defaultProps;
   const TransitionGroup$1 = TransitionGroup;
-  function Ripple(props) {
+  function Ripple(props2) {
     const {
       className,
       classes,
@@ -41895,7 +41895,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       in: inProp,
       onExited,
       timeout
-    } = props;
+    } = props2;
     const [leaving, setLeaving] = reactExports.useState(false);
     const rippleClassName = clsx(className, classes.ripple, classes.rippleVisible, pulsate && classes.ripplePulsate);
     const rippleStyles = {
@@ -42070,7 +42070,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     theme: theme2
   }) => theme2.transitions.easing.easeInOut);
   const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiTouchRipple"
     });
@@ -42078,7 +42078,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$R);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -42281,7 +42281,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ButtonBaseRoot = styled$1("button", {
     name: "MuiButtonBase",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({
     display: "inline-flex",
     alignItems: "center",
@@ -42323,7 +42323,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   });
   const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiButtonBase"
     });
@@ -42356,7 +42356,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$Q);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -42500,7 +42500,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       }, [enableTouchRipple]);
     }
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       centerRipple,
       component,
       disabled,
@@ -42711,10 +42711,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const listItemButtonClasses = generateUtilityClasses("MuiListItemButton", ["root", "focusVisible", "dense", "alignItemsFlexStart", "disabled", "divider", "gutters", "selected"]);
   const listItemButtonClasses$1 = listItemButtonClasses;
   const _excluded$P = ["alignItems", "autoFocus", "component", "children", "dense", "disableGutters", "divider", "focusVisibleClassName", "selected", "className"];
-  const overridesResolver$3 = (props, styles2) => {
+  const overridesResolver$3 = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
   };
   const useUtilityClasses$H = (ownerState) => {
@@ -42796,7 +42796,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: 4
   }));
   const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItemButton2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItemButton"
     });
@@ -42811,7 +42811,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       focusVisibleClassName,
       selected = false,
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$P);
     const context = reactExports.useContext(ListContext$1);
     const childContext = reactExports.useMemo(() => ({
       dense: dense || context.dense || false,
@@ -42828,7 +42828,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       }
     }, [autoFocus]);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       alignItems,
       dense: childContext.dense,
       disableGutters,
@@ -42949,10 +42949,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListItemSecondaryActionRoot = styled$1("div", {
     name: "MuiListItemSecondaryAction",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.disableGutters && styles2.disableGutters];
     }
   })(({
@@ -42966,15 +42966,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     right: 0
   }));
   const ListItemSecondaryAction = /* @__PURE__ */ reactExports.forwardRef(function ListItemSecondaryAction2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItemSecondaryAction"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$O);
     const context = reactExports.useContext(ListContext$1);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       disableGutters: context.disableGutters
     });
     const classes = useUtilityClasses$G(ownerState);
@@ -43009,10 +43009,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   ListItemSecondaryAction.muiName = "ListItemSecondaryAction";
   const ListItemSecondaryAction$1 = ListItemSecondaryAction;
   const _excluded$N = ["className"], _excluded2$4 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
-  const overridesResolver$2 = (props, styles2) => {
+  const overridesResolver$2 = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters, !ownerState.disablePadding && styles2.padding, ownerState.button && styles2.button, ownerState.hasSecondaryAction && styles2.secondaryAction];
   };
   const useUtilityClasses$F = (ownerState) => {
@@ -43112,12 +43112,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListItemContainer = styled$1("li", {
     name: "MuiListItem",
     slot: "Container",
-    overridesResolver: (props, styles2) => styles2.container
+    overridesResolver: (props2, styles2) => styles2.container
   })({
     position: "relative"
   });
   const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItem"
     });
@@ -43144,7 +43144,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       selected = false,
       slotProps = {},
       slots = {}
-    } = props, ContainerProps = _objectWithoutPropertiesLoose$1(props.ContainerProps, _excluded$N), other = _objectWithoutPropertiesLoose$1(props, _excluded2$4);
+    } = props2, ContainerProps = _objectWithoutPropertiesLoose$1(props2.ContainerProps, _excluded$N), other = _objectWithoutPropertiesLoose$1(props2, _excluded2$4);
     const context = reactExports.useContext(ListContext$1);
     const childContext = reactExports.useMemo(() => ({
       dense: dense || context.dense || false,
@@ -43163,7 +43163,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, [autoFocus]);
     const children = reactExports.Children.toArray(childrenProp);
     const hasSecondaryAction = children.length && isMuiElement(children[children.length - 1], ["ListItemSecondaryAction"]);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       alignItems,
       autoFocus,
       button,
@@ -43183,17 +43183,17 @@ Please use another name.` : formatMuiErrorMessage(18));
       className: clsx(classes.root, rootProps.className, className),
       disabled
     }, other);
-    let Component = componentProp || "li";
+    let Component2 = componentProp || "li";
     if (button) {
       componentProps.component = componentProp || "div";
       componentProps.focusVisibleClassName = clsx(listItemClasses$1.focusVisible, focusVisibleClassName);
-      Component = ButtonBase$1;
+      Component2 = ButtonBase$1;
     }
     if (hasSecondaryAction) {
-      Component = !componentProps.component && !componentProp ? "div" : Component;
+      Component2 = !componentProps.component && !componentProp ? "div" : Component2;
       if (ContainerComponent === "li") {
-        if (Component === "li") {
-          Component = "div";
+        if (Component2 === "li") {
+          Component2 = "div";
         } else if (componentProps.component === "li") {
           componentProps.component = "div";
         }
@@ -43207,7 +43207,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           ownerState
         }, ContainerProps, {
           children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root, _extends$2({}, rootProps, !isHostComponent(Root) && {
-            as: Component,
+            as: Component2,
             ownerState: _extends$2({}, ownerState, rootProps.ownerState)
           }, componentProps, {
             children
@@ -43218,7 +43218,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
       value: childContext,
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root, _extends$2({}, rootProps, {
-        as: Component,
+        as: Component2,
         ref: handleRef
       }, !isHostComponent(Root) && {
         ownerState: _extends$2({}, ownerState, rootProps.ownerState)
@@ -43257,8 +43257,8 @@ Please use another name.` : formatMuiErrorMessage(18));
      * The content of the component if a `ListItemSecondaryAction` is used it must
      * be the last child.
      */
-    children: chainPropTypes(PropTypes.node, (props) => {
-      const children = reactExports.Children.toArray(props.children);
+    children: chainPropTypes(PropTypes.node, (props2) => {
+      const children = reactExports.Children.toArray(props2.children);
       let secondaryActionIndex = -1;
       for (let i2 = children.length - 1; i2 >= 0; i2 -= 1) {
         const child = children[i2];
@@ -43412,10 +43412,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListItemTextRoot = styled$1("div", {
     name: "MuiListItemText",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [{
         [`& .${listItemTextClasses$1.primary}`]: styles2.primary
       }, {
@@ -43436,7 +43436,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingLeft: 56
   }));
   const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemText2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItemText"
     });
@@ -43449,13 +43449,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       primaryTypographyProps,
       secondary: secondaryProp,
       secondaryTypographyProps
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$M);
     const {
       dense
     } = reactExports.useContext(ListContext$1);
     let primary = primaryProp != null ? primaryProp : children;
     let secondary = secondaryProp;
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       disableTypography,
       inset,
       primary: !!primary,
@@ -43564,10 +43564,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListItemAvatarRoot = styled$1("div", {
     name: "MuiListItemAvatar",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart];
     }
   })(({
@@ -43579,15 +43579,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemAvatar = /* @__PURE__ */ reactExports.forwardRef(function ListItemAvatar2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItemAvatar"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$L);
     const context = reactExports.useContext(ListContext$1);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       alignItems: context.alignItems
     });
     const classes = useUtilityClasses$D(ownerState);
@@ -43625,7 +43625,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   generateUtilityClasses("MuiPagination", ["root", "ul", "outlined", "text"]);
   const _excluded$K = ["boundaryCount", "componentName", "count", "defaultPage", "disabled", "hideNextButton", "hidePrevButton", "onChange", "page", "showFirstButton", "showLastButton", "siblingCount"];
-  function usePagination(props = {}) {
+  function usePagination(props2 = {}) {
     const {
       boundaryCount = 1,
       componentName = "usePagination",
@@ -43639,7 +43639,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       showFirstButton = false,
       showLastButton = false,
       siblingCount = 1
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$K);
     const [page, setPageState] = useControlled({
       controlled: pageProp,
       default: defaultPage,
@@ -43760,10 +43760,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SvgIconRoot = styled$1("svg", {
     name: "MuiSvgIcon",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.color !== "inherit" && styles2[`color${capitalize(ownerState.color)}`], styles2[`fontSize${capitalize(ownerState.fontSize)}`]];
     }
   })(({
@@ -43798,7 +43798,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
   });
   const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiSvgIcon"
     });
@@ -43812,9 +43812,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$J);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       component,
       fontSize,
@@ -43918,19 +43918,19 @@ Please use another name.` : formatMuiErrorMessage(18));
   SvgIcon.muiName = "SvgIcon";
   const SvgIcon$1 = SvgIcon;
   function createSvgIcon$1(path, displayName) {
-    function Component(props, ref) {
+    function Component2(props2, ref) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(SvgIcon$1, _extends$2({
         "data-testid": `${displayName}Icon`,
         ref
-      }, props, {
+      }, props2, {
         children: path
       }));
     }
     if (process.env.NODE_ENV !== "production") {
-      Component.displayName = `${displayName}Icon`;
+      Component2.displayName = `${displayName}Icon`;
     }
-    Component.muiName = SvgIcon$1.muiName;
-    return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component));
+    Component2.muiName = SvgIcon$1.muiName;
+    return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component2));
   }
   const FirstPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
@@ -43945,10 +43945,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
   }), "NavigateNext");
   const _excluded$I = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
-  const overridesResolver$1 = (props, styles2) => {
+  const overridesResolver$1 = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.variant === "text" && styles2[`text${capitalize(ownerState.color)}`], ownerState.variant === "outlined" && styles2[`outlined${capitalize(ownerState.color)}`], ownerState.shape === "rounded" && styles2.rounded, ownerState.type === "page" && styles2.page, (ownerState.type === "start-ellipsis" || ownerState.type === "end-ellipsis") && styles2.ellipsis, (ownerState.type === "previous" || ownerState.type === "next") && styles2.previousNext, (ownerState.type === "first" || ownerState.type === "last") && styles2.firstLast];
   };
   const useUtilityClasses$B = (ownerState) => {
@@ -44118,7 +44118,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const PaginationItemPageIcon = styled$1("div", {
     name: "MuiPaginationItem",
     slot: "Icon",
-    overridesResolver: (props, styles2) => styles2.icon
+    overridesResolver: (props2, styles2) => styles2.icon
   })(({
     theme: theme2,
     ownerState
@@ -44131,7 +44131,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     fontSize: theme2.typography.pxToRem(22)
   }));
   const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function PaginationItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiPaginationItem"
     });
@@ -44148,8 +44148,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       slots = {},
       type = "page",
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$I);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       disabled,
       selected,
@@ -44302,17 +44302,17 @@ Please use another name.` : formatMuiErrorMessage(18));
   const PaginationRoot = styled$1("nav", {
     name: "MuiPagination",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant]];
     }
   })({});
   const PaginationUl = styled$1("ul", {
     name: "MuiPagination",
     slot: "Ul",
-    overridesResolver: (props, styles2) => styles2.ul
+    overridesResolver: (props2, styles2) => styles2.ul
   })({
     display: "flex",
     flexWrap: "wrap",
@@ -44328,7 +44328,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return `Go to ${type} page`;
   }
   const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiPagination"
     });
@@ -44349,13 +44349,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       siblingCount = 1,
       size: size2 = "medium",
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$H);
     const {
       items
-    } = usePagination(_extends$2({}, props, {
+    } = usePagination(_extends$2({}, props2, {
       componentName: "Pagination"
     }));
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       boundaryCount,
       color: color2,
       count,
@@ -44533,10 +44533,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AvatarRoot = styled$1("div", {
     name: "MuiAvatar",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant], ownerState.colorDefault && styles2.colorDefault];
     }
   })(({
@@ -44570,7 +44570,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AvatarImg = styled$1("img", {
     name: "MuiAvatar",
     slot: "Img",
-    overridesResolver: (props, styles2) => styles2.img
+    overridesResolver: (props2, styles2) => styles2.img
   })({
     width: "100%",
     height: "100%",
@@ -44585,7 +44585,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AvatarFallback = styled$1(Person, {
     name: "MuiAvatar",
     slot: "Fallback",
-    overridesResolver: (props, styles2) => styles2.fallback
+    overridesResolver: (props2, styles2) => styles2.fallback
   })({
     width: "75%",
     height: "75%"
@@ -44629,7 +44629,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return loaded;
   }
   const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiAvatar"
     });
@@ -44643,7 +44643,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       src,
       srcSet,
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$G);
     let children = null;
     const loaded = useLoaded(_extends$2({}, imgProps, {
       src,
@@ -44651,7 +44651,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
     const hasImg = src || srcSet;
     const hasImgNotFailing = hasImg && loaded !== "error";
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       colorDefault: !hasImgNotFailing,
       component,
       variant
@@ -44764,10 +44764,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const IconButtonRoot = styled$1(ButtonBase$1, {
     name: "MuiIconButton",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`], ownerState.edge && styles2[`edge${capitalize(ownerState.edge)}`], styles2[`size${capitalize(ownerState.size)}`]];
     }
   })(({
@@ -44830,7 +44830,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiIconButton"
     });
@@ -44842,8 +44842,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$F);
+    const ownerState = _extends$2({}, props2, {
       edge,
       color: color2,
       disabled,
@@ -44870,8 +44870,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * The icon to display.
      */
-    children: chainPropTypes(PropTypes.node, (props) => {
-      const found = reactExports.Children.toArray(props.children).some((child) => /* @__PURE__ */ reactExports.isValidElement(child) && child.props.onClick);
+    children: chainPropTypes(PropTypes.node, (props2) => {
+      const found = reactExports.Children.toArray(props2.children).some((child) => /* @__PURE__ */ reactExports.isValidElement(child) && child.props.onClick);
       if (found) {
         return new Error(["MUI: You are providing an onClick event listener to a child of a button element.", "Prefer applying it to the IconButton directly.", "This guarantees that the whole <button> will be responsive to click events."].join("\n"));
       }
@@ -44986,7 +44986,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return false;
   }
-  const MenuList = /* @__PURE__ */ reactExports.forwardRef(function MenuList2(props, ref) {
+  const MenuList = /* @__PURE__ */ reactExports.forwardRef(function MenuList2(props2, ref) {
     const {
       // private
       // eslint-disable-next-line react/prop-types
@@ -44999,7 +44999,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableListWrap = false,
       onKeyDown,
       variant = "selectedMenu"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$E);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$E);
     const listRef = reactExports.useRef(null);
     const textCriteriaRef = reactExports.useRef({
       keys: [],
@@ -45166,13 +45166,13 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const MenuList$1 = MenuList;
   const reflow = (node2) => node2.scrollTop;
-  function getTransitionProps(props, options) {
+  function getTransitionProps(props2, options) {
     var _style$transitionDura, _style$transitionTimi;
     const {
       timeout,
       easing: easing2,
       style: style2 = {}
-    } = props;
+    } = props2;
     return {
       duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout === "number" ? timeout : timeout[options.mode] || 0,
       easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
@@ -45194,7 +45194,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   };
   const isWebKit154 = typeof navigator !== "undefined" && /^((?!chrome|android).)*(safari|mobile)/i.test(navigator.userAgent) && /(os |version\/)15(.|_)4/i.test(navigator.userAgent);
-  const Grow = /* @__PURE__ */ reactExports.forwardRef(function Grow2(props, ref) {
+  const Grow = /* @__PURE__ */ reactExports.forwardRef(function Grow2(props2, ref) {
     const {
       addEndListener,
       appear = true,
@@ -45211,7 +45211,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = "auto",
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$D);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$D);
     const timer = reactExports.useRef();
     const autoTimeout = reactExports.useRef();
     const theme2 = useTheme();
@@ -45419,7 +45419,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       opacity: 1
     }
   };
-  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
+  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props2, ref) {
     const theme2 = useTheme();
     const defaultTimeout = {
       enter: theme2.transitions.duration.enteringScreen,
@@ -45441,7 +45441,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = defaultTimeout,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$C);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$C);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(nodeRef, children.ref, ref);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -45610,10 +45610,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const BackdropRoot = styled$1("div", {
     name: "MuiBackdrop",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.invisible && styles2.invisible];
     }
   })(({
@@ -45634,7 +45634,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
     var _slotProps$root, _ref, _slots$root;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiBackdrop"
     });
@@ -45650,8 +45650,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       slots = {},
       TransitionComponent = Fade$1,
       transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$B);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$B);
+    const ownerState = _extends$2({}, props2, {
       component,
       invisible
     });
@@ -45790,10 +45790,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ModalRoot = styled$1("div", {
     name: "MuiModal",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
     }
   })(({
@@ -45812,7 +45812,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ModalBackdrop = styled$1(Backdrop$1, {
     name: "MuiModal",
     slot: "Backdrop",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       return styles2.backdrop;
     }
   })({
@@ -45820,7 +45820,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       name: "MuiModal",
       props: inProps
     });
@@ -45847,8 +45847,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       slots
       // eslint-disable-next-line react/prop-types
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$A);
-    const propsWithDefaults = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$A);
+    const propsWithDefaults = _extends$2({}, props2, {
       closeAfterTransition,
       disableAutoFocus,
       disableEnforceFocus,
@@ -46139,10 +46139,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const PaperRoot = styled$1("div", {
     name: "MuiPaper",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
     }
   })(({
@@ -46167,7 +46167,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiPaper"
     });
@@ -46177,8 +46177,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$z);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$z);
+    const ownerState = _extends$2({}, props2, {
       component,
       elevation,
       square,
@@ -46225,11 +46225,11 @@ Please use another name.` : formatMuiErrorMessage(18));
      * It accepts values between 0 and 24 inclusive.
      * @default 1
      */
-    elevation: chainPropTypes(integerPropType, (props) => {
+    elevation: chainPropTypes(integerPropType, (props2) => {
       const {
         elevation,
         variant
-      } = props;
+      } = props2;
       if (elevation > 0 && variant === "outlined") {
         return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
       }
@@ -46297,12 +46297,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   const PopoverRoot = styled$1(Modal$1, {
     name: "MuiPopover",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({});
   const PopoverPaper = styled$1(Paper$1, {
     name: "MuiPopover",
     slot: "Paper",
-    overridesResolver: (props, styles2) => styles2.paper
+    overridesResolver: (props2, styles2) => styles2.paper
   })({
     position: "absolute",
     overflowY: "auto",
@@ -46318,7 +46318,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProps, ref) {
     var _slotProps$paper, _slots$root, _slots$paper;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiPopover"
     });
@@ -46350,11 +46350,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         onEntering
       } = {},
       disableScrollLock = false
-    } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$y), other = _objectWithoutPropertiesLoose$1(props, _excluded2$3);
+    } = props2, TransitionProps = _objectWithoutPropertiesLoose$1(props2.TransitionProps, _excluded$y), other = _objectWithoutPropertiesLoose$1(props2, _excluded2$3);
     const externalPaperSlotProps = (_slotProps$paper = slotProps == null ? void 0 : slotProps.paper) != null ? _slotProps$paper : PaperPropsProp;
     const paperRef = reactExports.useRef();
     const handlePaperRef = useForkRef(paperRef, externalPaperSlotProps.ref);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       anchorOrigin,
       anchorReference,
       elevation,
@@ -46572,9 +46572,9 @@ Please use another name.` : formatMuiErrorMessage(18));
      * or a function that returns either.
      * It's used to set the position of the popover.
      */
-    anchorEl: chainPropTypes(PropTypes.oneOfType([HTMLElementType, PropTypes.func]), (props) => {
-      if (props.open && (!props.anchorReference || props.anchorReference === "anchorEl")) {
-        const resolvedAnchorEl = resolveAnchorEl(props.anchorEl);
+    anchorEl: chainPropTypes(PropTypes.oneOfType([HTMLElementType, PropTypes.func]), (props2) => {
+      if (props2.open && (!props2.anchorReference || props2.anchorReference === "anchorEl")) {
+        const resolvedAnchorEl = resolveAnchorEl(props2.anchorEl);
         if (resolvedAnchorEl && resolvedAnchorEl.nodeType === 1) {
           const box = resolvedAnchorEl.getBoundingClientRect();
           if (process.env.NODE_ENV !== "test" && box.top === 0 && box.left === 0 && box.right === 0 && box.bottom === 0) {
@@ -46763,12 +46763,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiMenu",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({});
   const MenuPaper = styled$1(PopoverPaper, {
     name: "MuiMenu",
     slot: "Paper",
-    overridesResolver: (props, styles2) => styles2.paper
+    overridesResolver: (props2, styles2) => styles2.paper
   })({
     // specZ: The maximum height of a simple menu should be one or more rows less than the view
     // height. This ensures a tappable area outside of the simple menu with which to dismiss
@@ -46780,14 +46780,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   const MenuMenuList = styled$1(MenuList$1, {
     name: "MuiMenu",
     slot: "List",
-    overridesResolver: (props, styles2) => styles2.list
+    overridesResolver: (props2, styles2) => styles2.list
   })({
     // We disable the focus ring for mouse, touch and keyboard users.
     outline: 0
   });
   const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu2(inProps, ref) {
     var _slots$paper, _slotProps$paper;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiMenu"
     });
@@ -46808,10 +46808,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant = "selectedMenu",
       slots = {},
       slotProps = {}
-    } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$x), other = _objectWithoutPropertiesLoose$1(props, _excluded2$2);
+    } = props2, TransitionProps = _objectWithoutPropertiesLoose$1(props2.TransitionProps, _excluded$x), other = _objectWithoutPropertiesLoose$1(props2, _excluded2$2);
     const theme2 = useTheme();
     const isRtl = theme2.direction === "rtl";
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       autoFocus,
       disableAutoFocusItem,
       MenuListProps,
@@ -47041,10 +47041,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const DividerRoot = styled$1("div", {
     name: "MuiDivider",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.absolute && styles2.absolute, styles2[ownerState.variant], ownerState.light && styles2.light, ownerState.orientation === "vertical" && styles2.vertical, ownerState.flexItem && styles2.flexItem, ownerState.children && styles2.withChildren, ownerState.children && ownerState.orientation === "vertical" && styles2.withChildrenVertical, ownerState.textAlign === "right" && ownerState.orientation !== "vertical" && styles2.textAlignRight, ownerState.textAlign === "left" && ownerState.orientation !== "vertical" && styles2.textAlignLeft];
     }
   })(({
@@ -47128,10 +47128,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const DividerWrapper = styled$1("span", {
     name: "MuiDivider",
     slot: "Wrapper",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.wrapper, ownerState.orientation === "vertical" && styles2.wrapperVertical];
     }
   })(({
@@ -47146,7 +47146,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: `calc(${theme2.spacing(1)} * 1.2)`
   }));
   const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiDivider"
     });
@@ -47161,8 +47161,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       role = component !== "hr" ? "separator" : void 0,
       textAlign = "center",
       variant = "fullWidth"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$w);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$w);
+    const ownerState = _extends$2({}, props2, {
       absolute,
       component,
       flexItem,
@@ -47270,10 +47270,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ListItemIconRoot = styled$1("div", {
     name: "MuiListItemIcon",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart];
     }
   })(({
@@ -47288,15 +47288,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemIcon = /* @__PURE__ */ reactExports.forwardRef(function ListItemIcon2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiListItemIcon"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$v);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$v);
     const context = reactExports.useContext(ListContext$1);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       alignItems: context.alignItems
     });
     const classes = useUtilityClasses$r(ownerState);
@@ -47336,10 +47336,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const menuItemClasses = generateUtilityClasses("MuiMenuItem", ["root", "focusVisible", "dense", "disabled", "divider", "gutters", "selected"]);
   const menuItemClasses$1 = menuItemClasses;
   const _excluded$u = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
-  const overridesResolver = (props, styles2) => {
+  const overridesResolver = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.root, ownerState.dense && styles2.dense, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
   };
   const useUtilityClasses$q = (ownerState) => {
@@ -47442,7 +47442,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   })));
   const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiMenuItem"
     });
@@ -47456,7 +47456,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       role = "menuitem",
       tabIndex: tabIndexProp,
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$u);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$u);
     const context = reactExports.useContext(ListContext$1);
     const childContext = reactExports.useMemo(() => ({
       dense: dense || context.dense || false,
@@ -47472,15 +47472,15 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       }
     }, [autoFocus]);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       dense: childContext.dense,
       divider,
       disableGutters
     });
-    const classes = useUtilityClasses$q(props);
+    const classes = useUtilityClasses$q(props2);
     const handleRef = useForkRef(menuItemRef, ref);
     let tabIndex;
-    if (!props.disabled) {
+    if (!props2.disabled) {
       tabIndex = tabIndexProp !== void 0 ? tabIndexProp : -1;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
@@ -48447,18 +48447,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       }, timeout);
     };
   };
-  function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
-    for (let i2 = 0; i2 < props.outcome.length; i2++) {
-      if (props.outcome[i2].id === outcome_id) {
+  function createOutcomeNodeBranch(props2, outcome_id, nodecategory) {
+    for (let i2 = 0; i2 < props2.outcome.length; i2++) {
+      if (props2.outcome[i2].id === outcome_id) {
         let children;
-        if (props.outcome[i2].child_outcome_links.length === 0 || props.outcome[i2].depth >= 2)
+        if (props2.outcome[i2].child_outcome_links.length === 0 || props2.outcome[i2].depth >= 2)
           children = [];
         else
           children = filterThenSortByID(
-            props.outcomeoutcome,
-            props.outcome[i2].child_outcome_links
+            props2.outcomeoutcome,
+            props2.outcome[i2].child_outcome_links
           ).map(
-            (outcomeoutcome) => createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
+            (outcomeoutcome) => createOutcomeNodeBranch(props2, outcomeoutcome.child, nodecategory)
           );
         const outcomenodes = [];
         for (var ii = 0; ii < nodecategory.length; ii++) {
@@ -48467,7 +48467,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           for (var j = 0; j < category.nodes.length; j++) {
             const node2 = category.nodes[j];
             const outcomenode = getTableOutcomeNodeByID(
-              props.outcomenode,
+              props2.outcomenode,
               node2,
               outcome_id
             ).data;
@@ -48818,7 +48818,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function dragAction(renderer2, action_data, callBackFunction = () => console.log("success")) {
+  function dragAction(action_data, callBackFunction = () => console.log("success")) {
     try {
       COURSEFLOW_APP.tinyLoader.startLoad();
       $(".ui-draggable").draggable("disable");
@@ -48837,7 +48837,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       console.log(err);
     }
   }
-  function insertedAtInstant(renderer2, objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = () => console.log("success")) {
+  function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = () => console.log("success")) {
     try {
       COURSEFLOW_APP.tinyLoader.startLoad();
       $(".ui-draggable").draggable("disable");
@@ -49450,14 +49450,14 @@ Please use another name.` : formatMuiErrorMessage(18));
     return reactExports.useContext(FormControlContext$1);
   }
   function formControlState({
-    props,
+    props: props2,
     states,
     muiFormControl
   }) {
     return states.reduce((acc, state) => {
-      acc[state] = props[state];
+      acc[state] = props2[state];
       if (muiFormControl) {
-        if (typeof props[state] === "undefined") {
+        if (typeof props2[state] === "undefined") {
           acc[state] = muiFormControl[state];
         }
       }
@@ -49479,10 +49479,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const FormGroupRoot = styled$1("div", {
     name: "MuiFormGroup",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.row && styles2.row];
     }
   })(({
@@ -49495,21 +49495,21 @@ Please use another name.` : formatMuiErrorMessage(18));
     flexDirection: "row"
   }));
   const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFormGroup"
     });
     const {
       className,
       row = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$t);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$t);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["error"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       row,
       error: fcs.error
     });
@@ -49603,7 +49603,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     width: "100%"
   }));
   const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFormControl"
     });
@@ -49621,8 +49621,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       required = false,
       size: size2 = "medium",
       variant = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$s);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$s);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       component,
       disabled,
@@ -49808,7 +49808,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     createStyledComponent: styled$1("div", {
       name: "MuiStack",
       slot: "Root",
-      overridesResolver: (props, styles2) => styles2.root
+      overridesResolver: (props2, styles2) => styles2.root
     }),
     useThemeProps: (inProps) => useThemeProps({
       props: inProps,
@@ -49884,10 +49884,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const FormControlLabelRoot = styled$1("label", {
     name: "MuiFormControlLabel",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [{
         [`& .${formControlLabelClasses$1.label}`]: styles2.label
       }, styles2.root, styles2[`labelPlacement${capitalize(ownerState.labelPlacement)}`]];
@@ -49929,7 +49929,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AsteriskComponent$1 = styled$1("span", {
     name: "MuiFormControlLabel",
     slot: "Asterisk",
-    overridesResolver: (props, styles2) => styles2.asterisk
+    overridesResolver: (props2, styles2) => styles2.asterisk
   })(({
     theme: theme2
   }) => ({
@@ -49939,7 +49939,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormControlLabel2(inProps, ref) {
     var _ref, _slotProps$typography;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFormControlLabel"
     });
@@ -49953,7 +49953,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       labelPlacement = "end",
       required: requiredProp,
       slotProps = {}
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$r);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$r);
     const muiFormControl = useFormControl();
     const disabled = (_ref = disabledProp != null ? disabledProp : control.props.disabled) != null ? _ref : muiFormControl == null ? void 0 : muiFormControl.disabled;
     const required = requiredProp != null ? requiredProp : control.props.required;
@@ -49962,16 +49962,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       required
     };
     ["checked", "name", "onChange", "value", "inputRef"].forEach((key) => {
-      if (typeof control.props[key] === "undefined" && typeof props[key] !== "undefined") {
-        controlProps[key] = props[key];
+      if (typeof control.props[key] === "undefined" && typeof props2[key] !== "undefined") {
+        controlProps[key] = props2[key];
       }
     });
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["error"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       disabled,
       labelPlacement,
       required,
@@ -50126,7 +50126,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     padding: 0,
     zIndex: 1
   });
-  const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(props, ref) {
+  const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(props2, ref) {
     const {
       autoFocus,
       checked: checkedProp,
@@ -50149,7 +50149,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$q);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$q);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -50190,7 +50190,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
     const hasLabelFor = type === "checkbox" || type === "radio";
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       checked,
       disabled,
       disableFocusRipple,
@@ -50363,10 +50363,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SwitchRoot = styled$1("span", {
     name: "MuiSwitch",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.edge && styles2[`edge${capitalize(ownerState.edge)}`], styles2[`size${capitalize(ownerState.size)}`]];
     }
   })(({
@@ -50409,10 +50409,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SwitchSwitchBase = styled$1(SwitchBase$1, {
     name: "MuiSwitch",
     slot: "SwitchBase",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.switchBase, {
         [`& .${switchClasses$1.input}`]: styles2.input
       }, ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`]];
@@ -50476,7 +50476,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SwitchTrack = styled$1("span", {
     name: "MuiSwitch",
     slot: "Track",
-    overridesResolver: (props, styles2) => styles2.track
+    overridesResolver: (props2, styles2) => styles2.track
   })(({
     theme: theme2
   }) => ({
@@ -50493,7 +50493,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SwitchThumb = styled$1("span", {
     name: "MuiSwitch",
     slot: "Thumb",
-    overridesResolver: (props, styles2) => styles2.thumb
+    overridesResolver: (props2, styles2) => styles2.thumb
   })(({
     theme: theme2
   }) => ({
@@ -50504,7 +50504,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     borderRadius: "50%"
   }));
   const Switch = /* @__PURE__ */ reactExports.forwardRef(function Switch2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiSwitch"
     });
@@ -50514,8 +50514,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       edge = false,
       size: size2 = "medium",
       sx
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$p);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$p);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       edge,
       size: size2
@@ -50734,10 +50734,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AlertRoot = styled$1(Paper$1, {
     name: "MuiAlert",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize(ownerState.color || ownerState.severity)}`]];
     }
   })(({
@@ -50780,7 +50780,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AlertIcon = styled$1("div", {
     name: "MuiAlert",
     slot: "Icon",
-    overridesResolver: (props, styles2) => styles2.icon
+    overridesResolver: (props2, styles2) => styles2.icon
   })({
     marginRight: 12,
     padding: "7px 0",
@@ -50791,7 +50791,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AlertMessage = styled$1("div", {
     name: "MuiAlert",
     slot: "Message",
-    overridesResolver: (props, styles2) => styles2.message
+    overridesResolver: (props2, styles2) => styles2.message
   })({
     padding: "8px 0",
     minWidth: 0,
@@ -50800,7 +50800,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AlertAction = styled$1("div", {
     name: "MuiAlert",
     slot: "Action",
-    overridesResolver: (props, styles2) => styles2.action
+    overridesResolver: (props2, styles2) => styles2.action
   })({
     display: "flex",
     alignItems: "flex-start",
@@ -50824,7 +50824,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, ref) {
     var _ref, _slots$closeButton, _ref2, _slots$closeIcon, _slotProps$closeButto, _slotProps$closeIcon;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiAlert"
     });
@@ -50844,8 +50844,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$o);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$o);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       severity,
       variant
@@ -51044,10 +51044,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const FormHelperTextRoot = styled$1("p", {
     name: "MuiFormHelperText",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, ownerState.size && styles2[`size${capitalize(ownerState.size)}`], ownerState.contained && styles2.contained, ownerState.filled && styles2.filled];
     }
   })(({
@@ -51074,7 +51074,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: 14
   }));
   const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelperText2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFormHelperText"
     });
@@ -51082,14 +51082,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       children,
       className,
       component = "p"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$n);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$n);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["variant", "size", "disabled", "error", "filled", "focused", "required"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       component,
       contained: fcs.variant === "filled" || fcs.variant === "outlined",
       variant: fcs.variant,
@@ -51181,16 +51181,16 @@ Please use another name.` : formatMuiErrorMessage(18));
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
   const inputBaseClasses$1 = inputBaseClasses;
   const _excluded$m = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
-  const rootOverridesResolver = (props, styles2) => {
+  const rootOverridesResolver = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.root, ownerState.formControl && styles2.formControl, ownerState.startAdornment && styles2.adornedStart, ownerState.endAdornment && styles2.adornedEnd, ownerState.error && styles2.error, ownerState.size === "small" && styles2.sizeSmall, ownerState.multiline && styles2.multiline, ownerState.color && styles2[`color${capitalize(ownerState.color)}`], ownerState.fullWidth && styles2.fullWidth, ownerState.hiddenLabel && styles2.hiddenLabel];
   };
-  const inputOverridesResolver = (props, styles2) => {
+  const inputOverridesResolver = (props2, styles2) => {
     const {
       ownerState
-    } = props;
+    } = props2;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
   const useUtilityClasses$i = (ownerState) => {
@@ -51365,7 +51365,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(inProps, ref) {
     var _slotProps$input;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiInputBase"
     });
@@ -51404,7 +51404,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$m);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$m);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -51429,7 +51429,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       }, [muiFormControl]);
     }
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["color", "disabled", "error", "hiddenLabel", "size", "required", "filled"]
     });
@@ -51551,7 +51551,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         muiFormControl.setAdornedStart(Boolean(startAdornment));
       }
     }, [muiFormControl, startAdornment]);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       color: fcs.color || "primary",
       disabled: fcs.disabled,
       endAdornment,
@@ -51868,11 +51868,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiInput",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
-      return [...rootOverridesResolver(props, styles2), !ownerState.disableUnderline && styles2.underline];
+      } = props2;
+      return [...rootOverridesResolver(props2, styles2), !ownerState.disableUnderline && styles2.underline];
     }
   })(({
     theme: theme2,
@@ -51949,7 +51949,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   })({});
   const Input = /* @__PURE__ */ reactExports.forwardRef(function Input2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiInput"
     });
@@ -51963,8 +51963,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$l);
-    const classes = useUtilityClasses$h(props);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$l);
+    const classes = useUtilityClasses$h(props2);
     const ownerState = {
       disableUnderline
     };
@@ -52201,11 +52201,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiFilledInput",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
-      return [...rootOverridesResolver(props, styles2), !ownerState.disableUnderline && styles2.underline];
+      } = props2;
+      return [...rootOverridesResolver(props2, styles2), !ownerState.disableUnderline && styles2.underline];
     }
   })(({
     theme: theme2,
@@ -52353,7 +52353,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const FilledInput = /* @__PURE__ */ reactExports.forwardRef(function FilledInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFilledInput"
     });
@@ -52367,14 +52367,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$k);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$k);
+    const ownerState = _extends$2({}, props2, {
       fullWidth,
       inputComponent,
       multiline,
       type
     });
-    const classes = useUtilityClasses$g(props);
+    const classes = useUtilityClasses$g(props2);
     const filledInputComponentsProps = {
       root: {
         ownerState
@@ -52660,14 +52660,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       delay: 50
     })
   })));
-  function NotchedOutline(props) {
+  function NotchedOutline(props2) {
     const {
       className,
       label,
       notched
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$j);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$j);
     const withLabel = label != null && label !== "";
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       notched,
       withLabel
     });
@@ -52780,7 +52780,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const NotchedOutlineRoot = styled$1(NotchedOutline, {
     name: "MuiOutlinedInput",
     slot: "NotchedOutline",
-    overridesResolver: (props, styles2) => styles2.notchedOutline
+    overridesResolver: (props2, styles2) => styles2.notchedOutline
   })(({
     theme: theme2
   }) => {
@@ -52827,7 +52827,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const OutlinedInput = /* @__PURE__ */ reactExports.forwardRef(function OutlinedInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input, _React$Fragment;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiOutlinedInput"
     });
@@ -52840,15 +52840,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       notched,
       slots = {},
       type = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$i);
-    const classes = useUtilityClasses$f(props);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$i);
+    const classes = useUtilityClasses$f(props2);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["color", "disabled", "error", "focused", "hiddenLabel", "size", "required"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       color: fcs.color || "primary",
       disabled: fcs.disabled,
       error: fcs.error,
@@ -53106,7 +53106,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AsteriskComponent = styled$1("span", {
     name: "MuiFormLabel",
     slot: "Asterisk",
-    overridesResolver: (props, styles2) => styles2.asterisk
+    overridesResolver: (props2, styles2) => styles2.asterisk
   })(({
     theme: theme2
   }) => ({
@@ -53115,7 +53115,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFormLabel"
     });
@@ -53123,14 +53123,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       children,
       className,
       component = "label"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$h);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$h);
     const muiFormControl = useFormControl();
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["color", "required", "focused", "disabled", "error", "filled"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       color: fcs.color || "primary",
       component,
       disabled: fcs.disabled,
@@ -53234,10 +53234,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiInputLabel",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [{
         [`& .${formLabelClasses$1.asterisk}`]: styles2.asterisk
       }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, styles2[ownerState.variant]];
@@ -53305,7 +53305,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     transform: "translate(14px, -9px) scale(0.75)"
   })));
   const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       name: "MuiInputLabel",
       props: inProps
     });
@@ -53313,18 +53313,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableAnimation = false,
       shrink: shrinkProp,
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$g);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$g);
     const muiFormControl = useFormControl();
     let shrink = shrinkProp;
     if (typeof shrink === "undefined" && muiFormControl) {
       shrink = muiFormControl.filled || muiFormControl.focused || muiFormControl.adornedStart;
     }
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["size", "variant", "required"]
     });
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       disableAnimation,
       formControl: muiFormControl,
       shrink,
@@ -53490,10 +53490,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     name: "MuiNativeSelect",
     slot: "Select",
     shouldForwardProp: rootShouldForwardProp,
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.select, styles2[ownerState.variant], ownerState.error && styles2.error, {
         [`&.${nativeSelectClasses$1.multiple}`]: styles2.multiple
       }];
@@ -53525,14 +53525,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   const NativeSelectIcon = styled$1("svg", {
     name: "MuiNativeSelect",
     slot: "Icon",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.icon, ownerState.variant && styles2[`icon${capitalize(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
     }
   })(nativeSelectIconStyles);
-  const NativeSelectInput = /* @__PURE__ */ reactExports.forwardRef(function NativeSelectInput2(props, ref) {
+  const NativeSelectInput = /* @__PURE__ */ reactExports.forwardRef(function NativeSelectInput2(props2, ref) {
     const {
       className,
       disabled,
@@ -53540,8 +53540,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       IconComponent,
       inputRef,
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$f);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$f);
+    const ownerState = _extends$2({}, props2, {
       disabled,
       variant,
       error
@@ -53553,7 +53553,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         className: clsx(classes.select, className),
         disabled,
         ref: inputRef || ref
-      }, other)), props.multiple ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(NativeSelectIcon, {
+      }, other)), props2.multiple ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(NativeSelectIcon, {
         as: IconComponent,
         ownerState,
         className: classes.icon
@@ -53627,10 +53627,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SelectSelect = styled$1("div", {
     name: "MuiSelect",
     slot: "Select",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [
         // Win specificity over the input base
         {
@@ -53662,10 +53662,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SelectIcon = styled$1("svg", {
     name: "MuiSelect",
     slot: "Icon",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.icon, ownerState.variant && styles2[`icon${capitalize(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
     }
   })(nativeSelectIconStyles);
@@ -53673,7 +53673,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => slotShouldForwardProp(prop) && prop !== "classes",
     name: "MuiSelect",
     slot: "NativeInput",
-    overridesResolver: (props, styles2) => styles2.nativeInput
+    overridesResolver: (props2, styles2) => styles2.nativeInput
   })({
     bottom: 0,
     left: 0,
@@ -53708,7 +53708,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     return composeClasses(slots, getSelectUtilityClasses, classes);
   };
-  const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput2(props, ref) {
+  const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput2(props2, ref) {
     var _MenuProps$slotProps;
     const {
       "aria-describedby": ariaDescribedby,
@@ -53740,7 +53740,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex: tabIndexProp,
       value: valueProp,
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$e);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$e);
     const [value, setValueState] = useControlled({
       controlled: valueProp,
       default: defaultValue,
@@ -54001,7 +54001,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex = disabled ? null : 0;
     }
     const buttonId = SelectDisplayProps.id || (name2 ? `mui-component-select-${name2}` : void 0);
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       variant,
       value,
       open,
@@ -54243,7 +54243,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   const styledRootConfig = {
     name: "MuiSelect",
-    overridesResolver: (props, styles2) => styles2.root,
+    overridesResolver: (props2, styles2) => styles2.root,
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) && prop !== "variant",
     slot: "Root"
   };
@@ -54251,7 +54251,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const StyledOutlinedInput = styled$1(OutlinedInput$1, styledRootConfig)("");
   const StyledFilledInput = styled$1(FilledInput$1, styledRootConfig)("");
   const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       name: "MuiSelect",
       props: inProps
     });
@@ -54277,16 +54277,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       renderValue,
       SelectDisplayProps,
       variant: variantProp = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$d);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$d);
     const inputComponent = native ? NativeSelectInput$1 : SelectInput$1;
     const muiFormControl = useFormControl();
     const fcs = formControlState({
-      props,
+      props: props2,
       muiFormControl,
       states: ["variant", "error"]
     });
     const variant = fcs.variant || variantProp;
-    const ownerState = _extends$2({}, props, {
+    const ownerState = _extends$2({}, props2, {
       variant,
       classes: classesProp
     });
@@ -54517,10 +54517,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const TextFieldRoot = styled$1(FormControl$1, {
     name: "MuiTextField",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({});
   const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiTextField"
     });
@@ -54557,8 +54557,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       type,
       value,
       variant = "outlined"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$c);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$c);
+    const ownerState = _extends$2({}, props2, {
       autoFocus,
       color: color2,
       disabled,
@@ -54824,7 +54824,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const RadioGroupContext$1 = RadioGroupContext;
   const _excluded$b = ["actions", "children", "defaultValue", "name", "onChange", "value"];
-  const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(props, ref) {
+  const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(props2, ref) {
     const {
       // private
       // eslint-disable-next-line react/prop-types
@@ -54834,7 +54834,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       name: nameProp,
       onChange,
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$b);
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$b);
     const rootRef = reactExports.useRef(null);
     const [value, setValueState] = useControlled({
       controlled: valueProp,
@@ -54941,13 +54941,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       duration: theme2.transitions.duration.shortest
     })
   }));
-  function RadioButtonIcon(props) {
+  function RadioButtonIcon(props2) {
     const {
       checked = false,
       classes = {},
       fontSize
-    } = props;
-    const ownerState = _extends$2({}, props, {
+    } = props2;
+    const ownerState = _extends$2({}, props2, {
       checked
     });
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(RadioButtonIconRoot, {
@@ -55001,10 +55001,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiRadio",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[`color${capitalize(ownerState.color)}`]];
     }
   })(({
@@ -55041,7 +55041,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultIcon = /* @__PURE__ */ jsxRuntimeExports.jsx(RadioButtonIcon, {});
   const Radio = /* @__PURE__ */ reactExports.forwardRef(function Radio2(inProps, ref) {
     var _defaultIcon$props$fo, _defaultCheckedIcon$p;
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiRadio"
     });
@@ -55054,8 +55054,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       onChange: onChangeProp,
       size: size2 = "medium",
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$a);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$a);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       size: size2
     });
@@ -55066,7 +55066,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     let name2 = nameProp;
     if (radioGroup) {
       if (typeof checked === "undefined") {
-        checked = areEqualValues(radioGroup.value, props.value);
+        checked = areEqualValues(radioGroup.value, props2.value);
       }
       if (typeof name2 === "undefined") {
         name2 = radioGroup.name;
@@ -55228,10 +55228,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
     name: "MuiButton",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize(ownerState.color)}`], styles2[`size${capitalize(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
     }
   })(({
@@ -55362,10 +55362,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ButtonStartIcon = styled$1("span", {
     name: "MuiButton",
     slot: "StartIcon",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.startIcon, styles2[`iconSize${capitalize(ownerState.size)}`]];
     }
   })(({
@@ -55380,10 +55380,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ButtonEndIcon = styled$1("span", {
     name: "MuiButton",
     slot: "EndIcon",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.endIcon, styles2[`iconSize${capitalize(ownerState.size)}`]];
     }
   })(({
@@ -55399,7 +55399,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const contextProps = reactExports.useContext(ButtonGroupContext$1);
     const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
     const resolvedProps = resolveProps(contextProps, inProps);
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: resolvedProps,
       name: "MuiButton"
     });
@@ -55418,8 +55418,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       startIcon: startIconProp,
       type,
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$9);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$9);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       component,
       disabled,
@@ -55570,7 +55570,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SnackbarContentRoot = styled$1(Paper$1, {
     name: "MuiSnackbarContent",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })(({
     theme: theme2
   }) => {
@@ -55594,14 +55594,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SnackbarContentMessage = styled$1("div", {
     name: "MuiSnackbarContent",
     slot: "Message",
-    overridesResolver: (props, styles2) => styles2.message
+    overridesResolver: (props2, styles2) => styles2.message
   })({
     padding: "8px 0"
   });
   const SnackbarContentAction = styled$1("div", {
     name: "MuiSnackbarContent",
     slot: "Action",
-    overridesResolver: (props, styles2) => styles2.action
+    overridesResolver: (props2, styles2) => styles2.action
   })({
     display: "flex",
     alignItems: "center",
@@ -55610,7 +55610,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: -8
   });
   const SnackbarContent = /* @__PURE__ */ reactExports.forwardRef(function SnackbarContent2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiSnackbarContent"
     });
@@ -55619,8 +55619,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       className,
       message,
       role = "alert"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$8);
-    const ownerState = props;
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$8);
+    const ownerState = props2;
     const classes = useUtilityClasses$6(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SnackbarContentRoot, _extends$2({
       role,
@@ -55691,10 +55691,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SnackbarRoot = styled$1("div", {
     name: "MuiSnackbar",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[`anchorOrigin${capitalize(ownerState.anchorOrigin.vertical)}${capitalize(ownerState.anchorOrigin.horizontal)}`]];
     }
   })(({
@@ -55737,7 +55737,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiSnackbar"
     });
@@ -55769,8 +55769,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         onEnter,
         onExited
       } = {}
-    } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$7), other = _objectWithoutPropertiesLoose$1(props, _excluded2);
-    const ownerState = _extends$2({}, props, {
+    } = props2, TransitionProps = _objectWithoutPropertiesLoose$1(props2.TransitionProps, _excluded$7), other = _objectWithoutPropertiesLoose$1(props2, _excluded2);
+    const ownerState = _extends$2({}, props2, {
       anchorOrigin: {
         vertical,
         horizontal
@@ -56099,10 +56099,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     name: "MuiFab",
     slot: "Root",
     shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, styles2[capitalize(ownerState.size)], styles2[ownerState.color]];
     }
   })(({
@@ -56189,7 +56189,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiFab"
     });
@@ -56203,8 +56203,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       focusVisibleClassName,
       size: size2 = "large",
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$6);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$6);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       component,
       disabled,
@@ -56704,10 +56704,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const AppBarRoot = styled$1(Paper$1, {
     name: "MuiAppBar",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, styles2[`position${capitalize(ownerState.position)}`], styles2[`color${capitalize(ownerState.color)}`]];
     }
   })(({
@@ -56781,7 +56781,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const AppBar = /* @__PURE__ */ reactExports.forwardRef(function AppBar2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiAppBar"
     });
@@ -56790,8 +56790,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$5);
+    const ownerState = _extends$2({}, props2, {
       color: color2,
       position: position2,
       enableColorOnDark
@@ -56867,10 +56867,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ToolbarRoot = styled$1("div", {
     name: "MuiToolbar",
     slot: "Root",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.root, !ownerState.disableGutters && styles2.gutters, styles2[ownerState.variant]];
     }
   })(({
@@ -56894,7 +56894,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     ownerState
   }) => ownerState.variant === "regular" && theme2.mixins.toolbar);
   const Toolbar = /* @__PURE__ */ reactExports.forwardRef(function Toolbar2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiToolbar"
     });
@@ -56903,8 +56903,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       component = "div",
       disableGutters = false,
       variant = "regular"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$4);
+    const ownerState = _extends$2({}, props2, {
       component,
       disableGutters,
       variant
@@ -57059,7 +57059,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     $(document).off("nodeweek-dropped");
     $(document).on("nodeweek-dropped", () => {
-      dragAction(renderer2, renderer2.dragAction["nodeweek"]);
+      dragAction(renderer2.dragAction["nodeweek"]);
       renderer2.dragAction["nodeweek"] = null;
       $(document).off("nodeweek-dropped");
     });
@@ -57082,7 +57082,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     $(document).off(throughType + "-dropped");
     if (objectID)
       $(document).on(throughType + "-dropped", () => {
-        dragAction(renderer2, renderer2.dragAction[throughType]);
+        dragAction(renderer2.dragAction[throughType]);
         renderer2.dragAction[throughType] = null;
         $(document).off(throughType + "-dropped");
       });
@@ -57918,15 +57918,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       proxy.mapToProps = function detectFactoryAndVerify(stateOrDispatch, ownProps) {
         proxy.mapToProps = mapToProps;
         proxy.dependsOnOwnProps = getDependsOnOwnProps(mapToProps);
-        let props = proxy(stateOrDispatch, ownProps);
-        if (typeof props === "function") {
-          proxy.mapToProps = props;
-          proxy.dependsOnOwnProps = getDependsOnOwnProps(props);
-          props = proxy(stateOrDispatch, ownProps);
+        let props2 = proxy(stateOrDispatch, ownProps);
+        if (typeof props2 === "function") {
+          proxy.mapToProps = props2;
+          proxy.dependsOnOwnProps = getDependsOnOwnProps(props2);
+          props2 = proxy(stateOrDispatch, ownProps);
         }
         if (process.env.NODE_ENV !== "production")
-          verifyPlainObject(props, displayName, methodName);
-        return props;
+          verifyPlainObject(props2, displayName, methodName);
+        return props2;
       };
       return proxy;
     };
@@ -58230,24 +58230,24 @@ Please use another name.` : formatMuiErrorMessage(18));
         areOwnPropsEqual,
         areMergedPropsEqual
       };
-      function ConnectFunction(props) {
+      function ConnectFunction(props2) {
         const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
           const {
             reactReduxForwardedRef: reactReduxForwardedRef2
-          } = props, wrapperProps2 = _objectWithoutPropertiesLoose(props, _excluded$2);
-          return [props.context, reactReduxForwardedRef2, wrapperProps2];
-        }, [props]);
+          } = props2, wrapperProps2 = _objectWithoutPropertiesLoose(props2, _excluded$2);
+          return [props2.context, reactReduxForwardedRef2, wrapperProps2];
+        }, [props2]);
         const ContextToUse = reactExports.useMemo(() => {
           return propsContext && propsContext.Consumer && // @ts-ignore
           reactIsExports$1.isContextConsumer(/* @__PURE__ */ reactExports.createElement(propsContext.Consumer, null)) ? propsContext : Context;
         }, [propsContext, Context]);
         const contextValue = reactExports.useContext(ContextToUse);
-        const didStoreComeFromProps = Boolean(props.store) && Boolean(props.store.getState) && Boolean(props.store.dispatch);
+        const didStoreComeFromProps = Boolean(props2.store) && Boolean(props2.store.getState) && Boolean(props2.store.dispatch);
         const didStoreComeFromContext = Boolean(contextValue) && Boolean(contextValue.store);
         if (process.env.NODE_ENV !== "production" && !didStoreComeFromProps && !didStoreComeFromContext) {
           throw new Error(`Could not find "store" in the context of "${displayName}". Either wrap the root component in a <Provider>, or pass a custom React context provider to <Provider> and the corresponding React context consumer to ${displayName} in connect options.`);
         }
-        const store = didStoreComeFromProps ? props.store : contextValue.store;
+        const store = didStoreComeFromProps ? props2.store : contextValue.store;
         const getServerState = didStoreComeFromContext ? contextValue.getServerState : store.getState;
         const childPropsSelector = reactExports.useMemo(() => {
           return finalPropsSelectorFactory(store.dispatch, selectorFactoryOptions);
@@ -58361,8 +58361,8 @@ ${latestSubscriptionCallbackError.current.stack}
       Connect.WrappedComponent = WrappedComponent;
       Connect.displayName = ConnectFunction.displayName = displayName;
       if (forwardRef) {
-        const _forwarded = reactExports.forwardRef(function forwardConnectRef(props, ref) {
-          return /* @__PURE__ */ reactExports.createElement(Connect, _extends$1({}, props, {
+        const _forwarded = reactExports.forwardRef(function forwardConnectRef(props2, ref) {
+          return /* @__PURE__ */ reactExports.createElement(Connect, _extends$1({}, props2, {
             reactReduxForwardedRef: ref
           }));
         });
@@ -60947,8 +60947,8 @@ ${latestSubscriptionCallbackError.current.stack}
     return WorkflowType2;
   })(WorkflowType || {});
   class WorkflowCard extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "mainDiv");
       __publicField(this, "workflow");
       __publicField(this, "updateWorkflow");
@@ -61077,7 +61077,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return null;
       });
       this.state = {
-        favourite: props.workflowData.favourite
+        favourite: props2.workflowData.favourite
       };
       this.selected = this.props.selected;
       this.noHyperlink = this.props.noHyperlink;
@@ -61163,8 +61163,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class MenuSection extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.dropdownDiv = reactExports.createRef();
     }
     /*******************************************************
@@ -61315,8 +61315,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(WorkflowGridMenuUnconnected);
   class WorkflowGrid extends React.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.store = createStore(gridMenuReducer, this.props.data_package);
     }
     render() {
@@ -61328,75 +61328,104 @@ ${latestSubscriptionCallbackError.current.stack}
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
   };
   class SelectionManager {
-    constructor(read_only) {
-      this.currentSelection;
-      this.mouse_isclick = false;
-      this.read_only = read_only;
-      var selector = this;
+    constructor(readOnly) {
+      __publicField(this, "mouseClicked");
+      __publicField(this, "readOnly");
+      __publicField(this, "lastSidebarTab");
+      __publicField(this, "currentSelection");
+      this.currentSelection = null;
+      this.mouseClicked = false;
+      this.readOnly = readOnly;
+      this.setupEventListeners();
+      this.lastSidebarTab = this.getActiveTab();
+    }
+    setupEventListeners() {
       $(document).on("mousedown", () => {
-        selector.mouse_isclick = true;
+        this.mouseClicked = true;
         setTimeout(() => {
-          selector.mouse_isclick = false;
+          this.mouseClicked = false;
         }, 500);
       });
       $(document).on("mousemove", () => {
-        selector.mouse_isclick = false;
+        this.mouseClicked = false;
       });
-      $(document).on("mouseup", (evt, newSelection) => {
-        if (selector.mouse_isclick) {
-          selector.changeSelection(evt, null);
+      $(document).on("mouseup", (evt) => {
+        if (this.mouseClicked) {
+          this.changeSelection(evt);
         }
       });
-      this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
     }
+    getActiveTab() {
+      return $("#sidebar").tabs("option", "active");
+    }
+    setActiveTab(tabIndex) {
+      $("#sidebar").tabs("option", "active", tabIndex);
+    }
+    enableTab(tabIndex) {
+      $("#sidebar").tabs("enable", tabIndex);
+    }
+    disableTab(tabIndex) {
+      $("#sidebar").tabs("disable", tabIndex);
+    }
+    /**
+     * Changes the current selection to the new selection.
+     * @param evt - The event that triggered the selection change.
+     * @param newSelection - The new selection object.
+     */
     changeSelection(evt, newSelection) {
+      var _a, _b;
       if (evt) {
         evt.stopPropagation();
       }
-      if (!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock) {
+      if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
         return;
       }
       if (this.currentSelection) {
-        this.currentSelection.setState({ selected: false });
-        if (!this.read_only) {
-          this.currentSelection.props.renderer.lock_update(
-            {
-              object_id: this.currentSelection.props.data.id,
-              object_type: object_dictionary[this.currentSelection.objectType]
-            },
-            60 * 1e3,
-            false
-          );
-        }
+        this.deselectCurrentSelection();
       }
       this.currentSelection = newSelection;
       if (this.currentSelection) {
-        if (!this.read_only) {
-          this.currentSelection.props.renderer.lock_update(
-            {
-              object_id: this.currentSelection.props.data.id,
-              object_type: object_dictionary[this.currentSelection.objectType]
-            },
-            60 * 1e3,
-            true
-          );
-        }
-        if ($("#sidebar").tabs("option", "active") !== 0) {
-          this.last_sidebar_tab = $("#sidebar").tabs("option", "active");
-        }
-        $("#sidebar").tabs("enable", 0);
-        $("#sidebar").tabs("option", "active", 0);
-        this.currentSelection.setState({ selected: true });
+        this.selectCurrentSelection();
       } else {
-        if ($("#sidebar").tabs("option", "active") === 0) {
-          $("#sidebar").tabs("option", "active", this.last_sidebar_tab);
-        }
-        $("#sidebar").tabs("disable", 0);
+        this.resetSidebarTab();
       }
     }
+    deselectCurrentSelection() {
+      this.currentSelection.setState({ selected: false });
+      if (!this.readOnly) {
+        this.unlockCurrentSelection();
+      }
+    }
+    selectCurrentSelection() {
+      if (!this.readOnly) {
+        this.lockCurrentSelection();
+      }
+      const SIDEBAR_FIRST_TAB_INDEX = 0;
+      if (this.getActiveTab() !== SIDEBAR_FIRST_TAB_INDEX) {
+        this.lastSidebarTab = this.getActiveTab();
+      }
+      this.enableTab(SIDEBAR_FIRST_TAB_INDEX);
+      this.setActiveTab(SIDEBAR_FIRST_TAB_INDEX);
+      this.currentSelection.setState({ selected: true });
+    }
+    resetSidebarTab() {
+      const SIDEBAR_FIRST_TAB_INDEX = 0;
+      if (this.getActiveTab() === SIDEBAR_FIRST_TAB_INDEX) {
+        this.setActiveTab(this.lastSidebarTab);
+      }
+      this.disableTab(SIDEBAR_FIRST_TAB_INDEX);
+    }
+    lockCurrentSelection() {
+    }
+    unlockCurrentSelection() {
+    }
+    /**
+     * Handles the deletion of a selection.
+     * @param selection - The selection to be deleted.
+     */
     deleted(selection) {
       if (selection === this.currentSelection) {
-        this.changeSelection(null, null);
+        this.changeSelection(null);
       }
     }
   }
@@ -61419,8 +61448,8 @@ ${latestSubscriptionCallbackError.current.stack}
     dispatch(changeField(objectID, objectType, { is_dropped }));
   }
   class ComponentWithToggleDrop extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "mainDiv");
       __publicField(this, "maindiv");
       __publicField(this, "toggleDrop", (evt) => {
@@ -61440,8 +61469,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class NodeBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
     }
     /*******************************************************
@@ -61641,8 +61670,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class StrategyUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "strategy";
       this.objectClass = ".strategy";
       this.node_block = reactExports.createRef();
@@ -61838,8 +61867,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(ViewBarUnconnected);
   class RestoreBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
     }
     render() {
@@ -62177,11 +62206,11 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class QuillDiv extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.maindiv = reactExports.createRef();
-      if (props.text)
-        this.state = { charlength: props.text.length };
+      if (props2.text)
+        this.state = { charlength: props2.text.length };
       else
         this.state = { charlength: 0 };
     }
@@ -62757,8 +62786,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ActionButton extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.handleClick = this.handleClick.bind(this);
     }
     handleClick(evt) {
@@ -62780,8 +62809,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class CommentBox extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.input = reactExports.createRef();
       this.submit = reactExports.createRef();
       this.state = {};
@@ -62841,14 +62870,14 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     removeComment(id) {
       const parent = this.props.parent;
-      const props = parent.props;
+      const props2 = parent.props;
       if (window.confirm(
         window.gettext(
           "Are you sure you want to permanently clear this comment?"
         )
       )) {
         removeComment(
-          props.objectID,
+          props2.objectID,
           object_dictionary[parent.objectType],
           id,
           parent.reloadComments.bind(parent)
@@ -62857,14 +62886,14 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     removeAllComments() {
       const parent = this.props.parent;
-      const props = parent.props;
+      const props2 = parent.props;
       if (window.confirm(
         window.gettext(
           "Are you sure you want to permanently clear all comments from this object?"
         )
       )) {
         removeAllComments(
-          props.objectID,
+          props2.objectID,
           object_dictionary[parent.objectType],
           parent.reloadComments.bind(parent)
         );
@@ -62875,11 +62904,11 @@ ${latestSubscriptionCallbackError.current.stack}
       if (!text)
         return;
       const parent = this.props.parent;
-      const props = parent.props;
+      const props2 = parent.props;
       $(this.input.current)[0].value = "";
       $(this.submit.current).addClass("hidden");
       addComment(
-        props.objectID,
+        props2.objectID,
         object_dictionary[parent.objectType],
         text,
         parent.reloadComments.bind(parent)
@@ -63079,8 +63108,8 @@ ${latestSubscriptionCallbackError.current.stack}
         this.setState({ show_comments: false });
     }
     reloadComments(show_comments) {
-      const props = this.props;
-      const data = props.data;
+      const props2 = this.props;
+      const data = props2.data;
       COURSEFLOW_APP.tinyLoader.startLoad();
       getCommentsForObject(
         data.id,
@@ -63176,13 +63205,13 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     duplicateSelf(data) {
-      var props = this.props;
+      var props2 = this.props;
       var type = this.objectType;
       COURSEFLOW_APP.tinyLoader.startLoad();
       duplicateSelf(
         data.id,
         object_dictionary[type],
-        props.parentID,
+        props2.parentID,
         parent_dictionary[type],
         through_parent_dictionary[type],
         (response_data) => {
@@ -63203,13 +63232,13 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     insertSibling(data) {
-      var props = this.props;
+      var props2 = this.props;
       var type = this.objectType;
       COURSEFLOW_APP.tinyLoader.startLoad();
       insertSibling(
         data.id,
         object_dictionary[type],
-        props.parentID,
+        props2.parentID,
         parent_dictionary[type],
         through_parent_dictionary[type],
         (response_data) => {
@@ -63247,7 +63276,7 @@ ${latestSubscriptionCallbackError.current.stack}
         cursorAt = { top: 20 };
       if (draggable_type == "nodeweek")
         cursorAt = { top: 20, left: 50 };
-      var props = this.props;
+      var props2 = this.props;
       sortable_block.draggable({
         containment,
         axis,
@@ -63279,7 +63308,7 @@ ${latestSubscriptionCallbackError.current.stack}
           drag_item.attr("data-restrict-to", restrictTo);
           var old_index = drag_item.prevAll().length;
           drag_item.attr("data-old-index", old_index);
-          props.renderer.selection_manager.changeSelection(null, null);
+          props2.renderer.selection_manager.changeSelection(null, null);
           this.startSortFunction(
             parseInt(drag_item.attr("data-child-id")),
             draggable_type
@@ -63407,11 +63436,11 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcome";
       this.children_block = reactExports.createRef();
-      this.state = { is_dropped: props.data.depth < 1 };
+      this.state = { is_dropped: props2.data.depth < 1 };
     }
     /*******************************************************
      * LIFECYCLE
@@ -63578,8 +63607,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeBarOutcomeUnconnected);
   class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcomeoutcome";
     }
     /*******************************************************
@@ -63605,6 +63634,10 @@ ${latestSubscriptionCallbackError.current.stack}
   )(OutcomeBarOutcomeOutcomeUnconnected);
   class OutcomeBarUnconnected extends reactExports.Component {
     /*******************************************************
+     * .renderer.render
+     * renderer.read_only
+     *******************************************************/
+    /*******************************************************
      * FUNCTIONS
      *******************************************************/
     editOutcomesClick() {
@@ -63615,7 +63648,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data = this.props.data;
-      var outcomebaroutcomes = data.map((category) => [
+      let outcomebaroutcomes = data.map((category) => [
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
@@ -63630,12 +63663,12 @@ ${latestSubscriptionCallbackError.current.stack}
         ] })
       ]);
       if (outcomebaroutcomes.length == 0) {
-        outcomebaroutcomes = gettext(
+        outcomebaroutcomes = window.gettext(
           "Add outcomes to this workflow in by clicking the button below."
         );
       }
       const edittext = capWords(
-        gettext("Edit") + " " + gettext(this.props.workflow_type + " outcomes")
+        window.gettext("Edit") + " " + gettext(this.props.workflow_type + " outcomes")
       );
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
@@ -63854,6 +63887,13 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class RightSideBar extends reactExports.Component {
+    /*******************************************************
+     * props
+     *  renderer.view_type
+     *  is_strategy
+     *  read_only
+     *
+     *******************************************************/
     /*******************************************************
      * LIFECYCLE
      *******************************************************/
@@ -66315,8 +66355,8 @@ ${latestSubscriptionCallbackError.current.stack}
     window.flatpickr = flatpickr;
   }
   class DatePicker extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "input");
       __publicField(this, "flatpickrInstance");
       this.input = reactExports.createRef();
@@ -66352,8 +66392,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class CollapsibleText extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "css_class");
       __publicField(this, "defaultText");
       __publicField(this, "text");
@@ -66454,8 +66494,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ImportMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
     }
     /*******************************************************
      * FUNCTIONS
@@ -66559,8 +66599,8 @@ ${latestSubscriptionCallbackError.current.stack}
     reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
   }
   class WorkflowsMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = {};
       if (this.props.type === "target_project_menu") {
         try {
@@ -66575,7 +66615,7 @@ ${latestSubscriptionCallbackError.current.stack}
           this.state.selected = this.current_project.id;
       }
       if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
-        this.project_workflows = props.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
+        this.project_workflows = props2.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
     }
     /*******************************************************
      * LIFECYCLE
@@ -66796,7 +66836,7 @@ ${latestSubscriptionCallbackError.current.stack}
   const DialogBackdrop = styled$1(Backdrop$1, {
     name: "MuiDialog",
     slot: "Backdrop",
-    overrides: (props, styles2) => styles2.backdrop
+    overrides: (props2, styles2) => styles2.backdrop
   })({
     // Improve scrollable dialog support.
     zIndex: -1
@@ -66819,7 +66859,7 @@ ${latestSubscriptionCallbackError.current.stack}
   const DialogRoot = styled$1(Modal$1, {
     name: "MuiDialog",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({
     "@media print": {
       // Use !important to override the Modal inline-style.
@@ -66829,10 +66869,10 @@ ${latestSubscriptionCallbackError.current.stack}
   const DialogContainer = styled$1("div", {
     name: "MuiDialog",
     slot: "Container",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.container, styles2[`scroll${capitalize(ownerState.scroll)}`]];
     }
   })(({
@@ -66863,10 +66903,10 @@ ${latestSubscriptionCallbackError.current.stack}
   const DialogPaper = styled$1(Paper$1, {
     name: "MuiDialog",
     slot: "Paper",
-    overridesResolver: (props, styles2) => {
+    overridesResolver: (props2, styles2) => {
       const {
         ownerState
-      } = props;
+      } = props2;
       return [styles2.paper, styles2[`scrollPaper${capitalize(ownerState.scroll)}`], styles2[`paperWidth${capitalize(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
     }
   })(({
@@ -66921,7 +66961,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }));
   const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiDialog"
     });
@@ -66950,8 +66990,8 @@ ${latestSubscriptionCallbackError.current.stack}
       TransitionComponent = Fade$1,
       transitionDuration = defaultTransitionDuration,
       TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$1);
-    const ownerState = _extends$2({}, props, {
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$1);
+    const ownerState = _extends$2({}, props2, {
       disableEscapeKeyDown,
       fullScreen,
       fullWidth,
@@ -67174,21 +67214,21 @@ ${latestSubscriptionCallbackError.current.stack}
   const DialogTitleRoot = styled$1(Typography$1, {
     name: "MuiDialogTitle",
     slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
+    overridesResolver: (props2, styles2) => styles2.root
   })({
     padding: "16px 24px",
     flex: "0 0 auto"
   });
   const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps({
+    const props2 = useThemeProps({
       props: inProps,
       name: "MuiDialogTitle"
     });
     const {
       className,
       id: idProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded);
-    const ownerState = props;
+    } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded);
+    const ownerState = props2;
     const classes = useUtilityClasses(ownerState);
     const {
       titleId = idProp
@@ -67269,8 +67309,8 @@ ${latestSubscriptionCallbackError.current.stack}
     );
   }
   class OutcomeOutcomeUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcomeoutcome";
     }
     /*******************************************************
@@ -67308,8 +67348,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeOutcomeUnconnected);
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcomeoutcome";
     }
     /*******************************************************
@@ -67343,8 +67383,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(SimpleOutcomeOutcomeUnconnected);
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcome";
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: false };
@@ -67464,8 +67504,8 @@ ${latestSubscriptionCallbackError.current.stack}
   )(SimpleOutcomeUnconnected);
   const SimpleOutcome$1 = SimpleOutcome;
   class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcomehorizontallink";
     }
     /*******************************************************
@@ -67484,14 +67524,14 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     deleteSelf(data) {
-      const props = this.props;
+      this.props;
       if (window.confirm(
         window.gettext("Are you sure you want to delete this ") + get_verbose(
           this.props.data,
           this.objectType
         ).toLowerCase() + "?"
       )) {
-        props.COURSEFLOW_APP.tinyLoader.startLoad();
+        COURSEFLOW_APP.tinyLoader.startLoad();
         updateOutcomehorizontallinkDegree(
           data.outcome,
           data.parent_outcome,
@@ -67573,10 +67613,10 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeHorizontalLinkUnconnected);
   let Outcome$2 = class Outcome extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcome";
-      if (props.data.depth === 0)
+      if (props2.data.depth === 0)
         this.objectType = "outcome_base";
       this.children_block = reactExports.createRef();
     }
@@ -67640,7 +67680,6 @@ ${latestSubscriptionCallbackError.current.stack}
           "outcomeoutcome"
         );
         insertedAtInstant(
-          this.props.renderer,
           child_id,
           "outcome",
           new_parent,
@@ -67651,7 +67690,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     makeDroppable() {
-      var props = this.props;
+      var props2 = this.props;
       $(this.maindiv.current).droppable({
         tolerance: "pointer",
         droppable: ".outcome-ghost",
@@ -67683,9 +67722,9 @@ ${latestSubscriptionCallbackError.current.stack}
           $(e.target);
           var drag_item = ui.draggable;
           if (drag_item.hasClass("outcome")) {
-            props.COURSEFLOW_APP.tinyLoader.startLoad();
+            COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomehorizontallinkDegree(
-              props.objectID,
+              props2.objectID,
               drag_item[0].dataDraggable.outcome,
               1,
               (response_data) => {
@@ -67842,8 +67881,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const ConnectedOutcome = connect(mapOutcomeStateToProps$3, null)(Outcome$2);
   const Outcome$3 = ConnectedOutcome;
   class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
     }
     /*******************************************************
@@ -68009,7 +68048,6 @@ ${latestSubscriptionCallbackError.current.stack}
           "outcomeworkflow"
         );
         insertedAtInstant(
-          this.props.renderer,
           child_id,
           "outcome",
           this.props.workflow.id,
@@ -68032,8 +68070,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeEditUnconnected);
   class Column extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "column";
       this.objectClass = ".column";
     }
@@ -68096,8 +68134,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapColumnStateToProps = (state, own_props) => getColumnByID(state, own_props.objectID);
   const Column$1 = connect(mapColumnStateToProps, null)(Column);
   class ColumnWorkflow extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "columnworkflow";
       this.objectClass = ".column-workflow";
     }
@@ -82431,9 +82469,9 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class AutoLink extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.eventNameSpace = "autolink" + props.nodeID;
+    constructor(props2) {
+      super(props2);
+      this.eventNameSpace = "autolink" + props2.nodeID;
       this.rerenderEvents = "ports-rendered." + this.eventNameSpace;
     }
     componentWillUnmount() {
@@ -82531,8 +82569,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class NodeLink extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "nodelink";
       this.objectClass = ".node-link";
       this.rerenderEvents = "ports-rendered." + this.props.data.id;
@@ -82622,12 +82660,12 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapNodeLinkStateToProps = (state, own_props) => getNodeLinkByID(state, own_props.objectID);
   const NodeLink$1 = connect(mapNodeLinkStateToProps, null)(NodeLink);
   class AssignmentForNode extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = { is_dropped: false };
       this.user_id = COURSEFLOW_APP.contextData.user_id;
-      if (props.data.user_assignment)
-        this.state.completed = props.data.user_assignment.completed;
+      if (props2.data.user_assignment)
+        this.state.completed = props2.data.user_assignment.completed;
     }
     /*******************************************************
      * FUNCTIONS
@@ -82744,8 +82782,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class AssignmentBox extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.input = reactExports.createRef();
       this.state = { my_assignments: [], all_assignments: [] };
     }
@@ -82766,24 +82804,24 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     reloadAssignments() {
       const node_id = this.props.node_id;
-      const props = this.props;
-      props.COURSEFLOW_APP.tinyLoader.startLoad();
+      const props2 = this.props;
+      COURSEFLOW_APP.tinyLoader.startLoad();
       getAssignmentsForNode(node_id, (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad();
         this.setState(response_data.data_package);
         if (!this.props.has_assignment && (response_data.data_package.my_assignments.length > 0 || response_data.data_package.all_assignments.length > 0)) {
-          props.dispatch(reloadAssignmentsAction(props.node_id, true));
+          props2.dispatch(reloadAssignmentsAction(props2.node_id, true));
         } else if (this.props.has_assignment && response_data.data_package.my_assignments.length == 0 && response_data.data_package.all_assignments.length == 0) {
-          props.dispatch(reloadAssignmentsAction(props.node_id, false));
+          props2.dispatch(reloadAssignmentsAction(props2.node_id, false));
         }
       });
     }
     createAssignment() {
-      const props = this.props;
-      props.COURSEFLOW_APP.tinyLoader.startLoad();
+      const props2 = this.props;
+      COURSEFLOW_APP.tinyLoader.startLoad();
       createAssignmentQuery(
-        props.node_id,
-        props.renderer.project.id,
+        props2.node_id,
+        props2.renderer.project.id,
         (response_data) => {
           COURSEFLOW_APP.tinyLoader.endLoad();
           this.reloadAssignments();
@@ -82865,8 +82903,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcomenode";
     }
     /*******************************************************
@@ -82898,11 +82936,10 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     deleteSelf(data) {
-      const props = this.props;
       if (this.props.deleteSelfOverride)
         this.props.deleteSelfOverride();
       else {
-        props.COURSEFLOW_APP.tinyLoader.startLoad();
+        COURSEFLOW_APP.tinyLoader.startLoad();
         updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
           COURSEFLOW_APP.tinyLoader.endLoad();
         });
@@ -82962,8 +82999,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeNodeUnconnected);
   let Index$1 = class Index extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = {};
     }
     componentDidUpdate() {
@@ -83017,11 +83054,11 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     nodeLinkAdded(target, source_port, target_port) {
-      const props = this.props;
+      const props2 = this.props;
       if (target == this.props.nodeID)
         return;
       newNodeLink(
-        props.nodeID,
+        props2.nodeID,
         target,
         port_keys.indexOf(source_port),
         port_keys.indexOf(target_port)
@@ -83075,8 +83112,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   };
   let Node$1 = class Node extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
       this.state = { initial_render: true, show_outcomes: false };
     }
@@ -83120,7 +83157,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     makeDroppable() {
-      var props = this.props;
+      this.props;
       $(this.maindiv.current).droppable({
         tolerance: "pointer",
         droppable: ".outcome-ghost",
@@ -83149,10 +83186,9 @@ ${latestSubscriptionCallbackError.current.stack}
         },
         drop: (e, ui) => {
           $(".outcome-drop-over").removeClass("outcome-drop-over");
-          $(e.target);
           var drag_item = ui.draggable;
           if (drag_item.hasClass("outcome")) {
-            props.COURSEFLOW_APP.tinyLoader.startLoad();
+            COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomenodeDegree(
               this.props.objectID,
               drag_item[0].dataDraggable.outcome,
@@ -83434,8 +83470,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapNodeStateToProps$4 = (state, own_props) => getNodeByID(state, own_props.objectID);
   const Node$2 = connect(mapNodeStateToProps$4, null)(Node$1);
   class NodeWeekUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "nodeweek";
       this.objectClass = ".node-week";
     }
@@ -83479,8 +83515,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapNodeWeekStateToProps$1 = (state, own_props) => getNodeWeekByID(state, own_props.objectID);
   const NodeWeek = connect(mapNodeWeekStateToProps$1, null)(NodeWeekUnconnected);
   class WeekUnconnected extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "week";
       this.objectClass = ".week";
       this.node_block = reactExports.createRef();
@@ -83842,8 +83878,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapTermStateToProps = (state, own_props) => getTermByID(state, own_props.objectID);
   const Term$1 = connect(mapTermStateToProps, null)(Term);
   class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "weekworkflow";
       this.objectClass = ".week-workflow";
     }
@@ -83899,8 +83935,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(WeekWorkflowUnconnected);
   class WorkflowLegendUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = {
         show_legend: JSON.parse(localStorage.getItem("show_legend")),
         show_slider: false
@@ -84006,8 +84042,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const WorkflowLegend = connect(mapStateToProps$3, null)(WorkflowLegendUnconnected);
   class WorkflowViewUnconnected extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
       this.state = {};
     }
@@ -84139,8 +84175,8 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   const WorkflowView = connect(mapWorkflowStateToProps$3, null)(WorkflowViewUnconnected);
   class NodeComparisonUnconnected extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
     }
     /*******************************************************
@@ -84352,7 +84388,6 @@ ${latestSubscriptionCallbackError.current.stack}
           "nodeweek"
         );
         insertedAtInstant(
-          this.props.renderer,
           child_id,
           "node",
           new_parent,
@@ -84455,8 +84490,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(WeekWorkflowComparisonUnconnected);
   class WorkflowUnconnected extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
       this.state = {};
     }
@@ -84529,8 +84564,8 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   const Workflow$1 = connect(mapWorkflowStateToProps$2, null)(WorkflowUnconnected);
   class WorkflowBaseUnconnected extends EditableComponent {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
     }
     /*******************************************************
@@ -84551,10 +84586,10 @@ ${latestSubscriptionCallbackError.current.stack}
       this.props.renderer.selection_manager.changeSelection(evt, this);
     }
     addObjectSetTrigger() {
-      const props = this.props;
+      const props2 = this.props;
       $(document).off("object_set_toggled." + this.props.data.id);
       $(document).on("object_set_toggled." + this.props.data.id, (evt, data) => {
-        props.dispatch(toggleObjectSet(data.id, data.hidden));
+        props2.dispatch(toggleObjectSet(data.id, data.hidden));
       });
     }
     alignAllHeaders() {
@@ -84609,14 +84644,16 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(WorkflowBaseUnconnected);
   class ConnectionBar extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
+      console.log("ConnectionBar props");
+      console.log(props2);
       this.state = { connected_users: [] };
-      this.user_id = props.renderer.user_id;
+      this.user_id = props2.renderer.user_id;
       this.user_name = COURSEFLOW_APP.contextData.user_name;
       this.myColour = COURSEFLOW_APP.contextData.user_name;
       const connection_bar = this;
-      props.renderer.connection_update_received = (user_data) => {
+      props2.renderer.connection_update_received = (user_data) => {
         connection_bar.connection_update_received(user_data);
       };
     }
@@ -84712,6 +84749,8 @@ ${latestSubscriptionCallbackError.current.stack}
   }
   class ConnectedUser extends reactExports.Component {
     render() {
+      console.log("ConnectedUser props");
+      console.log(props);
       const data = this.props.user_data;
       console.log("this.props.user_data");
       console.log(this);
@@ -84752,7 +84791,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data = this.props.outcomenode;
-      const props = this.props;
+      const props2 = this.props;
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "alignment-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         OutcomeNode,
         {
@@ -84761,7 +84800,7 @@ ${latestSubscriptionCallbackError.current.stack}
           deleteSelfOverride: () => {
             COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomehorizontallinkDegree(
-              props.child_outcome,
+              props2.child_outcome,
               data.outcome,
               0,
               (response_data) => {
@@ -84904,8 +84943,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(AlignmentHorizontalReverseChildOutcomeUnconnected);
   class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
       this.state = {};
     }
@@ -85133,8 +85172,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(AlignmentHorizontalReverseNode);
   class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "week";
       this.state = {};
     }
@@ -85287,8 +85326,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(AlignmentHorizontalReverseBlockUnconnected);
   class AlignmentView extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
       this.state = { active: 0, active2: 0, sort: "outcome" };
     }
@@ -85445,8 +85484,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const AlignmentView$1 = connect(mapAlignmentStateToProps, null)(AlignmentView);
   class GridNodeUnconnected extends EditableComponentWithComments {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
     }
     /*******************************************************
@@ -85503,8 +85542,8 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   const GridNode = connect(mapNodeStateToProps$2, null)(GridNodeUnconnected);
   class GridWeekUnconnected extends EditableComponentWithComments {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "week";
     }
     /*******************************************************
@@ -85607,8 +85646,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const GridWeek = connect(mapWeekStateToProps$2, null)(GridWeekUnconnected);
   class GridView extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
       this.state = { dropped_list: [] };
     }
@@ -85630,8 +85669,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const GridView$1 = connect(mapStateToProps$2, null)(GridView);
   class JumpToWeekViewUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "week";
       this.objectClass = ".week";
     }
@@ -85695,8 +85734,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(JumpToWeekWorkflowUnconnected);
   class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = {};
     }
     /*******************************************************
@@ -85798,16 +85837,15 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     toggleFunction() {
-      const props = this.props;
       let value;
-      if (props.degree)
+      if (this.props.degree)
         value = 0;
       else
         value = 1;
-      props.COURSEFLOW_APP.tinyLoader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       updateOutcomenodeDegree(
-        props.nodeID,
-        props.outcomeID,
+        this.props.nodeID,
+        this.props.outcomeID,
         value,
         (response_data) => {
           COURSEFLOW_APP.tinyLoader.endLoad();
@@ -85815,12 +85853,11 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     changeFunction(evt) {
-      const props = this.props;
       const value = evt.target.value;
-      props.COURSEFLOW_APP.tinyLoader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       updateOutcomenodeDegree(
-        props.nodeID,
-        props.outcomeID,
+        this.props.nodeID,
+        this.props.outcomeID,
         value,
         (response_data) => {
           COURSEFLOW_APP.tinyLoader.endLoad();
@@ -85836,7 +85873,7 @@ ${latestSubscriptionCallbackError.current.stack}
       } else if (!completion_status) {
         return "";
       }
-      if (this.props.outcomes_type === 0 || completion_status & 1) {
+      if (this.props.outcomesType === 0 || completion_status & 1) {
         if (self_completion)
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
@@ -85880,13 +85917,13 @@ ${latestSubscriptionCallbackError.current.stack}
       let input;
       if (this.props.total)
         class_name += " total-cell";
-      if (this.props.grand_total)
+      if (this.props.grandTotal)
         class_name += " grand-total-cell";
       let checked = false;
       if (degree)
         checked = true;
-      if (!this.props.renderer.read_only && !this.props.total) {
-        if (this.props.outcomes_type === 0) {
+      if (!this.props.readOnly && !this.props.total) {
+        if (this.props.outcomesType === 0) {
           input = /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -85915,9 +85952,9 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+  let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
+    constructor(props2) {
+      super(props2);
       this.objectType = "outcome";
     }
     /*******************************************************
@@ -85993,10 +86030,10 @@ ${latestSubscriptionCallbackError.current.stack}
           const group_row = outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             TableCell,
             {
-              outcomes_type: this.props.outcomes_type,
-              renderer: this.props.renderer,
-              nodeID: outcomenode.node_id,
+              outcomesType: this.props.outcomes_type,
               degree: outcomenode.degree,
+              readOnly: this.props.read_only,
+              nodeID: outcomenode.node_id,
               outcomeID: this.props.outcome_tree.id
             }
           ));
@@ -86004,8 +86041,8 @@ ${latestSubscriptionCallbackError.current.stack}
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               TableCell,
               {
-                outcomes_type: this.props.outcomes_type,
-                renderer: this.props.renderer,
+                outcomesType: this.props.outcomes_type,
+                readOnly: this.props.read_only,
                 total: true,
                 degree: outcomenodegroup.total
               }
@@ -86022,11 +86059,11 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           TableCell,
           {
-            outcomes_type: this.props.outcomes_type,
-            renderer: this.props.renderer,
+            outcomesType: this.props.outcomes_type,
+            degree: this.props.outcome_tree.outcomenodes.total,
+            readOnly: this.props.read_only,
             total: true,
-            grand_total: true,
-            degree: this.props.outcome_tree.outcomenodes.total
+            grandTotal: true
           }
         )
       );
@@ -86178,8 +86215,8 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeLegendUnconnected);
   class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
       this.state = {
         initial_render: true
@@ -86214,8 +86251,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
   const Index = connect(mapNodeStateToProps$1, null)(NodeOutcomeViewUnconnected);
   class OutcomeTableView extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
       this.state = {};
     }
@@ -86417,8 +86454,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const OutcomeTableView$1 = connect(mapStateToProps$1, null)(OutcomeTableView);
   class MatrixNodeUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "node";
     }
     /*******************************************************
@@ -86465,8 +86502,8 @@ ${latestSubscriptionCallbackError.current.stack}
   const mapNodeStateToProps = (state, own_props) => getNodeByID(state, own_props.objectID);
   const MatrixNode = connect(mapNodeStateToProps, null)(MatrixNodeUnconnected);
   class MatrixWeekUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "week";
     }
     /*******************************************************
@@ -86565,8 +86602,8 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const MatrixWeek = connect(mapWeekStateToProps, null)(MatrixWeekUnconnected);
   class CompetencyMatrixView extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.objectType = "workflow";
     }
     /*******************************************************
@@ -86872,8 +86909,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class UserLabel extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.select = reactExports.createRef();
     }
     /*******************************************************
@@ -86945,8 +86982,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class UserAdd extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.input = reactExports.createRef();
       this.state = { selected: null };
     }
@@ -87021,10 +87058,10 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ShareMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = {
-        owner: props.data.author,
+        owner: props2.data.author,
         edit: [],
         view: [],
         comment: [],
@@ -87439,8 +87476,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ExportMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = { type: "outcome" };
     }
     /*******************************************************
@@ -87651,8 +87688,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "objectType");
       __publicField(this, "allowed_tabs");
       /*******************************************************
@@ -88146,7 +88183,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ] }) });
       });
       console.log("WorkflowBaseViewUnconnected props");
-      console.log(props);
+      console.log(props2);
       this.objectType = "workflow";
       this.allowed_tabs = [0, 1, 2, 3, 4];
       this.state = {
@@ -88489,7 +88526,7 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   class Workflow {
-    constructor(props) {
+    constructor(props2) {
       __publicField(this, "message_queue");
       __publicField(this, "messages_queued");
       __publicField(this, "public_view");
@@ -88529,7 +88566,7 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "is_static");
       __publicField(this, "store");
       console.log("WF props");
-      console.log(props);
+      console.log(props2);
       const {
         column_choices,
         context_choices,
@@ -88540,11 +88577,11 @@ ${latestSubscriptionCallbackError.current.stack}
         strategy_classification_choices,
         is_strategy,
         project
-      } = props.workflow_data_package;
+      } = props2.workflow_data_package;
       this.message_queue = [];
       this.messages_queued = true;
-      this.public_view = props.public_view;
-      this.workflowID = props.workflow_model_id;
+      this.public_view = props2.public_view;
+      this.workflowID = props2.workflow_model_id;
       this.column_choices = column_choices;
       this.context_choices = context_choices;
       this.task_choices = task_choices;
@@ -88554,9 +88591,9 @@ ${latestSubscriptionCallbackError.current.stack}
       this.strategy_classification_choices = strategy_classification_choices;
       this.is_strategy = is_strategy;
       this.project = project;
-      this.user_permission = props.user_permission;
-      this.user_role = props.user_role ?? role_keys["none"];
-      this.user_id = props.user_id;
+      this.user_permission = props2.user_permission;
+      this.user_role = props2.user_role ?? role_keys["none"];
+      this.user_id = props2.user_id;
       this.read_only = true;
       if (this.public_view) {
         this.always_static = true;
@@ -88564,7 +88601,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (!this.is_strategy && this.project.object_permission) {
         this.project_permission = this.project.object_permission.permission_type;
       }
-      switch (props.user_permission) {
+      switch (props2.user_permission) {
         case permission_keys["view"]:
           this.can_view = true;
           break;
@@ -88580,7 +88617,7 @@ ${latestSubscriptionCallbackError.current.stack}
           this.can_view = true;
           break;
       }
-      switch (props.user_role) {
+      switch (props2.user_role) {
         case role_keys["none"]:
           break;
         case role_keys["student"]:
@@ -88962,17 +88999,15 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class WorkflowFilter extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "filters");
       __publicField(this, "sorts");
       __publicField(this, "filterDOM");
       __publicField(this, "searchDOM");
       __publicField(this, "sortDOM");
-      console.log("props");
-      console.log(props);
       this.state = {
-        workflows: props.workflows,
+        workflows: props2.workflows,
         activeFilter: 0,
         activeSort: 0,
         reversed: false,
@@ -88993,10 +89028,14 @@ ${latestSubscriptionCallbackError.current.stack}
         { name: "type", display: window.gettext("Type") }
       ];
       const url_params = new URL(window.location.href).searchParams;
-      if (url_params.get("favourites") === "true")
-        this.state.active_filter = this.filters.findIndex(
-          (elem) => elem.name === "favourite"
-        );
+      if (url_params.get("favourites") === "true") {
+        this.setState({
+          ...this.state,
+          activeFilter: this.filters.findIndex(
+            (elem) => elem.name === "favourite"
+          )
+        });
+      }
       if (this.props.context === "library") {
         this.searchWithout = true;
       }
@@ -89014,7 +89053,10 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     componentDidUpdate(prevProps, prevState) {
       if (prevProps.workflows !== this.props.workflows)
-        this.setState({ workflows: this.props.workflows });
+        this.setState({
+          ...this.state,
+          workflows: this.props.workflows
+        });
     }
     getPlaceholder() {
       if (this.props.context === "project") {
@@ -89033,7 +89075,10 @@ ${latestSubscriptionCallbackError.current.stack}
           "div",
           {
             className: css_class,
-            onClick: () => this.setState({ activeFilter: i2 }),
+            onClick: () => this.setState({
+              ...this.state,
+              activeFilter: i2
+            }),
             children: filter.display
           }
         );
@@ -89107,10 +89152,18 @@ ${latestSubscriptionCallbackError.current.stack}
       return sortedWorkflows;
     }
     sortChange(index) {
-      if (this.state.activeSort === index)
-        this.setState({ reversed: !this.state.reversed });
-      else
-        this.setState({ active_sort: index, reversed: false });
+      if (this.state.activeSort === index) {
+        this.setState({
+          ...this.state,
+          reversed: !this.state.reversed
+        });
+      } else {
+        this.setState({
+          ...this.state,
+          activeSort: index,
+          reversed: false
+        });
+      }
     }
     filterWorkflows(workflows) {
       const filter = this.filters[this.state.activeFilter].name;
@@ -89132,22 +89185,12 @@ ${latestSubscriptionCallbackError.current.stack}
       );
       responseFunction(workflows);
     }
-    searchWithout(request, responseFunction) {
-      searchAllObjectsQuery(
-        request,
-        {
-          nresults: 10
-        },
-        (responseData) => {
-          responseFunction(responseData.workflow_list);
-        }
-      );
-    }
     seeAll() {
       COURSEFLOW_APP.tinyLoader.startLoad();
       const { searchFilter } = this.state;
       searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
         this.setState({
+          ...this.state,
           workflows: responseData.workflow_list,
           searchFilterLock: searchFilter
         });
@@ -89175,7 +89218,11 @@ ${latestSubscriptionCallbackError.current.stack}
     searchChange(evt) {
       const searchTerm = evt.target.value;
       if (!searchTerm) {
-        this.setState({ searchResults: [], searchFilter: "" });
+        this.setState({
+          ...this.state,
+          searchResults: [],
+          searchFilter: ""
+        });
         $(this.searchDOM.current).removeClass("active");
         return;
       }
@@ -89183,6 +89230,7 @@ ${latestSubscriptionCallbackError.current.stack}
       const filter = searchTerm.toLowerCase();
       searchFunction.call(this, filter, (response) => {
         this.setState({
+          ...this.state,
           searchResults: response,
           searchFilter: filter
         });
@@ -89202,11 +89250,12 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     clearSearchLock(evt) {
       this.setState({
+        ...this.state,
         workflows: this.props.workflows,
         searchFilterLock: null
       });
-      $("#workflow-search").attr("disabled", false);
-      $("#workflow-search-input").attr("disabled", false);
+      $("#workflow-search").attr("disabled", String(false));
+      $("#workflow-search-input").attr("disabled", String(false));
       evt.stopPropagation();
     }
     /*******************************************************
@@ -89408,8 +89457,8 @@ ${latestSubscriptionCallbackError.current.stack}
     ] });
   };
   class ProjectEditDialog extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       this.state = { ...this.props.data, selected_set: "none" };
       this.object_set_updates = {};
       this.close = this.props.closeAction;
@@ -89481,12 +89530,12 @@ ${latestSubscriptionCallbackError.current.stack}
       return false;
     }
     addDiscipline(id) {
-      this.setState((state, props) => {
+      this.setState((state, props2) => {
         return { disciplines: [...state.disciplines, id], changed: true };
       });
     }
     removeDiscipline(id) {
-      this.setState((state, props) => {
+      this.setState((state, props2) => {
         return {
           disciplines: state.disciplines.filter((value) => value != id),
           changed: true
@@ -89703,8 +89752,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ProjectMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "readOnly");
       __publicField(this, "userId");
       __publicField(this, "createDiv");
@@ -90161,8 +90210,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ProjectPage extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "readOnly");
       __publicField(this, "projectData");
       __publicField(this, "allDisciplines");
@@ -90196,8 +90245,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class LibraryPage extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "createDiv");
       __publicField(this, "read_only");
       /***
@@ -90296,8 +90345,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class FavouritesPage extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "createDiv");
       this.state = {};
       this.createDiv = reactExports.createRef();
@@ -90328,10 +90377,10 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class HomePage extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "isTeacher");
-      this.isTeacher = props.is_teacher;
+      this.isTeacher = props2.is_teacher;
       this.state = { projects: [], favourites: [] };
     }
     /*******************************************************
@@ -90387,8 +90436,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ExploreFilter extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "filterDOM");
       __publicField(this, "searchDOM");
       __publicField(this, "sortDOM");
@@ -90819,8 +90868,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class ExplorePage extends reactExports.Component {
-    constructor(props) {
-      super(props);
+    constructor(props2) {
+      super(props2);
       __publicField(this, "disciplines");
       __publicField(this, "initial_pages");
       __publicField(this, "initial_workflows");

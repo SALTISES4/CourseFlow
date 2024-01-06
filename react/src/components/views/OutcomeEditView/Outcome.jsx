@@ -57,7 +57,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
           '?'
       )
     ) {
-      props.COURSEFLOW_APP.tinyLoader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomehorizontallinkDegree(
         data.outcome,
         data.parent_outcome,
@@ -221,7 +221,6 @@ class Outcome extends EditableComponentWithSorting {
         'outcomeoutcome'
       )
       insertedAtInstant(
-        this.props.renderer,
         child_id,
         'outcome',
         new_parent,
@@ -266,7 +265,7 @@ class Outcome extends EditableComponentWithSorting {
         var drop_item = $(e.target)
         var drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
-          props.COURSEFLOW_APP.tinyLoader.startLoad()
+          COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomehorizontallinkDegree(
             props.objectID,
             drag_item[0].dataDraggable.outcome,

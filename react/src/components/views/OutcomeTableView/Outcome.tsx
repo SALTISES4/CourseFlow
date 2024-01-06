@@ -1,26 +1,37 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { OutcomeTitle } from '@cfUIComponents'
-import { Component } from '@cfParentComponents'
 import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
+import { OutcomeTitle } from '@cfUIComponents/index.js'
+
+type PropsType = {
+  outcomesType: number
+  total: boolean
+  readOnly: boolean
+  degree: number
+  nodeID?: number
+  outcomeID?: number
+  grandTotal?: boolean
+
+  // renderer={this.props.renderer}
+}
 
 /**
  *
  */
-class TableCell extends React.Component {
+class TableCell extends React.Component<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   toggleFunction() {
-    const props = this.props
     let value
-    if (props.degree) value = 0
+    if (this.props.degree) value = 0
     else value = 1
-    props.COURSEFLOW_APP.tinyLoader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
-      props.nodeID,
-      props.outcomeID,
+      this.props.nodeID,
+      this.props.outcomeID,
       value,
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
@@ -29,12 +40,11 @@ class TableCell extends React.Component {
   }
 
   changeFunction(evt) {
-    const props = this.props
     const value = evt.target.value
-    props.COURSEFLOW_APP.tinyLoader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
-      props.nodeID,
-      props.outcomeID,
+      this.props.nodeID,
+      this.props.outcomeID,
       value,
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
@@ -52,7 +62,7 @@ class TableCell extends React.Component {
     } else if (!completion_status) {
       return ''
     }
-    if (this.props.outcomes_type === 0 || completion_status & 1) {
+    if (this.props.outcomesType === 0 || completion_status & 1) {
       if (self_completion)
         return (
           <img
@@ -63,6 +73,7 @@ class TableCell extends React.Component {
       else return <img src={COURSEFLOW_APP.config.icon_path + 'check.svg'} />
     }
 
+    // @todo why is bitwise being used here? needs explanation comments
     if (completion_status & 2) {
       if (self_completion & 2) divclass = ' self-completed'
       contents.push(
@@ -93,13 +104,13 @@ class TableCell extends React.Component {
     let input
 
     if (this.props.total) class_name += ' total-cell'
-    if (this.props.grand_total) class_name += ' grand-total-cell'
+    if (this.props.grandTotal) class_name += ' grand-total-cell'
 
     let checked = false
     if (degree) checked = true
 
-    if (!this.props.renderer.read_only && !this.props.total) {
-      if (this.props.outcomes_type === 0) {
+    if (!this.props.readOnly && !this.props.total) {
+      if (this.props.outcomesType === 0) {
         input = (
           <input
             type="checkbox"
@@ -213,7 +224,7 @@ export class OutcomeUnconnected extends Component {
           )}
           <div className="mouseover-actions">{comments}</div>
           <div className="side-actions">
-            <div className="comment-indicator-container"></div>
+            <div className="comment-indicator-container" />
           </div>
         </div>
       </div>
@@ -223,37 +234,40 @@ export class OutcomeUnconnected extends Component {
       (outcomenodegroup) => {
         const group_row = outcomenodegroup.map((outcomenode) => (
           <TableCell
-            outcomes_type={this.props.outcomes_type}
-            renderer={this.props.renderer}
-            nodeID={outcomenode.node_id}
+            outcomesType={this.props.outcomes_type}
             degree={outcomenode.degree}
+            readOnly={this.props.read_only}
+            nodeID={outcomenode.node_id}
             outcomeID={this.props.outcome_tree.id}
+            // renderer={this.props.renderer}
           />
         ))
         group_row.unshift(
           <TableCell
-            outcomes_type={this.props.outcomes_type}
-            renderer={this.props.renderer}
+            outcomesType={this.props.outcomes_type}
+            readOnly={this.props.read_only}
             total={true}
             degree={outcomenodegroup.total}
+            // renderer={this.props.renderer}
           />
         )
         return (
           <div className="table-group">
-            <div className="table-cell blank-cell"></div>
+            <div className="table-cell blank-cell" />
             {group_row}
           </div>
         )
       }
     )
-    outcome_row.push(<div className="table-cell blank-cell"></div>)
+    outcome_row.push(<div className="table-cell blank-cell" />)
     outcome_row.push(
       <TableCell
-        outcomes_type={this.props.outcomes_type}
-        renderer={this.props.renderer}
-        total={true}
-        grand_total={true}
+        outcomesType={this.props.outcomes_type}
         degree={this.props.outcome_tree.outcomenodes.total}
+        readOnly={this.props.read_only}
+        total={true}
+        grandTotal={true}
+        // renderer={this.props.renderer}
       />
     )
     const full_row = (

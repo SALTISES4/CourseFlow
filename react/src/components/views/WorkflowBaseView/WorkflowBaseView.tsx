@@ -84,6 +84,24 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       openExportDialog: false,
       openImportDialog: false
     }
+
+    // in this component :
+    // renderer.is_student
+    // renderer.public_view
+    // project.id
+    // project
+    // read_only
+    // render
+    // selection_manager
+    // view_type
+    // always_static
+    // public_view
+    // is_student
+    // user_id
+    // can_view
+    // project_permission
+
+
   }
 
   /*******************************************************

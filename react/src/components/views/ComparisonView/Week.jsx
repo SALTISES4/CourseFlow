@@ -72,7 +72,6 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
         'nodeweek'
       )
       insertedAtInstant(
-        this.props.renderer,
         child_id,
         'node',
         new_parent,

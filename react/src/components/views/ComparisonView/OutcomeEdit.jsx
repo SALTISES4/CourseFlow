@@ -49,7 +49,6 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
         'outcomeworkflow'
       )
       insertedAtInstant(
-        this.props.renderer,
         child_id,
         'outcome',
         this.props.workflow.id,

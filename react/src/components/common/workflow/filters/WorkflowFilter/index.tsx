@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed/index.jsx'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
@@ -29,7 +28,8 @@ type StateType = {
   activeSort: number
   reversed: boolean
   searchResults: Workflow[]
-  searchFilterLock: null | number
+  searchFilterLock: null | number | string
+  searchFilter?: string
 }
 
 class WorkflowFilter extends React.Component<PropsType, StateType> {
@@ -41,9 +41,6 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
   constructor(props: PropsType) {
     super(props)
-
-    console.log('props')
-    console.log(props)
 
     this.state = {
       workflows: props.workflows,
@@ -68,10 +65,14 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       { name: 'type', display: window.gettext('Type') }
     ]
     const url_params = new URL(window.location.href).searchParams
-    if (url_params.get('favourites') === 'true')
-      this.state.active_filter = this.filters.findIndex(
-        (elem) => elem.name === 'favourite'
-      )
+    if (url_params.get('favourites') === 'true') {
+      this.setState({
+        ...this.state,
+        activeFilter: this.filters.findIndex(
+          (elem) => elem.name === 'favourite'
+        )
+      })
+    }
     if (this.props.context === 'library') {
       // @ts-ignore
       this.searchWithout = true // ??
@@ -92,7 +93,10 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.workflows !== this.props.workflows)
-      this.setState({ workflows: this.props.workflows })
+      this.setState({
+        ...this.state,
+        workflows: this.props.workflows
+      })
   }
 
   getPlaceholder() {
@@ -113,7 +117,12 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       return (
         <div
           className={css_class}
-          onClick={() => this.setState({ activeFilter: i })}
+          onClick={() =>
+            this.setState({
+              ...this.state,
+              activeFilter: i
+            })
+          }
         >
           {filter.display}
         </div>
@@ -203,9 +212,18 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
   }
 
   sortChange(index) {
-    if (this.state.activeSort === index)
-      this.setState({ reversed: !this.state.reversed })
-    else this.setState({ active_sort: index, reversed: false })
+    if (this.state.activeSort === index) {
+      this.setState({
+        ...this.state,
+        reversed: !this.state.reversed
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        activeSort: index,
+        reversed: false
+      })
+    }
   }
 
   filterWorkflows(workflows) {
@@ -229,24 +247,13 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     responseFunction(workflows)
   }
 
-  searchWithout(request, responseFunction) {
-    searchAllObjectsQuery(
-      request,
-      {
-        nresults: 10
-      },
-      (responseData) => {
-        responseFunction(responseData.workflow_list)
-      }
-    )
-  }
-
   seeAll() {
     COURSEFLOW_APP.tinyLoader.startLoad()
     const { searchFilter } = this.state
 
     searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
       this.setState({
+        ...this.state,
         workflows: responseData.workflow_list,
         searchFilterLock: searchFilter
       })
@@ -281,7 +288,11 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
     // Exit early if the search term is empty
     if (!searchTerm) {
-      this.setState({ searchResults: [], searchFilter: '' })
+      this.setState({
+        ...this.state,
+        searchResults: [],
+        searchFilter: ''
+      })
       $(this.searchDOM.current).removeClass('active')
       return
     }
@@ -294,6 +305,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
     searchFunction.call(this, filter, (response) => {
       this.setState({
+        ...this.state,
         searchResults: response,
         searchFilter: filter
       })
@@ -315,11 +327,12 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
   clearSearchLock(evt) {
     this.setState({
+      ...this.state,
       workflows: this.props.workflows,
       searchFilterLock: null
     })
-    $('#workflow-search').attr('disabled', false)
-    $('#workflow-search-input').attr('disabled', false)
+    $('#workflow-search').attr('disabled', String(false))
+    $('#workflow-search-input').attr('disabled', String(false))
     evt.stopPropagation()
   }
 

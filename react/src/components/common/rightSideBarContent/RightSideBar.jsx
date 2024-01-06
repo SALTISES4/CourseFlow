@@ -12,6 +12,15 @@ import ComparisonViewBar from './ComparisonViewBar'
  */
 
 class RightSideBar extends React.Component {
+
+  /*******************************************************
+   * props
+   *  renderer.view_type
+   *  is_strategy
+   *  read_only
+   *
+   *******************************************************/
+
   /*******************************************************
    * LIFECYCLE
    *******************************************************/

@@ -362,7 +362,6 @@ export function insertChild(
 
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
-  renderer,
   action_data,
   callBackFunction = () => console.log('success')
 ) {
@@ -385,7 +384,6 @@ export function dragAction(
 
 //Called when an object in a list is reordered
 export function insertedAtInstant(
-  renderer,
   objectID,
   objectType,
   parentID,

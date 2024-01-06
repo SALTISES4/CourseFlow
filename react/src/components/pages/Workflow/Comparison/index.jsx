@@ -1,7 +1,7 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
-import { SelectionManager, TinyLoader } from '@cfRedux/helpers'
+import { SelectionManager } from '@cfRedux/helpers'
 import * as Constants from '@cfConstants'
 import { ComparisonView } from '@cfViews/ComparisonView'
 
@@ -56,8 +56,6 @@ export class WorkflowComparison {
 
     reactDom.render(<WorkflowLoader />, container[0])
 
-    this.tiny_loader = new TinyLoader($('body')[0])
-
     switch (this.user_permission) {
       case Constants.permission_keys['none']:
       case Constants.permission_keys['view']:
@@ -89,7 +87,6 @@ export class WorkflowComparison {
           renderer={this}
           data={this.project_data}
           selection_manager={this.selection_manager}
-          tiny_loader={this.tiny_loader}
         />,
         container[0]
       )

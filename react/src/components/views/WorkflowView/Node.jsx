@@ -96,10 +96,9 @@ class Node extends EditableComponentWithActions {
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        var drop_item = $(e.target)
         var drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
-          props.COURSEFLOW_APP.tinyLoader.startLoad()
+          COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomenodeDegree(
             this.props.objectID,
             drag_item[0].dataDraggable.outcome,

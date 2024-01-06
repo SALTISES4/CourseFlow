@@ -6,6 +6,8 @@ import * as React from 'react'
 export class ConnectionBar extends React.Component {
   constructor(props) {
     super(props)
+    console.log('ConnectionBar props')
+    console.log(props)
     this.state = { connected_users: [] }
     this.user_id = props.renderer.user_id
     // this.user_name = props.renderer.user_name
@@ -124,6 +126,8 @@ export class ConnectionBar extends React.Component {
 
 export class ConnectedUser extends React.Component {
   render() {
+    console.log('ConnectedUser props')
+    console.log(props)
     const data = this.props.user_data
     console.log('this.props.user_data')
     console.log(this)

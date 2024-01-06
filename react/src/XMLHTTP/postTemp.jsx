@@ -133,7 +133,7 @@ export function columnChanged(renderer, objectID, columnID) {
 
   $(document).off('nodeweek-dropped')
   $(document).on('nodeweek-dropped', () => {
-    dragAction(renderer, renderer.dragAction['nodeweek'])
+    dragAction(renderer.dragAction['nodeweek'])
     renderer.dragAction['nodeweek'] = null
     $(document).off('nodeweek-dropped')
   })
@@ -164,7 +164,7 @@ export function insertedAt(
   $(document).off(throughType + '-dropped')
   if (objectID)
     $(document).on(throughType + '-dropped', () => {
-      dragAction(renderer, renderer.dragAction[throughType])
+      dragAction(renderer.dragAction[throughType])
       renderer.dragAction[throughType] = null
       $(document).off(throughType + '-dropped')
     })

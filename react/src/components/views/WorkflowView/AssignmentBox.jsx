@@ -161,7 +161,7 @@ class AssignmentBox extends React.Component {
   reloadAssignments() {
     const node_id = this.props.node_id
     const props = this.props
-    props.COURSEFLOW_APP.tinyLoader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     getAssignmentsForNode(node_id, (response_data) => {
       COURSEFLOW_APP.tinyLoader.endLoad()
       this.setState(response_data.data_package)
@@ -183,7 +183,7 @@ class AssignmentBox extends React.Component {
 
   createAssignment() {
     const props = this.props
-    props.COURSEFLOW_APP.tinyLoader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     createAssignmentQuery(
       props.node_id,
       props.renderer.project.id,

@@ -49,11 +49,10 @@ class OutcomeNodeUnconnected extends Component {
   }
 
   deleteSelf(data) {
-    const props = this.props
     if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
     //Temporary confirmation; add better confirmation dialogue later
     else {
-      props.COURSEFLOW_APP.tinyLoader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       })
