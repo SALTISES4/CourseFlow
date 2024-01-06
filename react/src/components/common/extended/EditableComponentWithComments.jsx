@@ -337,7 +337,7 @@ class EditableComponentWithComments extends EditableComponent {
   reloadComments(show_comments) {
     const props = this.props
     const data = props.data
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     getCommentsForObject(
       data.id,
       Constants.object_dictionary[this.objectType],
@@ -353,7 +353,7 @@ class EditableComponentWithComments extends EditableComponent {
           this.setState({ show_comments: true })
         }
         //this.setState({show_comments:true,comment_data:response_data.data_package});
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }

@@ -76,10 +76,6 @@ export function setLinkedWorkflow(
   })
 }
 
-
-
-
-
 //Add a new node to a week
 export function newNode(
   weekPk,
@@ -371,14 +367,14 @@ export function dragAction(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     $('.ui-draggable').draggable('disable')
     $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
       function (data) {
         if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
         else window.fail_function(data.action)
         $('.ui-draggable').draggable('enable')
-        renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   } catch (err) {
@@ -399,7 +395,7 @@ export function insertedAtInstant(
   callBackFunction = () => console.log('success')
 ) {
   try {
-    renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     $('.ui-draggable').draggable('disable')
     $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
       objectID: JSON.stringify(objectID),
@@ -414,7 +410,7 @@ export function insertedAtInstant(
       if (data.action === 'posted') callBackFunction(data)
       else window.fail_function(data.action)
       $('.ui-draggable').draggable('enable')
-      renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
   } catch (err) {
     window.fail_function('The item failed to be inserted.')
@@ -468,7 +464,7 @@ export function toggleFavourite(
 }
 
 //Get the data from all parent workflows
-export function getWorkflowParentData(
+export function getWorkflowParentDataQuery(
   workflowPk,
   callBackFunction = () => console.log('success')
 ) {
@@ -476,6 +472,8 @@ export function getWorkflowParentData(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
+      console.log('getWorkflowParentData')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -485,7 +483,7 @@ export function getWorkflowParentData(
 }
 
 //Get the data from all child workflows
-export function getWorkflowChildData(
+export function getWorkflowChildDataQuery(
   nodePk,
   callBackFunction = () => console.log('success')
 ) {
@@ -493,6 +491,8 @@ export function getWorkflowChildData(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
+      console.log('getWorkflowChildData')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -502,7 +502,7 @@ export function getWorkflowChildData(
 }
 
 //Get the public data from the workflow
-export function getPublicWorkflowData(
+export function getPublicWorkflowDataQuery(
   workflowPk,
   callBackFunction = () => console.log('success')
 ) {
@@ -513,6 +513,8 @@ export function getPublicWorkflowData(
         workflowPk
       )
     ).done(function (data) {
+      console.log('getPublicWorkflowData')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -522,7 +524,7 @@ export function getPublicWorkflowData(
 }
 
 //Get the public data from all parent workflows
-export function getPublicWorkflowParentData(
+export function getPublicWorkflowParentDataQuery(
   workflowPk,
   callBackFunction = () => console.log('success')
 ) {
@@ -533,6 +535,8 @@ export function getPublicWorkflowParentData(
         workflowPk
       )
     ).done(function (data) {
+      console.log('getPublicWorkflowParentData')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -542,7 +546,7 @@ export function getPublicWorkflowParentData(
 }
 
 //Get the public data from all child workflows
-export function getPublicWorkflowChildData(
+export function getPublicWorkflowChildDataQuery(
   nodePk,
   callBackFunction = () => console.log('success')
 ) {
@@ -553,6 +557,8 @@ export function getPublicWorkflowChildData(
         nodePk
       )
     ).done(function (data) {
+      console.log('getPublicWorkflowChildData data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -740,22 +746,7 @@ export function updateObjectSet(
   }
 }
 
-//Get the info from the parent workflow
-export function getParentWorkflowInfo(
-  workflowPk,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
 
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(

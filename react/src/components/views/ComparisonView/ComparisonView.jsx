@@ -116,7 +116,7 @@ class ComparisonView extends React.Component {
 
   loadWorkflow() {
     const renderer = this.props.renderer
-    renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     getWorkflowSelectMenu(
       this.props.data.id,
       'workflow',

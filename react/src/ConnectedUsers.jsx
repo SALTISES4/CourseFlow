@@ -21,7 +21,7 @@ export class ConnectionBar extends React.Component {
   }
 
   render() {
-    if (this.props.updateSocket.readyState === 1) {
+    if (this.props.websocket.readyState === 1) {
       const users = this.state.connected_users.map((user) => {
         return <ConnectedUser user_data={user} />
       })
@@ -35,7 +35,7 @@ export class ConnectionBar extends React.Component {
           <div className="users-hidden">{users}</div>
         </div>
       )
-    } else if (this.props.updateSocket.readyState === 3) {
+    } else if (this.props.websocket.readyState === 3) {
       return (
         <div className="users-box connection-failed">
           {window.gettext('Not Connected')}
@@ -58,8 +58,8 @@ export class ConnectionBar extends React.Component {
 
   connection_update(connected = true) {
     clearTimeout(this.connection_update.bind(this))
-    if (this.props.updateSocket.readyState === 1) {
-      this.props.updateSocket.send(
+    if (this.props.websocket.readyState === 1) {
+      this.props.websocket.send(
         JSON.stringify({
           type: 'connection_update',
           user_data: {

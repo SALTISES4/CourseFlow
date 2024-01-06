@@ -17,13 +17,13 @@ class TableCell extends React.Component {
     let value
     if (props.degree) value = 0
     else value = 1
-    props.renderer.tiny_loader.startLoad()
+    props.COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
       props.nodeID,
       props.outcomeID,
       value,
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
@@ -31,13 +31,13 @@ class TableCell extends React.Component {
   changeFunction(evt) {
     const props = this.props
     const value = evt.target.value
-    props.renderer.tiny_loader.startLoad()
+    props.COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
       props.nodeID,
       props.outcomeID,
       value,
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
         $(':focus').blur()
       }
     )

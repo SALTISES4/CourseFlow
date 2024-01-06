@@ -1,11 +1,9 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import {
-  getParentWorkflowInfo,
-  getPublicParentWorkflowInfo
-} from '@XMLHTTP/PostFunctions.js'
+import { getPublicParentWorkflowInfo } from '@XMLHTTP/PostFunctions.js'
 import { WorkflowTitle } from '@cfUIComponents'
 import { connect } from 'react-redux'
+import { getParentWorkflowInfoQuery } from '@XMLHTTP/APIFunctions'
 
 /**
  * Shows the parent workflows for the current workflow, as well
@@ -30,7 +28,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
         })
       )
     } else {
-      getParentWorkflowInfo(this.props.workflow_id, (response_data) =>
+      getParentWorkflowInfoQuery(this.props.workflow_id, (response_data) =>
         this.setState({
           parent_workflows: response_data.parent_workflows,
           has_loaded: true

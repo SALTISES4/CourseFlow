@@ -9,7 +9,10 @@ import {
   WorkflowsForProjectQueryResp
 } from '@XMLHTTP/types'
 import { DATA_ACTIONS, OBJECT_TYPE } from '@XMLHTTP/common'
-import { LinkedWorkflowMenuQueryResp } from '@XMLHTTP/types/query'
+import {
+  LinkedWorkflowMenuQueryResp,
+  ParentWorkflowInfoQueryResp
+} from '@XMLHTTP/types/query'
 
 /*******************************************************
  * LIBRARY PAGES
@@ -97,8 +100,6 @@ export function getUsersForObjectQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data: UsersForObjectQueryResp) {
-      console.log('data')
-      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -217,6 +218,8 @@ export function getWorkflowDataQuery(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data: WorkflowDataQueryResp) {
+      console.log('getWorkflowDataQuery data')
+      console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -251,6 +254,33 @@ export function getLinkedWorkflowMenuQuery(
       //  openLinkedWorkflowMenu(data, updateFunction)
     }
   )
+}
+
+/**
+ * @getParentWorkflowInfo
+ *
+ * Get the info from the parent workflow
+ *
+ * endpoint course-flow/parentworkflows/get/
+ *
+ * @param workflowPk
+ * @param callBackFunction
+ */
+export function getParentWorkflowInfoQuery(
+  workflowPk: number,
+  callBackFunction = (data: ParentWorkflowInfoQueryResp) =>
+    console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function (data: ParentWorkflowInfoQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
 }
 
 /*******************************************************
@@ -340,9 +370,8 @@ export function updateValueQuery(
 
   if (changeField) {
     // @ts-ignore
-    post_object.changeFieldID = COURSEFLOW_APP.contextData
-    // @ts-ignore
-      .changeFieldID as number
+    post_object.changeFieldID = // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID as number
   }
 
   document.lastUpdateCallFunction = () => {

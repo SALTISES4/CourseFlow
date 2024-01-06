@@ -4,7 +4,7 @@ class WebSocketManager {
     this.handleMessage = handleMessage
     this.handleOpen = handleOpen
     this.handleClose = handleClose
-    this.updateSocket = null
+    this.websocket = null
     this.message_queue = []
     this.messages_queued = true
   }
@@ -12,11 +12,11 @@ class WebSocketManager {
   connect() {
     const websocket_prefix =
       window.location.protocol === 'https:' ? 'wss' : 'ws'
-    this.updateSocket = new WebSocket(
+    this.websocket = new WebSocket(
       `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
     )
 
-    this.updateSocket.onmessage = (e) => {
+    this.websocket.onmessage = (e) => {
       if (this.messages_queued) {
         this.message_queue.push(e)
       } else {
@@ -24,13 +24,13 @@ class WebSocketManager {
       }
     }
 
-    this.updateSocket.onopen = () => {
+    this.websocket.onopen = () => {
       this.handleOpen()
       this.messages_queued = false
       this.processQueue()
     }
 
-    this.updateSocket.onclose = (e) => {
+    this.websocket.onclose = (e) => {
       this.handleClose(e)
       this.messages_queued = true
     }
@@ -44,8 +44,8 @@ class WebSocketManager {
   }
 
   sendMessage(message) {
-    if (this.updateSocket && this.updateSocket.readyState === WebSocket.OPEN) {
-      this.updateSocket.send(JSON.stringify(message))
+    if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+      this.websocket.send(JSON.stringify(message))
     }
   }
 

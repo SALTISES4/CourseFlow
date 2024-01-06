@@ -161,9 +161,9 @@ class AssignmentBox extends React.Component {
   reloadAssignments() {
     const node_id = this.props.node_id
     const props = this.props
-    props.renderer.tiny_loader.startLoad()
+    props.COURSEFLOW_APP.tinyLoader.startLoad()
     getAssignmentsForNode(node_id, (response_data) => {
-      props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
       this.setState(response_data.data_package)
       if (
         !this.props.has_assignment &&
@@ -183,12 +183,12 @@ class AssignmentBox extends React.Component {
 
   createAssignment() {
     const props = this.props
-    props.renderer.tiny_loader.startLoad()
+    props.COURSEFLOW_APP.tinyLoader.startLoad()
     createAssignmentQuery(
       props.node_id,
       props.renderer.project.id,
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
         this.reloadAssignments()
       }
     )

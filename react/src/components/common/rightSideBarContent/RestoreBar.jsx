@@ -139,9 +139,9 @@ class RestoreBarItem extends ComponentWithToggleDrop {
 
   restore() {
     this.setState({ disabled: true })
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
-      this.props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
   }
 
@@ -152,9 +152,9 @@ class RestoreBarItem extends ComponentWithToggleDrop {
       )
     ) {
       $(this.maindiv.current).children('button').attr('disabled', true)
-      this.props.renderer.tiny_loader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
-        this.props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
   }

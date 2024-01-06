@@ -559,6 +559,7 @@ def public_access(**outer_kwargs):
     return wrapped_view
 
 
+# @todo more explanation on this decorator business purpose
 def public_model_access(model, **outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 

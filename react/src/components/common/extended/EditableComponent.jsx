@@ -556,14 +556,14 @@ class EditableComponent extends ComponentWithToggleDrop {
   }
 
   setChanged(set_id, evt) {
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     updateObjectSet(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       set_id,
       evt.target.checked,
       () => {
-        this.props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }

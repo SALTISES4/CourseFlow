@@ -48820,7 +48820,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   function dragAction(renderer2, action_data, callBackFunction = () => console.log("success")) {
     try {
-      renderer2.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       $(".ui-draggable").draggable("disable");
       $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
         function(data) {
@@ -48829,7 +48829,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           else
             window.fail_function(data.action);
           $(".ui-draggable").draggable("enable");
-          renderer2.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     } catch (err) {
@@ -48839,7 +48839,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   function insertedAtInstant(renderer2, objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = () => console.log("success")) {
     try {
-      renderer2.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       $(".ui-draggable").draggable("disable");
       $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
         objectID: JSON.stringify(objectID),
@@ -48856,7 +48856,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         else
           window.fail_function(data.action);
         $(".ui-draggable").draggable("enable");
-        renderer2.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
       });
     } catch (err) {
       window.fail_function("The item failed to be inserted.");
@@ -48899,11 +48899,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowParentData(workflowPk, callBackFunction = () => console.log("success")) {
+  function getWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
         workflowPk: JSON.stringify(workflowPk)
       }).done(function(data) {
+        console.log("getWorkflowParentData");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -48913,11 +48915,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowChildData(nodePk, callBackFunction = () => console.log("success")) {
+  function getWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
         nodePk: JSON.stringify(nodePk)
       }).done(function(data) {
+        console.log("getWorkflowChildData");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -48927,7 +48931,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowData(workflowPk, callBackFunction = () => console.log("success")) {
+  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
@@ -48935,6 +48939,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           workflowPk
         )
       ).done(function(data) {
+        console.log("getPublicWorkflowData");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -48944,7 +48950,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowParentData(workflowPk, callBackFunction = () => console.log("success")) {
+  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
@@ -48952,6 +48958,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           workflowPk
         )
       ).done(function(data) {
+        console.log("getPublicWorkflowParentData");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -48961,7 +48969,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowChildData(nodePk, callBackFunction = () => console.log("success")) {
+  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
@@ -48969,6 +48977,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           nodePk
         )
       ).done(function(data) {
+        console.log("getPublicWorkflowChildData data");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -49064,20 +49074,6 @@ Please use another name.` : formatMuiErrorMessage(18));
         objectType: JSON.stringify(objectType),
         objectsetPk: JSON.stringify(objectsetPk),
         add: JSON.stringify(add2)
-      }).done(function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getParentWorkflowInfo(workflowPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-        workflowPk: JSON.stringify(workflowPk)
       }).done(function(data) {
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
@@ -59099,10 +59095,10 @@ ${latestSubscriptionCallbackError.current.stack}
       case "refreshStoreData": {
         const new_state = state.slice();
         if (action.payload.outcomeworkflow) {
-          for (let i3 = 0; i3 < action.payload.outcomeworkflow.length; i3++) {
-            const new_obj = action.payload.outcomeworkflow[i3];
+          for (let i2 = 0; i2 < action.payload.outcomeworkflow.length; i2++) {
+            const new_obj = action.payload.outcomeworkflow[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id === new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59118,19 +59114,19 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       case "outcomeworkflow/movedTo": {
         const new_state = state.slice();
-        for (let i3 = 0; i3 < state.length; i3++) {
-          if (state[i3].id === action.payload.id) {
-            new_state[i3] = { ...state[i3], no_drag: true };
+        for (let i2 = 0; i2 < state.length; i2++) {
+          if (state[i2].id === action.payload.id) {
+            new_state[i2] = { ...state[i2], no_drag: true };
           }
         }
         return new_state;
       }
       case "outcomeworkflow/changeID": {
-        for (let i3 = 0; i3 < state.length; i3++) {
-          if (state[i3].id === action.payload.old_id) {
+        for (let i2 = 0; i2 < state.length; i2++) {
+          if (state[i2].id === action.payload.old_id) {
             const new_state = state.slice();
-            new_state[i3] = {
-              ...new_state[i3],
+            new_state[i2] = {
+              ...new_state[i2],
               id: action.payload.new_id,
               no_drag: false
             };
@@ -59140,7 +59136,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return state;
       }
       case "outcome_base/deleteSelf": {
-        for (var i2 = 0; i2 < state.length; i2++) {
+        for (let i2 = 0; i2 < state.length; i2++) {
           if (state[i2].outcome == action.payload.id) {
             const new_state = state.slice();
             new_state.splice(i2, 1);
@@ -59175,7 +59171,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.columnworkflow.length; i2++) {
             const new_obj = action.payload.columnworkflow[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59246,13 +59242,13 @@ ${latestSubscriptionCallbackError.current.stack}
         if (action.payload.column)
           return action.payload.column;
         return state;
-      case "refreshStoreData":
+      case "refreshStoreData": {
         var new_state = state.slice();
         if (action.payload.column) {
           for (var i2 = 0; i2 < action.payload.column.length; i2++) {
             const new_obj = action.payload.collumn[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59265,6 +59261,7 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         }
         return new_state;
+      }
       case "column/createLock":
         for (var i2 = 0; i2 < state.length; i2++) {
           if (state[i2].id == action.payload.id) {
@@ -59360,7 +59357,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.weekworkflow.length; i2++) {
             const new_obj = action.payload.weekworkflow[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59427,7 +59424,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.week.length; i2++) {
             const new_obj = action.payload.week[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59636,7 +59633,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.nodeweek.length; i2++) {
             const new_obj = action.payload.nodeweek[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -59876,7 +59873,7 @@ ${latestSubscriptionCallbackError.current.stack}
           if (state[i2].id == action.payload.new_model.source_node) {
             var new_state = state.slice();
             new_state[i2] = { ...state[i2] };
-            var new_outgoing_links = state[i2].outgoing_links.slice();
+            const new_outgoing_links = state[i2].outgoing_links.slice();
             new_outgoing_links.push(action.payload.new_model.id);
             new_state[i2].outgoing_links = new_outgoing_links;
             return new_state;
@@ -59975,7 +59972,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.nodelink.length; i2++) {
             const new_obj = action.payload.nodelink[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60243,7 +60240,7 @@ ${latestSubscriptionCallbackError.current.stack}
           if (state[i2].id == action.payload.parentID) {
             var new_state = state.slice();
             new_state[i2] = { ...state[i2] };
-            var new_child_outcome_links = state[i2].child_outcome_links.slice();
+            const new_child_outcome_links = state[i2].child_outcome_links.slice();
             let new_index2;
             new_index2 = action.payload.new_through.rank;
             new_child_outcome_links.splice(
@@ -60336,7 +60333,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.outcomeoutcome.length; i2++) {
             const new_obj = action.payload.outcomeoutcome[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60417,7 +60414,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.outcomenode.length; i2++) {
             const new_obj = action.payload.outcomenode[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60492,7 +60489,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.outcomehorizontallink.length; i2++) {
             const new_obj = action.payload.outcomehorizontallink[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60607,10 +60604,10 @@ ${latestSubscriptionCallbackError.current.stack}
       case "refreshStoreData":
         var new_state = state.slice();
         if (action.payload.parent_workflow) {
-          for (var i2 = 0; i2 < action.payload.parent_workflow.length; i2++) {
+          for (let i2 = 0; i2 < action.payload.parent_workflow.length; i2++) {
             const new_obj = action.payload.parent_workflow[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60639,7 +60636,7 @@ ${latestSubscriptionCallbackError.current.stack}
           for (var i2 = 0; i2 < action.payload.child_workflow.length; i2++) {
             const new_obj = action.payload.child_workflow[i2];
             let added = false;
-            for (var j = 0; j < new_state.length; j++) {
+            for (let j = 0; j < new_state.length; j++) {
               if (new_state[j].id == new_obj.id) {
                 new_state.splice(j, 1, new_obj);
                 added = true;
@@ -60688,7 +60685,7 @@ ${latestSubscriptionCallbackError.current.stack}
           if (state[i2].id == action.payload.new_through.workflow) {
             var new_state = state.slice();
             new_state[i2] = { ...state[i2] };
-            var new_outcomeworkflow_set = state[i2].outcomeworkflow_set.slice();
+            const new_outcomeworkflow_set = state[i2].outcomeworkflow_set.slice();
             new_outcomeworkflow_set.splice(
               action.payload.new_through.rank,
               0,
@@ -60724,9 +60721,9 @@ ${latestSubscriptionCallbackError.current.stack}
   function objectSetReducer(state = [], action) {
     switch (action.type) {
       case "objectset/toggleObjectSet":
-        for (var i2 = 0; i2 < state.length; i2++) {
+        for (let i2 = 0; i2 < state.length; i2++) {
           if (state[i2].id == action.payload.id) {
-            var new_state = state.slice();
+            const new_state = state.slice();
             new_state[i2] = { ...new_state[i2], hidden: action.payload.hidden };
             return new_state;
           }
@@ -60768,27 +60765,30 @@ ${latestSubscriptionCallbackError.current.stack}
         return state;
     }
   }
-  const rootWorkflowReducer = combineReducers({
-    workflow: workflowReducer,
-    outcomeworkflow: outcomeworkflowReducer,
-    columnworkflow: columnworkflowReducer,
-    column: columnReducer,
-    weekworkflow: weekworkflowReducer,
-    week: weekReducer,
-    nodeweek: nodeweekReducer,
-    node: nodeReducer,
-    nodelink: nodelinkReducer,
-    outcome: outcomeReducer,
-    outcomeoutcome: outcomeOutcomeReducer,
-    outcomenode: outcomeNodeReducer,
-    parent_workflow: parentWorkflowReducer,
-    parent_node: parentNodeReducer,
-    outcomehorizontallink: outcomeHorizontalLinkReducer,
-    child_workflow: childWorkflowReducer,
-    strategy: strategyReducer,
-    saltise_strategy: saltiseStrategyReducer,
-    objectset: objectSetReducer
-  });
+  const getReducers = () => {
+    return {
+      workflow: workflowReducer,
+      outcomeworkflow: outcomeworkflowReducer,
+      columnworkflow: columnworkflowReducer,
+      column: columnReducer,
+      weekworkflow: weekworkflowReducer,
+      week: weekReducer,
+      nodeweek: nodeweekReducer,
+      node: nodeReducer,
+      nodelink: nodelinkReducer,
+      outcome: outcomeReducer,
+      outcomeoutcome: outcomeOutcomeReducer,
+      outcomenode: outcomeNodeReducer,
+      parent_workflow: parentWorkflowReducer,
+      parent_node: parentNodeReducer,
+      outcomehorizontallink: outcomeHorizontalLinkReducer,
+      child_workflow: childWorkflowReducer,
+      strategy: strategyReducer,
+      saltise_strategy: saltiseStrategyReducer,
+      objectset: objectSetReducer
+    };
+  };
+  const rootWorkflowReducer = combineReducers(getReducers());
   combineReducers({
     outcome: outcomeReducer,
     outcomeoutcome: outcomeOutcomeReducer
@@ -61947,9 +61947,9 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     restore() {
       this.setState({ disabled: true });
-      this.props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
-        this.props.renderer.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
     delete() {
@@ -61957,9 +61957,9 @@ ${latestSubscriptionCallbackError.current.stack}
         gettext("Are you sure you want to permanently delete this object?")
       )) {
         $(this.maindiv.current).children("button").attr("disabled", true);
-        this.props.renderer.tiny_loader.startLoad();
+        COURSEFLOW_APP.tinyLoader.startLoad();
         deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
-          this.props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         });
       }
     }
@@ -62002,8 +62002,6 @@ ${latestSubscriptionCallbackError.current.stack}
         objectID: JSON.stringify(objectID),
         objectType: JSON.stringify(objectType)
       }).done(function(data) {
-        console.log("data");
-        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -62070,6 +62068,8 @@ ${latestSubscriptionCallbackError.current.stack}
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
         workflowPk: JSON.stringify(workflowPk)
       }).done(function(data) {
+        console.log("getWorkflowDataQuery data");
+        console.log(data);
         if (data.action === DATA_ACTIONS.POSTED)
           callBackFunction(data);
         else
@@ -62089,6 +62089,20 @@ ${latestSubscriptionCallbackError.current.stack}
         callBackFunction();
       }
     );
+  }
+  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+        workflowPk: JSON.stringify(workflowPk)
+      }).done(function(data) {
+        if (data.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
   }
   function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data) => console.log("success")) {
     try {
@@ -62127,7 +62141,8 @@ ${latestSubscriptionCallbackError.current.stack}
       changeFieldID: 0
     };
     if (changeField2) {
-      post_object.changeFieldID = COURSEFLOW_APP.contextData.changeFieldID;
+      post_object.changeFieldID = // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID;
     }
     document.lastUpdateCallFunction = () => {
       try {
@@ -62703,14 +62718,14 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     setChanged(set_id, evt) {
-      this.props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       updateObjectSet(
         this.props.data.id,
         object_dictionary[this.objectType],
         set_id,
         evt.target.checked,
         () => {
-          this.props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     }
@@ -63066,7 +63081,7 @@ ${latestSubscriptionCallbackError.current.stack}
     reloadComments(show_comments) {
       const props = this.props;
       const data = props.data;
-      props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       getCommentsForObject(
         data.id,
         object_dictionary[this.objectType],
@@ -63081,7 +63096,7 @@ ${latestSubscriptionCallbackError.current.stack}
           if (show_comments) {
             this.setState({ show_comments: true });
           }
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     }
@@ -63101,13 +63116,12 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     restoreSelf(data) {
-      var props = this.props;
-      props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       restoreSelfQuery(
         data.id,
         object_dictionary[this.objectType],
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad;
         }
       );
     }
@@ -63125,10 +63139,10 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     deleteSelf(data) {
-      var props = this.props;
+      this.props;
       if (this.props.renderer)
         this.props.renderer.selection_manager.deleted(this);
-      if ((this.objectType == "week" || this.objectType == "column") && this.props.sibling_count < 2) {
+      if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
         alert(window.gettext("You cannot delete the last ") + this.objectType);
         return;
       }
@@ -63138,13 +63152,13 @@ ${latestSubscriptionCallbackError.current.stack}
           this.objectType
         ).toLowerCase() + "?"
       )) {
-        props.renderer.tiny_loader.startLoad();
+        COURSEFLOW_APP.tinyLoader.startLoad();
         deleteSelfQuery(
           data.id,
           object_dictionary[this.objectType],
           true,
           (response_data) => {
-            props.renderer.tiny_loader.endLoad();
+            COURSEFLOW_APP.tinyLoader.endLoad();
           }
         );
       }
@@ -63164,7 +63178,7 @@ ${latestSubscriptionCallbackError.current.stack}
     duplicateSelf(data) {
       var props = this.props;
       var type = this.objectType;
-      props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       duplicateSelf(
         data.id,
         object_dictionary[type],
@@ -63172,7 +63186,7 @@ ${latestSubscriptionCallbackError.current.stack}
         parent_dictionary[type],
         through_parent_dictionary[type],
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     }
@@ -63191,7 +63205,7 @@ ${latestSubscriptionCallbackError.current.stack}
     insertSibling(data) {
       var props = this.props;
       var type = this.objectType;
-      props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       insertSibling(
         data.id,
         object_dictionary[type],
@@ -63199,7 +63213,7 @@ ${latestSubscriptionCallbackError.current.stack}
         parent_dictionary[type],
         through_parent_dictionary[type],
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     }
@@ -63216,11 +63230,11 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     insertChild(data) {
-      var props = this.props;
+      this.props;
       var type = this.objectType;
-      props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       insertChild(data.id, object_dictionary[type], (response_data) => {
-        props.renderer.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
   }
@@ -67477,13 +67491,13 @@ ${latestSubscriptionCallbackError.current.stack}
           this.objectType
         ).toLowerCase() + "?"
       )) {
-        props.renderer.tiny_loader.startLoad();
+        props.COURSEFLOW_APP.tinyLoader.startLoad();
         updateOutcomehorizontallinkDegree(
           data.outcome,
           data.parent_outcome,
           0,
           (response_data) => {
-            props.renderer.tiny_loader.endLoad();
+            COURSEFLOW_APP.tinyLoader.endLoad();
           }
         );
       }
@@ -67669,13 +67683,13 @@ ${latestSubscriptionCallbackError.current.stack}
           $(e.target);
           var drag_item = ui.draggable;
           if (drag_item.hasClass("outcome")) {
-            props.renderer.tiny_loader.startLoad();
+            props.COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomehorizontallinkDegree(
               props.objectID,
               drag_item[0].dataDraggable.outcome,
               1,
               (response_data) => {
-                props.renderer.tiny_loader.endLoad();
+                COURSEFLOW_APP.tinyLoader.endLoad();
               }
             );
           }
@@ -82753,9 +82767,9 @@ ${latestSubscriptionCallbackError.current.stack}
     reloadAssignments() {
       const node_id = this.props.node_id;
       const props = this.props;
-      props.renderer.tiny_loader.startLoad();
+      props.COURSEFLOW_APP.tinyLoader.startLoad();
       getAssignmentsForNode(node_id, (response_data) => {
-        props.renderer.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
         this.setState(response_data.data_package);
         if (!this.props.has_assignment && (response_data.data_package.my_assignments.length > 0 || response_data.data_package.all_assignments.length > 0)) {
           props.dispatch(reloadAssignmentsAction(props.node_id, true));
@@ -82766,12 +82780,12 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     createAssignment() {
       const props = this.props;
-      props.renderer.tiny_loader.startLoad();
+      props.COURSEFLOW_APP.tinyLoader.startLoad();
       createAssignmentQuery(
         props.node_id,
         props.renderer.project.id,
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
           this.reloadAssignments();
         }
       );
@@ -82888,9 +82902,9 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.deleteSelfOverride)
         this.props.deleteSelfOverride();
       else {
-        props.renderer.tiny_loader.startLoad();
+        props.COURSEFLOW_APP.tinyLoader.startLoad();
         updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         });
       }
     }
@@ -83138,13 +83152,13 @@ ${latestSubscriptionCallbackError.current.stack}
           $(e.target);
           var drag_item = ui.draggable;
           if (drag_item.hasClass("outcome")) {
-            props.renderer.tiny_loader.startLoad();
+            props.COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomenodeDegree(
               this.props.objectID,
               drag_item[0].dataDraggable.outcome,
               1,
               (response_data) => {
-                props.renderer.tiny_loader.endLoad();
+                COURSEFLOW_APP.tinyLoader.endLoad();
               }
             );
           }
@@ -84607,7 +84621,7 @@ ${latestSubscriptionCallbackError.current.stack}
       };
     }
     render() {
-      if (this.props.updateSocket.readyState === 1) {
+      if (this.props.websocket.readyState === 1) {
         const users = this.state.connected_users.map((user) => {
           return /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectedUser, { user_data: user });
         });
@@ -84616,7 +84630,7 @@ ${latestSubscriptionCallbackError.current.stack}
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-more", children: "..." }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-hidden", children: users })
         ] });
-      } else if (this.props.updateSocket.readyState === 3) {
+      } else if (this.props.websocket.readyState === 3) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-box connection-failed", children: window.gettext("Not Connected") });
       }
     }
@@ -84632,8 +84646,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     connection_update(connected = true) {
       clearTimeout(this.connection_update.bind(this));
-      if (this.props.updateSocket.readyState === 1) {
-        this.props.updateSocket.send(
+      if (this.props.websocket.readyState === 1) {
+        this.props.websocket.send(
           JSON.stringify({
             type: "connection_update",
             user_data: {
@@ -84745,13 +84759,13 @@ ${latestSubscriptionCallbackError.current.stack}
           objectID: data.id,
           renderer: this.props.renderer,
           deleteSelfOverride: () => {
-            this.props.renderer.tiny_loader.startLoad();
+            COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomehorizontallinkDegree(
               props.child_outcome,
               data.outcome,
               0,
               (response_data) => {
-                props.renderer.tiny_loader.endLoad();
+                COURSEFLOW_APP.tinyLoader.endLoad();
               }
             );
           }
@@ -84766,9 +84780,9 @@ ${latestSubscriptionCallbackError.current.stack}
     onChange(evt) {
       if (evt.target.value == 0)
         return;
-      this.props.renderer.tiny_loader.startLoad();
+      COURSEFLOW_APP.tinyLoader.startLoad();
       this.props.addFunction(evt.target.value, 1, (response_data) => {
-        this.props.renderer.tiny_loader.endLoad();
+        COURSEFLOW_APP.tinyLoader.endLoad();
       });
       $(".outcome-adder").val(0);
     }
@@ -85698,7 +85712,7 @@ ${latestSubscriptionCallbackError.current.stack}
           })
         );
       } else {
-        getParentWorkflowInfo(
+        getParentWorkflowInfoQuery(
           this.props.workflow_id,
           (response_data) => this.setState({
             parent_workflows: response_data.parent_workflows,
@@ -85790,26 +85804,26 @@ ${latestSubscriptionCallbackError.current.stack}
         value = 0;
       else
         value = 1;
-      props.renderer.tiny_loader.startLoad();
+      props.COURSEFLOW_APP.tinyLoader.startLoad();
       updateOutcomenodeDegree(
         props.nodeID,
         props.outcomeID,
         value,
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
     }
     changeFunction(evt) {
       const props = this.props;
       const value = evt.target.value;
-      props.renderer.tiny_loader.startLoad();
+      props.COURSEFLOW_APP.tinyLoader.startLoad();
       updateOutcomenodeDegree(
         props.nodeID,
         props.outcomeID,
         value,
         (response_data) => {
-          props.renderer.tiny_loader.endLoad();
+          COURSEFLOW_APP.tinyLoader.endLoad();
           $(":focus").blur();
         }
       );
@@ -87639,6 +87653,8 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     constructor(props) {
       super(props);
+      __publicField(this, "objectType");
+      __publicField(this, "allowed_tabs");
       /*******************************************************
        * COMPONENTS
        *******************************************************/
@@ -87901,13 +87917,7 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "UserBar", () => {
         const renderer2 = this.props.renderer;
         if (!renderer2.always_static) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ConnectionBar,
-            {
-              updateSocket: renderer2.updateSocket,
-              renderer: renderer2
-            }
-          );
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectionBar, { websocket: renderer2.websocket, renderer: renderer2 });
         }
         return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
       });
@@ -87968,7 +87978,7 @@ ${latestSubscriptionCallbackError.current.stack}
       });
       __publicField(this, "CopyButton", () => {
         if (!this.props.renderer.user_id)
-          return nullz;
+          return null;
         const export_button = [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
@@ -87976,7 +87986,7 @@ ${latestSubscriptionCallbackError.current.stack}
               id: "copy-button",
               className: "hover-shade",
               onClick: () => {
-                const loader = COURSEFLOW_APP.tiny_loader;
+                const loader = COURSEFLOW_APP.tinyLoader;
                 if (this.props.data.is_strategy) {
                   duplicateBaseItemQuery(
                     this.props.data.id,
@@ -88003,7 +88013,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 id: "copy-to-project-button",
                 className: "hover-shade",
                 onClick: () => {
-                  const loader = COURSEFLOW_APP.tiny_loader;
+                  const loader = COURSEFLOW_APP.tinyLoader;
                   loader.startLoad();
                   duplicateBaseItemQuery(
                     this.props.data.id,
@@ -88135,7 +88145,7 @@ ${latestSubscriptionCallbackError.current.stack}
           )
         ] }) });
       });
-      console.log("props");
+      console.log("WorkflowBaseViewUnconnected props");
       console.log(props);
       this.objectType = "workflow";
       this.allowed_tabs = [0, 1, 2, 3, 4];
@@ -88184,6 +88194,7 @@ ${latestSubscriptionCallbackError.current.stack}
         deleteSelfQuery(this.props.data.id, "workflow", false, () => {
           window.location = COURSEFLOW_APP.config.update_path["project"].replace(
             0,
+            // @todo remove renderer
             renderer.project.id
           );
         });
@@ -88211,6 +88222,7 @@ ${latestSubscriptionCallbackError.current.stack}
         disabled_tabs.push(5);
       $("#sidebar").tabs({ disabled: disabled_tabs });
     }
+    // @todo what are all the view types?
     changeView(type) {
       this.props.renderer.render(this.props.renderer.container, type);
     }
@@ -88227,13 +88239,13 @@ ${latestSubscriptionCallbackError.current.stack}
     openEditMenu(evt) {
       this.props.renderer.selection_manager.changeSelection(evt, this);
     }
-    clickImport(import_type, evt) {
+    clickImport(import_type2, evt) {
       evt.preventDefault();
       renderMessageBox(
         {
           object_id: this.props.data.id,
           object_type: this.objectType,
-          import_type
+          import_type: import_type2
         },
         "import",
         () => {
@@ -88312,7 +88324,7 @@ ${latestSubscriptionCallbackError.current.stack}
         );
       return users;
     }
-    pushImport(imports, import_type, text, disabled) {
+    pushImport(imports, import_type2, text, disabled) {
       imports.push();
     }
     getReturnLinks() {
@@ -88416,7 +88428,6 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      const data = this.props.data;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           MenuBar,
@@ -88430,7 +88441,7 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
-            this.addEditable(data),
+            this.addEditable(this.props.data),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
             this.getReturnLinks(),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88446,7 +88457,7 @@ ${latestSubscriptionCallbackError.current.stack}
             {
               context: "workflow",
               renderer: this.props.renderer,
-              data
+              data: this.props.data
             }
           )
         ] }),
@@ -88456,13 +88467,17 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapWorkflowStateToProps = (state) => ({
-    data: state.workflow,
-    object_sets: state.objectset,
-    week: state.week,
-    node: state.node,
-    outcome: state.outcome
-  });
+  const mapWorkflowStateToProps = (state) => {
+    console.log("mapWorkflowStateToProps");
+    console.log(state);
+    return {
+      data: state.workflow,
+      object_sets: state.objectset,
+      week: state.week,
+      node: state.node,
+      outcome: state.outcome
+    };
+  };
   const WorkflowBaseView = connect(
     mapWorkflowStateToProps,
     null
@@ -88472,42 +88487,49 @@ ${latestSubscriptionCallbackError.current.stack}
     // @ts-ignore
     nonce: document.querySelector("#script-redesign").nonce
   });
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   class Workflow {
     constructor(props) {
       __publicField(this, "message_queue");
       __publicField(this, "messages_queued");
       __publicField(this, "public_view");
       __publicField(this, "workflowID");
-      __publicField(this, "column_choices");
-      __publicField(this, "context_choices");
-      __publicField(this, "task_choices");
-      __publicField(this, "time_choices");
-      __publicField(this, "outcome_type_choices");
-      __publicField(this, "can_view");
-      __publicField(this, "outcome_sort_choices");
-      __publicField(this, "strategy_classification_choices");
+      // private column_choices: Choice[]
+      // private context_choices: Choice[]
+      // private task_choices: Choice[]
+      // private time_choices: Choice[]
+      // private outcome_type_choices: Choice[]
+      // private outcome_sort_choices: Choice[]
+      // private strategy_classification_choices: Choice[]
       __publicField(this, "is_strategy");
       __publicField(this, "project");
-      __publicField(this, "parsemessage", function(e) {
-        const data = JSON.parse(e.data);
-        switch (data.type) {
-          case "workflow_action":
-            this.store.dispatch(data.action);
-            break;
-          case "lock_update":
-            this.lock_update_received(data.action);
-            break;
-          case "connection_update":
-            this.connection_update_received(data.action);
-            break;
-          case "workflow_parent_updated":
-            this.parent_workflow_updated(data.edit_count);
-            break;
-          case "workflow_child_updated":
-            this.child_workflow_updated(data.edit_count, data.child_workflow_id);
-            break;
-        }
-      });
+      __publicField(this, "user_permission");
+      __publicField(this, "user_role");
+      __publicField(this, "user_id");
+      __publicField(this, "read_only");
+      __publicField(this, "always_static");
+      // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
+      __publicField(this, "project_permission");
+      __publicField(this, "can_view");
+      __publicField(this, "view_comments");
+      __publicField(this, "add_comments");
+      __publicField(this, "is_student");
+      __publicField(this, "show_assignments");
+      __publicField(this, "is_teacher");
+      __publicField(this, "selection_manager");
+      __publicField(this, "child_data_completed");
+      __publicField(this, "child_data_needed");
+      __publicField(this, "fetching_child_data");
+      __publicField(this, "getWorkflowData");
+      __publicField(this, "getWorkflowParentData");
+      __publicField(this, "getWorkflowChildData");
+      __publicField(this, "websocket");
+      __publicField(this, "has_disconnected");
+      __publicField(this, "has_rendered");
+      __publicField(this, "is_static");
+      __publicField(this, "store");
+      console.log("WF props");
+      console.log(props);
       const {
         column_choices,
         context_choices,
@@ -88533,8 +88555,12 @@ ${latestSubscriptionCallbackError.current.stack}
       this.is_strategy = is_strategy;
       this.project = project;
       this.user_permission = props.user_permission;
-      this.user_role = props.user_role;
+      this.user_role = props.user_role ?? role_keys["none"];
       this.user_id = props.user_id;
+      this.read_only = true;
+      if (this.public_view) {
+        this.always_static = true;
+      }
       if (!this.is_strategy && this.project.object_permission) {
         this.project_permission = this.project.object_permission.permission_type;
       }
@@ -88566,68 +88592,70 @@ ${latestSubscriptionCallbackError.current.stack}
           this.show_assignments = true;
           break;
       }
-      if (this.public_view) {
-        this.getWorkflowData = getPublicWorkflowData;
-        this.getWorkflowParentData = getPublicWorkflowParentData;
-        this.getWorkflowChildData = getPublicWorkflowChildData;
+      this.getWorkflowData = this.public_view ? getPublicWorkflowDataQuery : getWorkflowDataQuery;
+      this.getWorkflowParentData = this.public_view ? getPublicWorkflowParentDataQuery : getWorkflowParentDataQuery;
+      this.getWorkflowChildData = this.public_view ? getPublicWorkflowChildDataQuery : getWorkflowChildDataQuery;
+    }
+    //
+    init() {
+      if (!this.always_static) {
+        this.connect();
       } else {
-        this.getWorkflowData = getWorkflowDataQuery;
-        this.getWorkflowParentData = getWorkflowParentData;
-        this.getWorkflowChildData = getWorkflowChildData;
+        this.connection_opened();
       }
-      this.messages_queued = true;
-      this.has_disconnected = false;
     }
     /*******************************************************
      * WEBSOCKET MANAGER
      *******************************************************/
     connect() {
       const websocket_prefix = window.location.protocol === "https:" ? "wss" : "ws";
-      this.updateSocket = new WebSocket(
+      this.websocket = new WebSocket(
         `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
       );
-      this.updateSocket.onmessage = (e) => {
+      this.websocket.onmessage = (e) => {
         if (this.messages_queued) {
           this.message_queue.push(e);
         } else {
           this.onMessageReceived(e);
         }
       };
-      this.updateSocket.onopen = () => {
-        this.onConnectionOpened();
+      this.websocket.onopen = () => {
         this.has_rendered = true;
+        this.connection_opened();
       };
-      this.updateSocket.onclose = (e) => this.handleSocketClose(e);
-    }
-    attempt_reconnect() {
-      setTimeout(() => this.connect(), 3e4);
+      if (this.websocket.readyState === 1) {
+        this.connection_opened();
+      }
+      this.websocket.onclose = (e) => this.handleSocketClose(e);
     }
     handleSocketClose(e) {
       if (e.code === 1e3)
         return;
-      this.onConnectionClosed();
+      if (!this.has_rendered) {
+        this.connection_opened(true);
+      } else {
+        this.attemptReconnect();
+      }
       this.is_static = true;
       this.has_disconnected = true;
-      this.attempt_reconnect();
-    }
-    connection_update_received() {
-      console.log("A connection update was received, but not handled.");
-    }
-    clear_queue(edit_count) {
-      let processMessages = false;
-      while (this.message_queue.length > 0) {
-        const message = this.message_queue[0];
-        if (processMessages) {
-          this.parsemessage(message);
-          this.message_queue.shift();
-        } else if (message.edit_count && parseInt(message.edit_count, 10) >= edit_count) {
-          processMessages = true;
-        } else {
-          this.message_queue.shift();
-        }
+      this.has_rendered = true;
+      if (!this.silent_connect_fail && !this.has_disconnected) {
+        alert(
+          window.gettext(
+            "Unable to establish connection to the server, or connection has been lost."
+          )
+        );
       }
-      this.messages_queued = false;
     }
+    attemptReconnect() {
+      setTimeout(() => this.init(), 3e4);
+    }
+    onMessageReceived(e) {
+      this.parsemessage(e);
+    }
+    /*******************************************************
+     * // WEBSOCKET MANAGER
+     *******************************************************/
     /*******************************************************
      * REACT TO MOVE
      *******************************************************/
@@ -88685,86 +88713,58 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     connection_opened(reconnect = false) {
+      console.log("connection_opened");
       this.getWorkflowData(this.workflowID, (response) => {
-        const data_flat = response.data_package;
-        this.unread_comments = data_flat.unread_comments;
-        const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+        var _a, _b;
+        this.unread_comments = (_a = response.data_package) == null ? void 0 : _a.unread_comments;
         this.store = createStore(
           rootWorkflowReducer,
-          data_flat,
+          response.data_package,
           composeEnhancers()
         );
         this.render($("#container"));
-        this.clear_queue(data_flat.workflow.edit_count);
+        this.clear_queue((_b = response.data_package) == null ? void 0 : _b.workflow.edit_count);
         if (reconnect) {
           this.attempt_reconnect();
         }
       });
     }
-    parent_workflow_updated(edit_count) {
-      this.messages_queued = true;
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          replaceStoreData({
-            parent_node: [],
-            parent_workflow: []
-          })
-        );
-        this.store.dispatch(refreshStoreData(response.data_package));
-        this.clear_queue(0);
-      });
-    }
-    child_workflow_updated(edit_count, child_workflow_id) {
-      this.messages_queued = true;
-      const state = this.store.getState();
-      const node2 = state.node.find(
-        (node22) => node22.linked_workflow == child_workflow_id
-      );
-      if (!node2) {
-        return;
+    clear_queue(edit_count) {
+      let started_edits = false;
+      while (this.message_queue.length > 0) {
+        const message = this.message_queue[0];
+        if (started_edits) {
+          this.parsemessage(message);
+        } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
+          started_edits = true;
+          this.message_queue.splice(0, 1);
+        }
       }
-      this.getWorkflowChildData(node2.id, (response) => {
-        this.store.dispatch(refreshStoreData(response.data_package));
-        this.clear_queue(0);
-      });
+      this.messages_queued = false;
     }
-    message_received(e) {
-      if (this.messages_queued) {
-        this.message_queue.push(e);
-      } else {
-        this.parsemessage(e);
-      }
-    }
-    micro_update(obj) {
-      if (this.updateSocket) {
-        this.updateSocket.send(
-          JSON.stringify({
-            type: "micro_update",
-            action: obj
-          })
-        );
-      }
-    }
-    change_field(id, object_type, field, value) {
-      const json = {};
-      json[field] = value;
-      this.store.dispatch(changeField(id, object_type, json));
-      updateValueQuery(id, object_type, json, true);
-    }
-    lock_update(obj, time, lock2) {
-      if (this.updateSocket) {
-        this.updateSocket.send(
-          JSON.stringify({
-            type: "lock_update",
-            lock: {
-              ...obj,
-              expires: Date.now() + time,
-              user_id: this.user_id,
-              user_colour: COURSEFLOW_APP.contextData.myColour,
-              lock: lock2
-            }
-          })
-        );
+    /*******************************************************
+     * THESE ARE UPDATES FROM PUB MESSAGE
+     *******************************************************/
+    parsemessage(e) {
+      const data = JSON.parse(e.data);
+      console.log("parsemessage");
+      console.log(data);
+      switch (data.type) {
+        case "workflow_action":
+          this.store.dispatch(data.action);
+          break;
+        case "lock_update":
+          this.lock_update_received(data.action);
+          break;
+        case "connection_update":
+          this.connection_update_received(data);
+          break;
+        case "workflow_parent_updated":
+          this.parent_workflow_updated(data.edit_count);
+          break;
+        case "workflow_child_updated":
+          this.child_workflow_updated(data.edit_count, data.child_workflow_id);
+          break;
       }
     }
     lock_update_received(data) {
@@ -88793,6 +88793,75 @@ ${latestSubscriptionCallbackError.current.stack}
         }, data.expires - Date.now());
       } else {
         this.locks[object_type][object_id] = null;
+      }
+    }
+    // @todo this is weird becuase connection_update_received is called in
+    // connectedUsers but expects data to be well defined
+    connection_update_received(data) {
+      console.log("A connection update was received, but not handled.");
+    }
+    parent_workflow_updated() {
+      this.messages_queued = true;
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        this.store.dispatch(
+          replaceStoreData({
+            parent_node: [],
+            parent_workflow: []
+          })
+        );
+        this.store.dispatch(refreshStoreData(response.data_package));
+        this.clear_queue(0);
+      });
+    }
+    child_workflow_updated(edit_count, child_workflow_id) {
+      this.messages_queued = true;
+      const state = this.store.getState();
+      const node2 = state.node.find(
+        (node22) => node22.linked_workflow == child_workflow_id
+      );
+      if (!node2) {
+        return;
+      }
+      this.getWorkflowChildData(node2.id, (response) => {
+        this.store.dispatch(refreshStoreData(response.data_package));
+        this.clear_queue(0);
+      });
+    }
+    /*******************************************************
+     * END PARSE MESSAGE LOGIC
+     *******************************************************/
+    // @todo how used?
+    micro_update(obj) {
+      if (this.websocket) {
+        this.websocket.send(
+          JSON.stringify({
+            type: "micro_update",
+            action: obj
+          })
+        );
+      }
+    }
+    // @todo where used?
+    change_field(id, object_type, field, value) {
+      const json = {};
+      json[field] = value;
+      this.store.dispatch(changeField(id, object_type, json));
+      updateValueQuery(id, object_type, json, true);
+    }
+    lock_update(obj, time, lock2) {
+      if (this.websocket) {
+        this.websocket.send(
+          JSON.stringify({
+            type: "lock_update",
+            lock: {
+              ...obj,
+              expires: Date.now() + time,
+              user_id: this.user_id,
+              user_colour: COURSEFLOW_APP.contextData.myColour,
+              lock: lock2
+            }
+          })
+        );
       }
     }
   }
@@ -90844,7 +90913,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowComparison, { ...thisContextData });
       case "workflowDetailView": {
         const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData);
-        workflow_renderer.connect();
+        workflow_renderer.init();
         return null;
       }
       case "my_live_projects":

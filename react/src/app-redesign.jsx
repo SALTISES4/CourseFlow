@@ -135,7 +135,7 @@ const getAppComponent = () => {
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
       const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData)
-      workflow_renderer.connect()
+      workflow_renderer.init()
       return null
     }
     case 'my_live_projects':

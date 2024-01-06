@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Redux from 'redux'
 import * as Utility from '@cfUtility'
 
@@ -399,7 +400,7 @@ export function outcomeworkflowReducer(state = [], action) {
         for (let i = 0; i < action.payload.outcomeworkflow.length; i++) {
           const new_obj = action.payload.outcomeworkflow[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id === new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -436,7 +437,7 @@ export function outcomeworkflowReducer(state = [], action) {
       return state
     }
     case 'outcome_base/deleteSelf': {
-      for (var i = 0; i < state.length; i++) {
+      for (let i = 0; i < state.length; i++) {
         if (state[i].outcome == action.payload.id) {
           const new_state = state.slice()
           new_state.splice(i, 1)
@@ -471,7 +472,7 @@ export function columnworkflowReducer(state = [], action) {
         for (var i = 0; i < action.payload.columnworkflow.length; i++) {
           const new_obj = action.payload.columnworkflow[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -539,13 +540,13 @@ export function columnReducer(state = [], action) {
     case 'replaceStoreData':
       if (action.payload.column) return action.payload.column
       return state
-    case 'refreshStoreData':
+    case 'refreshStoreData': {
       var new_state = state.slice()
       if (action.payload.column) {
         for (var i = 0; i < action.payload.column.length; i++) {
           const new_obj = action.payload.collumn[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -557,6 +558,7 @@ export function columnReducer(state = [], action) {
         }
       }
       return new_state
+    }
     case 'column/createLock':
       for (var i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
@@ -652,7 +654,7 @@ export function weekworkflowReducer(state = [], action) {
         for (var i = 0; i < action.payload.weekworkflow.length; i++) {
           const new_obj = action.payload.weekworkflow[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -717,7 +719,7 @@ export function weekReducer(state = [], action) {
         for (var i = 0; i < action.payload.week.length; i++) {
           const new_obj = action.payload.week[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -928,7 +930,7 @@ export function nodeweekReducer(state = [], action) {
         for (var i = 0; i < action.payload.nodeweek.length; i++) {
           const new_obj = action.payload.nodeweek[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1166,7 +1168,7 @@ export function nodeReducer(state = [], action) {
         if (state[i].id == action.payload.new_model.source_node) {
           var new_state = state.slice()
           new_state[i] = { ...state[i] }
-          var new_outgoing_links = state[i].outgoing_links.slice()
+          const new_outgoing_links = state[i].outgoing_links.slice()
           new_outgoing_links.push(action.payload.new_model.id)
           new_state[i].outgoing_links = new_outgoing_links
           return new_state
@@ -1264,7 +1266,7 @@ export function nodelinkReducer(state = [], action) {
         for (var i = 0; i < action.payload.nodelink.length; i++) {
           const new_obj = action.payload.nodelink[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1539,7 +1541,7 @@ export function outcomeReducer(state = [], action) {
         if (state[i].id == action.payload.parentID) {
           var new_state = state.slice()
           new_state[i] = { ...state[i] }
-          var new_child_outcome_links = state[i].child_outcome_links.slice()
+          const new_child_outcome_links = state[i].child_outcome_links.slice()
           let new_index
           new_index = action.payload.new_through.rank
           new_child_outcome_links.splice(
@@ -1637,7 +1639,7 @@ export function outcomeOutcomeReducer(state = [], action) {
         for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
           const new_obj = action.payload.outcomeoutcome[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1724,7 +1726,7 @@ export function outcomeNodeReducer(state = [], action) {
         for (var i = 0; i < action.payload.outcomenode.length; i++) {
           const new_obj = action.payload.outcomenode[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1797,7 +1799,7 @@ export function outcomeHorizontalLinkReducer(state = [], action) {
         for (var i = 0; i < action.payload.outcomehorizontallink.length; i++) {
           const new_obj = action.payload.outcomehorizontallink[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1902,6 +1904,7 @@ export function parentNodeReducer(state = [], action) {
       return state
   }
 }
+
 export function parentWorkflowReducer(state = [], action) {
   switch (action.type) {
     case 'replaceStoreData':
@@ -1910,10 +1913,10 @@ export function parentWorkflowReducer(state = [], action) {
     case 'refreshStoreData':
       var new_state = state.slice()
       if (action.payload.parent_workflow) {
-        for (var i = 0; i < action.payload.parent_workflow.length; i++) {
+        for (let i = 0; i < action.payload.parent_workflow.length; i++) {
           const new_obj = action.payload.parent_workflow[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1941,7 +1944,7 @@ export function childWorkflowReducer(state = [], action) {
         for (var i = 0; i < action.payload.child_workflow.length; i++) {
           const new_obj = action.payload.child_workflow[i]
           let added = false
-          for (var j = 0; j < new_state.length; j++) {
+          for (let j = 0; j < new_state.length; j++) {
             if (new_state[j].id == new_obj.id) {
               new_state.splice(j, 1, new_obj)
               added = true
@@ -1993,7 +1996,7 @@ export function childWorkflowReducer(state = [], action) {
         if (state[i].id == action.payload.new_through.workflow) {
           var new_state = state.slice()
           new_state[i] = { ...state[i] }
-          var new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice()
+          const new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice()
           new_outcomeworkflow_set.splice(
             action.payload.new_through.rank,
             0,
@@ -2028,9 +2031,9 @@ export function saltiseStrategyReducer(state = [], action) {
 export function objectSetReducer(state = [], action) {
   switch (action.type) {
     case 'objectset/toggleObjectSet':
-      for (var i = 0; i < state.length; i++) {
+      for (let i = 0; i < state.length; i++) {
         if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
+          const new_state = state.slice()
           new_state[i] = { ...new_state[i], hidden: action.payload.hidden }
           return new_state
         }
@@ -2044,7 +2047,7 @@ export function objectSetReducer(state = [], action) {
 export function gridMenuReducer(state = {}, action) {
   switch (action.type) {
     case 'gridmenu/itemAdded':
-      var new_state = { ...state }
+      var new_state = { ...state } // @todo why the shallow copy here?
       if (action.payload.type != 'project') {
         new_state.owned_strategies = { ...new_state.owned_strategies }
         new_state.owned_strategies.sections =
@@ -2083,14 +2086,15 @@ export function gridMenuReducer(state = {}, action) {
       return state
   }
 }
+
 export function projectMenuReducer(state = {}, action) {
   switch (action.type) {
     case 'gridmenu/itemAdded':
-      var new_state = { ...state }
+      var new_state = { ...state } // @todo why the shallow copy here?
       new_state.current_project = { ...new_state.current_project }
       new_state.current_project.sections =
         new_state.current_project.sections.slice()
-      for (var i = 0; i < new_state.current_project.sections.length; i++) {
+      for (let i = 0; i < new_state.current_project.sections.length; i++) {
         if (
           new_state.current_project.sections[i].object_type ==
           action.payload.type
@@ -2107,28 +2111,31 @@ export function projectMenuReducer(state = {}, action) {
       return state
   }
 }
+const getReducers = () => {
+  return {
+    workflow: workflowReducer,
+    outcomeworkflow: outcomeworkflowReducer,
+    columnworkflow: columnworkflowReducer,
+    column: columnReducer,
+    weekworkflow: weekworkflowReducer,
+    week: weekReducer,
+    nodeweek: nodeweekReducer,
+    node: nodeReducer,
+    nodelink: nodelinkReducer,
+    outcome: outcomeReducer,
+    outcomeoutcome: outcomeOutcomeReducer,
+    outcomenode: outcomeNodeReducer,
+    parent_workflow: parentWorkflowReducer,
+    parent_node: parentNodeReducer,
+    outcomehorizontallink: outcomeHorizontalLinkReducer,
+    child_workflow: childWorkflowReducer,
+    strategy: strategyReducer,
+    saltise_strategy: saltiseStrategyReducer,
+    objectset: objectSetReducer
+  }
+}
 
-export const rootWorkflowReducer = Redux.combineReducers({
-  workflow: workflowReducer,
-  outcomeworkflow: outcomeworkflowReducer,
-  columnworkflow: columnworkflowReducer,
-  column: columnReducer,
-  weekworkflow: weekworkflowReducer,
-  week: weekReducer,
-  nodeweek: nodeweekReducer,
-  node: nodeReducer,
-  nodelink: nodelinkReducer,
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
-  outcomenode: outcomeNodeReducer,
-  parent_workflow: parentWorkflowReducer,
-  parent_node: parentNodeReducer,
-  outcomehorizontallink: outcomeHorizontalLinkReducer,
-  child_workflow: childWorkflowReducer,
-  strategy: strategyReducer,
-  saltise_strategy: saltiseStrategyReducer,
-  objectset: objectSetReducer
-})
+export const rootWorkflowReducer = Redux.combineReducers(getReducers())
 
 export const rootOutcomeReducer = Redux.combineReducers({
   outcome: outcomeReducer,

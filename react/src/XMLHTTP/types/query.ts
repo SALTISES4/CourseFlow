@@ -1,4 +1,5 @@
 import { ObjectPermission, VERB } from '@cfModule/types/common'
+import { Workflow } from '@cfRedux/type'
 
 /*******************************************************
  * LinkedWorkflowMenuQueryResp
@@ -12,6 +13,11 @@ export type LinkedWorkflowMenuQueryResp = {
 export type LinkedWorkDataPackage = {
   current_project: AllPublished
   all_published: AllPublished
+}
+
+export type ParentWorkflowInfoQueryResp = {
+  action: VERB
+  parent_workflows: Workflow[]
 }
 
 export type AllPublished = {

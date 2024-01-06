@@ -13,9 +13,9 @@ export default class extends React.Component {
    *******************************************************/
   onChange(evt) {
     if (evt.target.value == 0) return
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     this.props.addFunction(evt.target.value, 1, (response_data) => {
-      this.props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
     $('.outcome-adder').val(0)
   }

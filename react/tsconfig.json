@@ -78,7 +78,7 @@
         "./redux/*"
       ],
       "@cfReducers": [
-        "./redux/Reducers.js"
+        "./redux/Reducers.ts"
       ],
       "@cfUtility": [
         "./utility/utilityFunctions.jsx"

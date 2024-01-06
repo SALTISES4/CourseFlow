@@ -1,9 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponentWithActions } from '@cfParentComponents'
+
 import { MenuBar } from '@cfCommonComponents/components/index.jsx'
-import { CollapsibleText, WorkflowTitle } from '@cfUIComponents'
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.jsx'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
@@ -29,17 +29,51 @@ import { Dialog, DialogTitle } from '@mui/material'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
+import EditableComponentWithActions from '@cfParentComponents/EditableComponentWithActions'
+import { WorkflowTitle } from '@cfUIComponents'
+import CollapsibleText from '@cfUIComponents/CollapsibleText'
+import { AppState } from '@cfRedux/type'
+
+type MapWorkflowStateToPropsType = {
+  data: AppState['workflow']
+  object_sets: AppState['objectset']
+  week: AppState['week']
+  node: AppState['node']
+  outcome: AppState['outcome']
+}
 
 
+/***
+ * @TODO NEED TO CLEAN UP TYPES
+ * MAINLY REMOVE RENDERER IN THIS FILE AND
+ *   EditableComponentWithActions
+  AND
+ EditableComponentWithComments
+ AMD
+ EditableComponent
+ AND
+ CommentBox
+ ComponentWithToggleDrop
+
+ */
+
+type SelfPropsType = {
+  view_type: string
+  renderer: any
+}
+type PropsType = MapWorkflowStateToPropsType & SelfPropsType
 /**
  * The base component of our workflow view. This renders the menu bar
  * above itself, the right sidebar, the header (description, sharing etc),
  * and then the tabs that allow the user to select a "type" of workflow view.
  */
-class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
+class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType> {
+  private objectType: string
+  private allowed_tabs: number[]
+
   constructor(props) {
     super(props)
-    console.log('props')
+    console.log('WorkflowBaseViewUnconnected props')
     console.log(props)
 
     this.objectType = 'workflow'
@@ -68,6 +102,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    * FUNCTIONS
    *******************************************************/
   getUserData() {
+    // @todo remove renderer
     if (this.props.renderer.public_view || this.props.renderer.is_student)
       return null
     getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
@@ -96,6 +131,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
         window.location = COURSEFLOW_APP.config.update_path['project'].replace(
           0,
+          // @todo remove renderer
           renderer.project.id
         )
       })
@@ -108,6 +144,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
+    // @todo remove renderer
     this.props.renderer.selection_manager.changeSelection(null, null)
     const disabled_tabs = []
     for (let i = 0; i <= 4; i++)
@@ -122,6 +159,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       if (this.allowed_tabs.length == 0) $('#sidebar').tabs({ active: false })
       else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
     }
+    // @todo remove renderer
     if (this.props.renderer.read_only) disabled_tabs.push(5)
     $('#sidebar').tabs({ disabled: disabled_tabs })
     /*******************************************************
@@ -129,8 +167,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      *******************************************************/
   }
 
+  // @todo what are all the view types?
   changeView(type) {
     //this.props.renderer.selection_manager.changeSelection(null,null);
+    // @todo remove renderer
     this.props.renderer.render(this.props.renderer.container, type)
   }
 
@@ -147,6 +187,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   openEditMenu(evt) {
+    // @todo remove renderer
     this.props.renderer.selection_manager.changeSelection(evt, this)
   }
 
@@ -272,6 +313,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         </div>
       )
     }
+    // @todo remove renderer
     if (!this.props.renderer.read_only)
       users.push(
         <div
@@ -542,10 +584,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
 
     if (!renderer.always_static) {
       return (
-        <ConnectionBar
-          updateSocket={renderer.updateSocket}
-          renderer={renderer}
-        />
+        <ConnectionBar websocket={renderer.websocket} renderer={renderer} />
       )
     }
     return <></>
@@ -615,13 +654,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   }
 
   CopyButton = () => {
-    if (!this.props.renderer.user_id) return nullz
+    if (!this.props.renderer.user_id) return null
     const export_button = [
       <div
         id="copy-button"
         className="hover-shade"
         onClick={() => {
-          const loader = COURSEFLOW_APP.tiny_loader
+          const loader = COURSEFLOW_APP.tinyLoader
           if (this.props.data.is_strategy) {
             duplicateBaseItemQuery(
               this.props.data.id,
@@ -666,7 +705,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           id="copy-to-project-button"
           className="hover-shade"
           onClick={() => {
-            const loader = COURSEFLOW_APP.tiny_loader
+            const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
             duplicateBaseItemQuery(
               this.props.data.id,
@@ -860,7 +899,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
     return (
       <div className="main-block">
         <MenuBar
@@ -873,7 +911,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               {<this.Header />}
-              {this.addEditable(data)}
+              {this.addEditable(this.props.data)}
 
               <div className="workflow-container">
                 <this.Content />
@@ -888,7 +926,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           <RightSideBar
             context="workflow"
             renderer={this.props.renderer}
-            data={data}
+            data={this.props.data}
           />
         </div>
 
@@ -899,13 +937,19 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     )
   }
 }
-const mapWorkflowStateToProps = (state) => ({
-  data: state.workflow,
-  object_sets: state.objectset,
-  week: state.week,
-  node: state.node,
-  outcome: state.outcome
-})
+const mapWorkflowStateToProps = (
+  state: AppState
+): WorkflowStateToPropsReduxState => {
+  console.log('mapWorkflowStateToProps')
+  console.log(state)
+  return {
+    data: state.workflow,
+    object_sets: state.objectset,
+    week: state.week,
+    node: state.node,
+    outcome: state.outcome
+  }
+}
 
 export const WorkflowBaseView = connect(
   mapWorkflowStateToProps,
