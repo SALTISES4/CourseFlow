@@ -18,7 +18,7 @@ class OutcomeBarUnconnected extends React.Component {
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
-    // @todo, no
+    // @todo, manage view change with state update
     this.props.renderer.render($('#container'), 'outcomeedit')
   }
 
@@ -41,13 +41,15 @@ class OutcomeBarUnconnected extends React.Component {
       </div>
     ])
 
-    if (outcomebaroutcomes.length == 0) {
+    if (outcomebaroutcomes.length === 0) {
       outcomebaroutcomes = window.gettext(
         'Add outcomes to this workflow in by clicking the button below.'
       )
     }
     const edittext = Utility.capWords(
-      window.gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
+      window.gettext('Edit') +
+        ' ' +
+        window.gettext(this.props.workflow_type + ' outcomes')
     )
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
@@ -67,11 +69,11 @@ class OutcomeBarUnconnected extends React.Component {
     )
   }
 }
-const mapOutcomeBarStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   ),
   workflow_type: state.workflow.type
 })
-export default connect(mapOutcomeBarStateToProps, null)(OutcomeBarUnconnected)
+export default connect(mapStateToProps, null)(OutcomeBarUnconnected)

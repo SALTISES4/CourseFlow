@@ -63388,13 +63388,13 @@ class OutcomeBarUnconnected extends reactExports.Component {
         ))
       ] })
     ]);
-    if (outcomebaroutcomes.length == 0) {
+    if (outcomebaroutcomes.length === 0) {
       outcomebaroutcomes = window.gettext(
         "Add outcomes to this workflow in by clicking the button below."
       );
     }
     const edittext = capWords(
-      window.gettext("Edit") + " " + gettext(this.props.workflow_type + " outcomes")
+      window.gettext("Edit") + " " + window.gettext(this.props.workflow_type + " outcomes")
     );
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
@@ -63412,14 +63412,14 @@ class OutcomeBarUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapOutcomeBarStateToProps = (state) => ({
+const mapStateToProps$6 = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   ),
   workflow_type: state.workflow.type
 });
-const OutcomeBar = connect(mapOutcomeBarStateToProps, null)(OutcomeBarUnconnected);
+const OutcomeBar = connect(mapStateToProps$6, null)(OutcomeBarUnconnected);
 class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
   /*******************************************************
    * RENDER
@@ -63735,11 +63735,11 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
       );
   }
 }
-const mapStateToProps$4 = (state, ownProps) => {
+const mapStateToProps$5 = (state, ownProps) => {
   return getColumnWorkflowByID(state, ownProps.objectID);
 };
 const NodeBarColumnWorkflow = connect(
-  mapStateToProps$4,
+  mapStateToProps$5,
   null
 )(NodeBarColumnWorkflowUnconnected);
 class StrategyUnconnected extends ComponentWithToggleDrop {
@@ -84037,7 +84037,7 @@ class WorkflowLegendUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapStateToProps$3 = (state) => {
+const mapStateToProps$4 = (state) => {
   let contexts = [];
   let tasks = [];
   let strategies = [];
@@ -84049,7 +84049,7 @@ const mapStateToProps$3 = (state) => {
   strategies = state.week.map((week) => parseInt(week.strategy_classification)).filter(uniqueTest).filter((value) => value > 0);
   return { contexts, tasks, strategies };
 };
-const WorkflowLegend = connect(mapStateToProps$3, null)(WorkflowLegendUnconnected);
+const WorkflowLegend = connect(mapStateToProps$4, null)(WorkflowLegendUnconnected);
 class WorkflowViewUnconnected extends EditableComponentWithSorting {
   constructor(props2) {
     super(props2);
@@ -84175,14 +84175,14 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     ] });
   }
 }
-const mapWorkflowStateToProps$3 = (state) => ({
+const mapWorkflowStateToProps$2 = (state) => ({
   data: state.workflow,
   object_sets: state.objectset,
   week: state.week,
   node: state.node,
   outcome: state.outcome
 });
-const WorkflowView = connect(mapWorkflowStateToProps$3, null)(WorkflowViewUnconnected);
+const WorkflowView = connect(mapWorkflowStateToProps$2, null)(WorkflowViewUnconnected);
 class NodeComparisonUnconnected extends EditableComponentWithActions {
   constructor(props2) {
     super(props2);
@@ -84567,11 +84567,11 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data.id + "-week-block", children: weekworkflows }) });
   }
 }
-const mapWorkflowStateToProps$2 = (state) => ({
+const mapWorkflowStateToProps$1 = (state) => ({
   data: state.workflow,
   object_sets: state.objectset
 });
-const Workflow$1 = connect(mapWorkflowStateToProps$2, null)(WorkflowUnconnected);
+const Workflow$1 = connect(mapWorkflowStateToProps$1, null)(WorkflowUnconnected);
 class WorkflowBaseUnconnected extends EditableComponent {
   constructor(props2) {
     super(props2);
@@ -84644,12 +84644,12 @@ class WorkflowBaseUnconnected extends EditableComponent {
     ];
   }
 }
-const mapWorkflowStateToProps$1 = (state) => ({
+const mapWorkflowStateToProps = (state) => ({
   data: state.workflow,
   object_sets: state.objectset
 });
 const WorkflowBase = connect(
-  mapWorkflowStateToProps$1,
+  mapWorkflowStateToProps,
   null
 )(WorkflowBaseUnconnected);
 class ConnectionBar extends reactExports.Component {
@@ -85674,11 +85674,11 @@ class GridView extends reactExports.Component {
     ] });
   }
 }
-const mapStateToProps$2 = (state, own_props) => {
+const mapStateToProps$3 = (state, own_props) => {
   const weeks = state.workflow.weekworkflow_set.map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week).map((week) => getWeekByID(state, week));
   return { workflow: state.workflow, weeks };
 };
-const GridView$1 = connect(mapStateToProps$2, null)(GridView);
+const GridView$1 = connect(mapStateToProps$3, null)(GridView);
 class JumpToWeekViewUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -86444,7 +86444,7 @@ class OutcomeTableView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps$1 = (state, own_props) => {
+const mapStateToProps$2 = (state, own_props) => {
   return {
     workflow_type: state.workflow.type,
     outcomes_type: state.workflow.outcomes_type,
@@ -86463,7 +86463,7 @@ const mapStateToProps$1 = (state, own_props) => {
     outcomes: state.outcome
   };
 };
-const OutcomeTableView$1 = connect(mapStateToProps$1, null)(OutcomeTableView);
+const OutcomeTableView$1 = connect(mapStateToProps$2, null)(OutcomeTableView);
 class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
@@ -86855,7 +86855,7 @@ class CompetencyMatrixView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps = (state, own_props) => {
+const mapStateToProps$1 = (state, own_props) => {
   return {
     weekworkflows: state.weekworkflow,
     weeks: state.week,
@@ -86869,7 +86869,7 @@ const mapStateToProps = (state, own_props) => {
     outcomes: state.outcome
   };
 };
-const CompetencyMatrixView$1 = connect(mapStateToProps, null)(CompetencyMatrixView);
+const CompetencyMatrixView$1 = connect(mapStateToProps$1, null)(CompetencyMatrixView);
 class OutcomeUnconnected2 extends OutcomeUnconnected$1 {
   /*******************************************************
    * FUNCTIONS
@@ -87706,7 +87706,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "readOnly");
     __publicField(this, "public_view");
     __publicField(this, "is_student");
-    __publicField(this, "data");
     __publicField(this, "project");
     __publicField(this, "selection_manager");
     __publicField(this, "view_type");
@@ -87718,6 +87717,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "user_id");
     __publicField(this, "project_permission");
     __publicField(this, "object_sets");
+    __publicField(this, "data");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
@@ -88524,7 +88524,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
             ParentWorkflowIndicator,
             {
               renderer: this.props.renderer,
-              workflow_id: this.data.id
+              workflow_id: this.props.id
             }
           )
         ] }) }),
@@ -88533,7 +88533,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
           {
             context: "workflow",
             renderer: this.props.renderer,
-            data: this.data
+            data: this.props.data
           }
         )
       ] }),
@@ -88543,7 +88543,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     ] });
   }
 }
-const mapWorkflowStateToProps = (state) => {
+const mapStateToProps = (state) => {
   console.log("mapWorkflowStateToProps");
   console.log(state);
   return {
@@ -88555,7 +88555,7 @@ const mapWorkflowStateToProps = (state) => {
   };
 };
 const WorkflowBaseView = connect(
-  mapWorkflowStateToProps,
+  mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected);
 const cache$1 = createCache({

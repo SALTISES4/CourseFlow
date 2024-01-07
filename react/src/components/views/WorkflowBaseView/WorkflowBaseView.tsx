@@ -31,11 +31,11 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 import { WorkflowTitle } from '@cfUIComponents'
 import CollapsibleText from '@cfUIComponents/CollapsibleText'
-import { AppState } from '@cfRedux/type'
+import { AppState, Workflow } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
-import {ComponentWithToggleProps} from "@cfParentComponents/ComponentWithToggleDrop";
+import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
 
-type MapWorkflowStateToPropsType = {
+type ConnectedState = {
   data: AppState['workflow']
   object_sets: AppState['objectset']
   week: AppState['week']
@@ -59,7 +59,7 @@ type SelfPropsType = {
   renderer: any
 } & ComponentWithToggleProps
 
-type PropsType = MapWorkflowStateToPropsType & SelfPropsType
+type PropsType = ConnectedState & SelfPropsType
 type StateType = {
   users: any
   openShareDialog: boolean
@@ -84,7 +84,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private readOnly: boolean
   private public_view: any
   private is_student: any
-  private data: { is_dropped: boolean; depth: number }
   private project: any
   private selection_manager: any
   private view_type: any
@@ -95,7 +94,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private always_static: any
   private user_id: any
   private project_permission: any
-  private object_sets: any
+  private object_sets: any[]
+  private data: Workflow & { is_dropped: boolean; depth: number };
 
   constructor(props: PropsType) {
     super(props)
@@ -963,14 +963,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               {this.getReturnLinks()}
               <ParentWorkflowIndicator
                 renderer={this.props.renderer}
-                workflow_id={this.data.id}
+                workflow_id={this.props.id}
               />
             </div>
           </div>
           <RightSideBar
             context="workflow"
             renderer={this.props.renderer}
-            data={this.data}
+            data={this.props.data}
           />
         </div>
 
@@ -981,9 +981,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     )
   }
 }
-const mapWorkflowStateToProps = (
-  state: AppState
-): WorkflowStateToPropsReduxState => {
+
+const mapStateToProps = (state: AppState): ConnectedState => {
   console.log('mapWorkflowStateToProps')
   console.log(state)
   return {
@@ -996,6 +995,6 @@ const mapWorkflowStateToProps = (
 }
 
 export const WorkflowBaseView = connect(
-  mapWorkflowStateToProps,
+  mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected)
