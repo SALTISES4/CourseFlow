@@ -1,9 +1,12 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
 import { toggleStrategy, updateObjectSet } from '@XMLHTTP/PostFunctions'
-import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from './ComponentWithToggleDrop.tsx'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/APIFunctions'
 
 //Quill div for inputs, as a react component
@@ -55,7 +58,7 @@ class QuillDiv extends React.Component {
     const toolbar = quill.getModule('toolbar')
     toolbar.defaultLinkFunction = toolbar.handlers['link']
     toolbar.addHandler('link', function customLinkFunction(value) {
-      var select = quill.getSelection()
+      const select = quill.getSelection()
       if (value && select['length'] == 0 && !renderer.read_only) {
         quill.insertText(select['index'], 'link')
         quill.setSelection(select['index'], 4)
@@ -80,15 +83,19 @@ class QuillDiv extends React.Component {
 }
 
 //Extends the react component to add a few features that are used in a large number of components
-class EditableComponent extends ComponentWithToggleDrop {
+type EditableComponentProps = any
+class EditableComponent<
+  P extends EditableComponentProps,
+  S = NonNullable<unknown>
+> extends ComponentWithToggleDrop<P, S> {
   //Makes the item selectable
   addEditable(data, no_delete = false) {
     const read_only = this.props.renderer.read_only
     if (this.state.selected) {
-      var type = Constants.object_dictionary[this.objectType]
+      const type = Constants.object_dictionary[this.objectType]
       let title_length = '100'
       if (type == 'outcome') title_length = '500'
-      var props = this.props
+      const props = this.props
       let override = false
       const title = Utility.unescapeCharacters(data.title || '')
       const description = data.description || ''
@@ -536,6 +543,7 @@ class EditableComponent extends ComponentWithToggleDrop {
   getDeleteForSidebar(read_only, no_delete, type, data) {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') return [null]
+      // @todo class calls a method which only children implement.
       else
         return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
     }

@@ -1,14 +1,27 @@
+// @ts-nocheck
 import * as React from 'react'
 
 // @todo not sure where this goes
 
 //Container for common elements for workflows
-export class ConnectionBar extends React.Component {
+
+type PropsType = {
+  user_id: any
+  websocket: any
+}
+
+type StateType = {
+  connected_users: any[]
+}
+
+export class ConnectionBar extends React.Component<PropsType, StateType> {
   constructor(props) {
     super(props)
     console.log('ConnectionBar props')
     console.log(props)
-    this.state = { connected_users: [] }
+    this.state = {
+      connected_users: []
+    }
     this.user_id = props.renderer.user_id
     // this.user_name = props.renderer.user_name
     this.user_name = COURSEFLOW_APP.contextData.user_name

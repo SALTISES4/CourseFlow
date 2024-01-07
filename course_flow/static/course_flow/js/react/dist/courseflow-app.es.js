@@ -280,20 +280,20 @@ function requireReact_development() {
         {
           Object.freeze(emptyObject);
         }
-        function Component2(props2, context, updater) {
+        function Component(props2, context, updater) {
           this.props = props2;
           this.context = context;
           this.refs = emptyObject;
           this.updater = updater || ReactNoopUpdateQueue;
         }
-        Component2.prototype.isReactComponent = {};
-        Component2.prototype.setState = function(partialState, callback) {
+        Component.prototype.isReactComponent = {};
+        Component.prototype.setState = function(partialState, callback) {
           if (typeof partialState !== "object" && typeof partialState !== "function" && partialState != null) {
             throw new Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
           }
           this.updater.enqueueSetState(this, partialState, callback, "setState");
         };
-        Component2.prototype.forceUpdate = function(callback) {
+        Component.prototype.forceUpdate = function(callback) {
           this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
         };
         {
@@ -302,7 +302,7 @@ function requireReact_development() {
             replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
           };
           var defineDeprecationWarning = function(methodName, info) {
-            Object.defineProperty(Component2.prototype, methodName, {
+            Object.defineProperty(Component.prototype, methodName, {
               get: function() {
                 warn("%s(...) is deprecated in plain JavaScript React classes. %s", info[0], info[1]);
                 return void 0;
@@ -317,7 +317,7 @@ function requireReact_development() {
         }
         function ComponentDummy() {
         }
-        ComponentDummy.prototype = Component2.prototype;
+        ComponentDummy.prototype = Component.prototype;
         function PureComponent(props2, context, updater) {
           this.props = props2;
           this.context = context;
@@ -326,7 +326,7 @@ function requireReact_development() {
         }
         var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
         pureComponentPrototype.constructor = PureComponent;
-        assign2(pureComponentPrototype, Component2.prototype);
+        assign2(pureComponentPrototype, Component.prototype);
         pureComponentPrototype.isPureReactComponent = true;
         function createRef() {
           var refObject = {
@@ -1391,8 +1391,8 @@ function requireReact_development() {
             return describeNativeComponentFrame(fn, false);
           }
         }
-        function shouldConstruct(Component3) {
-          var prototype = Component3.prototype;
+        function shouldConstruct(Component2) {
+          var prototype = Component2.prototype;
           return !!(prototype && prototype.isReactComponent);
         }
         function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -1898,7 +1898,7 @@ function requireReact_development() {
           only: onlyChild
         };
         exports.Children = Children;
-        exports.Component = Component2;
+        exports.Component = Component;
         exports.Fragment = REACT_FRAGMENT_TYPE;
         exports.Profiler = REACT_PROFILER_TYPE;
         exports.PureComponent = PureComponent;
@@ -2613,8 +2613,8 @@ function requireReactJsxRuntime_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -4588,29 +4588,29 @@ function getFunctionName(fn) {
   const name2 = match2 && match2[1];
   return name2 || "";
 }
-function getFunctionComponentName(Component2, fallback = "") {
-  return Component2.displayName || Component2.name || getFunctionName(Component2) || fallback;
+function getFunctionComponentName(Component, fallback = "") {
+  return Component.displayName || Component.name || getFunctionName(Component) || fallback;
 }
 function getWrappedName(outerType, innerType, wrapperName) {
   const functionName = getFunctionComponentName(innerType);
   return outerType.displayName || (functionName !== "" ? `${wrapperName}(${functionName})` : wrapperName);
 }
-function getDisplayName(Component2) {
-  if (Component2 == null) {
+function getDisplayName(Component) {
+  if (Component == null) {
     return void 0;
   }
-  if (typeof Component2 === "string") {
-    return Component2;
+  if (typeof Component === "string") {
+    return Component;
   }
-  if (typeof Component2 === "function") {
-    return getFunctionComponentName(Component2, "Component");
+  if (typeof Component === "function") {
+    return getFunctionComponentName(Component, "Component");
   }
-  if (typeof Component2 === "object") {
-    switch (Component2.$$typeof) {
+  if (typeof Component === "object") {
+    switch (Component.$$typeof) {
       case reactIsExports$1.ForwardRef:
-        return getWrappedName(Component2, Component2.render, "ForwardRef");
+        return getWrappedName(Component, Component.render, "ForwardRef");
       case reactIsExports$1.Memo:
-        return getWrappedName(Component2, Component2.type, "memo");
+        return getWrappedName(Component, Component.type, "memo");
       default:
         return void 0;
     }
@@ -4694,11 +4694,11 @@ function ownerWindow(node2) {
   const doc = ownerDocument(node2);
   return doc.defaultView || window;
 }
-function requirePropFactory(componentNameInError, Component2) {
+function requirePropFactory(componentNameInError, Component) {
   if (process.env.NODE_ENV === "production") {
     return () => null;
   }
-  const prevPropTypes = Component2 ? _extends$2({}, Component2.propTypes) : null;
+  const prevPropTypes = Component ? _extends$2({}, Component.propTypes) : null;
   const requireProp = (requiredProp) => (props2, propName, componentName, location2, propFullName, ...args) => {
     const propFullNameSafe = propFullName || propName;
     const defaultTypeChecker = prevPropTypes == null ? void 0 : prevPropTypes[propFullNameSafe];
@@ -8802,7 +8802,7 @@ function createStyled2(input = {}) {
         transformedStyleArg = [...styleArg, ...placeholders];
         transformedStyleArg.raw = [...styleArg.raw, ...placeholders];
       }
-      const Component2 = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
+      const Component = defaultStyledResolver(transformedStyleArg, ...expressionsWithDefaultTheme);
       if (process.env.NODE_ENV !== "production") {
         let displayName;
         if (componentName) {
@@ -8811,12 +8811,12 @@ function createStyled2(input = {}) {
         if (displayName === void 0) {
           displayName = `Styled(${getDisplayName(tag2)})`;
         }
-        Component2.displayName = displayName;
+        Component.displayName = displayName;
       }
       if (tag2.muiName) {
-        Component2.muiName = tag2.muiName;
+        Component.muiName = tag2.muiName;
       }
-      return Component2;
+      return Component;
     };
     if (defaultStyledResolver.withConfig) {
       muiStyledResolver.withConfig = defaultStyledResolver.withConfig;
@@ -11904,8 +11904,8 @@ function requireReactDom_development() {
           return describeNativeComponentFrame(fn, false);
         }
       }
-      function shouldConstruct(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
@@ -19348,9 +19348,9 @@ function requireReactDom_development() {
       var contextStackCursor = createCursor(emptyContextObject);
       var didPerformWorkStackCursor = createCursor(false);
       var previousContext = emptyContextObject;
-      function getUnmaskedContext(workInProgress2, Component2, didPushOwnContextIfProvider) {
+      function getUnmaskedContext(workInProgress2, Component, didPushOwnContextIfProvider) {
         {
-          if (didPushOwnContextIfProvider && isContextProvider(Component2)) {
+          if (didPushOwnContextIfProvider && isContextProvider(Component)) {
             return previousContext;
           }
           return contextStackCursor.current;
@@ -19487,8 +19487,8 @@ function requireReactDom_development() {
               case HostRoot:
                 return node2.stateNode.context;
               case ClassComponent: {
-                var Component2 = node2.type;
-                if (isContextProvider(Component2)) {
+                var Component = node2.type;
+                if (isContextProvider(Component)) {
                   return node2.stateNode.__reactInternalMemoizedMergedChildContext;
                 }
                 break;
@@ -20250,10 +20250,10 @@ function requireReactDom_development() {
           pendingLegacyContextWarning = /* @__PURE__ */ new Map();
         };
       }
-      function resolveDefaultProps(Component2, baseProps) {
-        if (Component2 && Component2.defaultProps) {
+      function resolveDefaultProps(Component, baseProps) {
+        if (Component && Component.defaultProps) {
           var props2 = assign2({}, baseProps);
-          var defaultProps2 = Component2.defaultProps;
+          var defaultProps2 = Component.defaultProps;
           for (var propName in defaultProps2) {
             if (props2[propName] === void 0) {
               props2[propName] = defaultProps2[propName];
@@ -22548,7 +22548,7 @@ function requireReactDom_development() {
         }
         return true;
       }
-      function renderWithHooks(current2, workInProgress2, Component2, props2, secondArg, nextRenderLanes) {
+      function renderWithHooks(current2, workInProgress2, Component, props2, secondArg, nextRenderLanes) {
         renderLanes = nextRenderLanes;
         currentlyRenderingFiber$1 = workInProgress2;
         {
@@ -22568,7 +22568,7 @@ function requireReactDom_development() {
             ReactCurrentDispatcher$1.current = HooksDispatcherOnMountInDEV;
           }
         }
-        var children = Component2(props2, secondArg);
+        var children = Component(props2, secondArg);
         if (didScheduleRenderPhaseUpdateDuringThisPass) {
           var numberOfReRenders = 0;
           do {
@@ -22588,7 +22588,7 @@ function requireReactDom_development() {
               hookTypesUpdateIndexDev = -1;
             }
             ReactCurrentDispatcher$1.current = HooksDispatcherOnRerenderInDEV;
-            children = Component2(props2, secondArg);
+            children = Component(props2, secondArg);
           } while (didScheduleRenderPhaseUpdateDuringThisPass);
         }
         ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -24696,22 +24696,22 @@ function requireReactDom_development() {
         workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
         workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
       }
-      function updateForwardRef(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
-        var render2 = Component2.render;
+        var render2 = Component.render;
         var ref = workInProgress2.ref;
         var nextChildren;
         var hasId;
@@ -24749,11 +24749,11 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         if (current2 === null) {
-          var type = Component2.type;
-          if (isSimpleFunctionComponent(type) && Component2.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
-          Component2.defaultProps === void 0) {
+          var type = Component.type;
+          if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
+          Component.defaultProps === void 0) {
             var resolvedType = type;
             {
               resolvedType = resolveFunctionForHotReloading(type);
@@ -24777,14 +24777,14 @@ function requireReactDom_development() {
               );
             }
           }
-          var child = createFiberFromTypeAndProps(Component2.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
+          var child = createFiberFromTypeAndProps(Component.type, null, nextProps, workInProgress2, workInProgress2.mode, renderLanes2);
           child.ref = workInProgress2.ref;
           child.return = workInProgress2;
           workInProgress2.child = child;
           return child;
         }
         {
-          var _type = Component2.type;
+          var _type = Component.type;
           var _innerPropTypes = _type.propTypes;
           if (_innerPropTypes) {
             checkPropTypes(
@@ -24800,7 +24800,7 @@ function requireReactDom_development() {
         var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
         if (!hasScheduledUpdateOrContext) {
           var prevProps = currentChild.memoizedProps;
-          var compare = Component2.compare;
+          var compare = Component.compare;
           compare = compare !== null ? compare : shallowEqual2;
           if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
             return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
@@ -24813,7 +24813,7 @@ function requireReactDom_development() {
         workInProgress2.child = newChild;
         return newChild;
       }
-      function updateSimpleMemoComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
             var outerMemoType = workInProgress2.elementType;
@@ -24853,7 +24853,7 @@ function requireReactDom_development() {
             }
           }
         }
-        return updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2);
+        return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
       }
       function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
         var nextProps = workInProgress2.pendingProps;
@@ -24943,24 +24943,24 @@ function requireReactDom_development() {
           }
         }
       }
-      function updateFunctionComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, true);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, true);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         var nextChildren;
@@ -24972,12 +24972,12 @@ function requireReactDom_development() {
         {
           ReactCurrentOwner$1.current = workInProgress2;
           setIsRendering(true);
-          nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+          nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           if (workInProgress2.mode & StrictLegacyMode) {
             setIsStrictModeForDevtools(true);
             try {
-              nextChildren = renderWithHooks(current2, workInProgress2, Component2, nextProps, context, renderLanes2);
+              nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
               hasId = checkDidRenderIdHook();
             } finally {
               setIsStrictModeForDevtools(false);
@@ -24999,7 +24999,7 @@ function requireReactDom_development() {
         reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
         return workInProgress2.child;
       }
-      function updateClassComponent(current2, workInProgress2, Component2, nextProps, renderLanes2) {
+      function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
         {
           switch (shouldError(workInProgress2)) {
             case false: {
@@ -25022,20 +25022,20 @@ function requireReactDom_development() {
             }
           }
           if (workInProgress2.type !== workInProgress2.elementType) {
-            var innerPropTypes = Component2.propTypes;
+            var innerPropTypes = Component.propTypes;
             if (innerPropTypes) {
               checkPropTypes(
                 innerPropTypes,
                 nextProps,
                 // Resolved props
                 "prop",
-                getComponentNameFromType(Component2)
+                getComponentNameFromType(Component)
               );
             }
           }
         }
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
@@ -25046,15 +25046,15 @@ function requireReactDom_development() {
         var shouldUpdate;
         if (instance === null) {
           resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
-          constructClassInstance(workInProgress2, Component2, nextProps);
-          mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          constructClassInstance(workInProgress2, Component, nextProps);
+          mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
           shouldUpdate = true;
         } else if (current2 === null) {
-          shouldUpdate = resumeMountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
         } else {
-          shouldUpdate = updateClassInstance(current2, workInProgress2, Component2, nextProps, renderLanes2);
+          shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
         }
-        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2);
+        var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
         {
           var inst = workInProgress2.stateNode;
           if (shouldUpdate && inst.props !== nextProps) {
@@ -25066,19 +25066,19 @@ function requireReactDom_development() {
         }
         return nextUnitOfWork;
       }
-      function finishClassComponent(current2, workInProgress2, Component2, shouldUpdate, hasContext, renderLanes2) {
+      function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
         markRef(current2, workInProgress2);
         var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
         if (!shouldUpdate && !didCaptureError) {
           if (hasContext) {
-            invalidateContextProvider(workInProgress2, Component2, false);
+            invalidateContextProvider(workInProgress2, Component, false);
           }
           return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
         }
         var instance = workInProgress2.stateNode;
         ReactCurrentOwner$1.current = workInProgress2;
         var nextChildren;
-        if (didCaptureError && typeof Component2.getDerivedStateFromError !== "function") {
+        if (didCaptureError && typeof Component.getDerivedStateFromError !== "function") {
           nextChildren = null;
           {
             stopProfilerTimerIfRunning();
@@ -25112,7 +25112,7 @@ function requireReactDom_development() {
         }
         workInProgress2.memoizedState = instance.state;
         if (hasContext) {
-          invalidateContextProvider(workInProgress2, Component2, true);
+          invalidateContextProvider(workInProgress2, Component, true);
         }
         return workInProgress2.child;
       }
@@ -25212,45 +25212,45 @@ function requireReactDom_development() {
         var lazyComponent = elementType;
         var payload = lazyComponent._payload;
         var init = lazyComponent._init;
-        var Component2 = init(payload);
-        workInProgress2.type = Component2;
-        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component2);
-        var resolvedProps = resolveDefaultProps(Component2, props2);
+        var Component = init(payload);
+        workInProgress2.type = Component;
+        var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component);
+        var resolvedProps = resolveDefaultProps(Component, props2);
         var child;
         switch (resolvedTag) {
           case FunctionComponent: {
             {
-              validateFunctionComponentInDev(workInProgress2, Component2);
-              workInProgress2.type = Component2 = resolveFunctionForHotReloading(Component2);
+              validateFunctionComponentInDev(workInProgress2, Component);
+              workInProgress2.type = Component = resolveFunctionForHotReloading(Component);
             }
-            child = updateFunctionComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateFunctionComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ClassComponent: {
             {
-              workInProgress2.type = Component2 = resolveClassForHotReloading(Component2);
+              workInProgress2.type = Component = resolveClassForHotReloading(Component);
             }
-            child = updateClassComponent(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateClassComponent(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case ForwardRef: {
             {
-              workInProgress2.type = Component2 = resolveForwardRefForHotReloading(Component2);
+              workInProgress2.type = Component = resolveForwardRefForHotReloading(Component);
             }
-            child = updateForwardRef(null, workInProgress2, Component2, resolvedProps, renderLanes2);
+            child = updateForwardRef(null, workInProgress2, Component, resolvedProps, renderLanes2);
             return child;
           }
           case MemoComponent: {
             {
               if (workInProgress2.type !== workInProgress2.elementType) {
-                var outerPropTypes = Component2.propTypes;
+                var outerPropTypes = Component.propTypes;
                 if (outerPropTypes) {
                   checkPropTypes(
                     outerPropTypes,
                     resolvedProps,
                     // Resolved for outer only
                     "prop",
-                    getComponentNameFromType(Component2)
+                    getComponentNameFromType(Component)
                   );
                 }
               }
@@ -25258,8 +25258,8 @@ function requireReactDom_development() {
             child = updateMemoComponent(
               null,
               workInProgress2,
-              Component2,
-              resolveDefaultProps(Component2.type, resolvedProps),
+              Component,
+              resolveDefaultProps(Component.type, resolvedProps),
               // The inner type can have defaults too
               renderLanes2
             );
@@ -25268,33 +25268,33 @@ function requireReactDom_development() {
         }
         var hint = "";
         {
-          if (Component2 !== null && typeof Component2 === "object" && Component2.$$typeof === REACT_LAZY_TYPE) {
+          if (Component !== null && typeof Component === "object" && Component.$$typeof === REACT_LAZY_TYPE) {
             hint = " Did you wrap a component in React.lazy() more than once?";
           }
         }
-        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component2 + ". " + ("Lazy element type must resolve to a class or function." + hint));
+        throw new Error("Element type is invalid. Received a promise that resolves to: " + Component + ". " + ("Lazy element type must resolve to a class or function." + hint));
       }
-      function mountIncompleteClassComponent(_current, workInProgress2, Component2, nextProps, renderLanes2) {
+      function mountIncompleteClassComponent(_current, workInProgress2, Component, nextProps, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         workInProgress2.tag = ClassComponent;
         var hasContext;
-        if (isContextProvider(Component2)) {
+        if (isContextProvider(Component)) {
           hasContext = true;
           pushContextProvider(workInProgress2);
         } else {
           hasContext = false;
         }
         prepareToReadContext(workInProgress2, renderLanes2);
-        constructClassInstance(workInProgress2, Component2, nextProps);
-        mountClassInstance(workInProgress2, Component2, nextProps, renderLanes2);
-        return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+        constructClassInstance(workInProgress2, Component, nextProps);
+        mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
+        return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
       }
-      function mountIndeterminateComponent(_current, workInProgress2, Component2, renderLanes2) {
+      function mountIndeterminateComponent(_current, workInProgress2, Component, renderLanes2) {
         resetSuspendedCurrentOnMountInLegacyMode(_current, workInProgress2);
         var props2 = workInProgress2.pendingProps;
         var context;
         {
-          var unmaskedContext = getUnmaskedContext(workInProgress2, Component2, false);
+          var unmaskedContext = getUnmaskedContext(workInProgress2, Component, false);
           context = getMaskedContext(workInProgress2, unmaskedContext);
         }
         prepareToReadContext(workInProgress2, renderLanes2);
@@ -25304,8 +25304,8 @@ function requireReactDom_development() {
           markComponentRenderStarted(workInProgress2);
         }
         {
-          if (Component2.prototype && typeof Component2.prototype.render === "function") {
-            var componentName = getComponentNameFromType(Component2) || "Unknown";
+          if (Component.prototype && typeof Component.prototype.render === "function") {
+            var componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutBadClass[componentName]) {
               error("The <%s /> component appears to have a render method, but doesn't extend React.Component. This is likely to cause errors. Change %s to extend React.Component instead.", componentName, componentName);
               didWarnAboutBadClass[componentName] = true;
@@ -25316,7 +25316,7 @@ function requireReactDom_development() {
           }
           setIsRendering(true);
           ReactCurrentOwner$1.current = workInProgress2;
-          value = renderWithHooks(null, workInProgress2, Component2, props2, context, renderLanes2);
+          value = renderWithHooks(null, workInProgress2, Component, props2, context, renderLanes2);
           hasId = checkDidRenderIdHook();
           setIsRendering(false);
         }
@@ -25326,7 +25326,7 @@ function requireReactDom_development() {
         workInProgress2.flags |= PerformedWork;
         {
           if (typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0) {
-            var _componentName = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName, _componentName, _componentName);
               didWarnAboutModulePatternComponent[_componentName] = true;
@@ -25339,7 +25339,7 @@ function requireReactDom_development() {
           typeof value === "object" && value !== null && typeof value.render === "function" && value.$$typeof === void 0
         ) {
           {
-            var _componentName2 = getComponentNameFromType(Component2) || "Unknown";
+            var _componentName2 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutModulePatternComponent[_componentName2]) {
               error("The <%s /> component appears to be a function component that returns a class instance. Change %s to a class that extends React.Component instead. If you can't use a class try assigning the prototype on the function as a workaround. `%s.prototype = React.Component.prototype`. Don't use an arrow function since it cannot be called with `new` by React.", _componentName2, _componentName2, _componentName2);
               didWarnAboutModulePatternComponent[_componentName2] = true;
@@ -25349,7 +25349,7 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = null;
           workInProgress2.updateQueue = null;
           var hasContext = false;
-          if (isContextProvider(Component2)) {
+          if (isContextProvider(Component)) {
             hasContext = true;
             pushContextProvider(workInProgress2);
           } else {
@@ -25358,15 +25358,15 @@ function requireReactDom_development() {
           workInProgress2.memoizedState = value.state !== null && value.state !== void 0 ? value.state : null;
           initializeUpdateQueue(workInProgress2);
           adoptClassInstance(workInProgress2, value);
-          mountClassInstance(workInProgress2, Component2, props2, renderLanes2);
-          return finishClassComponent(null, workInProgress2, Component2, true, hasContext, renderLanes2);
+          mountClassInstance(workInProgress2, Component, props2, renderLanes2);
+          return finishClassComponent(null, workInProgress2, Component, true, hasContext, renderLanes2);
         } else {
           workInProgress2.tag = FunctionComponent;
           {
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                value = renderWithHooks(null, workInProgress2, Component2, props2, context, renderLanes2);
+                value = renderWithHooks(null, workInProgress2, Component, props2, context, renderLanes2);
                 hasId = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -25378,16 +25378,16 @@ function requireReactDom_development() {
           }
           reconcileChildren(null, workInProgress2, value, renderLanes2);
           {
-            validateFunctionComponentInDev(workInProgress2, Component2);
+            validateFunctionComponentInDev(workInProgress2, Component);
           }
           return workInProgress2.child;
         }
       }
-      function validateFunctionComponentInDev(workInProgress2, Component2) {
+      function validateFunctionComponentInDev(workInProgress2, Component) {
         {
-          if (Component2) {
-            if (Component2.childContextTypes) {
-              error("%s(...): childContextTypes cannot be defined on a function component.", Component2.displayName || Component2.name || "Component");
+          if (Component) {
+            if (Component.childContextTypes) {
+              error("%s(...): childContextTypes cannot be defined on a function component.", Component.displayName || Component.name || "Component");
             }
           }
           if (workInProgress2.ref !== null) {
@@ -25406,15 +25406,15 @@ function requireReactDom_development() {
               error("Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s", info);
             }
           }
-          if (typeof Component2.getDerivedStateFromProps === "function") {
-            var _componentName3 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.getDerivedStateFromProps === "function") {
+            var _componentName3 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3]) {
               error("%s: Function components do not support getDerivedStateFromProps.", _componentName3);
               didWarnAboutGetDerivedStateOnFunctionComponent[_componentName3] = true;
             }
           }
-          if (typeof Component2.contextType === "object" && Component2.contextType !== null) {
-            var _componentName4 = getComponentNameFromType(Component2) || "Unknown";
+          if (typeof Component.contextType === "object" && Component.contextType !== null) {
+            var _componentName4 = getComponentNameFromType(Component) || "Unknown";
             if (!didWarnAboutContextTypeOnFunctionComponent[_componentName4]) {
               error("%s: Function components do not support contextType.", _componentName4);
               didWarnAboutContextTypeOnFunctionComponent[_componentName4] = true;
@@ -26176,8 +26176,8 @@ function requireReactDom_development() {
             pushHostContext(workInProgress2);
             break;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               pushContextProvider(workInProgress2);
             }
             break;
@@ -26304,10 +26304,10 @@ function requireReactDom_development() {
             return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
           }
           case FunctionComponent: {
-            var Component2 = workInProgress2.type;
+            var Component = workInProgress2.type;
             var unresolvedProps = workInProgress2.pendingProps;
-            var resolvedProps = workInProgress2.elementType === Component2 ? unresolvedProps : resolveDefaultProps(Component2, unresolvedProps);
-            return updateFunctionComponent(current2, workInProgress2, Component2, resolvedProps, renderLanes2);
+            var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
+            return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
           }
           case ClassComponent: {
             var _Component = workInProgress2.type;
@@ -26612,8 +26612,8 @@ function requireReactDom_development() {
             bubbleProperties(workInProgress2);
             return null;
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             bubbleProperties(workInProgress2);
@@ -26931,8 +26931,8 @@ function requireReactDom_development() {
         popTreeContext(workInProgress2);
         switch (workInProgress2.tag) {
           case ClassComponent: {
-            var Component2 = workInProgress2.type;
-            if (isContextProvider(Component2)) {
+            var Component = workInProgress2.type;
+            if (isContextProvider(Component)) {
               popContext(workInProgress2);
             }
             var flags = workInProgress2.flags;
@@ -30610,18 +30610,18 @@ function requireReactDom_development() {
       var createFiber = function(tag2, pendingProps, key, mode) {
         return new FiberNode(tag2, pendingProps, key, mode);
       };
-      function shouldConstruct$1(Component2) {
-        var prototype = Component2.prototype;
+      function shouldConstruct$1(Component) {
+        var prototype = Component.prototype;
         return !!(prototype && prototype.isReactComponent);
       }
       function isSimpleFunctionComponent(type) {
         return typeof type === "function" && !shouldConstruct$1(type) && type.defaultProps === void 0;
       }
-      function resolveLazyComponentTag(Component2) {
-        if (typeof Component2 === "function") {
-          return shouldConstruct$1(Component2) ? ClassComponent : FunctionComponent;
-        } else if (Component2 !== void 0 && Component2 !== null) {
-          var $$typeof = Component2.$$typeof;
+      function resolveLazyComponentTag(Component) {
+        if (typeof Component === "function") {
+          return shouldConstruct$1(Component) ? ClassComponent : FunctionComponent;
+        } else if (Component !== void 0 && Component !== null) {
+          var $$typeof = Component.$$typeof;
           if ($$typeof === REACT_FORWARD_REF_TYPE) {
             return ForwardRef;
           }
@@ -31058,9 +31058,9 @@ function requireReactDom_development() {
         var fiber = get(parentComponent);
         var parentContext = findCurrentUnmaskedContext(fiber);
         if (fiber.tag === ClassComponent) {
-          var Component2 = fiber.type;
-          if (isContextProvider(Component2)) {
-            return processChildContext(fiber, Component2, parentContext);
+          var Component = fiber.type;
+          if (isContextProvider(Component)) {
+            return processChildContext(fiber, Component, parentContext);
           }
         }
         return parentContext;
@@ -40756,10 +40756,10 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     variant,
     variantMapping
   });
-  const Component2 = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+  const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
   const classes = useUtilityClasses$L(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$2({
-    as: Component2,
+    as: Component,
     ref,
     ownerState,
     className: clsx(classes.root, className)
@@ -41808,20 +41808,20 @@ var TransitionGroup = /* @__PURE__ */ function(_React$Component) {
     }
   };
   _proto.render = function render() {
-    var _this$props = this.props, Component2 = _this$props.component, childFactory2 = _this$props.childFactory, props2 = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
+    var _this$props = this.props, Component = _this$props.component, childFactory2 = _this$props.childFactory, props2 = _objectWithoutPropertiesLoose$1(_this$props, ["component", "childFactory"]);
     var contextValue = this.state.contextValue;
     var children = values(this.state.children).map(childFactory2);
     delete props2.appear;
     delete props2.enter;
     delete props2.exit;
-    if (Component2 === null) {
+    if (Component === null) {
       return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
         value: contextValue
       }, children);
     }
     return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
       value: contextValue
-    }, /* @__PURE__ */ React.createElement(Component2, props2, children));
+    }, /* @__PURE__ */ React.createElement(Component, props2, children));
   };
   return TransitionGroup2;
 }(React.Component);
@@ -43179,17 +43179,17 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     className: clsx(classes.root, rootProps.className, className),
     disabled
   }, other);
-  let Component2 = componentProp || "li";
+  let Component = componentProp || "li";
   if (button) {
     componentProps.component = componentProp || "div";
     componentProps.focusVisibleClassName = clsx(listItemClasses$1.focusVisible, focusVisibleClassName);
-    Component2 = ButtonBase$1;
+    Component = ButtonBase$1;
   }
   if (hasSecondaryAction) {
-    Component2 = !componentProps.component && !componentProp ? "div" : Component2;
+    Component = !componentProps.component && !componentProp ? "div" : Component;
     if (ContainerComponent === "li") {
-      if (Component2 === "li") {
-        Component2 = "div";
+      if (Component === "li") {
+        Component = "div";
       } else if (componentProps.component === "li") {
         componentProps.component = "div";
       }
@@ -43203,7 +43203,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
         ownerState
       }, ContainerProps, {
         children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Root, _extends$2({}, rootProps, !isHostComponent(Root) && {
-          as: Component2,
+          as: Component,
           ownerState: _extends$2({}, ownerState, rootProps.ownerState)
         }, componentProps, {
           children
@@ -43214,7 +43214,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: childContext,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Root, _extends$2({}, rootProps, {
-      as: Component2,
+      as: Component,
       ref: handleRef
     }, !isHostComponent(Root) && {
       ownerState: _extends$2({}, ownerState, rootProps.ownerState)
@@ -43914,7 +43914,7 @@ process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
 SvgIcon.muiName = "SvgIcon";
 const SvgIcon$1 = SvgIcon;
 function createSvgIcon$1(path, displayName) {
-  function Component2(props2, ref) {
+  function Component(props2, ref) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(SvgIcon$1, _extends$2({
       "data-testid": `${displayName}Icon`,
       ref
@@ -43923,10 +43923,10 @@ function createSvgIcon$1(path, displayName) {
     }));
   }
   if (process.env.NODE_ENV !== "production") {
-    Component2.displayName = `${displayName}Icon`;
+    Component.displayName = `${displayName}Icon`;
   }
-  Component2.muiName = SvgIcon$1.muiName;
-  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component2));
+  Component.muiName = SvgIcon$1.muiName;
+  return /* @__PURE__ */ reactExports.memo(/* @__PURE__ */ reactExports.forwardRef(Component));
 }
 const FirstPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
@@ -47884,9 +47884,29 @@ function object_sets_types() {
     "activity node": capFirst(window.gettext("activity node"))
   };
 }
+const getColumnWorkflowByID = (state, id) => {
+  for (const i in state.columnworkflow) {
+    const columnWorkflow = state.columnworkflow[i];
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: state.workflow.columnworkflow_set
+      };
+    }
+  }
+  return {
+    data: void 0,
+    order: void 0
+  };
+};
+const getStrategyByID = (state, id) => {
+  const strategies = Object.values(state.strategy);
+  const foundStrategy = strategies.find((strategy) => strategy.id === id);
+  return foundStrategy ? { data: foundStrategy } : { data: void 0 };
+};
 const getColumnByID = (state, id) => {
-  for (var i in state.column) {
-    var column2 = state.column[i];
+  for (const i in state.column) {
+    const column2 = state.column[i];
     if (column2.id == id)
       return {
         data: column2,
@@ -47898,16 +47918,9 @@ const getColumnByID = (state, id) => {
       };
   }
 };
-const getColumnWorkflowByID = (state, id) => {
-  for (var i in state.columnworkflow) {
-    var columnworkflow = state.columnworkflow[i];
-    if (columnworkflow.id == id)
-      return { data: columnworkflow, order: state.workflow.columnworkflow_set };
-  }
-};
 const getWeekByID = (state, id) => {
-  for (var i in state.week) {
-    var week = state.week[i];
+  for (const i in state.week) {
+    const week = state.week[i];
     if (week.id == id) {
       if (week.is_dropped === void 0) {
         week.is_dropped = getDropped(id, "week");
@@ -47925,18 +47938,18 @@ const getWeekByID = (state, id) => {
   }
 };
 const getTermByID = (state, id) => {
-  for (var i in state.week) {
-    var week = state.week[i];
+  for (const i in state.week) {
+    const week = state.week[i];
     if (week.id == id) {
       if (week.is_dropped === void 0) {
         week.is_dropped = getDropped(id, "week");
       }
-      var nodeweeks = week.nodeweek_set;
+      const nodeweeks = week.nodeweek_set;
       const column_order = filterThenSortByID(
         state.columnworkflow,
         state.workflow.columnworkflow_set
       ).map((columnworkflow) => columnworkflow.column);
-      var nodes_by_column = {};
+      const nodes_by_column = {};
       for (var j = 0; j < column_order.length; j++) {
         nodes_by_column[column_order[j]] = [];
       }
@@ -47958,14 +47971,14 @@ const getTermByID = (state, id) => {
   }
 };
 const getWeekWorkflowByID = (state, id) => {
-  for (var i in state.weekworkflow) {
-    var weekworkflow = state.weekworkflow[i];
+  for (const i in state.weekworkflow) {
+    const weekworkflow = state.weekworkflow[i];
     if (weekworkflow.id == id)
       return { data: weekworkflow, order: state.workflow.weekworkflow_set };
   }
 };
 const getNodeByID = (state, id) => {
-  for (var i in state.node) {
+  for (const i in state.node) {
     var node2 = state.node[i];
     if (node2.id == id) {
       if (node2.is_dropped === void 0) {
@@ -47981,8 +47994,8 @@ const getNodeByID = (state, id) => {
   console.log("failed to find node");
 };
 const getNodeWeekByID = (state, id) => {
-  for (var i in state.nodeweek) {
-    var nodeweek = state.nodeweek[i];
+  for (const i in state.nodeweek) {
+    const nodeweek = state.nodeweek[i];
     if (nodeweek.id == id) {
       const node2 = getNodeByID(state, nodeweek.node).data;
       return {
@@ -47994,8 +48007,8 @@ const getNodeWeekByID = (state, id) => {
   }
 };
 const getNodeLinkByID = (state, id) => {
-  for (var i in state.nodelink) {
-    var nodelink = state.nodelink[i];
+  for (const i in state.nodelink) {
+    const nodelink = state.nodelink[i];
     if (nodelink.id == id)
       return { data: nodelink };
   }
@@ -48038,8 +48051,8 @@ function findTopRank(state, outcome) {
 }
 const getOutcomeByID = (state, id) => {
   const state_section = state.outcome;
-  for (var i in state_section) {
-    var outcome = state_section[i];
+  for (const i in state_section) {
+    const outcome = state_section[i];
     if (outcome.id == id) {
       if (outcome.is_dropped === void 0) {
         outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
@@ -48100,8 +48113,8 @@ const getOutcomeByID = (state, id) => {
   console.log("failed to find outcome");
 };
 const getChildWorkflowByID = (state, id) => {
-  for (var i in state.child_workflow) {
-    var workflow = state.child_workflow[i];
+  for (const i in state.child_workflow) {
+    const workflow = state.child_workflow[i];
     if (workflow.id == id)
       return { data: workflow };
   }
@@ -48110,35 +48123,28 @@ const getChildWorkflowByID = (state, id) => {
 };
 const getOutcomeOutcomeByID = (state, id) => {
   const state_section = state.outcomeoutcome;
-  for (var i in state_section) {
-    var outcomeoutcome = state_section[i];
+  for (const i in state_section) {
+    const outcomeoutcome = state_section[i];
     if (outcomeoutcome.id == id)
       return { data: outcomeoutcome };
   }
   console.log("failed to find outcomeoutcome");
 };
 const getOutcomeNodeByID = (state, id) => {
-  for (var i in state.outcomenode) {
-    var outcomenode = state.outcomenode[i];
+  for (const i in state.outcomenode) {
+    const outcomenode = state.outcomenode[i];
     if (outcomenode.id == id)
       return { data: outcomenode };
   }
   console.log("failed to find outcomenode");
 };
 const getOutcomeHorizontalLinkByID = (state, id) => {
-  for (var i in state.outcomehorizontallink) {
-    var outcomehorizontallink = state.outcomehorizontallink[i];
+  for (const i in state.outcomehorizontallink) {
+    const outcomehorizontallink = state.outcomehorizontallink[i];
     if (outcomehorizontallink.id == id)
       return { data: outcomehorizontallink };
   }
   console.log("failed to find outcomehorizontallink");
-};
-const getStrategyByID = (state, id) => {
-  for (var i in state.strategy) {
-    var strategy = state.strategy[i];
-    if (strategy.id == id)
-      return { data: strategy };
-  }
 };
 const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
   const outcomeworkflows = filterThenSortByID(
@@ -48149,7 +48155,7 @@ const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => 
     (outcomeworkflow) => outcomeworkflow.outcome
   );
   const outcomes = filterThenSortByID(state.outcome, outcome_ids);
-  for (var i = 0; i < outcomes.length; i++) {
+  for (let i = 0; i < outcomes.length; i++) {
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
   }
@@ -48234,8 +48240,8 @@ const getDropped = (objectID, objectType, depth = 1) => {
   }
 };
 const getTableOutcomeNodeByID = (outcomenodes, node_id, outcome_id) => {
-  for (var i in outcomenodes) {
-    var outcomenode = outcomenodes[i];
+  for (const i in outcomenodes) {
+    const outcomenode = outcomenodes[i];
     if (outcomenode.outcome == outcome_id && outcomenode.node == node_id)
       return { data: outcomenode };
   }
@@ -48250,7 +48256,7 @@ const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomework
     (outcomeworkflow) => outcomeworkflow.outcome
   );
   const outcomes = filterThenSortByID(outcomes_unsorted, outcome_ids);
-  for (var i = 0; i < outcomes.length; i++) {
+  for (let i = 0; i < outcomes.length; i++) {
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
   }
@@ -57041,13 +57047,13 @@ function createNew(create_url) {
     }
   );
 }
-function columnChanged(renderer2, objectID, columnID) {
-  if (!renderer2.dragAction)
-    renderer2.dragAction = {};
-  if (!renderer2.dragAction["nodeweek"])
-    renderer2.dragAction["nodeweek"] = {};
-  renderer2.dragAction["nodeweek"] = {
-    ...renderer2.dragAction["nodeweek"],
+function columnChanged(renderer, objectID, columnID) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction["nodeweek"])
+    renderer.dragAction["nodeweek"] = {};
+  renderer.dragAction["nodeweek"] = {
+    ...renderer.dragAction["nodeweek"],
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify("node"),
     columnPk: JSON.stringify(columnID),
@@ -57055,18 +57061,18 @@ function columnChanged(renderer2, objectID, columnID) {
   };
   $(document).off("nodeweek-dropped");
   $(document).on("nodeweek-dropped", () => {
-    dragAction(renderer2.dragAction["nodeweek"]);
-    renderer2.dragAction["nodeweek"] = null;
+    dragAction(renderer.dragAction["nodeweek"]);
+    renderer.dragAction["nodeweek"] = null;
     $(document).off("nodeweek-dropped");
   });
 }
-function insertedAt(renderer2, objectID, objectType, parentID, parentType, newPosition, throughType) {
-  if (!renderer2.dragAction)
-    renderer2.dragAction = {};
-  if (!renderer2.dragAction[throughType])
-    renderer2.dragAction[throughType] = {};
-  renderer2.dragAction[throughType] = {
-    ...renderer2.dragAction[throughType],
+function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction[throughType])
+    renderer.dragAction[throughType] = {};
+  renderer.dragAction[throughType] = {
+    ...renderer.dragAction[throughType],
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
     parentID: JSON.stringify(parentID),
@@ -57078,8 +57084,8 @@ function insertedAt(renderer2, objectID, objectType, parentID, parentType, newPo
   $(document).off(throughType + "-dropped");
   if (objectID)
     $(document).on(throughType + "-dropped", () => {
-      dragAction(renderer2.dragAction[throughType]);
-      renderer2.dragAction[throughType] = null;
+      dragAction(renderer.dragAction[throughType]);
+      renderer.dragAction[throughType] = null;
       $(document).off(throughType + "-dropped");
     });
 }
@@ -61323,422 +61329,6 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
-class SelectionManager {
-  constructor(readOnly) {
-    __publicField(this, "mouseClicked");
-    __publicField(this, "readOnly");
-    __publicField(this, "lastSidebarTab");
-    __publicField(this, "currentSelection");
-    this.currentSelection = null;
-    this.mouseClicked = false;
-    this.readOnly = readOnly;
-    this.setupEventListeners();
-    this.lastSidebarTab = this.getActiveTab();
-  }
-  setupEventListeners() {
-    $(document).on("mousedown", () => {
-      this.mouseClicked = true;
-      setTimeout(() => {
-        this.mouseClicked = false;
-      }, 500);
-    });
-    $(document).on("mousemove", () => {
-      this.mouseClicked = false;
-    });
-    $(document).on("mouseup", (evt) => {
-      if (this.mouseClicked) {
-        this.changeSelection(evt);
-      }
-    });
-  }
-  getActiveTab() {
-    return $("#sidebar").tabs("option", "active");
-  }
-  setActiveTab(tabIndex) {
-    $("#sidebar").tabs("option", "active", tabIndex);
-  }
-  enableTab(tabIndex) {
-    $("#sidebar").tabs("enable", tabIndex);
-  }
-  disableTab(tabIndex) {
-    $("#sidebar").tabs("disable", tabIndex);
-  }
-  /**
-   * Changes the current selection to the new selection.
-   * @param evt - The event that triggered the selection change.
-   * @param newSelection - The new selection object.
-   */
-  changeSelection(evt, newSelection) {
-    var _a, _b;
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
-      return;
-    }
-    if (this.currentSelection) {
-      this.deselectCurrentSelection();
-    }
-    this.currentSelection = newSelection;
-    if (this.currentSelection) {
-      this.selectCurrentSelection();
-    } else {
-      this.resetSidebarTab();
-    }
-  }
-  deselectCurrentSelection() {
-    this.currentSelection.setState({ selected: false });
-    if (!this.readOnly) {
-      this.unlockCurrentSelection();
-    }
-  }
-  selectCurrentSelection() {
-    if (!this.readOnly) {
-      this.lockCurrentSelection();
-    }
-    const SIDEBAR_FIRST_TAB_INDEX = 0;
-    if (this.getActiveTab() !== SIDEBAR_FIRST_TAB_INDEX) {
-      this.lastSidebarTab = this.getActiveTab();
-    }
-    this.enableTab(SIDEBAR_FIRST_TAB_INDEX);
-    this.setActiveTab(SIDEBAR_FIRST_TAB_INDEX);
-    this.currentSelection.setState({ selected: true });
-  }
-  resetSidebarTab() {
-    const SIDEBAR_FIRST_TAB_INDEX = 0;
-    if (this.getActiveTab() === SIDEBAR_FIRST_TAB_INDEX) {
-      this.setActiveTab(this.lastSidebarTab);
-    }
-    this.disableTab(SIDEBAR_FIRST_TAB_INDEX);
-  }
-  lockCurrentSelection() {
-  }
-  unlockCurrentSelection() {
-  }
-  /**
-   * Handles the deletion of a selection.
-   * @param selection - The selection to be deleted.
-   */
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null);
-    }
-  }
-}
-function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth = 1) {
-  try {
-    const default_drop = get_default_drop_state(
-      objectID,
-      objectType,
-      depth
-    );
-    if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, is_dropped);
-    else
-      window.localStorage.removeItem(objectType + objectID);
-  } catch (err) {
-    if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
-      window.localStorage.clear();
-    }
-  }
-  dispatch(changeField(objectID, objectType, { is_dropped }));
-}
-class ComponentWithToggleDrop extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    __publicField(this, "mainDiv");
-    __publicField(this, "maindiv");
-    __publicField(this, "toggleDrop", (evt) => {
-      evt.stopPropagation();
-      toggleDropReduxAction(
-        this.props.objectID,
-        // @ts-ignore
-        object_dictionary[this.objectType],
-        !this.props.data.is_dropped,
-        this.props.dispatch,
-        this.props.data.depth
-      );
-    });
-    this.mainDiv = reactExports.createRef();
-    this.maindiv = reactExports.createRef();
-    this.state = {};
-  }
-}
-class NodeBarUnconnected extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.objectType = "workflow";
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    var nodebarcolumnworkflows = data.columnworkflow_set.map(
-      (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeBarColumnWorkflow,
-        {
-          renderer: this.props.renderer,
-          objectID: columnworkflow
-        },
-        `NodeBarColumnWorkflow-${index}`
-      )
-    );
-    var columns_present = this.props.columns.map((col) => col.column_type);
-    for (var i = 0; i < data.DEFAULT_COLUMNS.length; i++) {
-      if (columns_present.indexOf(data.DEFAULT_COLUMNS[i]) < 0) {
-        nodebarcolumnworkflows.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            NodeBarColumnWorkflow,
-            {
-              renderer: this.props.renderer,
-              columnType: data.DEFAULT_COLUMNS[i]
-            },
-            `NodeBarColumnWorkflow-${i}`
-          )
-        );
-      }
-    }
-    nodebarcolumnworkflows.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeBarColumnWorkflow,
-        {
-          renderer: this.props.renderer,
-          columnType: data.DEFAULT_CUSTOM_COLUMN
-        },
-        `NodeBarColumnWorkflow-last-${i}`
-      )
-    );
-    let nodebar_nodes;
-    if (!this.props.renderer.read_only)
-      nodebar_nodes = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarcolumnworkflows })
-      ];
-    var strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
-    var saltise_strategies = this.props.saltise_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      nodebar_nodes,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies }),
-      saltise_strategies.length > 0 && [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("SALTISE strategies") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: saltise_strategies })
-      ]
-    ] });
-  }
-}
-const mapNodeBarStateToProps = (state) => ({
-  data: state.workflow,
-  columns: state.column,
-  available_strategies: state.strategy,
-  saltise_strategies: state.saltise_strategy
-});
-const NodeBar = connect(mapNodeBarStateToProps, null)(NodeBarUnconnected);
-class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    if (data)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeBarColumn,
-        {
-          objectID: data.column,
-          renderer: this.props.renderer,
-          throughParentID: data.id,
-          parentID: this.props.parentID
-        }
-      ) });
-    else
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeBarColumnCreator,
-        {
-          renderer: this.props.renderer,
-          columnType: this.props.columnType
-        }
-      ) });
-  }
-}
-const mapColumnWorkflowStateToProps$1 = (state, own_props) => getColumnWorkflowByID(state, own_props.objectID);
-const NodeBarColumnWorkflow = connect(
-  mapColumnWorkflowStateToProps$1,
-  null
-)(NodeBarColumnWorkflowUnconnected);
-class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = {
-      column: this.props.data.id,
-      column_type: null
-    };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  makeDraggable() {
-    var _a;
-    const draggable_selector = "node-week";
-    const draggable_type = "nodeweek";
-    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
-      helper: (e, item) => {
-        var helper = $(document.createElement("div"));
-        helper.addClass("node-ghost");
-        helper.appendTo(document.body);
-        return helper;
-      },
-      cursor: "move",
-      cursorAt: { top: 20, left: 100 },
-      distance: 10,
-      start: (e, ui) => {
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
-      },
-      stop: (e, ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
-      }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    var title;
-    if (data)
-      title = data.title;
-    if (!title)
-      title = data.column_type_display;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        dangerouslySetInnerHTML: { __html: title },
-        className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
-        ref: this.maindiv,
-        style: { backgroundColor: getColumnColour(data) }
-      }
-    );
-  }
-}
-const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
-const NodeBarColumn = connect(
-  mapColumnStateToProps$1,
-  null
-)(NodeBarColumnUnconnected);
-class NodeBarColumnCreator extends NodeBarColumnUnconnected {
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = {
-      column: null,
-      column_type: this.props.columnType
-    };
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var title = "New ";
-    for (var i = 0; i < this.props.renderer.column_choices.length; i++) {
-      if (this.props.renderer.column_choices[i].type == this.props.columnType) {
-        title += this.props.renderer.column_choices[i].name;
-        break;
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "new-node new-column node-bar-column node-bar-sortable",
-        ref: this.maindiv,
-        children: title
-      }
-    );
-  }
-}
-class StrategyUnconnected extends ComponentWithToggleDrop {
-  constructor(props2) {
-    super(props2);
-    this.objectType = "strategy";
-    this.objectClass = ".strategy";
-    this.node_block = reactExports.createRef();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = { strategy: this.props.data.id };
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  makeDraggable() {
-    var _a;
-    const draggable_selector = "week-workflow";
-    const draggable_type = "weekworkflow";
-    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
-      helper: (e, item) => {
-        var helper = $(document.createElement("div"));
-        helper.addClass("week-ghost");
-        helper.appendTo(document.body);
-        return helper;
-      },
-      cursor: "move",
-      cursorAt: { top: 20, left: 100 },
-      distance: 10,
-      start: (e, ui) => {
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
-      },
-      stop: (e, ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
-      }
-    });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data;
-    var title;
-    if (data)
-      title = data.title;
-    if (!title)
-      title = "untitled strategy";
-    let strategy_icon;
-    if (data.strategy_icon)
-      strategy_icon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          src: COURSEFLOW_APP.config.icon_path + strategy_keys[data.strategy_icon] + ".svg"
-        }
-      );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "strategy-bar-strategy strategy new-strategy",
-        ref: this.maindiv,
-        children: [
-          strategy_icon,
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: title })
-        ]
-      }
-    );
-  }
-}
-const mapStrategyStateToProps = (state, own_props) => getStrategyByID(state, own_props.objectID);
-const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
 class ViewBarUnconnected extends reactExports.Component {
   /*******************************************************
    * FUNCTIONS
@@ -61862,6 +61452,148 @@ const ViewBar = connect(
   }),
   null
 )(ViewBarUnconnected);
+class SelectionManager {
+  constructor(readOnly) {
+    __publicField(this, "mouseClicked");
+    __publicField(this, "readOnly");
+    __publicField(this, "lastSidebarTab");
+    __publicField(this, "currentSelection");
+    this.currentSelection = null;
+    this.mouseClicked = false;
+    this.readOnly = readOnly;
+    this.setupEventListeners();
+    this.lastSidebarTab = this.getActiveTab();
+  }
+  setupEventListeners() {
+    $(document).on("mousedown", () => {
+      this.mouseClicked = true;
+      setTimeout(() => {
+        this.mouseClicked = false;
+      }, 500);
+    });
+    $(document).on("mousemove", () => {
+      this.mouseClicked = false;
+    });
+    $(document).on("mouseup", (evt) => {
+      if (this.mouseClicked) {
+        this.changeSelection(evt);
+      }
+    });
+  }
+  getActiveTab() {
+    return $("#sidebar").tabs("option", "active");
+  }
+  setActiveTab(tabIndex) {
+    $("#sidebar").tabs("option", "active", tabIndex);
+  }
+  enableTab(tabIndex) {
+    $("#sidebar").tabs("enable", tabIndex);
+  }
+  disableTab(tabIndex) {
+    $("#sidebar").tabs("disable", tabIndex);
+  }
+  /**
+   * Changes the current selection to the new selection.
+   * @param evt - The event that triggered the selection change.
+   * @param newSelection - The new selection object.
+   */
+  changeSelection(evt, newSelection) {
+    var _a, _b;
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
+      return;
+    }
+    if (this.currentSelection) {
+      this.deselectCurrentSelection();
+    }
+    this.currentSelection = newSelection;
+    if (this.currentSelection) {
+      this.selectCurrentSelection();
+    } else {
+      this.resetSidebarTab();
+    }
+  }
+  deselectCurrentSelection() {
+    this.currentSelection.setState({ selected: false });
+    if (!this.readOnly) {
+      this.unlockCurrentSelection();
+    }
+  }
+  selectCurrentSelection() {
+    if (!this.readOnly) {
+      this.lockCurrentSelection();
+    }
+    const SIDEBAR_FIRST_TAB_INDEX = 0;
+    if (this.getActiveTab() !== SIDEBAR_FIRST_TAB_INDEX) {
+      this.lastSidebarTab = this.getActiveTab();
+    }
+    this.enableTab(SIDEBAR_FIRST_TAB_INDEX);
+    this.setActiveTab(SIDEBAR_FIRST_TAB_INDEX);
+    this.currentSelection.setState({ selected: true });
+  }
+  resetSidebarTab() {
+    const SIDEBAR_FIRST_TAB_INDEX = 0;
+    if (this.getActiveTab() === SIDEBAR_FIRST_TAB_INDEX) {
+      this.setActiveTab(this.lastSidebarTab);
+    }
+    this.disableTab(SIDEBAR_FIRST_TAB_INDEX);
+  }
+  lockCurrentSelection() {
+  }
+  unlockCurrentSelection() {
+  }
+  /**
+   * Handles the deletion of a selection.
+   * @param selection - The selection to be deleted.
+   */
+  deleted(selection) {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null);
+    }
+  }
+}
+function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth = 1) {
+  try {
+    const default_drop = get_default_drop_state(
+      objectID,
+      objectType,
+      depth
+    );
+    if (is_dropped !== default_drop)
+      window.localStorage.setItem(objectType + objectID, is_dropped);
+    else
+      window.localStorage.removeItem(objectType + objectID);
+  } catch (err) {
+    if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
+      window.localStorage.clear();
+    }
+  }
+  dispatch(changeField(objectID, objectType, { is_dropped }));
+}
+class ComponentWithToggleDrop extends reactExports.Component {
+  // @todo reconcile the two var spellings
+  constructor(props2) {
+    super(props2);
+    __publicField(this, "mainDiv");
+    __publicField(this, "maindiv");
+    __publicField(this, "toggleDrop", (evt) => {
+      evt.stopPropagation();
+      toggleDropReduxAction(
+        this.props.objectID,
+        // @ts-ignore
+        object_dictionary[this.objectType],
+        !this.props.data.is_dropped,
+        this.props.dispatch,
+        this.props.data.depth
+      );
+    });
+    this.mainDiv = reactExports.createRef();
+    this.maindiv = reactExports.createRef();
+    this.state = {};
+  }
+}
 class RestoreBarUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -62217,7 +61949,7 @@ class QuillDiv extends reactExports.Component {
     ] });
   }
   componentDidMount() {
-    const renderer2 = this.props.renderer;
+    const renderer = this.props.renderer;
     const quill_container = this.maindiv.current;
     const toolbarOptions = [
       ["bold", "italic", "underline"],
@@ -62247,8 +61979,8 @@ class QuillDiv extends reactExports.Component {
     const toolbar = quill.getModule("toolbar");
     toolbar.defaultLinkFunction = toolbar.handlers["link"];
     toolbar.addHandler("link", function customLinkFunction(value) {
-      var select = quill.getSelection();
-      if (value && select["length"] == 0 && !renderer2.read_only) {
+      const select = quill.getSelection();
+      if (value && select["length"] == 0 && !renderer.read_only) {
         quill.insertText(select["index"], "link");
         quill.setSelection(select["index"], 4);
       }
@@ -62273,7 +62005,7 @@ class EditableComponent extends ComponentWithToggleDrop {
     var _a;
     const read_only = this.props.renderer.read_only;
     if (this.state.selected) {
-      var type = object_dictionary[this.objectType];
+      const type = object_dictionary[this.objectType];
       let title_length = "100";
       if (type == "outcome")
         title_length = "500";
@@ -63151,6 +62883,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
   addDeleteSelf(data, alt_icon) {
     const icon = alt_icon || "rubbish.svg";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -63164,7 +62897,6 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   deleteSelf(data) {
-    this.props;
     if (this.props.renderer)
       this.props.renderer.selection_manager.deleted(this);
     if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
@@ -63228,13 +62960,12 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   insertSibling(data) {
-    var props2 = this.props;
     var type = this.objectType;
     COURSEFLOW_APP.tinyLoader.startLoad();
     insertSibling(
       data.id,
       object_dictionary[type],
-      props2.parentID,
+      this.props.parentID,
       parent_dictionary[type],
       through_parent_dictionary[type],
       (response_data) => {
@@ -63255,8 +62986,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   insertChild(data) {
-    this.props;
-    var type = this.objectType;
+    const type = this.objectType;
     COURSEFLOW_APP.tinyLoader.startLoad();
     insertChild(data.id, object_dictionary[type], (response_data) => {
       COURSEFLOW_APP.tinyLoader.endLoad();
@@ -63882,6 +63612,285 @@ class ComparisonViewBar extends reactExports.Component {
     ] });
   }
 }
+class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.makeDraggable();
+    $(this.maindiv.current)[0].dataDraggable = {
+      column: this.props.data.id,
+      column_type: null
+    };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  makeDraggable() {
+    var _a;
+    const draggable_selector = "node-week";
+    const draggable_type = "nodeweek";
+    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
+      helper: (_e, _item) => {
+        const helper = $(document.createElement("div"));
+        helper.addClass("node-ghost");
+        helper.appendTo(document.body);
+        return helper;
+      },
+      cursor: "move",
+      cursorAt: { top: 20, left: 100 },
+      distance: 10,
+      start: (_e, _ui) => {
+        $(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $(draggable_selector).addClass("dragging");
+      },
+      stop: (_e, _ui) => {
+        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $(draggable_selector).removeClass("dragging");
+      }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    const title = data ? data.title || data.column_type_display : void 0;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        dangerouslySetInnerHTML: { __html: title },
+        className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
+        ref: this.maindiv,
+        style: { backgroundColor: getColumnColour(data) }
+      }
+    );
+  }
+}
+class NodeBarColumnCreator extends NodeBarColumnUnconnected {
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.makeDraggable();
+    $(this.maindiv.current)[0].dataDraggable = {
+      column: null,
+      column_type: this.props.columnType
+    };
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const choice = this.props.columnChoices.find(
+      (choice2) => choice2.type === this.props.columnType
+    );
+    const title = choice ? `New ${choice.name}` : "New";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "new-node new-column node-bar-column node-bar-sortable",
+        ref: this.maindiv,
+        children: title
+      }
+    );
+  }
+}
+const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
+const NodeBarColumn = connect(
+  mapColumnStateToProps$1,
+  null
+)(NodeBarColumnUnconnected);
+class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    if (this.props.data)
+      return (
+        // @todo was
+        // <div className="node-bar-column-workflow" ref={this.maindiv}>
+        // however this.maindiv is not defined in this class
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeBarColumn,
+          {
+            objectID: this.props.data.column,
+            throughParentID: this.props.data.id,
+            parentID: this.props.parentID
+          }
+        ) })
+      );
+    else
+      return (
+        // @todo was
+        // <div className="node-bar-column-workflow" ref={this.maindiv}>
+        // however this.maindiv is not defined in this class
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeBarColumnCreator,
+          {
+            columnType: this.props.columnType,
+            columnChoices: this.props.columnChoices
+          }
+        ) })
+      );
+  }
+}
+const mapStateToProps$4 = (state, ownProps) => {
+  return getColumnWorkflowByID(state, ownProps.objectID);
+};
+const NodeBarColumnWorkflow = connect(
+  mapStateToProps$4,
+  null
+)(NodeBarColumnWorkflowUnconnected);
+class StrategyUnconnected extends ComponentWithToggleDrop {
+  // @todo not used?
+  // constructor(props) {
+  //   super(props)
+  //   this.objectType = 'strategy'
+  //   this.objectClass = '.strategy'
+  //   this.node_block = React.createRef()
+  // }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.makeDraggable();
+    $(this.maindiv.current)[0].dataDraggable = { strategy: this.props.data.id };
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  makeDraggable() {
+    var _a;
+    const draggable_selector = "week-workflow";
+    const draggable_type = "weekworkflow";
+    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
+      helper: (_e, _item) => {
+        const helper = $(document.createElement("div"));
+        helper.addClass("week-ghost");
+        helper.appendTo(document.body);
+        return helper;
+      },
+      cursor: "move",
+      cursorAt: { top: 20, left: 100 },
+      distance: 10,
+      start: (_e, _ui) => {
+        $(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $(draggable_selector).addClass("dragging");
+      },
+      stop: (_e, _ui) => {
+        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $(draggable_selector).removeClass("dragging");
+      }
+    });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const { data } = this.props;
+    const title = data && data.title ? data.title : "untitled strategy";
+    const strategyIcon = data && data.strategy_icon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "img",
+      {
+        src: `${COURSEFLOW_APP.config.icon_path}${strategy_keys[data.strategy_icon]}.svg`
+      }
+    ) : null;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "strategy-bar-strategy strategy new-strategy",
+        ref: this.maindiv,
+        children: [
+          strategyIcon,
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: title })
+        ]
+      }
+    );
+  }
+}
+const mapStrategyStateToProps = (state, ownProps) => {
+  return getStrategyByID(state, ownProps.objectID);
+};
+const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
+class NodeBarUnconnected extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    __publicField(this, "columnChoices");
+    __publicField(this, "readOnly");
+    this.columnChoices = this.props.columnChoices;
+    this.readOnly = this.props.readOnly;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data;
+    let nodebar_nodes = [];
+    const nodebarColumnWorkflows = data.columnworkflow_set.map(
+      (columnWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NodeBarColumnWorkflow,
+        {
+          objectID: columnWorkflow,
+          columnChoices: this.columnChoices
+        },
+        `NodeBarColumnWorkflow-${index}`
+      )
+    );
+    const columns_present = this.props.columns.map((col) => col.column_type);
+    for (let i2 = 0; i2 < data.DEFAULT_COLUMNS.length; i2++) {
+      if (columns_present.indexOf(data.DEFAULT_COLUMNS[i2]) < 0) {
+        nodebarColumnWorkflows.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            NodeBarColumnWorkflow,
+            {
+              columnType: data.DEFAULT_COLUMNS[i2],
+              columnChoices: this.columnChoices
+            }
+          )
+        );
+      }
+    }
+    let i;
+    nodebarColumnWorkflows.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NodeBarColumnWorkflow,
+        {
+          columnType: data.DEFAULT_CUSTOM_COLUMN,
+          columnChoices: this.columnChoices
+        },
+        `NodeBarColumnWorkflow-last-${i}`
+      )
+    );
+    if (!this.readOnly) {
+      nodebar_nodes = [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarColumnWorkflows })
+      ];
+    }
+    const strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
+    const saltise_strategies = this.props.saltise_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      nodebar_nodes,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies }),
+      saltise_strategies.length > 0 && [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("SALTISE strategies") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: saltise_strategies })
+      ]
+    ] });
+  }
+}
+const mapNodeBarStateToProps = (state) => ({
+  data: state.workflow,
+  columns: state.column,
+  available_strategies: state.strategy,
+  saltise_strategies: state.saltise_strategy
+});
+const NodeBar = connect(mapNodeBarStateToProps, null)(NodeBarUnconnected);
 class RightSideBar extends reactExports.Component {
   /*******************************************************
    * props
@@ -63905,9 +63914,9 @@ class RightSideBar extends reactExports.Component {
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
-        if (ui.oldTab.length == 0)
+        if (ui.oldTab.length === 0)
           $("#sidebar").removeClass("collapsed");
-        else if (ui.newTab.length == 0)
+        else if (ui.newTab.length === 0)
           $("#sidebar").addClass("collapsed");
       }
     });
@@ -63920,29 +63929,31 @@ class RightSideBar extends reactExports.Component {
     });
   }
   getNodeBar() {
-    if (this.props.context == "workflow")
+    if (this.props.context === "workflow")
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeBar,
         {
-          view_type: this.props.renderer.view_type,
-          renderer: this.props.renderer
+          readOnly: this.props.read_only,
+          columnChoices: this.props.renderer.column_choices
         }
       );
     return null;
   }
   getOutcomeBar() {
-    if (this.props.context == "comparison")
+    const renderer = this.props.renderer;
+    if (this.props.context === "comparison") {
       return null;
-    const renderer2 = this.props.renderer;
-    if (renderer2.view_type == "outcomeedit")
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer: renderer2 });
-    else
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeBar, { renderer: renderer2 });
+    }
+    if (renderer.view_type === "outcomeedit") {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeBar, { renderer });
   }
   getViewBar() {
-    if (this.props.context == "workflow")
+    if (this.props.context === "workflow") {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data, renderer: this.props.renderer });
-    else if (this.props.context == "comparison")
+    }
+    if (this.props.context === "comparison") {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         ComparisonViewBar,
         {
@@ -63951,9 +63962,11 @@ class RightSideBar extends reactExports.Component {
           renderer: this.props.renderer
         }
       );
+    }
+    return null;
   }
   getRestoreBar() {
-    if (this.props.context == "workflow")
+    if (this.props.context === "workflow")
       return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, { renderer: this.props.renderer });
     return null;
   }
@@ -63961,7 +63974,7 @@ class RightSideBar extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const renderer2 = this.props.renderer;
+    const renderer = this.props.renderer;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#edit-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -63980,7 +63993,7 @@ class RightSideBar extends reactExports.Component {
             children: "add_circle"
           }
         ) }) }),
-        !renderer2.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        !renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#outcome-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             "span",
             {
@@ -64013,7 +64026,7 @@ class RightSideBar extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "outcome-bar", className: "right-panel-container", children: this.getOutcomeBar() }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "view-bar", className: "right-panel-container", children: this.getViewBar() })
       ] }),
-      !renderer2.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
+      !renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", id: "side-bar-close-button", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_forward" }) })
     ] });
   }
@@ -83261,8 +83274,8 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       data_override = { ...data, ...data.linked_workflow_data, id: data.id };
     else
       data_override = { ...data };
-    const renderer2 = this.props.renderer;
-    const selection_manager = renderer2.selection_manager;
+    const renderer = this.props.renderer;
+    const selection_manager = renderer.selection_manager;
     var nodePorts;
     var node_links;
     var auto_link;
@@ -83271,7 +83284,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Index$1,
           {
-            renderer: renderer2,
+            renderer,
             nodeID: this.props.objectID,
             node_div: this.maindiv,
             dispatch: this.props.dispatch
@@ -83284,7 +83297,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         {
           objectID: link,
           node_div: this.maindiv,
-          renderer: renderer2
+          renderer
         },
         link
       ));
@@ -83305,7 +83318,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
             OutcomeNode,
             {
               objectID: outcomenode,
-              renderer: renderer2
+              renderer
             },
             outcomenode
           ))
@@ -83338,7 +83351,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
-          title: renderer2.context_choices.find(
+          title: renderer.context_choices.find(
             (obj) => obj.type == data.context_classification
           ).name,
           src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
@@ -83348,7 +83361,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       righticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
-          title: renderer2.task_choices.find(
+          title: renderer.task_choices.find(
             (obj) => obj.type == data.task_classification
           ).name,
           src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
@@ -83408,9 +83421,9 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data));
       mouseover_actions.push(this.addDeleteSelf(data));
     }
-    if (renderer2.view_comments)
+    if (renderer.view_comments)
       mouseover_actions.push(this.addCommenting(data));
-    if (renderer2.show_assignments)
+    if (renderer.show_assignments)
       mouseover_actions.push(this.addShowAssignment(data));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -83659,8 +83672,8 @@ class WeekUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   render() {
     const data = this.props.data;
-    const renderer2 = this.props.renderer;
-    const selection_manager = renderer2.selection_manager;
+    const renderer = this.props.renderer;
+    const selection_manager = renderer.selection_manager;
     var nodes = this.getNodes();
     let css_class = "week";
     if (data.is_strategy)
@@ -83670,7 +83683,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
     if (data.is_dropped)
       css_class += " dropped";
     let default_text;
-    if (!renderer2.is_strategy)
+    if (!renderer.is_strategy)
       default_text = data.week_type_display + " " + (this.props.rank + 1);
     const style2 = {};
     if (data.lock) {
@@ -83682,12 +83695,12 @@ class WeekUnconnected extends EditableComponentWithSorting {
     else
       dropIcon = "droptriangledown";
     const mouseover_actions = [];
-    if (!this.props.renderer.read_only && !renderer2.is_strategy) {
+    if (!this.props.renderer.read_only && !renderer.is_strategy) {
       mouseover_actions.push(this.addInsertSibling(data));
       mouseover_actions.push(this.addDuplicateSelf(data));
       mouseover_actions.push(this.addDeleteSelf(data));
     }
-    if (renderer2.view_comments)
+    if (renderer.view_comments)
       mouseover_actions.push(this.addCommenting(data));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -83726,7 +83739,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-square", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-circle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
-                title: renderer2.strategy_classification_choices.find(
+                title: renderer.strategy_classification_choices.find(
                   (obj) => obj.type == data.strategy_classification
                 ).name,
                 src: COURSEFLOW_APP.config.icon_path + strategy_keys[data.strategy_classification] + ".svg"
@@ -84117,14 +84130,14 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   render() {
     const data = this.props.data;
-    const renderer2 = this.props.renderer;
+    const renderer = this.props.renderer;
     const columnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         ColumnWorkflow$1,
         {
           objectID: columnworkflow,
           parentID: data.id,
-          renderer: renderer2
+          renderer
         },
         `columnworkflow-${index}`
       )
@@ -84135,7 +84148,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
         condensed: data.condensed,
         objectID: weekworkflow,
         parentID: data.id,
-        renderer: renderer2
+        renderer
       },
       `weekworkflow-${index}`
     ));
@@ -84143,7 +84156,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     if (data.condensed)
       css_class += " condensed";
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer: renderer2 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data.id + "-column-block", children: columnworkflows }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data.id + "-week-block", children: weekworkflows }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "workflow-canvas", width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84190,8 +84203,8 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
     } else {
       data_override = { ...data };
     }
-    const renderer2 = this.props.renderer;
-    const selection_manager = renderer2.selection_manager;
+    const renderer = this.props.renderer;
+    const selection_manager = renderer.selection_manager;
     let outcomenodes;
     if (this.state.show_outcomes)
       outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84206,7 +84219,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
             OutcomeNode,
             {
               objectID: outcomenode,
-              renderer: renderer2
+              renderer
             },
             outcomenode
           ))
@@ -84239,7 +84252,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
-          title: renderer2.context_choices.find(
+          title: renderer.context_choices.find(
             (obj) => obj.type == data.context_classification
           ).name,
           src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
@@ -84249,7 +84262,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
-          title: renderer2.task_choices.find(
+          title: renderer.task_choices.find(
             (obj) => obj.type == data.task_classification
           ).name,
           src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
@@ -84273,7 +84286,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data));
       mouseover_actions.push(this.addDeleteSelf(data));
     }
-    if (renderer2.view_comments)
+    if (renderer.view_comments)
       mouseover_actions.push(this.addCommenting(data));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -84540,14 +84553,14 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   render() {
     const data = this.props.data;
-    const renderer2 = this.props.renderer;
+    const renderer = this.props.renderer;
     const weekworkflows = data.weekworkflow_set.map((weekworkflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekWorkflowComparison,
       {
         condensed: data.condensed,
         objectID: weekworkflow,
         parentID: data.id,
-        renderer: renderer2
+        renderer
       },
       weekworkflow
     ));
@@ -84604,13 +84617,13 @@ class WorkflowBaseUnconnected extends EditableComponent {
    *******************************************************/
   render() {
     const data = this.props.data;
-    const renderer2 = this.props.renderer;
-    renderer2.selection_manager;
+    const renderer = this.props.renderer;
+    renderer.selection_manager;
     let workflow_content;
-    if (renderer2.view_type == "outcomeedit") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer: renderer2, objectID: data.id });
+    if (renderer.view_type == "outcomeedit") {
+      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data.id });
     } else {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer: renderer2, objectID: data.id });
+      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data.id });
     }
     const style2 = {};
     if (data.lock) {
@@ -84644,7 +84657,9 @@ class ConnectionBar extends reactExports.Component {
     super(props2);
     console.log("ConnectionBar props");
     console.log(props2);
-    this.state = { connected_users: [] };
+    this.state = {
+      connected_users: []
+    };
     this.user_id = props2.renderer.user_id;
     this.user_name = COURSEFLOW_APP.contextData.user_name;
     this.myColour = COURSEFLOW_APP.contextData.user_name;
@@ -85488,8 +85503,8 @@ class GridNodeUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    const renderer2 = this.props.renderer;
-    const selection_manager = renderer2.selection_manager;
+    const renderer = this.props.renderer;
+    const selection_manager = renderer.selection_manager;
     const data = this.props.data;
     let data_override;
     if (data.represents_workflow)
@@ -85691,9 +85706,9 @@ class JumpToWeekViewUnconnected extends reactExports.Component {
    *******************************************************/
   render() {
     const data = this.props.data;
-    const renderer2 = this.props.renderer;
+    const renderer = this.props.renderer;
     let default_text;
-    if (!renderer2.is_strategy)
+    if (!renderer.is_strategy)
       default_text = data.week_type_display + " " + (this.props.rank + 1);
     COURSEFLOW_APP.config.icon_path + "plus.svg";
     if (data.is_dropped)
@@ -85948,7 +85963,7 @@ class TableCell extends reactExports.Component {
     ] });
   }
 }
-let OutcomeUnconnected$1 = class OutcomeUnconnected extends Component {
+let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
     this.objectType = "outcome";
@@ -87683,11 +87698,26 @@ class ExportMenu extends reactExports.Component {
     ] });
   }
 }
-class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
+class WorkflowBaseViewUnconnected extends EditableComponent {
   constructor(props2) {
     super(props2);
     __publicField(this, "objectType");
     __publicField(this, "allowed_tabs");
+    __publicField(this, "readOnly");
+    __publicField(this, "public_view");
+    __publicField(this, "is_student");
+    __publicField(this, "data");
+    __publicField(this, "project");
+    __publicField(this, "selection_manager");
+    __publicField(this, "view_type");
+    __publicField(this, "container");
+    __publicField(this, "renderMethod");
+    __publicField(this, "can_view");
+    __publicField(this, "websocket");
+    __publicField(this, "always_static");
+    __publicField(this, "user_id");
+    __publicField(this, "project_permission");
+    __publicField(this, "object_sets");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
@@ -87702,7 +87732,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         {
           className: "project-header",
           style: style2,
-          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+          onClick: (evt) => this.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-top-line", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -87736,38 +87766,37 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       );
     });
     __publicField(this, "Content", () => {
-      const data = this.props.data;
-      const renderer2 = this.props.renderer;
+      const renderer = this.props.renderer;
       let workflow_content;
-      if (renderer2.view_type == "outcometable") {
+      if (this.view_type == "outcometable") {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTableView,
           {
-            data,
-            renderer: renderer2,
-            view_type: renderer2.view_type
+            data: this.data,
+            renderer,
+            view_type: this.view_type
           }
         );
         this.allowed_tabs = [3];
-      } else if (renderer2.view_type == "outcomeedit") {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer: renderer2 });
-        if (data.type == "program")
+      } else if (this.view_type == "outcomeedit") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer });
+        if (this.data.type == "program")
           this.allowed_tabs = [3];
         else
           this.allowed_tabs = [2, 3];
-      } else if (renderer2.view_type == "alignmentanalysis") {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer: renderer2, view_type: renderer2.view_type });
+      } else if (this.view_type == "alignmentanalysis") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
-      } else if (renderer2.view_type == "grid") {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer: renderer2, view_type: renderer2.view_type });
+      } else if (this.view_type == "grid") {
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
       } else {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer: renderer2 });
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer });
         this.allowed_tabs = [1, 2, 3, 4];
-        if (renderer2.read_only)
+        if (renderer.read_only)
           this.allowed_tabs = [2, 3];
       }
-      if (data.is_strategy)
+      if (this.data.is_strategy)
         return workflow_content;
       const view_buttons = [
         {
@@ -87778,21 +87807,21 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         {
           type: "outcomeedit",
           name: capWords(
-            window.gettext("View") + " " + window.gettext(data.type + " outcomes")
+            window.gettext("View") + " " + window.gettext(this.data.type + " outcomes")
           ),
           disabled: []
         },
         {
           type: "outcometable",
           name: capWords(
-            window.gettext(data.type + " outcome") + " " + window.gettext("Table")
+            window.gettext(this.data.type + " outcome") + " " + window.gettext("Table")
           ),
           disabled: []
         },
         {
           type: "alignmentanalysis",
           name: capWords(
-            window.gettext(data.type + " outcome") + " " + window.gettext("Analytics")
+            window.gettext(this.data.type + " outcome") + " " + window.gettext("Analytics")
           ),
           disabled: ["activity"]
         },
@@ -87801,9 +87830,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           name: window.gettext("Grid View"),
           disabled: ["activity", "course"]
         }
-      ].filter((item) => item.disabled.indexOf(data.type) == -1).map((item) => {
+      ].filter((item) => item.disabled.indexOf(this.data.type) == -1).map((item) => {
         let view_class = "hover-shade";
-        if (item.type === renderer2.view_type)
+        if (item.type === renderer.view_type)
           view_class += " active";
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "a",
@@ -87838,14 +87867,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      * VIEW BAR
      *******************************************************/
     __publicField(this, "Jump", () => {
-      if (this.props.renderer.view_type !== "workflowview")
+      if (this.view_type !== "workflowview")
         return null;
-      const data = this.props.data;
-      const nodebarweekworkflows = data.weekworkflow_set.map(
+      const nodebarweekworkflows = this.data.weekworkflow_set.map(
         (weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           JumpToWeekWorkflow,
           {
-            order: data.weekworkflow_set,
+            order: this.data.weekworkflow_set,
             renderer: this.props.renderer,
             objectID: weekworkflow
           },
@@ -87948,9 +87976,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      * USERBAR
      *******************************************************/
     __publicField(this, "UserBar", () => {
-      const renderer2 = this.props.renderer;
-      if (!renderer2.always_static) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectionBar, { websocket: renderer2.websocket, renderer: renderer2 });
+      const renderer = this.props.renderer;
+      if (!this.always_static) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ConnectionBar, { websocket: this.websocket, renderer });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     });
@@ -87958,23 +87986,23 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      * VISIBLE BUTTONS
      *******************************************************/
     __publicField(this, "ShareButton", () => {
-      let share;
-      if (!this.props.renderer.read_only)
-        share = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "share-button",
-            title: window.gettext("Sharing"),
-            onClick: this.openShareDialog.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-          }
-        );
-      return share;
+      if (this.readOnly) {
+        return null;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "hover-shade",
+          id: "share-button",
+          title: window.gettext("Sharing"),
+          onClick: this.openShareDialog.bind(this),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+        }
+      );
     });
     __publicField(this, "EditButton", () => {
       let edit;
-      if (!this.props.renderer.read_only)
+      if (!this.readOnly)
         edit = /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -87995,10 +88023,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
      *OVERFLOW LINKS
      *******************************************************/
     __publicField(this, "ExportButton", () => {
-      if (this.props.renderer.public_view && !this.props.renderer.user_id)
+      if (this.public_view && !this.user_id) {
         return null;
-      if (this.props.renderer.is_student && !this.props.renderer.can_view)
+      }
+      if (this.can_view && !this.can_view) {
         return null;
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -88010,7 +88040,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       );
     });
     __publicField(this, "CopyButton", () => {
-      if (!this.props.renderer.user_id)
+      if (!this.user_id)
         return null;
       const export_button = [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88020,10 +88050,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             className: "hover-shade",
             onClick: () => {
               const loader = COURSEFLOW_APP.tinyLoader;
-              if (this.props.data.is_strategy) {
+              if (this.data.is_strategy) {
                 duplicateBaseItemQuery(
-                  this.props.data.id,
-                  this.props.data.type,
+                  this.data.id,
+                  this.data.type,
                   null,
                   (response_data) => {
                     loader.endLoad();
@@ -88038,7 +88068,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           }
         )
       ];
-      if (!this.props.data.is_strategy && this.props.renderer.project_permission === permission_keys.edit)
+      if (!this.data.is_strategy && this.project_permission === permission_keys.edit)
         export_button.unshift(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
@@ -88049,9 +88079,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
                 const loader = COURSEFLOW_APP.tinyLoader;
                 loader.startLoad();
                 duplicateBaseItemQuery(
-                  this.props.data.id,
-                  this.props.data.type,
-                  this.props.renderer.project.id,
+                  this.data.id,
+                  this.data.type,
+                  this.project.id,
                   (response_data) => {
                     loader.endLoad();
                     window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
@@ -88065,9 +88095,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       return export_button;
     });
     __publicField(this, "ImportButton", () => {
-      if (this.props.renderer.read_only)
+      if (this.readOnly)
         return null;
-      const disabled = !!this.props.data.importing;
+      const disabled = !!this.data.importing;
       const aClass = disabled ? " disabled" : "hover-shade";
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
@@ -88076,9 +88106,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       ] });
     });
     __publicField(this, "DeleteWorkflowButton", () => {
-      if (this.props.renderer.read_only)
+      if (this.readOnly)
         return null;
-      if (!this.props.data.deleted)
+      if (!this.data.deleted)
         return [
           /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -88146,7 +88176,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           ExportMenu,
           {
-            data: { ...this.props.data, object_sets: this.props.object_sets },
+            data: { ...this.props.data, object_sets: this.object_sets },
             actionFunction: this.closeModals
           }
         )
@@ -88158,7 +88188,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           ImportMenu,
           {
             data: {
-              object_id: this.props.data.id,
+              object_id: this.data.id,
               object_type: this.objectType,
               import_type: "outcomes"
             },
@@ -88169,7 +88199,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           ImportMenu,
           {
             data: {
-              object_id: this.props.data.id,
+              object_id: this.data.id,
               object_type: this.objectType,
               import_type: "nodes"
             },
@@ -88182,6 +88212,21 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     console.log(props2);
     this.objectType = "workflow";
     this.allowed_tabs = [0, 1, 2, 3, 4];
+    this.readOnly = this.props.renderer.read_only;
+    this.public_view = this.props.renderer.public_view;
+    this.can_view = this.props.renderer.can_view;
+    this.can_view = this.props.renderer.is_student;
+    this.data = this.props.data;
+    this.project = this.props.renderer.project;
+    this.selection_manager = this.props.renderer.selection_manager;
+    this.renderMethod = this.props.renderer.render;
+    this.container = this.props.renderer.container;
+    this.view_type = this.props.renderer.view_type;
+    this.websocket = this.props.renderer.websocket;
+    this.always_static = this.props.renderer.always_static;
+    this.user_id = this.props.renderer.user_id;
+    this.project_permission = this.props.renderer.project_permission;
+    this.object_sets = this.props.object_sets;
     this.state = {
       users: null,
       openShareDialog: false,
@@ -88204,9 +88249,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    if (this.props.renderer.public_view || this.props.renderer.is_student)
+    if (this.public_view || this.is_student)
       return null;
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data });
     });
   }
@@ -88214,7 +88259,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this workflow?")
     )) {
-      deleteSelfQuery(this.props.data.id, "workflow", true, () => {
+      deleteSelfQuery(this.data.id, "workflow", true, () => {
       });
     }
   }
@@ -88224,21 +88269,20 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         "Are you sure you want to permanently delete this workflow?"
       )
     )) {
-      deleteSelfQuery(this.props.data.id, "workflow", false, () => {
+      deleteSelfQuery(this.data.id, "workflow", false, () => {
         window.location = COURSEFLOW_APP.config.update_path["project"].replace(
           0,
-          // @todo remove renderer
-          renderer.project.id
+          this.project.id
         );
       });
     }
   }
   restoreWorkflow() {
-    restoreSelfQuery(this.props.data.id, "workflow", () => {
+    restoreSelfQuery(this.data.id, "workflow", () => {
     });
   }
   updateTabs() {
-    this.props.renderer.selection_manager.changeSelection(null, null);
+    this.selection_manager.changeSelection(null, null);
     const disabled_tabs = [];
     for (let i = 0; i <= 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0)
@@ -88251,13 +88295,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       else
         $("#sidebar").tabs({ active: this.allowed_tabs[0] });
     }
-    if (this.props.renderer.read_only)
+    if (this.readOnly)
       disabled_tabs.push(5);
     $("#sidebar").tabs({ disabled: disabled_tabs });
   }
   // @todo what are all the view types?
   changeView(type) {
-    this.props.renderer.render(this.props.renderer.container, type);
+    this.renderMethod(this.container, type);
   }
   expandAll(type) {
     this.props[type].forEach(
@@ -88270,7 +88314,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     );
   }
   openEditMenu(evt) {
-    this.props.renderer.selection_manager.changeSelection(evt, this);
+    this.selection_manager.changeSelection(evt, this);
   }
   clickImport(import_type2, evt) {
     evt.preventDefault();
@@ -88296,11 +88340,11 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getUsers() {
     if (!this.state.users)
       return null;
+    let users_group = [];
     const author = this.state.users.author;
     const editors = this.state.users.editors;
     const commenters = this.state.users.commentors;
     const viewers = this.state.users.viewers;
-    let users_group = [];
     if (this.state.users.published) {
       users_group.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
@@ -88344,7 +88388,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         ] })
       );
     }
-    if (!this.props.renderer.read_only)
+    if (!this.readOnly)
       users.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -88361,9 +88405,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     imports.push();
   }
   getReturnLinks() {
-    const renderer2 = this.props.renderer;
     const return_links = [];
-    if (renderer2.project && !renderer2.is_student && !renderer2.public_view) {
+    if (this.project && !this.is_student && !this.public_view) {
       return_links.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "a",
@@ -88372,7 +88415,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             id: "project-return",
             href: COURSEFLOW_APP.config.update_path["project"].replace(
               0,
-              renderer2.project.id
+              this.project.id
             ),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
@@ -88384,7 +88427,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
                   {
                     class_name: "inline",
                     no_hyperlink: true,
-                    data: renderer2.project
+                    data: this.project
                   }
                 )
               ] })
@@ -88393,7 +88436,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         )
       );
     }
-    if (renderer2.public_view && renderer2.can_view) {
+    if (this.public_view && this.can_view) {
       return_links.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "a",
@@ -88402,7 +88445,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             id: "project-return",
             href: COURSEFLOW_APP.config.update_path["project"].replace(
               0,
-              renderer2.project.id
+              this.project.id
             ),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_back_ios" }),
@@ -88481,7 +88524,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
             ParentWorkflowIndicator,
             {
               renderer: this.props.renderer,
-              workflow_id: this.props.data.id
+              workflow_id: this.data.id
             }
           )
         ] }) }),
@@ -88490,7 +88533,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           {
             context: "workflow",
             renderer: this.props.renderer,
-            data: this.props.data
+            data: this.data
           }
         )
       ] }),

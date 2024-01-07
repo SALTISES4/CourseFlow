@@ -37,6 +37,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
   addDeleteSelf(data, alt_icon) {
     const icon = alt_icon || 'rubbish.svg'
     return (
@@ -50,8 +51,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   deleteSelf(data) {
-    var props = this.props
-    //Temporary confirmation; add better confirmation dialogue later
+    //@todo Temporary confirmation; add better confirmation dialogue later
     if (this.props.renderer) this.props.renderer.selection_manager.deleted(this)
     if (
       (this.objectType === 'week' || this.objectType === 'column') &&
@@ -123,13 +123,12 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   insertSibling(data) {
-    var props = this.props
     var type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
     insertSibling(
       data.id,
       Constants.object_dictionary[type],
-      props.parentID,
+      this.props.parentID,
       Constants.parent_dictionary[type],
       Constants.through_parent_dictionary[type],
       (response_data) => {
@@ -151,8 +150,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   insertChild(data) {
-    var props = this.props
-    var type = this.objectType
+    const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
     insertChild(data.id, Constants.object_dictionary[type], (response_data) => {
       COURSEFLOW_APP.tinyLoader.endLoad()

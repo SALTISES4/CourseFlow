@@ -1,10 +1,10 @@
 import * as React from 'react'
-import NodeBar from './NodeBar'
 import ViewBar from './ViewBar'
 import RestoreBar from './RestoreBar'
 import OutcomeBar from './OutcomeBar'
 import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
+import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,
@@ -12,7 +12,6 @@ import ComparisonViewBar from './ComparisonViewBar'
  */
 
 class RightSideBar extends React.Component {
-
   /*******************************************************
    * props
    *  renderer.view_type
@@ -37,8 +36,8 @@ class RightSideBar extends React.Component {
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
-        if (ui.oldTab.length == 0) $('#sidebar').removeClass('collapsed')
-        else if (ui.newTab.length == 0) $('#sidebar').addClass('collapsed')
+        if (ui.oldTab.length === 0) $('#sidebar').removeClass('collapsed')
+        else if (ui.newTab.length === 0) $('#sidebar').addClass('collapsed')
       }
     })
 
@@ -52,28 +51,35 @@ class RightSideBar extends React.Component {
   }
 
   getNodeBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow')
       return (
         <NodeBar
-          view_type={this.props.renderer.view_type}
-          renderer={this.props.renderer}
+          // view_type={this.props.renderer.view_type}
+          // renderer={this.props.renderer}
+          readOnly={this.props.read_only}
+          columnChoices={this.props.renderer.column_choices}
         />
       )
     return null
   }
 
   getOutcomeBar() {
-    if (this.props.context == 'comparison') return null
     const renderer = this.props.renderer
-    if (renderer.view_type == 'outcomeedit')
+
+    if (this.props.context === 'comparison') {
+      return null
+    }
+    if (renderer.view_type === 'outcomeedit') {
       return <ParentOutcomeBar renderer={renderer} />
-    else return <OutcomeBar renderer={renderer} />
+    }
+    return <OutcomeBar renderer={renderer} />
   }
 
   getViewBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow') {
       return <ViewBar data={this.props.data} renderer={this.props.renderer} />
-    else if (this.props.context == 'comparison')
+    }
+    if (this.props.context === 'comparison') {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
@@ -81,10 +87,12 @@ class RightSideBar extends React.Component {
           renderer={this.props.renderer}
         />
       )
+    }
+    return null
   }
 
   getRestoreBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow')
       return <RestoreBar renderer={this.props.renderer} />
     return null
   }
@@ -154,7 +162,7 @@ class RightSideBar extends React.Component {
             </a>
           </li>
         </ul>
-        <div id="edit-menu" className="right-panel-container"></div>
+        <div id="edit-menu" className="right-panel-container" />
         <div id="node-bar" className="right-panel-container">
           {this.getNodeBar()}
         </div>

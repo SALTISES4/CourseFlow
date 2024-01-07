@@ -27,7 +27,7 @@ class ComponentWithToggleDrop<
   S = NonNullable<unknown>
 > extends React.Component<P, S> {
   mainDiv: React.RefObject<HTMLDivElement>
-  maindiv: React.RefObject<HTMLDivElement>
+  maindiv: React.RefObject<HTMLDivElement> // @todo reconcile the two var spellings
 
   constructor(props: P) {
     super(props)

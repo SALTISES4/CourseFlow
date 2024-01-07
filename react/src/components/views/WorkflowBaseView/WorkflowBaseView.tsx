@@ -29,10 +29,11 @@ import { Dialog, DialogTitle } from '@mui/material'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
-import EditableComponentWithActions from '@cfParentComponents/EditableComponentWithActions'
 import { WorkflowTitle } from '@cfUIComponents'
 import CollapsibleText from '@cfUIComponents/CollapsibleText'
 import { AppState } from '@cfRedux/type'
+import EditableComponent from '@cfParentComponents/EditableComponent'
+import {ComponentWithToggleProps} from "@cfParentComponents/ComponentWithToggleDrop";
 
 type MapWorkflowStateToPropsType = {
   data: AppState['workflow']
@@ -42,13 +43,9 @@ type MapWorkflowStateToPropsType = {
   outcome: AppState['outcome']
 }
 
-
 /***
  * @TODO NEED TO CLEAN UP TYPES
  * MAINLY REMOVE RENDERER IN THIS FILE AND
- *   EditableComponentWithActions
-  AND
- EditableComponentWithComments
  AMD
  EditableComponent
  AND
@@ -60,48 +57,77 @@ type MapWorkflowStateToPropsType = {
 type SelfPropsType = {
   view_type: string
   renderer: any
-}
+} & ComponentWithToggleProps
+
 type PropsType = MapWorkflowStateToPropsType & SelfPropsType
+type StateType = {
+  users: any
+  openShareDialog: boolean
+  openExportDialog: boolean
+  openImportDialog: boolean
+}
 /**
  * The base component of our workflow view. This renders the menu bar
  * above itself, the right sidebar, the header (description, sharing etc),
  * and then the tabs that allow the user to select a "type" of workflow view.
  */
-class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType> {
+// @todo was previously extending EditableComponentWithActions
+// but as far as i can tell it uses nothing from
+// EditableComponentWithActions or EditableComponentWithComments
+// with possible exception of addDeleteSelf (which needs addressing independently)
+class WorkflowBaseViewUnconnected extends EditableComponent<
+  PropsType,
+  StateType
+> {
   private objectType: string
   private allowed_tabs: number[]
+  private readOnly: boolean
+  private public_view: any
+  private is_student: any
+  private data: { is_dropped: boolean; depth: number }
+  private project: any
+  private selection_manager: any
+  private view_type: any
+  private container: any
+  private renderMethod: any
+  private can_view: any
+  private websocket: any
+  private always_static: any
+  private user_id: any
+  private project_permission: any
+  private object_sets: any
 
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     console.log('WorkflowBaseViewUnconnected props')
     console.log(props)
 
     this.objectType = 'workflow'
     this.allowed_tabs = [0, 1, 2, 3, 4]
+
+    this.readOnly = this.props.renderer.read_only
+    this.public_view = this.props.renderer.public_view
+    this.can_view = this.props.renderer.can_view
+    this.can_view = this.props.renderer.is_student
+    this.data = this.props.data
+    this.project = this.props.renderer.project
+    this.selection_manager = this.props.renderer.selection_manager
+    // @todo important: change this to state update control
+    this.renderMethod = this.props.renderer.render
+    this.container = this.props.renderer.container
+    this.view_type = this.props.renderer.view_type
+    this.websocket = this.props.renderer.websocket
+    this.always_static = this.props.renderer.always_static
+    this.user_id = this.props.renderer.user_id
+    this.project_permission = this.props.renderer.project_permission
+    this.object_sets = this.props.object_sets
+
     this.state = {
       users: null,
       openShareDialog: false,
       openExportDialog: false,
       openImportDialog: false
     }
-
-    // in this component :
-    // renderer.is_student
-    // renderer.public_view
-    // project.id
-    // project
-    // read_only
-    // render
-    // selection_manager
-    // view_type
-    // always_static
-    // public_view
-    // is_student
-    // user_id
-    // can_view
-    // project_permission
-
-
   }
 
   /*******************************************************
@@ -120,10 +146,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    // @todo remove renderer
-    if (this.props.renderer.public_view || this.props.renderer.is_student)
-      return null
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
+    if (this.public_view || this.is_student) return null
+    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data })
     })
   }
@@ -134,7 +158,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
         window.gettext('Are you sure you want to delete this workflow?')
       )
     ) {
-      deleteSelfQuery(this.props.data.id, 'workflow', true, () => {})
+      deleteSelfQuery(this.data.id, 'workflow', true, () => {})
     }
   }
 
@@ -146,24 +170,22 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
         )
       )
     ) {
-      deleteSelfQuery(this.props.data.id, 'workflow', false, () => {
+      deleteSelfQuery(this.data.id, 'workflow', false, () => {
         window.location = COURSEFLOW_APP.config.update_path['project'].replace(
           0,
-          // @todo remove renderer
-          renderer.project.id
+          this.project.id
         )
       })
     }
   }
 
   restoreWorkflow() {
-    restoreSelfQuery(this.props.data.id, 'workflow', () => {})
+    restoreSelfQuery(this.data.id, 'workflow', () => {})
   }
 
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
-    // @todo remove renderer
-    this.props.renderer.selection_manager.changeSelection(null, null)
+    this.selection_manager.changeSelection(null, null)
     const disabled_tabs = []
     for (let i = 0; i <= 4; i++)
       if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
@@ -178,7 +200,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
     }
     // @todo remove renderer
-    if (this.props.renderer.read_only) disabled_tabs.push(5)
+    if (this.readOnly) disabled_tabs.push(5)
     $('#sidebar').tabs({ disabled: disabled_tabs })
     /*******************************************************
      * // JQUERY
@@ -187,9 +209,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
 
   // @todo what are all the view types?
   changeView(type) {
-    //this.props.renderer.selection_manager.changeSelection(null,null);
-    // @todo remove renderer
-    this.props.renderer.render(this.props.renderer.container, type)
+    this.renderMethod(this.container, type)
   }
 
   expandAll(type) {
@@ -205,8 +225,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   openEditMenu(evt) {
-    // @todo remove renderer
-    this.props.renderer.selection_manager.changeSelection(evt, this)
+    this.selection_manager.changeSelection(evt, this)
   }
 
   clickImport(import_type, evt) {
@@ -237,9 +256,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       <div
         className="project-header"
         style={style}
-        onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
-        }
+        onClick={(evt) => this.selection_manager.changeSelection(evt, this)}
       >
         <div className="project-header-top-line">
           <WorkflowTitle
@@ -279,11 +296,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
 
   getUsers() {
     if (!this.state.users) return null
+    let users_group = []
+
     const author = this.state.users.author
     const editors = this.state.users.editors
     const commenters = this.state.users.commentors
     const viewers = this.state.users.viewers
-    let users_group = []
+
     if (this.state.users.published) {
       users_group.push(
         <div className="user-name">
@@ -331,8 +350,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
         </div>
       )
     }
-    // @todo remove renderer
-    if (!this.props.renderer.read_only)
+
+    if (!this.readOnly)
       users.push(
         <div
           className="user-name collapsed-text-show-more"
@@ -351,16 +370,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   getReturnLinks() {
-    const renderer = this.props.renderer
     const return_links = []
-    if (renderer.project && !renderer.is_student && !renderer.public_view) {
+    if (this.project && !this.is_student && !this.public_view) {
       return_links.push(
         <a
           className="hover-shade no-underline"
           id="project-return"
           href={COURSEFLOW_APP.config.update_path['project'].replace(
             0,
-            renderer.project.id
+            this.project.id
           )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
@@ -369,20 +387,20 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
             <WorkflowTitle
               class_name="inline"
               no_hyperlink={true}
-              data={renderer.project}
+              data={this.project}
             />
           </div>
         </a>
       )
     }
-    if (renderer.public_view && renderer.can_view) {
+    if (this.public_view && this.can_view) {
       return_links.push(
         <a
           className="hover-shade no-underline"
           id="project-return"
           href={COURSEFLOW_APP.config.update_path['project'].replace(
             0,
-            renderer.project.id
+            this.project.id
           )}
         >
           <span className="material-symbols-rounded green">arrow_back_ios</span>
@@ -395,31 +413,31 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   Content = () => {
-    const data = this.props.data
+    // const data = this.data
     const renderer = this.props.renderer
 
     let workflow_content
-    if (renderer.view_type == 'outcometable') {
+    if (this.view_type == 'outcometable') {
       workflow_content = (
         <WorkflowTableView
-          data={data}
+          data={this.data}
           renderer={renderer}
-          view_type={renderer.view_type}
+          view_type={this.view_type}
         />
       )
       this.allowed_tabs = [3]
-    } else if (renderer.view_type == 'outcomeedit') {
+    } else if (this.view_type == 'outcomeedit') {
       workflow_content = <OutcomeEditView renderer={renderer} />
-      if (data.type == 'program') this.allowed_tabs = [3]
+      if (this.data.type == 'program') this.allowed_tabs = [3]
       else this.allowed_tabs = [2, 3]
-    } else if (renderer.view_type == 'alignmentanalysis') {
+    } else if (this.view_type == 'alignmentanalysis') {
       workflow_content = (
-        <AlignmentView renderer={renderer} view_type={renderer.view_type} />
+        <AlignmentView renderer={renderer} view_type={this.view_type} />
       )
       this.allowed_tabs = [3]
-    } else if (renderer.view_type == 'grid') {
+    } else if (this.view_type == 'grid') {
       workflow_content = (
-        <GridView renderer={renderer} view_type={renderer.view_type} />
+        <GridView renderer={renderer} view_type={this.view_type} />
       )
       this.allowed_tabs = [3]
     } else {
@@ -428,7 +446,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       if (renderer.read_only) this.allowed_tabs = [2, 3]
     }
 
-    if (data.is_strategy) return workflow_content
+    if (this.data.is_strategy) return workflow_content
 
     const view_buttons = [
       {
@@ -439,21 +457,25 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       {
         type: 'outcomeedit',
         name: Utility.capWords(
-          window.gettext('View') + ' ' + window.gettext(data.type + ' outcomes')
+          window.gettext('View') +
+            ' ' +
+            window.gettext(this.data.type + ' outcomes')
         ),
         disabled: []
       },
       {
         type: 'outcometable',
         name: Utility.capWords(
-          window.gettext(data.type + ' outcome') + ' ' + window.gettext('Table')
+          window.gettext(this.data.type + ' outcome') +
+            ' ' +
+            window.gettext('Table')
         ),
         disabled: []
       },
       {
         type: 'alignmentanalysis',
         name: Utility.capWords(
-          window.gettext(data.type + ' outcome') +
+          window.gettext(this.data.type + ' outcome') +
             ' ' +
             window.gettext('Analytics')
         ),
@@ -465,7 +487,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
         disabled: ['activity', 'course']
       }
     ]
-      .filter((item) => item.disabled.indexOf(data.type) == -1)
+      .filter((item) => item.disabled.indexOf(this.data.type) == -1)
       .map((item) => {
         let view_class = 'hover-shade'
         if (item.type === renderer.view_type) view_class += ' active'
@@ -503,13 +525,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
    * VIEW BAR
    *******************************************************/
   Jump = () => {
-    if (this.props.renderer.view_type !== 'workflowview') return null
-    const data = this.props.data
-    const nodebarweekworkflows = data.weekworkflow_set.map(
+    if (this.view_type !== 'workflowview') return null
+    const nodebarweekworkflows = this.data.weekworkflow_set.map(
       (weekworkflow, index) => (
         <JumpToWeekWorkflow
           key={`weekworkflow-${index}`}
-          order={data.weekworkflow_set}
+          order={this.data.weekworkflow_set}
           renderer={this.props.renderer}
           objectID={weekworkflow}
         />
@@ -600,10 +621,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   UserBar = () => {
     const renderer = this.props.renderer
 
-    if (!renderer.always_static) {
-      return (
-        <ConnectionBar websocket={renderer.websocket} renderer={renderer} />
-      )
+    if (!this.always_static) {
+      return <ConnectionBar websocket={this.websocket} renderer={renderer} />
     }
     return <></>
   }
@@ -612,24 +631,25 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
    * VISIBLE BUTTONS
    *******************************************************/
   ShareButton = () => {
-    let share
-    if (!this.props.renderer.read_only)
-      share = (
-        <div
-          className="hover-shade"
-          id="share-button"
-          title={window.gettext('Sharing')}
-          onClick={this.openShareDialog.bind(this)}
-        >
-          <span className="material-symbols-rounded filled">person_add</span>
-        </div>
-      )
-    return share
+    if (this.readOnly) {
+      return null
+    }
+
+    return (
+      <div
+        className="hover-shade"
+        id="share-button"
+        title={window.gettext('Sharing')}
+        onClick={this.openShareDialog.bind(this)}
+      >
+        <span className="material-symbols-rounded filled">person_add</span>
+      </div>
+    )
   }
 
   EditButton = () => {
     let edit
-    if (!this.props.renderer.read_only)
+    if (!this.readOnly)
       edit = (
         <div
           className="hover-shade"
@@ -637,6 +657,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
           title={window.gettext('Edit Workflow')}
           onClick={this.openEditMenu.bind(this)}
         >
+          {/*
+           @todo  what is this 'edit' var? is this a mistake from refactor, or from before?
+           will have to look in history again
+           */}
           <span className="material-symbols-rounded filled">edit</span>
         </div>
       )
@@ -655,10 +679,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
    *******************************************************/
 
   ExportButton = () => {
-    if (this.props.renderer.public_view && !this.props.renderer.user_id)
+    if (this.public_view && !this.user_id) {
       return null
-    if (this.props.renderer.is_student && !this.props.renderer.can_view)
+    }
+    if (this.can_view && !this.can_view) {
       return null
+    }
 
     return (
       <div
@@ -672,17 +698,17 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   CopyButton = () => {
-    if (!this.props.renderer.user_id) return null
+    if (!this.user_id) return null
     const export_button = [
       <div
         id="copy-button"
         className="hover-shade"
         onClick={() => {
           const loader = COURSEFLOW_APP.tinyLoader
-          if (this.props.data.is_strategy) {
+          if (this.data.is_strategy) {
             duplicateBaseItemQuery(
-              this.props.data.id,
-              this.props.data.type,
+              this.data.id,
+              this.data.type,
               null,
               (response_data) => {
                 loader.endLoad()
@@ -696,8 +722,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
               if (response_data.parentID != null) {
                 const utilLoader = new Utility.Loader('body')
                 duplicateBaseItemQuery(
-                  this.props.data.id,
-                  this.props.data.type,
+                  this.data.id,
+                  this.data.type,
                   response_data.parentID,
                   (response_data) => {
                     utilLoader.endLoad()
@@ -715,8 +741,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
       </div>
     ]
     if (
-      !this.props.data.is_strategy &&
-      this.props.renderer.project_permission === Constants.permission_keys.edit
+      !this.data.is_strategy &&
+      this.project_permission === Constants.permission_keys.edit
     )
       export_button.unshift(
         <div
@@ -726,9 +752,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
             const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
             duplicateBaseItemQuery(
-              this.props.data.id,
-              this.props.data.type,
-              this.props.renderer.project.id,
+              this.data.id,
+              this.data.type,
+              this.project.id,
               (response_data) => {
                 loader.endLoad()
                 window.location = COURSEFLOW_APP.config.update_path[
@@ -745,8 +771,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   ImportButton = () => {
-    if (this.props.renderer.read_only) return null
-    const disabled = !!this.props.data.importing
+    if (this.readOnly) return null
+    const disabled = !!this.data.importing
     const aClass = disabled ? ' disabled' : 'hover-shade'
 
     return (
@@ -763,8 +789,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
   }
 
   DeleteWorkflowButton = () => {
-    if (this.props.renderer.read_only) return null
-    if (!this.props.data.deleted)
+    if (this.readOnly) return null
+    if (!this.data.deleted)
       return [
         <hr />,
         <div
@@ -881,7 +907,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
           <h2>{window.gettext('Export project')}</h2>
         </DialogTitle>
         <ExportMenu
-          data={{ ...this.props.data, object_sets: this.props.object_sets }}
+          data={{ ...this.props.data, object_sets: this.object_sets }}
           actionFunction={this.closeModals}
         />
       </Dialog>
@@ -894,7 +920,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
         <>
           <ImportMenu
             data={{
-              object_id: this.props.data.id,
+              object_id: this.data.id,
               object_type: this.objectType,
               import_type: 'outcomes'
             }}
@@ -902,7 +928,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
           />
           <ImportMenu
             data={{
-              object_id: this.props.data.id,
+              object_id: this.data.id,
               object_type: this.objectType,
               import_type: 'nodes'
             }}
@@ -937,14 +963,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions<PropsType
               {this.getReturnLinks()}
               <ParentWorkflowIndicator
                 renderer={this.props.renderer}
-                workflow_id={this.props.data.id}
+                workflow_id={this.data.id}
               />
             </div>
           </div>
           <RightSideBar
             context="workflow"
             renderer={this.props.renderer}
-            data={this.props.data}
+            data={this.data}
           />
         </div>
 
