@@ -31,17 +31,12 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
     this.userId = this.props.user_id
     this.projectPaths = this.props.create_path_this_project
 
-    console.log('this.projectData')
-    console.log(this.projectData)
-
     if (
       this.projectData.object_permission &&
       this.projectData.object_permission.permission_type ===
         Constants.permission_keys['edit']
     ) {
-      console.log('readOnly')
       this.readOnly = false
-      console.log(this.readOnly)
     }
   }
 

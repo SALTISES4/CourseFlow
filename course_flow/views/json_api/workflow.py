@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -77,6 +78,7 @@ def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
             workflow.get_subclass(), request.user
         )
     except AttributeError:
+        traceback.print_exc()
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
 

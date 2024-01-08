@@ -31,31 +31,34 @@ class CompetencyMatrixView extends React.Component {
   }
 
   getNodecategory() {
-    let week_order = Utility.filterThenSortByID(
+    const week_order = Utility.filterThenSortByID(
       this.props.weekworkflows,
       this.props.weekworkflow_order
     ).map((weekworkflow) => weekworkflow.week)
-    let weeks_ordered = Utility.filterThenSortByID(this.props.weeks, week_order)
-    let nodeweek_order = [].concat(
+    const weeks_ordered = Utility.filterThenSortByID(
+      this.props.weeks,
+      week_order
+    )
+    const nodeweek_order = [].concat(
       ...weeks_ordered.map((week) => week.nodeweek_set)
     )
     let nodeweeks_ordered = Utility.filterThenSortByID(
       this.props.nodeweeks,
       nodeweek_order
     )
-    let node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
-    let nodes_ordered = Utility.filterThenSortByID(
+    const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
+    const nodes_ordered = Utility.filterThenSortByID(
       this.props.nodes,
       node_order
     ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
 
-    let nodes_allowed = nodes_ordered.map((node) => node.id)
+    const nodes_allowed = nodes_ordered.map((node) => node.id)
     nodeweeks_ordered = nodeweeks_ordered.filter(
       (nodeweek) => nodes_allowed.indexOf(nodeweek.node) >= 0
     )
-    let nodes_by_week = {}
+    const nodes_by_week = {}
     for (let i = 0; i < nodeweeks_ordered.length; i++) {
-      let nodeweek = nodeweeks_ordered[i]
+      const nodeweek = nodeweeks_ordered[i]
       Utility.pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node)
     }
     return weeks_ordered.map((week, index) => {
@@ -68,15 +71,15 @@ class CompetencyMatrixView extends React.Component {
   }
 
   getTotals() {
-    let nodes_data = this.props.nodes.filter(
+    const nodes_data = this.props.nodes.filter(
       (node) => !Utility.checkSetHidden(node, this.props.objectset)
     )
-    let linked_wf_data = nodes_data.map((node) => {
+    const linked_wf_data = nodes_data.map((node) => {
       if (node.represents_workflow)
         return { ...node, ...node.linked_workflow_data }
       return node
     })
-    let general_education = linked_wf_data.reduce(
+    const general_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
         if (currentValue && currentValue.time_general_hours)
           return previousValue + currentValue.time_general_hours
@@ -84,7 +87,7 @@ class CompetencyMatrixView extends React.Component {
       },
       0
     )
-    let specific_education = linked_wf_data.reduce(
+    const specific_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
         if (currentValue && currentValue.time_specific_hours)
           return previousValue + currentValue.time_specific_hours
@@ -92,12 +95,15 @@ class CompetencyMatrixView extends React.Component {
       },
       0
     )
-    let total_theory = linked_wf_data.reduce((previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderation_theory)
-        return previousValue + currentValue.ponderation_theory
-      return previousValue
-    }, 0)
-    let total_practical = linked_wf_data.reduce(
+    const total_theory = linked_wf_data.reduce(
+      (previousValue, currentValue) => {
+        if (currentValue && currentValue.ponderation_theory)
+          return previousValue + currentValue.ponderation_theory
+        return previousValue
+      },
+      0
+    )
+    const total_practical = linked_wf_data.reduce(
       (previousValue, currentValue) => {
         if (currentValue && currentValue.ponderation_practical)
           return previousValue + currentValue.ponderation_practical
@@ -105,7 +111,7 @@ class CompetencyMatrixView extends React.Component {
       },
       0
     )
-    let total_individual = linked_wf_data.reduce(
+    const total_individual = linked_wf_data.reduce(
       (previousValue, currentValue) => {
         if (currentValue && currentValue.ponderation_individual)
           return previousValue + currentValue.ponderation_individual
@@ -113,8 +119,8 @@ class CompetencyMatrixView extends React.Component {
       },
       0
     )
-    let total_time = total_theory + total_practical + total_individual
-    let total_required = linked_wf_data.reduce(
+    const total_time = total_theory + total_practical + total_individual
+    const total_required = linked_wf_data.reduce(
       (previousValue, currentValue) => {
         if (currentValue && currentValue.time_required)
           return previousValue + parseFloat(currentValue.time_required)
@@ -139,14 +145,14 @@ class CompetencyMatrixView extends React.Component {
    *******************************************************/
   render() {
     let nodecategory = this.getNodecategory()
-    let nodecategory_json = JSON.stringify(nodecategory)
+    const nodecategory_json = JSON.stringify(nodecategory)
     if (this.nodecategory_json == nodecategory_json)
       nodecategory = this.nodecategory
     else {
       this.nodecategory = nodecategory
       this.nodecategory_json = nodecategory_json
     }
-    let outcomes_sorted = this.getOutcomesSorted()
+    const outcomes_sorted = this.getOutcomesSorted()
 
     let has_nodes = false
     for (let i = 0; i < nodecategory.length; i++) {
@@ -180,7 +186,7 @@ class CompetencyMatrixView extends React.Component {
           ))}
         </div>
       ))
-      let blank_line = nodecategory.map((nodecategory) => (
+      const blank_line = nodecategory.map((nodecategory) => (
         <div className="table-group">
           <div className="table-cell blank-cell"></div>
           <div className="table-cell total-cell blank-cell"></div>
@@ -189,7 +195,7 @@ class CompetencyMatrixView extends React.Component {
           ))}
         </div>
       ))
-      let outcomes = outcomes_sorted.map((category) => (
+      const outcomes = outcomes_sorted.map((category) => (
         <div className="table-body">
           {this.props.object_sets.length > 0 && (
             <div className="outcome-row outcome-category">
@@ -215,10 +221,10 @@ class CompetencyMatrixView extends React.Component {
           ))}
         </div>
       ))
-      let blank_row = Array(10).fill(
+      const blank_row = Array(10).fill(
         <div className="table-cell empty-cell"></div>
       )
-      let weeks = nodecategory.map((category) => (
+      const weeks = nodecategory.map((category) => (
         <div className="matrix-time-week">
           <MatrixWeek objectID={category.id} renderer={this.props.renderer} />
           {category.nodes.map((node) => (
@@ -227,7 +233,7 @@ class CompetencyMatrixView extends React.Component {
           <div className="matrix-time-row">{blank_row}</div>
         </div>
       ))
-      let time_header = (
+      const time_header = (
         <div className="matrix-time-row">
           <div className="table-cell outcome-wrapper">
             <div className="outcome-head">
@@ -271,8 +277,8 @@ class CompetencyMatrixView extends React.Component {
           </div>
         </div>
       )
-      let totals = this.getTotals()
-      let grand_total = (
+      const totals = this.getTotals()
+      const grand_total = (
         <div className="matrix-time-row">
           <div className="total-cell grand-total-cell table-cell blank"></div>
           <div className="total-cell grand-total-cell table-cell">

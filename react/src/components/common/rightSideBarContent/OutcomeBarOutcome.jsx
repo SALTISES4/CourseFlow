@@ -46,9 +46,9 @@ export class OutcomeBarOutcomeUnconnected extends Component {
 
   makeDraggable() {
     if (this.props.renderer.read_only) return
-    let draggable_selector = 'outcome'
-    let draggable_type = 'outcome'
-    $(this.maindiv.current).draggable({
+    const draggable_selector = 'outcome'
+    const draggable_type = 'outcome'
+    $(this.maindiv?.current).draggable({
       helper: (e, item) => {
         var helper = $(document.createElement('div'))
         helper.addClass('outcome-ghost')
@@ -105,7 +105,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let children
     let dropIcon
     let droptext
@@ -130,7 +130,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext(
+        window.gettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length
@@ -217,7 +217,7 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
     return (
       <div className="outcome-outcome" id={data.id} ref={this.maindiv}>

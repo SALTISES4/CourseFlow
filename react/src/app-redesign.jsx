@@ -29,18 +29,9 @@ import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 
-// create the emotion cache
-const cache = createCache({
-  key: 'emotion',
-  nonce: document.querySelector('#script-redesign').nonce
-})
-
 // @WORKFLOW
 import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
-// @LIVE
-import LiveAssignment from '@cfModule/components/pages/Live/LiveAssignment'
-import LiveProject from '@cfModule/components/pages/Live/LiveProject'
 // @LIBRARY
 import Project from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
@@ -53,6 +44,12 @@ import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
 // see note in mouseCursorLoader.js
 const tinyLoader = new MouseCursorLoader($('body')[0])
 COURSEFLOW_APP.tinyLoader = tinyLoader
+
+// create the emotion cache
+const cache = createCache({
+  key: 'emotion',
+  nonce: document.querySelector('#script-redesign').nonce
+})
 
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
@@ -120,14 +117,6 @@ const getAppComponent = () => {
       return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
-     * LIVE
-     *******************************************************/
-    case 'assignmentDetail':
-      return <LiveAssignment {...COURSEFLOW_APP.contextData} />
-    case 'myLiveProjects':
-      return <LiveProject {...COURSEFLOW_APP.contextData} />
-
-    /*******************************************************
      * REDUX
      *******************************************************/
     case 'projectComparison':
@@ -146,7 +135,7 @@ const getAppComponent = () => {
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
       const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData)
-      workflow_renderer.connect()
+      workflow_renderer.init()
       return null
     }
     case 'my_live_projects':

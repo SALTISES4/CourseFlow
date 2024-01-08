@@ -17,9 +17,9 @@ class GridNodeUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    let renderer = this.props.renderer
-    let selection_manager = renderer.selection_manager
-    let data = this.props.data
+    const renderer = this.props.renderer
+    const selection_manager = renderer.selection_manager
+    const data = this.props.data
     let data_override
     if (data.represents_workflow)
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
@@ -35,7 +35,7 @@ class GridNodeUnconnected extends EditableComponentWithComments {
       </div>
     )
 
-    let style = {
+    const style = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {

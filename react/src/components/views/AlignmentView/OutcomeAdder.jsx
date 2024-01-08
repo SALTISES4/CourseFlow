@@ -13,9 +13,9 @@ export default class extends React.Component {
    *******************************************************/
   onChange(evt) {
     if (evt.target.value == 0) return
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     this.props.addFunction(evt.target.value, 1, (response_data) => {
-      this.props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
     $('.outcome-adder').val(0)
   }
@@ -24,13 +24,13 @@ export default class extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let options = this.props.outcome_set.map((outcome) => (
+    const options = this.props.outcome_set.map((outcome) => (
       <OutcomeAdderOption objectID={outcome} />
     ))
 
     return (
       <select className="outcome-adder" onChange={this.onChange.bind(this)}>
-        <option value={0}>{gettext('Add outcome')}</option>
+        <option value={0}>{window.gettext('Add outcome')}</option>
         {options}
       </select>
     )

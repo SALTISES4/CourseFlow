@@ -35,7 +35,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
   }
 
   addObjectSetTrigger() {
-    let props = this.props
+    const props = this.props
     $(document).off('object_set_toggled.' + this.props.data.id)
     $(document).on('object_set_toggled.' + this.props.data.id, (evt, data) => {
       props.dispatch(toggleObjectSet(data.id, data.hidden))
@@ -43,11 +43,11 @@ class WorkflowBaseUnconnected extends EditableComponent {
   }
 
   alignAllHeaders() {
-    let rank = this.props.rank + 1
+    const rank = this.props.rank + 1
     $('.comparison-view .workflow-header').css({ height: '' })
     let max_height = 0
     $('.comparison-view .workflow-header').each(function () {
-      let this_height = $(this).height()
+      const this_height = $(this).height()
       if (this_height > max_height) max_height = this_height
     })
     $('.comparison-view .workflow-header').css({ height: max_height + 'px' })
@@ -57,9 +57,9 @@ class WorkflowBaseUnconnected extends EditableComponent {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let renderer = this.props.renderer
-    let selection_manager = renderer.selection_manager
+    const data = this.props.data
+    const renderer = this.props.renderer
+    const selection_manager = renderer.selection_manager
 
     let workflow_content
     if (renderer.view_type == 'outcomeedit') {
@@ -68,12 +68,12 @@ class WorkflowBaseUnconnected extends EditableComponent {
       workflow_content = <Workflow renderer={renderer} objectID={data.id} />
     }
 
-    let style = {}
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
 
-    let workflow = this
+    const workflow = this
 
     return [
       <div className="workflow-header" style={style}>

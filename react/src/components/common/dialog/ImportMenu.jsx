@@ -43,7 +43,7 @@ class ImportMenu extends React.Component {
           <input
             type="hidden"
             name="csrfmiddlewaretoken"
-            value={root.getCsrfToken()}
+            value={window.getCsrfToken()}
           />
           <input
             type="hidden"

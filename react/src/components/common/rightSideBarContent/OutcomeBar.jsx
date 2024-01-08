@@ -10,9 +10,15 @@ import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
  */
 class OutcomeBarUnconnected extends React.Component {
   /*******************************************************
+   * .renderer.render
+   * renderer.read_only
+   *******************************************************/
+
+  /*******************************************************
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
+    // @todo, manage view change with state update
     this.props.renderer.render($('#container'), 'outcomeedit')
   }
 
@@ -20,8 +26,8 @@ class OutcomeBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    var outcomebaroutcomes = data.map((category) => [
+    const data = this.props.data
+    let outcomebaroutcomes = data.map((category) => [
       <hr />,
       <div>
         <h4>{category.objectset.title}</h4>
@@ -35,17 +41,19 @@ class OutcomeBarUnconnected extends React.Component {
       </div>
     ])
 
-    if (outcomebaroutcomes.length == 0) {
-      outcomebaroutcomes = gettext(
+    if (outcomebaroutcomes.length === 0) {
+      outcomebaroutcomes = window.gettext(
         'Add outcomes to this workflow in by clicking the button below.'
       )
     }
-    let edittext = Utility.capWords(
-      gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
+    const edittext = Utility.capWords(
+      window.gettext('Edit') +
+        ' ' +
+        window.gettext(this.props.workflow_type + ' outcomes')
     )
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{gettext('Outcomes')}</h3>
+        <h3 className="drag-and-drop">{window.gettext('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
         {!this.props.renderer.read_only && (
           <button
@@ -61,11 +69,11 @@ class OutcomeBarUnconnected extends React.Component {
     )
   }
 }
-const mapOutcomeBarStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   ),
   workflow_type: state.workflow.type
 })
-export default connect(mapOutcomeBarStateToProps, null)(OutcomeBarUnconnected)
+export default connect(mapStateToProps, null)(OutcomeBarUnconnected)

@@ -34,14 +34,14 @@ class ViewBarUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let sort_block
     if (
       this.props.renderer.view_type == 'outcometable' ||
       this.props.renderer.view_type == 'horizontaloutcometable'
     ) {
-      let table_type_value = data.table_type || 0
-      let sort_type = (
+      const table_type_value = data.table_type || 0
+      const sort_type = (
         <div className="node-bar-sort-block">
           {this.props.renderer.outcome_sort_choices.map((choice) => (
             <div>
@@ -64,7 +64,7 @@ class ViewBarUnconnected extends React.Component {
           ))}
         </div>
       )
-      let table_type = (
+      const table_type = (
         <div className="node-bar-sort-block">
           <div>
             <input
@@ -75,7 +75,7 @@ class ViewBarUnconnected extends React.Component {
               checked={table_type_value == 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_table">{gettext('Table Style')}</label>
+            <label htmlFor="table_type_table">{window.gettext('Table Style')}</label>
           </div>
           <div>
             <input
@@ -87,27 +87,27 @@ class ViewBarUnconnected extends React.Component {
               onChange={this.changeTableType.bind(this)}
             />
             <label htmlFor="table_type_matrix">
-              {gettext('Competency Matrix Style')}
+              {window.gettext('Competency Matrix Style')}
             </label>
           </div>
         </div>
       )
       sort_block = (
         <div>
-          <h4>{gettext('Sort Nodes')}:</h4>
+          <h4>{window.gettext('Sort Nodes')}:</h4>
           {sort_type}
-          <h4>{gettext('Table Type')}:</h4>
+          <h4>{window.gettext('Table Type')}:</h4>
           {table_type}
         </div>
       )
     }
 
-    let sets = (
+    const sets = (
       <div className="node-bar-sort-block">
         {this.props.object_sets
           .sort((a, b) => {
-            let x = a.term
-            let y = b.term
+            const x = a.term
+            const y = b.term
             if (x < y) return -1
             if (x > y) return 1
             return 0
@@ -129,10 +129,10 @@ class ViewBarUnconnected extends React.Component {
 
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h3>{gettext('View options')}</h3>
+        <h3>{window.gettext('View options')}</h3>
         <hr />
         {sort_block}
-        <h4>{gettext('Object Sets')}</h4>
+        <h4>{window.gettext('Object Sets')}</h4>
         {sets}
       </div>
     )

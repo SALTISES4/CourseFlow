@@ -14,19 +14,19 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
-    let weekworkflows = this.props.weekworkflows.map((weekworkflow) => {
-      let week = weekworkflow.weekworkflow.week
+    const weekworkflows = this.props.weekworkflows.map((weekworkflow) => {
+      const week = weekworkflow.weekworkflow.week
       if (
         this.props.restriction_set &&
         this.props.restriction_set.weeks &&
         this.props.restriction_set.weeks.indexOf(week) == -1
       )
         return null
-      let week_rank = weekworkflow.rank
+      const week_rank = weekworkflow.rank
 
-      let week_component = (
+      const week_component = (
         <AlignmentHorizontalReverseWeek
           week_rank={week_rank}
           objectID={week}
@@ -48,7 +48,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
 }
 
 const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
-  let weekworkflows = Utility.filterThenSortByID(
+  const weekworkflows = Utility.filterThenSortByID(
     state.weekworkflow,
     state.workflow.weekworkflow_set
   ).map((weekworkflow) => ({
@@ -57,17 +57,17 @@ const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
   }))
 
   if (own_props.sort == 'outcome') {
-    let base_outcome = own_props.data
-    let allowed_outcome_ids = [base_outcome.id]
+    const base_outcome = own_props.data
+    const allowed_outcome_ids = [base_outcome.id]
     getDescendantOutcomes(state, base_outcome, allowed_outcome_ids)
-    let allowed_outcomes = state.outcome.filter((outcome) =>
+    const allowed_outcomes = state.outcome.filter((outcome) =>
       allowed_outcome_ids.includes(outcome.id)
     )
 
-    let allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink
+    const allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink
       .filter((hl) => allowed_outcome_ids.indexOf(hl.parent_outcome) >= 0)
       .map((hl) => hl.outcome)
-    let allowed_child_outcome_ids = state.outcome
+    const allowed_child_outcome_ids = state.outcome
       .filter(
         (outcome) =>
           allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id) >= 0
@@ -75,20 +75,20 @@ const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 
-    let allowed_node_ids_from_outcomes = state.outcomenode
+    const allowed_node_ids_from_outcomes = state.outcomenode
       .filter((outcomenode) =>
         allowed_outcome_ids.includes(outcomenode.outcome)
       )
       .map((outcomenode) => outcomenode.node)
-    let allowed_node_ids = state.node
+    const allowed_node_ids = state.node
       .filter((node) => allowed_node_ids_from_outcomes.indexOf(node.id) >= 0)
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
-    let nodeweeks = state.nodeweek.filter((nodeweek) =>
+    const nodeweeks = state.nodeweek.filter((nodeweek) =>
       allowed_node_ids.includes(nodeweek.node)
     )
-    let allowed_week_ids = nodeweeks.map((nodeweek) => nodeweek.week)
+    const allowed_week_ids = nodeweeks.map((nodeweek) => nodeweek.week)
 
     return {
       weekworkflows: weekworkflows,
@@ -100,13 +100,13 @@ const mapAlignmentHorizontalReverseStateToProps = (state, own_props) => {
       }
     }
   } else if (own_props.sort == 'week') {
-    let allowed_outcome_ids = []
+    const allowed_outcome_ids = []
 
-    let allowed_node_ids = state.node
+    const allowed_node_ids = state.node
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
-    let allowed_child_outcome_ids = state.outcome
+    const allowed_child_outcome_ids = state.outcome
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 

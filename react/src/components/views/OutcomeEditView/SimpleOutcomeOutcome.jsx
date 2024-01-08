@@ -17,7 +17,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component {
    * FUNCTIONS
    *******************************************************/
   getChildType() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <SimpleOutcome
         objectID={data.child}
@@ -34,7 +34,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
     return (
       <div className="outcome-outcome" id={data.id} ref={this.maindiv}>

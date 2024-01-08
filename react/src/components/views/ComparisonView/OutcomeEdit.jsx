@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { insertedAt, insertedAtInstant } from '@XMLHTTP/PostFunctions'
+import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 
 /**
  * The outcome edit view for the comparison
@@ -26,14 +27,14 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
       false,
       '#workflow-' + this.props.workflow.id
     )
-    if (this.props.data.depth == 0) this.makeDroppable()
+    if (this.props.data.depth === 0) this.makeDroppable()
   }
 
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
-      type == 'outcomeworkflow' &&
+      type === 'outcomeworkflow' &&
       confirm(
-        gettext(
+        window.gettext(
           "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
         )
       )
@@ -48,7 +49,6 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
         'outcomeworkflow'
       )
       insertedAtInstant(
-        this.props.renderer,
         child_id,
         'outcome',
         this.props.workflow.id,

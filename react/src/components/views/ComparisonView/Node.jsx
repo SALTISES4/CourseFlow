@@ -20,7 +20,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let data_override
 
     if (data.represents_workflow) {
@@ -33,8 +33,8 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       data_override = { ...data }
     }
 
-    let renderer = this.props.renderer
-    let selection_manager = renderer.selection_manager
+    const renderer = this.props.renderer
+    const selection_manager = renderer.selection_manager
 
     let outcomenodes
     if (this.state.show_outcomes)
@@ -55,7 +55,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
           ))}
         </div>
       )
-    let side_actions = []
+    const side_actions = []
     if (data.outcomenode_unique_set.length > 0) {
       side_actions.push(
         <div className="outcome-node-indicator">
@@ -106,9 +106,9 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
           }
         />
       )
-    let titleText = <NodeTitle data={data} />
+    const titleText = <NodeTitle data={data} />
 
-    let style = {
+    const style = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
@@ -120,7 +120,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    let mouseover_actions = []
+    const mouseover_actions = []
     if (!this.props.renderer.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))

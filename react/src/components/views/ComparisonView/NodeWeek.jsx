@@ -13,7 +13,7 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
    * FUNCTIONS
    *******************************************************/
   getNode() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <Node
         objectID={data.node}

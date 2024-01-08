@@ -18,16 +18,16 @@ class GridView extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.workflow
+    const data = this.props.workflow
 
-    let weeks = this.props.weeks.map((week, i) => (
+    const weeks = this.props.weeks.map((week, i) => (
       <GridWeek renderer={this.props.renderer} data={week.data} rank={i} />
     ))
 
     return (
       <div className="workflow-details">
         <div className="grid-ponderation">
-          {gettext('Times in hours shown in format') +
+          {window.gettext('Times in hours shown in format') +
             ': ' +
             gettext('Theory') +
             '/' +
@@ -41,7 +41,7 @@ class GridView extends React.Component {
   }
 }
 const mapStateToProps = (state, own_props) => {
-  let weeks = state.workflow.weekworkflow_set
+  const weeks = state.workflow.weekworkflow_set
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)
     .map((week) => getWeekByID(state, week))
   return { workflow: state.workflow, weeks: weeks }

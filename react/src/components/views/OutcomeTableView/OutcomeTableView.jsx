@@ -29,33 +29,36 @@ class OutcomeTableView extends React.Component {
   }
 
   getNodecategory() {
-    let week_order = Utility.filterThenSortByID(
+    const week_order = Utility.filterThenSortByID(
       this.props.weekworkflows,
       this.props.weekworkflow_order
     ).map((weekworkflow) => weekworkflow.week)
-    let weeks_ordered = Utility.filterThenSortByID(this.props.weeks, week_order)
-    let nodeweek_order = [].concat(
+    const weeks_ordered = Utility.filterThenSortByID(
+      this.props.weeks,
+      week_order
+    )
+    const nodeweek_order = [].concat(
       ...weeks_ordered.map((week) => week.nodeweek_set)
     )
     let nodeweeks_ordered = Utility.filterThenSortByID(
       this.props.nodeweeks,
       nodeweek_order
     )
-    let node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
-    let nodes_ordered = Utility.filterThenSortByID(
+    const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
+    const nodes_ordered = Utility.filterThenSortByID(
       this.props.nodes,
       node_order
     ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
 
     switch (parseInt(this.props.outcomes_sort)) {
       case 0:
-        let nodes_allowed = nodes_ordered.map((node) => node.id)
+        const nodes_allowed = nodes_ordered.map((node) => node.id)
         nodeweeks_ordered = nodeweeks_ordered.filter(
           (nodeweek) => nodes_allowed.indexOf(nodeweek.node) >= 0
         )
-        let nodes_by_week = {}
+        const nodes_by_week = {}
         for (let i = 0; i < nodeweeks_ordered.length; i++) {
-          let nodeweek = nodeweeks_ordered[i]
+          const nodeweek = nodeweeks_ordered[i]
           Utility.pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node)
         }
         return weeks_ordered.map((week, index) => {
@@ -65,17 +68,17 @@ class OutcomeTableView extends React.Component {
           }
         })
       case 1:
-        let column_order = Utility.filterThenSortByID(
+        const column_order = Utility.filterThenSortByID(
           this.props.columnworkflows,
           this.props.columnworkflow_order
         ).map((columnworkflow) => columnworkflow.column)
-        let columns_ordered = Utility.filterThenSortByID(
+        const columns_ordered = Utility.filterThenSortByID(
           this.props.columns,
           column_order
         )
-        let nodes_by_column = {}
+        const nodes_by_column = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
-          let node = nodes_ordered[i]
+          const node = nodes_ordered[i]
           Utility.pushOrCreate(nodes_by_column, node.column, node.id)
         }
         return columns_ordered.map((column, index) => {
@@ -88,14 +91,14 @@ class OutcomeTableView extends React.Component {
         var workflow_type = ['activity', 'course', 'program'].indexOf(
           this.props.workflow_type
         )
-        let task_ordered = this.props.renderer.task_choices.filter(
+        const task_ordered = this.props.renderer.task_choices.filter(
           (x) =>
             x.type == 0 ||
             (x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1))
         )
-        let nodes_by_task = {}
+        const nodes_by_task = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
-          let node = nodes_ordered[i]
+          const node = nodes_ordered[i]
           Utility.pushOrCreate(nodes_by_task, node.task_classification, node.id)
         }
         return task_ordered.map((task) => {
@@ -105,14 +108,14 @@ class OutcomeTableView extends React.Component {
         var workflow_type = ['activity', 'course', 'program'].indexOf(
           this.props.workflow_type
         )
-        let context_ordered = this.props.renderer.context_choices.filter(
+        const context_ordered = this.props.renderer.context_choices.filter(
           (x) =>
             x.type == 0 ||
             (x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1))
         )
-        let nodes_by_context = {}
+        const nodes_by_context = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
-          let node = nodes_ordered[i]
+          const node = nodes_ordered[i]
           Utility.pushOrCreate(
             nodes_by_context,
             node.context_classification,
@@ -133,14 +136,14 @@ class OutcomeTableView extends React.Component {
    *******************************************************/
   render() {
     let nodecategory = this.getNodecategory()
-    let nodecategory_json = JSON.stringify(nodecategory)
+    const nodecategory_json = JSON.stringify(nodecategory)
     if (this.nodecategory_json === nodecategory_json)
       nodecategory = this.nodecategory
     else {
       this.nodecategory = nodecategory
       this.nodecategory_json = nodecategory_json
     }
-    let outcomes_sorted = this.getOutcomesSorted()
+    const outcomes_sorted = this.getOutcomesSorted()
 
     let has_nodes = false
     for (let i = 0; i < nodecategory.length; i++) {
@@ -172,7 +175,7 @@ class OutcomeTableView extends React.Component {
           ))}
         </div>
       ))
-      let outcomes = outcomes_sorted.map((category) => (
+      const outcomes = outcomes_sorted.map((category) => (
         <div>
           {this.props.object_sets.length > 0 && (
             <div className="outcome-row outcome-category">

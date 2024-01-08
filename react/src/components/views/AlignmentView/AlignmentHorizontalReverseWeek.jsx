@@ -19,11 +19,12 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
-    let default_text = data.week_type_display + ' ' + (this.props.week_rank + 1)
+    const default_text =
+      data.week_type_display + ' ' + (this.props.week_rank + 1)
 
-    let nodeweeks = this.props.nodeweeks.map((nodeweek) => {
+    const nodeweeks = this.props.nodeweeks.map((nodeweek) => {
       if (
         this.props.restriction_set &&
         this.props.restriction_set.nodes &&
@@ -66,8 +67,8 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
 const mapAlignmentHorizontalReverseWeekStateToProps = (state, own_props) => {
   for (var i = 0; i < state.week.length; i++) {
     if (state.week[i].id == own_props.objectID) {
-      let week = state.week[i]
-      let nodeweeks = Utility.filterThenSortByID(
+      const week = state.week[i]
+      const nodeweeks = Utility.filterThenSortByID(
         state.nodeweek,
         week.nodeweek_set
       )

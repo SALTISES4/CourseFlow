@@ -1,10 +1,10 @@
 import * as React from 'react'
-import NodeBar from './NodeBar'
 import ViewBar from './ViewBar'
 import RestoreBar from './RestoreBar'
 import OutcomeBar from './OutcomeBar'
 import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
+import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,
@@ -12,6 +12,14 @@ import ComparisonViewBar from './ComparisonViewBar'
  */
 
 class RightSideBar extends React.Component {
+  /*******************************************************
+   * props
+   *  renderer.view_type
+   *  is_strategy
+   *  read_only
+   *
+   *******************************************************/
+
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -28,8 +36,8 @@ class RightSideBar extends React.Component {
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
-        if (ui.oldTab.length == 0) $('#sidebar').removeClass('collapsed')
-        else if (ui.newTab.length == 0) $('#sidebar').addClass('collapsed')
+        if (ui.oldTab.length === 0) $('#sidebar').removeClass('collapsed')
+        else if (ui.newTab.length === 0) $('#sidebar').addClass('collapsed')
       }
     })
 
@@ -43,28 +51,35 @@ class RightSideBar extends React.Component {
   }
 
   getNodeBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow')
       return (
         <NodeBar
-          view_type={this.props.renderer.view_type}
-          renderer={this.props.renderer}
+          // view_type={this.props.renderer.view_type}
+          // renderer={this.props.renderer}
+          readOnly={this.props.read_only}
+          columnChoices={this.props.renderer.column_choices}
         />
       )
     return null
   }
 
   getOutcomeBar() {
-    if (this.props.context == 'comparison') return null
-    let renderer = this.props.renderer
-    if (renderer.view_type == 'outcomeedit')
+    const renderer = this.props.renderer
+
+    if (this.props.context === 'comparison') {
+      return null
+    }
+    if (renderer.view_type === 'outcomeedit') {
       return <ParentOutcomeBar renderer={renderer} />
-    else return <OutcomeBar renderer={renderer} />
+    }
+    return <OutcomeBar renderer={renderer} />
   }
 
   getViewBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow') {
       return <ViewBar data={this.props.data} renderer={this.props.renderer} />
-    else if (this.props.context == 'comparison')
+    }
+    if (this.props.context === 'comparison') {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
@@ -72,10 +87,12 @@ class RightSideBar extends React.Component {
           renderer={this.props.renderer}
         />
       )
+    }
+    return null
   }
 
   getRestoreBar() {
-    if (this.props.context == 'workflow')
+    if (this.props.context === 'workflow')
       return <RestoreBar renderer={this.props.renderer} />
     return null
   }
@@ -84,7 +101,7 @@ class RightSideBar extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let renderer = this.props.renderer
+    const renderer = this.props.renderer
     return (
       <div id="sidebar" className="side-bar hide-print">
         <ul>
@@ -92,7 +109,7 @@ class RightSideBar extends React.Component {
             <a href="#edit-menu">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Edit')}
+                title={window.gettext('Edit')}
               >
                 edit
               </span>
@@ -102,7 +119,7 @@ class RightSideBar extends React.Component {
             <a href="#node-bar">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Add')}
+                title={window.gettext('Add')}
               >
                 add_circle
               </span>
@@ -115,7 +132,7 @@ class RightSideBar extends React.Component {
                 <a href="#outcome-bar">
                   <span
                     className="material-symbols-rounded filled"
-                    title={gettext('Outcomes')}
+                    title={window.gettext('Outcomes')}
                   >
                     spoke
                   </span>
@@ -125,7 +142,7 @@ class RightSideBar extends React.Component {
                 <a href="#view-bar">
                   <span
                     className="material-symbols-rounded filled"
-                    title={gettext('View Options')}
+                    title={window.gettext('View Options')}
                   >
                     remove_red_eye
                   </span>
@@ -138,14 +155,14 @@ class RightSideBar extends React.Component {
             <a href="#restore-bar">
               <span
                 className="material-symbols-rounded filled"
-                title={gettext('Restore Deleted')}
+                title={window.gettext('Restore Deleted')}
               >
                 restore_from_trash
               </span>
             </a>
           </li>
         </ul>
-        <div id="edit-menu" className="right-panel-container"></div>
+        <div id="edit-menu" className="right-panel-container" />
         <div id="node-bar" className="right-panel-container">
           {this.getNodeBar()}
         </div>

@@ -101,8 +101,8 @@
       course: "{% url 'course_flow:workflow-update' pk='0'%}",
       program: "{% url 'course_flow:workflow-update' pk='0'%}",
       workflow: "{% url 'course_flow:workflow-update' pk='0'%}",
-      liveproject: "{% url 'course_flow:live-project-update' pk='0'%}",
-      liveassignment: "{% url 'course_flow:assignment-update' pk='0'%}"
+      {#liveproject: "{% url 'course_flow:live-project-update' pk='0'%}",#}
+      {#liveassignment: "{% url 'course_flow:assignment-update' pk='0'%}"#}
     },
     public_update_path: {
       activity: "{% url 'course_flow:workflow-public' pk='0'%}",
@@ -114,9 +114,9 @@
     explore_path: "{% url 'course_flow:explore' %}",
     my_library_path: "{% url 'course_flow:my-library' %}",
     my_favourites_path: "{% url 'course_flow:my-favourites' %}",
-    my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",
-    registration_path:
-      "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
+    {#my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",#}
+    {#registration_path:#}
+    {#  "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",#}
     logout_path: "{% url 'course_flow:logout' %}",
     icon_path: "{% static 'course_flow/img/images_svg/' %}",
 

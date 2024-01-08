@@ -8,6 +8,16 @@ declare global {
     fail_function: (action?: string) => void
     getCsrfToken: () => string
   }
+  interface Document {
+    lastUpdateCall: {
+      time: number
+      id: number
+      type: string
+      field: string
+    }
+    lastUpdateCallFunction
+    lastUpdateCallTimer
+  }
 
   const $: JQuery
   const COURSEFLOW_APP: CourseflowAppGlobals

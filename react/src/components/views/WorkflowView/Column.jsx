@@ -38,18 +38,18 @@ class Column extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     var title = data.title
     if (!title) title = data.column_type_display
 
-    let style = {}
+    const style = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
     let css_class = 'column'
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    let mouseover_actions = []
+    const mouseover_actions = []
     if (!this.props.renderer.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))

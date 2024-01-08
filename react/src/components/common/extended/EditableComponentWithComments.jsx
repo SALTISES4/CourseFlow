@@ -167,11 +167,11 @@ class CommentBox extends ComponentWithToggleDrop {
     }
 
     let render_div
-    const side_actions = $(this.props.parent.maindiv.current)
+    const side_actions = $(this.props.parent?.maindiv?.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
     if (side_actions.length > 0) render_div = side_actions[0]
-    else render_div = this.props.parent.maindiv.current
+    else render_div = this.props.parent?.maindiv?.current
     let comment_indicator = null
     if (has_comments) {
       let indicator_class = 'comment-indicator hover-shade'
@@ -337,7 +337,7 @@ class EditableComponentWithComments extends EditableComponent {
   reloadComments(show_comments) {
     const props = this.props
     const data = props.data
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     getCommentsForObject(
       data.id,
       Constants.object_dictionary[this.objectType],
@@ -353,7 +353,7 @@ class EditableComponentWithComments extends EditableComponent {
           this.setState({ show_comments: true })
         }
         //this.setState({show_comments:true,comment_data:response_data.data_package});
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }

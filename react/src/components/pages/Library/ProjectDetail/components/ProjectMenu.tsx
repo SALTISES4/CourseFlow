@@ -7,12 +7,6 @@ import {
 } from '@XMLHTTP/PostFunctions'
 // @local
 import { MenuBar } from '@cfCommonComponents/components'
-import LiveProjectOverview from '@cfViews/LiveProjectView/LiveProjectOverview'
-import LiveProjectStudents from '@cfViews/LiveProjectView/LiveProjectStudents'
-import {
-  LiveProjectAssignments,
-  LiveProjectCompletionTable
-} from '@cfViews/LiveProjectView'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import {
   duplicateBaseItemQuery,
@@ -37,7 +31,7 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
  * On mount, this will fetch the workflows for the project. When they have been
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
-type StateType = {
+interface StateType {
   data?: ProjectData
   view_type?: string
   users?: UsersForObjectQueryResp
@@ -161,6 +155,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     })
   }
 
+  //@todo can this be removed now?
   makeLive() {
     if (
       window.confirm(
@@ -197,22 +192,11 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Share = () => {
-    if (!this.readOnly)
-      return (
-        <div
-          className="hover-shade"
-          id="share-button"
-          title={window.gettext('Sharing')}
-          onClick={this.openShareDialog.bind(this)}
-        >
-          <span className="material-symbols-rounded filled">person_add</span>
-        </div>
-      )
-    return null
-  }
 
-  DeleteProject = () => {
+  /*******************************************************
+   * OVERFLOW LINKS
+   *******************************************************/
+  DeleteProjectButton = () => {
     if (!this.state.data.deleted) {
       return (
         <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
@@ -276,7 +260,10 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  OverflowLinks = (data, userId) => {
+  OverflowLinks = () => {
+    const data = this.state.data
+    const userId = this.userId
+
     let liveproject
     const overflow_links = []
 
@@ -288,7 +275,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             className="hover-shade"
             href={COURSEFLOW_APP.config.update_path.liveproject.replace(
               '0',
-              data.id
+              String(data.id)
             )}
           >
             {window.gettext('View Classroom')}
@@ -318,11 +305,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     overflow_links.push(<this.CopyButton />)
     if (data.author_id === userId) {
       overflow_links.push(<hr />)
-      overflow_links.push(<this.DeleteProject />)
+      overflow_links.push(<this.DeleteProjectButton />)
     }
     return overflow_links
   }
 
+  /*******************************************************
+   * VISIBLE BUTTONS
+   *******************************************************/
   Edit = () => {
     if (!this.readOnly) {
       return (
@@ -378,6 +368,33 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
+  Share = () => {
+    if (!this.readOnly)
+      return (
+        <div
+          className="hover-shade"
+          id="share-button"
+          title={window.gettext('Sharing')}
+          onClick={this.openShareDialog.bind(this)}
+        >
+          <span className="material-symbols-rounded filled">person_add</span>
+        </div>
+      )
+    return null
+  }
+
+  VisibleButtons = () => {
+    return (
+      <>
+        <this.Edit />
+        <this.Create />
+        <this.Share />
+      </>
+    )
+  }
+  /*******************************************************
+   *
+   *******************************************************/
   Content = () => {
     const return_val = []
 
@@ -403,60 +420,16 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         </div>
       )
 
-    switch (this.state.view_type) {
-      // @todo remove view_type
-      case 'overview':
-        return_val.push(
-          <LiveProjectOverview
-            userRole={this.userRole}
-            role={this.getRole()} // @todo what is differtence between this ad userRole and why is one hardcodcded
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'students':
-        return_val.push(
-          <LiveProjectStudents
-            role={this.getRole()}
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'assignments':
-        return_val.push(
-          <LiveProjectAssignments
-            // renderer={this.renderer} @todo i don't think live projects gets kept, if so address renderer
-            role={this.getRole()}
-            objectID={this.state.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      case 'completion_table':
-        return_val.push(
-          <LiveProjectCompletionTable
-            // renderer={this.renderer} @todo i don't think live projects gets kept, if so address renderer
-            role={this.getRole()}
-            objectID={this.data.id}
-            view_type={this.state.view_type}
-          />
-        )
-        break
-      default:
-        return_val.push(
-          <WorkflowFilter
-            user_role={this.userRole}
-            read_only={this.readOnly}
-            project_data={this.state.data}
-            workflows={this.state.workflow_data}
-            updateWorkflow={this.updateWorkflow.bind(this)}
-            context="project"
-          />
-        )
-    }
-    return return_val
+    return (
+      <WorkflowFilter
+        user_role={this.userRole}
+        read_only={this.readOnly}
+        project_data={this.state.data}
+        workflows={this.state.workflow_data}
+        updateWorkflow={this.updateWorkflow.bind(this)}
+        context="project"
+      />
+    )
   }
 
   /*******************************************************
@@ -561,33 +534,31 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    * RENDER
    *******************************************************/
   render() {
-    const visible_buttons = [<this.Edit />, <this.Create />, <this.Share />]
-
     return (
-      <div className="main-block">
-        <MenuBar
-          overflow_links={
-            <this.OverflowLinks data={this.state.data} userId={this.userId} />
-          }
-          visible_buttons={visible_buttons}
-        />
-
-        <div className="project-menu">
-          <Header
-            disciplines={this.state.data.disciplines}
-            description={this.state.data.description}
-            allDisciplines={this.allDisciplines}
-            data={this.state.data} // @todo this needs to be unpacked
-            users={this.state.users}
-            openShareDialog={() => this.openShareDialog()}
-            readOnly={this.readOnly}
+      <>
+        <div className="main-block">
+          <MenuBar
+            overflowLinks={() => <this.OverflowLinks />}
+            visibleButtons={() => <this.VisibleButtons />}
           />
-          <this.Content />
+
+          <div className="project-menu">
+            <Header
+              disciplines={this.state.data.disciplines}
+              description={this.state.data.description}
+              allDisciplines={this.allDisciplines}
+              data={this.state.data} // @todo this needs to be unpacked
+              users={this.state.users}
+              openShareDialog={() => this.openShareDialog()}
+              readOnly={this.readOnly}
+            />
+            <this.Content />
+          </div>
+          <this.EditDialog />
+          <this.ShareDialog />
+          <this.ExportDialog />
         </div>
-        <this.EditDialog />
-        <this.ShareDialog />
-        <this.ExportDialog />
-      </div>
+      </>
     )
   }
 }

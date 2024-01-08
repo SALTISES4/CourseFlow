@@ -79,7 +79,7 @@ export class Index extends React.Component {
   }
 
   nodeLinkAdded(target, source_port, target_port) {
-    let props = this.props
+    const props = this.props
     if (target == this.props.nodeID) return
     newNodeLink(
       props.nodeID,

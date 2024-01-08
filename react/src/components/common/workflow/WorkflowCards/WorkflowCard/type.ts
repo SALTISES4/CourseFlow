@@ -9,6 +9,7 @@ export type WorkflowCardProps = {
   readOnly?: any
   projectData?: any
   selectAction?: any
+  context?: any
 }
 
 export type CreateDiv = {

@@ -42,7 +42,7 @@ class OutcomeBaseUnconnected extends Component {
       this.props.nodecategory
     )
     //avoid further rerenders if possible
-    let outcome_tree_json = JSON.stringify(outcome_tree)
+    const outcome_tree_json = JSON.stringify(outcome_tree)
 
     if (this.outcome_tree_json === outcome_tree_json) {
       outcome_tree = this.outcome_tree

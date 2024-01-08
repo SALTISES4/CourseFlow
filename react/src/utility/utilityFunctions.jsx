@@ -149,9 +149,9 @@ export function capFirst(str) {
 
 //Get the offset from the canvas of a specific jquery object
 export function getCanvasOffset(node_dom) {
-  let node_offset = node_dom.offset()
-  let canvasElement = document.querySelector('.workflow-canvas')
-  let canvas_offset = getElementOffset(canvasElement)
+  const node_offset = node_dom.offset()
+  const canvasElement = document.querySelector('.workflow-canvas')
+  const canvas_offset = getElementOffset(canvasElement)
 
   node_offset.left -= canvas_offset.left
   node_offset.top -= canvas_offset.top
@@ -162,9 +162,9 @@ export function getCanvasOffset(node_dom) {
 //Check if the mouse event is within a box with the given padding around the element
 export function mouseOutsidePadding(evt, elem, padding) {
   if (elem.length === 0) return true
-  let offset = elem.offset()
-  let width = elem.outerWidth()
-  let height = elem.outerHeight()
+  const offset = elem.offset()
+  const width = elem.outerWidth()
+  const height = elem.outerHeight()
   return (
     evt.pageX < offset.left - padding ||
     evt.pageY < offset.top - padding ||
@@ -190,9 +190,9 @@ export function triggerHandlerEach(trigger, eventname) {
 }
 
 function getElementOffset(element) {
-  let rect = element.getBoundingClientRect()
-  let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-  let scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const rect = element.getBoundingClientRect()
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
   return {
     top: rect.top + scrollTop,
@@ -256,13 +256,13 @@ export function createOutcomeBranch(state, outcome_id) {
  * @returns {*[]}
  */
 export function createOutcomeTree(state) {
-  let outcomes_tree = []
-  let sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
+  const outcomes_tree = []
+  const sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   )
   for (let i = 0; i < sorted_outcomes.length; i++) {
-    let outcomes_tree_category = []
+    const outcomes_tree_category = []
     for (let j = 0; j < sorted_outcomes[i].outcomes.length; j++)
       outcomes_tree_category.push(
         createOutcomeBranch(state, sorted_outcomes[i].outcomes[j].id)
@@ -312,14 +312,14 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
         )
 
-      let outcomenodes = []
+      const outcomenodes = []
 
       for (var ii = 0; ii < nodecategory.length; ii++) {
-        let category = nodecategory[ii]
-        let outcomenodes_group = []
+        const category = nodecategory[ii]
+        const outcomenodes_group = []
         for (var j = 0; j < category.nodes.length; j++) {
-          let node = category.nodes[j]
-          let outcomenode = getTableOutcomeNodeByID(
+          const node = category.nodes[j]
+          const outcomenode = getTableOutcomeNodeByID(
             props.outcomenode,
             node,
             outcome_id
@@ -394,7 +394,7 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
  * @returns {JSX.Element|*[]}
  */
 export function getCompletionImg(completion_status, outcomes_type) {
-  let contents = []
+  const contents = []
 
   if (outcomes_type === 0 || completion_status & 1) {
     return (
@@ -405,19 +405,19 @@ export function getCompletionImg(completion_status, outcomes_type) {
     )
   }
   if (completion_status & 2) {
-    let divclass = ''
+    const divclass = ''
     contents.push(
       <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
     )
   }
   if (completion_status & 4) {
-    let divclass = ''
+    const divclass = ''
     contents.push(
       <div className={'outcome-developed outcome-degree' + divclass}>D</div>
     )
   }
   if (completion_status & 8) {
-    let divclass = ''
+    const divclass = ''
     contents.push(
       <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
     )

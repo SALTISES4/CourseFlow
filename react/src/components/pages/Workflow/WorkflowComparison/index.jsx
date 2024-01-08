@@ -31,7 +31,7 @@ export class WorkflowComparison extends Workflow {
 
   render(view_type = 'workflowview') {
     this.view_type = view_type
-    let store = this.store
+    const store = this.store
     this.locks = {}
     const el = document.querySelector(this.container)
 
@@ -59,7 +59,7 @@ export class WorkflowComparison extends Workflow {
   }
 
   connection_opened(reconnect = false) {
-    let loader = new Utility.Loader(this.container)
+    const loader = new Utility.Loader(this.container)
     this.getWorkflowData(this.workflowID, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {

@@ -16,31 +16,33 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let parent_outcomes = this.props.horizontal_links.map((horizontal_link) => {
-      for (var i = 0; i < this.props.outcomenodes.length; i++) {
-        if (
-          this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome
-        ) {
+    const data = this.props.data
+    const parent_outcomes = this.props.horizontal_links.map(
+      (horizontal_link) => {
+        for (var i = 0; i < this.props.outcomenodes.length; i++) {
           if (
-            this.props.restriction_set &&
-            this.props.restriction_set.parent_outcomes &&
-            this.props.restriction_set.parent_outcomes.indexOf(
-              this.props.outcomenodes[i].outcome
-            ) == -1
-          )
-            return null
-          return (
-            <AlignmentHorizontalReverseParentOutcome
-              child_outcome={this.props.objectID}
-              outcomenode={this.props.outcomenodes[i]}
-              renderer={this.props.renderer}
-            />
-          )
+            this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome
+          ) {
+            if (
+              this.props.restriction_set &&
+              this.props.restriction_set.parent_outcomes &&
+              this.props.restriction_set.parent_outcomes.indexOf(
+                this.props.outcomenodes[i].outcome
+              ) == -1
+            )
+              return null
+            return (
+              <AlignmentHorizontalReverseParentOutcome
+                child_outcome={this.props.objectID}
+                outcomenode={this.props.outcomenodes[i]}
+                renderer={this.props.renderer}
+              />
+            )
+          }
         }
+        return null
       }
-      return null
-    })
+    )
 
     let outcome_restriction = this.props.outcomenodes
       .filter(
@@ -97,17 +99,17 @@ const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
 ) => {
   for (var i = 0; i < state.outcome.length; i++) {
     if (state.outcome[i].id == own_props.objectID) {
-      let outcome = state.outcome[i]
-      let allowed_outcomenodes = Utility.filterThenSortByID(
+      const outcome = state.outcome[i]
+      const allowed_outcomenodes = Utility.filterThenSortByID(
         state.outcomenode,
         own_props.node_data.outcomenode_set
       )
 
-      let allowed_horizontal_links = Utility.filterThenSortByID(
+      const allowed_horizontal_links = Utility.filterThenSortByID(
         state.outcomehorizontallink,
         outcome.outcome_horizontal_links_unique
       )
-      let horizontal_link_outcomes = Utility.filterThenSortByID(
+      const horizontal_link_outcomes = Utility.filterThenSortByID(
         state.outcomehorizontallink,
         outcome.outcome_horizontal_links
       ).map((hl) => hl.parent_outcome)
