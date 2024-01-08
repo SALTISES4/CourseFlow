@@ -2,7 +2,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getWeekByID } from '@cfFindState'
-import { moveNodeWeek } from '@cfReducers'
 import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 // @components
 import NodeWeek from './NodeWeek'
@@ -41,7 +40,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
       this.props.renderer,

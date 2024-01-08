@@ -40,7 +40,7 @@ export class WorkflowComparison extends Workflow {
     if (view_type === 'outcomeedit') {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(Reducers.refreshStoreData(response.data_package))
+        store.dispatch(ActionCreator.refreshStoreData(response.data_package))
         reactDom.render(
           <Provider store={store}>
             <WorkflowComparisonBaseView view_type={view_type} renderer={this} />

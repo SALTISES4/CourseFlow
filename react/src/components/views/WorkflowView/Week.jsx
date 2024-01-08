@@ -4,7 +4,6 @@ import * as Utility from '@cfUtility'
 import { getWeekByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { addStrategy } from '@XMLHTTP/PostFunctions'
-import { columnChangeNode, moveNodeWeek } from '@cfReducers'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
 import NodeWeek from './NodeWeek'
@@ -97,7 +96,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       lastCall: Date.now()
     }
     this.lockChild(id, true, 'nodeweek')
-    this.props.renderer.micro_update(columnChangeNode(id, new_column))
+    this.props.renderer.micro_update(ActionCreator.columnChangeNode(id, new_column))
     columnChanged(this.props.renderer, id, new_column)
   }
 
@@ -113,7 +112,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
     }
 
     this.props.renderer.micro_update(
-      moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
       this.props.renderer,

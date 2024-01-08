@@ -2,7 +2,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponent } from '@cfParentComponents'
 
-import { toggleObjectSet } from '@cfReducers'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
@@ -38,7 +37,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
     const props = this.props
     $(document).off('object_set_toggled.' + this.props.data.id)
     $(document).on('object_set_toggled.' + this.props.data.id, (evt, data) => {
-      props.dispatch(toggleObjectSet(data.id, data.hidden))
+      props.dispatch(ActionCreator.toggleObjectSet(data.id, data.hidden))
     })
   }
 

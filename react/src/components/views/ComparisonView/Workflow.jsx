@@ -4,7 +4,6 @@ import { EditableComponentWithSorting } from '@cfParentComponents'
 import * as Utility from '@cfUtility'
 
 import WeekWorkflow from './WeekWorkflow'
-import { moveWeekWorkflow } from '@cfReducers'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 
 //Basic component representing the workflow
@@ -50,7 +49,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === 'weekworkflow') {
       this.props.renderer.micro_update(
-        moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,

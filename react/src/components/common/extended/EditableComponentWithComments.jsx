@@ -8,7 +8,6 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { reloadCommentsAction } from '@cfReducers'
 // @components
 import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 import ActionButton from '@cfUIComponents/ActionButton'
@@ -343,7 +342,7 @@ class EditableComponentWithComments extends EditableComponent {
       Constants.object_dictionary[this.objectType],
       (response_data) => {
         this.props.dispatch(
-          reloadCommentsAction(
+          ActionCreator.reloadCommentsAction(
             this.props.data.id,
             Constants.object_dictionary[this.objectType],
             response_data.data_package

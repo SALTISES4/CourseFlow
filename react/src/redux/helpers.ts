@@ -1,6 +1,5 @@
 // @ts-nocheck
 import * as Constants from '../constants'
-import { changeField } from '@cfReducers'
 
 /**
  * Manages the current selection, ensuring we only have one at a time
@@ -168,5 +167,7 @@ export function toggleDropReduxAction(
       window.localStorage.clear()
     }
   }
-  dispatch(changeField(objectID, objectType, { is_dropped: is_dropped }))
+  dispatch(
+    ActionCreator.changeField(objectID, objectType, { is_dropped: is_dropped })
+  )
 }

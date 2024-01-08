@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { changeField, toggleObjectSet } from '@cfReducers'
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets
@@ -13,19 +12,19 @@ class ViewBarUnconnected extends React.Component {
    *******************************************************/
 
   toggleHidden(id, hidden) {
-    this.props.dispatch(toggleObjectSet(id, hidden))
+    this.props.dispatch(ActionCreator.toggleObjectSet(id, hidden))
   }
 
   changeSort(evt) {
     this.props.dispatch(
-      changeField(this.props.data.id, 'workflow', {
+      ActionCreator.changeField(this.props.data.id, 'workflow', {
         outcomes_sort: evt.target.value
       })
     )
   }
   changeTableType(evt) {
     this.props.dispatch(
-      changeField(this.props.data.id, 'workflow', {
+      ActionCreator.changeField(this.props.data.id, 'workflow', {
         table_type: evt.target.value
       })
     )
@@ -37,8 +36,8 @@ class ViewBarUnconnected extends React.Component {
     const data = this.props.data
     let sort_block
     if (
-      this.props.renderer.view_type == 'outcometable' ||
-      this.props.renderer.view_type == 'horizontaloutcometable'
+      this.props.renderer.view_type === 'outcometable' ||
+      this.props.renderer.view_type === 'horizontaloutcometable'
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (
@@ -47,14 +46,14 @@ class ViewBarUnconnected extends React.Component {
             <div>
               <input
                 disabled={
-                  table_type_value == 1 ||
-                  (data.type == 'program' && choice.type > 1)
+                  table_type_value === 1 ||
+                  (data.type === 'program' && choice.type > 1)
                 }
                 type="radio"
                 id={'sort_type_choice' + choice.type}
                 name={'sort_type_choice' + choice.type}
                 value={choice.type}
-                checked={data.outcomes_sort == choice.type}
+                checked={data.outcomes_sort === choice.type}
                 onChange={this.changeSort.bind(this)}
               />
               <label htmlFor={'sort_type_choice' + choice.type}>
@@ -72,10 +71,12 @@ class ViewBarUnconnected extends React.Component {
               id={'table_type_table'}
               name="table_type_table"
               value={0}
-              checked={table_type_value == 0}
+              checked={table_type_value === 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_table">{window.gettext('Table Style')}</label>
+            <label htmlFor="table_type_table">
+              {window.gettext('Table Style')}
+            </label>
           </div>
           <div>
             <input
@@ -83,7 +84,7 @@ class ViewBarUnconnected extends React.Component {
               id={'table_type_matrix'}
               name="table_type_matrix"
               value={1}
-              checked={table_type_value == 1}
+              checked={table_type_value === 1}
               onChange={this.changeTableType.bind(this)}
             />
             <label htmlFor="table_type_matrix">
@@ -138,6 +139,7 @@ class ViewBarUnconnected extends React.Component {
     )
   }
 }
+
 export default connect(
   (state) => ({
     object_sets: state.objectset
