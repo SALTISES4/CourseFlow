@@ -15,7 +15,7 @@ import {
   WorkFlowActions
 } from '@cfRedux/enumActions'
 
-function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction) {
+function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction): Workflow {
   switch (action.type) {
     /*******************************************************
      * COMMON
@@ -137,7 +137,7 @@ function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction) {
     /*******************************************************
      * WEEK WORKFLOW
      *******************************************************/
-    case WeekWorkflowActions.WEEK_WORKFLOW__MOVED_TO: {
+    case WeekWorkflowActions.MOVED_TO: {
       const new_weekworkflow_set = state.weekworkflow_set.slice()
       for (let i = 0; i < new_weekworkflow_set.length; i++) {
         if (new_weekworkflow_set[i] == action.payload.id) {
@@ -155,7 +155,7 @@ function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction) {
       }
     }
 
-    case WeekWorkflowActions.WEEK_WORKFLOW__CHANGEID: {
+    case WeekWorkflowActions.CHANGE_ID: {
       const old_index = state.weekworkflow_set.indexOf(action.payload.old_id)
       if (old_index >= 0) {
         const updatedWeekworkflowSet = state.weekworkflow_set.slice()

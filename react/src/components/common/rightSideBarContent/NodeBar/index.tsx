@@ -19,7 +19,7 @@ type ReduxProps = {
   data: AppState['workflow']
   columns: AppState['columns']
   available_strategies: AppState['strategy']
-  saltise_strategies: AppState['saltise_strategy']
+  // saltise_strategies: AppState['saltise_strategy']
 }
 
 type PropsType = OwnPropsType & ReduxProps
@@ -82,9 +82,9 @@ class NodeBarUnconnected extends React.Component<PropsType> {
     const strategies = this.props.available_strategies.map((strategy) => (
       <Strategy key={strategy.id} objectID={strategy.id} data={strategy} />
     ))
-    const saltise_strategies = this.props.saltise_strategies.map((strategy) => (
-      <Strategy key={strategy.id} objectID={strategy.id} data={strategy} />
-    ))
+    // const saltise_strategies = this.props.saltise_strategies.map((strategy) => (
+    //   <Strategy key={strategy.id} objectID={strategy.id} data={strategy} />
+    // ))
 
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
@@ -94,12 +94,12 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         <hr />
         <h4>{window.gettext('My strategies')}</h4>
         <div className="strategy-bar-strategy-block">{strategies}</div>
-        {saltise_strategies.length > 0 && [
-          <h4>{window.gettext('SALTISE strategies')}</h4>,
-          <div className="strategy-bar-strategy-block">
-            {saltise_strategies}
-          </div>
-        ]}
+        {/*{saltise_strategies.length > 0 && [*/}
+        {/*  <h4>{window.gettext('SALTISE strategies')}</h4>,*/}
+        {/*  <div className="strategy-bar-strategy-block">*/}
+        {/*    {saltise_strategies}*/}
+        {/*  </div>*/}
+        {/*]}*/}
       </div>
     )
   }
@@ -109,6 +109,6 @@ const mapNodeBarStateToProps = (state: AppState): ReduxProps => ({
   data: state.workflow,
   columns: state.column,
   available_strategies: state.strategy,
-  saltise_strategies: state.saltise_strategy
+  // saltise_strategies: state.saltise_strategy
 })
 export default connect(mapNodeBarStateToProps, null)(NodeBarUnconnected)

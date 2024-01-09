@@ -12,41 +12,41 @@ import parentWorkflowReducer from '@cfRedux/reducers/parentWorfkflow'
 import nodeweekReducer from '@cfRedux/reducers/nodeWeek'
 import columnworkflowReducer from '@cfRedux/reducers/columnworkflow'
 import strategyReducer from '@cfRedux/reducers/strategy'
-import saltiseStrategyReducer from '@cfRedux/reducers/saltiseStrategy'
 import workflowReducer from '@cfRedux/reducers/workflow'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcomeWorkflow'
 import outcomeHorizontalLinkReducer from '@cfRedux/reducers/outcomeHorizontalLink'
 import objectSetReducer from '@cfRedux/reducers/objectSet'
 import weekworkflowReducer from '@cfRedux/reducers/weekworkflow'
 import weekReducer from '@cfRedux/reducers/week'
+import { AppState, RootOutcomeStateType } from '@cfRedux/type'
 
-const getReducers = () => {
-  return {
-    workflow: workflowReducer,
-    outcomeworkflow: outcomeworkflowReducer,
-    columnworkflow: columnworkflowReducer,
-    column: columnReducer,
-    weekworkflow: weekworkflowReducer,
-    week: weekReducer,
-    nodeweek: nodeweekReducer,
-    node: nodeReducer,
-    nodelink: nodelinkReducer,
-    outcome: outcomeReducer,
-    outcomeoutcome: outcomeOutcomeReducer,
-    outcomenode: outcomeNodeReducer,
-    parent_workflow: parentWorkflowReducer,
-    parent_node: parentNodeReducer,
-    outcomehorizontallink: outcomeHorizontalLinkReducer,
-    child_workflow: childWorkflowReducer,
-    strategy: strategyReducer,
-    saltise_strategy: saltiseStrategyReducer,
-    objectset: objectSetReducer
-  }
+const rootWorkflowReducers = {
+  workflow: workflowReducer,
+  outcomeworkflow: outcomeworkflowReducer,
+  columnworkflow: columnworkflowReducer,
+  column: columnReducer,
+  weekworkflow: weekworkflowReducer,
+  week: weekReducer,
+  nodeweek: nodeweekReducer,
+  node: nodeReducer,
+  nodelink: nodelinkReducer,
+  outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
+  outcomenode: outcomeNodeReducer,
+  parent_workflow: parentWorkflowReducer,
+  parent_node: parentNodeReducer,
+  outcomehorizontallink: outcomeHorizontalLinkReducer,
+  child_workflow: childWorkflowReducer,
+  strategy: strategyReducer,
+  objectset: objectSetReducer
+  // saltise_strategy: saltiseStrategyReducer, // this was empty
 }
 
-export const rootWorkflowReducer = Redux.combineReducers(getReducers())
-
-export const rootOutcomeReducer = Redux.combineReducers({
+const rootOutcomeReducers = {
   outcome: outcomeReducer,
   outcomeoutcome: outcomeOutcomeReducer
-})
+}
+
+export const rootWorkflowReducer = Redux.combineReducers(rootWorkflowReducers)
+
+export const rootOutcomeReducer = Redux.combineReducers(rootOutcomeReducers)
