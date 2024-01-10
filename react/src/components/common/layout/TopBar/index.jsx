@@ -9,7 +9,6 @@ import Link from '@mui/material/Link'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import Menu from '@mui/material/Menu'
-import Paper from '@mui/material/Paper'
 import Popover from '@mui/material/Popover'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -22,8 +21,16 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
-import useApi from '../../../hooks/useApi'
+import useApi from '@cfModule/hooks/useApi'
 import { createNew } from '@XMLHTTP/postTemp'
+
+import ResetPasswordModal from './components/ResetPasswordModal'
+
+const TopBarWrap = styled(Box)(({ theme }) => ({
+  '& .MuiPaper-root': {
+    backgroundColor: theme.palette.common.white
+  }
+}))
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
@@ -80,6 +87,8 @@ const NotificationsList = styled(List)(({ theme }) => ({
 const TopBar = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
+
+  const [resetPassword, setResetPassword] = useState(false)
 
   const [addMenuAnchorEl, setAddMenuAnchorEl] = useState(null)
   const isAddMenuOpen = Boolean(addMenuAnchorEl)
@@ -247,7 +256,7 @@ const TopBar = () => {
       <MenuItem component="a" href={apiData.menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem component="a" href={apiData.menus.account.resetPasswordUrl}>
+      <MenuItem onClick={() => setResetPassword(true)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem
@@ -267,62 +276,70 @@ const TopBar = () => {
   )
 
   return (
-    <Box>
+    <TopBarWrap>
       <AppBar position="static">
-        <Paper>
-          <Toolbar variant="dense">
-            <Box sx={{ flexGrow: 1 }} className="title" />
-            <Box sx={{ display: 'flex' }}>
-              {apiData.is_teacher ? (
-                <IconButton
-                  size="large"
-                  aria-label="add menu"
-                  aria-controls="add-menu"
-                  aria-haspopup="true"
-                  color="primary"
-                  onClick={handleAddMenuOpen}
-                >
-                  <AddCircleIcon />
-                </IconButton>
-              ) : null}
-
+        <Toolbar variant="dense">
+          <Box sx={{ flexGrow: 1 }} className="title" />
+          <Box sx={{ display: 'flex' }}>
+            {apiData.is_teacher ? (
               <IconButton
                 size="large"
-                aria-label={
-                  apiData.notifications.unread >= 1
-                    ? `show ${apiData.notifications.unread} new notifications`
-                    : 'no new notifications'
-                }
-                aria-controls="notifications-menu"
+                aria-label="add menu"
+                aria-controls="add-menu"
                 aria-haspopup="true"
-                onClick={handleNotificationsMenuOpen}
+                color="primary"
+                onClick={handleAddMenuOpen}
               >
-                <Badge
-                  badgeContent={apiData.notifications.unread}
-                  color="primary"
-                >
-                  <NotificationsIcon />
-                </Badge>
+                <AddCircleIcon />
               </IconButton>
+            ) : null}
 
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls="account-menu"
-                aria-haspopup="true"
-                onClick={handleMenuOpen}
+            <IconButton
+              size="large"
+              aria-label={
+                apiData.notifications.unread >= 1
+                  ? `show ${apiData.notifications.unread} new notifications`
+                  : 'no new notifications'
+              }
+              aria-controls="notifications-menu"
+              aria-haspopup="true"
+              onClick={handleNotificationsMenuOpen}
+            >
+              <Badge
+                badgeContent={apiData.notifications.unread}
+                color="primary"
               >
-                <AccountCircle />
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </Paper>
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls="account-menu"
+              aria-haspopup="true"
+              onClick={handleMenuOpen}
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+        </Toolbar>
       </AppBar>
       {apiData.is_teacher && addMenu}
       {notificationsMenu}
       {accountMenu}
-    </Box>
+
+      <ResetPasswordModal
+        show={resetPassword}
+        handleClose={() => {
+          setResetPassword(false)
+        }}
+        handleContinue={() =>
+          (window.location = apiData.menus.account.resetPasswordUrl)
+        }
+      />
+    </TopBarWrap>
   )
 }
 

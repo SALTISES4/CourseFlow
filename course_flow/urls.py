@@ -403,11 +403,6 @@ def course_flow_patterns():
             name="json-api-get-sidebar",
         ),
         path(
-            "json-api-get-notifications-page/",
-            views.json_api.sharing.json_api_get_notifications_page,
-            name="json-api-get-notifications-page",
-        ),
-        path(
             "mylibrary/get-projects/",
             views.json_api.menu.json_api_get_library,
             name="json-api-get-library",

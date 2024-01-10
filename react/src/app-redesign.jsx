@@ -20,10 +20,8 @@ import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsS
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
-import Sidebar, {
-  SidebarRootStyles
-} from '@cfCommonComponents/layout/Sidebar.jsx'
-import TopBar from '@cfCommonComponents/layout/TopBar.jsx'
+import Sidebar, { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar'
+import TopBar from '@cfModule/components/common/layout/TopBar'
 
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
@@ -110,7 +108,7 @@ const getAppComponent = () => {
      * USER / PROFILE
      *******************************************************/
     case 'notifications':
-      return <NotificationsPage />
+      return <NotificationsPage {...COURSEFLOW_APP.contextData} />
     case 'notificationsSettings':
       return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':
@@ -159,15 +157,6 @@ window.addEventListener('load', () => {
     {
       component: <TopBar />,
       target: '[data-component="topbar"]'
-    },
-    {
-      component: <NotificationsPage />,
-      target: '[data-component="notifications-page"]'
-    },
-
-    {
-      component: <ProfileSettingsPage />,
-      target: '[data-component="profile-settings-page"]'
     }
   ]
   renderComponents(componentsToRender)
