@@ -45,7 +45,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
   }
 
   makeDraggable() {
-    if (this.props.renderer.read_only) return
+    if (this.props.readOnly) return
     const draggable_selector = 'outcome'
     const draggable_type = 'outcome'
     $(this.maindiv?.current).draggable({
@@ -111,13 +111,14 @@ export class OutcomeBarOutcomeUnconnected extends Component {
     let droptext
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
+
     if (this.state.is_dropped)
       children = data.child_outcome_links.map((outcomeoutcome) => (
         <OutcomeBarOutcomeOutcome
           key={outcomeoutcome}
           objectID={outcomeoutcome}
           parentID={data.id}
-          renderer={this.props.renderer}
+          readOnly={this.props.readOnly}
         />
       ))
 
@@ -207,6 +208,9 @@ export default OutcomeBarOutcome
 /**
  * Used in the outcome bar
  */
+/**
+ * @TODO THESE COMPONENTS ARE CALLING EACH OTHER.....
+ */
 class OutcomeBarOutcomeOutcomeUnconnected extends React.Component {
   constructor(props) {
     super(props)
@@ -225,7 +229,8 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component {
           objectID={data.child}
           parentID={this.props.parentID}
           throughParentID={data.id}
-          renderer={this.props.renderer}
+          //renderer={this.props.renderer}
+          readOnly={this.props.readOnly}
         />
       </div>
     )

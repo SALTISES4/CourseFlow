@@ -48198,6 +48198,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return categories;
   };
   const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
+    console.log("getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set");
+    console.log(outcomeworkflow_set);
     const outcomeworkflows = filterThenSortByID(
       state.outcomeworkflow,
       outcomeworkflow_set
@@ -48206,18 +48208,27 @@ Please use another name.` : formatMuiErrorMessage(18));
       (outcomeworkflow) => outcomeworkflow.outcome
     );
     const outcomes = filterThenSortByID(state.outcome, outcome_ids);
+    if (outcomes.length === 0) {
+      return outcomes;
+    }
     for (let i2 = 0; i2 < outcomes.length; i2++) {
       outcomes[i2].outcomeworkflow = outcomeworkflows[i2].id;
       outcomes[i2].through_no_drag = outcomeworkflows[i2].no_drag;
     }
-    if (outcomes.length === 0)
-      return outcomes;
     const base_title = capWords(window.gettext("outcomes"));
     const object_sets = state.objectset.filter(
       (objectset) => objectset.term === outcomes[0].type
     );
-    if (object_sets.length === 0)
-      return [{ objectset: { title: base_title }, outcomes }];
+    if (object_sets.length === 0) {
+      return [
+        {
+          objectset: {
+            title: base_title
+          },
+          outcomes
+        }
+      ];
+    }
     const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
     let categories = [];
     if (uncategorized.length > 0)
@@ -48236,6 +48247,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         )
       }))
     ];
+    console.log("categories");
+    console.log(categories);
     return categories;
   };
   const getDescendantOutcomes = (state, outcome, outcomes) => {
@@ -58907,14 +58920,14 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     return prefix2 + " - " + text;
   }
-  var ViewType$1 = /* @__PURE__ */ ((ViewType2) => {
+  var ViewType = /* @__PURE__ */ ((ViewType2) => {
     ViewType2["WORKFLOW"] = "workflowview";
     ViewType2["OUTCOME_EDIT"] = "outcomeedit";
     ViewType2["GRID"] = "grid";
     ViewType2["OUTCOMETABLE"] = "outcometable";
     ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
     return ViewType2;
-  })(ViewType$1 || {});
+  })(ViewType || {});
   var WFContext = /* @__PURE__ */ ((WFContext2) => {
     WFContext2["WORKFLOW"] = "workflow";
     WFContext2["COMPARISON"] = "comparison";
@@ -58923,6 +58936,7 @@ ${latestSubscriptionCallbackError.current.stack}
   var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
     WorkflowType2["ACTIVITY"] = "activity";
     WorkflowType2["PROJECT"] = "project";
+    WorkflowType2["PROGRAM"] = "program";
     WorkflowType2["LIVE_PROJECT"] = "liveproject";
     return WorkflowType2;
   })(WorkflowType || {});
@@ -62777,7 +62791,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     makeDraggable() {
       var _a;
-      if (this.props.renderer.read_only)
+      if (this.props.readOnly)
         return;
       const draggable_selector = "outcome";
       const draggable_type = "outcome";
@@ -62847,7 +62861,7 @@ ${latestSubscriptionCallbackError.current.stack}
           {
             objectID: outcomeoutcome,
             parentID: data2.id,
-            renderer: this.props.renderer
+            readOnly: this.props.readOnly
           },
           outcomeoutcome
         ));
@@ -62929,7 +62943,7 @@ ${latestSubscriptionCallbackError.current.stack}
           objectID: data2.child,
           parentID: this.props.parentID,
           throughParentID: data2.id,
-          renderer: this.props.renderer
+          readOnly: this.props.readOnly
         }
       ) });
     }
@@ -62940,47 +62954,48 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(OutcomeBarOutcomeOutcomeUnconnected);
   class OutcomeBarUnconnected extends reactExports.Component {
-    /*******************************************************
-     * .renderer.render
-     * renderer.read_only
-     *******************************************************/
+    constructor(props2) {
+      super(props2);
+      __publicField(this, "readOnly");
+      __publicField(this, "renderMethod");
+      this.readOnly = this.props.readOnly;
+      this.renderMethod = this.props.renderMethod;
+    }
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
     editOutcomesClick() {
-      this.props.renderer.render($("#container"), ViewType.OUTCOME_EDIT);
+      this.renderMethod($("#container"), ViewType.OUTCOME_EDIT);
     }
     /*******************************************************
      * RENDER
      *******************************************************/
     render() {
       const data2 = this.props.data;
-      let outcomebaroutcomes = data2.map((category) => [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
-          category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            OutcomeBarOutcome,
-            {
-              objectID: outcome.id,
-              renderer: this.props.renderer
-            },
-            outcome.id
-          ))
-        ] })
-      ]);
-      if (outcomebaroutcomes.length === 0) {
-        outcomebaroutcomes = window.gettext(
-          "Add outcomes to this workflow in by clicking the button below."
-        );
-      }
+      const outcomeBarOutcomes = data2.map((category) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
+            category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeBarOutcome,
+              {
+                objectID: outcome.id,
+                readOnly: this.props.readOnly
+              },
+              outcome.id
+            ))
+          ] })
+        ] });
+      });
+      const outcomeBlock = outcomeBarOutcomes.length ? outcomeBarOutcomes : outcomeBarOutcomes;
       const edittext = capWords(
         window.gettext("Edit") + " " + window.gettext(this.props.workflow_type + " outcomes")
       );
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomebaroutcomes }),
-        !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomeBlock }),
+        !this.readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             className: "primary-button",
@@ -63000,7 +63015,10 @@ ${latestSubscriptionCallbackError.current.stack}
     ),
     workflow_type: state.workflow.type
   });
-  const OutcomeBar = connect(mapStateToProps$7, null)(OutcomeBarUnconnected);
+  const test = connect(
+    mapStateToProps$7,
+    null
+  )(OutcomeBarUnconnected);
   class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
     /*******************************************************
      * RENDER
@@ -63509,7 +63527,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBar,
           {
-            readOnly: this.props.read_only,
+            readOnly: this.props.renderer.read_only,
             columnChoices: this.props.renderer.column_choices
           }
         );
@@ -63520,10 +63538,17 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.context === WFContext.COMPARISON) {
         return null;
       }
-      if (renderer.view_type === ViewType$1.OUTCOME_EDIT) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
+      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer, jjj: 8 });
       }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeBar, { renderer });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        test,
+        {
+          renderMethod: this.props.parentRender,
+          readOnly: true,
+          yes: true
+        }
+      );
     }
     getViewBar() {
       if (this.props.context === WFContext.WORKFLOW) {
@@ -68484,8 +68509,8 @@ ${latestSubscriptionCallbackError.current.stack}
         const nextMatchingDefs = [];
         matchingSignatures.forEach((signature) => {
           const param = getParamAtIndex(signature.params, index);
-          const test = compileTest(param);
-          if ((index < signature.params.length || hasRestParam(signature.params)) && test(args[index])) {
+          const test2 = compileTest(param);
+          if ((index < signature.params.length || hasRestParam(signature.params)) && test2(args[index])) {
             nextMatchingDefs.push(signature);
           }
         });
@@ -69056,9 +69081,9 @@ ${latestSubscriptionCallbackError.current.stack}
     function slice2(arr, start, end) {
       return Array.prototype.slice.call(arr, start, end);
     }
-    function findInArray(arr, test) {
+    function findInArray(arr, test2) {
       for (let i2 = 0; i2 < arr.length; i2++) {
-        if (test(arr[i2])) {
+        if (test2(arr[i2])) {
           return arr[i2];
         }
       }
@@ -84221,7 +84246,7 @@ ${latestSubscriptionCallbackError.current.stack}
       const renderer = this.props.renderer;
       renderer.selection_manager;
       let workflow_content;
-      if (renderer.view_type === ViewType$1.OUTCOME_EDIT) {
+      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data2.id });
       } else {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data2.id });
@@ -87364,7 +87389,7 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "Content", () => {
         const renderer = this.props.renderer;
         let workflow_content;
-        if (this.view_type == ViewType$1.OUTCOMETABLE) {
+        if (this.view_type == ViewType.OUTCOMETABLE) {
           workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
             WorkflowTableView,
             {
@@ -87374,16 +87399,16 @@ ${latestSubscriptionCallbackError.current.stack}
             }
           );
           this.allowed_tabs = [3];
-        } else if (this.view_type == ViewType$1.OUTCOME_EDIT) {
+        } else if (this.view_type == ViewType.OUTCOME_EDIT) {
           workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer });
           if (this.data.type == "program")
             this.allowed_tabs = [3];
           else
             this.allowed_tabs = [2, 3];
-        } else if (this.view_type == ViewType$1.ALIGNMENTANALYSIS) {
+        } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
           workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer, view_type: this.view_type });
           this.allowed_tabs = [3];
-        } else if (this.view_type == ViewType$1.GRID) {
+        } else if (this.view_type == ViewType.GRID) {
           workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer, view_type: this.view_type });
           this.allowed_tabs = [3];
         } else {
@@ -87396,33 +87421,33 @@ ${latestSubscriptionCallbackError.current.stack}
           return workflow_content;
         const view_buttons = [
           {
-            type: ViewType$1.WORKFLOW,
+            type: ViewType.WORKFLOW,
             name: window.gettext("Workflow View"),
             disabled: []
           },
           {
-            type: ViewType$1.OUTCOME_EDIT,
+            type: ViewType.OUTCOME_EDIT,
             name: capWords(
               window.gettext("View") + " " + window.gettext(this.data.type + " outcomes")
             ),
             disabled: []
           },
           {
-            type: ViewType$1.OUTCOMETABLE,
+            type: ViewType.OUTCOMETABLE,
             name: capWords(
               window.gettext(this.data.type + " outcome") + " " + window.gettext("Table")
             ),
             disabled: []
           },
           {
-            type: ViewType$1.ALIGNMENTANALYSIS,
+            type: ViewType.ALIGNMENTANALYSIS,
             name: capWords(
               window.gettext(this.data.type + " outcome") + " " + window.gettext("Analytics")
             ),
             disabled: ["activity"]
           },
           {
-            type: ViewType$1.GRID,
+            type: ViewType.GRID,
             name: window.gettext("Grid View"),
             disabled: ["activity", "course"]
           }
@@ -87463,7 +87488,7 @@ ${latestSubscriptionCallbackError.current.stack}
        * VIEW BAR
        *******************************************************/
       __publicField(this, "Jump", () => {
-        if (this.view_type !== ViewType$1.WORKFLOW) {
+        if (this.view_type !== ViewType.WORKFLOW) {
           return null;
         }
         const nodebarweekworkflows = this.data.weekworkflow_set.map(
@@ -88129,7 +88154,8 @@ ${latestSubscriptionCallbackError.current.stack}
             {
               context: "workflow",
               renderer: this.props.renderer,
-              data: this.props.data
+              data: this.props.data,
+              parentRender: this.renderMethod
             }
           )
         ] }),
@@ -88338,7 +88364,7 @@ ${latestSubscriptionCallbackError.current.stack}
       reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
       this.container = container2;
       this.selection_manager.renderer = this;
-      if (view_type === ViewType$1.OUTCOME_EDIT) {
+      if (view_type === ViewType.OUTCOME_EDIT) {
         this.getWorkflowParentData(this.workflowID, (response) => {
           this.store.dispatch(
             ActionCreator.refreshStoreData(response.data_package)
@@ -88359,7 +88385,14 @@ ${latestSubscriptionCallbackError.current.stack}
         setTimeout(() => {
           const theme2 = createTheme({});
           reactDomExports.render(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this, parentRender: this.workflowRender }) }) }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowBaseView,
+              {
+                view_type,
+                renderer: this,
+                parentRender: this.workflowRender
+              }
+            ) }) }) }),
             container2[0]
           );
         }, 50);
@@ -88554,13 +88587,13 @@ ${latestSubscriptionCallbackError.current.stack}
       this.view_type = view_type;
       this.initial_object_sets = initial_object_sets;
     }
-    render(view_type = ViewType$1.WORKFLOW) {
+    render(view_type = ViewType.WORKFLOW) {
       this.view_type = view_type;
       const store = this.store;
       this.locks = {};
       const el = document.querySelector(this.container);
       reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), el);
-      if (view_type === ViewType$1.OUTCOME_EDIT) {
+      if (view_type === ViewType.OUTCOME_EDIT) {
         this.getWorkflowParentData(this.workflowID, (response) => {
           store.dispatch(ActionCreator.refreshStoreData(response.data_package));
           reactDomExports.render(
@@ -88568,7 +88601,7 @@ ${latestSubscriptionCallbackError.current.stack}
             el
           );
         });
-      } else if (view_type === ViewType$1.WORKFLOW) {
+      } else if (view_type === ViewType.WORKFLOW) {
         reactDomExports.render(
           /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
           el
@@ -90024,7 +90057,10 @@ ${latestSubscriptionCallbackError.current.stack}
       super(props2);
       __publicField(this, "isTeacher");
       this.isTeacher = props2.is_teacher;
-      this.state = { projects: [], favourites: [] };
+      this.state = {
+        projects: [],
+        favourites: []
+      };
     }
     /*******************************************************
      * Lifecycle hooks
@@ -90065,7 +90101,7 @@ ${latestSubscriptionCallbackError.current.stack}
         projectPath
       );
       let favouriteBox;
-      if (this.isTeacher) {
+      if (this.isTeacher == 1.1) {
         favouriteBox = this.renderHomeItem(
           "Favourites",
           favouritesContent,
@@ -90074,7 +90110,14 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
         projectBox,
-        favouriteBox
+        favouriteBox,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          test,
+          {
+            renderMethod: favouriteBox,
+            readOnly: true
+          }
+        )
       ] });
     }
   }
@@ -90536,7 +90579,8 @@ ${latestSubscriptionCallbackError.current.stack}
           disciplines: this.disciplines,
           workflows: this.initial_workflows,
           pages: this.initial_pages,
-          context: "library"
+          context: "library",
+          sadfasdf: true
         }
       ) });
     }

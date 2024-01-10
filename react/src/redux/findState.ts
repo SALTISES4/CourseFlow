@@ -1,7 +1,7 @@
 // @ts-nocheck
 import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
-import { AppState, Columnworkflow } from '@cfRedux/type'
+import { AppState, Columnworkflow, ObjectSet, Outcome } from '@cfRedux/type'
 
 /*******************************************************
  * TYPES
@@ -386,10 +386,18 @@ export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
 }
 
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+export type SortedOutcomesFromOutcomeWorkflowSetType = {
+  objectset: ObjectSet
+  outcomes: Outcome[]
+}[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
-  outcomeworkflow_set
-) => {
+  outcomeworkflow_set: any
+): SortedOutcomesFromOutcomeWorkflowSetType => {
+  console.log('getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set')
+  console.log(outcomeworkflow_set)
+
+
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
     outcomeworkflow_set
@@ -397,18 +405,34 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
+
+  // @todo this makes no sense
   const outcomes = Utility.filterThenSortByID(state.outcome, outcome_ids)
+  if (outcomes.length === 0) {
+    return outcomes
+  }
+
   for (let i = 0; i < outcomes.length; i++) {
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
-  if (outcomes.length === 0) return outcomes
+
   const base_title = Utility.capWords(window.gettext('outcomes'))
+
   const object_sets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
-  if (object_sets.length === 0)
-    return [{ objectset: { title: base_title }, outcomes: outcomes }]
+  if (object_sets.length === 0) {
+    return [
+      {
+        objectset: {
+          title: base_title
+        },
+        outcomes: outcomes
+      }
+    ]
+  }
+
   const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0)
   let categories = []
   if (uncategorized.length > 0)
@@ -429,6 +453,8 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
         )
       }))
   ]
+  console.log('categories')
+  console.log(categories)
   return categories
 }
 

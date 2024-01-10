@@ -14,6 +14,7 @@ export enum WFContext {
 export enum WorkflowType {
   ACTIVITY = 'activity',
   PROJECT = 'project',
+  PROGRAM = 'program',
   LIVE_PROJECT = 'liveproject'
 }
 

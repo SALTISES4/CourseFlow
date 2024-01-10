@@ -7,7 +7,7 @@
     // allow 'any' types
     "strictNullChecks": false,
     // allow fuzziness in our null definitions
-    "strict": false,
+    "strict": true,
     // lol
     "skipLibCheck": true,
     // don't TS check the node modules and other defined libs

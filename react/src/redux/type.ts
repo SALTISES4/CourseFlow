@@ -1,4 +1,5 @@
 import ChildWorkflow from '@cfRedux/reducers/childWorkflow'
+import {WorkflowType} from "@cfModule/types/enum";
 
 export type AppState = {
   workflow: Workflow
@@ -16,7 +17,7 @@ export type AppState = {
   outcomehorizontallink: OutcomeHorizontalLink[]
   child_workflow: ChildWorkflow[]
   strategy: Strategy[]
-  objectset: Objectset[]
+  objectset: ObjectSet[]
   outcomeoutcome: OutcomeOutcome[]
   outcome: Outcome[]
 }
@@ -36,12 +37,12 @@ export type Outcomenode = {
 
 export type Outcome = {
   deleted: boolean
-  deleted_on: string
+  deleted_on: Date
   id: number
   title: null
   code: null
   description: null
-  child_outcome_links: any[]
+  child_outcome_links: number[]
   outcome_horizontal_links: any[]
   outcome_horizontal_links_unique: any[]
   depth: number
@@ -159,7 +160,7 @@ export type Workflow = {
   outcomeworkflow_set: any[]
   is_strategy: boolean
   published: boolean
-  type: string
+  type: WorkflowType
   DEFAULT_COLUMNS: number[]
   DEFAULT_CUSTOM_COLUMN: number
   time_required: null
@@ -181,7 +182,9 @@ export type Workflow = {
  *******************************************************/
 export type Nodelink = any
 
-export type Objectset = any
+export type ObjectSet = {
+  title: string
+}
 
 export type OutcomeOutcome = any
 export type ParentWorkflow = any

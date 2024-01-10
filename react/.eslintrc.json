@@ -13,6 +13,7 @@
     "amd": true,
     "node": true
   },
+   "parser": "@typescript-eslint/parser",
   "settings": {
     "react": {
       "version": "detect"
@@ -32,27 +33,40 @@
     }
   },
   "extends": [
-    "plugin:@typescript-eslint/recommended",
+    "eslint:recommended",
+    // "react-app", // tied to eslint-con fig-react-app
     "plugin:react/recommended",
-    "plugin:prettier/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended"
+    // "plugin:@typescript-eslint/recommended",
+    // "plugin:react/recommended",
+    // "plugin:prettier/recommended"
   ],
   "plugins": [
     "react",
-    "prettier"
+    "prettier",
+    "@typescript-eslint",
+     "react-hooks"
   ],
   "rules": {
     "no-var": "warn",
-    "react/jsx-key": "off",
+    "no-undef": "warn",
+    "no-prototype-builtins": "warn",
+    "no-useless-escape": "warn",
+    "no-redeclare": "warn",
+    "no-empty": "warn",
+    "react/jsx-key": "warn",
     "react/display-name": "off",
-    "react/no-unknown-property": "off",
-    "react/jsx-no-undef": "off",
+    "react/no-unknown-property": "warn",
+    "react/jsx-no-undef": "warn",
     "react/prop-types": "off",
+    "no-case-declarations": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-ts-comment" : "off",
+    "@typescript-eslint/ban-ts-comment" : "warn",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-this-alias": "off",
     "prefer-const": "warn",
-    "react/jsx-filename-extension": [
+    "react/jsx-filename-extension":  [
       1,
       {
         "extensions": [

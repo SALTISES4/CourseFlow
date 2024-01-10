@@ -215,18 +215,18 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   // @todo what are all the view types?
-  changeView(type) {
+  changeView(type: ViewType) {
     // this.props.renderer.render(this.container, type)
     this.renderMethod(this.container, type)
   }
 
-  expandAll(type) {
+  expandAll(type: ViewType) {
     this.props[type].forEach((week) =>
       toggleDropReduxAction(week.id, type, true, this.props.dispatch)
     )
   }
 
-  collapseAll(type) {
+  collapseAll(type: ViewType) {
     this.props[type].forEach((week) =>
       toggleDropReduxAction(week.id, type, false, this.props.dispatch)
     )
@@ -981,6 +981,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
             context="workflow"
             renderer={this.props.renderer}
             data={this.props.data}
+            parentRender={this.renderMethod}
           />
         </div>
 

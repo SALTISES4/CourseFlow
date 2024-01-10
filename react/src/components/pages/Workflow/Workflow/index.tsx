@@ -33,7 +33,7 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
 import ActionCreator from '@cfRedux/ActionCreator'
-import {ViewType} from "@cfModule/types/enum";
+import { ViewType } from '@cfModule/types/enum'
 const cache = createCache({
   key: 'emotion',
   // @ts-ignore
@@ -324,7 +324,11 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkflowBaseView view_type={view_type} renderer={this} parentRender={this.workflowRender}/>
+                <WorkflowBaseView
+                  view_type={view_type}
+                  renderer={this}
+                  parentRender={this.workflowRender}
+                />
               </Provider>
             </ThemeProvider>
           </CacheProvider>,
