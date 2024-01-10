@@ -1,0 +1,56 @@
+<script nonce="{{ request.csp_nonce }}">
+  COURSEFLOW_APP.path_id = "{{ path_id }}";
+  const DTOContextData = {{ contextData | safe }};
+
+  switch (COURSEFLOW_APP.path_id) {
+
+    case 'explore':
+    case 'home':
+    case 'favorites':
+    case 'library':
+    case 'notifications':
+    case 'notificationsSettings':
+    case 'profileSettings':
+    case 'projectDetail': {
+       let create_path_this_project = {}
+      {% if object %}
+        create_path_this_project = {
+          activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
+          course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
+          program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
+        }
+      {% endif %}
+      COURSEFLOW_APP.contextData =  {
+        ...DTOContextData,
+        create_path_this_project
+      }
+      break;
+    }
+
+    /*******************************************************
+     * REDUX STUFF
+     *******************************************************/
+    case 'projectComparison': {
+      //  @todo these don't seem to be used
+      {% if object %}
+        // window.workflow_paths = {
+        //  activity: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //  course: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //  program: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        //   workflow: '{% url "course_flow:workflow-update" pk=object.pk %}',
+        // }
+      {% endif %}
+      COURSEFLOW_APP.contextData = DTOContextData
+      break;
+    }
+    case "workflowDetailView": {
+      COURSEFLOW_APP.contextData = {
+        ...DTOContextData,
+        myColour:
+          'hsl(' + (((DTOContextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
+      break;
+    }
+  }
+</script>

@@ -1,0 +1,10 @@
+{% extends "course_flow/base.html" %}
+
+{% load static i18n %}
+
+{% block title %}{% trans title %} - CourseFlow{% endblock %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/react_renderer.html' %}
+{% endblock %}
+

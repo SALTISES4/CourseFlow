@@ -7,7 +7,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
+import course_flow.models.project
 from course_flow import models
 
 owned_throughmodels = [
@@ -209,7 +212,9 @@ def get_parent_nodes_for_workflow(workflow):
 
 def get_nondeleted_favourites(user):
     return list(
-        models.Project.objects.filter(favourited_by__user=user)
+        course_flow.models.project.Project.objects.filter(
+            favourited_by__user=user
+        )
     ) + list(models.Workflow.objects.filter(favourited_by__user=user))
 
     # return models.Favourite.objects.filter(user=user).exclude(
@@ -241,7 +246,7 @@ def check_possible_parent(workflow, parent_workflow, same_project):
 
 
 def get_classrooms_for_student(user):
-    return models.Project.objects.filter(
+    return course_flow.models.project.Project.objects.filter(
         liveproject__liveprojectuser__user=user,
         deleted=False,
     )
@@ -267,34 +272,31 @@ def get_user_permission(obj, user):
 
 def get_user_role(obj, user):
     if user is None or not user.is_authenticated:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     if obj.type == "liveproject":
         liveproject = obj
-        project = obj.project
     elif obj.type == "project":
         try:
             liveproject = obj.liveproject
-            project = obj
         except AttributeError:
-            return models.LiveProjectUser.ROLE_NONE
+            return models.relations.LiveProjectUser.ROLE_NONE
     elif obj.is_strategy:
-        project = None
         liveproject = None
     else:
         try:
             project = obj.get_project()
             liveproject = project.liveproject
         except AttributeError:
-            return models.LiveProjectUser.ROLE_NONE
+            return models.relations.LiveProjectUser.ROLE_NONE
     if liveproject is None:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     if hasattr(obj, "author") and obj.author == user:
-        return models.LiveProjectUser.ROLE_TEACHER
-    permissions = models.LiveProjectUser.objects.filter(
+        return models.relations.LiveProjectUser.ROLE_TEACHER
+    permissions = models.relations.LiveProjectUser.objects.filter(
         user=user, liveproject=liveproject
     )
     if permissions.count() == 0:
-        return models.LiveProjectUser.ROLE_NONE
+        return models.relations.LiveProjectUser.ROLE_NONE
     return permissions.first().role_type
 
 
@@ -308,7 +310,7 @@ def user_workflow_url(workflow, user):
             can_view = True
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
         can_view = True
-    if user_role != models.LiveProjectUser.ROLE_NONE:
+    if user_role != models.relations.LiveProjectUser.ROLE_NONE:
         can_view = True
     if can_view:
         return reverse(
@@ -330,7 +332,7 @@ def user_project_url(project, user):
         return "noaccess"
     if (
         user_permission != models.ObjectPermission.PERMISSION_NONE
-        or user_role == models.LiveProjectUser.ROLE_TEACHER
+        or user_role == models.relations.LiveProjectUser.ROLE_TEACHER
     ):
         return reverse("course_flow:project-update", kwargs={"pk": project.pk})
     return reverse(
@@ -389,6 +391,41 @@ def get_relevance(obj, name_filter, keywords):
             else:
                 relevance += "2"
     return relevance
+
+
+def make_user_notification(
+    source_user, target_user, notification_type, content_object, **kwargs
+):
+    if source_user is not target_user:
+        extra_text = kwargs.get("extra_text", None)
+        comment = kwargs.get("comment", None)
+        text = ""
+        if source_user is not None:
+            text += source_user.username + " "
+        else:
+            text += _("Someone ")
+        if notification_type == models.Notification.TYPE_SHARED:
+            text += _("added you to the ")
+        elif notification_type == models.Notification.TYPE_COMMENT:
+            text += _("notified you in a comment in ")
+        else:
+            text += _(" notified you for ")
+        text += _(content_object.type) + " " + content_object.__str__()
+        if extra_text is not None:
+            text += ": " + extra_text
+        models.Notification.objects.create(
+            user=target_user,
+            source_user=source_user,
+            notification_type=notification_type,
+            content_object=content_object,
+            text=text,
+            comment=comment,
+        )
+
+        # clear any notifications older than two months
+        target_user.notifications.filter(
+            created_on__lt=timezone.now() - timezone.timedelta(days=60)
+        ).delete()
 
 
 def benchmark(identifier, last_time):

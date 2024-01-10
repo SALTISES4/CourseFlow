@@ -10,37 +10,37 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import tag
 from django.urls import reverse
 from selenium import webdriver
-from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
+from selenium.webdriver import Chrome, Firefox, FirefoxOptions
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from course_flow.models import (
-    Activity,
-    Course,
-    CourseFlowUser,
-    Discipline,
-    Favourite,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
-    ObjectPermission,
-    Outcome,
+from course_flow.models.project import Project
+from course_flow.models.relations.liveProjectUser import LiveProjectUser
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    UserAssignment,
-    Workflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.routing import websocket_urlpatterns
 from course_flow.utils import get_model_from_str
 
+from ...models.activity import Activity
+from ...models.course import Course
+from ...models.courseFlowUser import CourseFlowUser
+from ...models.discipline import Discipline
+from ...models.favourite import Favourite
+from ...models.liveAssignment import LiveAssignment
+from ...models.liveProject import LiveProject
+from ...models.objectPermission import ObjectPermission
+from ...models.outcome import Outcome
+from ...models.program import Program
+from ...models.userAssignment import UserAssignment
+from ...models.workflow import Workflow
 from .utils import get_author, login
 
 timeout = 10
@@ -756,7 +756,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element(By.CSS_SELECTOR, "#button_assignments").click()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -772,7 +772,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(2)
 
         windows = selenium.window_handles
-        selenium.switch_to_window(windows[1])
+        selenium.switch_to.window(windows[1])
 
         self.assertEqual(
             "new workflow",
@@ -780,14 +780,14 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         selenium.close()
-        selenium.switch_to_window(windows[0])
+        selenium.switch_to.window(windows[0])
 
         selenium.get(
             self.live_server_url
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element(By.CSS_SELECTOR, "#button_assignments").click()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -802,7 +802,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
         time.sleep(2)
         windows = selenium.window_handles
-        selenium.switch_to_window(windows[1])
+        selenium.switch_to.window(windows[1])
         self.assertEqual(
             "linked workflow",
             selenium.find_element(By.CSS_SELECTOR, ".project-title").text,
@@ -2302,7 +2302,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             column=program.columns.first(),
         )
         response = self.client.post(
-            reverse("course_flow:update-outcomenode-degree"),
+            reverse("course_flow:json-api-post-update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
 
@@ -2334,8 +2334,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
         )
 
-        title_text = selenium.find_elements_by_css_selector(
-            ".week .title-text"
+        title_text = selenium.find_elements(
+            By.CSS_SELECTOR, ".week .title-text"
         )[0]
 
         assert title_text.text == "Term 1"
@@ -2400,7 +2400,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             column=program.columns.first(),
         )
         response = self.client.post(
-            reverse("course_flow:update-outcomenode-degree"),
+            reverse("course_flow:json-api-post-update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": poo1.child.pk, "degree": 1},
         )
 
@@ -2525,9 +2525,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             set_linked_workflow.click()
 
-            # set_linked_workflow = wait.until(
-            #    EC.element_to_be_clickable((By.CSS_SELECTOR, ".linked-workflow.hover-shade"))
-            # )
+            set_linked_workflow = wait.until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, ".linked-workflow.hover-shade")
+                )
+            )
 
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow.id,
@@ -2746,7 +2748,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         self.assertEqual(len(created_by_buttons), 4)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
+            len(selenium.find_elements(By.CSS_SELECTOR, ".workflow-title")), 20
         )
         has_loading_finished()
         count_pagination_and_elements()
@@ -3542,11 +3544,17 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, ".panel-favourite"))
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, "[data-test-id='panel-favourite']")
+            )
         )
 
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "[data-test-id='panel-favourite']"
+                )
+            ),
             2,
         )
 
@@ -3570,7 +3578,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements(By.CSS_SELECTOR, ".panel-favourite")),
+            len(
+                selenium.find_elements(
+                    By.CSS_SELECTOR, "[data-test-id='panel-favourite']"
+                )
+            ),
             0,
         )
         self.assertEqual(

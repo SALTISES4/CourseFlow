@@ -1,53 +1,30 @@
-{% load static compress  %}
- <!-- Internal resources -->
-    <script
-      src="{% static 'course_flow/js/other/dist/csrf-setup.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-wf-redux.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-live.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/react/dist/scripts-library.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      id="script-redesign"
-      src="{% static 'course_flow/js/react/dist/scripts-redesign.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    <script nonce="{{ request.csp_nonce }}"
-      src="{% url 'course_flow:javascript-catalog' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    <!-- * CSS -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'course_flow/js/react/dist/course_flow.css' %}"
-    />
-    {% endcompress %}
+{% load static compress %}
+<!-- Internal resources -->
+<script
+  src="{% static 'course_flow/js/templates/csrf-setup.js' %}"
+  defer="true"
+  charset="utf-8"
+></script>
+<script
+  id="script-redesign"
+  nonce="{{ request.csp_nonce }}"
+  src="{% static 'course_flow/js/react/dist/courseflow-app.es.js' %}"
+  defer="true"
+  charset="utf-8"
+></script>
+<script nonce="{{ request.csp_nonce }}"
+        src="{% url 'course_flow:javascript-catalog' %}"
+        defer="true"
+        charset="utf-8"
+></script>
+
+<!-- * CSS -->
+{% compress css %}
+  <link
+    rel="stylesheet"
+    href="{% static 'course_flow/js/react/dist/style.css' %}"
+  />
+{% endcompress %}
+<!-- * CSS -->
+
+

@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext as _
+
+from course_flow.models.courseFlowUser import CourseFlowUser
 
 
 class RegistrationForm(UserCreationForm):
@@ -18,3 +21,40 @@ class RegistrationForm(UserCreationForm):
             "password1",
             "password2",
         )
+
+
+class ProfileSettings(forms.ModelForm):
+    # Re-declare form fields to make them required
+    # Instead, the fields will come from CourseFlowUser and they
+    # are declared as not required / blank, so a user will be able
+    # to save his details without specifying first/last name.
+    # TODO: Investigate if the CourseFlowUser model fields should be tweaked
+    # or if this is the route to take when overriding fields manually
+    first_name = forms.CharField(
+        label=_("First name"),
+        max_length=300,
+        help_text=_("This field is required."),
+    )
+
+    last_name = forms.CharField(
+        label=_("Last name"),
+        max_length=300,
+        help_text=_("This field is required."),
+    )
+
+    class Meta:
+        model = CourseFlowUser
+        fields = (
+            "first_name",
+            "last_name",
+            "language",
+        )
+        widgets = {
+            "language": forms.RadioSelect,
+        }
+
+
+class NotificationsSettings(forms.ModelForm):
+    class Meta:
+        model = CourseFlowUser
+        fields = ("notifications",)
