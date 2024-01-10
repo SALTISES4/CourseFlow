@@ -83,24 +83,24 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   PropsType,
   StateType
 > {
-  private objectType: string
-  private allowed_tabs: number[]
-  private readOnly: boolean
-  private public_view: any
-  private is_student: any
-  private project: any
-  private selection_manager: any
-  private view_type: any
-  private container: any
-  private renderMethod: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
-  private can_view: any
-  private websocket: any
-  private always_static: any
-  private user_id: any
-  private project_permission: any
-  private object_sets: any[]
-  private data: Workflow & { is_dropped: boolean; depth: number }
-  private workflowId: number
+  // private objectType: string
+  // private allowed_tabs: number[]
+  // private readOnly: boolean
+  // private public_view: any
+  // private is_student: any
+  // private project: any
+  // private selection_manager: any
+  // private view_type: any
+  // private container: any
+  // private renderMethod: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
+  // private can_view: any
+  // private websocket: any
+  // private always_static: any
+  // private user_id: any
+  // private project_permission: any
+  // private object_sets: any[]
+  // private data: Workflow & { is_dropped: boolean; depth: number }
+  // private workflowId: number
 
   constructor(props: PropsType) {
     super(props)
