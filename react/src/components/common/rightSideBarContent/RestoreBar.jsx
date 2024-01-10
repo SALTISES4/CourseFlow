@@ -14,7 +14,7 @@ class RestoreBarUnconnected extends React.Component {
   }
 
   render() {
-    let columns = this.props.columns.map((column) => (
+    const columns = this.props.columns.map((column) => (
       <RestoreBarItem
         key={column.id}
         objectType="column"
@@ -22,7 +22,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let weeks = this.props.weeks.map((week) => (
+    const weeks = this.props.weeks.map((week) => (
       <RestoreBarItem
         key={week.id}
         objectType="week"
@@ -30,7 +30,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let nodes = this.props.nodes.map((node) => (
+    const nodes = this.props.nodes.map((node) => (
       <RestoreBarItem
         key={node.id}
         objectType="node"
@@ -38,7 +38,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let outcomes = this.props.outcomes.map((outcome) => (
+    const outcomes = this.props.outcomes.map((outcome) => (
       <RestoreBarItem
         key={outcome.id}
         objectType="outcome"
@@ -46,7 +46,7 @@ class RestoreBarUnconnected extends React.Component {
         renderer={this.props.renderer}
       />
     ))
-    let nodelinks = this.props.nodelinks.map((nodelink) => (
+    const nodelinks = this.props.nodelinks.map((nodelink) => (
       <RestoreBarItem
         key={nodelink.id}
         objectType="nodelink"
@@ -57,21 +57,21 @@ class RestoreBarUnconnected extends React.Component {
 
     return (
       <div id="restore-bar-workflow" className="right-panel-inner">
-        <h3>{gettext('Restore items')}</h3>
+        <h3>{window.gettext('Restore items')}</h3>
         <hr />
-        <h4>{gettext('Nodes')}</h4>
+        <h4>{window.gettext('Nodes')}</h4>
         <div className="node-bar-column-block">{nodes}</div>
         <hr />
-        <h4>{gettext('Weeks')}</h4>
+        <h4>{window.gettext('Weeks')}</h4>
         <div className="node-bar-column-block">{weeks}</div>
         <hr />
-        <h4>{gettext('Columns')}</h4>
+        <h4>{window.gettext('Columns')}</h4>
         <div className="node-bar-column-block">{columns}</div>
         <hr />
-        <h4>{gettext('Outcomes')}</h4>
+        <h4>{window.gettext('Outcomes')}</h4>
         <div className="node-bar-column-block">{outcomes}</div>
         <hr />
-        <h4>{gettext('Node Links')}</h4>
+        <h4>{window.gettext('Node Links')}</h4>
         <div className="node-bar-column-block">{nodelinks}</div>
       </div>
     )
@@ -113,11 +113,11 @@ class RestoreBarItem extends ComponentWithToggleDrop {
       <div ref={this.maindiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
         <div className="workflow-created">
-          {gettext('Deleted') + ' ' + this.props.data.deleted_on}
+          {window.gettext('Deleted') + ' ' + this.props.data.deleted_on}
         </div>
-        <button onClick={this.restore.bind(this)}>{gettext('Restore')}</button>
+        <button onClick={this.restore.bind(this)}>{window.gettext('Restore')}</button>
         <button onClick={this.delete.bind(this)}>
-          {gettext('Permanently Delete')}
+          {window.gettext('Permanently Delete')}
         </button>
       </div>
     )
@@ -139,9 +139,9 @@ class RestoreBarItem extends ComponentWithToggleDrop {
 
   restore() {
     this.setState({ disabled: true })
-    this.props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
-      this.props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
   }
 
@@ -152,9 +152,9 @@ class RestoreBarItem extends ComponentWithToggleDrop {
       )
     ) {
       $(this.maindiv.current).children('button').attr('disabled', true)
-      this.props.renderer.tiny_loader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
-        this.props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
   }

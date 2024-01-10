@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getNodeByID } from '@cfFindState'
-import * as Constants from '@cfConstants'
 import { Component } from '@cfParentComponents'
 
 /**
@@ -23,7 +22,7 @@ class MatrixNodeUnconnected extends Component {
       <div className="table-cell">
         {(data.time_general_hours || 0) + (data.time_specific_hours || 0)}
       </div>,
-      <div className="table-cell blank"></div>,
+      <div className="table-cell blank" />,
       <div className="table-cell">{data.ponderation_theory}</div>,
       <div className="table-cell">{data.ponderation_practical}</div>,
       <div className="table-cell">{data.ponderation_individual}</div>,
@@ -45,21 +44,13 @@ class MatrixNodeUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let data_override
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
-    else data_override = data
-
-    let css_class =
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-
-    let style = {}
-    style.backgroundColor = Constants.getColumnColour(this.props.column)
+    const data_override = data.represents_workflow
+      ? { ...data, ...data.linked_workflow_data, id: data.id }
+      : this.props.data
 
     return (
       <div className="matrix-time-row">
-        <div className="table-cell blank"></div>
+        <div className="table-cell blank" />
         {this.getTimeData(data_override)}
       </div>
     )

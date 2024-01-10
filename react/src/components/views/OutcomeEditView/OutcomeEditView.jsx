@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { newOutcome, insertedAt } from '@XMLHTTP/PostFunctions'
-import { moveOutcomeWorkflow } from '@cfReducers'
 // @components
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import Outcome from './Outcome'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
+import ActionCreator from '@cfRedux/ActionCreator.ts'
 
 /**
  * The view of a workflow in which the outcomes can be added,
@@ -43,7 +44,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
             className="create-button"
             src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
           />
-          <div>{gettext('Add new')}</div>
+          <div>{window.gettext('Add new')}</div>
         </div>
       )
     return add_new_outcome
@@ -58,12 +59,17 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       'outcomeworkflow',
       '.outcome-workflow'
     )
-    if (this.props.data.depth == 0) this.makeDroppable()
+    if (this.props.data.depth === 0) this.makeDroppable()
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeWorkflow(id, new_position, this.props.workflow.id, child_id)
+      ActionCreator.moveOutcomeWorkflow(
+        id,
+        new_position,
+        this.props.workflow.id,
+        child_id
+      )
     )
     insertedAt(
       this.props.renderer,
@@ -77,14 +83,13 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
   }
 
   addNew(objectset) {
-    newOutcome(this.props.workflow.id, objectset.id)
+    newOutcomeQuery(this.props.workflow.id, objectset.id)
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    var selector = this
+    const data = this.props.data
     let outcomes = data.map((category) => (
       <div className="outcome-category">
         <h4>{category.objectset.title + ':'}</h4>
@@ -113,10 +118,10 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
         </div>
       </div>
     ))
-    if (outcomes.length == 0)
+    if (outcomes.length === 0)
       outcomes = [
         <div className="emptytext">
-          {gettext(
+          {window.gettext(
             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
           )}
         </div>,

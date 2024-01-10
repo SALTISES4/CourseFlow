@@ -13,8 +13,8 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let children = data.child_outcome_links.map((outcomeoutcome) => (
+    const data = this.props.data
+    const children = data.child_outcome_links.map((outcomeoutcome) => (
       <ParentOutcomeOutcome
         key={outcomeoutcome}
         objectID={outcomeoutcome}
@@ -102,7 +102,7 @@ class ParentOutcomeOutcomeUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
     return (
       <div className="outcome-outcome" id={data.id} ref={this.maindiv}>

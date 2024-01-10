@@ -32,8 +32,9 @@ class WorkflowCardCondensed extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.workflowData
-    let css_class = 'workflow-for-menu simple-workflow hover-shade ' + data.type
+    const data = this.props.workflowData
+    const css_class =
+      'workflow-for-menu simple-workflow hover-shade ' + data.type
 
     return (
       <div

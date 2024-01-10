@@ -10,7 +10,7 @@ class ExportMenu extends React.Component {
    * FUNCTIONS
    *******************************************************/
   getExportTypes() {
-    let type = this.props.data.type
+    const type = this.props.data.type
     const exports = []
     exports.push([
       <input
@@ -79,7 +79,7 @@ class ExportMenu extends React.Component {
 
   inputChange(type, id, evt) {
     if (type == 'set') {
-      let new_state = {}
+      const new_state = {}
       new_state[id] = !evt.target.checked
       this.setState(new_state)
     } else if (type == 'type' && evt.target.checked) {

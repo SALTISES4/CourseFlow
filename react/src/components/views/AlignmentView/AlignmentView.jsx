@@ -36,7 +36,7 @@ class AlignmentView extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     //Choices of outcomes to sort by
     let view_buttons_outcomes = this.props.outcomes.map((category, i) => {
       return [
@@ -68,7 +68,7 @@ class AlignmentView extends React.Component {
       ]
     })
     //Choices of terms (weeks) to sort by
-    let view_buttons_terms = this.props.terms.map((week, i) => {
+    const view_buttons_terms = this.props.terms.map((week, i) => {
       let view_class = 'hover-shade'
       if (this.state.sort == 'week' && i == this.state.active)
         view_class += ' active'
@@ -90,7 +90,7 @@ class AlignmentView extends React.Component {
 
     let outcome_data
     if (this.state.sort == 'outcome') {
-      let found = false
+      const found = false
       try {
         outcome_data =
           this.props.outcomes[this.state.active].outcomes[this.state.active2]
@@ -146,9 +146,9 @@ class AlignmentView extends React.Component {
 
     return (
       <div className="workflow-details">
-        <h3>{gettext('Filters')}:</h3>
+        <h3>{window.gettext('Filters')}:</h3>
         {view_buttons_outcomes}
-        <h4>{gettext('Sections')}:</h4>
+        <h4>{window.gettext('Sections')}:</h4>
         <div className="workflow-view-select hide-print">
           {view_buttons_terms}
         </div>
@@ -161,7 +161,7 @@ class AlignmentView extends React.Component {
   }
 }
 const mapAlignmentStateToProps = (state) => {
-  let outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
+  const outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   ).map((category) => ({

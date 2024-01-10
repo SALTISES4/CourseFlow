@@ -4,10 +4,9 @@ import { EditableComponentWithSorting } from '@cfCommonComponents/extended'
 import ColumnWorkflow from './ColumnWorkflow'
 import WeekWorkflow from './WeekWorkflow'
 import * as Utility from '@cfUtility'
-import { moveColumnWorkflow, moveWeekWorkflow } from '@cfReducers'
 import WorkflowLegend from './WorkflowLegend'
-import { insertedAt } from '@XMLHTTP/PostFunctions'
-// import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import ActionCreator from '@cfRedux/ActionCreator'
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns
@@ -63,9 +62,9 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    if (type == 'columnworkflow') {
+    if (type === 'columnworkflow') {
       this.props.renderer.micro_update(
-        moveColumnWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,
@@ -77,9 +76,9 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
         'columnworkflow'
       )
     }
-    if (type == 'weekworkflow') {
+    if (type === 'weekworkflow') {
       this.props.renderer.micro_update(
-        moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,
@@ -97,9 +96,9 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    let renderer = this.props.renderer
-    var columnworkflows = data.columnworkflow_set.map(
+    const data = this.props.data
+    const renderer = this.props.renderer
+    const columnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => (
         <ColumnWorkflow
           key={`columnworkflow-${index}`}
@@ -109,7 +108,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
         />
       )
     )
-    var weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => (
+    const weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => (
       <WeekWorkflow
         condensed={data.condensed}
         key={`weekworkflow-${index}`}

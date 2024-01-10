@@ -39,7 +39,7 @@ class NodeLink extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     if (
       !this.source_node ||
       !this.source_node.outerWidth() ||
@@ -68,14 +68,14 @@ class NodeLink extends EditableComponentWithActions {
       )
     }
 
-    let node_selected =
+    const node_selected =
       this.source_node.attr('data-selected') === 'true' ||
       this.target_node.attr('data-selected') === 'true'
-    let node_hovered =
+    const node_hovered =
       this.source_node.attr('data-hovered') === 'true' ||
       this.target_node.attr('data-hovered') === 'true'
 
-    let style = {}
+    const style = {}
     if (data.dashed) style.strokeDasharray = '5,5'
     if (
       this.source_node.css('display') == 'none' ||
@@ -130,5 +130,4 @@ class NodeLink extends EditableComponentWithActions {
 }
 const mapNodeLinkStateToProps = (state, own_props) =>
   getNodeLinkByID(state, own_props.objectID)
-const mapNodeLinkDispatchToProps = {}
 export default connect(mapNodeLinkStateToProps, null)(NodeLink)

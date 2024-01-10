@@ -17,7 +17,7 @@ class NodeWeekUnconnected extends React.Component {
    * FUNCTIONS
    *******************************************************/
   getNode() {
-    let data = this.props.data
+    const data = this.props.data
     return (
       <Node
         objectID={data.node}
@@ -33,7 +33,7 @@ class NodeWeekUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let my_class = 'node-week'
     if (data.no_drag) my_class += ' no-drag'
     return (

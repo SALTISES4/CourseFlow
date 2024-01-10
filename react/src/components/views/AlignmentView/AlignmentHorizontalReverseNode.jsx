@@ -4,11 +4,12 @@ import { EditableComponentWithComments } from '@cfParentComponents'
 import { NodeTitle } from '@cfUIComponents'
 import { getChildWorkflowByID } from '@cfFindState'
 import { OutcomeNode } from '../WorkflowView'
-import { newOutcome, updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
+import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome'
 import OutcomeAdder from './OutcomeAdder'
+import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
 
 /**
  * The representation of a node in the alignment view. It will display
@@ -30,31 +31,31 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
    * Adds a new outcome to the linked workflow
    */
   addNewChildOutcome() {
-    newOutcome(this.props.data.linked_workflow, null)
+    newOutcomeQuery(this.props.data.linked_workflow, null)
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let data_override
     if (data.represents_workflow)
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
     else data_override = { ...data }
-    let selection_manager = this.props.renderer.selection_manager
+    const selection_manager = this.props.renderer.selection_manager
     let child_outcomes_header
     if (this.props.child_outcomes.length > 0) {
       child_outcomes_header = (
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
             {Utility.capWords(
-              gettext(data.linked_workflow_data.type + ' outcomes')
-            ) + gettext(' From Linked Workflow')}
+              window.gettext(data.linked_workflow_data.type + ' outcomes')
+            ) + window.gettext(' From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
-            {gettext('Associated ') +
-              Utility.capWords(gettext(this.props.workflow.type + ' outcomes'))}
+            {window.gettext('Associated ') +
+              Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes'))}
           </div>
         </div>
       )
@@ -63,7 +64,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
         if (this.props.child_outcomes == -1) {
           child_outcomes_header = (
             <div className="child-outcome child-outcome-header">
-              {gettext('... LOADING')}
+              {window.gettext('... LOADING')}
             </div>
           )
           this.props.renderer.childWorkflowDataNeeded(this.props.data.id)
@@ -71,13 +72,13 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           if (data.linked_workflow_data.deleted) {
             child_outcomes_header = (
               <div className="child-outcome child-outcome-header">
-                {gettext('The linked workflow has been deleted.')}
+                {window.gettext('The linked workflow has been deleted.')}
               </div>
             )
           } else {
             child_outcomes_header = (
               <div className="child-outcome child-outcome-header">
-                {gettext(
+                {window.gettext(
                   'No outcomes have been added to the linked workflow. When added, they will appear here.'
                 )}
               </div>
@@ -87,7 +88,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       } else {
         child_outcomes_header = (
           <div className="child-outcome child-outcome-header">
-            {gettext(
+            {window.gettext(
               'No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.'
             )}
           </div>
@@ -101,7 +102,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           !this.state.show_all &&
           this.props.restriction_set &&
           this.props.restriction_set.child_outcomes &&
-          this.props.restriction_set.child_outcomes.indexOf(child_outcome) == -1
+          this.props.restriction_set.child_outcomes.indexOf(child_outcome) === -1
         )
           return null
         return (
@@ -117,16 +118,17 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     let show_all
 
     //if child outcomes are restricted, we need a show all button that expands to show all of them instead. Otherwise we only need to show the outcomes currently attached to the node.
-    let outcomenodes = this.props.outcomenodes.map((outcomenode) => (
+    const outcomenodes = this.props.outcomenodes.map((outcomenode) => (
       <OutcomeNode
         key={outcomenode.id}
         objectID={outcomenode.id}
         renderer={this.props.renderer}
       />
     ))
-    let outcome_restriction = this.props.restriction_set.parent_outcomes.filter(
-      (oc) => this.props.all_node_outcomes.indexOf(oc) == -1
-    )
+    const outcome_restriction =
+      this.props.restriction_set.parent_outcomes.filter(
+        (oc) => this.props.all_node_outcomes.indexOf(oc) === -1
+      )
     let outcomeadder
     if (!this.props.renderer.read_only)
       outcomeadder = (
@@ -136,11 +138,11 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           addFunction={updateOutcomenodeDegree.bind(this, this.props.objectID)}
         />
       )
-    let outcomes_for_node = (
+    const outcomes_for_node = (
       <div>
         <div className="node-outcomes-header">
           {Utility.capWords(gettext(this.props.workflow.type + ' outcomes')) +
-            gettext(' for node:')}
+            window.gettext(' for node:')}
         </div>
         {outcomenodes}
         {outcomeadder}
@@ -158,7 +160,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
             className="create-button"
             src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
           />
-          <div>{gettext('Add new')}</div>
+          <div>{window.gettext('Add new')}</div>
         </div>
       )
     if (
@@ -200,7 +202,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       )
     }
 
-    let style = {
+    const style = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
@@ -240,8 +242,8 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
 const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
   for (var i = 0; i < state.node.length; i++) {
     if (state.node[i].id == own_props.objectID) {
-      let node = state.node[i]
-      let column = state.column.find((column) => column.id == node.column)
+      const node = state.node[i]
+      const column = state.column.find((column) => column.id == node.column)
       let outcomenodes = Utility.filterThenSortByID(
         state.outcomenode,
         node.outcomenode_unique_set
@@ -255,7 +257,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
             own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome) >= 0
         )
       }
-      let node_outcomes = Utility.filterThenSortByID(
+      const node_outcomes = Utility.filterThenSortByID(
         state.outcomenode,
         node.outcomenode_set
       ).map((ocn) => ocn.outcome)
@@ -269,7 +271,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
           all_node_outcomes: node_outcomes
         }
       }
-      let child_workflow = getChildWorkflowByID(state, node.linked_workflow)
+      const child_workflow = getChildWorkflowByID(state, node.linked_workflow)
       let child_outcomes
       if (child_workflow != -1)
         child_outcomes = Utility.filterThenSortByID(

@@ -80,21 +80,21 @@ def get_my_live_projects(user):
     return data_package
 
 
-@login_required
-def my_live_projects_view(request):
-    current_user = request.user
-    context = {}
-    context_data = {
-        "user_id": current_user.id if current_user else 0,
-        "project_data_package": get_my_live_projects(request.user),
-    }
-
-    context["contextData"] = (
-        JSONRenderer().render(context_data).decode("utf-8")
-    )
-    context["path_id"] = "my_live_projects"
-    context["title"] = "My Live Projects"
-    return render(request, "course_flow/react/my_live_projects.html", context)
+# @login_required
+# def my_live_projects_view(request):
+#     current_user = request.user
+#     context = {}
+#     context_data = {
+#         "user_id": current_user.id if current_user else 0,
+#         "project_data_package": get_my_live_projects(request.user),
+#     }
+#
+#     context["contextData"] = (
+#         JSONRenderer().render(context_data).decode("utf-8")
+#     )
+#     context["path_id"] = "my_live_projects"
+#     context["title"] = "My Live Projects"
+#     return render(request, "course_flow/react/my_live_projects.html", context)
 
 
 class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):

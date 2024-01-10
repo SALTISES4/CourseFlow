@@ -20,10 +20,10 @@ class GridWeekUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
 
-    let default_text = data.week_type_display + ' ' + (this.props.rank + 1)
-    let nodes = this.props.nodes.map((node) => (
+    const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    const nodes = this.props.nodes.map((node) => (
       <GridNode renderer={this.props.renderer} data={node} />
     ))
 
@@ -60,19 +60,22 @@ class GridWeekUnconnected extends EditableComponentWithComments {
   }
 }
 const mapWeekStateToProps = (state, own_props) => {
-  let data = own_props.data
-  let node_weeks = Utility.filterThenSortByID(state.nodeweek, data.nodeweek_set)
-  let nodes_data = node_weeks
+  const data = own_props.data
+  const node_weeks = Utility.filterThenSortByID(
+    state.nodeweek,
+    data.nodeweek_set
+  )
+  const nodes_data = node_weeks
     .map((nodeweek) => getNodeByID(state, nodeweek.node).data)
     .filter((node) => !Utility.checkSetHidden(node, state.objectset))
   // let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
 
-  let override_data = nodes_data.map((node) => {
+  const override_data = nodes_data.map((node) => {
     if (node.represents_workflow)
       return { ...node, ...node.linked_workflow_data }
     else return node
   })
-  let general_education = override_data.reduce(
+  const general_education = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.time_general_hours)
         return previousValue + currentValue.time_general_hours
@@ -80,7 +83,7 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
-  let specific_education = override_data.reduce(
+  const specific_education = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.time_specific_hours)
         return previousValue + currentValue.time_specific_hours
@@ -88,23 +91,29 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
-  let total_theory = override_data.reduce((previousValue, currentValue) => {
+  const total_theory = override_data.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.ponderation_theory)
       return previousValue + currentValue.ponderation_theory
     return previousValue
   }, 0)
-  let total_practical = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderation_practical)
-      return previousValue + currentValue.ponderation_practical
-    return previousValue
-  }, 0)
-  let total_individual = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderation_individual)
-      return previousValue + currentValue.ponderation_individual
-    return previousValue
-  }, 0)
-  let total_time = total_theory + total_practical + total_individual
-  let total_required = override_data.reduce((previousValue, currentValue) => {
+  const total_practical = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.ponderation_practical)
+        return previousValue + currentValue.ponderation_practical
+      return previousValue
+    },
+    0
+  )
+  const total_individual = override_data.reduce(
+    (previousValue, currentValue) => {
+      if (currentValue && currentValue.ponderation_individual)
+        return previousValue + currentValue.ponderation_individual
+      return previousValue
+    },
+    0
+  )
+  const total_time = total_theory + total_practical + total_individual
+  const total_required = override_data.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.time_required)
       return previousValue + parseInt(currentValue.time_required)
     return previousValue

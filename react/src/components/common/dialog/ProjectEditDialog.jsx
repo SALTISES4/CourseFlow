@@ -1,12 +1,8 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import {
-  addTerminology,
-  deleteSelfQuery,
-  updateValueInstant
-} from '@XMLHTTP/PostFunctions'
-import { LiveProjectSettings } from '@cfViews/LiveProjectView'
+import { addTerminology, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
+import { updateValueInstant } from '@XMLHTTP/APIFunctions'
 
 /*
 The menu for editing a project.
@@ -67,7 +63,7 @@ class ProjectEditDialog extends React.Component {
   termChanged(id, evt) {
     const new_sets = this.state.object_sets.slice()
     for (var i = 0; i < new_sets.length; i++) {
-      if (new_sets[i].id == id) {
+      if (new_sets[i].id === id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value }
         this.object_set_updates[id] = { title: evt.target.value }
       }
@@ -143,22 +139,22 @@ class ProjectEditDialog extends React.Component {
     return actions
   }
 
-  getLiveProjectSettings() {
-    if (this.props.user_role === Constants.role_keys.teacher) {
-      return (
-        <div>
-          <LiveProjectSettings
-            // renderer={this.props.renderer}
-            role={'teacher'}
-            objectID={this.state.id}
-            view_type={'settings'}
-            updateLiveProject={this.props.actionFunction}
-          />
-        </div>
-      )
-    }
-    return null
-  }
+  // getLiveProjectSettings() {
+  //   if (this.props.user_role === Constants.role_keys.teacher) {
+  //     return (
+  //       <div>
+  //         <LiveProjectSettings
+  //           // renderer={this.props.renderer}
+  //           role={'teacher'}
+  //           objectID={this.state.id}
+  //           view_type={'settings'}
+  //           updateLiveProject={this.props.actionFunction}
+  //         />
+  //       </div>
+  //     )
+  //   }
+  //   return null
+  // }
 
   autocompleteDiscipline() {
     const choices = this.state.all_disciplines
@@ -316,7 +312,7 @@ class ProjectEditDialog extends React.Component {
           </div>
         </div>
 
-        {this.getLiveProjectSettings()}
+        {/*{this.getLiveProjectSettings()}*/}
 
         <div className="action-bar">{this.getActions()}</div>
         <div className="window-close-button" onClick={this.close}>

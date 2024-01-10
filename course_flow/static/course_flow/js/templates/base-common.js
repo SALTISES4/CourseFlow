@@ -74,6 +74,8 @@ if (
 
 $(window).on("load", () => {
   $(document).ajaxError(window.fail_function);
+
+  // @todo does this do anything?
   waitUntilElementExists("#overflow-options").then((el) => {
     makeDropdown(el, "#overflow-links");
   });
@@ -85,6 +87,9 @@ $(window).on("load", () => {
   });
   waitUntilElementExists("#create-options").then((el) => {
     makeDropdown(el, "#create-links");
+  });
+  waitUntilElementExists("#create-project-button").then((el) => {
+    makeDropdown(el, "#create-links-project");
   });
 
   if (COURSEFLOW_APP.show_notification_request) {

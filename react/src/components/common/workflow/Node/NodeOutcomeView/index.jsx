@@ -26,14 +26,14 @@ class NodeOutcomeViewUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let data_override
     if (data.represents_workflow)
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
     else data_override = data
-    let selection_manager = this.props.renderer.selection_manager
+    const selection_manager = this.props.renderer.selection_manager
 
-    let style = {
+    const style = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     let css_class =
@@ -52,7 +52,7 @@ class NodeOutcomeViewUnconnected extends Component {
           <div className="mouseover-actions">{comments}</div>
         </div>
         <div className="side-actions">
-          <div className="comment-indicator-container"></div>
+          <div className="comment-indicator-container"/>
         </div>
       </div>
     )

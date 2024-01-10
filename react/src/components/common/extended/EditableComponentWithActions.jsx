@@ -14,7 +14,7 @@ import EditableComponentWithComments from './EditableComponentWithComments'
 class EditableComponentWithActions extends EditableComponentWithComments {
   //Adds a button that restores the item.
   addRestoreSelf(data, alt_icon) {
-    let icon = alt_icon || 'restore.svg'
+    const icon = alt_icon || 'restore.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -26,20 +26,20 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   restoreSelf(data) {
-    var props = this.props
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     restoreSelfQuery(
       data.id,
       Constants.object_dictionary[this.objectType],
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad
       }
     )
   }
 
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
   addDeleteSelf(data, alt_icon) {
-    let icon = alt_icon || 'rubbish.svg'
+    const icon = alt_icon || 'rubbish.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -51,11 +51,10 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   deleteSelf(data) {
-    var props = this.props
-    //Temporary confirmation; add better confirmation dialogue later
+    //@todo Temporary confirmation; add better confirmation dialogue later
     if (this.props.renderer) this.props.renderer.selection_manager.deleted(this)
     if (
-      (this.objectType == 'week' || this.objectType == 'column') &&
+      (this.objectType === 'week' || this.objectType === 'column') &&
       this.props.sibling_count < 2
     ) {
       alert(window.gettext('You cannot delete the last ') + this.objectType)
@@ -71,13 +70,13 @@ class EditableComponentWithActions extends EditableComponentWithComments {
           '?'
       )
     ) {
-      props.renderer.tiny_loader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQuery(
         data.id,
         Constants.object_dictionary[this.objectType],
         true,
         (response_data) => {
-          props.renderer.tiny_loader.endLoad()
+          COURSEFLOW_APP.tinyLoader.endLoad()
         }
       )
     }
@@ -98,7 +97,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   duplicateSelf(data) {
     var props = this.props
     var type = this.objectType
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     duplicateSelf(
       data.id,
       Constants.object_dictionary[type],
@@ -106,7 +105,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       Constants.parent_dictionary[type],
       Constants.through_parent_dictionary[type],
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
@@ -124,17 +123,16 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   insertSibling(data) {
-    var props = this.props
     var type = this.objectType
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     insertSibling(
       data.id,
       Constants.object_dictionary[type],
-      props.parentID,
+      this.props.parentID,
       Constants.parent_dictionary[type],
       Constants.through_parent_dictionary[type],
       (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
@@ -152,11 +150,10 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   insertChild(data) {
-    var props = this.props
-    var type = this.objectType
-    props.renderer.tiny_loader.startLoad()
+    const type = this.objectType
+    COURSEFLOW_APP.tinyLoader.startLoad()
     insertChild(data.id, Constants.object_dictionary[type], (response_data) => {
-      props.renderer.tiny_loader.endLoad()
+      COURSEFLOW_APP.tinyLoader.endLoad()
     })
   }
 }

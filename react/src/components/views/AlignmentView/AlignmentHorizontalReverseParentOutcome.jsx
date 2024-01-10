@@ -12,21 +12,21 @@ export default class extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.outcomenode
-    let props = this.props
+    const data = this.props.outcomenode
+    const props = this.props
     return (
       <div className="alignment-row">
         <OutcomeNode
           objectID={data.id}
           renderer={this.props.renderer}
           deleteSelfOverride={() => {
-            this.props.renderer.tiny_loader.startLoad()
+            COURSEFLOW_APP.tinyLoader.startLoad()
             updateOutcomehorizontallinkDegree(
               props.child_outcome,
               data.outcome,
               0,
               (response_data) => {
-                props.renderer.tiny_loader.endLoad()
+                COURSEFLOW_APP.tinyLoader.endLoad()
               }
             )
           }}

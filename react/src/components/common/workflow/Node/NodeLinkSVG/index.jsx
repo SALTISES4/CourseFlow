@@ -10,10 +10,10 @@ import {
   norm as mathnorm,
   subtract as mathsubtract
 } from 'mathjs'
-// SVG portion of a NodeLink
 
 /**
  * Creates paths between two ports
+ *  SVG portion of a NodeLink
  */
 class PathGenerator {
   constructor(
@@ -50,8 +50,8 @@ class PathGenerator {
   //gets the total length of our path
   getPathLength() {
     let length = 0
-    for (var i = 1; i < this.full_array.length; i++) {
-      let seg_len = mathnorm(
+    for (let i = 1; i < this.full_array.length; i++) {
+      const seg_len = mathnorm(
         mathsubtract(this.full_array[i], this.full_array[i - 1])
       )
       length += seg_len
@@ -61,17 +61,17 @@ class PathGenerator {
 
   //gets the point at the given fraction of our path length
   getFractionalPoint(position) {
-    let length = this.getPathLength()
-    if (length == 0) return [0, 0]
-    let point = this.full_array[1]
+    const length = this.getPathLength()
+    if (length === 0) return [0, 0]
+    const point = this.full_array[1]
     let run_length = 0
-    let target_length = length * position
-    for (var i = 1; i < this.full_array.length; i++) {
-      let seg = mathsubtract(this.full_array[i], this.full_array[i - 1])
-      let seg_len = mathnorm(seg)
+    const target_length = length * position
+    for (let i = 1; i < this.full_array.length; i++) {
+      const seg = mathsubtract(this.full_array[i], this.full_array[i - 1])
+      const seg_len = mathnorm(seg)
       if (run_length + seg_len < target_length) run_length += seg_len
       else {
-        let remaining_len = target_length - run_length
+        const remaining_len = target_length - run_length
         return mathadd(
           this.full_array[i - 1],
           mathmultiply(seg, remaining_len / seg_len)
@@ -125,17 +125,17 @@ class PathGenerator {
   //Turns perpendicular to move around the edge of the node
   tickPerpendicular(port = 'source') {
     let otherport = 'target'
-    if (port == 'target') otherport = 'source'
+    if (port === 'target') otherport = 'source'
     this.padOut(port)
-    var new_direction = mathmultiply(
+    const new_direction = mathmultiply(
       mathmatrix([
         mathmultiply([1, 0], this.direction[port][1] ** 2),
         mathmultiply([0, 1], this.direction[port][0] ** 2)
       ]),
       mathsubtract(this.last_point[otherport], this.last_point[port])
     )._data
-    let norm = mathnorm(new_direction)
-    if (norm == 0) throw 'Non-numeric'
+    const norm = mathnorm(new_direction)
+    if (norm === 0) throw 'Non-numeric'
     this.direction[port] = mathmultiply(
       1.0 / mathnorm(new_direction),
       new_direction
@@ -161,7 +161,7 @@ class PathGenerator {
 
   //joins the two arrays, either as a corner or a double corner
   joinArrays() {
-    var joined = this.point_arrays['source'].slice()
+    const joined = this.point_arrays['source'].slice()
     //We have remaining either a corner or both point towards each other
     if (mathdot(this.direction['source'], this.direction['target']) == 0) {
       //corner
@@ -177,22 +177,22 @@ class PathGenerator {
         this.padOut('source')
       }
       //double corner
-      let diff = mathsubtract(
+      const diff = mathsubtract(
         this.last_point['target'],
         this.last_point['source']
       )
-      let mid1 = [
+      const mid1 = [
         (this.direction['source'][0] ** 2 * diff[0]) / 2,
         (this.direction['source'][1] ** 2 * diff[1]) / 2
       ]
-      let mid2 = [
+      const mid2 = [
         (-(this.direction['source'][0] ** 2) * diff[0]) / 2,
         (-(this.direction['source'][1] ** 2) * diff[1]) / 2
       ]
       joined.push(mathadd(this.last_point['source'], mid1))
       joined.push(mathadd(this.last_point['target'], mid2))
     }
-    for (var i = this.point_arrays['target'].length - 1; i >= 0; i--) {
+    for (let i = this.point_arrays['target'].length - 1; i >= 0; i--) {
       joined.push(this.point_arrays['target'][i])
     }
     return joined
@@ -200,27 +200,28 @@ class PathGenerator {
 }
 
 class NodeLinkSVG extends Component {
-  componentDidUpdate() {
-    if (
-      this.props.hovered ||
-      this.state.hovered ||
-      this.props.selected ||
-      this.props.node_selected
-    ) {
-      // d3.select(this.maindiv.current).raise();
-      // d3.selectAll(".node-ports").raise();
-    }
-  }
+  // componentDidUpdate() {
+  //   if (
+  //     this.props.hovered ||
+  //     this.state.hovered ||
+  //     this.props.selected ||
+  //     this.props.node_selected
+  //   ) {
+  //     // d3.select(this.maindiv.current).raise();
+  //     // d3.selectAll(".node-ports").raise();
+  //   }
+  // }
+
   getPathArray(source_point, source_port, target_point, target_port) {
-    var source_dims = [
+    const source_dims = [
       this.props.source_dimensions.width,
       this.props.source_dimensions.height
     ]
-    var target_dims = [
+    const target_dims = [
       this.props.target_dimensions.width,
       this.props.target_dimensions.height
     ]
-    var path_generator = new PathGenerator(
+    return new PathGenerator(
       source_point,
       source_port,
       target_point,
@@ -228,24 +229,32 @@ class NodeLinkSVG extends Component {
       source_dims,
       target_dims
     )
-    return path_generator
   }
 
   getPath(path_array) {
-    var path = 'M'
-    for (var i = 0; i < path_array.length; i++) {
+    let path = 'M'
+    for (let i = 0; i < path_array.length; i++) {
       if (i > 0) path += ' L'
-      var thispoint = path_array[i]
+      const thispoint = path_array[i]
       path += thispoint[0] + ' ' + thispoint[1]
     }
     return path
   }
 
   render() {
+    // @todo this  try / catch is too broad and hiding too many potential errors
     try {
+      console.log('this.props.source_port_handle')
+      console.log(this.props.source_port_handle)
+
+      console.log('this.props.target_port_handle')
+      console.log(this.props.target_port_handle)
+
       const source_transform = Utility.getSVGTranslation(
         this.props.source_port_handle
           .select(function () {
+            console.log('this.parentNode')
+            console.log(this.parentNode)
             return this.parentNode
           })
           .attr('transform')
@@ -253,10 +262,15 @@ class NodeLinkSVG extends Component {
       const target_transform = Utility.getSVGTranslation(
         this.props.target_port_handle
           .select(function () {
-            return this.parentNode
+            console.log('this.parentNode')
+            console.log(this.parentNode)
           })
           .attr('transform')
       )
+      console.log('this.props.source_port_handle')
+      console.log(this.props.source_port_handle)
+
+      // @todo what is all this doing?
       const source_point = [
         parseInt(this.props.source_port_handle.attr('cx')) +
           parseInt(source_transform[0]),
@@ -270,14 +284,14 @@ class NodeLinkSVG extends Component {
           parseInt(target_transform[1])
       ]
 
-      var path_array = this.getPathArray(
+      const path_array = this.getPathArray(
         source_point,
         this.props.source_port,
         target_point,
         this.props.target_port
       )
 
-      var path = this.getPath(path_array.findPath())
+      const path = this.getPath(path_array.findPath())
 
       let style
       if (this.props.style) style = { ...this.props.style }
@@ -300,8 +314,8 @@ class NodeLinkSVG extends Component {
       }
 
       let title
-      if (this.props.title && this.props.title != '') {
-        let text_position = path_array.getFractionalPoint(
+      if (this.props.title && this.props.title !== '') {
+        const text_position = path_array.getFractionalPoint(
           this.props.text_position / 100.0
         )
         title = (
@@ -316,7 +330,7 @@ class NodeLinkSVG extends Component {
                 className="nodelinktext"
                 dangerouslySetInnerHTML={{ __html: this.props.title }}
                 onClick={this.props.clickFunction}
-              ></div>
+              />
             </div>
           </foreignObject>
         )
@@ -344,6 +358,7 @@ class NodeLinkSVG extends Component {
       )
     } catch (err) {
       console.log('could not draw a node link')
+      console.log(err)
       return null
     }
   }

@@ -8,12 +8,12 @@ import {
 } from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { reloadCommentsAction } from '@cfReducers'
 // @components
 import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
+import ActionCreator from '@cfRedux/ActionCreator.ts'
 
 /*******************************************************
  * @CommentBox
@@ -167,11 +167,11 @@ class CommentBox extends ComponentWithToggleDrop {
     }
 
     let render_div
-    const side_actions = $(this.props.parent.maindiv.current)
+    const side_actions = $(this.props.parent?.maindiv?.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
     if (side_actions.length > 0) render_div = side_actions[0]
-    else render_div = this.props.parent.maindiv.current
+    else render_div = this.props.parent?.maindiv?.current
     let comment_indicator = null
     if (has_comments) {
       let indicator_class = 'comment-indicator hover-shade'
@@ -310,21 +310,26 @@ class CommentBox extends ComponentWithToggleDrop {
 //Extends the react component to add a few features that are used in a large number of components
 class EditableComponentWithComments extends EditableComponent {
   //Adds a button that opens/closes the comments dialogue
+
+  // @todo data is not used
+  // addCommenting(data) {
   addCommenting(data) {
-    return [
-      <ActionButton
-        buttonIcon="comment_new.svg"
-        buttonClass="comment-button"
-        titleText={window.gettext('Comments')}
-        handleClick={this.commentClick.bind(this)}
-      />,
-      <CommentBox
-        show={this.state.show_comments}
-        comments={this.props.data.comments}
-        parent={this}
-        renderer={this.props.renderer}
-      />
-    ]
+    return (
+      <>
+        <ActionButton
+          buttonIcon="comment_new.svg"
+          buttonClass="comment-button"
+          titleText={window.gettext('Comments')}
+          handleClick={this.commentClick.bind(this)}
+        />
+        <CommentBox
+          show={this.state.show_comments}
+          comments={this.props.data.comments}
+          parent={this}
+          renderer={this.props.renderer}
+        />
+      </>
+    )
   }
 
   commentClick(evt) {
@@ -337,13 +342,13 @@ class EditableComponentWithComments extends EditableComponent {
   reloadComments(show_comments) {
     const props = this.props
     const data = props.data
-    props.renderer.tiny_loader.startLoad()
+    COURSEFLOW_APP.tinyLoader.startLoad()
     getCommentsForObject(
       data.id,
       Constants.object_dictionary[this.objectType],
       (response_data) => {
         this.props.dispatch(
-          reloadCommentsAction(
+          ActionCreator.reloadCommentsAction(
             this.props.data.id,
             Constants.object_dictionary[this.objectType],
             response_data.data_package
@@ -353,7 +358,7 @@ class EditableComponentWithComments extends EditableComponent {
           this.setState({ show_comments: true })
         }
         //this.setState({show_comments:true,comment_data:response_data.data_package});
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }

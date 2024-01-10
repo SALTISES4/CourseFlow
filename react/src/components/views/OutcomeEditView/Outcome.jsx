@@ -6,15 +6,15 @@ import { Component } from '@cfParentComponents'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import OutcomeOutcome from './OutcomeOutcome'
 import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
-import { moveOutcomeOutcome } from '@cfReducers'
 import {
   updateOutcomehorizontallinkDegree,
-  insertedAt,
   insertedAtInstant
 } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
 
 /**
  * The link to tagged outcomes. Used when an outcome
@@ -45,7 +45,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * FUNCTIONS
    *******************************************************/
   deleteSelf(data) {
-    let props = this.props
+    const props = this.props
     //Temporary confirmation; add better confirmation dialogue later
     if (
       window.confirm(
@@ -57,13 +57,13 @@ class OutcomeHorizontalLinkUnconnected extends Component {
           '?'
       )
     ) {
-      props.renderer.tiny_loader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomehorizontallinkDegree(
         data.outcome,
         data.parent_outcome,
         0,
         (response_data) => {
-          props.renderer.tiny_loader.endLoad()
+          COURSEFLOW_APP.tinyLoader.endLoad()
         }
       )
     }
@@ -75,7 +75,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * @returns {JSX.Element}
    */
   addDeleteSelf(data) {
-    let icon = 'close.svg'
+    const icon = 'close.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -93,9 +93,9 @@ class OutcomeHorizontalLinkUnconnected extends Component {
     if ($(this.maindiv.current).children('.outcome').length == 0)
       $(this.maindiv.current).css('display', 'none')
     else $(this.maindiv.current).css('display', '')
-    let indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
     if (indicator.length >= 0) {
-      let num_outcomenodes = indicator
+      const num_outcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
       indicator
@@ -110,7 +110,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     //It's possible we don't actually have this data, if the horizontal link is dead
     if (!data) return null
     return (
@@ -188,7 +188,7 @@ class Outcome extends EditableComponentWithSorting {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeOutcome(id, new_position, new_parent, child_id)
+      ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
       this.props.renderer,
@@ -221,7 +221,6 @@ class Outcome extends EditableComponentWithSorting {
         'outcomeoutcome'
       )
       insertedAtInstant(
-        this.props.renderer,
         child_id,
         'outcome',
         new_parent,
@@ -233,16 +232,16 @@ class Outcome extends EditableComponentWithSorting {
   }
 
   makeDroppable() {
-    var props = this.props
+    const props = this.props
     $(this.maindiv.current).droppable({
       tolerance: 'pointer',
       droppable: '.outcome-ghost',
       over: (e, ui) => {
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var new_index = drop_item.prevAll().length
-        var new_parent_id = parseInt(drop_item.parent().attr('id'))
+        const drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const new_index = drop_item.prevAll().length
+        const new_parent_id = parseInt(drop_item.parent().attr('id'))
 
         if (drag_item.hasClass('outcome')) {
           drag_helper.addClass('valid-drop')
@@ -253,9 +252,9 @@ class Outcome extends EditableComponentWithSorting {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const drop_item = $(e.target)
         if (drag_item.hasClass('outcome')) {
           drag_helper.removeClass('valid-drop')
           drop_item.removeClass('outcome-drop-over')
@@ -263,16 +262,16 @@ class Outcome extends EditableComponentWithSorting {
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
+        const drop_item = $(e.target)
+        const drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
-          props.renderer.tiny_loader.startLoad()
+          COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomehorizontallinkDegree(
             props.objectID,
             drag_item[0].dataDraggable.outcome,
             1,
             (response_data) => {
-              props.renderer.tiny_loader.endLoad()
+              COURSEFLOW_APP.tinyLoader.endLoad()
             }
           )
         }
@@ -284,14 +283,14 @@ class Outcome extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
+    const data = this.props.data
     let children
     let outcomehorizontallinks
-    let side_actions = []
-    let mouseover_actions = []
+    const side_actions = []
+    const mouseover_actions = []
     let dropIcon
     let droptext
-    let style = {}
+    const style = {}
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
     if (data.is_dropped)
@@ -361,7 +360,7 @@ class Outcome extends EditableComponentWithSorting {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        nwindow.gettext(
+        window.gettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length

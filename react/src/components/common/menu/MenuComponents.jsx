@@ -44,13 +44,13 @@ export class MessageBox extends React.Component {
       //       actionFunction={this.props.actionFunction}
       //     />
       //   )
-      case 'import':
-        return (
-          <ImportMenu
-            data={this.props.message_data}
-            actionFunction={this.props.actionFunction}
-          />
-        )
+      // case 'import':
+      //   return (
+      //     <ImportMenu
+      //       data={this.props.message_data}
+      //       actionFunction={this.props.actionFunction}
+      //     />
+      //   )
       // case 'export':
       //   return (
       //     <ExportMenu

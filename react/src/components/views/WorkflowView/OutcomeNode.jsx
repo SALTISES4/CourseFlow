@@ -14,6 +14,8 @@ import { SimpleOutcome } from '../OutcomeEditView'
 class OutcomeNodeUnconnected extends Component {
   constructor(props) {
     super(props)
+    console.log('props')
+    console.log(props)
     this.objectType = 'outcomenode'
   }
 
@@ -37,7 +39,7 @@ class OutcomeNodeUnconnected extends Component {
    *******************************************************/
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
   addDeleteSelf(data) {
-    let icon = 'close.svg'
+    const icon = 'close.svg'
     return (
       <ActionButton
         buttonIcon={icon}
@@ -49,30 +51,33 @@ class OutcomeNodeUnconnected extends Component {
   }
 
   deleteSelf(data) {
-    let props = this.props
     if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
     //Temporary confirmation; add better confirmation dialogue later
     else {
-      props.renderer.tiny_loader.startLoad()
+      COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
-        props.renderer.tiny_loader.endLoad()
+        COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
   }
 
   checkHidden() {
-    if ($(this.maindiv.current).children('.outcome').length == 0)
+    if ($(this.maindiv.current).children('.outcome').length === 0) {
       $(this.maindiv.current).css('display', 'none')
-    else $(this.maindiv.current).css('display', '')
-    let indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    } else {
+      $(this.maindiv.current).css('display', '')
+    }
+
+    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+
     if (indicator.length >= 0) {
-      let num_outcomenodes = indicator
+      const num_outcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
       indicator
         .children('.outcome-node-indicator-number')
         .html(num_outcomenodes)
-      if (num_outcomenodes == 0) indicator.css('display', 'none')
+      if (num_outcomenodes === 0) indicator.css('display', 'none')
       else indicator.css('display', '')
     }
   }
@@ -81,8 +86,12 @@ class OutcomeNodeUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    let data = this.props.data
-    if (data.outcome === -1) return null
+    const data = this.props.data
+
+    // @todo component blows up on re-render by losing redux state
+    // results in
+
+    if (data?.outcome === -1 || !data?.outcome) return null
 
     return (
       <div
@@ -93,7 +102,9 @@ class OutcomeNodeUnconnected extends Component {
         {!this.props.renderer.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
         )}
+
         {Utility.getCompletionImg(data.degree, this.props.outcomes_type)}
+
         <SimpleOutcome
           checkHidden={this.checkHidden.bind(this)}
           comments={true}
@@ -107,11 +118,9 @@ class OutcomeNodeUnconnected extends Component {
     )
   }
 }
-const mapOutcomeNodeStateToProps = (state, own_props) =>
+const mapStateToProps = (state, own_props) =>
   getOutcomeNodeByID(state, own_props.objectID)
-const OutcomeNode = connect(
-  mapOutcomeNodeStateToProps,
-  null
-)(OutcomeNodeUnconnected)
+
+const OutcomeNode = connect(mapStateToProps, null)(OutcomeNodeUnconnected)
 
 export default OutcomeNode
