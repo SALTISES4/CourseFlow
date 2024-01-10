@@ -11,11 +11,6 @@ export enum WorkFlowActions {
   RESTORE_SELF = 'workflow/restoreSelf'
 }
 
-export enum WeekWorkflowActions {
-  CHANGE_ID = 'weekworkflow/changeID',
-  MOVED_TO = 'weekworkflow/movedTo'
-}
-
 export enum WeekActions {
   DELETE_SELF = 'week/deleteSelf',
   DELETE_SELF_SOFT = 'week/deleteSelfSoft',
@@ -26,11 +21,23 @@ export enum WeekActions {
   RELOAD_COMMENTS = 'week/reloadComments'
 }
 
+export enum WeekWorkflowActions {
+  CHANGE_ID = 'weekworkflow/changeID',
+  MOVED_TO = 'weekworkflow/movedTo'
+}
+
 export enum OutcomeActions {
   NEW_OUTCOME = 'outcome/newOutcome',
   DELETE_SELF = 'outcome/deleteSelf',
   DELETE_SELF_SOFT = 'outcome/deleteSelfSoft',
-  RESTORE_SELF = 'outcome/restoreSelf'
+  RESTORE_SELF = 'outcome/restoreSelf',
+  INSERT_CHILD = 'outcome/insertChild',
+  INSERT_BELOW = 'outcome/insertBelow',
+  CREATE_LOCK = 'outcome/createLock',
+  RELOAD_COMMENTS = 'outcome/reloadComments',
+  UPDATE_HORIZONTAL_LINK = 'outcome/updateHorizontalLinks',
+  CHANGE_FIELD = 'outcome/changeField',
+  CHANGE_FIELD_MANY = 'outcome/changeFieldMany'
 }
 
 export enum OutcomeNodeActions {
@@ -41,11 +48,21 @@ export enum OutcomeBaseActions {
   DELETE_SELF = 'outcome_base/deleteSelf',
   DELETE_SELF_SOFT = 'outcome_base/deleteSelfSoft',
   RESTORE_SELF = 'outcome_base/restoreSelf',
-  INSERT_BELOW = 'outcome_base/insertBelow'
+  INSERT_BELOW = 'outcome_base/insertBelow',
+  INSERT_CHILD = 'outcome_base/insertChild',
+  RELOAD_COMMENTS = 'outcome_base/reloadComments',
+  CHANGE_FIELD = 'outcome_base/changeField',
+  CHANGE_FIELD_MANY = 'outcome_base/changeFieldMany'
 }
+
 export enum OutcomeWorkflowActions {
   MOVED_TO = 'outcomeworkflow/movedTo',
   CHANGE_ID = 'outcomeworkflow/changeID'
+}
+
+export enum OutcomeOutcomeActions {
+  CHANGE_ID = 'outcomeoutcome/changeID',
+  MOVED_TO = 'outcomeoutcome/movedTo'
 }
 
 export enum StrategyActions {
@@ -57,7 +74,10 @@ export enum ColumnActions {
   DELETE_SELF = 'column/deleteSelf',
   DELETE_SELF_SOFT = 'column/deleteSelfSoft',
   RESTORE_SELF = 'column/restoreSelf',
-  INSERT_BELOW = 'column/insertBelow'
+  INSERT_BELOW = 'column/insertBelow',
+  CREATE_LOCK = 'column/createLock',
+  RELOAD_COMMENTS = 'column/reloadComments',
+  CHANGE_FIELD = 'column/changeField'
 }
 
 export enum ColumnWorkflowActions {
@@ -75,9 +95,32 @@ export enum NodeActions {
   DELETE_SELF = 'node/deleteSelf',
   DELETE_SELF_SOFT = 'node/deleteSelfSoft',
   RESTORE_SELF = 'node/restoreSelf',
-  INSERT_BELOW = 'node/insertBelow'
+  RELOAD_ASSIGNMENTS = 'node/reloadAssignments',
+  CHANGED_COLUMN = 'node/changedColumn',
+  CREATE_LOCK = 'node/createLock',
+  INSERT_BELOW = 'node/insertBelow',
+  CHANGE_FIELD = 'node/changeField',
+  RELOAD_COMMENTS = 'node/reloadComments',
+  SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
+}
+
+export enum NodeLinkActions {
+  CREATE_LOCK = 'nodelink/createLock',
+  CHANGE_FIELD = 'nodelink/changeField',
+  RESTORE_SELF = 'nodelink/restoreSelf',
+  DELETE_SELF = 'nodelink/deleteSelf',
+  DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',
+  NEW_NODE_LINK = 'nodelink/newNodeLink'
 }
 
 export enum GridMenuActions {
   ITEM_ADDED = 'gridmenu/itemAdded'
+}
+
+export enum ObjectSetActions {
+  TOGGLE_OBJECT_SET = 'objectset/toggleObjectSet'
+}
+
+export enum OutcomeHorizontalLinkActions {
+  UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
 }

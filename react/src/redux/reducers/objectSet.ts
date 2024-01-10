@@ -1,15 +1,20 @@
 // @ts-nocheck
-export default function objectSetReducer(state = [], action) {
+import { ObjectSetActions } from '@cfRedux/enumActions'
+import { Objectset } from '@cfRedux/type'
+import { AnyAction } from '@reduxjs/toolkit'
+
+export default function objectSetReducer(
+  state: Objectset[] = [],
+  action: AnyAction
+): Objectset[] {
   switch (action.type) {
-    case 'objectset/toggleObjectSet':
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          const new_state = state.slice()
-          new_state[i] = { ...new_state[i], hidden: action.payload.hidden }
-          return new_state
-        }
-      }
-      return state
+    case ObjectSetActions.TOGGLE_OBJECT_SET:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, hidden: action.payload.hidden }
+          : item
+      )
+
     default:
       return state
   }

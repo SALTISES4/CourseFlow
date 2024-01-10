@@ -18,7 +18,6 @@ import outcomeHorizontalLinkReducer from '@cfRedux/reducers/outcomeHorizontalLin
 import objectSetReducer from '@cfRedux/reducers/objectSet'
 import weekworkflowReducer from '@cfRedux/reducers/weekworkflow'
 import weekReducer from '@cfRedux/reducers/week'
-import { AppState, RootOutcomeStateType } from '@cfRedux/type'
 
 const rootWorkflowReducers = {
   workflow: workflowReducer,
@@ -39,7 +38,6 @@ const rootWorkflowReducers = {
   child_workflow: childWorkflowReducer,
   strategy: strategyReducer,
   objectset: objectSetReducer
-  // saltise_strategy: saltiseStrategyReducer, // this was empty
 }
 
 const rootOutcomeReducers = {

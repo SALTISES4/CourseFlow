@@ -272,15 +272,24 @@ export function getParentWorkflowInfoQuery(
     console.log('success')
 ) {
   try {
+     console.log('workflowPk')
+     console.log(workflowPk)
     $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data: ParentWorkflowInfoQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
     })
+      .done(function (data: ParentWorkflowInfoQueryResp) {
+        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+        else window.fail_function(data.action)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   } catch (err) {
+    console.log('getParentWorkflowInfoQuery error in try/catc')
+    console.log(err)
     window.fail_function()
   }
+  console.log('MyError getParentWorkflowInfoQuery')
 }
 
 /*******************************************************

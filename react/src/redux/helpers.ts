@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as Constants from '../constants'
+import ActionCreator from "@cfRedux/ActionCreator"
 
 /**
  * Manages the current selection, ensuring we only have one at a time

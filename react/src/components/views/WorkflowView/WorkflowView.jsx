@@ -6,7 +6,7 @@ import WeekWorkflow from './WeekWorkflow'
 import * as Utility from '@cfUtility'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-// import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox'
+import ActionCreator from '@cfRedux/ActionCreator'
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns
@@ -78,7 +78,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     }
     if (type === 'weekworkflow') {
       this.props.renderer.micro_update(
-       ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,

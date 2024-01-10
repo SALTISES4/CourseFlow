@@ -1,9 +1,11 @@
+// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Constants from '@cfConstants'
 import { ComparisonView } from '@cfViews/ComparisonView'
+import { ViewType } from '@cfModule/types/enum.js'
 
 /**
  * export interface Welcome2 {
@@ -50,7 +52,7 @@ export class WorkflowComparison {
     makeActiveSidebar('#project' + this.project_data.id)
   }
 
-  render(container, view_type = 'workflowview') {
+  render(container, view_type = ViewType.WORKFLOW) {
     this.container = container
     this.view_type = view_type
 
@@ -79,7 +81,10 @@ export class WorkflowComparison {
 
     this.selection_manager = new SelectionManager(this.read_only)
 
-    if (view_type === 'workflowview' || view_type === 'outcomeedit') {
+    if (
+      view_type === ViewType.WORKFLOW ||
+      view_type === ViewType.OUTCOME_EDIT
+    ) {
       reactDom.render(
         <ComparisonView
           view_type={view_type}

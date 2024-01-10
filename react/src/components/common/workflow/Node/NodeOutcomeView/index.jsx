@@ -52,7 +52,7 @@ class NodeOutcomeViewUnconnected extends Component {
           <div className="mouseover-actions">{comments}</div>
         </div>
         <div className="side-actions">
-          <div className="comment-indicator-container"></div>
+          <div className="comment-indicator-container"/>
         </div>
       </div>
     )

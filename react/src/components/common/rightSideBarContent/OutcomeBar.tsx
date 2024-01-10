@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -19,7 +20,7 @@ class OutcomeBarUnconnected extends React.Component {
    *******************************************************/
   editOutcomesClick() {
     // @todo, manage view change with state update
-    this.props.renderer.render($('#container'), 'outcomeedit')
+    this.props.renderer.render($('#container'), ViewType.OUTCOME_EDIT)
   }
 
   /*******************************************************

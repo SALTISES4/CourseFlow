@@ -1,260 +1,251 @@
 // @ts-nocheck
-import * as Utility from "@cfUtility";
+import * as Utility from '@cfUtility'
+import {
+  ColumnActions,
+  CommonActions,
+  NodeActions,
+  NodeLinkActions,
+  OutcomeActions,
+  OutcomeBaseActions,
+  OutcomeNodeActions,
+  OutcomeOutcomeActions,
+  StrategyActions,
+  WeekActions
+} from '@cfRedux/enumActions'
+import { Node } from '@cfRedux/type'
+import { AnyAction } from '@reduxjs/toolkit'
 
-export default  function nodeReducer(state = [], action) {
+export default function nodeReducer(
+  state: Node[] = [],
+  action: AnyAction
+): Node[] {
   switch (action.type) {
-    case 'replaceStoreData':
+    case CommonActions.REPLACE_STOREDATA:
       if (action.payload.node) return action.payload.node
       return state
-    case 'refreshStoreData':
-      var new_state = state.slice()
-      if (action.payload.node) {
-        for (var i = 0; i < action.payload.node.length; i++) {
-          const new_obj = action.payload.node[i]
-          let added = false
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj)
-              added = true
-              break
-            }
-          }
-          if (added) continue
-          new_state.push(new_obj)
-        }
-      }
-      return new_state
-    case 'node/createLock':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i], lock: action.payload.lock }
-          return new_state
-        }
-      }
-      return state
-    case 'column/deleteSelf':
-    case 'column/deleteSelfSoft':
-      var new_state = state.slice()
-      var new_column
-      if (action.payload.extra_data) {
-        new_column = action.payload.extra_data
-      }
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].column == action.payload.id) {
-          new_state[i] = { ...state[i], column: new_column }
-        }
-      }
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-      return new_state
-    case 'column/restoreSelf':
-      var new_state = state.slice()
-      var new_column
-      if (action.payload.id) {
-        new_column = action.payload.id
-      }
 
-      for (var i = 0; i < state.length; i++) {
-        if (action.payload.extra_data.indexOf(state[i].id) >= 0) {
-          new_state[i] = { ...state[i], column: new_column }
-        }
-      }
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-      return new_state
-    case 'node/changedColumn':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i], column: action.payload.new_column }
-          return new_state
-        }
-      }
-      return state
-    case 'node/deleteSelf':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state.splice(i, 1)
-          Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-          return new_state
-        }
-      }
-      return state
-    case 'node/deleteSelfSoft':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext('This session')
-          }
-          Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-          return new_state
-        }
-      }
-      return state
-    case 'node/restoreSelf':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i], deleted: false }
-          Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-          return new_state
-        }
-      }
-      return state
-    case 'nodelink/deleteSelf':
-    case 'nodelink/deleteSelfSoft':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outgoing_links.indexOf(action.payload.id) >= 0) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i] }
-          new_state[i].outgoing_links = state[i].outgoing_links.slice()
-          new_state[i].outgoing_links.splice(
-            new_state[i].outgoing_links.indexOf(action.payload.id),
-            1
+    case CommonActions.REFRESH_STOREDATA:
+      const updatedState = [...state]
+      if (action.payload.node) {
+        action.payload.node.forEach((nodeItem) => {
+          const existingIndex = updatedState.findIndex(
+            (item) => item.id === nodeItem.id
           )
-          return new_state
-        }
+          if (existingIndex >= 0) {
+            updatedState[existingIndex] = nodeItem
+          } else {
+            updatedState.push(nodeItem)
+          }
+        })
       }
-      return state
-    case 'nodelink/restoreSelf':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i] }
-          new_state[i].outgoing_links = state[i].outgoing_links.slice()
-          new_state[i].outgoing_links.push(action.payload.id)
-          return new_state
-        }
-      }
-      return state
-    case 'week/insertBelow':
-      if (!action.payload.children) return state
-      new_state = state.slice()
-      for (var i = 0; i < action.payload.children.node.length; i++) {
-        new_state.push(action.payload.children.node[i])
-      }
-      return new_state
-    case 'node/insertBelow':
-    case 'node/newNode':
-      new_state = state.slice()
-      new_state.push(action.payload.new_model)
-      return new_state
-    case 'node/changeField':
-      if (
-        action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+      return updatedState
+
+    /*******************************************************
+     * COLUMN
+     *******************************************************/
+    case ColumnActions.DELETE_SELF:
+    case ColumnActions.DELETE_SELF_SOFT:
+    case ColumnActions.RESTORE_SELF: {
+      const isDeleteAction =
+        action.type === ColumnActions.DELETE_SELF ||
+        action.type === 'column/deleteSelfSoft'
+      const newColumn = isDeleteAction
+        ? action.payload.extra_data
+        : action.payload.id
+      const updatedState = state.map((item) => {
+        const shouldUpdateColumn = isDeleteAction
+          ? item.column === action.payload.id
+          : action.payload.extra_data.includes(item.id)
+        return shouldUpdateColumn ? { ...item, column: newColumn } : item
+      })
+      // @todo need to remove these kind of side effects from...
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      return updatedState
+    }
+
+    /*******************************************************
+     * NODE
+     *******************************************************/
+    case NodeActions.CHANGED_COLUMN:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, column: action.payload.new_column }
+          : item
       )
-        return state
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = { ...state[i], ...action.payload.json }
-          return new_state
-        }
-      }
-      return state
-    case 'node/setLinkedWorkflow':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice()
-          new_state[i] = { ...state[i] }
-          new_state[i].linked_workflow = action.payload.linked_workflow
-          new_state[i].linked_workflow_data =
-            action.payload.linked_workflow_data
-          return new_state
-        }
-      }
-      return state
-    case 'nodelink/newNodeLink':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.new_model.source_node) {
-          var new_state = state.slice()
-          new_state[i] = { ...state[i] }
-          const new_outgoing_links = state[i].outgoing_links.slice()
-          new_outgoing_links.push(action.payload.new_model.id)
-          new_state[i].outgoing_links = new_outgoing_links
-          return new_state
-        }
-      }
-      return state
-    case 'outcomenode/updateDegree':
-      //Returns -1 if the outcome had already been added to the node at the given degree
-      if (action.payload.outcomenode == -1) return state
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].node) {
-          var new_state = state.slice()
-          new_state[i] = { ...new_state[i] }
-          new_state[i].outcomenode_set = action.payload.new_outcomenode_set
-          new_state[i].outcomenode_unique_set =
-            action.payload.new_outcomenode_unique_set
-          return new_state
-        }
-      }
-      return state
-    case 'strategy/addStrategy':
-      if (action.payload.nodes_added.length == 0) return state
-      new_state = state.slice()
-      new_state.push(...action.payload.nodes_added)
-      return new_state
-    case 'outcome/deleteSelf':
-    case 'outcome/deleteSelfSoft':
-    case 'outcome_base/deleteSelf':
-    case 'outcome_base/deleteSelfSoft':
-    case 'outcome/restoreSelf':
-    case 'outcome_base/restoreSelf':
-      new_state = state.slice()
-      for (var i = 0; i < action.payload.extra_data.length; i++) {
-        const new_node_data = action.payload.extra_data[i]
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_node_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_node_data }
-          }
-        }
-      }
-      return new_state
-    case 'node/reloadComments':
-      var new_state = state.slice()
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i]
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data }
-          return new_state
-        }
-      }
-      return state
-    case 'node/reloadAssignments':
-      var new_state = state.slice()
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i]
-        if (obj.id == action.payload.id) {
-          new_state[i] = {
-            ...obj,
-            has_assignment: action.payload.has_assignment
-          }
-          return new_state
-        }
-      }
-    case 'outcome/insertChild':
-    case 'outcome/insertBelow':
-    case 'outcome_base/insertChild':
-    case 'outcomeoutcome/changeID':
-      if (action.payload.node_updates.length == 0) return state
-      var new_state = state.slice()
-      for (var i = 0; i < action.payload.node_updates.length; i++) {
-        for (var j = 0; j < state.length; j++) {
-          if (action.payload.node_updates[i].id == state[j].id) {
-            new_state[j] = {
-              ...new_state[j],
-              outcomenode_set: action.payload.node_updates[i].outcomenode_set,
-              outcomenode_unique_set:
-                action.payload.node_updates[i].outcomenode_unique_set
+
+    case NodeActions.DELETE_SELF: {
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      return state.filter((item) => item.id !== action.payload.id)
+    }
+
+    case NodeActions.CREATE_LOCK:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, lock: action.payload.lock }
+          : item
+      )
+
+    case NodeActions.DELETE_SELF_SOFT: {
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? {
+              ...item,
+              deleted: true,
+              deleted_on: window.gettext('This session')
             }
+          : item
+      )
+    }
+
+    case NodeActions.RESTORE_SELF:
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      return state.map((item) =>
+        item.id === action.payload.id ? { ...item, deleted: false } : item
+      )
+
+    case NodeActions.INSERT_BELOW:
+    case NodeActions.NEW_NODE: {
+      return [...state, action.payload.new_model]
+    }
+
+    case NodeActions.CHANGE_FIELD:
+      if (
+        action.payload.changeFieldID ===
+        COURSEFLOW_APP.contextData.changeFieldID
+      ) {
+        return state
+      }
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, ...action.payload.json }
+          : item
+      )
+
+    case NodeActions.RELOAD_COMMENTS:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, comments: action.payload.comment_data }
+          : item
+      )
+
+    case NodeActions.SET_LINKED_WORKFLOW:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? {
+              ...item,
+              linked_workflow: action.payload.linked_workflow,
+              linked_workflow_data: action.payload.linked_workflow_data
+            }
+          : item
+      )
+
+    case NodeActions.RELOAD_ASSIGNMENTS:
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, has_assignment: action.payload.has_assignment }
+          : item
+      )
+
+    /*******************************************************
+     * NODE LINK
+     *******************************************************/
+    case NodeLinkActions.DELETE_SELF:
+    case NodeLinkActions.DELETE_SELF_SOFT:
+      return state.map((item) => {
+        if (item.outgoing_links.includes(action.payload.id)) {
+          const updatedOutgoingLinks = item.outgoing_links.filter(
+            (linkId) => linkId !== action.payload.id
+          )
+          return { ...item, outgoing_links: updatedOutgoingLinks }
+        }
+        return item
+      })
+
+    case NodeLinkActions.RESTORE_SELF:
+      return state.map((item) => {
+        if (item.id === action.payload.parent_id) {
+          return {
+            ...item,
+            outgoing_links: [...item.outgoing_links, action.payload.id]
           }
         }
+        return item
+      })
+
+    case NodeLinkActions.NEW_NODE_LINK:
+      return state.map((item) => {
+        if (item.id === action.payload.new_model.source_node) {
+          return {
+            ...item,
+            outgoing_links: [
+              ...item.outgoing_links,
+              action.payload.new_model.id
+            ]
+          }
+        }
+        return item
+      })
+
+    case StrategyActions.ADD_STRATEGY: {
+      if (action.payload.nodes_added.length == 0) return state
+      return [...state, ...action.payload.nodes_added]
+    }
+    /*******************************************************
+     * OUTCOME
+     *******************************************************/
+    case OutcomeActions.DELETE_SELF:
+    case OutcomeActions.DELETE_SELF_SOFT:
+    case OutcomeActions.RESTORE_SELF:
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeBaseActions.DELETE_SELF_SOFT:
+    case OutcomeBaseActions.RESTORE_SELF:
+      return state.map((item) => {
+        const update = action.payload.extra_data.find(
+          (updateItem) => updateItem.id === item.id
+        )
+        return update ? { ...item, ...update } : item
+      })
+
+    case OutcomeActions.INSERT_CHILD:
+    case OutcomeActions.INSERT_BELOW:
+    case OutcomeBaseActions.INSERT_CHILD:
+    case OutcomeOutcomeActions.CHANGE_ID:
+      if (action.payload.node_updates.length === 0) return state
+      return state.map((item) => {
+        const update = action.payload.node_updates.find(
+          (updateItem) => updateItem.id === item.id
+        )
+        return update
+          ? {
+              ...item,
+              outcomenode_set: update.outcomenode_set,
+              outcomenode_unique_set: update.outcomenode_unique_set
+            }
+          : item
+      })
+
+    case OutcomeNodeActions.UPDATE_DEGREE:
+      if (action.payload.outcomenode === -1) return state
+      return state.map((item) => {
+        return item.id === action.payload.data_package[0].node
+          ? {
+              ...item,
+              outcomenode_set: action.payload.new_outcomenode_set,
+              outcomenode_unique_set: action.payload.new_outcomenode_unique_set
+            }
+          : item
+      })
+
+    /*******************************************************
+     * WEEK
+     *******************************************************/
+    case WeekActions.INSERT_BELOW:
+      if (!action.payload.children) {
+        return state
       }
-      return new_state
+      return state.concat(action.payload.children.node)
+
     default:
       return state
   }

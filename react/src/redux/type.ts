@@ -1,3 +1,5 @@
+import ChildWorkflow from '@cfRedux/reducers/childWorkflow'
+
 export type AppState = {
   workflow: Workflow
   outcomeworkflow: Columnworkflow[]
@@ -9,20 +11,21 @@ export type AppState = {
   node: Node[]
   outcomenode: Outcomenode[]
   nodelink: Nodelink[]
-  parent_workflow: any[]
-  parent_node: any[]
-  outcomehorizontallink: any[]
-  child_workflow: any[]
+  parent_workflow: ParentWorkflow[]
+  parent_node: ParentNode[]
+  outcomehorizontallink: OutcomeHorizontalLink[]
+  child_workflow: ChildWorkflow[]
   strategy: Strategy[]
-  objectset: any[]
-  outcomeoutcome: any[]
-  outcome: any[]
+  objectset: Objectset[]
+  outcomeoutcome: OutcomeOutcome[]
+  outcome: Outcome[]
 }
 
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
 
-export type Nodelink = any
-
+/*******************************************************
+ * INDIVIDUALL REDUCER TYPES
+ *******************************************************/
 export type Outcomenode = {
   node: number
   outcome: number
@@ -68,6 +71,7 @@ export type Columnworkflow = {
   id: number
   column?: number
   outcome?: number
+  no_drag?: boolean
 }
 
 export type Node = {
@@ -172,7 +176,18 @@ export type Workflow = {
   url: string
 }
 
+/*******************************************************
+ * NEED TYPING
+ *******************************************************/
+export type Nodelink = any
+
+export type Objectset = any
+
+export type OutcomeOutcome = any
+export type ParentWorkflow = any
 export type Strategy = any
+export type ChildWorkflow = any
+export type OutcomeHorizontalLink = any
 
 // ENUM
 export enum NodeTypeDisplay {

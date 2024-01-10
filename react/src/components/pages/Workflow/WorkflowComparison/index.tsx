@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
@@ -7,6 +8,8 @@ import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonV
 import * as Utility from '@cfUtility'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { ViewType } from '@cfModule/types/enum.js'
 
 /****************************************
  *  @WorkflowComparisonRenderer
@@ -29,7 +32,7 @@ export class WorkflowComparison extends Workflow {
     this.initial_object_sets = initial_object_sets
   }
 
-  render(view_type = 'workflowview') {
+  render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type
     const store = this.store
     this.locks = {}
@@ -37,7 +40,7 @@ export class WorkflowComparison extends Workflow {
 
     reactDom.render(<WorkflowLoader />, el)
 
-    if (view_type === 'outcomeedit') {
+    if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
         store.dispatch(ActionCreator.refreshStoreData(response.data_package))
@@ -48,7 +51,7 @@ export class WorkflowComparison extends Workflow {
           el
         )
       })
-    } else if (view_type === 'workflowview') {
+    } else if (view_type === ViewType.WORKFLOW) {
       reactDom.render(
         <Provider store={this.store}>
           <WorkflowComparisonBaseView view_type={view_type} renderer={this} />

@@ -21,6 +21,10 @@ export default function weekworkflowReducer(
     }
 
     case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.weekworkflow) {
+        return state
+      }
+
       // replace exising items
       const new_state = state.map((item) => {
         const foundItem = action.payload.weekworkflow.find(

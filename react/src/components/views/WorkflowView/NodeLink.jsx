@@ -130,5 +130,4 @@ class NodeLink extends EditableComponentWithActions {
 }
 const mapNodeLinkStateToProps = (state, own_props) =>
   getNodeLinkByID(state, own_props.objectID)
-const mapNodeLinkDispatchToProps = {}
 export default connect(mapNodeLinkStateToProps, null)(NodeLink)

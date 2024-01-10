@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets

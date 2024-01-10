@@ -11,32 +11,40 @@ function childWorkflowReducer(state = [], action: AnyAction) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.child_workflow || state
 
-    case CommonActions.REFRESH_STOREDATA:
-      return action.payload.child_workflow
-        ? action.payload.child_workflow.reduce(
-            (acc, newObj) => {
-              const existingIndex = acc.findIndex(
-                (item) => item.id === newObj.id
-              )
-              if (existingIndex !== -1) {
-                acc[existingIndex] = newObj
-              } else {
-                acc.push(newObj)
-              }
-              return acc
-            },
-            [...state]
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.child_workflow) {
+        return state
+      }
+
+      return action.payload.child_workflow.reduce(
+        (updatedState, newChildWorkflowItem) => {
+          const existingIndex = updatedState.findIndex(
+            (item) => item.id === newChildWorkflowItem.id
           )
-        : state
+
+          if (existingIndex !== -1) {
+            // Update existing item in place
+            updatedState[existingIndex] = newChildWorkflowItem
+          } else {
+            // Add new item to the array
+            updatedState.push(newChildWorkflowItem)
+          }
+
+          return updatedState
+        },
+        [...state]
+      )
+    }
 
     case OutcomeBaseActions.DELETE_SELF:
-    case OutcomeBaseActions.DELETE_SELF_SOFT:
+    case OutcomeBaseActions.DELETE_SELF_SOFT: {
       return state.map((item) => ({
         ...item,
         outcomeworkflow_set: item.outcomeworkflow_set.filter(
           (id) => id !== action.payload.parent_id
         )
       }))
+    }
 
     case OutcomeBaseActions.RESTORE_SELF:
     case OutcomeBaseActions.INSERT_BELOW:

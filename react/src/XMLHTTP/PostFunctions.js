@@ -100,6 +100,11 @@ export function newNode(
 }
 
 //Create a nodelink from the source to the target, at the given ports
+/*******************************************************
+ *
+ *  endpoint: workflow/node-link/new
+ *  json-api-post-new-node-link
+ *******************************************************/
 export function newNodeLink(
   source_node,
   target_node,

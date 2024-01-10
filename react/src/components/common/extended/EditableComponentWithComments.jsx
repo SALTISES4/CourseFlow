@@ -13,6 +13,7 @@ import ComponentWithToggleDrop from './ComponentWithToggleDrop.tsx'
 import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
+import ActionCreator from '@cfRedux/ActionCreator.ts'
 
 /*******************************************************
  * @CommentBox
@@ -309,21 +310,26 @@ class CommentBox extends ComponentWithToggleDrop {
 //Extends the react component to add a few features that are used in a large number of components
 class EditableComponentWithComments extends EditableComponent {
   //Adds a button that opens/closes the comments dialogue
+
+  // @todo data is not used
+  // addCommenting(data) {
   addCommenting(data) {
-    return [
-      <ActionButton
-        buttonIcon="comment_new.svg"
-        buttonClass="comment-button"
-        titleText={window.gettext('Comments')}
-        handleClick={this.commentClick.bind(this)}
-      />,
-      <CommentBox
-        show={this.state.show_comments}
-        comments={this.props.data.comments}
-        parent={this}
-        renderer={this.props.renderer}
-      />
-    ]
+    return (
+      <>
+        <ActionButton
+          buttonIcon="comment_new.svg"
+          buttonClass="comment-button"
+          titleText={window.gettext('Comments')}
+          handleClick={this.commentClick.bind(this)}
+        />
+        <CommentBox
+          show={this.state.show_comments}
+          comments={this.props.data.comments}
+          parent={this}
+          renderer={this.props.renderer}
+        />
+      </>
+    )
   }
 
   commentClick(evt) {

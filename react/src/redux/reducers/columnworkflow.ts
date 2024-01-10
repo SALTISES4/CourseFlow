@@ -1,73 +1,87 @@
-export default function columnworkflowReducer(state = [], action) {
+import { Columnworkflow } from '@cfRedux/type'
+import { AnyAction } from '@reduxjs/toolkit'
+import {
+  ColumnActions,
+  ColumnWorkflowActions,
+  CommonActions,
+  NodeActions,
+  StrategyActions
+} from '@cfRedux/enumActions'
+
+/**
+ *
+ * @param state
+ * @param action
+ */
+function columnWorkflowReducer(
+  state: Columnworkflow[] = [],
+  action: AnyAction
+): Columnworkflow[] {
   switch (action.type) {
-    case 'replaceStoreData':
+    case CommonActions.REPLACE_STOREDATA:
       if (action.payload.columnworkflow) return action.payload.columnworkflow
       return state
-    case 'refreshStoreData':
-      var new_state = state.slice()
-      if (action.payload.columnworkflow) {
-        for (var i = 0; i < action.payload.columnworkflow.length; i++) {
-          const new_obj = action.payload.columnworkflow[i]
-          let added = false
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj)
-              added = true
-              break
-            }
+
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.columnworkflow) return state
+
+      return action.payload.columnworkflow.reduce(
+        (acc, newItem) => {
+          const existingIndex = acc.findIndex((item) => item.id === newItem.id)
+          if (existingIndex !== -1) {
+            acc.splice(existingIndex, 1, newItem) // Replace the item at the found index
+          } else {
+            acc.push(newItem) // Add the new item if not found
           }
-          if (added) continue
-          new_state.push(new_obj)
-        }
-      }
-      return new_state
-    case 'columnworkflow/changeID':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice()
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          }
-          return new_state
-        }
-      }
-      return state
-    case 'columnworkflow/movedTo':
-      new_state = state.slice()
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true }
-        }
-      }
-      return new_state
-    case 'column/deleteSelf':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice()
-          new_state.splice(i, 1)
-          return new_state
-        }
-      }
-      return state
-    case 'node/newNode':
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.columnworkflow.id) return state
-      }
-      new_state = state.slice()
-      new_state.push(action.payload.columnworkflow)
-      return new_state
-    case 'column/insertBelow':
-      new_state = state.slice()
+          return acc
+        },
+        [...state]
+      )
+    }
+
+    case ColumnWorkflowActions.CHANGE_ID: {
+      return state.map((item) =>
+        item.id === action.payload.old_id
+          ? { ...item, id: action.payload.new_id, no_drag: false }
+          : item
+      )
+    }
+
+    case ColumnWorkflowActions.MOVED_TO: {
+      return state.map((item) =>
+        item.id === action.payload.id ? { ...item, no_drag: true } : item
+      )
+    }
+
+    case ColumnActions.DELETE_SELF: {
+      return state.filter((item) => item.id !== action.payload.parent_id)
+    }
+
+    case ColumnActions.INSERT_BELOW: {
+      const new_state = state.slice()
       new_state.push(action.payload.new_through)
       return new_state
-    case 'strategy/addStrategy':
-      if (action.payload.columnworkflows_added.length == 0) return state
-      new_state = state.slice()
+    }
+
+    case NodeActions.NEW_NODE: {
+      const exists = state.some(
+        (item) => item.id === action.payload.columnworkflow.id
+      )
+      return exists ? state : [...state, action.payload.columnworkflow]
+    }
+
+    case StrategyActions.ADD_STRATEGY: {
+      if (action.payload.columnworkflows_added.length == 0) {
+        return state
+      }
+      const new_state = state.slice()
       new_state.push(...action.payload.columnworkflows_added)
       return new_state
+    }
+
     default:
       return state
   }
 }
+
+export default columnWorkflowReducer

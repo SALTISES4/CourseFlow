@@ -222,6 +222,7 @@ export function object_sets_types() {
 
 //missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
 function missing_translations() {
+  console.log('missing_translations called')
   window.gettext('activity')
   window.gettext('course')
   window.gettext('program')

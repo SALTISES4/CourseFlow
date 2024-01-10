@@ -32,6 +32,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
+import ActionCreator from '@cfRedux/ActionCreator'
+import {ViewType} from "@cfModule/types/enum";
 const cache = createCache({
   key: 'emotion',
   // @ts-ignore
@@ -100,8 +102,6 @@ class Workflow {
   private store: Store<EmptyObject & AppState, AnyAction>
 
   constructor(props: WorkflowDetailViewDTO) {
-    console.log('WF props')
-    console.log(props)
     const {
       column_choices,
       context_choices,
@@ -136,6 +136,8 @@ class Workflow {
     this.user_role = props.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
     this.user_id = props.user_id
     this.read_only = true
+    this.workflowRender = this.render.bind(this)
+
     if (this.public_view) {
       this.always_static = true
     }
@@ -298,13 +300,19 @@ class Workflow {
     this.container = container // @todo where is view_type set?
     this.selection_manager.renderer = this // @todo explicit props
 
-    if (view_type === 'outcomeedit') {
+    if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
         reactDom.render(
           <Provider store={this.store}>
-            <WorkflowBaseView view_type={view_type} renderer={this} />
+            <WorkflowBaseView
+              view_type={view_type}
+              renderer={this}
+              parentRender={this.workflowRender}
+            />
           </Provider>,
           container[0]
         )
@@ -316,7 +324,7 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkflowBaseView view_type={view_type} renderer={this} />
+                <WorkflowBaseView view_type={view_type} renderer={this} parentRender={this.workflowRender}/>
               </Provider>
             </ThemeProvider>
           </CacheProvider>,
@@ -338,7 +346,9 @@ class Workflow {
     this.getWorkflowChildData(
       this.child_data_needed[this.child_data_completed],
       (response) => {
-        this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
         setTimeout(() => this.getDataForChildWorkflow(), 50)
       }
     )

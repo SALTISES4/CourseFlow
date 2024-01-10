@@ -14,6 +14,7 @@ import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
 
 /**
  * The link to tagged outcomes. Used when an outcome

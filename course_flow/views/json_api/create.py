@@ -140,6 +140,7 @@ def json_api_post_new_node(request: HttpRequest) -> JsonResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
+
     response_data = {
         "new_model": NodeSerializerShallow(node).data,
         "new_through": NodeWeekSerializerShallow(node_week).data,
