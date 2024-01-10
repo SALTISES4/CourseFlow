@@ -32,6 +32,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
+import ActionCreator from '@cfRedux/ActionCreator'
+import {ViewType} from "@cfModule/types/enum";
 const cache = createCache({
   key: 'emotion',
   // @ts-ignore
@@ -100,8 +102,6 @@ class Workflow {
   private store: Store<EmptyObject & AppState, AnyAction>
 
   constructor(props: WorkflowDetailViewDTO) {
-    console.log('WF props')
-    console.log(props)
     const {
       column_choices,
       context_choices,
@@ -136,6 +136,8 @@ class Workflow {
     this.user_role = props.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
     this.user_id = props.user_id
     this.read_only = true
+    this.workflowRender = this.render.bind(this)
+
     if (this.public_view) {
       this.always_static = true
     }
@@ -298,13 +300,19 @@ class Workflow {
     this.container = container // @todo where is view_type set?
     this.selection_manager.renderer = this // @todo explicit props
 
-    if (view_type === 'outcomeedit') {
+    if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(Reducers.refreshStoreData(response.data_package))
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
         reactDom.render(
           <Provider store={this.store}>
-            <WorkflowBaseView view_type={view_type} renderer={this} />
+            <WorkflowBaseView
+              view_type={view_type}
+              renderer={this}
+              parentRender={this.workflowRender}
+            />
           </Provider>,
           container[0]
         )
@@ -316,7 +324,7 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkflowBaseView view_type={view_type} renderer={this} />
+                <WorkflowBaseView view_type={view_type} renderer={this} parentRender={this.workflowRender}/>
               </Provider>
             </ThemeProvider>
           </CacheProvider>,
@@ -338,7 +346,9 @@ class Workflow {
     this.getWorkflowChildData(
       this.child_data_needed[this.child_data_completed],
       (response) => {
-        this.store.dispatch(Reducers.refreshStoreData(response.data_package))
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
         setTimeout(() => this.getDataForChildWorkflow(), 50)
       }
     )
@@ -433,7 +443,7 @@ class Workflow {
     }
 
     this.store.dispatch(
-      Reducers.createLockAction(
+      ActionCreator.createLockAction(
         object_id,
         object_type,
         data.lock,
@@ -445,7 +455,7 @@ class Workflow {
     if (data.lock) {
       this.locks[object_type][object_id] = setTimeout(() => {
         this.store.dispatch(
-          Reducers.createLockAction(object_id, object_type, false)
+          ActionCreator.createLockAction(object_id, object_type, false)
         )
       }, data.expires - Date.now())
     } else {
@@ -464,12 +474,12 @@ class Workflow {
     this.getWorkflowParentData(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
-        Reducers.replaceStoreData({
+        ActionCreator.replaceStoreData({
           parent_node: [],
           parent_workflow: []
         })
       )
-      this.store.dispatch(Reducers.refreshStoreData(response.data_package))
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
       this.clear_queue(0)
     })
   }
@@ -486,7 +496,7 @@ class Workflow {
     }
 
     this.getWorkflowChildData(node.id, (response) => {
-      this.store.dispatch(Reducers.refreshStoreData(response.data_package))
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
       this.clear_queue(0)
     })
   }
@@ -511,7 +521,7 @@ class Workflow {
   change_field(id, object_type, field, value) {
     const json = {}
     json[field] = value
-    this.store.dispatch(Reducers.changeField(id, object_type, json))
+    this.store.dispatch(ActionCreator.changeField(id, object_type, json))
     updateValueQuery(id, object_type, json, true)
   }
 

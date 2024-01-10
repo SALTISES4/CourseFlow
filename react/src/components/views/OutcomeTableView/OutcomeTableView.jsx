@@ -155,18 +155,18 @@ class OutcomeTableView extends React.Component {
 
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
-      if (this.props.renderer.view_type === 'outcometable')
+      if (this.props.renderer.view_type === 'outcometable') {
         text = gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
+      }
 
       //else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
       return <div className="emptytext">{text}</div>
     } else {
-      let nodes
-      nodes = nodecategory.map((nodecategory) => (
+      const nodes = nodecategory.map((nodecategory) => (
         <div className="table-group">
-          <div className="table-cell nodewrapper blank-cell"></div>
+          <div className="table-cell nodewrapper blank-cell" />
           <div className="table-cell nodewrapper total-cell">
             <div className="node-category-header">{nodecategory.title}</div>
           </div>
@@ -175,6 +175,7 @@ class OutcomeTableView extends React.Component {
           ))}
         </div>
       ))
+
       const outcomes = outcomes_sorted.map((category) => (
         <div>
           {this.props.object_sets.length > 0 && (
@@ -206,11 +207,11 @@ class OutcomeTableView extends React.Component {
           <div className="outcome-table node-rows">
             <div className="outcome-row node-row">
               <div className="outcome-wrapper">
-                <div className="outcome-head empty"></div>
+                <div className="outcome-head empty" />
               </div>
               <div className="outcome-cells">{nodes}</div>
               <div className="table-cell blank-cell">
-                <div className="node-category-header"></div>
+                <div className="node-category-header" />
               </div>
               <div className="table-cell total-cell grand-total-cell">
                 <div className="total-header">Grand Total</div>
@@ -223,7 +224,8 @@ class OutcomeTableView extends React.Component {
     }
   }
 }
-const mapStateToProps = (state, own_props) => {
+
+const mapStateToProps = (state) => {
   return {
     workflow_type: state.workflow.type,
     outcomes_type: state.workflow.outcomes_type,
@@ -242,5 +244,4 @@ const mapStateToProps = (state, own_props) => {
     outcomes: state.outcome
   }
 }
-const mapDispatchToProps = {}
 export default connect(mapStateToProps, null)(OutcomeTableView)

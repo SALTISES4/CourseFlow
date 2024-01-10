@@ -5,11 +5,11 @@ import {
   getAssignmentsForNode,
   setAssignmentCompletionQuery
 } from '@XMLHTTP/PostFunctions'
-import { reloadAssignmentsAction } from '@cfReducers'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
 
 /**
  *
@@ -170,13 +170,17 @@ class AssignmentBox extends React.Component {
         (response_data.data_package.my_assignments.length > 0 ||
           response_data.data_package.all_assignments.length > 0)
       ) {
-        props.dispatch(reloadAssignmentsAction(props.node_id, true))
+        props.dispatch(
+          ActionCreator.reloadAssignmentsAction(props.node_id, true)
+        )
       } else if (
         this.props.has_assignment &&
         response_data.data_package.my_assignments.length == 0 &&
         response_data.data_package.all_assignments.length == 0
       ) {
-        props.dispatch(reloadAssignmentsAction(props.node_id, false))
+        props.dispatch(
+          ActionCreator.reloadAssignmentsAction(props.node_id, false)
+        )
       }
     })
   }

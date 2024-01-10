@@ -1,9 +1,10 @@
+// @ts-ignore
 import * as React from 'react'
 import { connect } from 'react-redux'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
-import {getStrategyByID, StrategyByIDType} from '@cfRedux/stateSelectors'
 import { AppState } from '@cfRedux/type'
+import { getStrategyByID, StrategyByIDType } from '@cfFindState'
 
 /**
  * Represents a strategy (SALTISE) or node group (user generated)

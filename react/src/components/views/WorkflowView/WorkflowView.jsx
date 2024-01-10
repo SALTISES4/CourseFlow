@@ -4,10 +4,9 @@ import { EditableComponentWithSorting } from '@cfCommonComponents/extended'
 import ColumnWorkflow from './ColumnWorkflow'
 import WeekWorkflow from './WeekWorkflow'
 import * as Utility from '@cfUtility'
-import { moveColumnWorkflow, moveWeekWorkflow } from '@cfReducers'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-// import closeMessageBox from '../../components/MenuComponents/components/closeMessageBox'
+import ActionCreator from '@cfRedux/ActionCreator'
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns
@@ -65,7 +64,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === 'columnworkflow') {
       this.props.renderer.micro_update(
-        moveColumnWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,
@@ -79,7 +78,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     }
     if (type === 'weekworkflow') {
       this.props.renderer.micro_update(
-        moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
         this.props.renderer,

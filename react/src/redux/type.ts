@@ -1,23 +1,55 @@
+import ChildWorkflow from '@cfRedux/reducers/childWorkflow'
+
 export type AppState = {
   workflow: Workflow
-  outcomeworkflow: any[]
+  outcomeworkflow: Columnworkflow[]
   columnworkflow: Columnworkflow[]
   column: Column[]
   weekworkflow: Weekworkflow[]
   week: Week[]
   nodeweek: Nodeweek[]
   node: Node[]
-  nodelink: any[]
-  outcome: any[]
-  outcomeoutcome: any[]
-  outcomenode: any[]
-  parent_workflow: any[]
-  parent_node: any[]
-  outcomehorizontallink: any[]
-  child_workflow: any[]
-  strategy: any[]
-  saltise_strategy: any[]
-  objectset: any[]
+  outcomenode: Outcomenode[]
+  nodelink: Nodelink[]
+  parent_workflow: ParentWorkflow[]
+  parent_node: ParentNode[]
+  outcomehorizontallink: OutcomeHorizontalLink[]
+  child_workflow: ChildWorkflow[]
+  strategy: Strategy[]
+  objectset: Objectset[]
+  outcomeoutcome: OutcomeOutcome[]
+  outcome: Outcome[]
+}
+
+export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
+
+/*******************************************************
+ * INDIVIDUALL REDUCER TYPES
+ *******************************************************/
+export type Outcomenode = {
+  node: number
+  outcome: number
+  rank: number
+  id: number
+  degree: number
+}
+
+export type Outcome = {
+  deleted: boolean
+  deleted_on: string
+  id: number
+  title: null
+  code: null
+  description: null
+  child_outcome_links: any[]
+  outcome_horizontal_links: any[]
+  outcome_horizontal_links_unique: any[]
+  depth: number
+  type: string
+  comments: any[]
+  sets: any[]
+  outcomeworkflow: number
+  is_dropped: boolean
 }
 
 export type Column = {
@@ -35,9 +67,11 @@ export type Column = {
 
 export type Columnworkflow = {
   workflow: number
-  column: number
   rank: number
   id: number
+  column?: number
+  outcome?: number
+  no_drag?: boolean
 }
 
 export type Node = {
@@ -54,7 +88,7 @@ export type Node = {
   outcomenode_unique_set: any[]
   outgoing_links: any[]
   node_type: number
-  node_type_display: string
+  node_type_display: NodeTypeDisplay
   has_autolink: boolean
   time_units: number
   time_required: null
@@ -81,9 +115,9 @@ export type Nodeweek = {
 }
 
 export type Week = {
+  id: number
   deleted: boolean
   deleted_on: string
-  id: number
   title: null
   description: null
   default: boolean
@@ -97,17 +131,18 @@ export type Week = {
 }
 
 export type Weekworkflow = {
+  id: number
   workflow: number
   week: number
   rank: number
-  id: number
   week_type: number
+  no_drag?: boolean
 }
 
 export type Workflow = {
+  id: number
   deleted: boolean
   deleted_on: string
-  id: number
   title: string
   description: string
   code: null
@@ -139,4 +174,22 @@ export type Workflow = {
   importing: boolean
   public_view: boolean
   url: string
+}
+
+/*******************************************************
+ * NEED TYPING
+ *******************************************************/
+export type Nodelink = any
+
+export type Objectset = any
+
+export type OutcomeOutcome = any
+export type ParentWorkflow = any
+export type Strategy = any
+export type ChildWorkflow = any
+export type OutcomeHorizontalLink = any
+
+// ENUM
+export enum NodeTypeDisplay {
+  CourseNode = 'Course Node'
 }

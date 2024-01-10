@@ -1,8 +1,5 @@
 // @ts-nocheck
-import {
-  ColumnWorkflowByIDType,
-  getColumnWorkflowByID
-} from '@cfRedux/stateSelectors'
+
 import * as React from 'react'
 import { AppState } from '@cfRedux/type'
 import { connect } from 'react-redux'
@@ -10,6 +7,7 @@ import {
   NodeBarColumn,
   NodeBarColumnCreator
 } from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumn'
+import { ColumnWorkflowByIDType, getColumnWorkflowByID } from '@cfFindState'
 
 /**
  * More or less a dummy container which renders

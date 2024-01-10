@@ -6,7 +6,6 @@ import { Component } from '@cfParentComponents'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import OutcomeOutcome from './OutcomeOutcome'
 import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
-import { moveOutcomeOutcome } from '@cfReducers'
 import {
   updateOutcomehorizontallinkDegree,
   insertedAtInstant
@@ -14,7 +13,8 @@ import {
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
-import {insertedAt} from "@XMLHTTP/postTemp.jsx";
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
 
 /**
  * The link to tagged outcomes. Used when an outcome
@@ -188,7 +188,7 @@ class Outcome extends EditableComponentWithSorting {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeOutcome(id, new_position, new_parent, child_id)
+      ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
       this.props.renderer,
@@ -232,16 +232,16 @@ class Outcome extends EditableComponentWithSorting {
   }
 
   makeDroppable() {
-    var props = this.props
+    const props = this.props
     $(this.maindiv.current).droppable({
       tolerance: 'pointer',
       droppable: '.outcome-ghost',
       over: (e, ui) => {
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var new_index = drop_item.prevAll().length
-        var new_parent_id = parseInt(drop_item.parent().attr('id'))
+        const drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const new_index = drop_item.prevAll().length
+        const new_parent_id = parseInt(drop_item.parent().attr('id'))
 
         if (drag_item.hasClass('outcome')) {
           drag_helper.addClass('valid-drop')
@@ -252,9 +252,9 @@ class Outcome extends EditableComponentWithSorting {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const drop_item = $(e.target)
         if (drag_item.hasClass('outcome')) {
           drag_helper.removeClass('valid-drop')
           drop_item.removeClass('outcome-drop-over')
@@ -262,8 +262,8 @@ class Outcome extends EditableComponentWithSorting {
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
+        const drop_item = $(e.target)
+        const drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomehorizontallinkDegree(

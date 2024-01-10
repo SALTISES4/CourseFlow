@@ -1,6 +1,14 @@
+// @ts-nocheck
 import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
-import { getColumnWorkflowByID } from '@cfRedux/stateSelectors'
+import { AppState, Columnworkflow } from '@cfRedux/type'
+
+/*******************************************************
+ * TYPES
+ *******************************************************/
+export type StrategyByIDType = {
+  data: any // don't have type for strategy
+}
 
 /*******************************************************
  *
@@ -9,7 +17,7 @@ import { getColumnWorkflowByID } from '@cfRedux/stateSelectors'
  *
  *******************************************************/
 
-export const getColumnByID = (state, id) => {
+export const getColumnByID = (state: AppState, id: number) => {
   for (const i in state.column) {
     const column = state.column[i]
     if (column.id == id)
@@ -25,7 +33,7 @@ export const getColumnByID = (state, id) => {
   }
 }
 
-export const getWeekByID = (state, id) => {
+export const getWeekByID = (state: AppState, id: number) => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -46,7 +54,7 @@ export const getWeekByID = (state, id) => {
   }
 }
 
-export const getTermByID = (state, id) => {
+export const getTermByID = (state: AppState, id: number) => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -78,7 +86,7 @@ export const getTermByID = (state, id) => {
   }
 }
 
-export const getWeekWorkflowByID = (state, id) => {
+export const getWeekWorkflowByID = (state: AppState, id: number) => {
   for (const i in state.weekworkflow) {
     const weekworkflow = state.weekworkflow[i]
     if (weekworkflow.id == id)
@@ -86,7 +94,7 @@ export const getWeekWorkflowByID = (state, id) => {
   }
 }
 
-export const getOutcomeWorkflowByID = (state, id) => {
+export const getOutcomeWorkflowByID = (state: AppState, id: number) => {
   for (const i in state.outcomeworkflow) {
     const outcomeworkflow = state.outcomeworkflow[i]
     if (outcomeworkflow.id == id)
@@ -98,24 +106,24 @@ export const getOutcomeWorkflowByID = (state, id) => {
   console.log('failed to find outcomeworkflow')
 }
 
-export const getParentWorkflowByID = (state, id) => {
-  for (const i in state.parent_workflow) {
-    const workflow = state.parent_workflow[i]
-    if (workflow.id == id) return { data: workflow }
-  }
-  console.log('failed to find parent workflow')
-}
+// export const getParentWorkflowByID = (state, id) => {
+//   for (const i in state.parent_workflow) {
+//     const workflow = state.parent_workflow[i]
+//     if (workflow.id == id) return { data: workflow }
+//   }
+//   console.log('failed to find parent workflow')
+// }
 
-export const getNodeByID = (state, id) => {
+export const getNodeByID = (state: AppState, id: number) => {
   for (const i in state.node) {
     var node = state.node[i]
-    if (node.id == id) {
+    if (node.id === id) {
       if (node.is_dropped === undefined) {
         node.is_dropped = getDropped(id, 'node')
       }
       return {
         data: node,
-        column: state.column.find((column) => column.id == node.column),
+        column: state.column.find((column) => column.id === node.column),
         object_sets: state.objectset
       }
     }
@@ -123,10 +131,10 @@ export const getNodeByID = (state, id) => {
   console.log('failed to find node')
 }
 
-export const getNodeWeekByID = (state, id) => {
+export const getNodeWeekByID = (state: AppState, id: number) => {
   for (const i in state.nodeweek) {
     const nodeweek = state.nodeweek[i]
-    if (nodeweek.id == id) {
+    if (nodeweek.id === id) {
       const node = getNodeByID(state, nodeweek.node).data
       return {
         data: nodeweek,
@@ -136,11 +144,45 @@ export const getNodeWeekByID = (state, id) => {
     }
   }
 }
-export const getNodeLinkByID = (state, id) => {
+
+export const getNodeLinkByID = (state: AppState, id: number) => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
-    if (nodelink.id == id) return { data: nodelink }
+    if (nodelink.id === id) return { data: nodelink }
   }
+}
+
+export type ColumnWorkflowByIDType = {
+  data?: Columnworkflow
+  order?: number[]
+}
+
+export const getColumnWorkflowByID = (
+  state: AppState,
+  id: number
+): ColumnWorkflowByIDType => {
+  for (const i in state.columnworkflow) {
+    const columnWorkflow = state.columnworkflow[i]
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: state.workflow.columnworkflow_set
+      }
+    }
+  }
+  return {
+    data: undefined,
+    order: undefined
+  }
+}
+
+export const getStrategyByID = (
+  state: AppState,
+  id: number
+): StrategyByIDType => {
+  const strategies = Object.values(state.strategy)
+  const foundStrategy = strategies.find((strategy) => strategy.id === id)
+  return foundStrategy ? { data: foundStrategy } : { data: undefined }
 }
 
 /**
@@ -153,20 +195,20 @@ export const getNodeLinkByID = (state, id) => {
  * @param state
  * @returns {*|{rank: *, id: *}}
  */
-function findRootOutcome(id, rank, state) {
+function findRootOutcome(state, id, rank) {
   for (let i = 0; i < state.length; i++) {
-    if (state[i].child == id) {
+    if (state[i].child === id) {
       rank.unshift({ parent: state[i].parent, through: state[i].id })
-      return findRootOutcome(state[i].parent, rank, state)
+      return findRootOutcome(state, state[i].parent, rank)
     }
   }
   return { id: id, rank: rank }
 }
 
-function findTopRank(state, outcome) {
+function findTopRank(state: AppState, outcome) {
   for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome == outcome.id) {
-      if (state.outcomeworkflow[j].workflow == state.workflow.id) {
+    if (state.outcomeworkflow[j].outcome === outcome.id) {
+      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
         return (
           state.workflow.outcomeworkflow_set.indexOf(
             state.outcomeworkflow[j].id
@@ -193,12 +235,12 @@ function findTopRank(state, outcome) {
   }
 }
 
-export const getOutcomeByID = (state, id) => {
+export const getOutcomeByID = (state: AppState, id: number) => {
   const state_section = state.outcome
   for (const i in state_section) {
     const outcome = state_section[i]
 
-    if (outcome.id == id) {
+    if (outcome.id === id) {
       if (outcome.is_dropped === undefined) {
         outcome.is_dropped = getDropped(id, 'outcome', outcome.depth)
       }
@@ -209,17 +251,17 @@ export const getOutcomeByID = (state, id) => {
       if (outcome.depth > 0) {
         const state_outcomeoutcome_section = state.outcomeoutcome
         const root_info = findRootOutcome(
+          state_outcomeoutcome_section,
           outcome.id,
-          [],
-          state_outcomeoutcome_section
+          []
         )
         rank = root_info.rank.map((x) => null)
         titles = rank.map((x) => null)
         for (let j = 0; j < state_section.length; j++) {
-          if (state_section[j].id == root_info.id)
+          if (state_section[j].id === root_info.id)
             root_outcome = state_section[j]
           for (let k = 0; k < root_info.rank.length; k++) {
-            if (root_info.rank[k].parent == state_section[j].id) {
+            if (root_info.rank[k].parent === state_section[j].id) {
               titles[k] = state_section[j].title
               if (rank[k]) continue
               if (state_section[j].code) {
@@ -256,33 +298,36 @@ export const getOutcomeByID = (state, id) => {
   console.log('failed to find outcome')
 }
 
-export const getChildWorkflowByID = (state, id) => {
+export const getChildWorkflowByID = (state: AppState, id: number) => {
   for (const i in state.child_workflow) {
     const workflow = state.child_workflow[i]
-    if (workflow.id == id) return { data: workflow }
+    if (workflow.id === id) return { data: workflow }
   }
   console.log('failed to find child workflow')
   return -1
 }
 
-export const getOutcomeOutcomeByID = (state, id) => {
+export const getOutcomeOutcomeByID = (state: AppState, id: number) => {
   const state_section = state.outcomeoutcome
   for (const i in state_section) {
     const outcomeoutcome = state_section[i]
-    if (outcomeoutcome.id == id) return { data: outcomeoutcome }
+    if (outcomeoutcome.id === id) return { data: outcomeoutcome }
   }
   console.log('failed to find outcomeoutcome')
 }
 
-export const getOutcomeNodeByID = (state, id) => {
-  for (const i in state.outcomenode) {
-    const outcomenode = state.outcomenode[i]
-    if (outcomenode.id == id) return { data: outcomenode }
+export const getOutcomeNodeByID = (state: AppState, id: number) => {
+  const outcomeNode = state.outcomenode.find((node) => node.id === id)
+  if (outcomeNode) {
+    return {
+      data: outcomeNode
+    }
+  } else {
+    console.log('Failed to find outcomenode with ID:', id)
   }
-  console.log('failed to find outcomenode')
 }
 
-export const getOutcomeHorizontalLinkByID = (state, id) => {
+export const getOutcomeHorizontalLinkByID = (state: AppState, id: number) => {
   for (const i in state.outcomehorizontallink) {
     const outcomehorizontallink = state.outcomehorizontallink[i]
     if (outcomehorizontallink.id == id) return { data: outcomehorizontallink }
@@ -290,11 +335,59 @@ export const getOutcomeHorizontalLinkByID = (state, id) => {
   console.log('failed to find outcomehorizontallink')
 }
 
+export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
+  let outcomenode_ids = []
+  for (let i = 0; i < nodes.length; i++) {
+    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set)
+  }
+  const outcomenodes = Utility.filterThenSortByID(
+    state.outcomenode,
+    outcomenode_ids
+  )
+  const outcomes = Utility.filterThenSortByID(
+    state.outcome,
+    outcomenodes.map((outcomenode) => outcomenode.outcome)
+  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
 
+  if (outcomes.length === 0) {
+    return outcomes
+  }
+
+  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const object_sets = state.objectset.filter(
+    (objectset) => objectset.term === outcomes[0].type
+  )
+  if (object_sets.length === 0)
+    return [
+      {
+        objectset: {
+          title: base_title
+        },
+        outcomes: outcomes
+      }
+    ]
+  const categories = [
+    {
+      objectset: { title: window.gettext('Uncategorized') },
+      outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
+    },
+    ...object_sets
+      .filter((objectset) => !objectset.hidden)
+      .map((objectset) => ({
+        objectset: objectset,
+        outcomes: outcomes.filter(
+          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+        )
+      }))
+  ]
+  console.log('returm from getSortedOutcomeNodesFromNodes')
+  console.log(categories)
+  return categories
+}
 
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
-  state,
+  state: AppState,
   outcomeworkflow_set
 ) => {
   const outcomeworkflows = Utility.filterThenSortByID(
@@ -309,14 +402,14 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
-  if (outcomes.length == 0) return outcomes
+  if (outcomes.length === 0) return outcomes
   const base_title = Utility.capWords(window.gettext('outcomes'))
   const object_sets = state.objectset.filter(
-    (objectset) => objectset.term == outcomes[0].type
+    (objectset) => objectset.term === outcomes[0].type
   )
-  if (object_sets.length == 0)
+  if (object_sets.length === 0)
     return [{ objectset: { title: base_title }, outcomes: outcomes }]
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length == 0)
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0)
   let categories = []
   if (uncategorized.length > 0)
     categories = [
@@ -339,69 +432,46 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   return categories
 }
 
-export const getSortedOutcomeNodesFromNodes = (state, nodes) => {
-  let outcomenode_ids = []
-  for (let i = 0; i < nodes.length; i++) {
-    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set)
+//Used in the Alignment View
+export const getDescendantOutcomes = (state, outcome, outcomes) => {
+  if (outcome.depth >= 2) return
+  const children = outcome.child_outcome_links
+    .map((id) => getOutcomeOutcomeByID(state, id))
+    .map(
+      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+    )
+  for (let i = 0; i < children.length; i++) {
+    outcomes.push(children[i].id)
+    getDescendantOutcomes(state, children[i], outcomes)
   }
-  const outcomenodes = Utility.filterThenSortByID(
-    state.outcomenode,
-    outcomenode_ids
-  )
-  const outcomes = Utility.filterThenSortByID(
-    state.outcome,
-    outcomenodes.map((outcomenode) => outcomenode.outcome)
-  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
-  if (outcomes.length == 0) return outcomes
-  const base_title = Utility.capWords(window.gettext('outcomes'))
-  const object_sets = state.objectset.filter(
-    (objectset) => objectset.term == outcomes[0].type
-  )
-  if (object_sets.length == 0)
-    return [{ objectset: { title: base_title }, outcomes: outcomes }]
-  const categories = [
-    {
-      objectset: { title: window.gettext('Uncategorized') },
-      outcomes: outcomes.filter((outcome) => outcome.sets.length == 0)
-    },
-    ...object_sets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
-        outcomes: outcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-        )
-      }))
-  ]
-  return categories
 }
-
 /*******************************************************
- * HELPER
+ * HELPER FUNCTIONS FOR FOR STATE QUERIES
  *******************************************************/
-const getDropped = (objectID, objectType, depth = 1) => {
+
+const getDropped = (objectId: number, objectType, depth = 1) => {
   const default_drop = Constants.get_default_drop_state(
-    objectID,
+    objectId,
     objectType,
     depth
   )
   try {
-    const stored_drop = JSON.parse(
-      window.localStorage.getItem(objectType + objectID)
+    const storedDrop = JSON.parse(
+      window.localStorage.getItem(objectType + objectId)
     )
-    if (stored_drop === null) return default_drop
-    return stored_drop
+    if (storedDrop === null) return default_drop
+    return storedDrop
   } catch (err) {
     return default_drop
   }
 }
 
 // @todo doesn't really belong here (not a state selector)
-export const getTableOutcomeNodeByID = (outcomenodes, node_id, outcome_id) => {
-  for (const i in outcomenodes) {
-    const outcomenode = outcomenodes[i]
-    if (outcomenode.outcome == outcome_id && outcomenode.node == node_id)
-      return { data: outcomenode }
+export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
+  for (const i in outcomeNodes) {
+    const outcomeNode = outcomeNodes[i]
+    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
+      return { data: outcomeNode }
   }
   return { data: null }
 }
@@ -426,12 +496,12 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
-  if (outcomes.length == 0) return outcomes.map((outcome) => outcome.id)
+  if (outcomes.length === 0) return outcomes.map((outcome) => outcome.id)
   const base_title = Utility.capWords(window.gettext('outcomes'))
   const object_sets = object_sets_unfiltered.filter(
-    (objectset) => objectset.term == outcomes[0].type
+    (objectset) => objectset.term === outcomes[0].type
   )
-  if (object_sets.length == 0)
+  if (object_sets.length === 0)
     return [
       {
         objectset: { title: base_title },
@@ -439,7 +509,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
       }
     ]
   const uncategorized = outcomes
-    .filter((outcome) => outcome.sets.length == 0)
+    .filter((outcome) => outcome.sets.length === 0)
     .map((outcome) => outcome.id)
   let categories = []
   if (uncategorized.length > 0)
@@ -461,18 +531,4 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
       }))
   ]
   return categories
-}
-
-//Used in the Alignment View
-export const getDescendantOutcomes = (state, outcome, outcomes) => {
-  if (outcome.depth >= 2) return
-  const children = outcome.child_outcome_links
-    .map((id) => getOutcomeOutcomeByID(state, id))
-    .map(
-      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-    )
-  for (let i = 0; i < children.length; i++) {
-    outcomes.push(children[i].id)
-    getDescendantOutcomes(state, children[i], outcomes)
-  }
 }

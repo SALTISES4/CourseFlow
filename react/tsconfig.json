@@ -72,7 +72,7 @@
         "./components/common/UIComponents"
       ],
       "@cfFindState": [
-        "./redux/FindState.js"
+        "./redux/findState.ts"
       ],
       "@cfRedux/*": [
         "./redux/*"

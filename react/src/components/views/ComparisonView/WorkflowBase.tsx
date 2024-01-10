@@ -1,11 +1,13 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponent } from '@cfParentComponents'
 
-import { toggleObjectSet } from '@cfReducers'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
+import ActionCreator from "@cfRedux/ActionCreator.ts";
+import {ViewType} from "@cfModule/types/enum.js";
 
 //Container for common elements for workflows
 class WorkflowBaseUnconnected extends EditableComponent {
@@ -38,7 +40,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
     const props = this.props
     $(document).off('object_set_toggled.' + this.props.data.id)
     $(document).on('object_set_toggled.' + this.props.data.id, (evt, data) => {
-      props.dispatch(toggleObjectSet(data.id, data.hidden))
+      props.dispatch(ActionCreator.toggleObjectSet(data.id, data.hidden))
     })
   }
 
@@ -62,7 +64,7 @@ class WorkflowBaseUnconnected extends EditableComponent {
     const selection_manager = renderer.selection_manager
 
     let workflow_content
-    if (renderer.view_type == 'outcomeedit') {
+    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
       workflow_content = <OutcomeEdit renderer={renderer} objectID={data.id} />
     } else {
       workflow_content = <Workflow renderer={renderer} objectID={data.id} />

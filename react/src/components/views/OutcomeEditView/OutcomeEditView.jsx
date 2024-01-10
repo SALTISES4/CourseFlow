@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { moveOutcomeWorkflow } from '@cfReducers'
 // @components
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
+import ActionCreator from '@cfRedux/ActionCreator.ts'
 
 /**
  * The view of a workflow in which the outcomes can be added,
@@ -59,12 +59,17 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       'outcomeworkflow',
       '.outcome-workflow'
     )
-    if (this.props.data.depth == 0) this.makeDroppable()
+    if (this.props.data.depth === 0) this.makeDroppable()
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeWorkflow(id, new_position, this.props.workflow.id, child_id)
+      ActionCreator.moveOutcomeWorkflow(
+        id,
+        new_position,
+        this.props.workflow.id,
+        child_id
+      )
     )
     insertedAt(
       this.props.renderer,

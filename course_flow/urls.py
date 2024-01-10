@@ -160,7 +160,7 @@ def course_flow_patterns():
         ),
         path(
             "workflow/node-link/new",
-            views.json_api.create.json_api_post_new_node,
+            views.json_api.create.json_api_post_new_node_link,
             name="json-api-post-new-node-link",
         ),
         path(

@@ -3754,9 +3754,9 @@ function requireFactoryWithTypeCheckers() {
         return x !== x && y !== y;
       }
     }
-    function PropTypeError(message, data) {
+    function PropTypeError(message, data2) {
       this.message = message;
-      this.data = data && typeof data === "object" ? data : {};
+      this.data = data2 && typeof data2 === "object" ? data2 : {};
       this.stack = "";
     }
     PropTypeError.prototype = Error.prototype;
@@ -18880,8 +18880,8 @@ function requireReactDom_development() {
           var nextNode = node2.nextSibling;
           parentInstance.removeChild(node2);
           if (nextNode && nextNode.nodeType === COMMENT_NODE) {
-            var data = nextNode.data;
-            if (data === SUSPENSE_END_DATA) {
+            var data2 = nextNode.data;
+            if (data2 === SUSPENSE_END_DATA) {
               if (depth === 0) {
                 parentInstance.removeChild(nextNode);
                 retryIfBlockedOn(suspenseInstance);
@@ -18889,7 +18889,7 @@ function requireReactDom_development() {
               } else {
                 depth--;
               }
-            } else if (data === SUSPENSE_START_DATA || data === SUSPENSE_PENDING_START_DATA || data === SUSPENSE_FALLBACK_START_DATA) {
+            } else if (data2 === SUSPENSE_START_DATA || data2 === SUSPENSE_PENDING_START_DATA || data2 === SUSPENSE_FALLBACK_START_DATA) {
               depth++;
             }
           }
@@ -19034,14 +19034,14 @@ function requireReactDom_development() {
         var depth = 0;
         while (node2) {
           if (node2.nodeType === COMMENT_NODE) {
-            var data = node2.data;
-            if (data === SUSPENSE_END_DATA) {
+            var data2 = node2.data;
+            if (data2 === SUSPENSE_END_DATA) {
               if (depth === 0) {
                 return getNextHydratableSibling(node2);
               } else {
                 depth--;
               }
-            } else if (data === SUSPENSE_START_DATA || data === SUSPENSE_FALLBACK_START_DATA || data === SUSPENSE_PENDING_START_DATA) {
+            } else if (data2 === SUSPENSE_START_DATA || data2 === SUSPENSE_FALLBACK_START_DATA || data2 === SUSPENSE_PENDING_START_DATA) {
               depth++;
             }
           }
@@ -19054,14 +19054,14 @@ function requireReactDom_development() {
         var depth = 0;
         while (node2) {
           if (node2.nodeType === COMMENT_NODE) {
-            var data = node2.data;
-            if (data === SUSPENSE_START_DATA || data === SUSPENSE_FALLBACK_START_DATA || data === SUSPENSE_PENDING_START_DATA) {
+            var data2 = node2.data;
+            if (data2 === SUSPENSE_START_DATA || data2 === SUSPENSE_FALLBACK_START_DATA || data2 === SUSPENSE_PENDING_START_DATA) {
               if (depth === 0) {
                 return node2;
               } else {
                 depth--;
               }
-            } else if (data === SUSPENSE_END_DATA) {
+            } else if (data2 === SUSPENSE_END_DATA) {
               depth++;
             }
           }
@@ -47666,12 +47666,12 @@ function useApi(url, debug = false) {
     debug && console.log(`API fetching from: ${url}`);
     fetch(url).then((response) => {
       if (response.ok) {
-        response.json().then((data) => {
-          debug && console.log(data);
+        response.json().then((data2) => {
+          debug && console.log(data2);
           setState({
             loading: false,
             error: null,
-            data
+            data: data2
           });
         });
       } else {
@@ -47813,10 +47813,10 @@ const through_parent_dictionary = {
   outcome: "outcomeoutcome",
   outcome_base: "outcomeworkflow"
 };
-const get_verbose = function(data, object_type) {
+const get_verbose = function(data2, object_type) {
   switch (object_type) {
     case "node":
-      return data.node_type_display;
+      return data2.node_type_display;
     case "workflow":
     case "activity":
     case "course":
@@ -47826,9 +47826,9 @@ const get_verbose = function(data, object_type) {
         course: window.gettext("Course"),
         program: window.gettext("Program"),
         workflow: window.gettext("Workflow")
-      }[data.type];
+      }[data2.type];
     case "week":
-      return data.week_type_display;
+      return data2.week_type_display;
   }
   return {
     outcome_base: window.gettext("Outcome"),
@@ -47867,12 +47867,12 @@ const get_default_drop_state = (objectID, objectType, depth = 1) => {
   }
   return default_drop;
 };
-function getColumnColour(data) {
+function getColumnColour(data2) {
   var _a;
-  if (data.colour == null)
-    return default_column_settings[data.column_type].colour;
+  if (data2.colour == null)
+    return default_column_settings[data2.column_type].colour;
   else
-    return "#" + ("000000" + ((_a = data.colour) == null ? void 0 : _a.toString(16))).slice(-6);
+    return "#" + ("000000" + ((_a = data2.colour) == null ? void 0 : _a.toString(16))).slice(-6);
 }
 function object_sets_types() {
   return {
@@ -47884,26 +47884,6 @@ function object_sets_types() {
     "activity node": capFirst(window.gettext("activity node"))
   };
 }
-const getColumnWorkflowByID = (state, id) => {
-  for (const i in state.columnworkflow) {
-    const columnWorkflow = state.columnworkflow[i];
-    if (columnWorkflow.id === id) {
-      return {
-        data: columnWorkflow,
-        order: state.workflow.columnworkflow_set
-      };
-    }
-  }
-  return {
-    data: void 0,
-    order: void 0
-  };
-};
-const getStrategyByID = (state, id) => {
-  const strategies = Object.values(state.strategy);
-  const foundStrategy = strategies.find((strategy) => strategy.id === id);
-  return foundStrategy ? { data: foundStrategy } : { data: void 0 };
-};
 const getColumnByID = (state, id) => {
   for (const i in state.column) {
     const column2 = state.column[i];
@@ -47980,13 +47960,13 @@ const getWeekWorkflowByID = (state, id) => {
 const getNodeByID = (state, id) => {
   for (const i in state.node) {
     var node2 = state.node[i];
-    if (node2.id == id) {
+    if (node2.id === id) {
       if (node2.is_dropped === void 0) {
         node2.is_dropped = getDropped(id, "node");
       }
       return {
         data: node2,
-        column: state.column.find((column2) => column2.id == node2.column),
+        column: state.column.find((column2) => column2.id === node2.column),
         object_sets: state.objectset
       };
     }
@@ -47996,7 +47976,7 @@ const getNodeByID = (state, id) => {
 const getNodeWeekByID = (state, id) => {
   for (const i in state.nodeweek) {
     const nodeweek = state.nodeweek[i];
-    if (nodeweek.id == id) {
+    if (nodeweek.id === id) {
       const node2 = getNodeByID(state, nodeweek.node).data;
       return {
         data: nodeweek,
@@ -48009,23 +47989,43 @@ const getNodeWeekByID = (state, id) => {
 const getNodeLinkByID = (state, id) => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i];
-    if (nodelink.id == id)
+    if (nodelink.id === id)
       return { data: nodelink };
   }
 };
-function findRootOutcome(id, rank, state) {
+const getColumnWorkflowByID = (state, id) => {
+  for (const i in state.columnworkflow) {
+    const columnWorkflow = state.columnworkflow[i];
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: state.workflow.columnworkflow_set
+      };
+    }
+  }
+  return {
+    data: void 0,
+    order: void 0
+  };
+};
+const getStrategyByID = (state, id) => {
+  const strategies = Object.values(state.strategy);
+  const foundStrategy = strategies.find((strategy) => strategy.id === id);
+  return foundStrategy ? { data: foundStrategy } : { data: void 0 };
+};
+function findRootOutcome(state, id, rank) {
   for (let i = 0; i < state.length; i++) {
-    if (state[i].child == id) {
+    if (state[i].child === id) {
       rank.unshift({ parent: state[i].parent, through: state[i].id });
-      return findRootOutcome(state[i].parent, rank, state);
+      return findRootOutcome(state, state[i].parent, rank);
     }
   }
   return { id, rank };
 }
 function findTopRank(state, outcome) {
   for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome == outcome.id) {
-      if (state.outcomeworkflow[j].workflow == state.workflow.id) {
+    if (state.outcomeworkflow[j].outcome === outcome.id) {
+      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
         return state.workflow.outcomeworkflow_set.indexOf(
           state.outcomeworkflow[j].id
         ) + 1;
@@ -48053,7 +48053,7 @@ const getOutcomeByID = (state, id) => {
   const state_section = state.outcome;
   for (const i in state_section) {
     const outcome = state_section[i];
-    if (outcome.id == id) {
+    if (outcome.id === id) {
       if (outcome.is_dropped === void 0) {
         outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
       }
@@ -48064,17 +48064,17 @@ const getOutcomeByID = (state, id) => {
       if (outcome.depth > 0) {
         const state_outcomeoutcome_section = state.outcomeoutcome;
         const root_info = findRootOutcome(
+          state_outcomeoutcome_section,
           outcome.id,
-          [],
-          state_outcomeoutcome_section
+          []
         );
         rank = root_info.rank.map((x) => null);
         titles = rank.map((x) => null);
         for (let j = 0; j < state_section.length; j++) {
-          if (state_section[j].id == root_info.id)
+          if (state_section[j].id === root_info.id)
             root_outcome = state_section[j];
           for (let k = 0; k < root_info.rank.length; k++) {
-            if (root_info.rank[k].parent == state_section[j].id) {
+            if (root_info.rank[k].parent === state_section[j].id) {
               titles[k] = state_section[j].title;
               if (rank[k])
                 continue;
@@ -48115,7 +48115,7 @@ const getOutcomeByID = (state, id) => {
 const getChildWorkflowByID = (state, id) => {
   for (const i in state.child_workflow) {
     const workflow = state.child_workflow[i];
-    if (workflow.id == id)
+    if (workflow.id === id)
       return { data: workflow };
   }
   console.log("failed to find child workflow");
@@ -48125,18 +48125,20 @@ const getOutcomeOutcomeByID = (state, id) => {
   const state_section = state.outcomeoutcome;
   for (const i in state_section) {
     const outcomeoutcome = state_section[i];
-    if (outcomeoutcome.id == id)
+    if (outcomeoutcome.id === id)
       return { data: outcomeoutcome };
   }
   console.log("failed to find outcomeoutcome");
 };
 const getOutcomeNodeByID = (state, id) => {
-  for (const i in state.outcomenode) {
-    const outcomenode = state.outcomenode[i];
-    if (outcomenode.id == id)
-      return { data: outcomenode };
+  const outcomeNode = state.outcomenode.find((node2) => node2.id === id);
+  if (outcomeNode) {
+    return {
+      data: outcomeNode
+    };
+  } else {
+    console.log("Failed to find outcomenode with ID:", id);
   }
-  console.log("failed to find outcomenode");
 };
 const getOutcomeHorizontalLinkByID = (state, id) => {
   for (const i in state.outcomehorizontallink) {
@@ -48145,6 +48147,51 @@ const getOutcomeHorizontalLinkByID = (state, id) => {
       return { data: outcomehorizontallink };
   }
   console.log("failed to find outcomehorizontallink");
+};
+const getSortedOutcomeNodesFromNodes = (state, nodes) => {
+  let outcomenode_ids = [];
+  for (let i = 0; i < nodes.length; i++) {
+    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
+  }
+  const outcomenodes = filterThenSortByID(
+    state.outcomenode,
+    outcomenode_ids
+  );
+  const outcomes = filterThenSortByID(
+    state.outcome,
+    outcomenodes.map((outcomenode) => outcomenode.outcome)
+  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }));
+  if (outcomes.length === 0) {
+    return outcomes;
+  }
+  const base_title = capWords(window.gettext("outcomes"));
+  const object_sets = state.objectset.filter(
+    (objectset) => objectset.term === outcomes[0].type
+  );
+  if (object_sets.length === 0)
+    return [
+      {
+        objectset: {
+          title: base_title
+        },
+        outcomes
+      }
+    ];
+  const categories = [
+    {
+      objectset: { title: window.gettext("Uncategorized") },
+      outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
+    },
+    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+      objectset,
+      outcomes: outcomes.filter(
+        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+      )
+    }))
+  ];
+  console.log("returm from getSortedOutcomeNodesFromNodes");
+  console.log(categories);
+  return categories;
 };
 const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
   const outcomeworkflows = filterThenSortByID(
@@ -48159,15 +48206,15 @@ const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => 
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
   }
-  if (outcomes.length == 0)
+  if (outcomes.length === 0)
     return outcomes;
   const base_title = capWords(window.gettext("outcomes"));
   const object_sets = state.objectset.filter(
-    (objectset) => objectset.term == outcomes[0].type
+    (objectset) => objectset.term === outcomes[0].type
   );
-  if (object_sets.length == 0)
+  if (object_sets.length === 0)
     return [{ objectset: { title: base_title }, outcomes }];
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length == 0);
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
   let categories = [];
   if (uncategorized.length > 0)
     categories = [
@@ -48187,63 +48234,39 @@ const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => 
   ];
   return categories;
 };
-const getSortedOutcomeNodesFromNodes = (state, nodes) => {
-  let outcomenode_ids = [];
-  for (let i = 0; i < nodes.length; i++) {
-    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
+const getDescendantOutcomes = (state, outcome, outcomes) => {
+  if (outcome.depth >= 2)
+    return;
+  const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
+    (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+  );
+  for (let i = 0; i < children.length; i++) {
+    outcomes.push(children[i].id);
+    getDescendantOutcomes(state, children[i], outcomes);
   }
-  const outcomenodes = filterThenSortByID(
-    state.outcomenode,
-    outcomenode_ids
-  );
-  const outcomes = filterThenSortByID(
-    state.outcome,
-    outcomenodes.map((outcomenode) => outcomenode.outcome)
-  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }));
-  if (outcomes.length == 0)
-    return outcomes;
-  const base_title = capWords(window.gettext("outcomes"));
-  const object_sets = state.objectset.filter(
-    (objectset) => objectset.term == outcomes[0].type
-  );
-  if (object_sets.length == 0)
-    return [{ objectset: { title: base_title }, outcomes }];
-  const categories = [
-    {
-      objectset: { title: window.gettext("Uncategorized") },
-      outcomes: outcomes.filter((outcome) => outcome.sets.length == 0)
-    },
-    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-      objectset,
-      outcomes: outcomes.filter(
-        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-      )
-    }))
-  ];
-  return categories;
 };
-const getDropped = (objectID, objectType, depth = 1) => {
+const getDropped = (objectId, objectType, depth = 1) => {
   const default_drop = get_default_drop_state(
-    objectID,
+    objectId,
     objectType,
     depth
   );
   try {
-    const stored_drop = JSON.parse(
-      window.localStorage.getItem(objectType + objectID)
+    const storedDrop = JSON.parse(
+      window.localStorage.getItem(objectType + objectId)
     );
-    if (stored_drop === null)
+    if (storedDrop === null)
       return default_drop;
-    return stored_drop;
+    return storedDrop;
   } catch (err) {
     return default_drop;
   }
 };
-const getTableOutcomeNodeByID = (outcomenodes, node_id, outcome_id) => {
-  for (const i in outcomenodes) {
-    const outcomenode = outcomenodes[i];
-    if (outcomenode.outcome == outcome_id && outcomenode.node == node_id)
-      return { data: outcomenode };
+const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
+  for (const i in outcomeNodes) {
+    const outcomeNode = outcomeNodes[i];
+    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
+      return { data: outcomeNode };
   }
   return { data: null };
 };
@@ -48260,20 +48283,20 @@ const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomework
     outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
   }
-  if (outcomes.length == 0)
+  if (outcomes.length === 0)
     return outcomes.map((outcome) => outcome.id);
   const base_title = capWords(window.gettext("outcomes"));
   const object_sets = object_sets_unfiltered.filter(
-    (objectset) => objectset.term == outcomes[0].type
+    (objectset) => objectset.term === outcomes[0].type
   );
-  if (object_sets.length == 0)
+  if (object_sets.length === 0)
     return [
       {
         objectset: { title: base_title },
         outcomes: outcomes.map((outcome) => outcome.id)
       }
     ];
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length == 0).map((outcome) => outcome.id);
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0).map((outcome) => outcome.id);
   let categories = [];
   if (uncategorized.length > 0)
     categories = [
@@ -48290,17 +48313,6 @@ const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomework
     }))
   ];
   return categories;
-};
-const getDescendantOutcomes = (state, outcome, outcomes) => {
-  if (outcome.depth >= 2)
-    return;
-  const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
-    (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-  );
-  for (let i = 0; i < children.length; i++) {
-    outcomes.push(children[i].id);
-    getDescendantOutcomes(state, children[i], outcomes);
-  }
 };
 function permission_translate() {
   return {
@@ -48338,12 +48350,12 @@ class Loader {
     }
   }
 }
-function checkSetHidden(data, objectsets) {
+function checkSetHidden(data2, objectsets) {
   let hidden = false;
-  if (data.sets.length > 0 && objectsets) {
+  if (data2.sets.length > 0 && objectsets) {
     hidden = true;
     for (var i = 0; i < objectsets.length; i++) {
-      if (!objectsets[i].hidden && data.sets.indexOf(objectsets[i].id) >= 0) {
+      if (!objectsets[i].hidden && data2.sets.indexOf(objectsets[i].id) >= 0) {
         hidden = false;
         break;
       }
@@ -48581,7 +48593,7 @@ const OBJECT_TYPE = Enum({
   PROJECT: "project",
   STRATEGY: "strategy"
 });
-function API_POST(url = "", data = {}) {
+function API_POST(url = "", data2 = {}) {
   if (!url) {
     return Promise.reject("You need to specify an URL in for API_POST to run.");
   }
@@ -48593,12 +48605,12 @@ function API_POST(url = "", data = {}) {
         // 'root' comes from the csrf-setup script
         "X-CSRFToken": window.getCsrfToken()
       },
-      body: JSON.stringify(data)
-    }).then((response) => response.json()).then((data2) => {
-      if (data2.action === DATA_ACTIONS.POSTED) {
-        res(data2);
+      body: JSON.stringify(data2)
+    }).then((response) => response.json()).then((data3) => {
+      if (data3.action === DATA_ACTIONS.POSTED) {
+        res(data3);
       } else {
-        rej({ error: "API_POST failed", url, data: data2 });
+        rej({ error: "API_POST failed", url, data: data3 });
       }
     }).catch((err) => {
       rej({ error: "API_POST failed", originalError: err });
@@ -48609,11 +48621,11 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => consol
   $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
-  }).done(function(data) {
-    if (data.action === DATA_ACTIONS.POSTED)
-      callBackFunction(data);
+  }).done(function(data2) {
+    if (data2.action === DATA_ACTIONS.POSTED)
+      callBackFunction(data2);
     else
-      window.fail_function(data.action);
+      window.fail_function(data2.action);
   });
 }
 function newNode(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = () => console.log("success")) {
@@ -48623,11 +48635,11 @@ function newNode(weekPk, position2 = -1, column2 = -1, column_type = -1, callBac
       position: JSON.stringify(position2),
       columnPk: JSON.stringify(column2),
       columnType: JSON.stringify(column_type)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48641,11 +48653,11 @@ function newNodeLink(source_node, target_node, source_port, target_port, callBac
       objectType: JSON.stringify("node"),
       sourcePort: JSON.stringify(source_port),
       targetPort: JSON.stringify(target_port)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48658,11 +48670,11 @@ function addStrategy(workflowPk, position2 = -1, strategyPk = -1, callBackFuncti
       position: JSON.stringify(position2),
       objectID: JSON.stringify(strategyPk),
       objectType: JSON.stringify("workflow")
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48673,11 +48685,11 @@ function toggleStrategy(weekPk, is_strategy, callBackFunction = () => console.lo
     $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
       weekPk: JSON.stringify(weekPk),
       is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48693,13 +48705,13 @@ function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = 
     $.post(path, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("deleteSelfQuery data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48710,13 +48722,13 @@ function restoreSelfQuery(objectID, objectType, callBackFunction = () => console
     $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("restoreSelfQuery data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48728,11 +48740,11 @@ function removeComment(objectID, objectType, commentPk, callBackFunction = () =>
       objectID: JSON.stringify(objectID),
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48743,11 +48755,11 @@ function removeAllComments(objectID, objectType, callBackFunction = () => consol
     $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48759,11 +48771,11 @@ function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = ()
       nodePk: JSON.stringify(nodeID),
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48777,11 +48789,11 @@ function duplicateSelf(objectID, objectType, parentID, parentType, throughType, 
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48795,11 +48807,11 @@ function insertSibling(objectID, objectType, parentID, parentType, throughType, 
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48810,11 +48822,11 @@ function insertChild(objectID, objectType, callBackFunction = () => console.log(
     $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48825,11 +48837,11 @@ function dragAction(action_data, callBackFunction = () => console.log("success")
     COURSEFLOW_APP.tinyLoader.startLoad();
     $(".ui-draggable").draggable("disable");
     $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function(data) {
-        if (data.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data);
+      function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
         else
-          window.fail_function(data.action);
+          window.fail_function(data2.action);
         $(".ui-draggable").draggable("enable");
         COURSEFLOW_APP.tinyLoader.endLoad();
       }
@@ -48852,11 +48864,11 @@ function insertedAtInstant(objectID, objectType, parentID, parentType, newPositi
       throughType: JSON.stringify(throughType),
       inserted: JSON.stringify(true),
       allowDifferent: JSON.stringify(true)
-    }).done(function(data) {
-      if (data.action === "posted")
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === "posted")
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
       $(".ui-draggable").draggable("enable");
       COURSEFLOW_APP.tinyLoader.endLoad();
     });
@@ -48875,11 +48887,11 @@ function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBa
         objectType: JSON.stringify("outcome"),
         degree: JSON.stringify(degree)
       }
-    ).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    ).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48891,11 +48903,11 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = () 
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48905,13 +48917,13 @@ function getWorkflowParentDataQuery(workflowPk, callBackFunction = () => console
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("getWorkflowParentData");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48921,13 +48933,13 @@ function getWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log(
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("getWorkflowChildData");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48940,13 +48952,13 @@ function getPublicWorkflowDataQuery(workflowPk, callBackFunction = () => console
         "0",
         workflowPk
       )
-    ).done(function(data) {
+    ).done(function(data2) {
       console.log("getPublicWorkflowData");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48959,13 +48971,13 @@ function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = () => c
         "0",
         workflowPk
       )
-    ).done(function(data) {
+    ).done(function(data2) {
       console.log("getPublicWorkflowParentData");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48978,13 +48990,13 @@ function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = () => consol
         "0",
         nodePk
       )
-    ).done(function(data) {
+    ).done(function(data2) {
       console.log("getPublicWorkflowChildData data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -48997,11 +49009,11 @@ function setUserPermission(user_id2, objectID, objectType, permission_type, call
       objectType: JSON.stringify(objectType),
       permission_user: JSON.stringify(user_id2),
       permission_type: JSON.stringify(permission_type)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.error);
+        window.fail_function(data2.error);
     });
   } catch (err) {
     window.fail_function();
@@ -49011,11 +49023,11 @@ function getUserList(filter, callBackFunction = () => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
       filter: JSON.stringify(filter)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49026,11 +49038,11 @@ function getCommentsForObject(objectID, objectType, callBackFunction = () => con
     $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49042,11 +49054,11 @@ function addComment(objectID, objectType, text, callBackFunction = () => console
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49059,11 +49071,11 @@ function addTerminology(projectPk, term, title, translation_plural, callBackFunc
       term: JSON.stringify(term),
       title: JSON.stringify(title),
       translation_plural: JSON.stringify(translation_plural)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49076,11 +49088,11 @@ function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFuncti
       objectType: JSON.stringify(objectType),
       objectsetPk: JSON.stringify(objectsetPk),
       add: JSON.stringify(add2)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49093,27 +49105,27 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => consol
         "0",
         workflowPk
       )
-    ).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    ).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function makeProjectLiveQuery(projectPk, callBackFunction = (data) => console.log("success")) {
+function makeProjectLiveQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("makeProjectLiveQuery data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49125,13 +49137,13 @@ function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBack
       liveprojectPk: JSON.stringify(liveprojectPk),
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("setWorkflowVisibilityQuery data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49142,11 +49154,11 @@ function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = () => c
     $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
       nodePk: JSON.stringify(nodePk),
       liveprojectPk: JSON.stringify(liveprojectPk)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49157,11 +49169,11 @@ function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunct
     $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
       userassignmentPk: JSON.stringify(userassignmentPk),
       completed: JSON.stringify(completed)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49171,11 +49183,11 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
       nodePk: JSON.stringify(nodePk)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -49183,8 +49195,8 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
 }
 function getFavouritesQuery(callBackFunction = () => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
-      callBackFunction(data);
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
+      callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
@@ -57015,7 +57027,7 @@ function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only,
       get_strategies: JSON.stringify(get_strategies),
       self_only: JSON.stringify(self_only)
     },
-    (data) => {
+    (data2) => {
     }
   );
 }
@@ -57025,7 +57037,7 @@ function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () 
     {
       workflowPk: JSON.stringify(workflowPk)
     },
-    (data) => {
+    (data2) => {
       callBackFunction();
     }
   );
@@ -58744,2057 +58756,6 @@ function compose() {
     };
   });
 }
-const createLockAction = (object_id, object_type, lock2, user_id2, user_colour) => {
-  if (lock2)
-    return {
-      type: object_type + "/createLock",
-      payload: {
-        id: object_id,
-        lock: { user_id: user_id2, user_colour }
-      }
-    };
-  else
-    return {
-      type: object_type + "/createLock",
-      payload: { id: object_id, lock: null }
-    };
-};
-const reloadCommentsAction = (id, objectType, comment_data) => {
-  return {
-    type: objectType + "/reloadComments",
-    payload: { id, objectType, comment_data }
-  };
-};
-const reloadAssignmentsAction = (id, has_assignment) => {
-  return {
-    type: "node/reloadAssignments",
-    payload: { id, has_assignment }
-  };
-};
-const moveColumnWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "columnworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const moveWeekWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "weekworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const columnChangeNode = (id, new_column) => {
-  return {
-    type: "node/changedColumn",
-    payload: { id, new_column }
-  };
-};
-const moveNodeWeek = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "nodeweek/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const changeField = (id, objectType, json) => {
-  return {
-    type: objectType + "/changeField",
-    payload: { id, objectType, json }
-  };
-};
-const moveOutcomeOutcome = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "outcomeoutcome/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const moveOutcomeWorkflow = (id, new_position, new_parent, child_id) => {
-  return {
-    type: "outcomeworkflow/movedTo",
-    payload: {
-      id,
-      new_index: new_position,
-      new_parent,
-      child_id
-    }
-  };
-};
-const toggleObjectSet = (id, hidden) => {
-  return {
-    type: "objectset/toggleObjectSet",
-    payload: { id, hidden }
-  };
-};
-const replaceStoreData = (data_package) => {
-  return {
-    type: "replaceStoreData",
-    payload: data_package
-  };
-};
-const refreshStoreData = (data_package) => {
-  return {
-    type: "refreshStoreData",
-    payload: data_package
-  };
-};
-function workflowReducer(state = {}, action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.workflow)
-        return action.payload.workflow;
-      return state;
-    case "refreshStoreData":
-      if (action.payload.workflow)
-        return action.payload.workflow;
-      return state;
-    case "workflow/createLock":
-      if (state.id == action.payload.id) {
-        var new_state = { ...state, lock: action.payload.lock };
-        return new_state;
-      }
-      return state;
-    case "weekworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.weekworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.weekworklow_set = new_state.weekworkflow_set.slice();
-        new_state.weekworkflow_set.splice(old_index, 1, action.payload.new_id);
-      }
-      return new_state;
-    case "outcomeworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.outcomeworklow_set = new_state.outcomeworkflow_set.slice();
-        new_state.outcomeworkflow_set.splice(
-          old_index,
-          1,
-          action.payload.new_id
-        );
-      }
-      return new_state;
-    case "columnworkflow/changeID":
-      var new_state = { ...state };
-      var old_index = state.columnworkflow_set.indexOf(action.payload.old_id);
-      if (old_index >= 0) {
-        new_state.columnworklow_set = new_state.columnworkflow_set.slice();
-        new_state.columnworkflow_set.splice(old_index, 1, action.payload.new_id);
-      }
-      return new_state;
-    case "columnworkflow/movedTo":
-      var new_columnworkflow_set = state.columnworkflow_set.slice();
-      for (var i = 0; i < new_columnworkflow_set.length; i++) {
-        if (new_columnworkflow_set[i] == action.payload.id) {
-          new_columnworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_columnworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        columnworkflow_set: new_columnworkflow_set
-      };
-    case "weekworkflow/movedTo":
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      for (var i = 0; i < new_weekworkflow_set.length; i++) {
-        if (new_weekworkflow_set[i] == action.payload.id) {
-          new_weekworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_weekworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        weekworkflow_set: new_weekworkflow_set
-      };
-    case "outcomeworkflow/movedTo":
-      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      for (var i = 0; i < new_outcomeworkflow_set.length; i++) {
-        if (new_outcomeworkflow_set[i] == action.payload.id) {
-          new_outcomeworkflow_set.splice(
-            action.payload.new_index,
-            0,
-            new_outcomeworkflow_set.splice(i, 1)[0]
-          );
-          break;
-        }
-      }
-      return {
-        ...state,
-        outcomeworkflow_set: new_outcomeworkflow_set
-      };
-    case "workflow/deleteSelfSoft":
-      return { ...state, deleted: true };
-    case "workflow/restoreSelf":
-      return { ...state, deleted: false };
-    case "week/deleteSelf":
-    case "week/deleteSelfSoft":
-      if (state.weekworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state };
-        new_state.weekworkflow_set = state.weekworkflow_set.slice();
-        new_state.weekworkflow_set.splice(
-          new_state.weekworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state;
-      }
-      return state;
-    case "week/restoreSelf":
-      var new_state = { ...state };
-      new_state.weekworkflow_set = state.weekworkflow_set.slice();
-      new_state.weekworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state;
-    case "week/insertBelow":
-      new_state = { ...state };
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      new_weekworkflow_set.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.weekworkflow_set = new_weekworkflow_set;
-      return new_state;
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-      if (state.outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        var new_state = { ...state };
-        new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
-        new_state.outcomeworkflow_set.splice(
-          new_state.outcomeworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state;
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      var new_state = { ...state };
-      new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      new_state.outcomeworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      if (state.id != action.payload.new_through.workflow)
-        return state;
-      new_state = { ...state };
-      var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
-      new_outcomeworkflow_set.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.outcomeworkflow_set = new_outcomeworkflow_set;
-      return new_state;
-    case "strategy/addStrategy":
-      new_state = { ...state };
-      var new_weekworkflow_set = state.weekworkflow_set.slice();
-      new_weekworkflow_set.splice(
-        action.payload.index,
-        0,
-        action.payload.new_through.id
-      );
-      new_state.weekworkflow_set = new_weekworkflow_set;
-      if (action.payload.columnworkflows_added.length > 0) {
-        const new_columnworkflow_set2 = state.columnworkflow_set.slice();
-        new_columnworkflow_set2.push(
-          ...action.payload.columnworkflows_added.map(
-            (columnworkflow) => columnworkflow.id
-          )
-        );
-        new_state.columnworkflow_set = new_columnworkflow_set2;
-      }
-      return new_state;
-    case "column/deleteSelf":
-    case "column/deleteSelfSoft": {
-      if (state.columnworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-        const new_state2 = { ...state };
-        new_state2.columnworkflow_set = state.columnworkflow_set.slice();
-        new_state2.columnworkflow_set.splice(
-          new_state2.columnworkflow_set.indexOf(action.payload.parent_id),
-          1
-        );
-        return new_state2;
-      }
-      return state;
-    }
-    case "column/restoreSelf": {
-      const new_state2 = { ...state };
-      new_state2.columnworkflow_set = state.columnworkflow_set.slice();
-      new_state2.columnworkflow_set.splice(
-        action.payload.throughparent_index,
-        0,
-        action.payload.throughparent_id
-      );
-      return new_state2;
-    }
-    case "node/newNode": {
-      if (state.columnworkflow_set.indexOf(action.payload.columnworkflow.id) >= 0)
-        return state;
-      const new_state2 = { ...state };
-      const new_columnworkflow_set2 = state.columnworkflow_set.slice();
-      new_columnworkflow_set2.push(action.payload.columnworkflow.id);
-      new_state2.columnworkflow_set = new_columnworkflow_set2;
-      return new_state2;
-    }
-    case "column/insertBelow": {
-      const new_state2 = { ...state };
-      const new_columnworkflow_set2 = state.columnworkflow_set.slice();
-      new_columnworkflow_set2.splice(
-        action.payload.new_through.rank,
-        0,
-        action.payload.new_through.id
-      );
-      new_state2.columnworkflow_set = new_columnworkflow_set2;
-      return new_state2;
-    }
-    case "workflow/changeField": {
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      return { ...state, ...action.payload.json };
-    }
-    default:
-      return state;
-  }
-}
-function outcomeworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomeworkflow)
-        return action.payload.outcomeworkflow;
-      return state;
-    case "refreshStoreData": {
-      const new_state = state.slice();
-      if (action.payload.outcomeworkflow) {
-        for (let i = 0; i < action.payload.outcomeworkflow.length; i++) {
-          const new_obj = action.payload.outcomeworkflow[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id === new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    }
-    case "outcomeworkflow/movedTo": {
-      const new_state = state.slice();
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].id === action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    }
-    case "outcomeworkflow/changeID": {
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].id === action.payload.old_id) {
-          const new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    }
-    case "outcome_base/deleteSelf": {
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].outcome == action.payload.id) {
-          const new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    }
-    case "outcome_base/insertBelow": {
-      const new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    }
-    case "outcome/newOutcome": {
-      const new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    }
-    default:
-      return state;
-  }
-}
-function columnworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.columnworkflow)
-        return action.payload.columnworkflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.columnworkflow) {
-        for (var i = 0; i < action.payload.columnworkflow.length; i++) {
-          const new_obj = action.payload.columnworkflow[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "columnworkflow/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "columnworkflow/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    case "column/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.columnworkflow.id)
-          return state;
-      }
-      new_state = state.slice();
-      new_state.push(action.payload.columnworkflow);
-      return new_state;
-    case "column/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.columnworkflows_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.columnworkflows_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function columnReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.column)
-        return action.payload.column;
-      return state;
-    case "refreshStoreData": {
-      var new_state = state.slice();
-      if (action.payload.column) {
-        for (var i = 0; i < action.payload.column.length; i++) {
-          const new_obj = action.payload.collumn[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    }
-    case "column/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.column.id)
-          return state;
-      }
-      new_state = state.slice();
-      new_state.push(action.payload.column);
-      return new_state;
-    case "column/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "column/changeField":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      if (action.payload.columns_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.columns_added);
-      return new_state;
-    case "column/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function weekworkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.weekworkflow)
-        return action.payload.weekworkflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.weekworkflow) {
-        for (var i = 0; i < action.payload.weekworkflow.length; i++) {
-          const new_obj = action.payload.weekworkflow[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "weekworkflow/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = { ...state[i], no_drag: true };
-        }
-      }
-      return new_state;
-    case "weekworkflow/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function weekReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.week)
-        return action.payload.week;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.week) {
-        for (var i = 0; i < action.payload.week.length; i++) {
-          const new_obj = action.payload.week[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "week/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodeweek/changeID":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        const old_index = state[i].nodeweek_set.indexOf(action.payload.old_id);
-        if (old_index >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = new_state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(old_index, 1, action.payload.new_id);
-        }
-      }
-      return new_state;
-    case "nodeweek/movedTo":
-      let old_parent, old_parent_index, new_parent, new_parent_index;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].nodeweek_set.indexOf(action.payload.id) >= 0) {
-          old_parent_index = i;
-          old_parent = { ...state[i] };
-        }
-        if (state[i].id == action.payload.new_parent) {
-          new_parent_index = i;
-          new_parent = { ...state[i] };
-        }
-      }
-      var new_index = action.payload.new_index;
-      var new_state = state.slice();
-      old_parent.nodeweek_set = old_parent.nodeweek_set.slice();
-      old_parent.nodeweek_set.splice(
-        old_parent.nodeweek_set.indexOf(action.payload.id),
-        1
-      );
-      if (old_parent_index == new_parent_index) {
-        old_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
-      } else {
-        new_parent.nodeweek_set = new_parent.nodeweek_set.slice();
-        new_parent.nodeweek_set.splice(new_index, 0, action.payload.id);
-        new_state.splice(new_parent_index, 1, new_parent);
-      }
-      new_state.splice(old_parent_index, 1, old_parent);
-      return new_state;
-    case "node/deleteSelf":
-    case "node/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].nodeweek_set.indexOf(action.payload.parent_id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(
-            new_state[i].nodeweek_set.indexOf(action.payload.parent_id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "node/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
-          new_state[i].nodeweek_set.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "node/insertBelow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_nodeweek_set = state[i].nodeweek_set.slice();
-          new_nodeweek_set.splice(
-            action.payload.new_through.rank,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].nodeweek_set = new_nodeweek_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "node/newNode":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          var new_nodeweek_set = state[i].nodeweek_set.slice();
-          new_nodeweek_set.splice(
-            action.payload.index,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].nodeweek_set = new_nodeweek_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "week/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/changeField":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/toggleStrategy":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].is_strategy = action.payload.is_strategy;
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      new_state = state.slice();
-      new_state.push(action.payload.strategy);
-      return new_state;
-    case "week/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function nodeweekReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.nodeweek)
-        return action.payload.nodeweek;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.nodeweek) {
-        for (var i = 0; i < action.payload.nodeweek.length; i++) {
-          const new_obj = action.payload.nodeweek[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "nodeweek/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "nodeweek/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...state[i],
-            week: action.payload.new_parent,
-            no_drag: true
-          };
-        }
-      }
-      return new_state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.nodeweek.length; i++) {
-        new_state.push(action.payload.children.nodeweek[i]);
-      }
-      return new_state;
-    case "node/insertBelow":
-    case "node/newNode":
-      new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.nodeweeks_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodeweeks_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function nodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.node)
-        return action.payload.node;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.node) {
-        for (var i = 0; i < action.payload.node.length; i++) {
-          const new_obj = action.payload.node[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "node/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "column/deleteSelf":
-    case "column/deleteSelfSoft":
-      var new_state = state.slice();
-      var new_column;
-      if (action.payload.extra_data) {
-        new_column = action.payload.extra_data;
-      }
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].column == action.payload.id) {
-          new_state[i] = { ...state[i], column: new_column };
-        }
-      }
-      triggerHandlerEach($(".week .node"), "component-updated");
-      return new_state;
-    case "column/restoreSelf":
-      var new_state = state.slice();
-      var new_column;
-      if (action.payload.id) {
-        new_column = action.payload.id;
-      }
-      for (var i = 0; i < state.length; i++) {
-        if (action.payload.extra_data.indexOf(state[i].id) >= 0) {
-          new_state[i] = { ...state[i], column: new_column };
-        }
-      }
-      triggerHandlerEach($(".week .node"), "component-updated");
-      return new_state;
-    case "node/changedColumn":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], column: action.payload.new_column };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "node/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "node/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          triggerHandlerEach($(".week .node"), "component-updated");
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/deleteSelf":
-    case "nodelink/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outgoing_links.indexOf(action.payload.id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outgoing_links = state[i].outgoing_links.slice();
-          new_state[i].outgoing_links.splice(
-            new_state[i].outgoing_links.indexOf(action.payload.id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outgoing_links = state[i].outgoing_links.slice();
-          new_state[i].outgoing_links.push(action.payload.id);
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.node.length; i++) {
-        new_state.push(action.payload.children.node[i]);
-      }
-      return new_state;
-    case "node/insertBelow":
-    case "node/newNode":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "node/changeField":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/setLinkedWorkflow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].linked_workflow = action.payload.linked_workflow;
-          new_state[i].linked_workflow_data = action.payload.linked_workflow_data;
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/newNodeLink":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.new_model.source_node) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          const new_outgoing_links = state[i].outgoing_links.slice();
-          new_outgoing_links.push(action.payload.new_model.id);
-          new_state[i].outgoing_links = new_outgoing_links;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].node) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
-          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "strategy/addStrategy":
-      if (action.payload.nodes_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodes_added);
-      return new_state;
-    case "outcome/deleteSelf":
-    case "outcome/deleteSelfSoft":
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-    case "outcome/restoreSelf":
-    case "outcome_base/restoreSelf":
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.extra_data.length; i++) {
-        const new_node_data = action.payload.extra_data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_node_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_node_data };
-          }
-        }
-      }
-      return new_state;
-    case "node/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/reloadAssignments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = {
-            ...obj,
-            has_assignment: action.payload.has_assignment
-          };
-          return new_state;
-        }
-      }
-    case "outcome/insertChild":
-    case "outcome/insertBelow":
-    case "outcome_base/insertChild":
-    case "outcomeoutcome/changeID":
-      if (action.payload.node_updates.length == 0)
-        return state;
-      var new_state = state.slice();
-      for (var i = 0; i < action.payload.node_updates.length; i++) {
-        for (var j = 0; j < state.length; j++) {
-          if (action.payload.node_updates[i].id == state[j].id) {
-            new_state[j] = {
-              ...new_state[j],
-              outcomenode_set: action.payload.node_updates[i].outcomenode_set,
-              outcomenode_unique_set: action.payload.node_updates[i].outcomenode_unique_set
-            };
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function nodelinkReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.nodelink)
-        return action.payload.nodelink;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.nodelink) {
-        for (var i = 0; i < action.payload.nodelink.length; i++) {
-          const new_obj = action.payload.nodelink[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "nodelink/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/changeField":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "node/insertBelow":
-    case "node/newNode":
-    case "node/deleteSelf":
-      return state;
-    case "nodelink/newNodeLink":
-      new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      return new_state;
-    case "nodelink/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "nodelink/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "week/insertBelow":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.nodelink.length; i++) {
-        new_state.push(action.payload.children.nodelink[i]);
-      }
-      return new_state;
-    case "strategy/addStrategy":
-      if (action.payload.nodelinks_added.length == 0)
-        return state;
-      new_state = state.slice();
-      new_state.push(...action.payload.nodelinks_added);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcome)
-        return action.payload.outcome;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcome) {
-        for (var i = 0; i < action.payload.outcome.length; i++) {
-          const new_obj = action.payload.outcome[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcome/createLock":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], lock: action.payload.lock };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomeoutcome/changeID":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        const old_index = state[i].child_outcome_links.indexOf(
-          action.payload.old_id
-        );
-        if (old_index >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            old_index,
-            1,
-            action.payload.new_id
-          );
-        }
-      }
-      return new_state;
-    case "outcomeoutcome/movedTo":
-      let old_parent, old_parent_index, new_parent, new_parent_index;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].child_outcome_links.indexOf(action.payload.id) >= 0) {
-          old_parent_index = i;
-          old_parent = { ...state[i] };
-        }
-        if (state[i].id == action.payload.new_parent) {
-          new_parent_index = i;
-          new_parent = { ...state[i] };
-        }
-      }
-      var new_index = action.payload.new_index;
-      var new_state = state.slice();
-      old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
-      old_parent.child_outcome_links.splice(
-        old_parent.child_outcome_links.indexOf(action.payload.id),
-        1
-      );
-      if (old_parent_index == new_parent_index) {
-        old_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
-      } else {
-        new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
-        new_parent.child_outcome_links.splice(new_index, 0, action.payload.id);
-        new_state.splice(new_parent_index, 1, new_parent);
-      }
-      new_state.splice(old_parent_index, 1, old_parent);
-      return new_state;
-    case "outcome_base/deleteSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/deleteSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        if (new_state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
-            1
-          );
-        } else if (new_state[i].id == action.payload.id) {
-          new_state.splice(i, 1);
-          i--;
-        }
-      }
-      return new_state;
-    case "outcome/deleteSelfSoft":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].child_outcome_links.indexOf(action.payload.parent_id) >= 0) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            new_state[i].child_outcome_links.indexOf(action.payload.parent_id),
-            1
-          );
-        } else if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-        }
-      }
-      return new_state;
-    case "outcome/restoreSelf":
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          new_state[i] = { ...new_state[i] };
-          new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-          new_state[i].child_outcome_links.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-        } else if (state[i].id == action.payload.id) {
-          new_state[i] = { ...new_state[i], deleted: false };
-        }
-      }
-      return new_state;
-    case "outcome_base/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            deleted: true,
-            deleted_on: window.gettext("This session")
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i], deleted: false };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      var new_state = state.slice();
-      new_state.push(action.payload.new_model);
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcome.length; i++) {
-          new_state.push(action.payload.children.outcome[i]);
-        }
-      }
-      return new_state;
-    case "outcome/insertChild":
-    case "outcome_base/insertChild":
-    case "outcome/insertBelow":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parentID) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          const new_child_outcome_links = state[i].child_outcome_links.slice();
-          let new_index2;
-          new_index2 = action.payload.new_through.rank;
-          new_child_outcome_links.splice(
-            new_index2,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].child_outcome_links = new_child_outcome_links;
-          new_state.push(action.payload.new_model);
-          if (action.payload.children) {
-            for (var i = 0; i < action.payload.children.outcome.length; i++) {
-              new_state.push(action.payload.children.outcome[i]);
-            }
-          }
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/changeField":
-    case "outcome_base/changeField":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i], ...action.payload.json };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/changeFieldMany":
-    case "outcome_base/changeFieldMany":
-      if (action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID)
-        return state;
-      var new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (action.payload.ids.indexOf(state[i].id) >= 0) {
-          new_state[i] = { ...state[i], ...action.payload.json };
-        }
-      }
-      return new_state;
-    case "outcomehorizontallink/updateDegree":
-      if (action.payload.outcomehorizontallink == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].outcome) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcome_horizontal_links = action.payload.new_outcome_horizontal_links;
-          new_state[i].outcome_horizontal_links_unique = action.payload.new_outcome_horizontal_links_unique;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/updateHorizontalLinks":
-      var new_state = state.slice();
-      for (var i = 0; i < action.payload.data.length; i++) {
-        const new_outcome_data = action.payload.data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_outcome_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_outcome_data };
-          }
-        }
-      }
-      return new_state;
-    case "outcome/reloadComments":
-    case "outcome_base/reloadComments":
-      var new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const obj = new_state[i];
-        if (obj.id == action.payload.id) {
-          new_state[i] = { ...obj, comments: action.payload.comment_data };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function outcomeOutcomeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomeoutcome)
-        return action.payload.outcomeoutcome;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomeoutcome) {
-        for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
-          const new_obj = action.payload.outcomeoutcome[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomeoutcome/changeID":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.old_id) {
-          var new_state = state.slice();
-          new_state[i] = {
-            ...new_state[i],
-            id: action.payload.new_id,
-            no_drag: false
-          };
-          return new_state;
-        }
-      }
-      return state;
-    case "outcomeoutcome/movedTo":
-      new_state = state.slice();
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          new_state[i] = {
-            ...state[i],
-            parent: action.payload.new_parent,
-            no_drag: true
-          };
-        }
-      }
-      return new_state;
-    case "outcome/deleteSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state.splice(i, 1);
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-      var new_state = state.slice();
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
-          new_state.push(action.payload.children.outcomeoutcome[i]);
-        }
-      }
-      return new_state;
-    case "outcome/insertChild":
-    case "outcome/insertBelow":
-      var new_state = state.slice();
-      new_state.push(action.payload.new_through);
-      if (action.payload.children) {
-        for (var i = 0; i < action.payload.children.outcomeoutcome.length; i++) {
-          new_state.push(action.payload.children.outcomeoutcome[i]);
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeNodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomenode)
-        return action.payload.outcomenode;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomenode) {
-        for (var i = 0; i < action.payload.outcomenode.length; i++) {
-          const new_obj = action.payload.outcomenode[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      var new_state = state.slice();
-      const new_outcomenode_outcomes = action.payload.data_package.map(
-        (outcomenode) => cantorPairing(outcomenode.node, outcomenode.outcome)
-      );
-      const data_package_copy = action.payload.data_package.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const new_outcomenode_index = new_outcomenode_outcomes.indexOf(
-          cantorPairing(new_state[i].node, new_state[i].outcome)
-        );
-        if (new_outcomenode_index >= 0) {
-          new_state[i] = data_package_copy[new_outcomenode_index];
-          data_package_copy[new_outcomenode_index] = null;
-        }
-      }
-      for (var i = 0; i < data_package_copy.length; i++) {
-        if (data_package_copy[i] != null)
-          new_state.push(data_package_copy[i]);
-      }
-      new_state = new_state.filter((outcomenode) => outcomenode.degree > 0);
-      return new_state;
-    case "outcome/deleteSelf":
-    case "outcome_base/deleteSelf":
-      new_state = state.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        if (new_state[i].outcome == action.payload.id) {
-          new_state.splice(i, 1);
-          i--;
-        }
-      }
-      return new_state;
-    case "week/insertBelow":
-    case "node/insertBelow":
-    case "outcome/insertChild":
-    case "outcome_base/insertChild":
-    case "outcome/insertBelow":
-    case "outcomeoutcome/changeID":
-      if (!action.payload.children)
-        return state;
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.children.outcomenode.length; i++) {
-        new_state.push(action.payload.children.outcomenode[i]);
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function outcomeHorizontalLinkReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.outcomehorizontallink)
-        return action.payload.outcomehorizontallink;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.outcomehorizontallink) {
-        for (var i = 0; i < action.payload.outcomehorizontallink.length; i++) {
-          const new_obj = action.payload.outcomehorizontallink[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomehorizontallink/updateDegree":
-      if (action.payload.outcomehorizontallink == -1)
-        return state;
-      var new_state = state.slice();
-      const new_outcomehorizontallink_outcomes = action.payload.data_package.map(
-        (outcomehorizontallink) => cantorPairing(
-          outcomehorizontallink.outcome,
-          outcomehorizontallink.parent_outcome
-        )
-      );
-      const data_package_copy = action.payload.data_package.slice();
-      for (var i = 0; i < new_state.length; i++) {
-        const new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(
-          cantorPairing(
-            new_state[i].outcome,
-            new_state[i].parent_outcome
-          )
-        );
-        if (new_outcomehorizontallink_index >= 0) {
-          new_state[i] = data_package_copy[new_outcomehorizontallink_index];
-          data_package_copy[new_outcomehorizontallink_index] = null;
-        }
-      }
-      for (var i = 0; i < data_package_copy.length; i++) {
-        if (data_package_copy[i] != null)
-          new_state.push(data_package_copy[i]);
-      }
-      new_state = new_state.filter(
-        (outcomehorizontallink) => outcomehorizontallink.degree > 0
-      );
-      return new_state;
-    default:
-      return state;
-  }
-}
-function parentNodeReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.parent_node)
-        return action.payload.parent_node;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.parent_node) {
-        for (var i = 0; i < action.payload.parent_node.length; i++) {
-          const new_obj = action.payload.parent_node[i];
-          let added = false;
-          for (var j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcomenode/updateDegree":
-      if (action.payload.outcomenode == -1)
-        return state;
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.data_package[0].node) {
-          var new_state = state.slice();
-          new_state[i] = { ...new_state[i] };
-          new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
-          new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome/deleteSelf":
-    case "outcome/deleteSelfSoft":
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-    case "outcome/restoreSelf":
-    case "outcome_base/restoreSelf":
-      new_state = state.slice();
-      for (var i = 0; i < action.payload.extra_data.length; i++) {
-        const new_node_data = action.payload.extra_data[i];
-        for (var j = 0; j < new_state.length; j++) {
-          if (new_node_data.id == new_state[j].id) {
-            new_state[j] = { ...new_state[j], ...new_node_data };
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function parentWorkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.parent_workflow)
-        return action.payload.parent_workflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.parent_workflow) {
-        for (let i = 0; i < action.payload.parent_workflow.length; i++) {
-          const new_obj = action.payload.parent_workflow[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-function childWorkflowReducer(state = [], action) {
-  switch (action.type) {
-    case "replaceStoreData":
-      if (action.payload.child_workflow)
-        return action.payload.child_workflow;
-      return state;
-    case "refreshStoreData":
-      var new_state = state.slice();
-      if (action.payload.child_workflow) {
-        for (var i = 0; i < action.payload.child_workflow.length; i++) {
-          const new_obj = action.payload.child_workflow[i];
-          let added = false;
-          for (let j = 0; j < new_state.length; j++) {
-            if (new_state[j].id == new_obj.id) {
-              new_state.splice(j, 1, new_obj);
-              added = true;
-              break;
-            }
-          }
-          if (added)
-            continue;
-          new_state.push(new_obj);
-        }
-      }
-      return new_state;
-    case "outcome_base/deleteSelf":
-    case "outcome_base/deleteSelfSoft":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].outcomeworkflow_set.indexOf(action.payload.parent_id) >= 0) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_state[i].outcomeworkflow_set.splice(
-            new_state[i].outcomeworkflow_set.indexOf(action.payload.parent_id),
-            1
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/restoreSelf":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.parent_id) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_state[i].outcomeworkflow_set.splice(
-            action.payload.throughparent_index,
-            0,
-            action.payload.throughparent_id
-          );
-          return new_state;
-        }
-      }
-      return state;
-    case "outcome_base/insertBelow":
-    case "outcome/newOutcome":
-      for (var i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.new_through.workflow) {
-          var new_state = state.slice();
-          new_state[i] = { ...state[i] };
-          const new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-          new_outcomeworkflow_set.splice(
-            action.payload.new_through.rank,
-            0,
-            action.payload.new_through.id
-          );
-          new_state[i].outcomeworkflow_set = new_outcomeworkflow_set;
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function strategyReducer(state = [], action) {
-  switch (action.type) {
-    case "strategy/toggleStrategy":
-      if (!action.payload.is_strategy)
-        return state;
-      const new_state = state.slice();
-      new_state.push(action.payload.strategy);
-      return new_state;
-    default:
-      return state;
-  }
-}
-function saltiseStrategyReducer(state = [], action) {
-  switch (action.type) {
-    default:
-      return state;
-  }
-}
-function objectSetReducer(state = [], action) {
-  switch (action.type) {
-    case "objectset/toggleObjectSet":
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].id == action.payload.id) {
-          const new_state = state.slice();
-          new_state[i] = { ...new_state[i], hidden: action.payload.hidden };
-          return new_state;
-        }
-      }
-      return state;
-    default:
-      return state;
-  }
-}
-function gridMenuReducer(state = {}, action) {
-  switch (action.type) {
-    case "gridmenu/itemAdded":
-      var new_state = { ...state };
-      if (action.payload.type != "project") {
-        new_state.owned_strategies = { ...new_state.owned_strategies };
-        new_state.owned_strategies.sections = new_state.owned_strategies.sections.slice();
-        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
-          if (new_state.owned_strategies.sections[i].object_type == action.payload.type) {
-            new_state.owned_strategies.sections[i].objects = new_state.owned_strategies.sections[i].objects.slice();
-            new_state.owned_strategies.sections[i].objects.push(
-              action.payload.new_item
-            );
-          }
-        }
-      } else {
-        new_state.owned_projects = { ...new_state.owned_projects };
-        new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
-        for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
-          if (new_state.owned_projects.sections[i].object_type == action.payload.type) {
-            new_state.owned_projects.sections[i].objects = new_state.owned_projects.sections[i].objects.slice();
-            new_state.owned_projects.sections[i].objects.push(
-              action.payload.new_item
-            );
-          }
-        }
-      }
-      return new_state;
-    default:
-      return state;
-  }
-}
-const getReducers = () => {
-  return {
-    workflow: workflowReducer,
-    outcomeworkflow: outcomeworkflowReducer,
-    columnworkflow: columnworkflowReducer,
-    column: columnReducer,
-    weekworkflow: weekworkflowReducer,
-    week: weekReducer,
-    nodeweek: nodeweekReducer,
-    node: nodeReducer,
-    nodelink: nodelinkReducer,
-    outcome: outcomeReducer,
-    outcomeoutcome: outcomeOutcomeReducer,
-    outcomenode: outcomeNodeReducer,
-    parent_workflow: parentWorkflowReducer,
-    parent_node: parentNodeReducer,
-    outcomehorizontallink: outcomeHorizontalLinkReducer,
-    child_workflow: childWorkflowReducer,
-    strategy: strategyReducer,
-    saltise_strategy: saltiseStrategyReducer,
-    objectset: objectSetReducer
-  };
-};
-const rootWorkflowReducer = combineReducers(getReducers());
-combineReducers({
-  outcome: outcomeReducer,
-  outcomeoutcome: outcomeOutcomeReducer
-});
 class TitleText extends reactExports.Component {
   render() {
     var text = this.props.text;
@@ -60813,23 +58774,23 @@ class TitleText extends reactExports.Component {
 }
 class WorkflowTitle extends reactExports.Component {
   render() {
-    const data = this.props.data;
-    let text = data.title;
-    if (data.code)
-      text = data.code + " - " + text;
+    const data2 = this.props.data;
+    let text = data2.title;
+    if (data2.code)
+      text = data2.code + " - " + text;
     if (text == null || text == "") {
       text = window.gettext("Untitled");
     }
-    if (data.url == "noaccess" || data.url == "nouser") {
+    if (data2.url == "noaccess" || data2.url == "nouser") {
       text += window.gettext(" (no access)");
     }
-    if (data.deleted) {
+    if (data2.deleted) {
       text += " (deleted)";
     }
-    let href = data.url;
-    if (!data.url)
-      href = COURSEFLOW_APP.config.update_path[data.type].replace("0", data.id);
-    if (this.props.no_hyperlink || data.url == "noaccess" || data.url == "nouser") {
+    let href = data2.url;
+    if (!data2.url)
+      href = COURSEFLOW_APP.config.update_path[data2.type].replace("0", data2.id);
+    if (this.props.no_hyperlink || data2.url == "noaccess" || data2.url == "nouser") {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -60856,21 +58817,21 @@ class WorkflowTitle extends reactExports.Component {
 }
 class WeekTitle extends reactExports.Component {
   render() {
-    const data = this.props.data;
-    const default_text = data.week_type_display + " " + (this.props.rank + 1);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text });
+    const data2 = this.props.data;
+    const default_text = data2.week_type_display + " " + (this.props.rank + 1);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text });
   }
 }
 class NodeTitle extends reactExports.Component {
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let text;
-    if (data.represents_workflow && data.linked_workflow_data) {
-      text = data.linked_workflow_data.title;
-      if (data.linked_workflow_data.code)
-        text = data.linked_workflow_data.code + " - " + text;
+    if (data2.represents_workflow && data2.linked_workflow_data) {
+      text = data2.linked_workflow_data.title;
+      if (data2.linked_workflow_data.code)
+        text = data2.linked_workflow_data.code + " - " + text;
     } else
-      text = data.title;
+      text = data2.title;
     if (text == null || text == "") {
       text = window.gettext("Untitled");
     }
@@ -60886,14 +58847,14 @@ class NodeTitle extends reactExports.Component {
 }
 class AssignmentTitle extends reactExports.Component {
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let text;
-    if (data.task.represents_workflow && data.task.linked_workflow_data) {
-      text = data.task.linked_workflow_data.title;
-      if (data.task.linked_workflow_data.code)
-        text = data.task.linked_workflow_data.code + " - " + text;
+    if (data2.task.represents_workflow && data2.task.linked_workflow_data) {
+      text = data2.task.linked_workflow_data.title;
+      if (data2.task.linked_workflow_data.code)
+        text = data2.task.linked_workflow_data.code + " - " + text;
     } else
-      text = data.task.title;
+      text = data2.task.title;
     if (text == null || text == "") {
       text = window.gettext("Untitled");
     }
@@ -60903,7 +58864,7 @@ class AssignmentTitle extends reactExports.Component {
         {
           href: COURSEFLOW_APP.config.update_path.liveassignment.replace(
             "0",
-            data.id
+            data2.id
           ),
           className: "workflow-title hover-shade",
           title: text,
@@ -60924,9 +58885,9 @@ class AssignmentTitle extends reactExports.Component {
 }
 class OutcomeTitle extends reactExports.Component {
   render() {
-    const data = this.props.data;
-    let text = data.title;
-    if (data.title == null || data.title == "") {
+    const data2 = this.props.data;
+    let text = data2.title;
+    if (data2.title == null || data2.title == "") {
       text = window.gettext("Untitled");
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { title: this.props.hovertext, className: "title-text", children: [
@@ -60935,13 +58896,26 @@ class OutcomeTitle extends reactExports.Component {
     ] });
   }
 }
-function getOutcomeTitle(data, prefix2) {
-  let text = data.title;
-  if (data.title == null || data.title == "") {
+function getOutcomeTitle(data2, prefix2) {
+  let text = data2.title;
+  if (data2.title == null || data2.title == "") {
     text = window.gettext("Untitled");
   }
   return prefix2 + " - " + text;
 }
+var ViewType$1 = /* @__PURE__ */ ((ViewType2) => {
+  ViewType2["WORKFLOW"] = "workflowview";
+  ViewType2["OUTCOME_EDIT"] = "outcomeedit";
+  ViewType2["GRID"] = "grid";
+  ViewType2["OUTCOMETABLE"] = "outcometable";
+  ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
+  return ViewType2;
+})(ViewType$1 || {});
+var WFContext = /* @__PURE__ */ ((WFContext2) => {
+  WFContext2["WORKFLOW"] = "workflow";
+  WFContext2["COMPARISON"] = "comparison";
+  return WFContext2;
+})(WFContext || {});
 var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
   WorkflowType2["ACTIVITY"] = "activity";
   WorkflowType2["PROJECT"] = "project";
@@ -61111,12 +59085,12 @@ class WorkflowCard extends reactExports.Component {
   /*******************************************************
    * RENDER
    *******************************************************/
-  renderCreationText(data) {
+  renderCreationText(data2) {
     let creationText = window.gettext("Created");
-    if (data.author && data.author !== "None") {
-      creationText += ` ${window.gettext("by")} ${data.author}`;
+    if (data2.author && data2.author !== "None") {
+      creationText += ` ${window.gettext("by")} ${data2.author}`;
     }
-    creationText += `${window.gettext(" on ")}${data.created_on}`;
+    creationText += `${window.gettext(" on ")}${data2.created_on}`;
     return creationText;
   }
   renderDescription(description) {
@@ -61316,6 +59290,152 @@ const WorkflowGridMenu = connect(
   (state) => ({ data_package: state }),
   null
 )(WorkflowGridMenuUnconnected);
+var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
+  CommonActions2["REPLACE_STOREDATA"] = "replaceStoreData";
+  CommonActions2["REFRESH_STOREDATA"] = "refreshStoreData";
+  return CommonActions2;
+})(CommonActions || {});
+var WorkFlowActions = /* @__PURE__ */ ((WorkFlowActions2) => {
+  WorkFlowActions2["CREATELOCK"] = "workflow/createLock";
+  WorkFlowActions2["CHANGE_FIELD"] = "workflow/changeField";
+  WorkFlowActions2["DELETE_SELF_SOFT"] = "workflow/deleteSelfSoft";
+  WorkFlowActions2["RESTORE_SELF"] = "workflow/restoreSelf";
+  return WorkFlowActions2;
+})(WorkFlowActions || {});
+var WeekActions = /* @__PURE__ */ ((WeekActions2) => {
+  WeekActions2["DELETE_SELF"] = "week/deleteSelf";
+  WeekActions2["DELETE_SELF_SOFT"] = "week/deleteSelfSoft";
+  WeekActions2["RESTORE_SELF"] = "week/restoreSelf";
+  WeekActions2["INSERT_BELOW"] = "week/insertBelow";
+  WeekActions2["CREATE_LOCK"] = "week/createLock";
+  WeekActions2["CHANGE_FIELD"] = "week/changeField";
+  WeekActions2["RELOAD_COMMENTS"] = "week/reloadComments";
+  return WeekActions2;
+})(WeekActions || {});
+var WeekWorkflowActions = /* @__PURE__ */ ((WeekWorkflowActions2) => {
+  WeekWorkflowActions2["CHANGE_ID"] = "weekworkflow/changeID";
+  WeekWorkflowActions2["MOVED_TO"] = "weekworkflow/movedTo";
+  return WeekWorkflowActions2;
+})(WeekWorkflowActions || {});
+var OutcomeActions = /* @__PURE__ */ ((OutcomeActions2) => {
+  OutcomeActions2["NEW_OUTCOME"] = "outcome/newOutcome";
+  OutcomeActions2["DELETE_SELF"] = "outcome/deleteSelf";
+  OutcomeActions2["DELETE_SELF_SOFT"] = "outcome/deleteSelfSoft";
+  OutcomeActions2["RESTORE_SELF"] = "outcome/restoreSelf";
+  OutcomeActions2["INSERT_CHILD"] = "outcome/insertChild";
+  OutcomeActions2["INSERT_BELOW"] = "outcome/insertBelow";
+  OutcomeActions2["CREATE_LOCK"] = "outcome/createLock";
+  OutcomeActions2["RELOAD_COMMENTS"] = "outcome/reloadComments";
+  OutcomeActions2["UPDATE_HORIZONTAL_LINK"] = "outcome/updateHorizontalLinks";
+  OutcomeActions2["CHANGE_FIELD"] = "outcome/changeField";
+  OutcomeActions2["CHANGE_FIELD_MANY"] = "outcome/changeFieldMany";
+  return OutcomeActions2;
+})(OutcomeActions || {});
+var OutcomeNodeActions = /* @__PURE__ */ ((OutcomeNodeActions2) => {
+  OutcomeNodeActions2["UPDATE_DEGREE"] = "outcomenode/updateDegree";
+  return OutcomeNodeActions2;
+})(OutcomeNodeActions || {});
+var OutcomeBaseActions = /* @__PURE__ */ ((OutcomeBaseActions2) => {
+  OutcomeBaseActions2["DELETE_SELF"] = "outcome_base/deleteSelf";
+  OutcomeBaseActions2["DELETE_SELF_SOFT"] = "outcome_base/deleteSelfSoft";
+  OutcomeBaseActions2["RESTORE_SELF"] = "outcome_base/restoreSelf";
+  OutcomeBaseActions2["INSERT_BELOW"] = "outcome_base/insertBelow";
+  OutcomeBaseActions2["INSERT_CHILD"] = "outcome_base/insertChild";
+  OutcomeBaseActions2["RELOAD_COMMENTS"] = "outcome_base/reloadComments";
+  OutcomeBaseActions2["CHANGE_FIELD"] = "outcome_base/changeField";
+  OutcomeBaseActions2["CHANGE_FIELD_MANY"] = "outcome_base/changeFieldMany";
+  return OutcomeBaseActions2;
+})(OutcomeBaseActions || {});
+var OutcomeWorkflowActions = /* @__PURE__ */ ((OutcomeWorkflowActions2) => {
+  OutcomeWorkflowActions2["MOVED_TO"] = "outcomeworkflow/movedTo";
+  OutcomeWorkflowActions2["CHANGE_ID"] = "outcomeworkflow/changeID";
+  return OutcomeWorkflowActions2;
+})(OutcomeWorkflowActions || {});
+var OutcomeOutcomeActions = /* @__PURE__ */ ((OutcomeOutcomeActions2) => {
+  OutcomeOutcomeActions2["CHANGE_ID"] = "outcomeoutcome/changeID";
+  OutcomeOutcomeActions2["MOVED_TO"] = "outcomeoutcome/movedTo";
+  return OutcomeOutcomeActions2;
+})(OutcomeOutcomeActions || {});
+var StrategyActions = /* @__PURE__ */ ((StrategyActions2) => {
+  StrategyActions2["ADD_STRATEGY"] = "strategy/addStrategy";
+  StrategyActions2["TOGGLE_STRATEGY"] = "strategy/toggleStrategy";
+  return StrategyActions2;
+})(StrategyActions || {});
+var ColumnActions = /* @__PURE__ */ ((ColumnActions2) => {
+  ColumnActions2["DELETE_SELF"] = "column/deleteSelf";
+  ColumnActions2["DELETE_SELF_SOFT"] = "column/deleteSelfSoft";
+  ColumnActions2["RESTORE_SELF"] = "column/restoreSelf";
+  ColumnActions2["INSERT_BELOW"] = "column/insertBelow";
+  ColumnActions2["CREATE_LOCK"] = "column/createLock";
+  ColumnActions2["RELOAD_COMMENTS"] = "column/reloadComments";
+  ColumnActions2["CHANGE_FIELD"] = "column/changeField";
+  return ColumnActions2;
+})(ColumnActions || {});
+var ColumnWorkflowActions = /* @__PURE__ */ ((ColumnWorkflowActions2) => {
+  ColumnWorkflowActions2["CHANGE_ID"] = "columnworkflow/changeID";
+  ColumnWorkflowActions2["MOVED_TO"] = "columnworkflow/movedTo";
+  return ColumnWorkflowActions2;
+})(ColumnWorkflowActions || {});
+var NodeWeekActions = /* @__PURE__ */ ((NodeWeekActions2) => {
+  NodeWeekActions2["CHANGE_ID"] = "nodeweek/changeID";
+  NodeWeekActions2["MOVED_TO"] = "nodeweek/movedTo";
+  return NodeWeekActions2;
+})(NodeWeekActions || {});
+var NodeActions = /* @__PURE__ */ ((NodeActions2) => {
+  NodeActions2["NEW_NODE"] = "node/newNode";
+  NodeActions2["DELETE_SELF"] = "node/deleteSelf";
+  NodeActions2["DELETE_SELF_SOFT"] = "node/deleteSelfSoft";
+  NodeActions2["RESTORE_SELF"] = "node/restoreSelf";
+  NodeActions2["RELOAD_ASSIGNMENTS"] = "node/reloadAssignments";
+  NodeActions2["CHANGED_COLUMN"] = "node/changedColumn";
+  NodeActions2["CREATE_LOCK"] = "node/createLock";
+  NodeActions2["INSERT_BELOW"] = "node/insertBelow";
+  NodeActions2["CHANGE_FIELD"] = "node/changeField";
+  NodeActions2["RELOAD_COMMENTS"] = "node/reloadComments";
+  NodeActions2["SET_LINKED_WORKFLOW"] = "node/setLinkedWorkflow";
+  return NodeActions2;
+})(NodeActions || {});
+var NodeLinkActions = /* @__PURE__ */ ((NodeLinkActions2) => {
+  NodeLinkActions2["CREATE_LOCK"] = "nodelink/createLock";
+  NodeLinkActions2["CHANGE_FIELD"] = "nodelink/changeField";
+  NodeLinkActions2["RESTORE_SELF"] = "nodelink/restoreSelf";
+  NodeLinkActions2["DELETE_SELF"] = "nodelink/deleteSelf";
+  NodeLinkActions2["DELETE_SELF_SOFT"] = "nodelink/deleteSelfSoft";
+  NodeLinkActions2["NEW_NODE_LINK"] = "nodelink/newNodeLink";
+  return NodeLinkActions2;
+})(NodeLinkActions || {});
+var GridMenuActions = /* @__PURE__ */ ((GridMenuActions2) => {
+  GridMenuActions2["ITEM_ADDED"] = "gridmenu/itemAdded";
+  return GridMenuActions2;
+})(GridMenuActions || {});
+var ObjectSetActions = /* @__PURE__ */ ((ObjectSetActions2) => {
+  ObjectSetActions2["TOGGLE_OBJECT_SET"] = "objectset/toggleObjectSet";
+  return ObjectSetActions2;
+})(ObjectSetActions || {});
+var OutcomeHorizontalLinkActions = /* @__PURE__ */ ((OutcomeHorizontalLinkActions2) => {
+  OutcomeHorizontalLinkActions2["UPDATE_DEGREE"] = "outcomehorizontallink/updateDegree";
+  return OutcomeHorizontalLinkActions2;
+})(OutcomeHorizontalLinkActions || {});
+function gridMenuReducer(state = {}, action) {
+  switch (action.type) {
+    case GridMenuActions.ITEM_ADDED:
+      const new_state = {
+        ...state,
+        owned_strategies: { ...state.owned_strategies },
+        owned_projects: { ...state.owned_projects }
+      };
+      const target = action.payload.type === "project" ? "owned_projects" : "owned_strategies";
+      new_state[target].sections = new_state[target].sections.map(
+        (section) => ({
+          ...section,
+          objects: section.object_type === action.payload.type ? [...section.objects, action.payload.new_item] : [...section.objects]
+        })
+      );
+      return new_state;
+    default:
+      return state;
+  }
+}
 class WorkflowGrid extends React.Component {
   constructor(props2) {
     super(props2);
@@ -61329,23 +59449,1469 @@ class WorkflowGrid extends React.Component {
 const WorkflowLoader = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
 };
+function parentNodeReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.parent_node || state;
+    case CommonActions.REFRESH_STOREDATA:
+      if (!action.payload.parent_node)
+        return state;
+      return action.payload.parent_node.reduce(
+        (acc, newItem) => {
+          const index = acc.findIndex((item) => item.id === newItem.id);
+          if (index > -1) {
+            acc.splice(index, 1, newItem);
+          } else {
+            acc.push(newItem);
+          }
+          return acc;
+        },
+        [...state]
+      );
+    case OutcomeNodeActions.UPDATE_DEGREE:
+      if (action.payload.outcomenode === -1)
+        return state;
+      return state.map(
+        (item) => item.id === action.payload.data_package[0].node ? {
+          ...item,
+          outcomenode_set: action.payload.new_outcomenode_set,
+          outcomenode_unique_set: action.payload.new_outcomenode_unique_set
+        } : item
+      );
+    case OutcomeActions.DELETE_SELF:
+    case OutcomeActions.DELETE_SELF_SOFT:
+    case OutcomeActions.RESTORE_SELF:
+    case OutcomeBaseActions.RESTORE_SELF:
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeBaseActions.DELETE_SELF_SOFT:
+      return state.map(
+        (item, index) => action.payload.extra_data.find((data2) => data2.id === item.id) ? {
+          ...item,
+          ...action.payload.extra_data.find((data2) => data2.id === item.id)
+        } : item
+      );
+    default:
+      return state;
+  }
+}
+const findAndReplaceOrAdd = (array, newItem) => {
+  const index = array.findIndex((item) => item.id === newItem.id);
+  if (index !== -1) {
+    return [...array.slice(0, index), newItem, ...array.slice(index + 1)];
+  }
+  return [...array, newItem];
+};
+const updateStateForId = (state, action, updateCallback) => {
+  return state.map(
+    (item) => item.id === action.payload.id ? updateCallback(item) : item
+  );
+};
+const findParentIndices = (state, action) => {
+  let oldParentIndex, newParentIndex;
+  const oldParent = state.find((item, index) => {
+    if (item.child_outcome_links.includes(action.payload.id)) {
+      oldParentIndex = index;
+      return true;
+    }
+    return false;
+  });
+  const newParent = state.find((item, index) => {
+    if (item.id === action.payload.new_parent) {
+      newParentIndex = index;
+      return true;
+    }
+    return false;
+  });
+  return { oldParent, oldParentIndex, newParent, newParentIndex };
+};
+function outcomeReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA: {
+      return action.payload.outcome || state;
+    }
+    case CommonActions.REFRESH_STOREDATA: {
+      return action.payload.outcome ? action.payload.outcome.reduce(findAndReplaceOrAdd, [...state]) : state;
+    }
+    case OutcomeActions.CREATE_LOCK: {
+      return updateStateForId(state, action, (item) => ({
+        ...item,
+        lock: action.payload.lock
+      }));
+    }
+    case OutcomeActions.RESTORE_SELF:
+      return updateStateForId(state, action, (item) => {
+        if (item.id === action.payload.parent_id) {
+          const newChildLinks = [...item.child_outcome_links];
+          newChildLinks.splice(
+            action.payload.throughparent_index,
+            0,
+            action.payload.throughparent_id
+          );
+          return { ...item, child_outcome_links: newChildLinks };
+        }
+        return item.id === action.payload.id ? { ...item, deleted: false } : item;
+      });
+    case OutcomeActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.id).map((item) => ({
+        ...item,
+        child_outcome_links: item.child_outcome_links.filter(
+          (linkId) => linkId !== action.payload.parent_id
+        )
+      }));
+    case OutcomeActions.UPDATE_HORIZONTAL_LINK:
+      return updateStateForId(state, action, (item) => {
+        const newData = action.payload.data.find((d) => d.id === item.id) || {};
+        return { ...item, ...newData };
+      });
+    case OutcomeActions.DELETE_SELF_SOFT:
+      return updateStateForId(state, action, (item) => {
+        if (item.child_outcome_links.includes(action.payload.parent_id)) {
+          const newChildLinks = item.child_outcome_links.filter(
+            (linkId) => linkId !== action.payload.parent_id
+          );
+          return { ...item, child_outcome_links: newChildLinks };
+        }
+        return item.id === action.payload.id ? {
+          ...item,
+          deleted: true,
+          deleted_on: window.gettext("This session")
+        } : item;
+      });
+    case OutcomeOutcomeActions.CHANGE_ID:
+      return state.map((item) => {
+        const oldIndex = item.child_outcome_links.indexOf(action.payload.old_id);
+        if (oldIndex >= 0) {
+          const newLinks = [...item.child_outcome_links];
+          newLinks.splice(oldIndex, 1, action.payload.new_id);
+          return { ...item, child_outcome_links: newLinks };
+        }
+        return item;
+      });
+    case OutcomeOutcomeActions.MOVED_TO:
+      const { oldParent, oldParentIndex, newParent, newParentIndex } = findParentIndices(state, action);
+      if (!oldParent || !newParent)
+        return state;
+      const newOldParentLinks = oldParent.child_outcome_links.filter(
+        (id) => id !== action.payload.id
+      );
+      const newParentLinks = [...newParent.child_outcome_links];
+      newParentLinks.splice(action.payload.new_index, 0, action.payload.id);
+      const newState = [...state];
+      newState[oldParentIndex] = {
+        ...oldParent,
+        child_outcome_links: newOldParentLinks
+      };
+      if (oldParentIndex !== newParentIndex) {
+        newState[newParentIndex] = {
+          ...newParent,
+          child_outcome_links: newParentLinks
+        };
+      }
+      return newState;
+    case OutcomeBaseActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.id);
+    case OutcomeBaseActions.DELETE_SELF_SOFT:
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          deleted: true,
+          deleted_on: window.gettext("This session")
+        } : item
+      );
+    case OutcomeBaseActions.RESTORE_SELF:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, deleted: false } : item
+      );
+    case OutcomeActions.RELOAD_COMMENTS:
+    case OutcomeBaseActions.RELOAD_COMMENTS:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, comments: action.payload.comment_data } : item
+      );
+    case OutcomeActions.NEW_OUTCOME:
+    case OutcomeBaseActions.INSERT_BELOW:
+      return [
+        ...state,
+        action.payload.new_model,
+        ...action.payload.children ? action.payload.children.outcome : []
+      ];
+    case OutcomeActions.INSERT_CHILD:
+    case OutcomeActions.INSERT_BELOW:
+    case OutcomeBaseActions.INSERT_CHILD: {
+      const parentIndex = state.findIndex(
+        (item) => item.id === action.payload.parentID
+      );
+      if (parentIndex === -1)
+        return state;
+      const newState2 = state.slice();
+      const parentItem = { ...newState2[parentIndex] };
+      const newChildOutcomeLinks = [...parentItem.child_outcome_links];
+      newChildOutcomeLinks.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      parentItem.child_outcome_links = newChildOutcomeLinks;
+      newState2[parentIndex] = parentItem;
+      const childrenToAdd = action.payload.children ? action.payload.children.outcome : [];
+      return [...newState2, action.payload.new_model, ...childrenToAdd];
+    }
+    case OutcomeActions.CHANGE_FIELD:
+    case OutcomeBaseActions.CHANGE_FIELD:
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
+      );
+    case OutcomeActions.CHANGE_FIELD_MANY:
+    case OutcomeBaseActions.CHANGE_FIELD_MANY:
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      return state.map(
+        (item) => action.payload.ids.includes(item.id) ? { ...item, ...action.payload.json } : item
+      );
+    case OutcomeHorizontalLinkActions.UPDATE_DEGREE:
+      if (action.payload.outcomehorizontallink === -1)
+        return state;
+      return state.map((item) => {
+        if (item.id === action.payload.data_package[0].outcome) {
+          return {
+            ...item,
+            outcome_horizontal_links: action.payload.new_outcome_horizontal_links,
+            outcome_horizontal_links_unique: action.payload.new_outcome_horizontal_links_unique
+          };
+        }
+        return item;
+      });
+    default:
+      return state;
+  }
+}
+function columnReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.column || state;
+    case CommonActions.REFRESH_STOREDATA:
+      return action.payload.column ? action.payload.column.reduce(
+        (newState, new_obj) => {
+          const index = newState.findIndex((item) => item.id === new_obj.id);
+          if (index !== -1) {
+            return [
+              ...newState.slice(0, index),
+              new_obj,
+              ...newState.slice(index + 1)
+            ];
+          }
+          return [...newState, new_obj];
+        },
+        [...state]
+      ) : state;
+    case ColumnActions.CREATE_LOCK:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, lock: action.payload.lock } : item
+      );
+    case ColumnActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.id);
+    case ColumnActions.DELETE_SELF_SOFT:
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          deleted: true,
+          deleted_on: window.gettext("This session")
+        } : item
+      );
+    case ColumnActions.RESTORE_SELF:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, deleted: false } : item
+      );
+    case ColumnActions.INSERT_BELOW:
+      return [...state, action.payload.new_model];
+    case ColumnActions.CHANGE_FIELD:
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+        return state;
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
+      );
+    case ColumnActions.RELOAD_COMMENTS:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, comments: action.payload.comment_data } : item
+      );
+    case NodeActions.NEW_NODE:
+      return state.some((item) => item.id === action.payload.column.id) ? state : [...state, action.payload.column];
+    case StrategyActions.ADD_STRATEGY:
+      return action.payload.columns_added.length === 0 ? state : [...state, ...action.payload.columns_added];
+    default:
+      return state;
+  }
+}
+function outcomeOutcomeReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.outcomeoutcome || state;
+    case CommonActions.REFRESH_STOREDATA:
+      return action.payload.outcomeoutcome ? action.payload.outcomeoutcome.reduce(
+        (acc, newItem) => {
+          const existingIndex = acc.findIndex(
+            (item) => item.id === newItem.id
+          );
+          if (existingIndex !== -1) {
+            acc[existingIndex] = newItem;
+          } else {
+            acc.push(newItem);
+          }
+          return acc;
+        },
+        [...state]
+      ) : state;
+    case OutcomeOutcomeActions.CHANGE_ID:
+      return state.map(
+        (item) => item.id === action.payload.old_id ? { ...item, id: action.payload.new_id, no_drag: false } : item
+      );
+    case OutcomeOutcomeActions.MOVED_TO:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, parent: action.payload.new_parent, no_drag: true } : item
+      );
+    case OutcomeActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.parent_id);
+    case OutcomeBaseActions.INSERT_BELOW:
+    case OutcomeActions.INSERT_CHILD:
+    case OutcomeActions.INSERT_BELOW:
+      const newItems = action.payload.children ? action.payload.children.outcomeoutcome : [];
+      return [...state, action.payload.new_through, ...newItems];
+    default:
+      return state;
+  }
+}
+function childWorkflowReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.child_workflow || state;
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.child_workflow) {
+        return state;
+      }
+      return action.payload.child_workflow.reduce(
+        (updatedState, newChildWorkflowItem) => {
+          const existingIndex = updatedState.findIndex(
+            (item) => item.id === newChildWorkflowItem.id
+          );
+          if (existingIndex !== -1) {
+            updatedState[existingIndex] = newChildWorkflowItem;
+          } else {
+            updatedState.push(newChildWorkflowItem);
+          }
+          return updatedState;
+        },
+        [...state]
+      );
+    }
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeBaseActions.DELETE_SELF_SOFT: {
+      return state.map((item) => ({
+        ...item,
+        outcomeworkflow_set: item.outcomeworkflow_set.filter(
+          (id) => id !== action.payload.parent_id
+        )
+      }));
+    }
+    case OutcomeBaseActions.RESTORE_SELF:
+    case OutcomeBaseActions.INSERT_BELOW:
+    case OutcomeActions.NEW_OUTCOME:
+      return state.map((item) => {
+        if (item.id === action.payload.parent_id || item.id === action.payload.new_through.workflow) {
+          const new_outcomeworkflow_set = [...item.outcomeworkflow_set];
+          const index = action.type === OutcomeBaseActions.RESTORE_SELF ? action.payload.throughparent_index : action.payload.new_through.rank;
+          new_outcomeworkflow_set.splice(
+            index,
+            0,
+            action.payload.throughparent_id || action.payload.new_through.id
+          );
+          return { ...item, outcomeworkflow_set: new_outcomeworkflow_set };
+        }
+        return item;
+      });
+    default:
+      return state;
+  }
+}
+function outcomeNodeReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA: {
+      return action.payload.outcomenode || state;
+    }
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.outcomenode)
+        return state;
+      const updatedItems = action.payload.outcomenode.map((newItem) => {
+        const existingItem = state.find((item) => item.id === newItem.id);
+        return existingItem ? newItem : null;
+      }).filter((item) => item !== null);
+      const remainingItems = state.filter(
+        (stateItem) => !action.payload.outcomenode.some(
+          (newItem) => newItem.id === stateItem.id
+        )
+      );
+      return [...updatedItems, ...remainingItems];
+    }
+    case OutcomeNodeActions.UPDATE_DEGREE: {
+      if (action.payload.outcomenode === -1) {
+        return state;
+      }
+      const new_outcomenode_outcomes = action.payload.data_package.map(
+        (outcomenode) => cantorPairing(outcomenode.node, outcomenode.outcome)
+      );
+      const updatedState = state.map((item) => {
+        const index = new_outcomenode_outcomes.indexOf(
+          cantorPairing(item.node, item.outcome)
+        );
+        return index >= 0 ? action.payload.data_package[index] : item;
+      });
+      return updatedState.concat(
+        action.payload.data_package.filter(
+          (item) => !new_outcomenode_outcomes.includes(
+            cantorPairing(item.node, item.outcome)
+          )
+        )
+      ).filter((outcomenode) => outcomenode.degree > 0);
+    }
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeActions.DELETE_SELF: {
+      return state.filter((item) => item.outcome !== action.payload.id);
+    }
+    case WeekActions.INSERT_BELOW:
+    case NodeActions.INSERT_BELOW:
+    case OutcomeActions.INSERT_CHILD:
+    case OutcomeActions.INSERT_BELOW:
+    case OutcomeBaseActions.INSERT_CHILD:
+    case OutcomeOutcomeActions.CHANGE_ID: {
+      return action.payload.children ? [...state, ...action.payload.children.outcomenode] : state;
+    }
+    default:
+      return state;
+  }
+}
+function nodeReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      if (action.payload.node)
+        return action.payload.node;
+      return state;
+    case CommonActions.REFRESH_STOREDATA:
+      const updatedState = [...state];
+      if (action.payload.node) {
+        action.payload.node.forEach((nodeItem) => {
+          const existingIndex = updatedState.findIndex(
+            (item) => item.id === nodeItem.id
+          );
+          if (existingIndex >= 0) {
+            updatedState[existingIndex] = nodeItem;
+          } else {
+            updatedState.push(nodeItem);
+          }
+        });
+      }
+      return updatedState;
+    case ColumnActions.DELETE_SELF:
+    case ColumnActions.DELETE_SELF_SOFT:
+    case ColumnActions.RESTORE_SELF: {
+      const isDeleteAction = action.type === ColumnActions.DELETE_SELF || action.type === "column/deleteSelfSoft";
+      const newColumn = isDeleteAction ? action.payload.extra_data : action.payload.id;
+      const updatedState2 = state.map((item) => {
+        const shouldUpdateColumn = isDeleteAction ? item.column === action.payload.id : action.payload.extra_data.includes(item.id);
+        return shouldUpdateColumn ? { ...item, column: newColumn } : item;
+      });
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return updatedState2;
+    }
+    case NodeActions.CHANGED_COLUMN:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, column: action.payload.new_column } : item
+      );
+    case NodeActions.DELETE_SELF: {
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return state.filter((item) => item.id !== action.payload.id);
+    }
+    case NodeActions.CREATE_LOCK:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, lock: action.payload.lock } : item
+      );
+    case NodeActions.DELETE_SELF_SOFT: {
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          deleted: true,
+          deleted_on: window.gettext("This session")
+        } : item
+      );
+    }
+    case NodeActions.RESTORE_SELF:
+      triggerHandlerEach($(".week .node"), "component-updated");
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, deleted: false } : item
+      );
+    case NodeActions.INSERT_BELOW:
+    case NodeActions.NEW_NODE: {
+      return [...state, action.payload.new_model];
+    }
+    case NodeActions.CHANGE_FIELD:
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID) {
+        return state;
+      }
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
+      );
+    case NodeActions.RELOAD_COMMENTS:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, comments: action.payload.comment_data } : item
+      );
+    case NodeActions.SET_LINKED_WORKFLOW:
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          linked_workflow: action.payload.linked_workflow,
+          linked_workflow_data: action.payload.linked_workflow_data
+        } : item
+      );
+    case NodeActions.RELOAD_ASSIGNMENTS:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, has_assignment: action.payload.has_assignment } : item
+      );
+    case NodeLinkActions.DELETE_SELF:
+    case NodeLinkActions.DELETE_SELF_SOFT:
+      return state.map((item) => {
+        if (item.outgoing_links.includes(action.payload.id)) {
+          const updatedOutgoingLinks = item.outgoing_links.filter(
+            (linkId) => linkId !== action.payload.id
+          );
+          return { ...item, outgoing_links: updatedOutgoingLinks };
+        }
+        return item;
+      });
+    case NodeLinkActions.RESTORE_SELF:
+      return state.map((item) => {
+        if (item.id === action.payload.parent_id) {
+          return {
+            ...item,
+            outgoing_links: [...item.outgoing_links, action.payload.id]
+          };
+        }
+        return item;
+      });
+    case NodeLinkActions.NEW_NODE_LINK:
+      return state.map((item) => {
+        if (item.id === action.payload.new_model.source_node) {
+          return {
+            ...item,
+            outgoing_links: [
+              ...item.outgoing_links,
+              action.payload.new_model.id
+            ]
+          };
+        }
+        return item;
+      });
+    case StrategyActions.ADD_STRATEGY: {
+      if (action.payload.nodes_added.length == 0)
+        return state;
+      return [...state, ...action.payload.nodes_added];
+    }
+    case OutcomeActions.DELETE_SELF:
+    case OutcomeActions.DELETE_SELF_SOFT:
+    case OutcomeActions.RESTORE_SELF:
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeBaseActions.DELETE_SELF_SOFT:
+    case OutcomeBaseActions.RESTORE_SELF:
+      return state.map((item) => {
+        const update = action.payload.extra_data.find(
+          (updateItem) => updateItem.id === item.id
+        );
+        return update ? { ...item, ...update } : item;
+      });
+    case OutcomeActions.INSERT_CHILD:
+    case OutcomeActions.INSERT_BELOW:
+    case OutcomeBaseActions.INSERT_CHILD:
+    case OutcomeOutcomeActions.CHANGE_ID:
+      if (action.payload.node_updates.length === 0)
+        return state;
+      return state.map((item) => {
+        const update = action.payload.node_updates.find(
+          (updateItem) => updateItem.id === item.id
+        );
+        return update ? {
+          ...item,
+          outcomenode_set: update.outcomenode_set,
+          outcomenode_unique_set: update.outcomenode_unique_set
+        } : item;
+      });
+    case OutcomeNodeActions.UPDATE_DEGREE:
+      if (action.payload.outcomenode === -1)
+        return state;
+      return state.map((item) => {
+        return item.id === action.payload.data_package[0].node ? {
+          ...item,
+          outcomenode_set: action.payload.new_outcomenode_set,
+          outcomenode_unique_set: action.payload.new_outcomenode_unique_set
+        } : item;
+      });
+    case WeekActions.INSERT_BELOW:
+      if (!action.payload.children) {
+        return state;
+      }
+      return state.concat(action.payload.children.node);
+    default:
+      return state;
+  }
+}
+function nodelinkReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      if (action.payload.nodelink)
+        return action.payload.nodelink;
+      return state;
+    case CommonActions.REFRESH_STOREDATA:
+      return action.payload.nodelink ? action.payload.nodelink.reduce(
+        (updatedState, newNodelink) => {
+          const index = updatedState.findIndex(
+            (item) => item.id === newNodelink.id
+          );
+          return index !== -1 ? [
+            ...updatedState.slice(0, index),
+            newNodelink,
+            ...updatedState.slice(index + 1)
+          ] : [...updatedState, newNodelink];
+        },
+        [...state]
+      ) : state;
+    case NodeLinkActions.CREATE_LOCK:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, lock: action.payload.lock } : item
+      );
+    case NodeLinkActions.CHANGE_FIELD:
+      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID) {
+        return state;
+      }
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
+      );
+    case NodeLinkActions.NEW_NODE_LINK:
+      return [...state, action.payload.new_model];
+    case NodeLinkActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.id);
+    case NodeLinkActions.DELETE_SELF_SOFT:
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          deleted: true,
+          deleted_on: window.gettext("This session")
+        } : item
+      );
+    case NodeLinkActions.RESTORE_SELF:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, deleted: false } : item
+      );
+    case WeekActions.INSERT_BELOW:
+      return action.payload.children ? [...state, ...action.payload.children.nodelink] : state;
+    case StrategyActions.ADD_STRATEGY:
+      return action.payload.nodelinks_added.length === 0 ? state : [...state, ...action.payload.nodelinks_added];
+    default:
+      return state;
+  }
+}
+function parentWorkflowReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.parent_workflow || state;
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.parent_workflow) {
+        return state;
+      }
+      return action.payload.parent_workflow.reduce(
+        (acc, newItem) => {
+          const index = acc.findIndex((item) => item.id === newItem.id);
+          if (index > -1) {
+            acc.splice(index, 1, newItem);
+          } else {
+            acc.push(newItem);
+          }
+          return acc;
+        },
+        [...state]
+      );
+    }
+    default:
+      return state;
+  }
+}
+function nodeweekReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      if (action.payload.nodeweek)
+        return action.payload.nodeweek;
+      return state;
+    case CommonActions.REFRESH_STOREDATA:
+      return action.payload.nodeweek ? action.payload.nodeweek.reduce(
+        (updatedState, newNodeWeek) => {
+          const index = updatedState.findIndex(
+            (item) => item.id === newNodeWeek.id
+          );
+          if (index !== -1) {
+            updatedState.splice(index, 1, newNodeWeek);
+          } else {
+            updatedState.push(newNodeWeek);
+          }
+          return updatedState;
+        },
+        [...state]
+      ) : state;
+    case NodeWeekActions.CHANGE_ID:
+      return state.map(
+        (item) => item.id === action.payload.old_id ? { ...item, id: action.payload.new_id, no_drag: false } : item
+      );
+    case NodeActions.DELETE_SELF:
+      return state.filter((item) => item.id !== action.payload.parent_id);
+    case NodeWeekActions.MOVED_TO: {
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          week: action.payload.new_parent,
+          no_drag: true
+        } : item
+      );
+    }
+    case WeekActions.INSERT_BELOW:
+      return action.payload.children ? [...state, ...action.payload.children.nodeweek] : state;
+    case NodeActions.INSERT_BELOW:
+    case NodeActions.NEW_NODE:
+      return [...state, action.payload.new_through];
+    case StrategyActions.ADD_STRATEGY:
+      return action.payload.nodeweeks_added.length === 0 ? state : [...state, ...action.payload.nodeweeks_added];
+    default:
+      return state;
+  }
+}
+function columnWorkflowReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      if (action.payload.columnworkflow)
+        return action.payload.columnworkflow;
+      return state;
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.columnworkflow)
+        return state;
+      return action.payload.columnworkflow.reduce(
+        (acc, newItem) => {
+          const existingIndex = acc.findIndex((item) => item.id === newItem.id);
+          if (existingIndex !== -1) {
+            acc.splice(existingIndex, 1, newItem);
+          } else {
+            acc.push(newItem);
+          }
+          return acc;
+        },
+        [...state]
+      );
+    }
+    case ColumnWorkflowActions.CHANGE_ID: {
+      return state.map(
+        (item) => item.id === action.payload.old_id ? { ...item, id: action.payload.new_id, no_drag: false } : item
+      );
+    }
+    case ColumnWorkflowActions.MOVED_TO: {
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, no_drag: true } : item
+      );
+    }
+    case ColumnActions.DELETE_SELF: {
+      return state.filter((item) => item.id !== action.payload.parent_id);
+    }
+    case ColumnActions.INSERT_BELOW: {
+      const new_state = state.slice();
+      new_state.push(action.payload.new_through);
+      return new_state;
+    }
+    case NodeActions.NEW_NODE: {
+      const exists = state.some(
+        (item) => item.id === action.payload.columnworkflow.id
+      );
+      return exists ? state : [...state, action.payload.columnworkflow];
+    }
+    case StrategyActions.ADD_STRATEGY: {
+      if (action.payload.columnworkflows_added.length == 0) {
+        return state;
+      }
+      const new_state = state.slice();
+      new_state.push(...action.payload.columnworkflows_added);
+      return new_state;
+    }
+    default:
+      return state;
+  }
+}
+function strategyReducer(state = [], action) {
+  switch (action.type) {
+    case StrategyActions.TOGGLE_STRATEGY:
+      return action.payload.is_strategy ? [...state, action.payload.strategy] : state;
+    default:
+      return state;
+  }
+}
+function workflowReducer(state = {}, action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      if (action.payload.workflow) {
+        return action.payload.workflow;
+      }
+      return state;
+    case CommonActions.REFRESH_STOREDATA:
+      if (action.payload.workflow) {
+        return action.payload.workflow;
+      }
+      return state;
+    case WorkFlowActions.DELETE_SELF_SOFT:
+      return {
+        ...state,
+        deleted: true
+      };
+    case WorkFlowActions.RESTORE_SELF:
+      return {
+        ...state,
+        deleted: false
+      };
+    case WorkFlowActions.CREATELOCK: {
+      if (state.id === action.payload.id) {
+        return { ...state, lock: action.payload.lock };
+      }
+      return state;
+    }
+    case WorkFlowActions.CHANGE_FIELD: {
+      if (action.payload.changeFieldID === // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID) {
+        return state;
+      }
+      return {
+        ...state,
+        ...action.payload.json
+      };
+    }
+    case OutcomeWorkflowActions.CHANGE_ID: {
+      const new_state = { ...state };
+      const old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        new_state.outcomeworkflow_set = new_state.outcomeworkflow_set.slice();
+        new_state.outcomeworkflow_set.splice(
+          old_index,
+          1,
+          action.payload.new_id
+        );
+      }
+      return new_state;
+    }
+    case OutcomeWorkflowActions.MOVED_TO: {
+      const new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      for (let i = 0; i < new_outcomeworkflow_set.length; i++) {
+        if (new_outcomeworkflow_set[i] == action.payload.id) {
+          new_outcomeworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_outcomeworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        outcomeworkflow_set: new_outcomeworkflow_set
+      };
+    }
+    case ColumnWorkflowActions.CHANGE_ID: {
+      const new_state = { ...state };
+      const old_index = state.columnworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        new_state.columnworkflow_set = new_state.columnworkflow_set.slice();
+        new_state.columnworkflow_set.splice(old_index, 1, action.payload.new_id);
+      }
+      return new_state;
+    }
+    case ColumnWorkflowActions.MOVED_TO: {
+      const new_columnworkflow_set = state.columnworkflow_set.slice();
+      for (let i = 0; i < new_columnworkflow_set.length; i++) {
+        if (new_columnworkflow_set[i] == action.payload.id) {
+          new_columnworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_columnworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        columnworkflow_set: new_columnworkflow_set
+      };
+    }
+    case WeekWorkflowActions.MOVED_TO: {
+      const new_weekworkflow_set = state.weekworkflow_set.slice();
+      for (let i = 0; i < new_weekworkflow_set.length; i++) {
+        if (new_weekworkflow_set[i] == action.payload.id) {
+          new_weekworkflow_set.splice(
+            action.payload.new_index,
+            0,
+            new_weekworkflow_set.splice(i, 1)[0]
+          );
+          break;
+        }
+      }
+      return {
+        ...state,
+        weekworkflow_set: new_weekworkflow_set
+      };
+    }
+    case WeekWorkflowActions.CHANGE_ID: {
+      const old_index = state.weekworkflow_set.indexOf(action.payload.old_id);
+      if (old_index >= 0) {
+        const updatedWeekworkflowSet = state.weekworkflow_set.slice();
+        updatedWeekworkflowSet.splice(old_index, 1, action.payload.new_id);
+        return {
+          ...state,
+          weekworkflow_set: updatedWeekworkflowSet
+        };
+      }
+      return state;
+    }
+    case WeekActions.DELETE_SELF:
+    case WeekActions.DELETE_SELF_SOFT: {
+      if (state.weekworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+        const new_state = { ...state };
+        new_state.weekworkflow_set = state.weekworkflow_set.slice();
+        new_state.weekworkflow_set.splice(
+          new_state.weekworkflow_set.indexOf(action.payload.parent_id),
+          1
+        );
+        return new_state;
+      }
+      return state;
+    }
+    case WeekActions.RESTORE_SELF: {
+      const new_state = { ...state };
+      new_state.weekworkflow_set = state.weekworkflow_set.slice();
+      new_state.weekworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state;
+    }
+    case WeekActions.INSERT_BELOW: {
+      const new_state = { ...state };
+      const new_weekworkflow_set = state.weekworkflow_set.slice();
+      new_weekworkflow_set.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.weekworkflow_set = new_weekworkflow_set;
+      return new_state;
+    }
+    case OutcomeBaseActions.DELETE_SELF:
+    case OutcomeBaseActions.DELETE_SELF_SOFT:
+      const parent_id = action.payload.parent_id;
+      if (state.outcomeworkflow_set.includes(parent_id)) {
+        return {
+          ...state,
+          outcomeworkflow_set: state.outcomeworkflow_set.filter(
+            (id) => id !== parent_id
+          )
+        };
+      }
+      return state;
+    case OutcomeBaseActions.RESTORE_SELF: {
+      const new_state = { ...state };
+      new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      new_state.outcomeworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state;
+    }
+    case OutcomeBaseActions.INSERT_BELOW:
+    case OutcomeActions.NEW_OUTCOME: {
+      if (state.id != action.payload.new_through.workflow)
+        return state;
+      const new_state = { ...state };
+      const new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+      new_outcomeworkflow_set.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.outcomeworkflow_set = new_outcomeworkflow_set;
+      return new_state;
+    }
+    case StrategyActions.ADD_STRATEGY: {
+      const new_state = { ...state };
+      const new_weekworkflow_set = state.weekworkflow_set.slice();
+      new_weekworkflow_set.splice(
+        action.payload.index,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.weekworkflow_set = new_weekworkflow_set;
+      if (action.payload.columnworkflows_added.length > 0) {
+        const new_columnworkflow_set = state.columnworkflow_set.slice();
+        new_columnworkflow_set.push(
+          ...action.payload.columnworkflows_added.map(
+            (columnworkflow) => columnworkflow.id
+          )
+        );
+        new_state.columnworkflow_set = new_columnworkflow_set;
+      }
+      return new_state;
+    }
+    case NodeActions.NEW_NODE: {
+      const new_state = { ...state };
+      if (state.columnworkflow_set.indexOf(action.payload.columnworkflow.id) >= 0) {
+        return state;
+      }
+      const new_columnworkflow_set = state.columnworkflow_set.slice();
+      new_columnworkflow_set.push(action.payload.columnworkflow.id);
+      new_state.columnworkflow_set = new_columnworkflow_set;
+      return new_state;
+    }
+    case ColumnActions.RESTORE_SELF: {
+      const new_state = { ...state };
+      new_state.columnworkflow_set = state.columnworkflow_set.slice();
+      new_state.columnworkflow_set.splice(
+        action.payload.throughparent_index,
+        0,
+        action.payload.throughparent_id
+      );
+      return new_state;
+    }
+    case ColumnActions.DELETE_SELF:
+    case ColumnActions.DELETE_SELF_SOFT: {
+      if (state.columnworkflow_set.indexOf(action.payload.parent_id) >= 0) {
+        const new_state = { ...state };
+        new_state.columnworkflow_set = state.columnworkflow_set.slice();
+        new_state.columnworkflow_set.splice(
+          new_state.columnworkflow_set.indexOf(action.payload.parent_id),
+          1
+        );
+        return new_state;
+      }
+      return state;
+    }
+    case ColumnActions.INSERT_BELOW: {
+      const new_state = { ...state };
+      const new_columnworkflow_set = state.columnworkflow_set.slice();
+      new_columnworkflow_set.splice(
+        action.payload.new_through.rank,
+        0,
+        action.payload.new_through.id
+      );
+      new_state.columnworkflow_set = new_columnworkflow_set;
+      return new_state;
+    }
+    default:
+      return state;
+  }
+}
+function outcomeworkflowReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.outcomeworkflow) {
+        return state;
+      }
+      return action.payload.outcomeworkflow.reduce(
+        (accumulator, currentItem) => {
+          const existingItemIndex = accumulator.findIndex(
+            (item) => item.id === currentItem.id
+          );
+          if (existingItemIndex !== -1) {
+            accumulator[existingItemIndex] = currentItem;
+          } else {
+            accumulator.push(currentItem);
+          }
+          return accumulator;
+        },
+        [...state]
+      );
+    }
+    case OutcomeWorkflowActions.MOVED_TO:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, no_drag: true } : item
+      );
+    case OutcomeWorkflowActions.CHANGE_ID:
+      return state.map(
+        (item) => item.id === action.payload.old_id ? { ...item, id: action.payload.new_id, no_drag: false } : item
+      );
+    case OutcomeBaseActions.DELETE_SELF:
+      return state.filter((item) => item.outcome !== action.payload.id);
+    case OutcomeBaseActions.INSERT_BELOW:
+    case OutcomeActions.NEW_OUTCOME:
+      return [...state, action.payload.new_through];
+    default:
+      return state;
+  }
+}
+function outcomeHorizontalLinkReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA: {
+      return action.payload.outcomehorizontallink || state;
+    }
+    case CommonActions.REFRESH_STOREDATA:
+      if (!action.payload.outcomehorizontallink) {
+        return state;
+      }
+      return action.payload.outcomehorizontallink.reduce(
+        (updatedState2, newOutcomeHorizontalLink) => {
+          const existingIndex = updatedState2.findIndex(
+            (item) => item.id === newOutcomeHorizontalLink.id
+          );
+          if (existingIndex !== -1) {
+            return [
+              ...updatedState2.slice(0, existingIndex),
+              newOutcomeHorizontalLink,
+              ...updatedState2.slice(existingIndex + 1)
+            ];
+          } else {
+            return [...updatedState2, newOutcomeHorizontalLink];
+          }
+        },
+        [...state]
+      );
+    case OutcomeHorizontalLinkActions.UPDATE_DEGREE:
+      if (action.payload.outcomehorizontallink === -1)
+        return state;
+      const newOutcomeHorizontalLinkOutcomes = action.payload.data_package.map(
+        (outcomeHorizontalLink) => cantorPairing(
+          outcomeHorizontalLink.outcome,
+          outcomeHorizontalLink.parent_outcome
+        )
+      );
+      let updatedState = state.map((item) => {
+        const index = newOutcomeHorizontalLinkOutcomes.indexOf(
+          cantorPairing(item.outcome, item.parent_outcome)
+        );
+        return index !== -1 ? action.payload.data_package[index] : item;
+      });
+      const unusedData = action.payload.data_package.filter(
+        (data2) => !updatedState.includes(data2)
+      );
+      updatedState = [...updatedState, ...unusedData].filter(
+        (outcomeHorizontalLink) => outcomeHorizontalLink.degree > 0
+      );
+      return updatedState;
+    default:
+      return state;
+  }
+}
+function objectSetReducer(state = [], action) {
+  switch (action.type) {
+    case ObjectSetActions.TOGGLE_OBJECT_SET:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, hidden: action.payload.hidden } : item
+      );
+    default:
+      return state;
+  }
+}
+function weekworkflowReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA: {
+      if (action.payload.weekworkflow) {
+        return action.payload.weekworkflow;
+      }
+      return state;
+    }
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.weekworkflow) {
+        return state;
+      }
+      const new_state = state.map((item) => {
+        const foundItem = action.payload.weekworkflow.find(
+          (newItem) => newItem.id === item.id
+        );
+        return foundItem ? foundItem : item;
+      });
+      action.payload.weekworkflow.forEach((newItem) => {
+        if (!new_state.find((item) => item.id === newItem.id)) {
+          new_state.push(newItem);
+        }
+      });
+      return new_state;
+    }
+    case WeekWorkflowActions.MOVED_TO: {
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, no_drag: true } : item
+      );
+    }
+    case WeekWorkflowActions.CHANGE_ID: {
+      return state.map(
+        (item) => item.id === action.payload.old_id ? { ...item, id: action.payload.new_id, no_drag: false } : item
+      );
+    }
+    case WeekActions.DELETE_SELF: {
+      return state.filter((item) => item.id !== action.payload.parent_id);
+    }
+    case WeekActions.INSERT_BELOW: {
+      const newState = state.slice();
+      newState.push(action.payload.new_through);
+      return newState;
+    }
+    case StrategyActions.ADD_STRATEGY: {
+      const newState = state.slice();
+      newState.push(action.payload.new_through);
+      return newState;
+    }
+    default:
+      return state;
+  }
+}
+function weekReducer(state = [], action) {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.week || state;
+    case CommonActions.REFRESH_STOREDATA:
+      return action.payload.week ? action.payload.week.reduce(
+        (acc, newItem) => {
+          const index = acc.findIndex((item) => item.id === newItem.id);
+          if (index > -1) {
+            acc[index] = newItem;
+          } else {
+            acc.push(newItem);
+          }
+          return acc;
+        },
+        [...state]
+      ) : state;
+    case WeekActions.CREATE_LOCK:
+    case WeekActions.RELOAD_COMMENTS:
+    case WeekActions.CHANGE_FIELD:
+    case StrategyActions.TOGGLE_STRATEGY:
+      return state.map(
+        (item) => item.id === action.payload.id ? { ...item, ...action.payload } : item
+      );
+    case WeekActions.INSERT_BELOW:
+    case StrategyActions.ADD_STRATEGY:
+      return [...state, action.payload.new_model];
+    case WeekActions.DELETE_SELF:
+    case NodeActions.DELETE_SELF:
+    case NodeActions.DELETE_SELF_SOFT:
+      return state.filter((item) => item.id !== action.payload.id);
+    case WeekActions.DELETE_SELF_SOFT:
+    case WeekActions.RESTORE_SELF:
+      return state.map(
+        (item) => item.id === action.payload.id ? {
+          ...item,
+          deleted: !item.deleted,
+          deleted_on: item.deleted ? void 0 : "This session"
+        } : item
+      );
+    case NodeWeekActions.CHANGE_ID:
+      return state.map((item) => ({
+        ...item,
+        nodeweek_set: item.nodeweek_set.map(
+          (id) => id === action.payload.old_id ? action.payload.new_id : id
+        )
+      }));
+    case NodeWeekActions.MOVED_TO:
+      return state.map((item) => {
+        if (item.nodeweek_set.includes(action.payload.id)) {
+          const newSet = item.nodeweek_set.filter(
+            (id) => id !== action.payload.id
+          );
+          if (item.id === action.payload.new_parent) {
+            newSet.splice(action.payload.new_index, 0, action.payload.id);
+          }
+          return { ...item, nodeweek_set: newSet };
+        }
+        return item;
+      });
+    case NodeActions.RESTORE_SELF:
+    case NodeActions.INSERT_BELOW:
+    case NodeActions.NEW_NODE:
+      return state.map((item) => {
+        if (item.id === action.payload.parentID) {
+          const newSet = [...item.nodeweek_set];
+          newSet.splice(action.payload.index, 0, action.payload.new_through.id);
+          return { ...item, nodeweek_set: newSet };
+        }
+        return item;
+      });
+    default:
+      return state;
+  }
+}
+const rootWorkflowReducers = {
+  workflow: workflowReducer,
+  outcomeworkflow: outcomeworkflowReducer,
+  columnworkflow: columnWorkflowReducer,
+  column: columnReducer,
+  weekworkflow: weekworkflowReducer,
+  week: weekReducer,
+  nodeweek: nodeweekReducer,
+  node: nodeReducer,
+  nodelink: nodelinkReducer,
+  outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
+  outcomenode: outcomeNodeReducer,
+  parent_workflow: parentWorkflowReducer,
+  parent_node: parentNodeReducer,
+  outcomehorizontallink: outcomeHorizontalLinkReducer,
+  child_workflow: childWorkflowReducer,
+  strategy: strategyReducer,
+  objectset: objectSetReducer
+};
+const rootOutcomeReducers = {
+  outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer
+};
+const rootWorkflowReducer = combineReducers(rootWorkflowReducers);
+combineReducers(rootOutcomeReducers);
+class ActionCreator {
+}
+/*******************************************************
+ * COMMON / DYNAMIC OBJECT
+ *******************************************************/
+__publicField(ActionCreator, "createLockAction", (object_id, object_type, lock2, user_id2, user_colour) => {
+  if (lock2)
+    return {
+      type: object_type + "/createLock",
+      payload: {
+        id: object_id,
+        lock: { user_id: user_id2, user_colour }
+      }
+    };
+  else
+    return {
+      type: object_type + "/createLock",
+      payload: { id: object_id, lock: null }
+    };
+});
+__publicField(ActionCreator, "reloadCommentsAction", (id, objectType, comment_data) => {
+  return {
+    type: objectType + "/reloadComments",
+    payload: { id, objectType, comment_data }
+  };
+});
+__publicField(ActionCreator, "changeField", (id, objectType, json) => {
+  return {
+    type: objectType + "/changeField",
+    payload: { id, objectType, json }
+  };
+});
+/*******************************************************
+ *
+ *******************************************************/
+__publicField(ActionCreator, "replaceStoreData", (data_package) => {
+  return {
+    type: CommonActions.REPLACE_STOREDATA,
+    payload: data_package
+  };
+});
+__publicField(ActionCreator, "refreshStoreData", (data_package) => {
+  return {
+    type: CommonActions.REFRESH_STOREDATA,
+    payload: data_package
+  };
+});
+__publicField(ActionCreator, "reloadAssignmentsAction", (id, has_assignment) => {
+  return {
+    type: NodeActions.RELOAD_ASSIGNMENTS,
+    payload: { id, has_assignment }
+  };
+});
+__publicField(ActionCreator, "moveColumnWorkflow", (id, new_position, new_parent, child_id) => {
+  return {
+    type: ColumnWorkflowActions.MOVED_TO,
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+});
+__publicField(ActionCreator, "moveWeekWorkflow", (id, new_position, new_parent, child_id) => {
+  return {
+    type: WeekWorkflowActions.MOVED_TO,
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+});
+__publicField(ActionCreator, "columnChangeNode", (id, new_column) => {
+  return {
+    type: NodeActions.CHANGED_COLUMN,
+    payload: { id, new_column }
+  };
+});
+__publicField(ActionCreator, "moveNodeWeek", (id, new_position, new_parent, child_id) => {
+  return {
+    type: NodeWeekActions.MOVED_TO,
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+});
+__publicField(ActionCreator, "moveOutcomeOutcome", (id, new_position, new_parent, child_id) => {
+  return {
+    type: OutcomeOutcomeActions.MOVED_TO,
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+});
+__publicField(ActionCreator, "moveOutcomeWorkflow", (id, new_position, new_parent, child_id) => {
+  return {
+    type: OutcomeWorkflowActions.MOVED_TO,
+    payload: {
+      id,
+      new_index: new_position,
+      new_parent,
+      child_id
+    }
+  };
+});
+__publicField(ActionCreator, "gridMenuItemAdded", (response_data) => {
+  return {
+    type: GridMenuActions.ITEM_ADDED,
+    payload: response_data
+  };
+});
+__publicField(ActionCreator, "toggleObjectSet", (id, hidden) => {
+  return {
+    type: ObjectSetActions.TOGGLE_OBJECT_SET,
+    payload: { id, hidden }
+  };
+});
 class ViewBarUnconnected extends reactExports.Component {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   toggleHidden(id, hidden) {
-    this.props.dispatch(toggleObjectSet(id, hidden));
+    this.props.dispatch(ActionCreator.toggleObjectSet(id, hidden));
   }
   changeSort(evt) {
     this.props.dispatch(
-      changeField(this.props.data.id, "workflow", {
+      ActionCreator.changeField(this.props.data.id, "workflow", {
         outcomes_sort: evt.target.value
       })
     );
   }
   changeTableType(evt) {
     this.props.dispatch(
-      changeField(this.props.data.id, "workflow", {
+      ActionCreator.changeField(this.props.data.id, "workflow", {
         table_type: evt.target.value
       })
     );
@@ -61354,20 +60920,20 @@ class ViewBarUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let sort_block;
-    if (this.props.renderer.view_type == "outcometable" || this.props.renderer.view_type == "horizontaloutcometable") {
-      const table_type_value = data.table_type || 0;
+    if (this.props.renderer.view_type === "outcometable" || this.props.renderer.view_type === "horizontaloutcometable") {
+      const table_type_value = data2.table_type || 0;
       const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.renderer.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
-            disabled: table_type_value == 1 || data.type == "program" && choice.type > 1,
+            disabled: table_type_value === 1 || data2.type === "program" && choice.type > 1,
             type: "radio",
             id: "sort_type_choice" + choice.type,
             name: "sort_type_choice" + choice.type,
             value: choice.type,
-            checked: data.outcomes_sort == choice.type,
+            checked: data2.outcomes_sort === choice.type,
             onChange: this.changeSort.bind(this)
           }
         ),
@@ -61382,7 +60948,7 @@ class ViewBarUnconnected extends reactExports.Component {
               id: "table_type_table",
               name: "table_type_table",
               value: 0,
-              checked: table_type_value == 0,
+              checked: table_type_value === 0,
               onChange: this.changeTableType.bind(this)
             }
           ),
@@ -61396,7 +60962,7 @@ class ViewBarUnconnected extends reactExports.Component {
               id: "table_type_matrix",
               name: "table_type_matrix",
               value: 1,
-              checked: table_type_value == 1,
+              checked: table_type_value === 1,
               onChange: this.changeTableType.bind(this)
             }
           ),
@@ -61570,7 +61136,9 @@ function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth
       window.localStorage.clear();
     }
   }
-  dispatch(changeField(objectID, objectType, { is_dropped }));
+  dispatch(
+    ActionCreator.changeField(objectID, objectType, { is_dropped })
+  );
 }
 class ComponentWithToggleDrop extends reactExports.Component {
   // @todo reconcile the two var spellings
@@ -61721,48 +61289,48 @@ class RestoreBarItem extends ComponentWithToggleDrop {
     }
   }
 }
-function getLibraryQuery(callBackFunction = (data) => console.log("success")) {
+function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjectsQuery(filter, data, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(data2) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
       callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getHomeQuery(callBackFunction = (data) => console.log("success")) {
+function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-      callBackFunction(data);
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data2)
+    }).done(function(data22) {
+      callBackFunction(data22);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) => console.log("success")) {
+function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     console.log("err");
@@ -61770,9 +61338,9 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data) 
     window.fail_function();
   }
 }
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data) => console.log("success")) {
-  const sendPostRequest = (url, data) => {
-    $.post(url, data).done(function(response) {
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
+  const sendPostRequest = (url, data2) => {
+    $.post(url, data2).done(function(response) {
       console.log("duplicateBaseItemQuery response");
       console.log(response);
       if (response.action === DATA_ACTIONS.POSTED) {
@@ -61809,74 +61377,81 @@ function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction 
     window.fail_function();
   }
 }
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data) => console.log("success")) {
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
       projectPk
-    }).done(function(data) {
-      callBackFunction(data);
+    }).done(function(data2) {
+      callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getWorkflowDataQuery(workflowPk, callBackFunction = (data) => console.log("success")) {
+function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data) {
+    }).done(function(data2) {
       console.log("getWorkflowDataQuery data");
-      console.log(data);
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data) => console.log("success")) {
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },
-    (data) => {
+    (data2) => {
       callBackFunction();
     }
   );
 }
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data) => console.log("success")) {
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
   try {
+    console.log("workflowPk");
+    console.log(workflowPk);
     $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
+    }).catch((err) => {
+      console.log(err);
     });
   } catch (err) {
+    console.log("getParentWorkflowInfoQuery error in try/catc");
+    console.log(err);
     window.fail_function();
   }
+  console.log("MyError getParentWorkflowInfoQuery");
 }
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data) => console.log("success")) {
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function updateValueQuery(objectID, objectType, json, changeField2 = false, callBackFunction = () => console.log("success")) {
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
   const t = 1e3;
   const previousCall = document.lastUpdateCall;
   document.lastUpdateCall = {
@@ -61897,18 +61472,18 @@ function updateValueQuery(objectID, objectType, json, changeField2 = false, call
     data: JSON.stringify(json),
     changeFieldID: 0
   };
-  if (changeField2) {
+  if (changeField) {
     post_object.changeFieldID = // @ts-ignore
     COURSEFLOW_APP.contextData.changeFieldID;
   }
   document.lastUpdateCallFunction = () => {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === DATA_ACTIONS.POSTED) {
-            callBackFunction(data);
+        function(data2) {
+          if (data2.action === DATA_ACTIONS.POSTED) {
+            callBackFunction(data2);
           } else
-            window.fail_function(data.action);
+            window.fail_function(data2.action);
         }
       );
     } catch (err) {
@@ -61923,11 +61498,11 @@ function updateValueInstant(objectID, objectType, json, callBackFunction = () =>
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data);
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
       else
-        window.fail_function(data.action);
+        window.fail_function(data2.action);
     });
   } catch (err) {
     window.fail_function();
@@ -62001,7 +61576,7 @@ class QuillDiv extends reactExports.Component {
 }
 class EditableComponent extends ComponentWithToggleDrop {
   //Makes the item selectable
-  addEditable(data, no_delete = false) {
+  addEditable(data2, no_delete = false) {
     var _a;
     const read_only = this.props.renderer.read_only;
     if (this.state.selected) {
@@ -62011,21 +61586,21 @@ class EditableComponent extends ComponentWithToggleDrop {
         title_length = "500";
       this.props;
       let override = false;
-      const title = unescapeCharacters(data.title || "");
-      const description = data.description || "";
-      if (data.represents_workflow)
+      const title = unescapeCharacters(data2.title || "");
+      const description = data2.description || "";
+      if (data2.represents_workflow)
         override = true;
       let sets;
       if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
-        let term_type = data.type;
+        let term_type = data2.type;
         if (type == "node")
-          term_type = node_type_keys[data.node_type];
+          term_type = node_type_keys[data2.node_type];
         const allowed_sets = this.props.object_sets.filter(
           (set) => set.term == term_type
         );
         if (allowed_sets.length >= 0) {
           let disable_sets = false;
-          if (data.depth || read_only)
+          if (data2.depth || read_only)
             disable_sets = true;
           const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -62034,7 +61609,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                 disabled: disable_sets,
                 type: "checkbox",
                 name: set.id,
-                checked: data.sets.indexOf(set.id) >= 0,
+                checked: data2.sets.indexOf(set.id) >= 0,
                 onChange: this.setChanged.bind(this, set.id)
               }
             ),
@@ -62050,7 +61625,7 @@ class EditableComponent extends ComponentWithToggleDrop {
             className: "right-panel-inner",
             onClick: (evt) => evt.stopPropagation(),
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data, this.objectType) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
               [
                 "node",
                 "week",
@@ -62109,13 +61684,13 @@ class EditableComponent extends ComponentWithToggleDrop {
                     autoComplete: "off",
                     id: "column-icon-editor",
                     type: "text",
-                    value: data.icon,
+                    value: data2.icon,
                     maxLength: 50,
                     onChange: this.inputChanged.bind(this, "icon")
                   }
                 )
               ] }),
-              (type == "outcome" && data.depth == 0 || type == "workflow" && data.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              (type == "outcome" && data2.depth == 0 || type == "workflow" && data2.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Code (Optional)") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
@@ -62124,41 +61699,41 @@ class EditableComponent extends ComponentWithToggleDrop {
                     disabled: read_only,
                     id: "code-editor",
                     type: "text",
-                    value: data.code,
+                    value: data2.code,
                     maxLength: "50",
                     onChange: this.inputChanged.bind(this, "code")
                   }
                 )
               ] }),
-              type == "node" && data.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Context") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "select",
                   {
                     id: "context-editor",
                     disabled: read_only,
-                    value: data.context_classification,
+                    value: data2.context_classification,
                     onChange: this.inputChanged.bind(
                       this,
                       "context_classification"
                     ),
                     children: this.props.renderer.context_choices.filter(
-                      (choice) => Math.floor(choice.type / 100) == data.node_type || choice.type == 0
+                      (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
                     ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
                   }
                 )
               ] }),
-              type == "node" && data.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Task") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "select",
                   {
                     id: "task-editor",
                     disabled: read_only,
-                    value: data.task_classification,
+                    value: data2.task_classification,
                     onChange: this.inputChanged.bind(this, "task_classification"),
                     children: this.props.renderer.task_choices.filter(
-                      (choice) => Math.floor(choice.type / 100) == data.node_type || choice.type == 0
+                      (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
                     ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
                   }
                 )
@@ -62174,7 +61749,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                       id: "time-editor",
                       className: "half-width",
                       type: "text",
-                      value: data.time_required,
+                      value: data2.time_required,
                       maxLength: "30",
                       onChange: this.inputChanged.bind(this, "time_required")
                     }
@@ -62185,7 +61760,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                       disabled: override || read_only,
                       id: "time-units-editor",
                       className: "half-width",
-                      value: data.time_units,
+                      value: data2.time_units,
                       onChange: this.inputChanged.bind(this, "time_units"),
                       children: this.props.renderer.time_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
                     }
@@ -62202,13 +61777,13 @@ class EditableComponent extends ComponentWithToggleDrop {
                     id: "colour-editor",
                     className: "half-width",
                     type: "color",
-                    value: "#" + ((_a = data.colour) == null ? void 0 : _a.toString(16)),
+                    value: "#" + ((_a = data2.colour) == null ? void 0 : _a.toString(16)),
                     maxLength: "30",
                     onChange: this.inputChanged.bind(this, "colour")
                   }
                 ) })
               ] }),
-              (type == "workflow" && data.type == "course" || type == "node" && data.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              (type == "workflow" && data2.type == "course" || type == "node" && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Ponderation") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
@@ -62218,7 +61793,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     className: "half-width",
                     id: "ponderation-theory",
                     type: "number",
-                    value: data.ponderation_theory,
+                    value: data2.ponderation_theory,
                     onChange: this.inputChanged.bind(this, "ponderation_theory")
                   }
                 ),
@@ -62231,7 +61806,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     className: "half-width",
                     id: "ponderation-practical",
                     type: "number",
-                    value: data.ponderation_practical,
+                    value: data2.ponderation_practical,
                     onChange: this.inputChanged.bind(this, "ponderation_practical")
                   }
                 ),
@@ -62244,7 +61819,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     autoComplete: "off",
                     id: "ponderation-individual",
                     type: "number",
-                    value: data.ponderation_individual,
+                    value: data2.ponderation_individual,
                     onChange: this.inputChanged.bind(
                       this,
                       "ponderation_individual"
@@ -62260,7 +61835,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     autoComplete: "off",
                     id: "time-general-hours",
                     type: "number",
-                    value: data.time_general_hours,
+                    value: data2.time_general_hours,
                     onChange: this.inputChanged.bind(this, "time_general_hours")
                   }
                 ),
@@ -62273,15 +61848,15 @@ class EditableComponent extends ComponentWithToggleDrop {
                     autoComplete: "off",
                     id: "time-specific-hours",
                     type: "number",
-                    value: data.time_specific_hours,
+                    value: data2.time_specific_hours,
                     onChange: this.inputChanged.bind(this, "time_specific_hours")
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Specific Education") })
               ] }),
-              type === "node" && data.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type === "node" && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data.linked_workflow && data.linked_workflow_data.title }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.linked_workflow && data2.linked_workflow_data.title }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
                   {
@@ -62291,7 +61866,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     onClick: () => {
                       COURSEFLOW_APP.tinyLoader.startLoad();
                       getLinkedWorkflowMenuQuery(
-                        data,
+                        data2,
                         (response_data) => {
                           console.log("linked a workflow");
                         },
@@ -62309,7 +61884,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     disabled: read_only,
                     type: "checkbox",
                     name: "respresents_workflow",
-                    checked: data.represents_workflow,
+                    checked: data2.represents_workflow,
                     onChange: this.checkboxChanged.bind(
                       this,
                       "represents_workflow"
@@ -62318,7 +61893,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "repesents_workflow", children: window.gettext("Display linked workflow data") })
               ] }),
-              type == "node" && data.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type == "node" && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Other") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
@@ -62326,7 +61901,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     disabled: read_only,
                     type: "checkbox",
                     name: "has_autolink",
-                    checked: data.has_autolink,
+                    checked: data2.has_autolink,
                     onChange: this.checkboxChanged.bind(this, "has_autolink")
                   }
                 ),
@@ -62341,7 +61916,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                       disabled: read_only,
                       type: "checkbox",
                       name: "dashed",
-                      checked: data.dashed,
+                      checked: data2.dashed,
                       onChange: this.checkboxChanged.bind(this, "dashed")
                     }
                   ),
@@ -62356,7 +61931,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                       type: "range",
                       min: "1",
                       max: "100",
-                      value: data.text_position,
+                      value: data2.text_position,
                       className: "range-slider",
                       id: "text-position-range",
                       onChange: this.inputChanged.bind(this, "text_position")
@@ -62373,7 +61948,7 @@ class EditableComponent extends ComponentWithToggleDrop {
                     {
                       disabled: read_only,
                       name: "outcomes_type",
-                      value: data.outcomes_type,
+                      value: data2.outcomes_type,
                       onChange: this.inputChanged.bind(this, "outcomes_type"),
                       children: this.props.renderer.outcome_type_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
                     }
@@ -62387,12 +61962,12 @@ class EditableComponent extends ComponentWithToggleDrop {
                       disabled: read_only,
                       type: "checkbox",
                       name: "condensed",
-                      checked: data.condensed,
+                      checked: data2.condensed,
                       onChange: this.checkboxChanged.bind(this, "condensed")
                     }
                   )
                 ] }),
-                data.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                data2.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "is_published", children: window.gettext("Published") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
@@ -62400,19 +61975,19 @@ class EditableComponent extends ComponentWithToggleDrop {
                       disabled: read_only,
                       type: "checkbox",
                       name: "is_published",
-                      checked: data.published,
+                      checked: data2.published,
                       onChange: this.checkboxChanged.bind(this, "published")
                     }
                   )
                 ] })
               ] }),
-              type == "week" && data.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              type == "week" && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Strategy") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "select",
                   {
                     disabled: read_only,
-                    value: data.strategy_classification,
+                    value: data2.strategy_classification,
                     onChange: this.inputChanged.bind(
                       this,
                       "strategy_classification"
@@ -62429,19 +62004,19 @@ class EditableComponent extends ComponentWithToggleDrop {
                     id: "toggle-strategy-editor",
                     onClick: () => {
                       const loader = new Loader("body");
-                      toggleStrategy(data.id, data.is_strategy, (response_data) => {
+                      toggleStrategy(data2.id, data2.is_strategy, (response_data) => {
                         loader.endLoad();
                       });
                     },
                     children: [
-                      data.is_strategy && window.gettext("Remove Strategy Status"),
-                      !data.is_strategy && window.gettext("Save as Template")
+                      data2.is_strategy && window.gettext("Remove Strategy Status"),
+                      !data2.is_strategy && window.gettext("Save as Template")
                     ]
                   }
                 )
               ] }),
               sets,
-              this.getDeleteForSidebar(read_only, no_delete, type, data)
+              this.getDeleteForSidebar(read_only, no_delete, type, data2)
             ]
           }
         ),
@@ -62449,12 +62024,12 @@ class EditableComponent extends ComponentWithToggleDrop {
       );
     }
   }
-  getDeleteForSidebar(read_only, no_delete, type, data) {
-    if (!read_only && !no_delete && (type != "outcome" || data.depth > 0)) {
+  getDeleteForSidebar(read_only, no_delete, type, data2) {
+    if (!read_only && !no_delete && (type != "outcome" || data2.depth > 0)) {
       if (type == "workflow")
         return [null];
       else
-        return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data)];
+        return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data2)];
     }
   }
   inputChanged(field, evt) {
@@ -62503,12 +62078,12 @@ class EditableComponent extends ComponentWithToggleDrop {
     );
   }
   get_border_style() {
-    const data = this.props.data;
-    if (!data)
+    const data2 = this.props.data;
+    if (!data2)
       return;
     const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
     return style2;
   }
@@ -62806,8 +62381,10 @@ class CommentBox extends ComponentWithToggleDrop {
 }
 class EditableComponentWithComments extends EditableComponent {
   //Adds a button that opens/closes the comments dialogue
-  addCommenting(data) {
-    return [
+  // @todo data is not used
+  // addCommenting(data) {
+  addCommenting(data2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ActionButton,
         {
@@ -62826,7 +62403,7 @@ class EditableComponentWithComments extends EditableComponent {
           renderer: this.props.renderer
         }
       )
-    ];
+    ] });
   }
   commentClick(evt) {
     evt.stopPropagation();
@@ -62837,14 +62414,14 @@ class EditableComponentWithComments extends EditableComponent {
   }
   reloadComments(show_comments) {
     const props2 = this.props;
-    const data = props2.data;
+    const data2 = props2.data;
     COURSEFLOW_APP.tinyLoader.startLoad();
     getCommentsForObject(
-      data.id,
+      data2.id,
       object_dictionary[this.objectType],
       (response_data) => {
         this.props.dispatch(
-          reloadCommentsAction(
+          ActionCreator.reloadCommentsAction(
             this.props.data.id,
             object_dictionary[this.objectType],
             response_data.data_package
@@ -62860,7 +62437,7 @@ class EditableComponentWithComments extends EditableComponent {
 }
 class EditableComponentWithActions extends EditableComponentWithComments {
   //Adds a button that restores the item.
-  addRestoreSelf(data, alt_icon) {
+  addRestoreSelf(data2, alt_icon) {
     const icon = alt_icon || "restore.svg";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
@@ -62868,14 +62445,14 @@ class EditableComponentWithActions extends EditableComponentWithComments {
         buttonIcon: icon,
         buttonClass: "delete-self-button",
         titleText: window.gettext("Restore"),
-        handleClick: this.restoreSelf.bind(this, data)
+        handleClick: this.restoreSelf.bind(this, data2)
       }
     );
   }
-  restoreSelf(data) {
+  restoreSelf(data2) {
     COURSEFLOW_APP.tinyLoader.startLoad();
     restoreSelfQuery(
-      data.id,
+      data2.id,
       object_dictionary[this.objectType],
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad;
@@ -62884,7 +62461,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
   // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
-  addDeleteSelf(data, alt_icon) {
+  addDeleteSelf(data2, alt_icon) {
     const icon = alt_icon || "rubbish.svg";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
@@ -62892,11 +62469,11 @@ class EditableComponentWithActions extends EditableComponentWithComments {
         buttonIcon: icon,
         buttonClass: "delete-self-button",
         titleText: window.gettext("Delete"),
-        handleClick: this.deleteSelf.bind(this, data)
+        handleClick: this.deleteSelf.bind(this, data2)
       }
     );
   }
-  deleteSelf(data) {
+  deleteSelf(data2) {
     if (this.props.renderer)
       this.props.renderer.selection_manager.deleted(this);
     if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
@@ -62911,7 +62488,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     )) {
       COURSEFLOW_APP.tinyLoader.startLoad();
       deleteSelfQuery(
-        data.id,
+        data2.id,
         object_dictionary[this.objectType],
         true,
         (response_data) => {
@@ -62921,23 +62498,23 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     }
   }
   //Adds a button that duplicates the item (with a confirmation).
-  addDuplicateSelf(data) {
+  addDuplicateSelf(data2) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
         buttonIcon: "duplicate.svg",
         buttonClass: "duplicate-self-button",
         titleText: window.gettext("Duplicate"),
-        handleClick: this.duplicateSelf.bind(this, data)
+        handleClick: this.duplicateSelf.bind(this, data2)
       }
     );
   }
-  duplicateSelf(data) {
+  duplicateSelf(data2) {
     var props2 = this.props;
     var type = this.objectType;
     COURSEFLOW_APP.tinyLoader.startLoad();
     duplicateSelf(
-      data.id,
+      data2.id,
       object_dictionary[type],
       props2.parentID,
       parent_dictionary[type],
@@ -62948,22 +62525,22 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   //Adds a button that inserts a sibling below the item.
-  addInsertSibling(data) {
+  addInsertSibling(data2) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
         buttonIcon: "add_new.svg",
         buttonClass: "insert-sibling-button",
         titleText: window.gettext("Insert Below"),
-        handleClick: this.insertSibling.bind(this, data)
+        handleClick: this.insertSibling.bind(this, data2)
       }
     );
   }
-  insertSibling(data) {
+  insertSibling(data2) {
     var type = this.objectType;
     COURSEFLOW_APP.tinyLoader.startLoad();
     insertSibling(
-      data.id,
+      data2.id,
       object_dictionary[type],
       this.props.parentID,
       parent_dictionary[type],
@@ -62974,21 +62551,21 @@ class EditableComponentWithActions extends EditableComponentWithComments {
     );
   }
   //Adds a button that inserts a child to them item
-  addInsertChild(data) {
+  addInsertChild(data2) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
       {
         buttonIcon: "create_new_child.svg",
         buttonClass: "insert-child-button",
         titleText: window.gettext("Insert Child"),
-        handleClick: this.insertChild.bind(this, data)
+        handleClick: this.insertChild.bind(this, data2)
       }
     );
   }
-  insertChild(data) {
+  insertChild(data2) {
     const type = this.objectType;
     COURSEFLOW_APP.tinyLoader.startLoad();
-    insertChild(data.id, object_dictionary[type], (response_data) => {
+    insertChild(data2.id, object_dictionary[type], (response_data) => {
       COURSEFLOW_APP.tinyLoader.endLoad();
     });
   }
@@ -63254,18 +62831,18 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let children;
     let dropIcon;
     let droptext;
-    if (checkSetHidden(data, this.props.object_sets))
+    if (checkSetHidden(data2, this.props.object_sets))
       return null;
     if (this.state.is_dropped)
-      children = data.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         OutcomeBarOutcomeOutcome,
         {
           objectID: outcomeoutcome,
-          parentID: data.id,
+          parentID: data2.id,
           renderer: this.props.renderer
         },
         outcomeoutcome
@@ -63277,15 +62854,15 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
     if (this.state.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
-        data.child_outcome_links.length
+        data2.child_outcome_links.length
       );
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data.id,
+        className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
         ref: this.maindiv,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -63305,11 +62882,11 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
               onChange: this.clickFunction.bind(this)
             }
           ),
-          data.depth < 2 && data.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+          data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
           ] }),
-          data.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
               className: "children-block",
@@ -63341,13 +62918,13 @@ class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const data2 = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       OutcomeBarOutcome,
       {
-        objectID: data.child,
+        objectID: data2.child,
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer
       }
     ) });
@@ -63367,14 +62944,14 @@ class OutcomeBarUnconnected extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
-    this.props.renderer.render($("#container"), "outcomeedit");
+    this.props.renderer.render($("#container"), ViewType.OUTCOME_EDIT);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    let outcomebaroutcomes = data.map((category) => [
+    const data2 = this.props.data;
+    let outcomebaroutcomes = data2.map((category) => [
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
@@ -63412,25 +62989,25 @@ class OutcomeBarUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapStateToProps$6 = (state) => ({
+const mapStateToProps$7 = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
   ),
   workflow_type: state.workflow.type
 });
-const OutcomeBar = connect(mapStateToProps$6, null)(OutcomeBarUnconnected);
+const OutcomeBar = connect(mapStateToProps$7, null)(OutcomeBarUnconnected);
 class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const children = data.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const data2 = this.props.data;
+    const children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       ParentOutcomeOutcome,
       {
         objectID: outcomeoutcome,
-        parentID: data.id,
+        parentID: data2.id,
         renderer: this.props.renderer
       },
       outcomeoutcome
@@ -63448,7 +63025,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data.id,
+        className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
         ref: this.maindiv,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -63468,7 +63045,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
               onChange: this.clickFunction.bind(this)
             }
           ),
-          data.depth < 2 && data.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+          data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
           ] }),
@@ -63500,13 +63077,13 @@ class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const data2 = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       ParentOutcome,
       {
-        objectID: data.child,
+        objectID: data2.child,
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer
       }
     ) });
@@ -63522,8 +63099,8 @@ class ParentOutcomeBarUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    var outcomebaroutcomes = data.map((category) => [
+    const data2 = this.props.data;
+    var outcomebaroutcomes = data2.map((category) => [
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
@@ -63654,15 +63231,15 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const title = data ? data.title || data.column_type_display : void 0;
+    const data2 = this.props.data;
+    const title = data2 ? data2.title || data2.column_type_display : void 0;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         dangerouslySetInnerHTML: { __html: title },
         className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
         ref: this.maindiv,
-        style: { backgroundColor: getColumnColour(data) }
+        style: { backgroundColor: getColumnColour(data2) }
       }
     );
   }
@@ -63735,11 +63312,11 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
       );
   }
 }
-const mapStateToProps$5 = (state, ownProps) => {
+const mapStateToProps$6 = (state, ownProps) => {
   return getColumnWorkflowByID(state, ownProps.objectID);
 };
 const NodeBarColumnWorkflow = connect(
-  mapStateToProps$5,
+  mapStateToProps$6,
   null
 )(NodeBarColumnWorkflowUnconnected);
 class StrategyUnconnected extends ComponentWithToggleDrop {
@@ -63788,12 +63365,12 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const { data } = this.props;
-    const title = data && data.title ? data.title : "untitled strategy";
-    const strategyIcon = data && data.strategy_icon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const { data: data2 } = this.props;
+    const title = data2 && data2.title ? data2.title : "untitled strategy";
+    const strategyIcon = data2 && data2.strategy_icon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
       "img",
       {
-        src: `${COURSEFLOW_APP.config.icon_path}${strategy_keys[data.strategy_icon]}.svg`
+        src: `${COURSEFLOW_APP.config.icon_path}${strategy_keys[data2.strategy_icon]}.svg`
       }
     ) : null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -63825,9 +63402,9 @@ class NodeBarUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let nodebar_nodes = [];
-    const nodebarColumnWorkflows = data.columnworkflow_set.map(
+    const nodebarColumnWorkflows = data2.columnworkflow_set.map(
       (columnWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeBarColumnWorkflow,
         {
@@ -63838,13 +63415,13 @@ class NodeBarUnconnected extends reactExports.Component {
       )
     );
     const columns_present = this.props.columns.map((col) => col.column_type);
-    for (let i2 = 0; i2 < data.DEFAULT_COLUMNS.length; i2++) {
-      if (columns_present.indexOf(data.DEFAULT_COLUMNS[i2]) < 0) {
+    for (let i2 = 0; i2 < data2.DEFAULT_COLUMNS.length; i2++) {
+      if (columns_present.indexOf(data2.DEFAULT_COLUMNS[i2]) < 0) {
         nodebarColumnWorkflows.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             NodeBarColumnWorkflow,
             {
-              columnType: data.DEFAULT_COLUMNS[i2],
+              columnType: data2.DEFAULT_COLUMNS[i2],
               columnChoices: this.columnChoices
             }
           )
@@ -63856,7 +63433,7 @@ class NodeBarUnconnected extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeBarColumnWorkflow,
         {
-          columnType: data.DEFAULT_CUSTOM_COLUMN,
+          columnType: data2.DEFAULT_CUSTOM_COLUMN,
           columnChoices: this.columnChoices
         },
         `NodeBarColumnWorkflow-last-${i}`
@@ -63869,26 +63446,21 @@ class NodeBarUnconnected extends reactExports.Component {
       ];
     }
     const strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
-    const saltise_strategies = this.props.saltise_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       nodebar_nodes,
       /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies }),
-      saltise_strategies.length > 0 && [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("SALTISE strategies") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: saltise_strategies })
-      ]
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies })
     ] });
   }
 }
 const mapNodeBarStateToProps = (state) => ({
   data: state.workflow,
   columns: state.column,
-  available_strategies: state.strategy,
-  saltise_strategies: state.saltise_strategy
+  available_strategies: state.strategy
+  // saltise_strategies: state.saltise_strategy
 });
 const NodeBar = connect(mapNodeBarStateToProps, null)(NodeBarUnconnected);
 class RightSideBar extends reactExports.Component {
@@ -63941,19 +63513,19 @@ class RightSideBar extends reactExports.Component {
   }
   getOutcomeBar() {
     const renderer = this.props.renderer;
-    if (this.props.context === "comparison") {
+    if (this.props.context === WFContext.COMPARISON) {
       return null;
     }
-    if (renderer.view_type === "outcomeedit") {
+    if (renderer.view_type === ViewType$1.OUTCOME_EDIT) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeBar, { renderer });
   }
   getViewBar() {
-    if (this.props.context === "workflow") {
+    if (this.props.context === WFContext.WORKFLOW) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data, renderer: this.props.renderer });
     }
-    if (this.props.context === "comparison") {
+    if (this.props.context === WFContext.COMPARISON) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         ComparisonViewBar,
         {
@@ -63966,7 +63538,7 @@ class RightSideBar extends reactExports.Component {
     return null;
   }
   getRestoreBar() {
-    if (this.props.context === "workflow")
+    if (this.props.context === WFContext.WORKFLOW)
       return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, { renderer: this.props.renderer });
     return null;
   }
@@ -66188,13 +65760,13 @@ function FlatpickrInstance(element, instanceConfig) {
       return self.close();
     self.open(e);
   }
-  function triggerEvent(event2, data) {
+  function triggerEvent(event2, data2) {
     if (self.config === void 0)
       return;
     var hooks = self.config[event2];
     if (hooks !== void 0 && hooks.length > 0) {
       for (var i = 0; hooks[i] && i < hooks.length; i++)
-        hooks[i](self.selectedDates, self.input.value, self, data);
+        hooks[i](self.selectedDates, self.input.value, self, data2);
     }
     if (event2 === "onChange") {
       self.input.dispatchEvent(createEvent("change"));
@@ -67304,12 +66876,12 @@ class MessageBox extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "screen-barrier", onClick: (evt) => evt.stopPropagation(), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "message-box " + this.props.message_type, children: this.getMenu() }) });
   }
 }
-function renderMessageBox(data, type, updateFunction) {
+function renderMessageBox(data2, type, updateFunction) {
   reactDomExports.render(
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MessageBox,
       {
-        message_data: data,
+        message_data: data2,
         message_type: type,
         actionFunction: updateFunction
       }
@@ -67326,23 +66898,23 @@ class OutcomeOutcomeUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let my_class = "outcome-outcome outcome-outcome-" + this.props.parent_depth;
-    if (data.no_drag)
+    if (data2.no_drag)
       my_class += " no-drag";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "li",
       {
         className: my_class,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
-        "data-child-id": data.child,
+        "data-child-id": data2.child,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Outcome$3,
           {
-            objectID: data.child,
+            objectID: data2.child,
             parentID: this.props.parentID,
-            throughParentID: data.id,
+            throughParentID: data2.id,
             renderer: this.props.renderer,
             show_horizontal: this.props.show_horizontal
           }
@@ -67365,13 +66937,13 @@ class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   getChildType() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       SimpleOutcome$1,
       {
-        objectID: data.child,
+        objectID: data2.child,
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         comments: this.props.comments,
         edit: this.props.edit,
         renderer: this.props.renderer
@@ -67382,8 +66954,8 @@ class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data.id, ref: this.maindiv, children: this.getChildType() });
+    const data2 = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: this.getChildType() });
   }
 }
 const mapOutcomeOutcomeStateToProps = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
@@ -67416,12 +66988,12 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     this.setState({ is_dropped: !this.state.is_dropped });
   }
   getChildType(outcomeoutcome) {
-    const data = this.props.data;
+    const data2 = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       SimpleOutcomeOutcome,
       {
         objectID: outcomeoutcome,
-        parentID: data.id,
+        parentID: data2.id,
         renderer: this.props.renderer,
         comments: this.props.comments,
         edit: this.props.edit
@@ -67433,17 +67005,17 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let children;
     let dropIcon;
     let droptext;
     let comments;
     let edit;
     let onClick;
-    if (checkSetHidden(data, this.props.object_sets))
+    if (checkSetHidden(data2, this.props.object_sets))
       return null;
     if (this.state.is_dropped) {
-      children = data.child_outcome_links.map(
+      children = data2.child_outcome_links.map(
         (outcomeoutcome) => this.getChildType(outcomeoutcome)
       );
     }
@@ -67454,21 +67026,21 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     if (this.state.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
-        data.child_outcome_links.length
+        data2.child_outcome_links.length
       );
     if (this.props.renderer.view_comments)
       comments = this.addCommenting();
     if (this.props.edit)
-      edit = this.addEditable(data, true);
+      edit = this.addEditable(data2, true);
     onClick = (evt) => this.props.renderer.selection_manager.changeSelection(evt, this);
-    let css_class = "outcome outcome-" + data.id;
+    let css_class = "outcome outcome-" + data2.id;
     if (this.state.is_dropped)
       css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -67480,16 +67052,16 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeTitle,
             {
-              data,
+              data: data2,
               prefix: this.props.prefix,
               hovertext: this.props.hovertext
             }
           ) }),
-          data.depth < 2 && data.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+          data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
           ] }),
-          data.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
               className: "children-block",
@@ -67532,7 +67104,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  deleteSelf(data) {
+  deleteSelf(data2) {
     this.props;
     if (window.confirm(
       window.gettext("Are you sure you want to delete this ") + get_verbose(
@@ -67542,8 +67114,8 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
     )) {
       COURSEFLOW_APP.tinyLoader.startLoad();
       updateOutcomehorizontallinkDegree(
-        data.outcome,
-        data.parent_outcome,
+        data2.outcome,
+        data2.parent_outcome,
         0,
         (response_data) => {
           COURSEFLOW_APP.tinyLoader.endLoad();
@@ -67556,7 +67128,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
    * @param data
    * @returns {JSX.Element}
    */
-  addDeleteSelf(data) {
+  addDeleteSelf(data2) {
     const icon = "close.svg";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
@@ -67564,7 +67136,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
         buttonIcon: icon,
         buttonClass: "delete-self-button",
         titleText: window.gettext("Delete"),
-        handleClick: this.deleteSelf.bind(this, data)
+        handleClick: this.deleteSelf.bind(this, data2)
       }
     );
   }
@@ -67590,25 +67162,25 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    if (!data)
+    const data2 = this.props.data;
+    if (!data2)
       return null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "outcome-node outcome-" + data.id,
-        id: data.id,
+        className: "outcome-node outcome-" + data2.id,
+        id: data2.id,
         ref: this.maindiv,
         children: [
-          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data, "close.svg") }),
+          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             SimpleOutcome$1,
             {
               renderer: this.props.renderer,
               checkHidden: this.checkHidden.bind(this),
-              objectID: data.parent_outcome,
+              objectID: data2.parent_outcome,
               parentID: this.props.parentID,
-              throughParentID: data.id
+              throughParentID: data2.id
             }
           )
         ]
@@ -67659,7 +67231,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeOutcome(id, new_position, new_parent, child_id)
+      ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     );
     insertedAt(
       this.props.renderer,
@@ -67699,14 +67271,14 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
     }
   }
   makeDroppable() {
-    var props2 = this.props;
+    const props2 = this.props;
     $(this.maindiv.current).droppable({
       tolerance: "pointer",
       droppable: ".outcome-ghost",
       over: (e, ui) => {
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
+        const drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
         drop_item.prevAll().length;
         parseInt(drop_item.parent().attr("id"));
         if (drag_item.hasClass("outcome")) {
@@ -67718,9 +67290,9 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        var drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
+        const drop_item = $(e.target);
         if (drag_item.hasClass("outcome")) {
           drag_helper.removeClass("valid-drop");
           drop_item.removeClass("outcome-drop-over");
@@ -67729,7 +67301,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
       drop: (e, ui) => {
         $(".outcome-drop-over").removeClass("outcome-drop-over");
         $(e.target);
-        var drag_item = ui.draggable;
+        const drag_item = ui.draggable;
         if (drag_item.hasClass("outcome")) {
           COURSEFLOW_APP.tinyLoader.startLoad();
           updateOutcomehorizontallinkDegree(
@@ -67748,7 +67320,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let children;
     let outcomehorizontallinks;
     const side_actions = [];
@@ -67756,14 +67328,14 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
     let dropIcon;
     let droptext;
     const style2 = {};
-    if (checkSetHidden(data, this.props.object_sets))
+    if (checkSetHidden(data2, this.props.object_sets))
       return null;
-    if (data.is_dropped)
-      children = data.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    if (data2.is_dropped)
+      children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         OutcomeOutcome,
         {
           objectID: outcomeoutcome,
-          parentID: data.id,
+          parentID: data2.id,
           renderer: this.props.renderer,
           show_horizontal: this.props.show_horizontal,
           parent_depth: this.props.data.depth
@@ -67778,7 +67350,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
           onMouseLeave: () => {
             this.setState({ show_horizontal_links: false });
           },
-          children: data.outcome_horizontal_links_unique.map((horizontal_link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          children: data2.outcome_horizontal_links_unique.map((horizontal_link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeHorizontalLink,
             {
               objectID: horizontal_link,
@@ -67788,7 +67360,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
           ))
         }
       );
-    if (this.props.show_horizontal && data.outcome_horizontal_links_unique.length > 0) {
+    if (this.props.show_horizontal && data2.outcome_horizontal_links_unique.length > 0) {
       side_actions.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67798,7 +67370,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
               onMouseEnter: () => {
                 this.setState({ show_horizontal_links: true });
               },
-              children: data.outcome_horizontal_links_unique.length
+              children: data2.outcome_horizontal_links_unique.length
             }
           ),
           outcomehorizontallinks
@@ -67806,38 +67378,38 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
       );
     }
     if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
-      if (data.depth < 2)
-        mouseover_actions.push(this.addInsertChild(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
+      if (data2.depth < 2)
+        mouseover_actions.push(this.addInsertChild(data2));
     }
     if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
-    if (data.is_dropped)
+      mouseover_actions.push(this.addCommenting(data2));
+    if (data2.is_dropped)
       dropIcon = "droptriangleup";
     else
       dropIcon = "droptriangledown";
-    if (data.is_dropped)
+    if (data2.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
-        data.child_outcome_links.length
+        data2.child_outcome_links.length
       );
-    if (!this.props.renderer.read_only && data.depth < 2 && data.child_outcome_links.length === 0 && children)
+    if (!this.props.renderer.read_only && data2.depth < 2 && data2.child_outcome_links.length === 0 && children)
       children.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", style: { height: "5px" } })
       );
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
-    let css_class = "outcome outcome-" + data.id;
-    if (data.is_dropped)
+    let css_class = "outcome outcome-" + data2.id;
+    if (data2.is_dropped)
       css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -67854,11 +67426,11 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
               hovertext: this.props.hovertext
             }
           ) }),
-          data.depth < 2 && data.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+          data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
           ] }),
-          data.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "ol",
             {
               className: "children-block children-block-" + this.props.data.depth,
@@ -67867,16 +67439,16 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
               children
             }
           ),
-          !this.props.renderer.read_only && data.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          !this.props.renderer.read_only && data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
               className: "outcome-create-child",
-              onClick: this.insertChild.bind(this, data),
+              onClick: this.insertChild.bind(this, data2),
               children: window.gettext("+ Add New")
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-          this.addEditable(data),
+          this.addEditable(data2),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "side-actions", children: [
             side_actions,
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" })
@@ -67938,12 +67510,17 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       "outcomeworkflow",
       ".outcome-workflow"
     );
-    if (this.props.data.depth == 0)
+    if (this.props.data.depth === 0)
       this.makeDroppable();
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveOutcomeWorkflow(id, new_position, this.props.workflow.id, child_id)
+      ActionCreator.moveOutcomeWorkflow(
+        id,
+        new_position,
+        this.props.workflow.id,
+        child_id
+      )
     );
     insertedAt(
       this.props.renderer,
@@ -67962,8 +67539,8 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    let outcomes = data.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-category", children: [
+    const data2 = this.props.data;
+    let outcomes = data2.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-category", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title + ":" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-category-block", children: [
         category.outcomes.map((outcome) => {
@@ -68102,25 +67679,25 @@ class Column extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    var title = data.title;
+    const data2 = this.props.data;
+    var title = data2.title;
     if (!title)
-      title = data.column_type_display;
+      title = data2.column_type_display;
     const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
     let css_class = "column";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     const mouseover_actions = [];
     if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
+      mouseover_actions.push(this.addCommenting(data2));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -68133,7 +67710,7 @@ class Column extends EditableComponentWithActions {
             this.getIcon(),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: title } })
           ] }),
-          this.addEditable(data),
+          this.addEditable(data2),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions })
         ]
       }
@@ -68152,23 +67729,23 @@ class ColumnWorkflow extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    let my_class = "column-workflow column-" + data.id;
-    if (data.no_drag)
+    const data2 = this.props.data;
+    let my_class = "column-workflow column-" + data2.id;
+    if (data2.no_drag)
       my_class += " no-drag";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         className: my_class,
         ref: this.maindiv,
-        id: data.id,
-        "data-child-id": data.column,
+        id: data2.id,
+        "data-child-id": data2.column,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           Column$1,
           {
-            objectID: data.column,
+            objectID: data2.column,
             parentID: this.props.parentID,
-            throughParentID: data.id,
+            throughParentID: data2.id,
             renderer: this.props.renderer
           }
         )
@@ -75153,7 +74730,7 @@ var createMatrixClass = /* @__PURE__ */ factory(name$14, dependencies$13, () => 
   Matrix2.prototype.datatype = function() {
     throw new Error("Cannot invoke datatype on a Matrix interface");
   };
-  Matrix2.prototype.create = function(data, datatype) {
+  Matrix2.prototype.create = function(data2, datatype) {
     throw new Error("Cannot invoke create on a Matrix interface");
   };
   Matrix2.prototype.subset = function(index, replacement, defaultValue) {
@@ -75214,35 +74791,35 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
   var {
     Matrix: Matrix2
   } = _ref;
-  function DenseMatrix2(data, datatype) {
+  function DenseMatrix2(data2, datatype) {
     if (!(this instanceof DenseMatrix2)) {
       throw new SyntaxError("Constructor must be called with the new operator");
     }
     if (datatype && !isString(datatype)) {
       throw new Error("Invalid datatype: " + datatype);
     }
-    if (isMatrix(data)) {
-      if (data.type === "DenseMatrix") {
-        this._data = clone$2(data._data);
-        this._size = clone$2(data._size);
-        this._datatype = datatype || data._datatype;
+    if (isMatrix(data2)) {
+      if (data2.type === "DenseMatrix") {
+        this._data = clone$2(data2._data);
+        this._size = clone$2(data2._size);
+        this._datatype = datatype || data2._datatype;
       } else {
-        this._data = data.toArray();
-        this._size = data.size();
-        this._datatype = datatype || data._datatype;
+        this._data = data2.toArray();
+        this._size = data2.size();
+        this._datatype = datatype || data2._datatype;
       }
-    } else if (data && isArray(data.data) && isArray(data.size)) {
-      this._data = data.data;
-      this._size = data.size;
+    } else if (data2 && isArray(data2.data) && isArray(data2.size)) {
+      this._data = data2.data;
+      this._size = data2.size;
       validate(this._data, this._size);
-      this._datatype = datatype || data.datatype;
-    } else if (isArray(data)) {
-      this._data = preprocess(data);
+      this._datatype = datatype || data2.datatype;
+    } else if (isArray(data2)) {
+      this._data = preprocess(data2);
       this._size = arraySize(this._data);
       validate(this._data, this._size);
       this._datatype = datatype;
-    } else if (data) {
-      throw new TypeError("Unsupported type of data (" + typeOf(data) + ")");
+    } else if (data2) {
+      throw new TypeError("Unsupported type of data (" + typeOf(data2) + ")");
     } else {
       this._data = [];
       this._size = [0];
@@ -75250,8 +74827,8 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     }
   }
   DenseMatrix2.prototype = new Matrix2();
-  DenseMatrix2.prototype.createDenseMatrix = function(data, datatype) {
-    return new DenseMatrix2(data, datatype);
+  DenseMatrix2.prototype.createDenseMatrix = function(data2, datatype) {
+    return new DenseMatrix2(data2, datatype);
   };
   Object.defineProperty(DenseMatrix2, "name", {
     value: "DenseMatrix"
@@ -75268,8 +74845,8 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
   DenseMatrix2.prototype.datatype = function() {
     return this._datatype;
   };
-  DenseMatrix2.prototype.create = function(data, datatype) {
-    return new DenseMatrix2(data, datatype);
+  DenseMatrix2.prototype.create = function(data2, datatype) {
+    return new DenseMatrix2(data2, datatype);
   };
   DenseMatrix2.prototype.subset = function(index, replacement, defaultValue) {
     switch (arguments.length) {
@@ -75292,13 +74869,13 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     for (var x = 0; x < index.length; x++) {
       validateIndex(index[x], this._size[x]);
     }
-    var data = this._data;
+    var data2 = this._data;
     for (var i = 0, ii = index.length; i < ii; i++) {
       var indexI = index[i];
-      validateIndex(indexI, data.length);
-      data = data[indexI];
+      validateIndex(indexI, data2.length);
+      data2 = data2[indexI];
     }
-    return data;
+    return data2;
   };
   DenseMatrix2.prototype.set = function(index, value, defaultValue) {
     if (!isArray(index)) {
@@ -75312,15 +74889,15 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
       return i2 + 1;
     });
     _fit(this, size2, defaultValue);
-    var data = this._data;
+    var data2 = this._data;
     for (i = 0, ii = index.length - 1; i < ii; i++) {
       indexI = index[i];
-      validateIndex(indexI, data.length);
-      data = data[indexI];
+      validateIndex(indexI, data2.length);
+      data2 = data2[indexI];
     }
     indexI = index[index.length - 1];
-    validateIndex(indexI, data.length);
-    data[indexI] = value;
+    validateIndex(indexI, data2.length);
+    data2[indexI] = value;
     return this;
   };
   function _get(matrix2, index) {
@@ -75344,18 +74921,18 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
       return new DenseMatrix2(_getSubmatrix(matrix2._data, index, size2.length, 0), matrix2._datatype);
     }
   }
-  function _getSubmatrix(data, index, dims, dim) {
+  function _getSubmatrix(data2, index, dims, dim) {
     var last = dim === dims - 1;
     var range2 = index.dimension(dim);
     if (last) {
       return range2.map(function(i) {
-        validateIndex(i, data.length);
-        return data[i];
+        validateIndex(i, data2.length);
+        return data2[i];
       }).valueOf();
     } else {
       return range2.map(function(i) {
-        validateIndex(i, data.length);
-        var child = data[i];
+        validateIndex(i, data2.length);
+        var child = data2[i];
         return _getSubmatrix(child, index, dims, dim + 1);
       }).valueOf();
     }
@@ -75418,18 +74995,18 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     }
     return matrix2;
   }
-  function _setSubmatrix(data, index, submatrix, dims, dim) {
+  function _setSubmatrix(data2, index, submatrix, dims, dim) {
     var last = dim === dims - 1;
     var range2 = index.dimension(dim);
     if (last) {
       range2.forEach(function(dataIndex, subIndex) {
         validateIndex(dataIndex);
-        data[dataIndex] = submatrix[subIndex[0]];
+        data2[dataIndex] = submatrix[subIndex[0]];
       });
     } else {
       range2.forEach(function(dataIndex, subIndex) {
         validateIndex(dataIndex);
-        _setSubmatrix(data[dataIndex], index, submatrix[subIndex[0]], dims, dim + 1);
+        _setSubmatrix(data2[dataIndex], index, submatrix[subIndex[0]], dims, dim + 1);
       });
     }
   }
@@ -75508,9 +75085,9 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
         }
       }
     };
-    var data = recurse(this._data, []);
-    var datatype = this._datatype !== void 0 ? getArrayDataType(data, typeOf) : void 0;
-    return new DenseMatrix2(data, datatype);
+    var data2 = recurse(this._data, []);
+    var datatype = this._datatype !== void 0 ? getArrayDataType(data2, typeOf) : void 0;
+    return new DenseMatrix2(data2, datatype);
   };
   DenseMatrix2.prototype.forEach = function(callback) {
     var me = this;
@@ -75546,8 +75123,8 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     if (s.length !== 2) {
       throw new TypeError("Rows can only be returned for a 2D matrix.");
     }
-    var data = this._data;
-    for (var row of data) {
+    var data2 = this._data;
+    for (var row of data2) {
       result.push(new DenseMatrix2([row], this._datatype));
     }
     return result;
@@ -75559,9 +75136,9 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     if (s.length !== 2) {
       throw new TypeError("Rows can only be returned for a 2D matrix.");
     }
-    var data = this._data;
+    var data2 = this._data;
     var _loop = function _loop2(i2) {
-      var col = data.map((row) => [row[i2]]);
+      var col = data2.map((row) => [row[i2]]);
       result.push(new DenseMatrix2(col, _this._datatype));
     };
     for (var i = 0; i < s[1]; i++) {
@@ -75605,12 +75182,12 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     var rows = this._size[0];
     var columns = this._size[1];
     var n = Math.min(rows - kSub, columns - kSuper);
-    var data = [];
+    var data2 = [];
     for (var i = 0; i < n; i++) {
-      data[i] = this._data[i + kSub][i + kSuper];
+      data2[i] = this._data[i + kSub][i + kSuper];
     }
     return new DenseMatrix2({
-      data,
+      data: data2,
       size: [n],
       datatype: this._datatype
     });
@@ -75670,15 +75247,15 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     if (!defaultValue) {
       defaultValue = isBigNumber(_value(0)) ? _value(0).mul(0) : 0;
     }
-    var data = [];
+    var data2 = [];
     if (size2.length > 0) {
-      data = resize(data, size2, defaultValue);
+      data2 = resize(data2, size2, defaultValue);
       for (var d = 0; d < n; d++) {
-        data[d + kSub][d + kSuper] = _value(d);
+        data2[d + kSub][d + kSuper] = _value(d);
       }
     }
     return new DenseMatrix2({
-      data,
+      data: data2,
       size: [rows, columns]
     });
   };
@@ -75697,19 +75274,19 @@ var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (
     DenseMatrix2._swapRows(i, j, this._data);
     return this;
   };
-  DenseMatrix2._swapRows = function(i, j, data) {
-    var vi2 = data[i];
-    data[i] = data[j];
-    data[j] = vi2;
+  DenseMatrix2._swapRows = function(i, j, data2) {
+    var vi2 = data2[i];
+    data2[i] = data2[j];
+    data2[j] = vi2;
   };
-  function preprocess(data) {
-    if (isMatrix(data)) {
-      return preprocess(data.valueOf());
+  function preprocess(data2) {
+    if (isMatrix(data2)) {
+      return preprocess(data2.valueOf());
     }
-    if (isArray(data)) {
-      return data.map(preprocess);
+    if (isArray(data2)) {
+      return data2.map(preprocess);
     }
-    return data;
+    return data2;
   }
   return DenseMatrix2;
 }, {
@@ -75903,25 +75480,25 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
     equalScalar: equalScalar2,
     Matrix: Matrix2
   } = _ref;
-  function SparseMatrix2(data, datatype) {
+  function SparseMatrix2(data2, datatype) {
     if (!(this instanceof SparseMatrix2)) {
       throw new SyntaxError("Constructor must be called with the new operator");
     }
     if (datatype && !isString(datatype)) {
       throw new Error("Invalid datatype: " + datatype);
     }
-    if (isMatrix(data)) {
-      _createFromMatrix(this, data, datatype);
-    } else if (data && isArray(data.index) && isArray(data.ptr) && isArray(data.size)) {
-      this._values = data.values;
-      this._index = data.index;
-      this._ptr = data.ptr;
-      this._size = data.size;
-      this._datatype = datatype || data.datatype;
-    } else if (isArray(data)) {
-      _createFromArray(this, data, datatype);
-    } else if (data) {
-      throw new TypeError("Unsupported type of data (" + typeOf(data) + ")");
+    if (isMatrix(data2)) {
+      _createFromMatrix(this, data2, datatype);
+    } else if (data2 && isArray(data2.index) && isArray(data2.ptr) && isArray(data2.size)) {
+      this._values = data2.values;
+      this._index = data2.index;
+      this._ptr = data2.ptr;
+      this._size = data2.size;
+      this._datatype = datatype || data2.datatype;
+    } else if (isArray(data2)) {
+      _createFromArray(this, data2, datatype);
+    } else if (data2) {
+      throw new TypeError("Unsupported type of data (" + typeOf(data2) + ")");
     } else {
       this._values = [];
       this._index = [];
@@ -75941,12 +75518,12 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
       _createFromArray(matrix2, source.valueOf(), datatype || source._datatype);
     }
   }
-  function _createFromArray(matrix2, data, datatype) {
+  function _createFromArray(matrix2, data2, datatype) {
     matrix2._values = [];
     matrix2._index = [];
     matrix2._ptr = [];
     matrix2._datatype = datatype;
-    var rows = data.length;
+    var rows = data2.length;
     var columns = 0;
     var eq = equalScalar2;
     var zero = 0;
@@ -75959,7 +75536,7 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
       do {
         matrix2._ptr.push(matrix2._index.length);
         for (var i = 0; i < rows; i++) {
-          var row = data[i];
+          var row = data2[i];
           if (isArray(row)) {
             if (j === 0 && columns < row.length) {
               columns = row.length;
@@ -75988,8 +75565,8 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
     matrix2._size = [rows, columns];
   }
   SparseMatrix2.prototype = new Matrix2();
-  SparseMatrix2.prototype.createSparseMatrix = function(data, datatype) {
-    return new SparseMatrix2(data, datatype);
+  SparseMatrix2.prototype.createSparseMatrix = function(data2, datatype) {
+    return new SparseMatrix2(data2, datatype);
   };
   Object.defineProperty(SparseMatrix2, "name", {
     value: "SparseMatrix"
@@ -76006,8 +75583,8 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
   SparseMatrix2.prototype.datatype = function() {
     return this._datatype;
   };
-  SparseMatrix2.prototype.create = function(data, datatype) {
-    return new SparseMatrix2(data, datatype);
+  SparseMatrix2.prototype.create = function(data2, datatype) {
+    return new SparseMatrix2(data2, datatype);
   };
   SparseMatrix2.prototype.density = function() {
     var rows = this._size[0];
@@ -76975,21 +76552,21 @@ var createMatrix = /* @__PURE__ */ factory(name$V, dependencies$U, (_ref) => {
     "string, string": function stringString(format2, datatype) {
       return _create([], format2, datatype);
     },
-    Array: function Array2(data) {
-      return _create(data);
+    Array: function Array2(data2) {
+      return _create(data2);
     },
-    Matrix: function Matrix3(data) {
-      return _create(data, data.storage());
+    Matrix: function Matrix3(data2) {
+      return _create(data2, data2.storage());
     },
     "Array | Matrix, string": _create,
     "Array | Matrix, string, string": _create
   });
-  function _create(data, format2, datatype) {
+  function _create(data2, format2, datatype) {
     if (format2 === "dense" || format2 === "default" || format2 === void 0) {
-      return new DenseMatrix2(data, datatype);
+      return new DenseMatrix2(data2, datatype);
     }
     if (format2 === "sparse") {
-      return new SparseMatrix2(data, datatype);
+      return new SparseMatrix2(data2, datatype);
     }
     throw new TypeError("Unknown matrix type " + JSON.stringify(format2) + ".");
   }
@@ -79056,13 +78633,13 @@ var createTranspose = /* @__PURE__ */ factory(name$o, dependencies$o, (_ref) => 
     return c;
   }
   function _denseTranspose(m2, rows, columns) {
-    var data = m2._data;
+    var data2 = m2._data;
     var transposed = [];
     var transposedRow;
     for (var j = 0; j < columns; j++) {
       transposedRow = transposed[j] = [];
       for (var i = 0; i < rows; i++) {
-        transposedRow[i] = clone$2(data[i][j]);
+        transposedRow[i] = clone$2(data2[i][j]);
       }
     }
     return m2.createDenseMatrix({
@@ -79383,7 +78960,7 @@ function createSolveValidation(_ref) {
     if (rows !== columns) {
       throw new RangeError("Matrix must be square (size: " + format(mSize) + ")");
     }
-    var data = [];
+    var data2 = [];
     if (isMatrix(b)) {
       var bSize = b.size();
       var bdata = b._data;
@@ -79392,10 +78969,10 @@ function createSolveValidation(_ref) {
           throw new RangeError("Dimension mismatch. Matrix columns must match vector length.");
         }
         for (var i = 0; i < rows; i++) {
-          data[i] = [bdata[i]];
+          data2[i] = [bdata[i]];
         }
         return new DenseMatrix2({
-          data,
+          data: data2,
           size: [rows, 1],
           datatype: b._datatype
         });
@@ -79406,12 +78983,12 @@ function createSolveValidation(_ref) {
         }
         if (isDenseMatrix(b)) {
           if (copy2) {
-            data = [];
+            data2 = [];
             for (var _i = 0; _i < rows; _i++) {
-              data[_i] = [bdata[_i][0]];
+              data2[_i] = [bdata[_i][0]];
             }
             return new DenseMatrix2({
-              data,
+              data: data2,
               size: [rows, 1],
               datatype: b._datatype
             });
@@ -79420,17 +78997,17 @@ function createSolveValidation(_ref) {
         }
         if (isSparseMatrix(b)) {
           for (var _i2 = 0; _i2 < rows; _i2++) {
-            data[_i2] = [0];
+            data2[_i2] = [0];
           }
           var values2 = b._values;
           var index = b._index;
           var ptr = b._ptr;
           for (var k1 = ptr[1], k = ptr[0]; k < k1; k++) {
             var _i3 = index[k];
-            data[_i3][0] = values2[k];
+            data2[_i3][0] = values2[k];
           }
           return new DenseMatrix2({
-            data,
+            data: data2,
             size: [rows, 1],
             datatype: b._datatype
           });
@@ -79445,10 +79022,10 @@ function createSolveValidation(_ref) {
           throw new RangeError("Dimension mismatch. Matrix columns must match vector length.");
         }
         for (var _i4 = 0; _i4 < rows; _i4++) {
-          data[_i4] = [b[_i4]];
+          data2[_i4] = [b[_i4]];
         }
         return new DenseMatrix2({
-          data,
+          data: data2,
           size: [rows, 1]
         });
       }
@@ -79457,10 +79034,10 @@ function createSolveValidation(_ref) {
           throw new RangeError("Dimension mismatch. Matrix columns must match vector length.");
         }
         for (var _i5 = 0; _i5 < rows; _i5++) {
-          data[_i5] = [b[_i5][0]];
+          data2[_i5] = [b[_i5][0]];
         }
         return new DenseMatrix2({
-          data,
+          data: data2,
           size: [rows, 1]
         });
       }
@@ -79989,28 +79566,28 @@ var createImmutableDenseMatrixClass = /* @__PURE__ */ factory(name$b, dependenci
     smaller: smaller2,
     DenseMatrix: DenseMatrix2
   } = _ref;
-  function ImmutableDenseMatrix2(data, datatype) {
+  function ImmutableDenseMatrix2(data2, datatype) {
     if (!(this instanceof ImmutableDenseMatrix2)) {
       throw new SyntaxError("Constructor must be called with the new operator");
     }
     if (datatype && !isString(datatype)) {
       throw new Error("Invalid datatype: " + datatype);
     }
-    if (isMatrix(data) || isArray(data)) {
-      var matrix2 = new DenseMatrix2(data, datatype);
+    if (isMatrix(data2) || isArray(data2)) {
+      var matrix2 = new DenseMatrix2(data2, datatype);
       this._data = matrix2._data;
       this._size = matrix2._size;
       this._datatype = matrix2._datatype;
       this._min = null;
       this._max = null;
-    } else if (data && isArray(data.data) && isArray(data.size)) {
-      this._data = data.data;
-      this._size = data.size;
-      this._datatype = data.datatype;
-      this._min = typeof data.min !== "undefined" ? data.min : null;
-      this._max = typeof data.max !== "undefined" ? data.max : null;
-    } else if (data) {
-      throw new TypeError("Unsupported type of data (" + typeOf(data) + ")");
+    } else if (data2 && isArray(data2.data) && isArray(data2.size)) {
+      this._data = data2.data;
+      this._size = data2.size;
+      this._datatype = data2.datatype;
+      this._min = typeof data2.min !== "undefined" ? data2.min : null;
+      this._max = typeof data2.max !== "undefined" ? data2.max : null;
+    } else if (data2) {
+      throw new TypeError("Unsupported type of data (" + typeOf(data2) + ")");
     } else {
       this._data = [];
       this._size = [0];
@@ -82207,7 +81784,7 @@ class PathGenerator {
   //gets the total length of our path
   getPathLength() {
     let length2 = 0;
-    for (var i = 1; i < this.full_array.length; i++) {
+    for (let i = 1; i < this.full_array.length; i++) {
       const seg_len = norm(
         subtract(this.full_array[i], this.full_array[i - 1])
       );
@@ -82218,12 +81795,12 @@ class PathGenerator {
   //gets the point at the given fraction of our path length
   getFractionalPoint(position2) {
     const length2 = this.getPathLength();
-    if (length2 == 0)
+    if (length2 === 0)
       return [0, 0];
     const point = this.full_array[1];
     let run_length = 0;
     const target_length = length2 * position2;
-    for (var i = 1; i < this.full_array.length; i++) {
+    for (let i = 1; i < this.full_array.length; i++) {
       const seg = subtract(this.full_array[i], this.full_array[i - 1]);
       const seg_len = norm(seg);
       if (run_length + seg_len < target_length)
@@ -82274,10 +81851,10 @@ class PathGenerator {
   //Turns perpendicular to move around the edge of the node
   tickPerpendicular(port = "source") {
     let otherport = "target";
-    if (port == "target")
+    if (port === "target")
       otherport = "source";
     this.padOut(port);
-    var new_direction = multiply(
+    const new_direction = multiply(
       matrix([
         multiply([1, 0], this.direction[port][1] ** 2),
         multiply([0, 1], this.direction[port][0] ** 2)
@@ -82285,7 +81862,7 @@ class PathGenerator {
       subtract(this.last_point[otherport], this.last_point[port])
     )._data;
     const norm$1 = norm(new_direction);
-    if (norm$1 == 0)
+    if (norm$1 === 0)
       throw "Non-numeric";
     this.direction[port] = multiply(
       1 / norm(new_direction),
@@ -82310,7 +81887,7 @@ class PathGenerator {
   }
   //joins the two arrays, either as a corner or a double corner
   joinArrays() {
-    var joined = this.point_arrays["source"].slice();
+    const joined = this.point_arrays["source"].slice();
     if (dot(this.direction["source"], this.direction["target"]) == 0) {
       joined.push([
         this.direction["source"][0] ** 2 * this.last_point["target"][0] + this.direction["target"][0] ** 2 * this.last_point["source"][0],
@@ -82336,27 +81913,34 @@ class PathGenerator {
       joined.push(add(this.last_point["source"], mid1));
       joined.push(add(this.last_point["target"], mid2));
     }
-    for (var i = this.point_arrays["target"].length - 1; i >= 0; i--) {
+    for (let i = this.point_arrays["target"].length - 1; i >= 0; i--) {
       joined.push(this.point_arrays["target"][i]);
     }
     return joined;
   }
 }
 class NodeLinkSVG extends ComponentWithToggleDrop {
-  componentDidUpdate() {
-    if (this.props.hovered || this.state.hovered || this.props.selected || this.props.node_selected)
-      ;
-  }
+  // componentDidUpdate() {
+  //   if (
+  //     this.props.hovered ||
+  //     this.state.hovered ||
+  //     this.props.selected ||
+  //     this.props.node_selected
+  //   ) {
+  //     // d3.select(this.maindiv.current).raise();
+  //     // d3.selectAll(".node-ports").raise();
+  //   }
+  // }
   getPathArray(source_point, source_port, target_point, target_port) {
-    var source_dims = [
+    const source_dims = [
       this.props.source_dimensions.width,
       this.props.source_dimensions.height
     ];
-    var target_dims = [
+    const target_dims = [
       this.props.target_dimensions.width,
       this.props.target_dimensions.height
     ];
-    var path_generator = new PathGenerator(
+    return new PathGenerator(
       source_point,
       source_port,
       target_point,
@@ -82364,30 +81948,38 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
       source_dims,
       target_dims
     );
-    return path_generator;
   }
   getPath(path_array) {
-    var path = "M";
-    for (var i = 0; i < path_array.length; i++) {
+    let path = "M";
+    for (let i = 0; i < path_array.length; i++) {
       if (i > 0)
         path += " L";
-      var thispoint = path_array[i];
+      const thispoint = path_array[i];
       path += thispoint[0] + " " + thispoint[1];
     }
     return path;
   }
   render() {
     try {
+      console.log("this.props.source_port_handle");
+      console.log(this.props.source_port_handle);
+      console.log("this.props.target_port_handle");
+      console.log(this.props.target_port_handle);
       const source_transform = getSVGTranslation(
         this.props.source_port_handle.select(function() {
+          console.log("this.parentNode");
+          console.log(this.parentNode);
           return this.parentNode;
         }).attr("transform")
       );
       const target_transform = getSVGTranslation(
         this.props.target_port_handle.select(function() {
-          return this.parentNode;
+          console.log("this.parentNode");
+          console.log(this.parentNode);
         }).attr("transform")
       );
+      console.log("this.props.source_port_handle");
+      console.log(this.props.source_port_handle);
       const source_point = [
         parseInt(this.props.source_port_handle.attr("cx")) + parseInt(source_transform[0]),
         parseInt(this.props.source_port_handle.attr("cy")) + parseInt(source_transform[1])
@@ -82396,13 +81988,13 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
         parseInt(this.props.target_port_handle.attr("cx")) + parseInt(target_transform[0]),
         parseInt(this.props.target_port_handle.attr("cy")) + parseInt(target_transform[1])
       ];
-      var path_array = this.getPathArray(
+      const path_array = this.getPathArray(
         source_point,
         this.props.source_port,
         target_point,
         this.props.target_port
       );
-      var path = this.getPath(path_array.findPath());
+      const path = this.getPath(path_array.findPath());
       let style2;
       if (this.props.style)
         style2 = { ...this.props.style };
@@ -82425,7 +82017,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
         style2.opacity = 0.4;
       }
       let title;
-      if (this.props.title && this.props.title != "") {
+      if (this.props.title && this.props.title !== "") {
         const text_position = path_array.getFractionalPoint(
           this.props.text_position / 100
         );
@@ -82473,6 +82065,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
       ] });
     } catch (err) {
       console.log("could not draw a node link");
+      console.log(err);
       return null;
     }
   }
@@ -82603,23 +82196,23 @@ class NodeLink extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     if (!this.source_node || !this.source_node.outerWidth() || !this.target_node || !this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()) {
       this.source_node = $(this.props.node_div.current);
-      this.target_node = $("#" + data.target_node + ".node");
+      this.target_node = $("#" + data2.target_node + ".node");
       this.source_node.on(this.rerenderEvents, this.rerender.bind(this));
       this.target_node.on(this.rerenderEvents, this.rerender.bind(this));
       this.source_port_handle = d3.select(
-        "g.port-" + data.source_node + " circle[data-port-type='source'][data-port='" + port_keys[data.source_port] + "']"
+        "g.port-" + data2.source_node + " circle[data-port-type='source'][data-port='" + port_keys[data2.source_port] + "']"
       );
       this.target_port_handle = d3.select(
-        "g.port-" + data.target_node + " circle[data-port-type='target'][data-port='" + port_keys[data.target_port] + "']"
+        "g.port-" + data2.target_node + " circle[data-port-type='target'][data-port='" + port_keys[data2.target_port] + "']"
       );
     }
     const node_selected = this.source_node.attr("data-selected") === "true" || this.target_node.attr("data-selected") === "true";
     const node_hovered = this.source_node.attr("data-hovered") === "true" || this.target_node.attr("data-hovered") === "true";
     const style2 = {};
-    if (data.dashed)
+    if (data2.dashed)
       style2.strokeDasharray = "5,5";
     if (this.source_node.css("display") == "none" || this.target_node.css("display") == "none")
       style2["display"] = "none";
@@ -82644,13 +82237,13 @@ class NodeLink extends EditableComponentWithActions {
             style: style2,
             hovered: node_hovered,
             node_selected,
-            lock: data.lock,
-            title: data.title,
-            text_position: data.text_position,
+            lock: data2.lock,
+            title: data2.title,
+            text_position: data2.text_position,
             source_port_handle: this.source_port_handle,
-            source_port: data.source_port,
+            source_port: data2.source_port,
             target_port_handle: this.target_port_handle,
-            target_port: data.target_port,
+            target_port: data2.target_port,
             clickFunction: (evt) => this.props.renderer.selection_manager.changeSelection(
               evt,
               selector
@@ -82662,7 +82255,7 @@ class NodeLink extends EditableComponentWithActions {
         ),
         $(".workflow-canvas")[0]
       ),
-      this.addEditable(data)
+      this.addEditable(data2)
     ] });
   }
 }
@@ -82693,34 +82286,34 @@ class AssignmentForNode extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const node_data = data.task;
+    const data2 = this.props.data;
+    const node_data = data2.task;
     if (node_data.represents_workflow)
       ({
         ...node_data,
         ...node_data.linked_workflow_data,
-        id: data.id
+        id: data2.id
       });
     else
       ({ ...node_data });
     const css_class = "assignment-in-node";
     let completion_data;
-    if (data.user_assignment) {
+    if (data2.user_assignment) {
       let disabled = true;
-      if (this.props.renderer.user_role == role_keys.teacher || data.self_reporting && //check AssignmentView for user defined in global scope
-      data.user_assignment.liveprojectuser.user.id === user_id)
+      if (this.props.renderer.user_role == role_keys.teacher || data2.self_reporting && //check AssignmentView for user defined in global scope
+      data2.user_assignment.liveprojectuser.user.id === user_id)
         disabled = false;
       let extra_data;
-      if (data.single_completion && data.user_assignment.completed) {
+      if (data2.single_completion && data2.user_assignment.completed) {
         extra_data = [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             window.gettext("Completed by ") + getUserDisplay(
-              data.user_assignment.liveprojectuser.user
+              data2.user_assignment.liveprojectuser.user
             ) + window.gettext(" on "),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DatePicker,
               {
-                default_value: data.user_assignment.completed_on,
+                default_value: data2.user_assignment.completed_on,
                 disabled: true
               }
             )
@@ -82743,15 +82336,15 @@ class AssignmentForNode extends reactExports.Component {
         ),
         extra_data
       ] });
-    } else if (data.completion_info) {
-      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Completion") + ": " + data.completion_info });
+    } else if (data2.completion_info) {
+      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Completion") + ": " + data2.completion_info });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         AssignmentTitle,
         {
           user_role: this.props.renderer.user_role,
-          data
+          data: data2
         }
       ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
@@ -82765,7 +82358,7 @@ class AssignmentForNode extends reactExports.Component {
               DatePicker,
               {
                 id: "end_date",
-                default_value: data.end_date,
+                default_value: data2.end_date,
                 disabled: true
               }
             )
@@ -82779,7 +82372,7 @@ class AssignmentForNode extends reactExports.Component {
               DatePicker,
               {
                 id: "start_date",
-                default_value: data.start_date,
+                default_value: data2.start_date,
                 disabled: true
               }
             )
@@ -82819,9 +82412,13 @@ class AssignmentBox extends reactExports.Component {
       COURSEFLOW_APP.tinyLoader.endLoad();
       this.setState(response_data.data_package);
       if (!this.props.has_assignment && (response_data.data_package.my_assignments.length > 0 || response_data.data_package.all_assignments.length > 0)) {
-        props2.dispatch(reloadAssignmentsAction(props2.node_id, true));
+        props2.dispatch(
+          ActionCreator.reloadAssignmentsAction(props2.node_id, true)
+        );
       } else if (this.props.has_assignment && response_data.data_package.my_assignments.length == 0 && response_data.data_package.all_assignments.length == 0) {
-        props2.dispatch(reloadAssignmentsAction(props2.node_id, false));
+        props2.dispatch(
+          ActionCreator.reloadAssignmentsAction(props2.node_id, false)
+        );
       }
     });
   }
@@ -82914,6 +82511,8 @@ class AssignmentBox extends reactExports.Component {
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
+    console.log("props");
+    console.log(props2);
     this.objectType = "outcomenode";
   }
   /*******************************************************
@@ -82932,7 +82531,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  addDeleteSelf(data) {
+  addDeleteSelf(data2) {
     const icon = "close.svg";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       ActionButton,
@@ -82940,30 +82539,31 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
         buttonIcon: icon,
         buttonClass: "delete-self-button",
         titleText: window.gettext("Delete"),
-        handleClick: this.deleteSelf.bind(this, data)
+        handleClick: this.deleteSelf.bind(this, data2)
       }
     );
   }
-  deleteSelf(data) {
+  deleteSelf(data2) {
     if (this.props.deleteSelfOverride)
       this.props.deleteSelfOverride();
     else {
       COURSEFLOW_APP.tinyLoader.startLoad();
-      updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
+      updateOutcomenodeDegree(data2.node, data2.outcome, 0, (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
   }
   checkHidden() {
-    if ($(this.maindiv.current).children(".outcome").length == 0)
+    if ($(this.maindiv.current).children(".outcome").length === 0) {
       $(this.maindiv.current).css("display", "none");
-    else
+    } else {
       $(this.maindiv.current).css("display", "");
+    }
     const indicator = $(this.maindiv.current).closest(".outcome-node-indicator");
     if (indicator.length >= 0) {
       const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
       indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
-      if (num_outcomenodes == 0)
+      if (num_outcomenodes === 0)
         indicator.css("display", "none");
       else
         indicator.css("display", "");
@@ -82973,27 +82573,27 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    if (data.outcome === -1)
+    const data2 = this.props.data;
+    if ((data2 == null ? void 0 : data2.outcome) === -1 || !(data2 == null ? void 0 : data2.outcome))
       return null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "outcome-node outcomenode-" + data.id,
-        id: data.id,
+        className: "outcome-node outcomenode-" + data2.id,
+        id: data2.id,
         ref: this.maindiv,
         children: [
-          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data, "close.svg") }),
-          getCompletionImg(data.degree, this.props.outcomes_type),
+          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
+          getCompletionImg(data2.degree, this.props.outcomes_type),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             SimpleOutcome$1,
             {
               checkHidden: this.checkHidden.bind(this),
               comments: true,
               edit: true,
-              objectID: data.outcome,
+              objectID: data2.outcome,
               parentID: this.props.parentID,
-              throughParentID: data.id,
+              throughParentID: data2.id,
               renderer: this.props.renderer
             }
           )
@@ -83002,11 +82602,8 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     );
   }
 }
-const mapOutcomeNodeStateToProps = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
-const OutcomeNode = connect(
-  mapOutcomeNodeStateToProps,
-  null
-)(OutcomeNodeUnconnected);
+const mapStateToProps$5 = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+const OutcomeNode = connect(mapStateToProps$5, null)(OutcomeNodeUnconnected);
 let Index$1 = class Index extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -83230,7 +82827,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       }
     });
   }
-  addShowAssignment(data) {
+  addShowAssignment(data2) {
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ActionButton,
@@ -83246,7 +82843,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         AssignmentBox,
         {
           dispatch: this.props.dispatch.bind(this),
-          node_id: data.id,
+          node_id: data2.id,
           show: this.state.show_assignments,
           has_assignment: this.props.data.has_assignment,
           parent: this,
@@ -83268,12 +82865,12 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let data_override;
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
+    if (data2.represents_workflow)
+      data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
     else
-      data_override = { ...data };
+      data_override = { ...data2 };
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
     var nodePorts;
@@ -83292,7 +82889,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         ),
         $(".workflow-canvas")[0]
       );
-      node_links = data.outgoing_links.map((link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      node_links = data2.outgoing_links.map((link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeLink$1,
         {
           objectID: link,
@@ -83301,7 +82898,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         },
         link
       ));
-      if (data.has_autolink)
+      if (data2.has_autolink)
         auto_link = /* @__PURE__ */ jsxRuntimeExports.jsx(AutoLink, { nodeID: this.props.objectID, node_div: this.maindiv });
     }
     let outcomenodes;
@@ -83309,12 +82906,12 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: "outcome-node-container column-" + data.column,
+          className: "outcome-node-container column-" + data2.column,
           onMouseLeave: () => {
             this.setState({ show_outcomes: false });
           },
           style: { borderColor: getColumnColour(this.props.column) },
-          children: data.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeNode,
             {
               objectID: outcomenode,
@@ -83325,20 +82922,20 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         }
       );
     const side_actions = [];
-    if (data.outcomenode_unique_set.length > 0) {
+    if (data2.outcomenode_unique_set.length > 0) {
       side_actions.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: "outcome-node-indicator-number column-" + data.column,
+              className: "outcome-node-indicator-number column-" + data2.column,
               onMouseEnter: () => {
                 this.setState({ show_outcomes: true });
               },
               style: {
                 borderColor: getColumnColour(this.props.column)
               },
-              children: data.outcomenode_unique_set.length
+              children: data2.outcomenode_unique_set.length
             }
           ),
           outcomenodes
@@ -83347,28 +82944,28 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     }
     let lefticon;
     let righticon;
-    if (data.context_classification > 0)
+    if (data2.context_classification > 0)
       lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
           title: renderer.context_choices.find(
-            (obj) => obj.type == data.context_classification
+            (obj) => obj.type == data2.context_classification
           ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
         }
       ) });
-    if (data.task_classification > 0)
+    if (data2.task_classification > 0)
       righticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
           title: renderer.task_choices.find(
-            (obj) => obj.type == data.task_classification
+            (obj) => obj.type == data2.task_classification
           ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
+          src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
         }
       ) });
     let dropIcon;
-    if (data.is_dropped)
+    if (data2.is_dropped)
       dropIcon = "droptriangleup";
     else
       dropIcon = "droptriangledown";
@@ -83376,12 +82973,12 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     let linktext = window.gettext("Visit workflow");
     let clickfunc = this.doubleClick.bind(this);
     let link_class = "linked-workflow";
-    if (data.linked_workflow_data) {
-      if (data.linked_workflow_data.url == "noaccess" || data.linked_workflow_data.url == "nouser") {
+    if (data2.linked_workflow_data) {
+      if (data2.linked_workflow_data.url == "noaccess" || data2.linked_workflow_data.url == "nouser") {
         linktext = window.gettext("<Inaccessible>");
         clickfunc = null;
         link_class += " link-noaccess";
-      } else if (data.linked_workflow_data.deleted) {
+      } else if (data2.linked_workflow_data.deleted) {
         linktext = window.gettext("<Deleted>");
         clickfunc = null;
         link_class += " link-noaccess";
@@ -83389,7 +82986,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         link_class += " hover-shade";
       }
     }
-    if (data.linked_workflow)
+    if (data2.linked_workflow)
       linkIcon = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: link_class, onClick: clickfunc, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "wflink.svg" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: linktext })
@@ -83400,37 +82997,37 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       ""
     ) != "")
       dropText = "...";
-    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data });
+    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
     const style2 = {
-      left: columnwidth * this.props.column_order.indexOf(data.column) + "px",
+      left: columnwidth * this.props.column_order.indexOf(data2.column) + "px",
       backgroundColor: getColumnColour(this.props.column)
     };
-    if (data.lock) {
-      style2.outline = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.outline = "2px solid " + data2.lock.user_colour;
     }
-    if (checkSetHidden(data, this.props.object_sets))
+    if (checkSetHidden(data2, this.props.object_sets))
       style2.display = "none";
-    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
-    if (data.is_dropped)
+    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
+    if (data2.is_dropped)
       css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     const mouseover_actions = [];
     if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
+      mouseover_actions.push(this.addCommenting(data2));
     if (renderer.show_assignments)
-      mouseover_actions.push(this.addShowAssignment(data));
+      mouseover_actions.push(this.addShowAssignment(data2));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
         "data-selected": this.state.selected,
         "data-hovered": this.state.hovered,
@@ -83488,13 +83085,13 @@ class NodeWeekUnconnected extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   getNode() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       Node$2,
       {
-        objectID: data.node,
+        objectID: data2.node,
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer,
         column_order: this.props.column_order
       }
@@ -83504,16 +83101,16 @@ class NodeWeekUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let my_class = "node-week";
-    if (data.no_drag)
+    if (data2.no_drag)
       my_class += " no-drag";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         className: my_class,
-        id: data.id,
-        "data-child-id": data.node,
+        id: data2.id,
+        "data-child-id": data2.node,
         "data-column-id": this.props.column,
         ref: this.maindiv,
         children: this.getNode()
@@ -83557,7 +83154,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       },
       nodeweek
     ));
-    if (nodes.length == 0)
+    if (nodes.length === 0)
       nodes.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." })
       );
@@ -83595,12 +83192,14 @@ class WeekUnconnected extends EditableComponentWithSorting {
       lastCall: Date.now()
     };
     this.lockChild(id, true, "nodeweek");
-    this.props.renderer.micro_update(columnChangeNode(id, new_column));
+    this.props.renderer.micro_update(
+      ActionCreator.columnChangeNode(id, new_column)
+    );
     columnChanged(this.props.renderer, id, new_column);
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (this.props.nodes_by_column) {
-      for (var col in this.props.nodes_by_column) {
+      for (const col in this.props.nodes_by_column) {
         if (this.props.nodes_by_column[col].indexOf(id) >= 0) {
           const previous = this.props.nodes_by_column[col][new_position];
           new_position = this.props.data.nodeweek_set.indexOf(previous);
@@ -83608,7 +83207,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       }
     }
     this.props.renderer.micro_update(
-      moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     );
     insertedAt(
       this.props.renderer,
@@ -83627,11 +83226,9 @@ class WeekUnconnected extends EditableComponentWithSorting {
       tolerance: "pointer",
       droppable: ".strategy-ghost",
       over: (e, ui) => {
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        drop_item.prevAll().length;
-        parseInt(drop_item.parent().attr("id"));
+        const drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
         if (drag_item.hasClass("new-strategy")) {
           drag_helper.addClass("valid-drop");
           drop_item.addClass("new-strategy-drop-over");
@@ -83640,9 +83237,9 @@ class WeekUnconnected extends EditableComponentWithSorting {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        var drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
+        const drop_item = $(e.target);
         if (drag_item.hasClass("new-strategy")) {
           drag_helper.removeClass("valid-drop");
           drop_item.removeClass("new-strategy-drop-over");
@@ -83650,9 +83247,9 @@ class WeekUnconnected extends EditableComponentWithSorting {
       },
       drop: (e, ui) => {
         $(".new-strategy-drop-over").removeClass("new-strategy-drop-over");
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var new_index = drop_item.parent().prevAll().length + 1;
+        const drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const new_index = drop_item.parent().prevAll().length + 1;
         if (drag_item.hasClass("new-strategy")) {
           const loader = new Loader("body");
           addStrategy(
@@ -83671,37 +83268,37 @@ class WeekUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
-    var nodes = this.getNodes();
+    const nodes = this.getNodes();
     let css_class = "week";
-    if (data.is_strategy)
+    if (data2.is_strategy)
       css_class += " strategy";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
-    if (data.is_dropped)
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
+    if (data2.is_dropped)
       css_class += " dropped";
     let default_text;
     if (!renderer.is_strategy)
-      default_text = data.week_type_display + " " + (this.props.rank + 1);
+      default_text = data2.week_type_display + " " + (this.props.rank + 1);
     const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
     let dropIcon;
-    if (data.is_dropped)
+    if (data2.is_dropped)
       dropIcon = "droptriangleup";
     else
       dropIcon = "droptriangledown";
     const mouseover_actions = [];
     if (!this.props.renderer.read_only && !renderer.is_strategy) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
+      mouseover_actions.push(this.addCommenting(data2));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -83711,7 +83308,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
@@ -83733,16 +83330,16 @@ class WeekUnconnected extends EditableComponentWithSorting {
               ]
             }
           ),
-          this.addEditable(data),
-          data.strategy_classification > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "strategy-tab", children: [
+          this.addEditable(data2),
+          data2.strategy_classification > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "strategy-tab", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-triangle" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-square", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-circle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
                 title: renderer.strategy_classification_choices.find(
-                  (obj) => obj.type == data.strategy_classification
+                  (obj) => obj.type === data2.strategy_classification
                 ).name,
-                src: COURSEFLOW_APP.config.icon_path + strategy_keys[data.strategy_classification] + ".svg"
+                src: COURSEFLOW_APP.config.icon_path + strategy_keys[data2.strategy_classification] + ".svg"
               }
             ) }) })
           ] })
@@ -83773,20 +83370,20 @@ class Term extends WeekUnconnected {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     var node_blocks = [];
     for (var i = 0; i < this.props.column_order.length; i++) {
       const col = this.props.column_order[i];
       const nodeweeks = [];
-      for (var j = 0; j < data.nodeweek_set.length; j++) {
-        const nodeweek = data.nodeweek_set[j];
+      for (var j = 0; j < data2.nodeweek_set.length; j++) {
+        const nodeweek = data2.nodeweek_set[j];
         if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               NodeWeek,
               {
                 objectID: nodeweek,
-                parentID: data.id,
+                parentID: data2.id,
                 renderer: this.props.renderer,
                 column_order: this.props.column_order
               },
@@ -83818,29 +83415,29 @@ class Term extends WeekUnconnected {
       );
     }
     let css_class = "week";
-    if (data.is_strategy)
+    if (data2.is_strategy)
       css_class += " strategy";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
-    if (data.is_dropped)
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
+    if (data2.is_dropped)
       css_class += " dropped";
     const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
     let dropIcon;
-    if (data.is_dropped)
+    if (data2.is_dropped)
       dropIcon = "droptriangleup";
     else
       dropIcon = "droptriangledown";
     const mouseover_actions = [];
     if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
+      mouseover_actions.push(this.addCommenting(data2));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -83853,8 +83450,8 @@ class Term extends WeekUnconnected {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             TitleText,
             {
-              text: data.title,
-              defaultText: data.week_type_display + " " + (this.props.rank + 1)
+              text: data2.title,
+              defaultText: data2.week_type_display + " " + (this.props.rank + 1)
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83878,7 +83475,7 @@ class Term extends WeekUnconnected {
               ]
             }
           ),
-          this.addEditable(data)
+          this.addEditable(data2)
         ]
       }
     );
@@ -83897,9 +83494,9 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
    *******************************************************/
   render() {
     var _a;
-    const data = this.props.data;
+    const data2 = this.props.data;
     let my_class = "week-workflow";
-    if (data.no_drag)
+    if (data2.no_drag)
       my_class += " no-drag";
     if ($((_a = this.maindiv) == null ? void 0 : _a.current).hasClass("dragging"))
       my_class += " dragging";
@@ -83908,10 +83505,10 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
       week = /* @__PURE__ */ jsxRuntimeExports.jsx(
         Term$1,
         {
-          objectID: data.week,
-          rank: this.props.order.indexOf(data.id),
+          objectID: data2.week,
+          rank: this.props.order.indexOf(data2.id),
           parentID: this.props.parentID,
-          throughParentID: data.id,
+          throughParentID: data2.id,
           renderer: this.props.renderer
         }
       );
@@ -83919,10 +83516,10 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
       week = /* @__PURE__ */ jsxRuntimeExports.jsx(
         Week,
         {
-          objectID: data.week,
-          rank: this.props.order.indexOf(data.id),
+          objectID: data2.week,
+          rank: this.props.order.indexOf(data2.id),
           parentID: this.props.parentID,
-          throughParentID: data.id,
+          throughParentID: data2.id,
           renderer: this.props.renderer
         }
       );
@@ -83930,9 +83527,9 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
       "div",
       {
         className: my_class,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
-        "data-child-id": data.week,
+        "data-child-id": data2.week,
         children: week
       }
     );
@@ -84098,7 +83695,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === "columnworkflow") {
       this.props.renderer.micro_update(
-        moveColumnWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       );
       insertedAt(
         this.props.renderer,
@@ -84112,7 +83709,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     }
     if (type === "weekworkflow") {
       this.props.renderer.micro_update(
-        moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       );
       insertedAt(
         this.props.renderer,
@@ -84129,36 +83726,36 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const renderer = this.props.renderer;
-    const columnworkflows = data.columnworkflow_set.map(
+    const columnworkflows = data2.columnworkflow_set.map(
       (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         ColumnWorkflow$1,
         {
           objectID: columnworkflow,
-          parentID: data.id,
+          parentID: data2.id,
           renderer
         },
         `columnworkflow-${index}`
       )
     );
-    const weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const weekworkflows = data2.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekWorkflow,
       {
-        condensed: data.condensed,
+        condensed: data2.condensed,
         objectID: weekworkflow,
-        parentID: data.id,
+        parentID: data2.id,
         renderer
       },
       `weekworkflow-${index}`
     ));
     let css_class = "workflow-details";
-    if (data.condensed)
+    if (data2.condensed)
       css_class += " condensed";
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data.id + "-column-block", children: columnworkflows }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data.id + "-week-block", children: weekworkflows }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data2.id + "-column-block", children: columnworkflows }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data2.id + "-week-block", children: weekworkflows }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "workflow-canvas", width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         "marker",
         {
@@ -84192,16 +83789,16 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let data_override;
-    if (data.represents_workflow) {
+    if (data2.represents_workflow) {
       data_override = {
-        ...data,
-        ...data.linked_workflow_data,
-        id: data.id
+        ...data2,
+        ...data2.linked_workflow_data,
+        id: data2.id
       };
     } else {
-      data_override = { ...data };
+      data_override = { ...data2 };
     }
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
@@ -84210,12 +83807,12 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: "outcome-node-container column-111111-" + data.column,
+          className: "outcome-node-container column-111111-" + data2.column,
           onMouseLeave: () => {
             this.setState({ show_outcomes: false });
           },
           style: { borderColor: getColumnColour(this.props.column) },
-          children: data.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeNode,
             {
               objectID: outcomenode,
@@ -84226,20 +83823,20 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
         }
       );
     const side_actions = [];
-    if (data.outcomenode_unique_set.length > 0) {
+    if (data2.outcomenode_unique_set.length > 0) {
       side_actions.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: "outcome-node-indicator-number column-" + data.column,
+              className: "outcome-node-indicator-number column-" + data2.column,
               onMouseEnter: () => {
                 this.setState({ show_outcomes: true });
               },
               style: {
                 borderColor: getColumnColour(this.props.column)
               },
-              children: data.outcomenode_unique_set.length
+              children: data2.outcomenode_unique_set.length
             }
           ),
           outcomenodes
@@ -84248,52 +83845,52 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
     }
     let lefticon;
     let righticon;
-    if (data.context_classification > 0)
+    if (data2.context_classification > 0)
       lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
           title: renderer.context_choices.find(
-            (obj) => obj.type == data.context_classification
+            (obj) => obj.type == data2.context_classification
           ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data.context_classification] + ".svg"
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
         }
       );
-    if (data.task_classification > 0)
+    if (data2.task_classification > 0)
       righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "img",
         {
           title: renderer.task_choices.find(
-            (obj) => obj.type == data.task_classification
+            (obj) => obj.type == data2.task_classification
           ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[data.task_classification] + ".svg"
+          src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
         }
       );
-    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data });
+    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
     const style2 = {
       backgroundColor: getColumnColour(this.props.column)
     };
-    if (data.lock) {
-      style2.outline = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.outline = "2px solid " + data2.lock.user_colour;
     }
-    if (checkSetHidden(data, this.props.object_sets))
+    if (checkSetHidden(data2, this.props.object_sets))
       style2.display = "none";
-    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     const mouseover_actions = [];
     if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data));
-      mouseover_actions.push(this.addDuplicateSelf(data));
-      mouseover_actions.push(this.addDeleteSelf(data));
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data));
+      mouseover_actions.push(this.addCommenting(data2));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         children: [
@@ -84327,13 +83924,13 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
    * FUNCTIONS
    *******************************************************/
   getNode() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       NodeComparison,
       {
-        objectID: data.node,
+        objectID: data2.node,
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer,
         column_order: this.props.column_order
       }
@@ -84369,7 +83966,7 @@ class WeekComparisonUnconnected extends WeekUnconnected {
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     this.props.renderer.micro_update(
-      moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     );
     insertedAt(
       this.props.renderer,
@@ -84467,17 +84064,17 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
    * FUNCTIONS
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let my_class = "week-workflow";
-    if (data.no_drag)
+    if (data2.no_drag)
       my_class += " no-drag";
     var week = /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekComparison,
       {
-        objectID: data.week,
-        rank: this.props.order.indexOf(data.id),
+        objectID: data2.week,
+        rank: this.props.order.indexOf(data2.id),
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer
       }
     );
@@ -84485,9 +84082,9 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
       "div",
       {
         className: my_class,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
-        "data-child-id": data.week,
+        "data-child-id": data2.week,
         children: week
       }
     );
@@ -84535,7 +84132,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === "weekworkflow") {
       this.props.renderer.micro_update(
-        moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       );
       insertedAt(
         this.props.renderer,
@@ -84552,19 +84149,19 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const renderer = this.props.renderer;
-    const weekworkflows = data.weekworkflow_set.map((weekworkflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const weekworkflows = data2.weekworkflow_set.map((weekworkflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekWorkflowComparison,
       {
-        condensed: data.condensed,
+        condensed: data2.condensed,
         objectID: weekworkflow,
-        parentID: data.id,
+        parentID: data2.id,
         renderer
       },
       weekworkflow
     ));
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data.id + "-week-block", children: weekworkflows }) });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data2.id + "-week-block", children: weekworkflows }) });
   }
 }
 const mapWorkflowStateToProps$1 = (state) => ({
@@ -84597,8 +84194,8 @@ class WorkflowBaseUnconnected extends EditableComponent {
   addObjectSetTrigger() {
     const props2 = this.props;
     $(document).off("object_set_toggled." + this.props.data.id);
-    $(document).on("object_set_toggled." + this.props.data.id, (evt, data) => {
-      props2.dispatch(toggleObjectSet(data.id, data.hidden));
+    $(document).on("object_set_toggled." + this.props.data.id, (evt, data2) => {
+      props2.dispatch(ActionCreator.toggleObjectSet(data2.id, data2.hidden));
     });
   }
   alignAllHeaders() {
@@ -84616,29 +84213,29 @@ class WorkflowBaseUnconnected extends EditableComponent {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const renderer = this.props.renderer;
     renderer.selection_manager;
     let workflow_content;
-    if (renderer.view_type == "outcomeedit") {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data.id });
+    if (renderer.view_type === ViewType$1.OUTCOME_EDIT) {
+      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data2.id });
     } else {
-      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data.id });
+      workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data2.id });
     }
     const style2 = {};
-    if (data.lock) {
-      style2.border = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.border = "2px solid " + data2.lock.user_colour;
     }
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-header", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowCard,
         {
-          workflowData: data,
+          workflowData: data2,
           selectAction: this.openEdit.bind(this, null)
         }
       ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-container", children: [
-        this.addEditable(data, true),
+        this.addEditable(data2, true),
         workflow_content
       ] })
     ];
@@ -84762,7 +84359,7 @@ class ConnectedUser extends reactExports.Component {
   render() {
     console.log("ConnectedUser props");
     console.log(props);
-    const data = this.props.user_data;
+    const data2 = this.props.user_data;
     console.log("this.props.user_data");
     console.log(this);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84770,10 +84367,10 @@ class ConnectedUser extends reactExports.Component {
       {
         className: "user-indicator",
         style: {
-          backgroundColor: data.user_colour
+          backgroundColor: data2.user_colour
         },
-        title: data.user_name,
-        children: data.user_name
+        title: data2.user_name,
+        children: data2.user_name
       }
     );
   }
@@ -84783,7 +84380,7 @@ class AlignmentOutcomesBlock extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const titlestr = capWords(
       gettext(this.props.workflow_type + " outcome")
     );
@@ -84792,7 +84389,7 @@ class AlignmentOutcomesBlock extends reactExports.Component {
         titlestr,
         ":"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Outcome$3, { renderer: this.props.renderer, objectID: data.id })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Outcome$3, { renderer: this.props.renderer, objectID: data2.id })
     ] });
   }
 }
@@ -84801,18 +84398,18 @@ class AlignmentHorizontalReverseParentOutcome extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.outcomenode;
+    const data2 = this.props.outcomenode;
     const props2 = this.props;
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "alignment-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       OutcomeNode,
       {
-        objectID: data.id,
+        objectID: data2.id,
         renderer: this.props.renderer,
         deleteSelfOverride: () => {
           COURSEFLOW_APP.tinyLoader.startLoad();
           updateOutcomehorizontallinkDegree(
             props2.child_outcome,
-            data.outcome,
+            data2.outcome,
             0,
             (response_data) => {
               COURSEFLOW_APP.tinyLoader.endLoad();
@@ -84865,7 +84462,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Com
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const parent_outcomes = this.props.horizontal_links.map(
       (horizontal_link) => {
         for (var i = 0; i < this.props.outcomenodes.length; i++) {
@@ -84901,7 +84498,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Com
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         Outcome$3,
         {
-          objectID: data.id,
+          objectID: data2.id,
           comments: true,
           edit: true,
           renderer: this.props.renderer
@@ -84972,28 +84569,28 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let data_override;
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
+    if (data2.represents_workflow)
+      data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
     else
-      data_override = { ...data };
+      data_override = { ...data2 };
     const selection_manager = this.props.renderer.selection_manager;
     let child_outcomes_header;
     if (this.props.child_outcomes.length > 0) {
       child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "child-outcome child-outcome-header", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: capWords(
-          window.gettext(data.linked_workflow_data.type + " outcomes")
+          window.gettext(data2.linked_workflow_data.type + " outcomes")
         ) + window.gettext(" From Linked Workflow") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: window.gettext("Associated ") + capWords(window.gettext(this.props.workflow.type + " outcomes")) })
       ] });
     } else {
-      if (data.linked_workflow) {
+      if (data2.linked_workflow) {
         if (this.props.child_outcomes == -1) {
           child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext("... LOADING") });
           this.props.renderer.childWorkflowDataNeeded(this.props.data.id);
         } else {
-          if (data.linked_workflow_data.deleted) {
+          if (data2.linked_workflow_data.deleted) {
             child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext("The linked workflow has been deleted.") });
           } else {
             child_outcomes_header = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "child-outcome child-outcome-header", children: window.gettext(
@@ -85016,7 +84613,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           AlignmentHorizontalReverseChildOutcome,
           {
             objectID: child_outcome,
-            node_data: data,
+            node_data: data2,
             renderer: this.props.renderer,
             restriction_set: this.props.restriction_set
           }
@@ -85050,7 +84647,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       outcomeadder
     ] });
     let add_new_outcome;
-    if (!this.props.renderer.read_only && data.linked_workflow)
+    if (!this.props.renderer.read_only && data2.linked_workflow)
       add_new_outcome = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -85069,7 +84666,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           ]
         }
       );
-    if (data.linked_workflow && this.props.restriction_set && this.props.restriction_set.child_outcomes) {
+    if (data2.linked_workflow && this.props.restriction_set && this.props.restriction_set.child_outcomes) {
       if (this.state.show_all) {
         show_all = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alignment-added-outcomes", children: [
           add_new_outcome,
@@ -85102,8 +84699,8 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     const style2 = {
       backgroundColor: getColumnColour(this.props.column)
     };
-    if (data.lock) {
-      style2.outline = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.outline = "2px solid " + data2.lock.user_colour;
     }
     let comments;
     if (this.props.renderer.view_comments)
@@ -85112,11 +84709,11 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
       "div",
       {
         style: style2,
-        className: "node column-" + data.column,
+        className: "node column-" + data2.column,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         ref: this.maindiv,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-block", children: [
             child_outcomes_header,
             child_outcomes
@@ -85192,8 +84789,8 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const default_text = data.week_type_display + " " + (this.props.week_rank + 1);
+    const data2 = this.props.data;
+    const default_text = data2.week_type_display + " " + (this.props.week_rank + 1);
     const nodeweeks = this.props.nodeweeks.map((nodeweek) => {
       if (this.props.restriction_set && this.props.restriction_set.nodes && this.props.restriction_set.nodes.indexOf(nodeweek.node) == -1)
         return null;
@@ -85217,9 +84814,9 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
         style: this.get_border_style(),
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-block", children: nodeweeks }),
-          this.addEditable(data, true),
+          this.addEditable(data2, true),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments })
         ]
@@ -85355,7 +84952,7 @@ class AlignmentView extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     let view_buttons_outcomes = this.props.outcomes.map((category, i2) => {
       return [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
@@ -85428,10 +85025,10 @@ class AlignmentView extends reactExports.Component {
       outcomes_block = /* @__PURE__ */ jsxRuntimeExports.jsx(
         AlignmentOutcomesBlock,
         {
-          workflow_type: data.type,
+          workflow_type: data2.type,
           renderer: this.props.renderer,
           data: outcome_data,
-          outcomes_type: data.outcomes_type
+          outcomes_type: data2.outcomes_type
         }
       );
       alignment_reverse_block = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -85440,7 +85037,7 @@ class AlignmentView extends reactExports.Component {
           sort: "outcome",
           renderer: this.props.renderer,
           data: outcome_data,
-          outcomes_type: data.outcomes_type
+          outcomes_type: data2.outcomes_type
         }
       );
     }
@@ -85452,7 +85049,7 @@ class AlignmentView extends reactExports.Component {
           renderer: this.props.renderer,
           data: this.props.terms[this.state.active],
           base_outcomes: this.props.outcomes,
-          outcomes_type: data.outcomes_type
+          outcomes_type: data2.outcomes_type
         }
       );
     }
@@ -85505,25 +85102,25 @@ class GridNodeUnconnected extends EditableComponentWithComments {
   render() {
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
-    const data = this.props.data;
+    const data2 = this.props.data;
     let data_override;
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
+    if (data2.represents_workflow)
+      data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
     else
-      data_override = data;
+      data_override = data2;
     let ponderation;
     ponderation = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: data_override.ponderation_theory + "/" + data_override.ponderation_practical + "/" + data_override.ponderation_individual });
     const style2 = {
       backgroundColor: getColumnColour(this.props.column)
     };
-    if (data.lock) {
-      style2.outline = "2px solid " + data.lock.user_colour;
+    if (data2.lock) {
+      style2.outline = "2px solid " + data2.lock.user_colour;
     }
-    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
-    if (data.is_dropped)
+    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
+    if (data2.is_dropped)
       css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     let comments;
     if (this.props.renderer.view_comments)
       comments = this.addCommenting();
@@ -85531,13 +85128,13 @@ class GridNodeUnconnected extends EditableComponentWithComments {
       "div",
       {
         style: style2,
-        id: data.id,
+        id: data2.id,
         ref: this.maindiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         className: css_class,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }),
             ponderation
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
@@ -85561,8 +85158,8 @@ class GridWeekUnconnected extends EditableComponentWithComments {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const default_text = data.week_type_display + " " + (this.props.rank + 1);
+    const data2 = this.props.data;
+    const default_text = data2.week_type_display + " " + (this.props.rank + 1);
     const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridNode, { renderer: this.props.renderer, data: node2 }));
     let comments;
     if (this.props.renderer.view_comments)
@@ -85576,11 +85173,11 @@ class GridWeekUnconnected extends EditableComponentWithComments {
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "week-title", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { title: data.title, defaultText: default_text }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { title: data2.title, defaultText: default_text }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: this.props.total_theory + "/" + this.props.total_practical + "/" + this.props.total_individual })
           ] }),
           nodes,
-          this.addEditable(data, true),
+          this.addEditable(data2, true),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
         ]
@@ -85589,10 +85186,10 @@ class GridWeekUnconnected extends EditableComponentWithComments {
   }
 }
 const mapWeekStateToProps$2 = (state, own_props) => {
-  const data = own_props.data;
+  const data2 = own_props.data;
   const node_weeks = filterThenSortByID(
     state.nodeweek,
-    data.nodeweek_set
+    data2.nodeweek_set
   );
   const nodes_data = node_weeks.map((nodeweek) => getNodeByID(state, nodeweek.node).data).filter((node2) => !checkSetHidden(node2, state.objectset));
   const override_data = nodes_data.map((node2) => {
@@ -85705,15 +85302,15 @@ class JumpToWeekViewUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const renderer = this.props.renderer;
     let default_text;
     if (!renderer.is_strategy)
-      default_text = data.week_type_display + " " + (this.props.rank + 1);
+      default_text = data2.week_type_display + " " + (this.props.rank + 1);
     COURSEFLOW_APP.config.icon_path + "plus.svg";
-    if (data.is_dropped)
+    if (data2.is_dropped)
       COURSEFLOW_APP.config.icon_path + "minus.svg";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.jumpTo.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }) });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.jumpTo.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text }) });
   }
 }
 const mapWeekStateToProps$1 = (state, own_props) => getWeekByID(state, own_props.objectID);
@@ -85726,14 +85323,14 @@ class JumpToWeekWorkflowUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       JumpToWeekView,
       {
-        objectID: data.week,
-        rank: this.props.order.indexOf(data.id),
+        objectID: data2.week,
+        rank: this.props.order.indexOf(data2.id),
         parentID: this.props.parentID,
-        throughParentID: data.id,
+        throughParentID: data2.id,
         renderer: this.props.renderer
       }
     );
@@ -85774,10 +85371,10 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getTypeIndicator(data) {
-    const type = data.type;
+  getTypeIndicator(data2) {
+    const type = data2.type;
     let type_text = gettext(type);
-    if (data.is_strategy)
+    if (data2.is_strategy)
       type_text += gettext(" strategy");
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
   }
@@ -85989,7 +85586,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const is_dropped = this.getIsDropped();
     let dropIcon;
     if (is_dropped)
@@ -86000,10 +85597,10 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
     if (is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
-        data.child_outcome_links.length
+        data2.child_outcome_links.length
       );
     let comments;
     let style2;
@@ -86012,7 +85609,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
       {
         className: "outcome-head",
         ref: this.maindiv,
-        style: { paddingLeft: data.depth * 12 },
+        style: { paddingLeft: data2.depth * 12 },
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeTitle,
@@ -86022,7 +85619,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
               hovertext: this.props.hovertext
             }
           ) }),
-          data.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+          data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
@@ -86078,7 +85675,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
         }
       )
     );
-    const full_row = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row depth-" + data.depth, children: [
+    const full_row = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row depth-" + data2.depth, children: [
       outcome_head,
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-cells", children: outcome_row })
     ] });
@@ -86237,22 +85834,22 @@ class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    if (data.represents_workflow)
-      ({ ...data, ...data.linked_workflow_data, id: data.id });
+    const data2 = this.props.data;
+    if (data2.represents_workflow)
+      ({ ...data2, ...data2.linked_workflow_data, id: data2.id });
     this.props.renderer.selection_manager;
     const style2 = {
       backgroundColor: getColumnColour(this.props.column)
     };
-    let css_class = "node column-" + data.column + " " + node_keys[data.node_type];
-    if (data.is_dropped)
+    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
+    if (data2.is_dropped)
       css_class += " dropped";
-    if (data.lock)
-      css_class += " locked locked-" + data.lock.user_id;
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
     let comments;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "table-cell nodewrapper", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, style: style2, id: data.id, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, style: style2, id: data2.id, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
@@ -86397,14 +85994,14 @@ class OutcomeTableView extends reactExports.Component {
     }
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text;
-      if (this.props.renderer.view_type === "outcometable")
+      if (this.props.renderer.view_type === "outcometable") {
         text = gettext(
           "This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started."
         );
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "emptytext", children: text });
     } else {
-      let nodes;
-      nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
+      const nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header", children: nodecategory2.title }) }),
         nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Index2, { renderer: this.props.renderer, objectID: node2 }))
@@ -86444,7 +86041,7 @@ class OutcomeTableView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps$2 = (state, own_props) => {
+const mapStateToProps$2 = (state) => {
   return {
     workflow_type: state.workflow.type,
     outcomes_type: state.workflow.outcomes_type,
@@ -86472,22 +86069,22 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getTimeData(data) {
+  getTimeData(data2) {
     return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.time_general_hours }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.time_specific_hours }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: (data.time_general_hours || 0) + (data.time_specific_hours || 0) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.time_general_hours }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.time_specific_hours }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: (data2.time_general_hours || 0) + (data2.time_specific_hours || 0) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.ponderation_theory }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.ponderation_practical }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.ponderation_individual }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data.ponderation_theory + data.ponderation_practical + data.ponderation_individual }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.ponderation_theory }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.ponderation_practical }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.ponderation_individual }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell", children: data2.ponderation_theory + data2.ponderation_practical + data2.ponderation_individual }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           className: "table-cell",
-          titletext: this.props.renderer.time_choices[data.time_units].name,
-          children: data.time_required
+          titletext: this.props.renderer.time_choices[data2.time_units].name,
+          children: data2.time_required
         }
       )
     ];
@@ -86496,14 +86093,7 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    let data_override;
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id };
-    else
-      data_override = data;
-    "node column-" + data.column + " " + node_keys[data.node_type];
-    getColumnColour(this.props.column);
+    const data_override = data.represents_workflow ? { ...data, ...data.linked_workflow_data, id: data.id } : this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "matrix-time-row", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank" }),
       this.getTimeData(data_override)
@@ -86521,8 +86111,8 @@ class MatrixWeekUnconnected extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    data.week_type_display + " " + (this.props.rank + 1);
+    const data2 = this.props.data;
+    data2.week_type_display + " " + (this.props.rank + 1);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "matrix-time-row", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "total-cell table-cell blank" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "total-cell table-cell", children: this.props.general_education }),
@@ -86538,10 +86128,10 @@ class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   }
 }
 const mapWeekStateToProps = (state, own_props) => {
-  const data = getWeekByID(state, own_props.objectID).data;
+  const data2 = getWeekByID(state, own_props.objectID).data;
   const node_weeks = filterThenSortByID(
     state.nodeweek,
-    data.nodeweek_set
+    data2.nodeweek_set
   );
   const nodes_data = filterThenSortByID(
     state.node,
@@ -86599,7 +86189,7 @@ const mapWeekStateToProps = (state, own_props) => {
     0
   );
   return {
-    data,
+    data: data2,
     total_theory,
     total_practical,
     total_individual,
@@ -86900,8 +86490,8 @@ class WorkflowTableView extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    if (data.table_type === 1)
+    const data2 = this.props.data;
+    if (data2.table_type === 1)
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         CompetencyMatrixView$1,
         {
@@ -87107,17 +86697,17 @@ class ShareMenu extends reactExports.Component {
    *******************************************************/
   getPublication() {
     const published = this.state.published;
-    const data = this.props.data;
-    if (data.type === "project" || data.is_strategy) {
+    const data2 = this.props.data;
+    if (data2.type === "project" || data2.is_strategy) {
       let public_class = "big-button make-public";
       let private_class = "big-button hover-shade make-private";
       if (published)
         public_class += " active";
       else
         private_class += " active";
-      let public_disabled = !(data.title && data.title.length > 0);
-      if (data.type == "project")
-        public_disabled |= data.disciplines.length == 0;
+      let public_disabled = !(data2.title && data2.title.length > 0);
+      if (data2.type == "project")
+        public_disabled |= data2.disciplines.length == 0;
       if (!public_disabled && !published)
         public_class += " hover-shade";
       if (public_disabled)
@@ -87126,7 +86716,7 @@ class ShareMenu extends reactExports.Component {
       let disabled_indicator;
       if (public_disabled) {
         let disabled_text;
-        if (data.type == "project")
+        if (data2.type == "project")
           disabled_text = window.gettext(
             "Title and disciplines are required to publish."
           );
@@ -87185,9 +86775,9 @@ class ShareMenu extends reactExports.Component {
     }
   }
   getPublicLink() {
-    const data = this.props.data;
-    const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data.id);
-    if (data.type !== "project") {
+    const data2 = this.props.data;
+    const public_link = "https://" + window.location.host + COURSEFLOW_APP.config.public_update_path["workflow"].replace("0", data2.id);
+    if (data2.type !== "project") {
       const public_view = this.state.public_view;
       if (!public_view)
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -87373,7 +86963,7 @@ class ShareMenu extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
+    const data2 = this.props.data;
     const owner = /* @__PURE__ */ jsxRuntimeExports.jsx(UserLabel, { user: this.state.owner, type: "owner" });
     const editors = this.state.edit.filter((user) => user.id !== this.state.owner.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       UserLabel,
@@ -87412,7 +87002,7 @@ class ShareMenu extends reactExports.Component {
       }
     ));
     let share_info;
-    if (data.type === "project") {
+    if (data2.type === "project") {
       share_info = window.gettext(
         "Invite collaborators to project and its workflows"
       );
@@ -87441,7 +87031,7 @@ class ShareMenu extends reactExports.Component {
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap user-text", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { children: [
-        window.gettext("Share") + " " + window.gettext(data.type) + " ",
+        window.gettext("Share") + " " + window.gettext(data2.type) + " ",
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
           {
@@ -87711,6 +87301,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "view_type");
     __publicField(this, "container");
     __publicField(this, "renderMethod");
+    // @todo delete his after converrting to state mgmt
     __publicField(this, "can_view");
     __publicField(this, "websocket");
     __publicField(this, "always_static");
@@ -87718,14 +87309,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "project_permission");
     __publicField(this, "object_sets");
     __publicField(this, "data");
+    __publicField(this, "workflowId");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
     __publicField(this, "Header", () => {
-      const data = this.props.data;
+      const data2 = this.props.data;
       const style2 = {};
-      if (data.lock) {
-        style2.border = "2px solid " + data.lock.user_colour;
+      if (data2.lock) {
+        style2.border = "2px solid " + data2.lock.user_colour;
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
@@ -87738,7 +87330,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 WorkflowTitle,
                 {
-                  data,
+                  data: data2,
                   no_hyperlink: true,
                   class_name: "project-title"
                 }
@@ -87755,7 +87347,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   CollapsibleText,
                   {
-                    text: data.description,
+                    text: data2.description,
                     defaultText: window.gettext("No description")
                   }
                 )
@@ -87768,7 +87360,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "Content", () => {
       const renderer = this.props.renderer;
       let workflow_content;
-      if (this.view_type == "outcometable") {
+      if (this.view_type == ViewType$1.OUTCOMETABLE) {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTableView,
           {
@@ -87778,16 +87370,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
           }
         );
         this.allowed_tabs = [3];
-      } else if (this.view_type == "outcomeedit") {
+      } else if (this.view_type == ViewType$1.OUTCOME_EDIT) {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer });
         if (this.data.type == "program")
           this.allowed_tabs = [3];
         else
           this.allowed_tabs = [2, 3];
-      } else if (this.view_type == "alignmentanalysis") {
+      } else if (this.view_type == ViewType$1.ALIGNMENTANALYSIS) {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
-      } else if (this.view_type == "grid") {
+      } else if (this.view_type == ViewType$1.GRID) {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
       } else {
@@ -87800,33 +87392,33 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         return workflow_content;
       const view_buttons = [
         {
-          type: "workflowview",
+          type: ViewType$1.WORKFLOW,
           name: window.gettext("Workflow View"),
           disabled: []
         },
         {
-          type: "outcomeedit",
+          type: ViewType$1.OUTCOME_EDIT,
           name: capWords(
             window.gettext("View") + " " + window.gettext(this.data.type + " outcomes")
           ),
           disabled: []
         },
         {
-          type: "outcometable",
+          type: ViewType$1.OUTCOMETABLE,
           name: capWords(
             window.gettext(this.data.type + " outcome") + " " + window.gettext("Table")
           ),
           disabled: []
         },
         {
-          type: "alignmentanalysis",
+          type: ViewType$1.ALIGNMENTANALYSIS,
           name: capWords(
             window.gettext(this.data.type + " outcome") + " " + window.gettext("Analytics")
           ),
           disabled: ["activity"]
         },
         {
-          type: "grid",
+          type: ViewType$1.GRID,
           name: window.gettext("Grid View"),
           disabled: ["activity", "course"]
         }
@@ -87867,8 +87459,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
      * VIEW BAR
      *******************************************************/
     __publicField(this, "Jump", () => {
-      if (this.view_type !== "workflowview")
+      if (this.view_type !== ViewType$1.WORKFLOW) {
         return null;
+      }
       const nodebarweekworkflows = this.data.weekworkflow_set.map(
         (weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           JumpToWeekWorkflow,
@@ -88208,8 +87801,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         )
       ] }) });
     });
-    console.log("WorkflowBaseViewUnconnected props");
-    console.log(props2);
     this.objectType = "workflow";
     this.allowed_tabs = [0, 1, 2, 3, 4];
     this.readOnly = this.props.renderer.read_only;
@@ -88219,7 +87810,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     this.data = this.props.data;
     this.project = this.props.renderer.project;
     this.selection_manager = this.props.renderer.selection_manager;
-    this.renderMethod = this.props.renderer.render;
+    this.renderMethod = this.props.parentRender;
     this.container = this.props.renderer.container;
     this.view_type = this.props.renderer.view_type;
     this.websocket = this.props.renderer.websocket;
@@ -88227,6 +87818,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     this.user_id = this.props.renderer.user_id;
     this.project_permission = this.props.renderer.project_permission;
     this.object_sets = this.props.object_sets;
+    this.workflowId = this.props.renderer.workflowID;
     this.state = {
       users: null,
       openShareDialog: false,
@@ -88251,8 +87843,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
   getUserData() {
     if (this.public_view || this.is_student)
       return null;
-    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
-      this.setState({ users: data });
+    getUsersForObjectQuery(this.data.id, this.data.type, (data2) => {
+      this.setState({ users: data2 });
     });
   }
   deleteWorkflow() {
@@ -88331,11 +87923,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     );
   }
   getTypeIndicator() {
-    const data = this.props.data;
-    let type_text = window.gettext(data.type);
-    if (data.is_strategy)
+    const data2 = this.props.data;
+    let type_text = window.gettext(data2.type);
+    if (data2.is_strategy)
       type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data.type, children: type_text });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data2.type, children: type_text });
   }
   getUsers() {
     if (!this.state.users)
@@ -88524,7 +88116,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
             ParentWorkflowIndicator,
             {
               renderer: this.props.renderer,
-              workflow_id: this.props.id
+              workflow_id: this.workflowId
             }
           )
         ] }) }),
@@ -88544,8 +88136,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
   }
 }
 const mapStateToProps = (state) => {
-  console.log("mapWorkflowStateToProps");
-  console.log(state);
   return {
     data: state.workflow,
     object_sets: state.objectset,
@@ -88604,8 +88194,6 @@ class Workflow {
     __publicField(this, "has_rendered");
     __publicField(this, "is_static");
     __publicField(this, "store");
-    console.log("WF props");
-    console.log(props2);
     const {
       column_choices,
       context_choices,
@@ -88634,6 +88222,7 @@ class Workflow {
     this.user_role = props2.user_role ?? role_keys["none"];
     this.user_id = props2.user_id;
     this.read_only = true;
+    this.workflowRender = this.render.bind(this);
     if (this.public_view) {
       this.always_static = true;
     }
@@ -88745,11 +88334,20 @@ class Workflow {
     reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
     this.container = container2;
     this.selection_manager.renderer = this;
-    if (view_type === "outcomeedit") {
+    if (view_type === ViewType$1.OUTCOME_EDIT) {
       this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(refreshStoreData(response.data_package));
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        );
         reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowBaseView,
+            {
+              view_type,
+              renderer: this,
+              parentRender: this.workflowRender
+            }
+          ) }),
           container2[0]
         );
       });
@@ -88757,7 +88355,7 @@ class Workflow {
       setTimeout(() => {
         const theme2 = createTheme({});
         reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this }) }) }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBaseView, { view_type, renderer: this, parentRender: this.workflowRender }) }) }) }),
           container2[0]
         );
       }, 50);
@@ -88774,7 +88372,9 @@ class Workflow {
     this.getWorkflowChildData(
       this.child_data_needed[this.child_data_completed],
       (response) => {
-        this.store.dispatch(refreshStoreData(response.data_package));
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        );
         setTimeout(() => this.getDataForChildWorkflow(), 50);
       }
     );
@@ -88822,30 +88422,30 @@ class Workflow {
    * THESE ARE UPDATES FROM PUB MESSAGE
    *******************************************************/
   parsemessage(e) {
-    const data = JSON.parse(e.data);
+    const data2 = JSON.parse(e.data);
     console.log("parsemessage");
-    console.log(data);
-    switch (data.type) {
+    console.log(data2);
+    switch (data2.type) {
       case "workflow_action":
-        this.store.dispatch(data.action);
+        this.store.dispatch(data2.action);
         break;
       case "lock_update":
-        this.lock_update_received(data.action);
+        this.lock_update_received(data2.action);
         break;
       case "connection_update":
-        this.connection_update_received(data);
+        this.connection_update_received(data2);
         break;
       case "workflow_parent_updated":
-        this.parent_workflow_updated(data.edit_count);
+        this.parent_workflow_updated(data2.edit_count);
         break;
       case "workflow_child_updated":
-        this.child_workflow_updated(data.edit_count, data.child_workflow_id);
+        this.child_workflow_updated(data2.edit_count, data2.child_workflow_id);
         break;
     }
   }
-  lock_update_received(data) {
-    const object_type = data.object_type;
-    const object_id = data.object_id;
+  lock_update_received(data2) {
+    const object_type = data2.object_type;
+    const object_id = data2.object_id;
     if (!this.locks[object_type]) {
       this.locks[object_type] = {};
     }
@@ -88853,39 +88453,39 @@ class Workflow {
       clearTimeout(this.locks[object_type][object_id]);
     }
     this.store.dispatch(
-      createLockAction(
+      ActionCreator.createLockAction(
         object_id,
         object_type,
-        data.lock,
-        data.user_id,
-        data.user_colour
+        data2.lock,
+        data2.user_id,
+        data2.user_colour
       )
     );
-    if (data.lock) {
+    if (data2.lock) {
       this.locks[object_type][object_id] = setTimeout(() => {
         this.store.dispatch(
-          createLockAction(object_id, object_type, false)
+          ActionCreator.createLockAction(object_id, object_type, false)
         );
-      }, data.expires - Date.now());
+      }, data2.expires - Date.now());
     } else {
       this.locks[object_type][object_id] = null;
     }
   }
   // @todo this is weird becuase connection_update_received is called in
   // connectedUsers but expects data to be well defined
-  connection_update_received(data) {
+  connection_update_received(data2) {
     console.log("A connection update was received, but not handled.");
   }
   parent_workflow_updated() {
     this.messages_queued = true;
     this.getWorkflowParentData(this.workflowID, (response) => {
       this.store.dispatch(
-        replaceStoreData({
+        ActionCreator.replaceStoreData({
           parent_node: [],
           parent_workflow: []
         })
       );
-      this.store.dispatch(refreshStoreData(response.data_package));
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
       this.clear_queue(0);
     });
   }
@@ -88899,7 +88499,7 @@ class Workflow {
       return;
     }
     this.getWorkflowChildData(node2.id, (response) => {
-      this.store.dispatch(refreshStoreData(response.data_package));
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
       this.clear_queue(0);
     });
   }
@@ -88921,7 +88521,7 @@ class Workflow {
   change_field(id, object_type, field, value) {
     const json = {};
     json[field] = value;
-    this.store.dispatch(changeField(id, object_type, json));
+    this.store.dispatch(ActionCreator.changeField(id, object_type, json));
     updateValueQuery(id, object_type, json, true);
   }
   lock_update(obj, time, lock2) {
@@ -88950,21 +88550,21 @@ class WorkflowComparison extends Workflow {
     this.view_type = view_type;
     this.initial_object_sets = initial_object_sets;
   }
-  render(view_type = "workflowview") {
+  render(view_type = ViewType$1.WORKFLOW) {
     this.view_type = view_type;
     const store = this.store;
     this.locks = {};
     const el = document.querySelector(this.container);
     reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), el);
-    if (view_type === "outcomeedit") {
+    if (view_type === ViewType$1.OUTCOME_EDIT) {
       this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(refreshStoreData(response.data_package));
+        store.dispatch(ActionCreator.refreshStoreData(response.data_package));
         reactDomExports.render(
           /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
           el
         );
       });
-    } else if (view_type === "workflowview") {
+    } else if (view_type === ViewType$1.WORKFLOW) {
       reactDomExports.render(
         /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowBase, { view_type, renderer: this }) }),
         el
@@ -89009,8 +88609,8 @@ class WorkflowCardCondensed extends WorkflowCard {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.workflowData;
-    const css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
+    const data2 = this.props.workflowData;
+    const css_class = "workflow-for-menu simple-workflow hover-shade " + data2.type;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -89027,7 +88627,7 @@ class WorkflowCardCondensed extends WorkflowCard {
             {
               no_hyperlink: this.props.no_hyperlink,
               class_name: "workflow-title",
-              data
+              data: data2
             }
           ),
           this.getButtons(),
@@ -89443,19 +89043,19 @@ const Header = ({
   allDisciplines,
   description,
   disciplines,
-  data,
+  data: data2,
   users,
   readOnly,
   openShareDialog
 }) => {
   console.log("discipline");
   console.log(allDisciplines);
-  console.log(data.disciplines);
+  console.log(data2.disciplines);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowTitle,
       {
-        data,
+        data: data2,
         no_hyperlink: true,
         class_name: "project-title"
       }
@@ -89659,10 +89259,10 @@ class ProjectEditDialog extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data = this.state;
+    var data2 = this.state;
     let disciplines;
-    if (data.all_disciplines) {
-      disciplines = data.all_disciplines.filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
+    if (data2.all_disciplines) {
+      disciplines = data2.all_disciplines.filter((discipline) => data2.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
         discipline.title,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "span",
@@ -89674,14 +89274,14 @@ class ProjectEditDialog extends reactExports.Component {
         )
       ] }));
     }
-    const title = unescapeCharacters(data.title || "");
-    const description = unescapeCharacters(data.description || "");
+    const title = unescapeCharacters(data2.title || "");
+    const description = unescapeCharacters(data2.description || "");
     const object_sets = object_sets_types();
     const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
     let selected_set;
     if (this.state.selected_set)
       selected_set = object_sets[this.state.selected_set];
-    const sets_added = data.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
+    const sets_added = data2.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
@@ -89699,8 +89299,8 @@ class ProjectEditDialog extends reactExports.Component {
         }
       )
     ] }));
-    const published_enabled = data.title && data.disciplines.length > 0;
-    if (data.published && !published_enabled)
+    const published_enabled = data2.title && data2.disciplines.length > 0;
+    if (data2.published && !published_enabled)
       this.setState({ published: false });
     if (!published_enabled)
       window.gettext(
@@ -89859,12 +89459,12 @@ class ProjectMenu extends reactExports.Component {
       return null;
     });
     __publicField(this, "OverflowLinks", () => {
-      const data = this.state.data;
+      const data2 = this.state.data;
       const userId = this.userId;
       let liveproject;
       const overflow_links = [];
-      if (data.author_id === userId) {
-        if (data.liveproject) {
+      if (data2.author_id === userId) {
+        if (data2.liveproject) {
           liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
             "a",
             {
@@ -89872,7 +89472,7 @@ class ProjectMenu extends reactExports.Component {
               className: "hover-shade",
               href: COURSEFLOW_APP.config.update_path.liveproject.replace(
                 "0",
-                String(data.id)
+                String(data2.id)
               ),
               children: window.gettext("View Classroom")
             }
@@ -89896,7 +89496,7 @@ class ProjectMenu extends reactExports.Component {
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
-      if (data.author_id === userId) {
+      if (data2.author_id === userId) {
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
       }
@@ -90090,9 +89690,9 @@ class ProjectMenu extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     const component = this;
-    getWorkflowsForProjectQuery(this.data.id, (data) => {
+    getWorkflowsForProjectQuery(this.data.id, (data2) => {
       component.setState({
-        workflow_data: data.data_package
+        workflow_data: data2.data_package
       });
     });
     this.getUserData();
@@ -90101,8 +89701,8 @@ class ProjectMenu extends reactExports.Component {
   // @todo this is wrapped because it is called by openShareMenu
   // so do no unwrap until the renderMessageBox is sorted out
   getUserData() {
-    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
-      this.setState({ users: data });
+    getUsersForObjectQuery(this.data.id, this.data.type, (data2) => {
+      this.setState({ users: data2 });
     });
   }
   /*******************************************************
@@ -90150,7 +89750,7 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to create a live classroom for this project?"
       )
     )) {
-      makeProjectLiveQuery(this.data.id, (data) => {
+      makeProjectLiveQuery(this.data.id, (data2) => {
         location.reload();
       });
     }
@@ -90353,9 +89953,9 @@ class LibraryPage extends reactExports.Component {
    * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
-    getLibraryQuery((data) => {
+    getLibraryQuery((data2) => {
       this.setState({
-        project_data: data.data_package
+        project_data: data2.data_package
       });
     });
     COURSEFLOW_APP.makeDropdown(this.createDiv.current);
@@ -90394,10 +89994,10 @@ class FavouritesPage extends reactExports.Component {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    getFavouritesQuery((data) => {
+    getFavouritesQuery((data2) => {
       console.log("data");
-      console.log(data);
-      this.setState({ project_data: data.data_package });
+      console.log(data2);
+      this.setState({ project_data: data2.data_package });
     });
     COURSEFLOW_APP.makeDropdown(this.createDiv.current);
   }
@@ -90426,10 +90026,10 @@ class HomePage extends reactExports.Component {
    * Lifecycle hooks
    *******************************************************/
   componentDidMount() {
-    getHomeQuery((data) => {
+    getHomeQuery((data2) => {
       this.setState({
-        projects: data.projects,
-        favourites: data.favourites
+        projects: data2.projects,
+        favourites: data2.favourites
       });
     });
   }
@@ -90919,8 +90519,8 @@ class ExplorePage extends reactExports.Component {
     this.createDiv = reactExports.createRef();
   }
   componentDidMount() {
-    getLibraryQuery((data) => {
-      this.setState({ project_data: data.data_package });
+    getLibraryQuery((data2) => {
+      this.setState({ project_data: data2.data_package });
     });
     COURSEFLOW_APP.makeDropdown(this.createDiv.current);
     COURSEFLOW_APP.makeDropdown(this.createDiv.current);

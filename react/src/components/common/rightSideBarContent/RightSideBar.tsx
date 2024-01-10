@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import ViewBar from './ViewBar'
 import RestoreBar from './RestoreBar'
@@ -5,6 +6,7 @@ import OutcomeBar from './OutcomeBar'
 import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
+import {ViewType, WFContext} from "@cfModule/types/enum.js";
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,
@@ -66,20 +68,20 @@ class RightSideBar extends React.Component {
   getOutcomeBar() {
     const renderer = this.props.renderer
 
-    if (this.props.context === 'comparison') {
+    if (this.props.context === WFContext.COMPARISON) {
       return null
     }
-    if (renderer.view_type === 'outcomeedit') {
+    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar renderer={renderer} />
     }
     return <OutcomeBar renderer={renderer} />
   }
 
   getViewBar() {
-    if (this.props.context === 'workflow') {
+    if (this.props.context === WFContext.WORKFLOW) {
       return <ViewBar data={this.props.data} renderer={this.props.renderer} />
     }
-    if (this.props.context === 'comparison') {
+    if (this.props.context === WFContext.COMPARISON) {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
@@ -92,7 +94,7 @@ class RightSideBar extends React.Component {
   }
 
   getRestoreBar() {
-    if (this.props.context === 'workflow')
+    if (this.props.context === WFContext.WORKFLOW)
       return <RestoreBar renderer={this.props.renderer} />
     return null
   }

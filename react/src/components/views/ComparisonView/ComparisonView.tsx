@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
@@ -10,6 +11,7 @@ import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import { renderMessageBox } from '../../common/menu/MenuComponents'
 import closeMessageBox from '../../common/menu/components/closeMessageBox'
+import { ViewType } from '@cfModule/types/enum.js'
 
 /**
  * Creates a sort of container for the workflows you want to compare,
@@ -182,12 +184,12 @@ class ComparisonView extends React.Component {
 
     const view_buttons = [
       {
-        type: 'workflowview',
+        type: ViewType.WORKFLOW,
         name: window.gettext('Workflow View'),
         disabled: []
       },
       {
-        type: 'outcomeedit',
+        type: ViewType.OUTCOME_EDIT,
         name: Utility.capWords(window.gettext('View') + ' outcomes'),
         disabled: []
       }

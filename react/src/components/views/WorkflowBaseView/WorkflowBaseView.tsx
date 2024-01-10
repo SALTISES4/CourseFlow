@@ -34,6 +34,7 @@ import CollapsibleText from '@cfUIComponents/CollapsibleText'
 import { AppState, Workflow } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
+import { ViewType } from '@cfModule/types/enum'
 
 type ConnectedState = {
   data: AppState['workflow']
@@ -57,6 +58,8 @@ type ConnectedState = {
 type SelfPropsType = {
   view_type: string
   renderer: any
+  id: number
+  parentRender: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
 } & ComponentWithToggleProps
 
 type PropsType = ConnectedState & SelfPropsType
@@ -65,6 +68,7 @@ type StateType = {
   openShareDialog: boolean
   openExportDialog: boolean
   openImportDialog: boolean
+  data?: any
 }
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -88,19 +92,18 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private selection_manager: any
   private view_type: any
   private container: any
-  private renderMethod: any
+  private renderMethod: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
   private can_view: any
   private websocket: any
   private always_static: any
   private user_id: any
   private project_permission: any
   private object_sets: any[]
-  private data: Workflow & { is_dropped: boolean; depth: number };
+  private data: Workflow & { is_dropped: boolean; depth: number }
+  private workflowId: number
 
   constructor(props: PropsType) {
     super(props)
-    console.log('WorkflowBaseViewUnconnected props')
-    console.log(props)
 
     this.objectType = 'workflow'
     this.allowed_tabs = [0, 1, 2, 3, 4]
@@ -112,8 +115,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.data = this.props.data
     this.project = this.props.renderer.project
     this.selection_manager = this.props.renderer.selection_manager
+
     // @todo important: change this to state update control
-    this.renderMethod = this.props.renderer.render
+    // issues with loss of scope of this if assigned to local method in this
+    this.renderMethod = this.props.parentRender
+
     this.container = this.props.renderer.container
     this.view_type = this.props.renderer.view_type
     this.websocket = this.props.renderer.websocket
@@ -121,6 +127,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.user_id = this.props.renderer.user_id
     this.project_permission = this.props.renderer.project_permission
     this.object_sets = this.props.object_sets
+    this.workflowId = this.props.renderer.workflowID
 
     this.state = {
       users: null,
@@ -209,6 +216,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // @todo what are all the view types?
   changeView(type) {
+    // this.props.renderer.render(this.container, type)
     this.renderMethod(this.container, type)
   }
 
@@ -417,7 +425,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const renderer = this.props.renderer
 
     let workflow_content
-    if (this.view_type == 'outcometable') {
+    if (this.view_type == ViewType.OUTCOMETABLE) {
       workflow_content = (
         <WorkflowTableView
           data={this.data}
@@ -426,16 +434,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         />
       )
       this.allowed_tabs = [3]
-    } else if (this.view_type == 'outcomeedit') {
+    } else if (this.view_type == ViewType.OUTCOME_EDIT) {
       workflow_content = <OutcomeEditView renderer={renderer} />
       if (this.data.type == 'program') this.allowed_tabs = [3]
       else this.allowed_tabs = [2, 3]
-    } else if (this.view_type == 'alignmentanalysis') {
+    } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
       workflow_content = (
         <AlignmentView renderer={renderer} view_type={this.view_type} />
       )
       this.allowed_tabs = [3]
-    } else if (this.view_type == 'grid') {
+    } else if (this.view_type == ViewType.GRID) {
       workflow_content = (
         <GridView renderer={renderer} view_type={this.view_type} />
       )
@@ -450,12 +458,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     const view_buttons = [
       {
-        type: 'workflowview',
+        type: ViewType.WORKFLOW,
         name: window.gettext('Workflow View'),
         disabled: []
       },
       {
-        type: 'outcomeedit',
+        type: ViewType.OUTCOME_EDIT,
         name: Utility.capWords(
           window.gettext('View') +
             ' ' +
@@ -464,7 +472,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         disabled: []
       },
       {
-        type: 'outcometable',
+        type: ViewType.OUTCOMETABLE,
         name: Utility.capWords(
           window.gettext(this.data.type + ' outcome') +
             ' ' +
@@ -473,7 +481,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         disabled: []
       },
       {
-        type: 'alignmentanalysis',
+        type: ViewType.ALIGNMENTANALYSIS,
         name: Utility.capWords(
           window.gettext(this.data.type + ' outcome') +
             ' ' +
@@ -482,7 +490,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         disabled: ['activity']
       },
       {
-        type: 'grid',
+        type: ViewType.GRID,
         name: window.gettext('Grid View'),
         disabled: ['activity', 'course']
       }
@@ -525,7 +533,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * VIEW BAR
    *******************************************************/
   Jump = () => {
-    if (this.view_type !== 'workflowview') return null
+    if (this.view_type !== ViewType.WORKFLOW) {
+      return null
+    }
     const nodebarweekworkflows = this.data.weekworkflow_set.map(
       (weekworkflow, index) => (
         <JumpToWeekWorkflow
@@ -963,7 +973,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               {this.getReturnLinks()}
               <ParentWorkflowIndicator
                 renderer={this.props.renderer}
-                workflow_id={this.props.id}
+                workflow_id={this.workflowId}
               />
             </div>
           </div>
@@ -983,8 +993,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 }
 
 const mapStateToProps = (state: AppState): ConnectedState => {
-  console.log('mapWorkflowStateToProps')
-  console.log(state)
   return {
     data: state.workflow,
     object_sets: state.objectset,
