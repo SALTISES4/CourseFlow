@@ -36,8 +36,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
 const cache = createCache({
   key: 'emotion',
-  // @ts-ignore
-  nonce: document.querySelector('#script-redesign').nonce
+  nonce: window.cf_nonce
 })
 
 enum DATA_TYPE {

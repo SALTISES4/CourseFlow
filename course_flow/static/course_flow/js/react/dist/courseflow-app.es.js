@@ -88377,8 +88377,7 @@ const WorkflowBaseView = connect(
 )(WorkflowBaseViewUnconnected);
 const cache$1 = createCache({
   key: "emotion",
-  // @ts-ignore
-  nonce: document.querySelector("#script-redesign").nonce
+  nonce: window.cf_nonce
 });
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 class Workflow {
@@ -90804,7 +90803,7 @@ const tinyLoader = new MouseCursorLoader($("body")[0]);
 COURSEFLOW_APP.tinyLoader = tinyLoader;
 const cache = createCache({
   key: "emotion",
-  nonce: document.querySelector("#script-redesign").nonce
+  nonce: window.cf_nonce
 });
 function renderComponents(components) {
   components.forEach((c) => {

@@ -46,7 +46,7 @@ COURSEFLOW_APP.tinyLoader = tinyLoader
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
-  nonce: document.querySelector('#script-redesign').nonce
+  nonce: window.cf_nonce
 })
 
 // helper function that wraps each of the components we want to render
