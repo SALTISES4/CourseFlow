@@ -24,6 +24,7 @@ import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
+import $ from 'jquery'
 
 /*******************************************************
  * The project library menu
@@ -42,18 +43,8 @@ interface StateType {
 }
 
 class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
-  private readonly readOnly: boolean
-  private readonly userId: number
   private readonly createDiv: React.RefObject<HTMLDivElement>
-  private projectPaths: {
-    activity: string
-    course: string
-    program: string
-  }
-  private readonly userRole: number
-  private readonly allDisciplines: Discipline[]
   private readonly viewButtons: { name: string; type: string }[]
-  private readonly data: ProjectData
 
   constructor(props: ProjectMenuProps) {
     super(props)
@@ -64,14 +55,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       { type: 'assignments', name: window.gettext('Assignments') },
       { type: 'completion_table', name: window.gettext('Completion Table') }
     ]
-    this.userId = this.props.userId
-    this.userRole = this.props.userRole
-    this.readOnly = this.props.readOnly
-    this.projectPaths = this.props.projectPaths
-    this.allDisciplines = this.props.allDisciplines
 
     // this.renderer = this.props.renderer
-    this.data = this.props.data
 
     this.state = {
       data: this.props.data,
@@ -91,7 +76,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    *******************************************************/
   componentDidMount() {
     const component = this
-    getWorkflowsForProjectQuery(this.data.id, (data) => {
+    getWorkflowsForProjectQuery(this.props.data.id, (data) => {
       component.setState({
         workflow_data: data.data_package
       })
@@ -103,7 +88,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   // @todo this is wrapped because it is called by openShareMenu
   // so do no unwrap until the renderMessageBox is sorted out
   getUserData() {
-    getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
       this.setState({ users: data })
     })
   }
@@ -129,8 +114,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         window.gettext('Are you sure you want to delete this project?')
       )
     ) {
-      deleteSelfQuery(this.data.id, 'project', true, () => {
-        this.setState({ data: { ...this.data, deleted: true } })
+      deleteSelfQuery(this.props.data.id, 'project', true, () => {
+        this.setState({ data: { ...this.props.data, deleted: true } })
       })
     }
   }
@@ -143,15 +128,15 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         )
       )
     ) {
-      deleteSelfQuery(this.data.id, 'project', false, () => {
+      deleteSelfQuery(this.props.data.id, 'project', false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path
       })
     }
   }
 
   restoreProject() {
-    restoreSelfQuery(this.data.id, 'project', () => {
-      this.setState({ data: { ...this.data, deleted: false } })
+    restoreSelfQuery(this.props.data.id, 'project', () => {
+      this.setState({ data: { ...this.props.data, deleted: false } })
     })
   }
 
@@ -164,7 +149,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         )
       )
     ) {
-      makeProjectLiveQuery(this.data.id, (data) => {
+      makeProjectLiveQuery(this.props.data.id, (data) => {
         location.reload()
       })
     }
@@ -215,7 +200,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   ExportButton = () => {
-    if (this.userId) {
+    if (this.props.userId) {
       return (
         <div
           id="export-button"
@@ -232,7 +217,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   CopyButton = () => {
-    if (this.userId) {
+    if (this.props.userId) {
       return (
         <div
           id="copy-button"
@@ -241,8 +226,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
             duplicateBaseItemQuery(
-              this.data.id,
-              this.data.type,
+              this.props.data.id,
+              this.props.data.type,
               null,
               (response_data) => {
                 loader.endLoad()
@@ -262,12 +247,12 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
   OverflowLinks = () => {
     const data = this.state.data
-    const userId = this.userId
+
 
     let liveproject
     const overflow_links = []
 
-    if (data.author_id === userId) {
+    if (data.author_id === this.props.userId) {
       if (data.liveproject) {
         liveproject = (
           <a
@@ -303,7 +288,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     overflow_links.push(<hr />)
     overflow_links.push(<this.ExportButton />)
     overflow_links.push(<this.CopyButton />)
-    if (data.author_id === userId) {
+    if (data.author_id === this.props.userId) {
       overflow_links.push(<hr />)
       overflow_links.push(<this.DeleteProjectButton />)
     }
@@ -314,7 +299,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    * VISIBLE BUTTONS
    *******************************************************/
   Edit = () => {
-    if (!this.readOnly) {
+    if (!this.props.readOnly) {
       return (
         <div
           className="hover-shade"
@@ -330,7 +315,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   Create = () => {
-    if (!this.readOnly) {
+    if (!this.props.readOnly) {
       return (
         <div
           className="hover-shade"
@@ -342,21 +327,21 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           <div id="create-links-project" className="create-dropdown">
             <a
               id="activity-create-project"
-              href={this.projectPaths.activity}
+              href={this.props.projectPaths.activity}
               className="hover-shade"
             >
               {window.gettext('New activity')}
             </a>
             <a
               id="course-create-project"
-              href={this.projectPaths.course}
+              href={this.props.projectPaths.course}
               className="hover-shade"
             >
               {window.gettext('New course')}
             </a>
             <a
               id="program-create-project"
-              href={this.projectPaths.program}
+              href={this.props.projectPaths.program}
               className="hover-shade"
             >
               {window.gettext('New program')}
@@ -369,7 +354,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   Share = () => {
-    if (!this.readOnly)
+    if (!this.props.readOnly)
       return (
         <div
           className="hover-shade"
@@ -400,7 +385,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
     if (
       this.state.data.liveproject &&
-      this.userRole === Constants.role_keys.teacher
+      this.props.userRole === Constants.role_keys.teacher
     )
       return_val.push(
         <div className="workflow-view-select hide-print">
@@ -422,8 +407,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
     return (
       <WorkflowFilter
-        user_role={this.userRole}
-        read_only={this.readOnly}
+        user_role={this.props.userRole}
+        read_only={this.props.readOnly}
         project_data={this.state.data}
         workflows={this.state.workflow_data}
         updateWorkflow={this.updateWorkflow.bind(this)}
@@ -508,8 +493,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           type={'project_edit_menu'}
           data={{
             ...this.state.data,
-            all_disciplines: this.allDisciplines,
-            user_role: this.userRole
+            all_disciplines: this.props.allDisciplines,
+            user_role: this.props.userRole
             // renderer: this.props.renderer
           }}
           actionFunction={this.updateFunction}
@@ -546,11 +531,11 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             <Header
               disciplines={this.state.data.disciplines}
               description={this.state.data.description}
-              allDisciplines={this.allDisciplines}
+              allDisciplines={this.props.allDisciplines}
               data={this.state.data} // @todo this needs to be unpacked
               users={this.state.users}
               openShareDialog={() => this.openShareDialog()}
-              readOnly={this.readOnly}
+              readOnly={this.props.readOnly}
             />
             <this.Content />
           </div>

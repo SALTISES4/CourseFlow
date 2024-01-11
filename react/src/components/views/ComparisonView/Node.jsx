@@ -133,7 +133,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
         style={style}
         className={css_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
         <div className="node-top-row">

@@ -3,6 +3,7 @@ import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { addTerminology, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
 import { updateValueInstant } from '@XMLHTTP/APIFunctions'
+import $ from 'jquery'
 
 /*
 The menu for editing a project.

@@ -37,7 +37,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component {
     const data = this.props.data
 
     return (
-      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.mainDiv}>
         {this.getChildType()}
       </div>
     )

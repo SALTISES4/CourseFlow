@@ -2,6 +2,7 @@
 import * as Constants from '@cfConstants'
 import { newNode } from '@XMLHTTP/PostFunctions'
 import EditableComponentWithActions from './EditableComponentWithActions'
+import $ from 'jquery'
 
 class EditableComponentWithSorting extends EditableComponentWithActions {
   makeSortableNode(

@@ -4,6 +4,7 @@ import { TitleText } from '@cfUIComponents'
 import { WeekUnconnected } from './Week'
 import NodeWeek from './NodeWeek'
 import { getTermByID } from '@cfFindState'
+import $ from 'jquery'
 
 /**
  * The term variation of a week, used in the program level or in the
@@ -97,7 +98,7 @@ class Term extends WeekUnconnected {
       <div
         style={style}
         className={css_class}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }

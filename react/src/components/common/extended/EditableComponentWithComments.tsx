@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import {
@@ -14,6 +15,7 @@ import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
+import $ from 'jquery'
 
 /*******************************************************
  * @CommentBox
@@ -167,11 +169,11 @@ class CommentBox extends ComponentWithToggleDrop {
     }
 
     let render_div
-    const side_actions = $(this.props.parent?.maindiv?.current)
+    const side_actions = $(this.props.parent?.mainDiv?.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
     if (side_actions.length > 0) render_div = side_actions[0]
-    else render_div = this.props.parent?.maindiv?.current
+    else render_div = this.props.parent?.mainDiv?.current
     let comment_indicator = null
     if (has_comments) {
       let indicator_class = 'comment-indicator hover-shade'
@@ -313,7 +315,7 @@ class EditableComponentWithComments extends EditableComponent {
 
   // @todo data is not used
   // addCommenting(data) {
-  addCommenting(data) {
+  addCommenting(_data: any) {
     return (
       <>
         <ActionButton

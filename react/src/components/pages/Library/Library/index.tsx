@@ -10,12 +10,10 @@ import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
  *******************************************************/
 class LibraryPage extends React.Component {
   private createDiv: React.RefObject<HTMLDivElement>
-  private read_only: any
 
   constructor(props) {
     super(props)
     this.state = {}
-    // this.read_only = this.props.renderer.read_only
     this.createDiv = React.createRef()
   }
 

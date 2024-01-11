@@ -5,6 +5,7 @@ import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import $ from 'jquery'
 
 /**
  * The outcome edit view for the comparison
@@ -19,7 +20,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
 
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.maindiv.current).find('.outcome-workflow').not('ui-draggable'),
+      $(this.mainDiv.current).find('.outcome-workflow').not('ui-draggable'),
       this.props.objectID,
       'outcomeworkflow',
       '.outcome-workflow',

@@ -60,7 +60,7 @@ class Column extends EditableComponentWithActions {
 
     return (
       <div
-        ref={this.maindiv}
+        ref={this.mainDiv}
         style={style}
         className={css_class}
         onClick={(evt) =>

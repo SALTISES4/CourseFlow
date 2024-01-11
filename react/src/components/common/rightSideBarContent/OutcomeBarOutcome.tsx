@@ -1,17 +1,116 @@
 import * as React from 'react'
-import { getOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
+import {
+  getOutcomeByID,
+  GetOutcomeByIDType,
+  getOutcomeOutcomeByID,
+  OutcomeOutcomeByIDType
+} from '@cfFindState'
 import { connect } from 'react-redux'
 import { OutcomeTitle } from '@cfUIComponents/Titles'
-import { Component } from '@cfParentComponents'
 import * as Utility from '@cfUtility'
+import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
+
+import { AppState } from '@cfRedux/type'
+import { ChangeEvent } from 'react'
+import $ from 'jquery'
 
 /**
- * Basic component representing an outcome in the outcome bar
+ * Used in the outcome bar
  */
-export class OutcomeBarOutcomeUnconnected extends Component {
-  constructor(props) {
+/**
+ * @TODO THESE COMPONENTS ARE CALLING EACH OTHER.....
+ * probably OutcomeBarOutcomeOutcomeUnconnected should not be a separate component
+ */
+
+type OutcomeBarOutcomeOutcomeOwnProps = {
+  objectID: number
+  parentID: number
+  readOnly: boolean
+}
+type OutcomeBarOutcomeOutcomeConnectedProps = OutcomeOutcomeByIDType
+type OutcomeBarOutcomeOutcomePropsType = OutcomeBarOutcomeOutcomeOwnProps &
+  OutcomeBarOutcomeOutcomeConnectedProps
+
+class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutcomeOutcomePropsType> {
+  constructor(props: OutcomeBarOutcomeOutcomePropsType) {
     super(props)
-    this.objectType = 'outcome'
+    // this.objectType = 'outcomeoutcome' @todo this.objectType is not used
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    // check on props.data since this is connected props, and state finder function can return undefined
+    if (!this.props.data) {
+      return <></>
+    }
+
+    return (
+      // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
+      <div className="outcome-outcome" id={this.props.data.id}>
+        <OutcomeBarOutcome
+          objectID={this.props.data.child}
+          parentID={this.props.parentID}
+          throughParentID={this.props.data.id}
+          readOnly={this.props.readOnly}
+          //renderer={this.props.renderer}
+        />
+      </div>
+    )
+  }
+}
+
+const mapOutcomeOutcomeStateToProps = (
+  state: AppState,
+  ownProps: OutcomeBarOutcomeOutcomeOwnProps
+): OutcomeBarOutcomeOutcomeConnectedProps => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID)
+}
+
+const OutcomeBarOutcomeOutcome = connect<
+  OutcomeBarOutcomeOutcomeConnectedProps,
+  NonNullable<any>,
+  OutcomeBarOutcomeOutcomeOwnProps,
+  AppState
+>(
+  mapOutcomeOutcomeStateToProps,
+  null
+)(OutcomeBarOutcomeOutcomeUnconnected)
+
+/*******************************************************
+ *  Basic component representing an
+ *  outcome in the outcome bar
+ *
+ *******************************************************/
+
+type OwnProps = {
+  objectID: number
+  parentID: number
+  readOnly: boolean
+  throughParentID?: number
+}
+export type OutcomeBarOutcomePropsType = OwnProps
+
+type ConnectedProps = GetOutcomeByIDType & {
+  nodes: number[]
+  horizontaloutcomes: any[]
+}
+type PropsType = OwnProps & ConnectedProps
+
+type StateType = {
+  is_dropped: boolean
+}
+
+export class OutcomeBarOutcomeUnconnected<
+  P extends PropsType
+> extends ComponentWithToggleDrop<P, StateType> {
+  protected children_block: React.RefObject<HTMLDivElement>
+  // private objectType: string
+
+  constructor(props: P) {
+    super(props)
+    // this.objectType = 'outcome'
     this.children_block = React.createRef()
     this.state = { is_dropped: props.data.depth < 1 }
   }
@@ -21,11 +120,14 @@ export class OutcomeBarOutcomeUnconnected extends Component {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
-    $(this.maindiv.current)[0].dataDraggable = { outcome: this.props.data.id }
-    $(this.maindiv.current).mouseenter((evt) => {
+    // @todo - dataDraggable is not a property of a div element, what is happening here?
+    // are we trying to store a 'data' attribute ont this div ref?
+    // @ts-ignore
+    $(this.mainDiv.current)[0].dataDraggable = { outcome: this.props.data.id }
+    $(this.mainDiv.current).mouseenter((evt) => {
       this.toggleCSS(true, 'hover')
     })
-    $(this.maindiv.current).mouseleave((evt) => {
+    $(this.mainDiv.current).mouseleave((evt) => {
       this.toggleCSS(false, 'hover')
     })
     $(this.children_block.current).mouseleave((evt) => {
@@ -39,7 +141,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  toggleDrop(evt) {
+  toggleDrop = (evt: React.MouseEvent) => {
     evt.stopPropagation()
     this.setState({ is_dropped: !this.state.is_dropped })
   }
@@ -48,9 +150,10 @@ export class OutcomeBarOutcomeUnconnected extends Component {
     if (this.props.readOnly) return
     const draggable_selector = 'outcome'
     const draggable_type = 'outcome'
-    $(this.maindiv?.current).draggable({
-      helper: (e, item) => {
-        var helper = $(document.createElement('div'))
+
+    $(this.mainDiv?.current).draggable({
+      helper: (_e, _item) => {
+        const helper = $(document.createElement('div'))
         helper.addClass('outcome-ghost')
         helper.appendTo(document.body)
         return helper
@@ -58,18 +161,18 @@ export class OutcomeBarOutcomeUnconnected extends Component {
       cursor: 'move',
       cursorAt: { top: 20, left: 100 },
       distance: 10,
-      start: (e, ui) => {
+      start: (_e, _ui) => {
         $('.workflow-canvas').addClass('dragging-' + draggable_type)
         $(draggable_selector).addClass('dragging')
       },
-      stop: (e, ui) => {
+      stop: (_e, _ui) => {
         $('.workflow-canvas').removeClass('dragging-' + draggable_type)
         $(draggable_selector).removeClass('dragging')
       }
     })
   }
 
-  clickFunction(evt) {
+  clickFunction(evt: ChangeEvent<HTMLInputElement>) {
     if (evt.target.checked) {
       this.toggleCSS(true, 'toggle')
     } else {
@@ -77,7 +180,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
     }
   }
 
-  toggleCSS(is_toggled, type) {
+  toggleCSS(is_toggled: boolean, type: string) {
     if (is_toggled) {
       $('.outcome-' + this.props.data.id).addClass('outcome-' + type)
       if (this.props.nodes.length)
@@ -131,7 +234,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        window.gettext(
+        window.ngettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length
@@ -145,7 +248,7 @@ export class OutcomeBarOutcomeUnconnected extends Component {
           ' outcome-' +
           data.id
         }
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         <div className="outcome-title">
           <OutcomeTitle
@@ -185,61 +288,30 @@ export class OutcomeBarOutcomeUnconnected extends Component {
 /*******************************************************
  * MAP STATE TO PROPS
  *******************************************************/
-const mapOutcomeBarOutcomeStateToProps = (state, own_props) => ({
-  ...getOutcomeByID(state, own_props.objectID),
+const mapOutcomeBarOutcomeStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => ({
+  ...getOutcomeByID(state, ownProps.objectID),
   nodes: state.outcomenode
-    .filter((outcomenode) => outcomenode.outcome == own_props.objectID)
-    .map((outcomenode) => outcomenode.node),
+    .filter((outcomeNode) => outcomeNode.outcome == ownProps.objectID)
+    .map((outcomeNode) => outcomeNode.node),
   horizontaloutcomes: state.outcomehorizontallink
-    .filter((ochl) => ochl.parent_outcome == own_props.objectID)
+    .filter((ochl) => ochl.parent_outcome == ownProps.objectID)
     .map((ochl) => ochl.outcome)
 })
 
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const OutcomeBarOutcome = connect(
+const OutcomeBarOutcome = connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  OwnProps,
+  AppState
+>(
   mapOutcomeBarOutcomeStateToProps,
   null
 )(OutcomeBarOutcomeUnconnected)
 
 export default OutcomeBarOutcome
-
-/**
- * Used in the outcome bar
- */
-/**
- * @TODO THESE COMPONENTS ARE CALLING EACH OTHER.....
- */
-class OutcomeBarOutcomeOutcomeUnconnected extends React.Component {
-  constructor(props) {
-    super(props)
-    this.objectType = 'outcomeoutcome'
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data
-
-    return (
-      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
-        <OutcomeBarOutcome
-          objectID={data.child}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
-          //renderer={this.props.renderer}
-          readOnly={this.props.readOnly}
-        />
-      </div>
-    )
-  }
-}
-const mapOutcomeOutcomeStateToProps = (state, own_props) =>
-  getOutcomeOutcomeByID(state, own_props.objectID)
-
-const OutcomeBarOutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps,
-  null
-)(OutcomeBarOutcomeOutcomeUnconnected)

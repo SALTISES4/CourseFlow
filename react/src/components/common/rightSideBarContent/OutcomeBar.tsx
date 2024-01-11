@@ -9,6 +9,7 @@ import {
 } from '@cfFindState'
 import { ViewType, WorkflowType } from '@cfModule/types/enum'
 import { AppState } from '@cfRedux/type'
+import $ from 'jquery'
 
 /**
  * The outcomes tab of the right sidebar (which can be either this
@@ -28,9 +29,6 @@ type SelfProps = {
 
 type PropsType = SelfProps & StateProps
 class OutcomeBarUnconnected extends React.Component<PropsType, any> {
-  private readOnly: boolean
-  private renderMethod: (container, view_type: ViewType) => void
-
   constructor(props: PropsType) {
     super(props)
 
@@ -108,14 +106,8 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
   workflow_type: state.workflow.type
 })
 
-const test = connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  SelfProps,
-  AppState
->(
+export default connect<ConnectedProps, NonNullable<unknown>, SelfProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeBarUnconnected)
 
-export default test

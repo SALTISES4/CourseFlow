@@ -7,6 +7,7 @@ import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 import { ViewType, WFContext } from '@cfModule/types/enum.js'
+import $ from 'jquery'
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,
@@ -72,7 +73,7 @@ class RightSideBar extends React.Component {
       return null
     }
     if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      return <ParentOutcomeBar renderer={renderer} jjj={8} />
+      return <ParentOutcomeBar renderer={renderer}  />
     }
     return (
       <OutcomeBar

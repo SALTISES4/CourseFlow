@@ -3,6 +3,7 @@ import * as reactDom from 'react-dom'
 import * as Constants from '@cfConstants'
 import { connect } from 'react-redux'
 import { Slider, LegendLine } from '@cfUIComponents'
+import $ from 'jquery'
 
 class WorkflowLegendUnconnected extends React.Component {
   constructor(props) {

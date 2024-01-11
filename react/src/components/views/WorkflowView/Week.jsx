@@ -9,6 +9,7 @@ import { TitleText } from '@cfUIComponents'
 import NodeWeek from './NodeWeek'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
+import $ from 'jquery'
 
 /**
  * Renders a standard 'week-style' block of nodes, wherein the
@@ -32,7 +33,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
   componentDidUpdate() {
     this.makeDragAndDrop()
     Utility.triggerHandlerEach(
-      $(this.maindiv.current).find('.node'),
+      $(this.mainDiv.current).find('.node'),
       'component-updated'
     )
   }
@@ -130,7 +131,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
 
   makeDroppable() {
     const props = this.props
-    $(this.maindiv?.current).droppable({
+    $(this.mainDiv?.current).droppable({
       tolerance: 'pointer',
       droppable: '.strategy-ghost',
       over: (e, ui) => {
@@ -211,7 +212,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       <div
         style={style}
         className={css_class}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
         <div className="mouseover-container-bypass">

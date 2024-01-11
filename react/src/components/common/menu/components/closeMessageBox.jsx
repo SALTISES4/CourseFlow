@@ -1,4 +1,5 @@
 import * as reactDom from 'react-dom'
+import $ from 'jquery'
 
 // @TODO THIS IS TEMPORARY
 // closeMessageBox is imported by sub menus and prebviously defined inside the same file as

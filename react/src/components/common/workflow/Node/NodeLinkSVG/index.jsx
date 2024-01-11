@@ -207,7 +207,7 @@ class NodeLinkSVG extends Component {
   //     this.props.selected ||
   //     this.props.node_selected
   //   ) {
-  //     // d3.select(this.maindiv.current).raise();
+  //     // d3.select(this.mainDiv.current).raise();
   //     // d3.selectAll(".node-ports").raise();
   //   }
   // }
@@ -337,7 +337,7 @@ class NodeLinkSVG extends Component {
       }
 
       return (
-        <g ref={this.maindiv} stroke="black" fill="none">
+        <g ref={this.mainDiv} stroke="black" fill="none">
           <path
             opacity="0"
             strokeWidth="10px"

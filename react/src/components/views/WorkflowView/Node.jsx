@@ -13,6 +13,7 @@ import NodeLink from './NodeLink'
 import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode'
 import NodePorts from '@cfCommonComponents/workflow/Node/NodePorts'
+import $ from 'jquery'
 
 /**
  * Represents the node in the workflow view
@@ -29,16 +30,35 @@ class Node extends EditableComponentWithActions {
    *******************************************************/
   componentDidMount() {
     if (this.state.initial_render) this.setState({ initial_render: false })
-    $(this.maindiv.current).on('mouseenter', this.mouseIn.bind(this))
     this.makeDroppable()
-    $(this.maindiv.current).on('dblclick', this.doubleClick.bind(this))
     this.updateHidden()
+
+    // $(this.mainDiv.current).on('mouseenter', this.mouseIn.bind(this))
+    // $(this.mainDiv.current).on('dblclick', this.doubleClick.bind(this))
+    this.mainDiv.current.addEventListener('mouseenter', this.mouseIn.bind(this))
+    this.mainDiv.current.addEventListener(
+      'dblclick',
+      this.doubleClick.bind(this)
+    )
+  }
+
+  componentWillUnmount() {
+    this.mainDiv.current.removeEventListener(
+      'mouseenter',
+      this.mouseIn.bind(this)
+    )
+    this.mainDiv.current.removeEventListener(
+      'dblclick',
+      this.doubleClick.bind(this)
+    )
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.data.is_dropped == prevProps.data.is_dropped)
+    if (this.props.data.is_dropped == prevProps.data.is_dropped) {
       this.updatePorts()
-    else Utility.triggerHandlerEach($('.node'), 'component-updated')
+    } else {
+      Utility.triggerHandlerEach($('.node'), 'component-updated')
+    }
     this.updateHidden()
   }
 
@@ -47,15 +67,15 @@ class Node extends EditableComponentWithActions {
    *******************************************************/
   //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
-    if ($(this.maindiv.current).css('display') == 'none') {
-      const week = $(this.maindiv.current).parent('.node-week').parent()
+    if ($(this.mainDiv.current).css('display') == 'none') {
+      const week = $(this.mainDiv.current).parent('.node-week').parent()
       if (week.children('.node-week:not(.empty)').length > 1)
-        $(this.maindiv.current).parent('.node-week').addClass('empty')
-    } else $(this.maindiv.current).parent('.nodeweek').removeClass('empty')
+        $(this.mainDiv.current).parent('.node-week').addClass('empty')
+    } else $(this.mainDiv.current).parent('.nodeweek').removeClass('empty')
   }
 
   updatePorts() {
-    $(this.maindiv.current).triggerHandler('component-updated')
+    $(this.mainDiv.current).triggerHandler('component-updated')
   }
 
   doubleClick(evt) {
@@ -66,16 +86,16 @@ class Node extends EditableComponentWithActions {
   }
 
   makeDroppable() {
-    var props = this.props
-    $(this.maindiv.current).droppable({
+    const props = this.props
+    $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       droppable: '.outcome-ghost',
       over: (e, ui) => {
-        var drop_item = $(e.target)
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var new_index = drop_item.prevAll().length
-        var new_parent_id = parseInt(drop_item.parent().attr('id'))
+        const drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const new_index = drop_item.prevAll().length
+        const new_parent_id = parseInt(drop_item.parent().attr('id'))
 
         if (drag_item.hasClass('outcome')) {
           drag_helper.addClass('valid-drop')
@@ -86,9 +106,9 @@ class Node extends EditableComponentWithActions {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable
-        var drag_helper = ui.helper
-        var drop_item = $(e.target)
+        const drag_item = ui.draggable
+        const drag_helper = ui.helper
+        const drop_item = $(e.target)
         if (drag_item.hasClass('outcome')) {
           drag_helper.removeClass('valid-drop')
           drop_item.removeClass('outcome-drop-over')
@@ -96,7 +116,7 @@ class Node extends EditableComponentWithActions {
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        var drag_item = ui.draggable
+        const drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomenodeDegree(
@@ -121,14 +141,14 @@ class Node extends EditableComponentWithActions {
           "'][data-port-type='source']"
       ).addClass('mouseover')
     d3.selectAll('.node-ports').raise()
-    var mycomponent = this
+    const mycomponent = this
     this.setState({ hovered: true })
 
     $(document).on('mousemove', function (evt) {
       if (
         !mycomponent ||
-        !mycomponent.maindiv ||
-        Utility.mouseOutsidePadding(evt, $(mycomponent.maindiv.current), 20)
+        !mycomponent.mainDiv ||
+        Utility.mouseOutsidePadding(evt, $(mycomponent.mainDiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
@@ -181,16 +201,16 @@ class Node extends EditableComponentWithActions {
     else data_override = { ...data }
     const renderer = this.props.renderer
     const selection_manager = renderer.selection_manager
-    var nodePorts
-    var node_links
-    var auto_link
+    let nodePorts
+    let node_links
+    let auto_link
 
     if (!this.state.initial_render) {
       nodePorts = reactDom.createPortal(
         <NodePorts
           renderer={renderer}
           nodeID={this.props.objectID}
-          node_div={this.maindiv}
+          node_div={this.mainDiv}
           dispatch={this.props.dispatch}
         />,
         $('.workflow-canvas')[0]
@@ -199,13 +219,13 @@ class Node extends EditableComponentWithActions {
         <NodeLink
           key={link}
           objectID={link}
-          node_div={this.maindiv}
+          node_div={this.mainDiv}
           renderer={renderer}
         />
       ))
       if (data.has_autolink)
         auto_link = (
-          <AutoLink nodeID={this.props.objectID} node_div={this.maindiv} />
+          <AutoLink nodeID={this.props.objectID} node_div={this.mainDiv} />
         )
     }
     let outcomenodes
@@ -356,7 +376,7 @@ class Node extends EditableComponentWithActions {
         style={style}
         className={css_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         data-selected={this.state.selected}
         data-hovered={this.state.hovered}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}

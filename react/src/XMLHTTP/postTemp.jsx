@@ -2,6 +2,7 @@
 // import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents'
 import { DATA_ACTIONS } from './common'
 import { dragAction } from '@XMLHTTP/PostFunctions.js'
+import $ from 'jquery'
 
 /**
  *

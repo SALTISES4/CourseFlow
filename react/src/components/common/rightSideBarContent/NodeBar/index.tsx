@@ -25,8 +25,6 @@ type ReduxProps = {
 type PropsType = OwnPropsType & ReduxProps
 
 class NodeBarUnconnected extends React.Component<PropsType> {
-  private columnChoices: number[]
-  private readOnly: boolean
   constructor(props: PropsType) {
     super(props)
     this.columnChoices = this.props.columnChoices

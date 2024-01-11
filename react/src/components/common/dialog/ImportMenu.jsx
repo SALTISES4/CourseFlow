@@ -1,4 +1,5 @@
 import * as React from 'react'
+import $ from 'jquery'
 
 class ImportMenu extends React.Component {
   constructor(props) {

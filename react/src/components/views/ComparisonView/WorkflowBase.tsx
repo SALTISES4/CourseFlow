@@ -6,8 +6,9 @@ import { EditableComponent } from '@cfParentComponents'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
-import ActionCreator from "@cfRedux/ActionCreator.ts";
-import {ViewType} from "@cfModule/types/enum.js";
+import ActionCreator from '@cfRedux/ActionCreator.ts'
+import { ViewType } from '@cfModule/types/enum.js'
+import $ from 'jquery'
 
 //Container for common elements for workflows
 class WorkflowBaseUnconnected extends EditableComponent {

@@ -34,6 +34,8 @@ import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
+import $ from 'jquery'
+
 const cache = createCache({
   key: 'emotion',
   // @ts-ignore
@@ -117,8 +119,8 @@ class Workflow {
     this.message_queue = []
     this.messages_queued = true
 
-    this.public_view = props.public_view
-    this.workflowID = props.workflow_model_id
+    this.public_view = this.props.public_view
+    this.workflowID = this.props.workflow_model_id
 
     // Data package
     this.column_choices = column_choices
@@ -146,7 +148,7 @@ class Workflow {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    switch (props.user_permission) {
+    switch (this.props.user_permission) {
       case Constants.permission_keys['view']:
         this.can_view = true
         break
@@ -167,7 +169,7 @@ class Workflow {
       // No default case needed here if these are the only options
     }
 
-    switch (props.user_role) {
+    switch (this.props.user_role) {
       case Constants.role_keys['none']:
         // @todo what is happening in this option?
         break
@@ -312,6 +314,7 @@ class Workflow {
               view_type={view_type}
               renderer={this}
               parentRender={this.workflowRender}
+              readOnly={this.read_only}
             />
           </Provider>,
           container[0]

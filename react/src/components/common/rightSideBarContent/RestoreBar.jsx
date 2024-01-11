@@ -2,6 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { restoreSelfQuery, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop.tsx'
+import $ from 'jquery'
 
 /**
  * The delete/restore tab of the right sidebar in the workflow view.
@@ -110,7 +111,7 @@ export default connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected)
 class RestoreBarItem extends ComponentWithToggleDrop {
   render() {
     return (
-      <div ref={this.maindiv} className="restore-bar-item">
+      <div ref={this.mainDiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
         <div className="workflow-created">
           {window.gettext('Deleted') + ' ' + this.props.data.deleted_on}
@@ -151,7 +152,7 @@ class RestoreBarItem extends ComponentWithToggleDrop {
         gettext('Are you sure you want to permanently delete this object?')
       )
     ) {
-      $(this.maindiv.current).children('button').attr('disabled', true)
+      $(this.mainDiv.current).children('button').attr('disabled', true)
       COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
         COURSEFLOW_APP.tinyLoader.endLoad()

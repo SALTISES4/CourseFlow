@@ -24,7 +24,7 @@ class OutcomeOutcomeUnconnected extends React.Component {
       <li
         className={my_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         data-child-id={data.child}
       >
         <Outcome

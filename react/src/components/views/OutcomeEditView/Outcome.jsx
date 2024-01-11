@@ -14,7 +14,8 @@ import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from "@cfRedux/ActionCreator.ts";
+import ActionCreator from '@cfRedux/ActionCreator.ts'
+import $ from 'jquery'
 
 /**
  * The link to tagged outcomes. Used when an outcome
@@ -90,10 +91,10 @@ class OutcomeHorizontalLinkUnconnected extends Component {
    * @todo what is this doing?
    */
   checkHidden() {
-    if ($(this.maindiv.current).children('.outcome').length == 0)
-      $(this.maindiv.current).css('display', 'none')
-    else $(this.maindiv.current).css('display', '')
-    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    if ($(this.mainDiv.current).children('.outcome').length == 0)
+      $(this.mainDiv.current).css('display', 'none')
+    else $(this.mainDiv.current).css('display', '')
+    const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
     if (indicator.length >= 0) {
       const num_outcomenodes = indicator
         .children('.outcome-node-container')
@@ -117,7 +118,7 @@ class OutcomeHorizontalLinkUnconnected extends Component {
       <div
         className={'outcome-node outcome-' + data.id}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         {!this.props.renderer.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
@@ -233,7 +234,7 @@ class Outcome extends EditableComponentWithSorting {
 
   makeDroppable() {
     const props = this.props
-    $(this.maindiv.current).droppable({
+    $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       droppable: '.outcome-ghost',
       over: (e, ui) => {
@@ -388,7 +389,7 @@ class Outcome extends EditableComponentWithSorting {
       <div
         style={style}
         className={css_class}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }

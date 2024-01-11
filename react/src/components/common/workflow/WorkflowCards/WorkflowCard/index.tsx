@@ -28,27 +28,13 @@ type StateType = {
 class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
   private readonly mainDiv: React.RefObject<HTMLDivElement>
   private readonly workflow: Workflow
-  private readonly updateWorkflow: any
-  private readonly selectAction: any
-  private readonly userRole: any
-  private readonly readOnly: any
-  private projectData: any
-  private selected: any
-  private noHyperlink: any
 
   constructor(props: WorkflowCardProps) {
     super(props)
     this.state = {
       favourite: props.workflowData.favourite
     }
-    this.selected = this.props.selected
-    this.noHyperlink = this.props.noHyperlink
-    this.userRole = this.props.userRole // from renderer
-    this.readOnly = this.props.readOnly // from renderer
-    this.projectData = this.props.projectData // from renderer
-    this.updateWorkflow = this.props.updateWorkflow
     this.workflow = this.props.workflowData
-    this.selectAction = this.props.selectAction
     this.mainDiv = React.createRef()
   }
 
@@ -57,8 +43,8 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
    *******************************************************/
 
   clickAction() {
-    if (this.selectAction) {
-      this.selectAction(this.workflow.id)
+    if (this.props.selectAction) {
+      this.props.selectAction(this.workflow.id)
     } else {
       window.location.href = COURSEFLOW_APP.config.update_path[
         this.workflow.type
@@ -68,14 +54,14 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
 
   visibilityFunction(id, is_visible) {
     const isVisibleBool = is_visible === 'true'
-    this.updateWorkflow(id, {
+    this.props.updateWorkflow(id, {
       is_visible: isVisibleBool
     })
     // @todo not sure of use case for 'visibility toggle'
     // if we are passing mutation of the workflow
     // it doesn't make sense to then have this post query in the child also
     // these mutations should be combined
-    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool)
+    setWorkflowVisibilityQuery(this.props.projectData.id, id, isVisibleBool)
   }
 
   /*******************************************************
@@ -195,12 +181,12 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
   }
 
   Visible = () => {
-    const isTeacher = this.userRole === Constants.role_keys.teacher
+    const isTeacher = this.props.userRole === Constants.role_keys.teacher
     const isEligibleType =
       this.workflow.type !== WorkflowType.PROJECT &&
       this.workflow.type !== WorkflowType.LIVE_PROJECT
 
-    if (!this.readOnly && isTeacher && isEligibleType) {
+    if (!this.props.readOnly  && isTeacher && isEligibleType) {
       return (
         <div
           className="permission-select"

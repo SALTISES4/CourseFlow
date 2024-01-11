@@ -6,6 +6,7 @@ import {
   getUsersForObjectQuery,
   updateValueInstant
 } from '@XMLHTTP/APIFunctions'
+import $ from 'jquery'
 
 class UserLabel extends React.Component {
   constructor(props) {

@@ -8,12 +8,13 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from './ComponentWithToggleDrop.tsx'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/APIFunctions'
+import $ from 'jquery'
 
 //Quill div for inputs, as a react component
 class QuillDiv extends React.Component {
   constructor(props) {
     super(props)
-    this.maindiv = React.createRef()
+    this.mainDiv = React.createRef()
     if (props.text) this.state = { charlength: props.text.length }
     else this.state = { charlength: 0 }
   }
@@ -21,7 +22,7 @@ class QuillDiv extends React.Component {
   render() {
     return (
       <div>
-        <div ref={this.maindiv} className="quill-div" />
+        <div ref={this.mainDiv} className="quill-div" />
         <div className={'character-length'}>
           {this.state.charlength + ' ' + window.gettext('characters')}
         </div>
@@ -31,7 +32,7 @@ class QuillDiv extends React.Component {
 
   componentDidMount() {
     const renderer = this.props.renderer
-    const quill_container = this.maindiv.current
+    const quill_container = this.mainDiv.current
     const toolbarOptions = [
       ['bold', 'italic', 'underline'],
       [{ script: 'sub' }, { script: 'super' }],
@@ -74,7 +75,7 @@ class QuillDiv extends React.Component {
         this.quill.clipboard.dangerouslyPasteHTML(this.props.text, 'silent')
       this.quill.enable(!this.props.disabled)
     }
-    $(this.maindiv.current)
+    $(this.mainDiv.current)
       .find('a')
       .click(() => {
         $(this).attr('target', '_blank')
@@ -89,26 +90,194 @@ class EditableComponent<
   S = NonNullable<unknown>
 > extends ComponentWithToggleDrop<P, S> {
   //Makes the item selectable
-  addEditable(data, no_delete = false) {
-    const read_only = this.props.renderer.read_only
-    if (this.state.selected) {
-      const type = Constants.object_dictionary[this.objectType]
-      let title_length = '100'
-      if (type == 'outcome') title_length = '500'
-      const props = this.props
-      let override = false
-      const title = Utility.unescapeCharacters(data.title || '')
-      const description = data.description || ''
-      if (data.represents_workflow) override = true
 
-      let sets
+  BrowseOptions = ({ data, override, read_only }) => (
+    <div>
+      <h4>{window.gettext('Custom Icon')}</h4>
+      <p>
+        Browse options{' '}
+        <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">
+          here
+        </a>
+        .
+      </p>
+      <input
+        disabled={override || read_only}
+        autoComplete="off"
+        id="column-icon-editor"
+        type="text"
+        value={data.icon}
+        maxLength={50}
+        onChange={this.inputChanged.bind(this, 'icon')}
+      />
+    </div>
+  )
+
+  Ponderation = ({ data, override, read_only }) => (
+    <div>
+      <h4>{window.gettext('Ponderation')}</h4>
+      <input
+        disabled={override || read_only}
+        autoComplete="off"
+        className="half-width"
+        id="ponderation-theory"
+        type="number"
+        value={data.ponderation_theory}
+        onChange={this.inputChanged.bind(this, 'ponderation_theory')}
+      />
+      <div className="half-width">{window.gettext('hrs. Theory')}</div>
+      <input
+        disabled={override || read_only}
+        autoComplete="off"
+        className="half-width"
+        id="ponderation-practical"
+        type="number"
+        value={data.ponderation_practical}
+        onChange={this.inputChanged.bind(this, 'ponderation_practical')}
+      />
+      <div className="half-width">{window.gettext('hrs. Practical')}</div>
+      <input
+        disabled={override || read_only}
+        className="half-width"
+        autoComplete="off"
+        id="ponderation-individual"
+        type="number"
+        value={data.ponderation_individual}
+        onChange={this.inputChanged.bind(this, 'ponderation_individual')}
+      />
+      <div className="half-width">{window.gettext('hrs. Individual')}</div>
+      <input
+        disabled={override || read_only}
+        className="half-width"
+        autoComplete="off"
+        id="time-general-hours"
+        type="number"
+        value={data.time_general_hours}
+        onChange={this.inputChanged.bind(this, 'time_general_hours')}
+      />
+      <div className="half-width">
+        {window.gettext('hrs. General Education')}
+      </div>
+      <input
+        disabled={override || read_only}
+        className="half-width"
+        autoComplete="off"
+        id="time-specific-hours"
+        type="number"
+        value={data.time_specific_hours}
+        onChange={this.inputChanged.bind(this, 'time_specific_hours')}
+      />
+      <div className="half-width">
+        {window.gettext('hrs. Specific Education')}
+      </div>
+    </div>
+  )
+
+  Workflow = ({ data, read_only }) => {
+    <div>
+      <h4>{window.gettext('Settings')}</h4>
+      <div>
+        <label htmlFor="outcomes_type">
+          {window.gettext('Outcomes Style')}
+        </label>
+        <select
+          disabled={read_only}
+          name="outcomes_type"
+          value={data.outcomes_type}
+          onChange={this.inputChanged.bind(this, 'outcomes_type')}
+        >
+          {this.props.renderer.outcome_type_choices.map((choice) => (
+            <option value={choice.type}>{choice.name}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="condensed">{window.gettext('Condensed View')}</label>
+        <input
+          disabled={read_only}
+          type="checkbox"
+          name="condensed"
+          checked={data.condensed}
+          onChange={this.checkboxChanged.bind(this, 'condensed')}
+        />
+      </div>
+      {data.is_strategy && (
+        <div>
+          <label htmlFor="is_published">{window.gettext('Published')}</label>
+          <input
+            disabled={read_only}
+            type="checkbox"
+            name="is_published"
+            checked={data.published}
+            onChange={this.checkboxChanged.bind(this, 'published')}
+          />
+        </div>
+      )}
+    </div>
+  }
+
+  LinkedWorkflow = ({read_only, data}) => {
+    <div>
+      <h4>{window.gettext('Linked Workflow')}</h4>
+      <div>
+        {data.linked_workflow && data.linked_workflow_data.title}
+      </div>
+      <button
+        className="primary-button"
+        disabled={read_only}
+        id="linked-workflow-editor"
+        onClick={() => {
+          COURSEFLOW_APP.tinyLoader.startLoad()
+          getLinkedWorkflowMenuQuery(
+            data,
+            (response_data) => {
+              console.log('linked a workflow')
+            },
+            () => {
+              COURSEFLOW_APP.tinyLoader.endLoad()
+            }
+          )
+        }}
+      >
+        {window.gettext('Change')}
+      </button>
+      <input
+        disabled={read_only}
+        type="checkbox"
+        name="respresents_workflow"
+        checked={data.represents_workflow}
+        onChange={this.checkboxChanged.bind(
+          this,
+          'represents_workflow'
+        )}
+      />
+      <label htmlFor="repesents_workflow">
+        {window.gettext('Display linked workflow data')}
+      </label>
+    </div>
+  }
+
+  addEditable(data, no_delete = false) {
+    let title_length = '100'
+    let override = false
+    let sets
+
+    const read_only = this.props.renderer.read_only
+    const title = Utility.unescapeCharacters(data.title || '')
+    const type = Constants.object_dictionary[this.objectType]
+    const description = data.description || ''
+    if (data.represents_workflow) override = true
+    if (type == 'outcome') title_length = '500'
+
+    if (this.state.selected) {
       if (this.props.object_sets && ['node', 'outcome'].indexOf(type) >= 0) {
-        let term_type = data.type
-        if (type == 'node') term_type = Constants.node_type_keys[data.node_type]
+        const term_type =
+          type == 'node' ? Constants.node_type_keys[data.node_type] : data.type
 
         const allowed_sets = this.props.object_sets.filter(
           (set) => set.term == term_type
         )
+
         if (allowed_sets.length >= 0) {
           let disable_sets = false
           if (data.depth || read_only) disable_sets = true
@@ -137,6 +306,7 @@ class EditableComponent<
             {window.gettext('Edit ') +
               Constants.get_verbose(data, this.objectType)}
           </h3>
+
           {[
             'node',
             'week',
@@ -162,6 +332,7 @@ class EditableComponent<
               </div>
             </div>
           )}
+
           {['node', 'workflow', 'outcome'].indexOf(type) >= 0 && (
             <div>
               <h4>{window.gettext('Description')}</h4>
@@ -174,27 +345,9 @@ class EditableComponent<
               />
             </div>
           )}
-          {type == 'column' && (
-            <div>
-              <h4>{window.gettext('Custom Icon')}</h4>
-              <p>
-                Browse options{' '}
-                <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">
-                  here
-                </a>
-                .
-              </p>
-              <input
-                disabled={override || read_only}
-                autoComplete="off"
-                id="column-icon-editor"
-                type="text"
-                value={data.icon}
-                maxLength={50}
-                onChange={this.inputChanged.bind(this, 'icon')}
-              />
-            </div>
-          )}
+
+          {type == 'column' && <this.BrowseOptions />}
+
           {((type == 'outcome' && data.depth == 0) ||
             (type == 'workflow' && data.type == 'course')) && (
             <div>
@@ -210,6 +363,7 @@ class EditableComponent<
               />
             </div>
           )}
+
           {type == 'node' && data.node_type < 2 && (
             <div>
               <h4>{window.gettext('Context')}</h4>
@@ -234,6 +388,7 @@ class EditableComponent<
               </select>
             </div>
           )}
+
           {type == 'node' && data.node_type < 2 && (
             <div>
               <h4>{window.gettext('Task')}</h4>
@@ -255,6 +410,7 @@ class EditableComponent<
               </select>
             </div>
           )}
+
           {(type == 'node' || type == 'workflow') && (
             <div>
               <h4>{window.gettext('Time')}</h4>
@@ -283,6 +439,7 @@ class EditableComponent<
               </div>
             </div>
           )}
+
           {type == 'column' && (
             <div>
               <h4>{window.gettext('Colour')}</h4>
@@ -300,113 +457,18 @@ class EditableComponent<
               </div>
             </div>
           )}
+
           {((type == 'workflow' && data.type == 'course') ||
             (type == 'node' && data.node_type == 2)) && (
-            <div>
-              <h4>{window.gettext('Ponderation')}</h4>
-              <input
-                disabled={override || read_only}
-                autoComplete="off"
-                className="half-width"
-                id="ponderation-theory"
-                type="number"
-                value={data.ponderation_theory}
-                onChange={this.inputChanged.bind(this, 'ponderation_theory')}
-              />
-              <div className="half-width">{window.gettext('hrs. Theory')}</div>
-              <input
-                disabled={override || read_only}
-                autoComplete="off"
-                className="half-width"
-                id="ponderation-practical"
-                type="number"
-                value={data.ponderation_practical}
-                onChange={this.inputChanged.bind(this, 'ponderation_practical')}
-              />
-              <div className="half-width">
-                {window.gettext('hrs. Practical')}
-              </div>
-              <input
-                disabled={override || read_only}
-                className="half-width"
-                autoComplete="off"
-                id="ponderation-individual"
-                type="number"
-                value={data.ponderation_individual}
-                onChange={this.inputChanged.bind(
-                  this,
-                  'ponderation_individual'
-                )}
-              />
-              <div className="half-width">
-                {window.gettext('hrs. Individual')}
-              </div>
-              <input
-                disabled={override || read_only}
-                className="half-width"
-                autoComplete="off"
-                id="time-general-hours"
-                type="number"
-                value={data.time_general_hours}
-                onChange={this.inputChanged.bind(this, 'time_general_hours')}
-              />
-              <div className="half-width">
-                {window.gettext('hrs. General Education')}
-              </div>
-              <input
-                disabled={override || read_only}
-                className="half-width"
-                autoComplete="off"
-                id="time-specific-hours"
-                type="number"
-                value={data.time_specific_hours}
-                onChange={this.inputChanged.bind(this, 'time_specific_hours')}
-              />
-              <div className="half-width">
-                {window.gettext('hrs. Specific Education')}
-              </div>
-            </div>
+            <this.Ponderation
+              data={data}
+              override={override}
+              read_only={read_only}
+            />
           )}
-          {type === 'node' && data.node_type !== 0 && (
-            <div>
-              <h4>{window.gettext('Linked Workflow')}</h4>
-              <div>
-                {data.linked_workflow && data.linked_workflow_data.title}
-              </div>
-              <button
-                className="primary-button"
-                disabled={read_only}
-                id="linked-workflow-editor"
-                onClick={() => {
-                  COURSEFLOW_APP.tinyLoader.startLoad()
-                  getLinkedWorkflowMenuQuery(
-                    data,
-                    (response_data) => {
-                      console.log('linked a workflow')
-                    },
-                    () => {
-                      COURSEFLOW_APP.tinyLoader.endLoad()
-                    }
-                  )
-                }}
-              >
-                {window.gettext('Change')}
-              </button>
-              <input
-                disabled={read_only}
-                type="checkbox"
-                name="respresents_workflow"
-                checked={data.represents_workflow}
-                onChange={this.checkboxChanged.bind(
-                  this,
-                  'represents_workflow'
-                )}
-              />
-              <label htmlFor="repesents_workflow">
-                {window.gettext('Display linked workflow data')}
-              </label>
-            </div>
-          )}
+
+          {type === 'node' && data.node_type !== 0 && <this.LinkedWorkflow data={data} read_only={read_only} />}
+
           {type == 'node' && data.node_type != 2 && (
             <div>
               <h4>{window.gettext('Other')}</h4>
@@ -422,6 +484,7 @@ class EditableComponent<
               </label>
             </div>
           )}
+
           {type == 'nodelink' && (
             <div>
               <h4>{window.gettext('Style')}</h4>
@@ -454,52 +517,11 @@ class EditableComponent<
               </div>
             </div>
           )}
+
           {type == 'workflow' && (
-            <div>
-              <h4>{window.gettext('Settings')}</h4>
-              <div>
-                <label htmlFor="outcomes_type">
-                  {window.gettext('Outcomes Style')}
-                </label>
-                <select
-                  disabled={read_only}
-                  name="outcomes_type"
-                  value={data.outcomes_type}
-                  onChange={this.inputChanged.bind(this, 'outcomes_type')}
-                >
-                  {this.props.renderer.outcome_type_choices.map((choice) => (
-                    <option value={choice.type}>{choice.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="condensed">
-                  {window.gettext('Condensed View')}
-                </label>
-                <input
-                  disabled={read_only}
-                  type="checkbox"
-                  name="condensed"
-                  checked={data.condensed}
-                  onChange={this.checkboxChanged.bind(this, 'condensed')}
-                />
-              </div>
-              {data.is_strategy && (
-                <div>
-                  <label htmlFor="is_published">
-                    {window.gettext('Published')}
-                  </label>
-                  <input
-                    disabled={read_only}
-                    type="checkbox"
-                    name="is_published"
-                    checked={data.published}
-                    onChange={this.checkboxChanged.bind(this, 'published')}
-                  />
-                </div>
-              )}
-            </div>
+            <this.Workflow data={data} read_only={read_only} />
           )}
+
           {type == 'week' && data.week_type < 2 && (
             <div>
               <h4>{window.gettext('Strategy')}</h4>

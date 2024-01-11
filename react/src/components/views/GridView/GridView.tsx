@@ -3,14 +3,28 @@ import { connect } from 'react-redux'
 // @components
 import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import GridWeek from './GridWeek'
+import { AppState, Workflow } from '@cfRedux/type'
 
 /**
  * Creates a grid with just nodes by week and their times
  */
-class GridView extends React.Component {
-  constructor(props) {
+
+type OwnProps = {
+  renderer: any
+}
+type ConnectedProps = {
+  workflow: Workflow
+  weeks: any[]
+}
+
+type StateType = {
+  dropped_list: any[]
+}
+type PropsType = OwnProps & ConnectedProps
+class GridView extends React.Component<PropsType, StateType> {
+  constructor(props: PropsType) {
     super(props)
-    this.objectType = 'workflow'
+    // this.objectType = 'workflow' @todo objectType is not used
     this.state = { dropped_list: [] }
   }
 
@@ -18,10 +32,15 @@ class GridView extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.workflow
+    // const data = this.props.workflow
 
     const weeks = this.props.weeks.map((week, i) => (
-      <GridWeek renderer={this.props.renderer} data={week.data} rank={i} />
+      <GridWeek
+        key={i}
+        renderer={this.props.renderer}
+        data={week.data}
+        rank={i}
+      />
     ))
 
     return (
@@ -29,21 +48,36 @@ class GridView extends React.Component {
         <div className="grid-ponderation">
           {window.gettext('Times in hours shown in format') +
             ': ' +
-            gettext('Theory') +
+            window.gettext('Theory') +
             '/' +
-            gettext('Practical') +
+            window.gettext('Practical') +
             '/' +
-            gettext('Individual')}
+            window.gettext('Individual')}
         </div>
         <div className="workflow-grid">{weeks}</div>
       </div>
     )
   }
 }
-const mapStateToProps = (state, own_props) => {
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
   const weeks = state.workflow.weekworkflow_set
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)
     .map((week) => getWeekByID(state, week))
-  return { workflow: state.workflow, weeks: weeks }
+
+  return {
+    workflow: state.workflow,
+    weeks: weeks
+  }
 }
-export default connect(mapStateToProps, null)(GridView)
+export default connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
+  null
+)(GridView)

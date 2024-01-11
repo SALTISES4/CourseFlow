@@ -3,12 +3,22 @@ import { connect } from 'react-redux'
 import { NodeTitle } from '@cfUIComponents'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
+import { AppState, Column } from '@cfModule/redux/type'
+
+type OwnProps = {
+  renderer: any
+  data: any
+}
+type ConnectedProps = {
+  column: Column
+}
+type PropsType = OwnProps & ConnectedProps
 
 /**
  * A node in the grid view
  */
-class GridNodeUnconnected extends EditableComponentWithComments {
-  constructor(props) {
+class GridNodeUnconnected extends EditableComponentWithComments<PropsType> {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = 'node'
   }
@@ -20,12 +30,12 @@ class GridNodeUnconnected extends EditableComponentWithComments {
     const renderer = this.props.renderer
     const selection_manager = renderer.selection_manager
     const data = this.props.data
-    let data_override
-    if (data.represents_workflow)
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
-    else data_override = data
-    let ponderation
-    ponderation = (
+
+    const data_override = data.represents_workflow
+      ? { ...data, ...data.linked_workflow_data, id: data.id }
+      : data
+
+    const ponderation = (
       <div className="grid-ponderation">
         {data_override.ponderation_theory +
           '/' +
@@ -53,7 +63,7 @@ class GridNodeUnconnected extends EditableComponentWithComments {
       <div
         style={style}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
         className={css_class}
       >
@@ -71,7 +81,18 @@ class GridNodeUnconnected extends EditableComponentWithComments {
   }
 }
 
-const mapNodeStateToProps = (state, own_props) => ({
-  column: state.column.find((column) => column.id == own_props.data.column)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => ({
+  column: state.column.find((column) => column.id == ownProps.data.column)
 })
-export default connect(mapNodeStateToProps, null)(GridNodeUnconnected)
+export default connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
+  null
+)(GridNodeUnconnected)

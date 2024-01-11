@@ -16,17 +16,10 @@ type StateType = {
 }
 
 class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
-  private readonly css_class: any
-  private readonly defaultText: string
-  private readonly text: string
-
   constructor(props: PropsType) {
     super(props)
     this.state = {}
     this.mainDiv = React.createRef()
-    this.css_class = this.props.css_class
-    this.defaultText = this.props.defaultText
-    this.text = this.props.text
   }
   /*******************************************************
    * LIFECYCLE HOOKS
@@ -56,7 +49,7 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
    *******************************************************/
   render() {
     let css_class = ''
-    if (this.css_class) css_class = this.css_class + ' '
+    if (this.props.css_class) css_class = this.props.css_class + ' '
     css_class += 'title-text collapsible-text'
     let drop_text = window.gettext('show more')
     if (this.state.is_dropped) {
@@ -77,9 +70,12 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
         </div>
       )
 
-    let text = this.text
-    if ((this.text == null || this.text == '') && this.defaultText != null) {
-      text = this.defaultText
+    let text = this.props.text
+    if (
+      (this.props.text == null || this.props.text == '') &&
+      this.props.defaultText != null
+    ) {
+      text = this.props.defaultText
     }
     return [
       <div

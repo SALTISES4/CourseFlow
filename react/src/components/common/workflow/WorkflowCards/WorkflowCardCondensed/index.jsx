@@ -38,7 +38,7 @@ class WorkflowCardCondensed extends WorkflowCard {
 
     return (
       <div
-        ref={this.maindiv}
+        ref={this.mainDiv}
         className={css_class}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {

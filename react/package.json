@@ -39,6 +39,7 @@
     "@mui/material": "^5.14.14",
     "@reduxjs/toolkit": "^1.9.6",
     "@types/jquery": "^3.5.29",
+    "@types/jqueryui": "^1.12.21",
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

@@ -20,7 +20,7 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
     const data = this.props.data
 
     return (
-      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.mainDiv}>
         <Outcome
           renderer={this.props.renderer}
           objectID={data.child}
@@ -37,10 +37,12 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
     )
   }
 }
-const mapOutcomeOutcomeStateToProps = (state, own_props) =>
-  getOutcomeOutcomeByID(state, own_props.objectID)
+const mapStateToProps = (state, own_props) => {
+  return getOutcomeOutcomeByID(state, own_props.objectID)
+}
+
 const TableOutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps,
+  mapStateToProps,
   null
 )(TableOutcomeOutcomeUnconnected)
 

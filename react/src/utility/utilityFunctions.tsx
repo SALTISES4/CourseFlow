@@ -1,9 +1,5 @@
 // @ts-nocheck
 import * as React from 'react'
-import {
-  getSortedOutcomesFromOutcomeWorkflowSet,
-  getTableOutcomeNodeByID
-} from '@cfFindState'
 
 export function permission_translate() {
   return {
@@ -14,6 +10,7 @@ export function permission_translate() {
   }
 }
 
+// @todo move to component
 // Get the little tag that sits in front of usernames signifying the role
 export function getUserTag(user_type) {
   return (
@@ -66,7 +63,7 @@ export function checkSetHidden(data, objectsets) {
   let hidden = false
   if (data.sets.length > 0 && objectsets) {
     hidden = true
-    for (var i = 0; i < objectsets.length; i++) {
+    for (let i = 0; i < objectsets.length; i++) {
       if (!objectsets[i].hidden && data.sets.indexOf(objectsets[i].id) >= 0) {
         hidden = false
         break
@@ -74,23 +71,6 @@ export function checkSetHidden(data, objectsets) {
     }
   }
   return hidden
-}
-
-export function download(filename, text) {
-  var pom = document.createElement('a')
-  pom.setAttribute(
-    'href',
-    'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
-  )
-  pom.setAttribute('download', filename)
-
-  if (document.createEvent) {
-    var event = document.createEvent('MouseEvents')
-    event.initEvent('click', true, true)
-    pom.dispatchEvent(event)
-  } else {
-    pom.click()
-  }
 }
 
 // Do a bit of cleaning to unescape certain characters and display them correctly
@@ -127,7 +107,7 @@ export function cantorPairing(k1, k2) {
 }
 
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
-export function filterThenSortByID(object_list, id_list) {
+export function filterThenSortByID<P>(object_list: P[], id_list): P[] {
   return object_list
     .filter((obj) => id_list.includes(obj.id))
     .sort((a, b) => id_list.indexOf(a.id) - id_list.indexOf(b.id))
@@ -180,7 +160,7 @@ export function triggerHandlerEach(trigger, eventname) {
   // trigger will work outside a jquery object yet
   return trigger.each((i, element) => {
     if (element) {
-      var event = new Event(eventname, {
+      const event = new Event(eventname, {
         bubbles: true, // This makes the event bubble up
         cancelable: true // This makes the event cancelable
       })
@@ -216,74 +196,6 @@ export function Enum(baseEnum) {
   })
 }
 
-/**
- * THIS IS NOT BEING USED
- * Used in the table. Creates a shaped tree-like structure
- * for an outcome and its children that includes each one's
- * relationship to each node.
- *
- * @param props
- * @param outcome_id
- * @param nodecategory
- * @returns {{outcomenodes: *[], children: *[], id}|null}
- */
-export function createOutcomeBranch(state, outcome_id) {
-  for (let i = 0; i < state.outcome.length; i++) {
-    if (state.outcome[i].id === outcome_id) {
-      let children
-      if (
-        state.outcome[i].child_outcome_links.length === 0 ||
-        state.outcome[i].depth >= 2
-      )
-        children = []
-      else
-        children = filterThenSortByID(
-          state.outcomeoutcome,
-          state.outcome[i].child_outcome_links
-        ).map((outcomeoutcome) =>
-          createOutcomeBranch(state, outcomeoutcome.child)
-        )
-
-      return { id: outcome_id, children: children }
-    }
-  }
-  return null
-}
-
-/**
- * THIS IS NOT BEING USED
- * From the state, creates a tree structure for an outcome
- * @param state
- * @returns {*[]}
- */
-export function createOutcomeTree(state) {
-  const outcomes_tree = []
-  const sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
-    state,
-    state.workflow.outcomeworkflow_set
-  )
-  for (let i = 0; i < sorted_outcomes.length; i++) {
-    const outcomes_tree_category = []
-    for (let j = 0; j < sorted_outcomes[i].outcomes.length; j++)
-      outcomes_tree_category.push(
-        createOutcomeBranch(state, sorted_outcomes[i].outcomes[j].id)
-      )
-    outcomes_tree.push({
-      title: sorted_outcomes[i].objectset.title,
-      outcomes: outcomes_tree_category
-    })
-  }
-  return outcomes_tree
-}
-
-/*From a tree structure of outcomes, flatten the tree*/
-export function flattenOutcomeTree(outcomes_tree, array) {
-  outcomes_tree.forEach((element) => {
-    array.push(element.id)
-    flattenOutcomeTree(element.children, array)
-  })
-}
-
 export const debounce = (func, timeout = 300) => {
   let timer
   return (...args) => {
@@ -294,99 +206,7 @@ export const debounce = (func, timeout = 300) => {
   }
 }
 
-/*Used in the table. Creates a shaped tree-like structure for an outcome and its children that includes each one's relationship to each node.*/
-export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
-  for (let i = 0; i < props.outcome.length; i++) {
-    if (props.outcome[i].id === outcome_id) {
-      let children
-
-      if (
-        props.outcome[i].child_outcome_links.length === 0 ||
-        props.outcome[i].depth >= 2
-      )
-        children = []
-      else
-        children = filterThenSortByID(
-          props.outcomeoutcome,
-          props.outcome[i].child_outcome_links
-        ).map((outcomeoutcome) =>
-          createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
-        )
-
-      const outcomenodes = []
-
-      for (var ii = 0; ii < nodecategory.length; ii++) {
-        const category = nodecategory[ii]
-        const outcomenodes_group = []
-        for (var j = 0; j < category.nodes.length; j++) {
-          const node = category.nodes[j]
-          const outcomenode = getTableOutcomeNodeByID(
-            props.outcomenode,
-            node,
-            outcome_id
-          ).data
-          if (outcomenode) {
-            outcomenodes_group.push({
-              node_id: node,
-              degree: outcomenode.degree
-            })
-            continue
-          }
-          //If the outcomenode doesn't exist and there are children, check them.
-          let added = false
-          for (var k = 0; k < children.length; k++) {
-            if (children[k].outcomenodes[ii][j].degree !== null) {
-              outcomenodes_group.push({ node_id: node, degree: 0 })
-              added = true
-              break
-            }
-          }
-          if (!added) outcomenodes_group.push({ node_id: node, degree: null })
-        }
-        let total = null
-        if (children.length > 0) {
-          total = 15
-          let all_null = true
-          for (let k = 0; k < children.length; k++) {
-            var child_total = children[k].outcomenodes[ii].total
-            if (child_total !== null) all_null = false
-            total &= child_total
-          }
-          if (all_null) total = null
-        } else {
-          total = outcomenodes_group.reduce((acc, curr) => {
-            if (curr.degree === null) return acc
-            if (acc === null) return curr.degree
-            return acc | curr.degree
-          }, null)
-        }
-        outcomenodes_group.total = total
-        outcomenodes.push(outcomenodes_group)
-      }
-      let total = null
-      if (children.length > 0) {
-        total = 15
-        let all_null = true
-        for (let k = 0; k < children.length; k++) {
-          var child_total = children[k].outcomenodes.total
-          if (child_total !== null) all_null = false
-          total &= child_total
-        }
-        if (all_null) total = null
-      } else {
-        total = outcomenodes.reduce((acc, curr) => {
-          if (curr.total === null) return acc
-          if (acc === null) return curr.total
-          return acc | curr.total
-        }, null)
-      }
-      outcomenodes.total = total
-      return { id: outcome_id, children: children, outcomenodes: outcomenodes }
-    }
-  }
-  return null
-}
-
+// @todo move to component
 /**
  * Based on an outcomenode's completion status, return the correct icon
  *

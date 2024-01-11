@@ -7,13 +7,35 @@ import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode'
 
 import * as Utility from '@cfUtility'
+import { AppState, Nodeweek } from '@cfRedux/type'
 /**
  * A block representing a term in the grid view
  */
-class GridWeekUnconnected extends EditableComponentWithComments {
-  constructor(props) {
+
+type OwnProps = {
+  renderer: any
+  rank: number
+  data: any
+}
+type ConnectedProps = {
+  nodes: any
+  general_education: any
+  specific_education: any
+  total_theory: any
+  total_practical: any
+  total_individual: any
+  total_time: any
+  total_required: any
+}
+type PropsType = OwnProps & ConnectedProps
+class GridWeekUnconnected extends EditableComponentWithComments<PropsType> {
+  constructor(props: PropsType) {
     super(props)
-    this.objectType = 'week'
+
+    // from this.renderer
+    // view_comments
+    // selection_manager
+    // this.objectType = 'week' // @todo i don't think this is used in this child
   }
 
   /*******************************************************
@@ -33,7 +55,7 @@ class GridWeekUnconnected extends EditableComponentWithComments {
     return (
       <div
         className="week"
-        ref={this.maindiv}
+        ref={this.mainDiv}
         style={this.get_border_style()}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
@@ -59,9 +81,14 @@ class GridWeekUnconnected extends EditableComponentWithComments {
     )
   }
 }
-const mapWeekStateToProps = (state, own_props) => {
-  const data = own_props.data
-  const node_weeks = Utility.filterThenSortByID(
+
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  const data = ownProps.data
+
+  const node_weeks = Utility.filterThenSortByID<Nodeweek>(
     state.nodeweek,
     data.nodeweek_set
   )
@@ -72,9 +99,14 @@ const mapWeekStateToProps = (state, own_props) => {
 
   const override_data = nodes_data.map((node) => {
     if (node.represents_workflow)
-      return { ...node, ...node.linked_workflow_data }
+      return {
+        ...node,
+        // @ts-ignore
+        ...node.linked_workflow_data
+      }
     else return node
   })
+
   const general_education = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.time_general_hours)
@@ -83,6 +115,7 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
+
   const specific_education = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.time_specific_hours)
@@ -91,11 +124,13 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
+
   const total_theory = override_data.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.ponderation_theory)
       return previousValue + currentValue.ponderation_theory
     return previousValue
   }, 0)
+
   const total_practical = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderation_practical)
@@ -104,6 +139,7 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
+
   const total_individual = override_data.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderation_individual)
@@ -112,7 +148,9 @@ const mapWeekStateToProps = (state, own_props) => {
     },
     0
   )
+
   const total_time = total_theory + total_practical + total_individual
+
   const total_required = override_data.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.time_required)
       return previousValue + parseInt(currentValue.time_required)
@@ -130,4 +168,7 @@ const mapWeekStateToProps = (state, own_props) => {
     total_required: total_required
   }
 }
-export default connect(mapWeekStateToProps, null)(GridWeekUnconnected)
+export default connect<ConnectedProps, NonNullable<any>, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(GridWeekUnconnected)

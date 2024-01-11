@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
+import $ from 'jquery'
 
 const TinyLoaderContext = React.createContext()
 
