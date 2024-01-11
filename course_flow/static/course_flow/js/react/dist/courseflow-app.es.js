@@ -38980,8 +38980,9 @@ const theme = createTheme({
       light: "#90A4AE",
       dark: "#607D8B"
     },
-    other: {
-      divider: "#CFD8DC"
+    divider: "#CFD8DC",
+    action: {
+      hover: "rgba(4, 186, 116, 0.08)"
     }
   },
   typography: {
@@ -90837,13 +90838,14 @@ const getAppComponent = () => {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsSettingsPage, { ...COURSEFLOW_APP.contextData });
     case "profileSettings":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ProfileSettingsPage, { ...COURSEFLOW_APP.contextData });
-    case "projectComparison":
+    case "projectComparison": {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        myColour: "hsl(" + (DTOcontextData.user_id * 5 % 360 + 1) + ",50%,50%)",
+        myColour: "hsl(" + (DTOcontextData.user_id * 5 % 360 + 1) + ", 50%, 50%)",
         changeFieldID: Math.floor(Math.random() * 1e4)
       };
       return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowComparison, { ...thisContextData });
+    }
     case "workflowDetailView": {
       const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData);
       workflow_renderer.init();
