@@ -56173,7 +56173,7 @@ function useApi(url, debug = false) {
         });
       }
     });
-  }, []);
+  }, [url, debug]);
   return [{ ...state.data }, state.loading, state.error];
 }
 function getFabUtilityClass(slot) {
@@ -58029,7 +58029,7 @@ const TopBar = () => {
         handleClose: () => {
           setResetPassword(false);
         },
-        handleContinue: () => window.location = apiData.menus.account.resetPasswordUrl
+        handleContinue: () => window.location.href = apiData.menus.account.resetPasswordUrl
       }
     )
   ] });

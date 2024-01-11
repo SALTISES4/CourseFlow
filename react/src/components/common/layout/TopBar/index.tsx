@@ -30,6 +30,33 @@ import {
   NotificationsList
 } from './styles'
 
+type TopBarAPIResponse = {
+  is_teacher: boolean
+  notifications: {
+    url: string
+    unread: number
+    items: {
+      unread: boolean
+      url: string
+      from: string
+      text: string
+      date: string
+    }[]
+  }
+  menus: {
+    add: {
+      projectUrl: string
+    }
+    account: {
+      notificationsSettingsUrls: string
+      profileUrl: string
+      resetPasswordUrl: string
+      daliteUrl: string
+      daliteText: string
+    }
+  }
+}
+
 const TopBar = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
@@ -43,7 +70,7 @@ const TopBar = () => {
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
-  const [apiData, loading, error] = useApi(
+  const [apiData, loading, error] = useApi<TopBarAPIResponse>(
     COURSEFLOW_APP.config.json_api_paths.get_top_bar
   )
 
@@ -282,7 +309,7 @@ const TopBar = () => {
           setResetPassword(false)
         }}
         handleContinue={() =>
-          (window.location = apiData.menus.account.resetPasswordUrl)
+          (window.location.href = apiData.menus.account.resetPasswordUrl)
         }
       />
     </TopBarWrap>

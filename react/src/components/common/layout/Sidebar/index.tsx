@@ -27,12 +27,21 @@ import {
   HelpLink
 } from './styles'
 
+type SidebarAPIResponse = {
+  is_anonymous: boolean
+  is_teacher: boolean
+  favourites: {
+    title: string
+    url: string
+  }[]
+}
+
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(
     !!sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const [apiData, loading, error] = useApi(
+  const [apiData, loading, error] = useApi<SidebarAPIResponse>(
     COURSEFLOW_APP.config.json_api_paths.get_sidebar
   )
 

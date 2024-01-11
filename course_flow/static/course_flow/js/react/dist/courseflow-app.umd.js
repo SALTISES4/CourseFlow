@@ -56177,7 +56177,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           });
         }
       });
-    }, []);
+    }, [url, debug]);
     return [{ ...state.data }, state.loading, state.error];
   }
   function getFabUtilityClass(slot) {
@@ -58033,7 +58033,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           handleClose: () => {
             setResetPassword(false);
           },
-          handleContinue: () => window.location = apiData.menus.account.resetPasswordUrl
+          handleContinue: () => window.location.href = apiData.menus.account.resetPasswordUrl
         }
       )
     ] });
