@@ -63664,7 +63664,7 @@ ${latestSubscriptionCallbackError.current.stack}
     ),
     workflow_type: state.workflow.type
   });
-  const test = connect(
+  const OutcomeBarConnected = connect(
     mapStateToProps$7,
     null
   )(OutcomeBarUnconnected);
@@ -64191,7 +64191,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer, jjj: 8 });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        test,
+        OutcomeBarConnected,
         {
           renderMethod: this.props.parentRender,
           readOnly: true,
@@ -68711,8 +68711,8 @@ ${latestSubscriptionCallbackError.current.stack}
         const nextMatchingDefs = [];
         matchingSignatures.forEach((signature) => {
           const param = getParamAtIndex(signature.params, index);
-          const test2 = compileTest(param);
-          if ((index < signature.params.length || hasRestParam(signature.params)) && test2(args[index])) {
+          const test = compileTest(param);
+          if ((index < signature.params.length || hasRestParam(signature.params)) && test(args[index])) {
             nextMatchingDefs.push(signature);
           }
         });
@@ -69283,9 +69283,9 @@ ${latestSubscriptionCallbackError.current.stack}
     function slice2(arr, start, end) {
       return Array.prototype.slice.call(arr, start, end);
     }
-    function findInArray(arr, test2) {
+    function findInArray(arr, test) {
       for (let i2 = 0; i2 < arr.length; i2++) {
-        if (test2(arr[i2])) {
+        if (test(arr[i2])) {
           return arr[i2];
         }
       }
@@ -90303,7 +90303,7 @@ ${latestSubscriptionCallbackError.current.stack}
         projectPath
       );
       let favouriteBox;
-      if (this.isTeacher == 1.1) {
+      if (this.isTeacher) {
         favouriteBox = this.renderHomeItem(
           "Favourites",
           favouritesContent,
@@ -90312,14 +90312,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
         projectBox,
-        favouriteBox,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          test,
-          {
-            renderMethod: favouriteBox,
-            readOnly: true
-          }
-        )
+        favouriteBox
       ] });
     }
   }

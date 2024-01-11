@@ -63660,7 +63660,7 @@ const mapStateToProps$7 = (state) => ({
   ),
   workflow_type: state.workflow.type
 });
-const test = connect(
+const OutcomeBarConnected = connect(
   mapStateToProps$7,
   null
 )(OutcomeBarUnconnected);
@@ -64187,7 +64187,7 @@ class RightSideBar extends reactExports.Component {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer, jjj: 8 });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      test,
+      OutcomeBarConnected,
       {
         renderMethod: this.props.parentRender,
         readOnly: true,
@@ -68707,8 +68707,8 @@ function create() {
       const nextMatchingDefs = [];
       matchingSignatures.forEach((signature) => {
         const param = getParamAtIndex(signature.params, index);
-        const test2 = compileTest(param);
-        if ((index < signature.params.length || hasRestParam(signature.params)) && test2(args[index])) {
+        const test = compileTest(param);
+        if ((index < signature.params.length || hasRestParam(signature.params)) && test(args[index])) {
           nextMatchingDefs.push(signature);
         }
       });
@@ -69279,9 +69279,9 @@ function create() {
   function slice2(arr, start, end) {
     return Array.prototype.slice.call(arr, start, end);
   }
-  function findInArray(arr, test2) {
+  function findInArray(arr, test) {
     for (let i = 0; i < arr.length; i++) {
-      if (test2(arr[i])) {
+      if (test(arr[i])) {
         return arr[i];
       }
     }
@@ -90299,7 +90299,7 @@ class HomePage extends reactExports.Component {
       projectPath
     );
     let favouriteBox;
-    if (this.isTeacher == 1.1) {
+    if (this.isTeacher) {
       favouriteBox = this.renderHomeItem(
         "Favourites",
         favouritesContent,
@@ -90308,14 +90308,7 @@ class HomePage extends reactExports.Component {
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
       projectBox,
-      favouriteBox,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        test,
-        {
-          renderMethod: favouriteBox,
-          readOnly: true
-        }
-      )
+      favouriteBox
     ] });
   }
 }
