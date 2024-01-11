@@ -57734,7 +57734,11 @@ const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
     padding: theme2.spacing(1)
   }
 }));
-const ResetPasswordModal = ({ show, handleClose, handleContinue }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+const ResetPasswordModal = ({
+  show,
+  handleClose,
+  handleContinue
+}) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
   StyledDialog,
   {
     open: show,

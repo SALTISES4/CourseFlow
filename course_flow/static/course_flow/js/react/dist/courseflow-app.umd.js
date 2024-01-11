@@ -57738,7 +57738,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       padding: theme2.spacing(1)
     }
   }));
-  const ResetPasswordModal = ({ show, handleClose, handleContinue }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  const ResetPasswordModal = ({
+    show,
+    handleClose,
+    handleContinue
+  }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
     StyledDialog,
     {
       open: show,

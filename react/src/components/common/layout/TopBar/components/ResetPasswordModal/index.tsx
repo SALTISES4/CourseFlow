@@ -16,7 +16,17 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   }
 }))
 
-const ResetPasswordModal = ({ show, handleClose, handleContinue }) => (
+type PropsType = {
+  show: boolean
+  handleClose: () => void
+  handleContinue: () => void
+}
+
+const ResetPasswordModal = ({
+  show,
+  handleClose,
+  handleContinue
+}: PropsType) => (
   <StyledDialog
     open={show}
     onClose={handleClose}
