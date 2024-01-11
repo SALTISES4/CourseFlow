@@ -56057,6 +56057,125 @@ const ProfileSettingsPage = ({ formData }) => {
     )
   ] });
 };
+var Home = {};
+var _interopRequireDefault$a = interopRequireDefaultExports;
+Object.defineProperty(Home, "__esModule", {
+  value: true
+});
+var default_1$a = Home.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+}), "Home");
+default_1$a = Home.default = _default$a;
+var FolderCopy = {};
+var _interopRequireDefault$9 = interopRequireDefaultExports;
+Object.defineProperty(FolderCopy, "__esModule", {
+  value: true
+});
+var default_1$9 = FolderCopy.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
+}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+}, "1")], "FolderCopy");
+default_1$9 = FolderCopy.default = _default$9;
+var Search = {};
+var _interopRequireDefault$8 = interopRequireDefaultExports;
+Object.defineProperty(Search, "__esModule", {
+  value: true
+});
+var default_1$8 = Search.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+}), "Search");
+default_1$8 = Search.default = _default$8;
+var CalendarMonth = {};
+var _interopRequireDefault$7 = interopRequireDefaultExports;
+Object.defineProperty(CalendarMonth, "__esModule", {
+  value: true
+});
+var default_1$7 = CalendarMonth.default = void 0;
+var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+var _jsxRuntime$7 = jsxRuntimeExports;
+var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
+}), "CalendarMonth");
+default_1$7 = CalendarMonth.default = _default$7;
+var HelpRounded = {};
+var _interopRequireDefault$6 = interopRequireDefaultExports;
+Object.defineProperty(HelpRounded, "__esModule", {
+  value: true
+});
+var default_1$6 = HelpRounded.default = void 0;
+var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+var _jsxRuntime$6 = jsxRuntimeExports;
+var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
+}), "HelpRounded");
+default_1$6 = HelpRounded.default = _default$6;
+var ArrowBack = {};
+var _interopRequireDefault$5 = interopRequireDefaultExports;
+Object.defineProperty(ArrowBack, "__esModule", {
+  value: true
+});
+var default_1$5 = ArrowBack.default = void 0;
+var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
+var _jsxRuntime$5 = jsxRuntimeExports;
+var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+}), "ArrowBack");
+default_1$5 = ArrowBack.default = _default$5;
+var Menu2 = {};
+var _interopRequireDefault$4 = interopRequireDefaultExports;
+Object.defineProperty(Menu2, "__esModule", {
+  value: true
+});
+var default_1$4 = Menu2.default = void 0;
+var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
+var _jsxRuntime$4 = jsxRuntimeExports;
+var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
+}), "Menu");
+default_1$4 = Menu2.default = _default$4;
+function useApi(url, debug = false) {
+  const [state, setState] = reactExports.useState({
+    loading: true,
+    data: {},
+    error: null
+  });
+  reactExports.useEffect(() => {
+    debug && console.log(`API fetching from: ${url}`);
+    fetch(url).then((response) => {
+      if (response.ok) {
+        response.json().then((data2) => {
+          debug && console.log(data2);
+          setState({
+            loading: false,
+            error: null,
+            data: data2
+          });
+        });
+      } else {
+        debug && console.log("Error", response);
+        setState({
+          loading: false,
+          data: null,
+          error: {
+            response,
+            message: `Error fetching from API URL: ${url}`
+          }
+        });
+      }
+    });
+  }, []);
+  return [{ ...state.data }, state.loading, state.error];
+}
 function getFabUtilityClass(slot) {
   return generateUtilityClass("MuiFab", slot);
 }
@@ -56276,125 +56395,6 @@ process.env.NODE_ENV !== "production" ? Fab.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "extended"]), PropTypes.string])
 } : void 0;
 const Fab$1 = Fab;
-var Home = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
-Object.defineProperty(Home, "__esModule", {
-  value: true
-});
-var default_1$a = Home.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-}), "Home");
-default_1$a = Home.default = _default$a;
-var FolderCopy = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
-Object.defineProperty(FolderCopy, "__esModule", {
-  value: true
-});
-var default_1$9 = FolderCopy.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-}, "1")], "FolderCopy");
-default_1$9 = FolderCopy.default = _default$9;
-var Search = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
-Object.defineProperty(Search, "__esModule", {
-  value: true
-});
-var default_1$8 = Search.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-}), "Search");
-default_1$8 = Search.default = _default$8;
-var CalendarMonth = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
-Object.defineProperty(CalendarMonth, "__esModule", {
-  value: true
-});
-var default_1$7 = CalendarMonth.default = void 0;
-var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-var _jsxRuntime$7 = jsxRuntimeExports;
-var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-  d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
-}), "CalendarMonth");
-default_1$7 = CalendarMonth.default = _default$7;
-var HelpRounded = {};
-var _interopRequireDefault$6 = interopRequireDefaultExports;
-Object.defineProperty(HelpRounded, "__esModule", {
-  value: true
-});
-var default_1$6 = HelpRounded.default = void 0;
-var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-var _jsxRuntime$6 = jsxRuntimeExports;
-var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
-}), "HelpRounded");
-default_1$6 = HelpRounded.default = _default$6;
-var ArrowBack = {};
-var _interopRequireDefault$5 = interopRequireDefaultExports;
-Object.defineProperty(ArrowBack, "__esModule", {
-  value: true
-});
-var default_1$5 = ArrowBack.default = void 0;
-var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
-var _jsxRuntime$5 = jsxRuntimeExports;
-var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
-  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-}), "ArrowBack");
-default_1$5 = ArrowBack.default = _default$5;
-var Menu2 = {};
-var _interopRequireDefault$4 = interopRequireDefaultExports;
-Object.defineProperty(Menu2, "__esModule", {
-  value: true
-});
-var default_1$4 = Menu2.default = void 0;
-var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
-var _jsxRuntime$4 = jsxRuntimeExports;
-var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
-}), "Menu");
-default_1$4 = Menu2.default = _default$4;
-function useApi(url, debug = false) {
-  const [state, setState] = reactExports.useState({
-    loading: true,
-    data: {},
-    error: null
-  });
-  reactExports.useEffect(() => {
-    debug && console.log(`API fetching from: ${url}`);
-    fetch(url).then((response) => {
-      if (response.ok) {
-        response.json().then((data2) => {
-          debug && console.log(data2);
-          setState({
-            loading: false,
-            error: null,
-            data: data2
-          });
-        });
-      } else {
-        debug && console.log("Error", response);
-        setState({
-          loading: false,
-          data: null,
-          error: {
-            response,
-            message: `Error fetching from API URL: ${url}`
-          }
-        });
-      }
-    });
-  }, []);
-  return [{ ...state.data }, state.loading, state.error];
-}
 const SidebarRootStyles = {
   height: "100%"
 };
