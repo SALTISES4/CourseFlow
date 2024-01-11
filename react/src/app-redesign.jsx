@@ -117,7 +117,7 @@ const getAppComponent = () => {
     /*******************************************************
      * REDUX
      *******************************************************/
-    case 'projectComparison':
+    case 'projectComparison': {
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if not from django, define as explicit props
@@ -125,11 +125,12 @@ const getAppComponent = () => {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
         myColour:
-          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ', 50%, 50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments
       return <WorkflowComparison {...thisContextData} />
+    }
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
       const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData)
