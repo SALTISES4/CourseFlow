@@ -23,42 +23,46 @@ export const LogoWrap = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const Collapse = styled(Fab)(({ theme, collapsed }) => ({
-  position: 'absolute',
-  right: 0,
-  top: '60px',
-  transform: 'translateX(50%)',
-  transition: 'opacity 0.15s ease, visibility 0.15s ease',
-  color: theme.palette.common.white,
-  ...(collapsed && {
-    backgroundColor: 'transparent',
-    color: theme.palette.primary.main,
-    boxShadow: 'none',
-    transform: 'translate(4em, -58px)',
-    transition: 'color 0.3s ease, background-color 0.3s ease',
-    '&:hover': {
-      color: theme.palette.common.white,
-      backgroundColor: theme.palette.common.light
-    }
+export const Collapse = styled(Fab)<{ collapsed: boolean }>(
+  ({ theme, collapsed }) => ({
+    position: 'absolute',
+    right: 0,
+    top: '60px',
+    transform: 'translateX(50%)',
+    transition: 'opacity 0.15s ease, visibility 0.15s ease',
+    color: theme.palette.common.white,
+    ...(collapsed && {
+      backgroundColor: 'transparent',
+      color: theme.palette.primary.main,
+      boxShadow: 'none',
+      transform: 'translate(4em, -58px)',
+      transition: 'color 0.3s ease, background-color 0.3s ease',
+      '&:hover': {
+        color: theme.palette.common.white,
+        // backgroundColor: theme.palette.common.light
+      }
+    })
   })
-}))
+)
 
-export const SidebarWrap = styled(Box)(({ theme, collapsed }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  ...(collapsed && {
-    [`& .MuiPaper-root`]: {
-      display: 'none'
-    }
-  }),
-  ...(!collapsed && {
-    '&:not(:hover) .MuiFab-root': {
-      opacity: 0,
-      visibility: 'hidden'
-    }
+export const SidebarWrap = styled(Box)<{ collapsed: boolean }>(
+  ({ theme, collapsed }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    ...(collapsed && {
+      [`& .MuiPaper-root`]: {
+        display: 'none'
+      }
+    }),
+    ...(!collapsed && {
+      '&:not(:hover) .MuiFab-root': {
+        opacity: 0,
+        visibility: 'hidden'
+      }
+    })
   })
-}))
+)
 
 export const SidebarInner = styled(Paper)({
   display: 'flex',

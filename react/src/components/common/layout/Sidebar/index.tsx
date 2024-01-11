@@ -29,7 +29,7 @@ import {
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(
-    sessionStorage.getItem('collapsed_sidebar')
+    !!sessionStorage.getItem('collapsed_sidebar')
   )
 
   const [apiData, loading, error] = useApi(
@@ -38,7 +38,7 @@ const Sidebar = () => {
 
   function toggleCollapse() {
     if (!collapsed) {
-      sessionStorage.setItem('collapsed_sidebar', true)
+      sessionStorage.setItem('collapsed_sidebar', 'true')
     } else {
       sessionStorage.removeItem('collapsed_sidebar')
     }

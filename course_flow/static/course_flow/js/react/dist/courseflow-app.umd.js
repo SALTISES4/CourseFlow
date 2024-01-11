@@ -56414,41 +56414,45 @@ Please use another name.` : formatMuiErrorMessage(18));
       marginRight: theme2.spacing(2)
     }
   }));
-  const Collapse = styled$1(Fab$1)(({ theme: theme2, collapsed }) => ({
-    position: "absolute",
-    right: 0,
-    top: "60px",
-    transform: "translateX(50%)",
-    transition: "opacity 0.15s ease, visibility 0.15s ease",
-    color: theme2.palette.common.white,
-    ...collapsed && {
-      backgroundColor: "transparent",
-      color: theme2.palette.primary.main,
-      boxShadow: "none",
-      transform: "translate(4em, -58px)",
-      transition: "color 0.3s ease, background-color 0.3s ease",
-      "&:hover": {
-        color: theme2.palette.common.white,
-        backgroundColor: theme2.palette.common.light
+  const Collapse = styled$1(Fab$1)(
+    ({ theme: theme2, collapsed }) => ({
+      position: "absolute",
+      right: 0,
+      top: "60px",
+      transform: "translateX(50%)",
+      transition: "opacity 0.15s ease, visibility 0.15s ease",
+      color: theme2.palette.common.white,
+      ...collapsed && {
+        backgroundColor: "transparent",
+        color: theme2.palette.primary.main,
+        boxShadow: "none",
+        transform: "translate(4em, -58px)",
+        transition: "color 0.3s ease, background-color 0.3s ease",
+        "&:hover": {
+          color: theme2.palette.common.white
+          // backgroundColor: theme.palette.common.light
+        }
       }
-    }
-  }));
-  const SidebarWrap = styled$1(Box$1)(({ theme: theme2, collapsed }) => ({
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    ...collapsed && {
-      [`& .MuiPaper-root`]: {
-        display: "none"
+    })
+  );
+  const SidebarWrap = styled$1(Box$1)(
+    ({ theme: theme2, collapsed }) => ({
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      ...collapsed && {
+        [`& .MuiPaper-root`]: {
+          display: "none"
+        }
+      },
+      ...!collapsed && {
+        "&:not(:hover) .MuiFab-root": {
+          opacity: 0,
+          visibility: "hidden"
+        }
       }
-    },
-    ...!collapsed && {
-      "&:not(:hover) .MuiFab-root": {
-        opacity: 0,
-        visibility: "hidden"
-      }
-    }
-  }));
+    })
+  );
   const SidebarInner = styled$1(Paper$1)({
     display: "flex",
     flexDirection: "column",
@@ -56494,14 +56498,14 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const Sidebar = () => {
     const [collapsed, setCollapsed] = reactExports.useState(
-      sessionStorage.getItem("collapsed_sidebar")
+      !!sessionStorage.getItem("collapsed_sidebar")
     );
     const [apiData, loading, error] = useApi(
       COURSEFLOW_APP.config.json_api_paths.get_sidebar
     );
     function toggleCollapse() {
       if (!collapsed) {
-        sessionStorage.setItem("collapsed_sidebar", true);
+        sessionStorage.setItem("collapsed_sidebar", "true");
       } else {
         sessionStorage.removeItem("collapsed_sidebar");
       }
