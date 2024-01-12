@@ -42,6 +42,10 @@
     // "plugin:react/recommended",
     // "plugin:prettier/recommended"
   ],
+  "globals": {
+    "$": true,
+    "COURSEFLOW_APP": true
+  },
   "plugins": [
     "react",
     "prettier",

@@ -1,5 +1,5 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
-// import { renderMessageBox } from '../Components/components/MenuComponents/MenuComponents'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import { DATA_ACTIONS } from './common'
 import { dragAction } from '@XMLHTTP/PostFunctions.js'
 
@@ -8,27 +8,26 @@ import { dragAction } from '@XMLHTTP/PostFunctions.js'
  */
 function openLinkedWorkflowMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    //   renderMessageBox(response, 'linked_workflow_menu', updateFunction)
-  } else
+    renderMessageBox(response, 'linked_workflow_menu', updateFunction)
+  } else {
     alert('Failed to find the parent project. Is this workflow in a project?')
+  }
 }
 
 function openAddedWorkflowMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    // renderMessageBox(response, 'added_workflow_menu', updateFunction)
-  } else alert('Failed to find your workflows.')
+    renderMessageBox(response, 'added_workflow_menu', updateFunction)
+  } else {
+    alert('Failed to find your workflows.')
+  }
 }
 
 function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
-    // renderMessageBox(response, 'workflow_select_menu', updateFunction)
-  } else alert('Failed to find your workflows.')
-}
-
-function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
-    //  renderMessageBox(response, 'target_project_menu', updateFunction)
-  } else alert('Failed to find potential projects.')
+    renderMessageBox(response, 'workflow_select_menu', updateFunction)
+  } else {
+    alert('Failed to find your workflows.')
+  }
 }
 
 //Get a list of possible workflows we can add to this project
@@ -75,44 +74,6 @@ export function getWorkflowSelectMenu(
       // @TODO call to react render
       //  openWorkflowSelectMenu(data, updateFunction)
       if (receiptFunction) receiptFunction()
-    }
-  )
-}
-
-//Get possible projects that can be a target for the workflow to be duplicated into
-export function getTargetProjectMenu(
-  workflowPk,
-  updateFunction,
-  callBackFunction = () => console.log('success')
-) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_target_projects,
-    {
-      workflowPk: JSON.stringify(workflowPk)
-    },
-    (data) => {
-      callBackFunction()
-      // @TODO call to react render
-      // openTargetProjectMenu(data, updateFunction)
-    }
-  )
-}
-
-// not sure where this lives yet
-export function createNew(create_url) {
-  COURSEFLOW_APP.tinyLoader.startLoad()
-  getTargetProjectMenu(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location = create_url.replace(
-          '/0/',
-          '/' + response_data.parentID + '/'
-        )
-      }
-    },
-    () => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
     }
   )
 }

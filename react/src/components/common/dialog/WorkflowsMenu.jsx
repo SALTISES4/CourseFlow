@@ -67,9 +67,9 @@ class WorkflowsMenu extends React.Component {
   }
 
   getActions() {
-    var actions = []
+    const actions = []
     if (this.props.type === 'linked_workflow_menu') {
-      var text = window.gettext('link to node')
+      let text = window.gettext('link to node')
       if (
         this.state.selected &&
         this.project_workflows.indexOf(this.state.selected) < 0
@@ -121,7 +121,7 @@ class WorkflowsMenu extends React.Component {
       this.props.type === 'added_workflow_menu' ||
       this.props.type === 'workflow_select_menu'
     ) {
-      var text
+      let text = ''
       if (this.props.type === 'added_workflow_menu') {
         text = window.gettext('Select')
         if (
@@ -185,7 +185,7 @@ class WorkflowsMenu extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data_package = this.props.data.data_package
+    const data_package = this.props.data.data_package
     let no_hyperlink = false
     if (
       this.props.type === 'linked_workflow_menu' ||
@@ -194,10 +194,10 @@ class WorkflowsMenu extends React.Component {
       this.props.type === 'workflow_select_menu'
     )
       no_hyperlink = true
-    var tabs = []
-    var tab_li = []
-    var i = 0
-    for (var prop in data_package) {
+    const tabs = []
+    const tab_li = []
+    let i = 0
+    for (const prop in data_package) {
       tab_li.push(
         <li className="tab-header">
           <a className="hover-shade" href={'#tabs-' + i}>
@@ -219,23 +219,25 @@ class WorkflowsMenu extends React.Component {
     }
     let current_project
     if (this.current_project) {
-      current_project = [
-        <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
-        <div className="menu-grid">
-          <WorkflowCard
-            workflowData={this.current_project}
-            selected={this.state.selected === this.current_project.id}
-            noHyperlink={no_hyperlink}
-            type={this.props.type}
-            dispatch={this.props.dispatch}
-            selectAction={this.workflowSelected.bind(this)}
-          />
-        </div>,
-        <hr className={'big-space'} />,
-        <h4 className={'big-space'}>
-          {window.gettext('Or select from your projects')}
-        </h4>
-      ]
+      current_project = (
+        <>
+          <h4 className="big-space">{window.gettext('Current project')}</h4>
+          <div className="menu-grid">
+            <WorkflowCard
+              workflowData={this.current_project}
+              selected={this.state.selected === this.current_project.id}
+              noHyperlink={no_hyperlink}
+              type={this.props.type}
+              dispatch={this.props.dispatch}
+              selectAction={this.workflowSelected.bind(this)}
+            />
+          </div>
+          <hr className="big-space" />,
+          <h4 className="big-space">
+            {window.gettext('Or select from your projects')}
+          </h4>
+        </>
+      )
     }
     return (
       <div className="message-wrap">

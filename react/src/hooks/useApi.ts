@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 
-function useApi(url, debug = false) {
+function useApi<APIResponseType>(
+  url: string,
+  debug = false
+): [APIResponseType, boolean, null | { response: Response; message: string }] {
   const [state, setState] = useState({
     loading: true,
-    data: {},
+    data: {} as APIResponseType,
     error: null
   })
 
@@ -32,7 +35,7 @@ function useApi(url, debug = false) {
         })
       }
     })
-  }, [])
+  }, [url, debug])
 
   return [{ ...state.data }, state.loading, state.error]
 }

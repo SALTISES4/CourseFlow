@@ -38980,8 +38980,9 @@ const theme = createTheme({
       light: "#90A4AE",
       dark: "#607D8B"
     },
-    other: {
-      divider: "#CFD8DC"
+    divider: "#CFD8DC",
+    action: {
+      hover: "rgba(4, 186, 116, 0.08)"
     }
   },
   typography: {
@@ -56056,6 +56057,125 @@ const ProfileSettingsPage = ({ formData }) => {
     )
   ] });
 };
+var Home = {};
+var _interopRequireDefault$a = interopRequireDefaultExports;
+Object.defineProperty(Home, "__esModule", {
+  value: true
+});
+var default_1$a = Home.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+}), "Home");
+default_1$a = Home.default = _default$a;
+var FolderCopy = {};
+var _interopRequireDefault$9 = interopRequireDefaultExports;
+Object.defineProperty(FolderCopy, "__esModule", {
+  value: true
+});
+var default_1$9 = FolderCopy.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
+}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+}, "1")], "FolderCopy");
+default_1$9 = FolderCopy.default = _default$9;
+var Search = {};
+var _interopRequireDefault$8 = interopRequireDefaultExports;
+Object.defineProperty(Search, "__esModule", {
+  value: true
+});
+var default_1$8 = Search.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+}), "Search");
+default_1$8 = Search.default = _default$8;
+var CalendarMonth = {};
+var _interopRequireDefault$7 = interopRequireDefaultExports;
+Object.defineProperty(CalendarMonth, "__esModule", {
+  value: true
+});
+var default_1$7 = CalendarMonth.default = void 0;
+var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+var _jsxRuntime$7 = jsxRuntimeExports;
+var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
+}), "CalendarMonth");
+default_1$7 = CalendarMonth.default = _default$7;
+var HelpRounded = {};
+var _interopRequireDefault$6 = interopRequireDefaultExports;
+Object.defineProperty(HelpRounded, "__esModule", {
+  value: true
+});
+var default_1$6 = HelpRounded.default = void 0;
+var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+var _jsxRuntime$6 = jsxRuntimeExports;
+var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
+}), "HelpRounded");
+default_1$6 = HelpRounded.default = _default$6;
+var ArrowBack = {};
+var _interopRequireDefault$5 = interopRequireDefaultExports;
+Object.defineProperty(ArrowBack, "__esModule", {
+  value: true
+});
+var default_1$5 = ArrowBack.default = void 0;
+var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
+var _jsxRuntime$5 = jsxRuntimeExports;
+var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+}), "ArrowBack");
+default_1$5 = ArrowBack.default = _default$5;
+var Menu2 = {};
+var _interopRequireDefault$4 = interopRequireDefaultExports;
+Object.defineProperty(Menu2, "__esModule", {
+  value: true
+});
+var default_1$4 = Menu2.default = void 0;
+var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
+var _jsxRuntime$4 = jsxRuntimeExports;
+var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
+}), "Menu");
+default_1$4 = Menu2.default = _default$4;
+function useApi(url, debug = false) {
+  const [state, setState] = reactExports.useState({
+    loading: true,
+    data: {},
+    error: null
+  });
+  reactExports.useEffect(() => {
+    debug && console.log(`API fetching from: ${url}`);
+    fetch(url).then((response) => {
+      if (response.ok) {
+        response.json().then((data2) => {
+          debug && console.log(data2);
+          setState({
+            loading: false,
+            error: null,
+            data: data2
+          });
+        });
+      } else {
+        debug && console.log("Error", response);
+        setState({
+          loading: false,
+          data: null,
+          error: {
+            response,
+            message: `Error fetching from API URL: ${url}`
+          }
+        });
+      }
+    });
+  }, [url, debug]);
+  return [{ ...state.data }, state.loading, state.error];
+}
 function getFabUtilityClass(slot) {
   return generateUtilityClass("MuiFab", slot);
 }
@@ -56275,125 +56395,6 @@ process.env.NODE_ENV !== "production" ? Fab.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "extended"]), PropTypes.string])
 } : void 0;
 const Fab$1 = Fab;
-var Home = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
-Object.defineProperty(Home, "__esModule", {
-  value: true
-});
-var default_1$a = Home.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-}), "Home");
-default_1$a = Home.default = _default$a;
-var FolderCopy = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
-Object.defineProperty(FolderCopy, "__esModule", {
-  value: true
-});
-var default_1$9 = FolderCopy.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-}, "1")], "FolderCopy");
-default_1$9 = FolderCopy.default = _default$9;
-var Search = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
-Object.defineProperty(Search, "__esModule", {
-  value: true
-});
-var default_1$8 = Search.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-}), "Search");
-default_1$8 = Search.default = _default$8;
-var CalendarMonth = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
-Object.defineProperty(CalendarMonth, "__esModule", {
-  value: true
-});
-var default_1$7 = CalendarMonth.default = void 0;
-var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-var _jsxRuntime$7 = jsxRuntimeExports;
-var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-  d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
-}), "CalendarMonth");
-default_1$7 = CalendarMonth.default = _default$7;
-var HelpRounded = {};
-var _interopRequireDefault$6 = interopRequireDefaultExports;
-Object.defineProperty(HelpRounded, "__esModule", {
-  value: true
-});
-var default_1$6 = HelpRounded.default = void 0;
-var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-var _jsxRuntime$6 = jsxRuntimeExports;
-var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
-}), "HelpRounded");
-default_1$6 = HelpRounded.default = _default$6;
-var ArrowBack = {};
-var _interopRequireDefault$5 = interopRequireDefaultExports;
-Object.defineProperty(ArrowBack, "__esModule", {
-  value: true
-});
-var default_1$5 = ArrowBack.default = void 0;
-var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
-var _jsxRuntime$5 = jsxRuntimeExports;
-var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
-  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-}), "ArrowBack");
-default_1$5 = ArrowBack.default = _default$5;
-var Menu2 = {};
-var _interopRequireDefault$4 = interopRequireDefaultExports;
-Object.defineProperty(Menu2, "__esModule", {
-  value: true
-});
-var default_1$4 = Menu2.default = void 0;
-var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
-var _jsxRuntime$4 = jsxRuntimeExports;
-var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
-}), "Menu");
-default_1$4 = Menu2.default = _default$4;
-function useApi(url, debug = false) {
-  const [state, setState] = reactExports.useState({
-    loading: true,
-    data: {},
-    error: null
-  });
-  reactExports.useEffect(() => {
-    debug && console.log(`API fetching from: ${url}`);
-    fetch(url).then((response) => {
-      if (response.ok) {
-        response.json().then((data2) => {
-          debug && console.log(data2);
-          setState({
-            loading: false,
-            error: null,
-            data: data2
-          });
-        });
-      } else {
-        debug && console.log("Error", response);
-        setState({
-          loading: false,
-          data: null,
-          error: {
-            response,
-            message: `Error fetching from API URL: ${url}`
-          }
-        });
-      }
-    });
-  }, []);
-  return [{ ...state.data }, state.loading, state.error];
-}
 const SidebarRootStyles = {
   height: "100%"
 };
@@ -56409,41 +56410,45 @@ const LogoWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     marginRight: theme2.spacing(2)
   }
 }));
-const Collapse = styled$1(Fab$1)(({ theme: theme2, collapsed }) => ({
-  position: "absolute",
-  right: 0,
-  top: "60px",
-  transform: "translateX(50%)",
-  transition: "opacity 0.15s ease, visibility 0.15s ease",
-  color: theme2.palette.common.white,
-  ...collapsed && {
-    backgroundColor: "transparent",
-    color: theme2.palette.primary.main,
-    boxShadow: "none",
-    transform: "translate(4em, -58px)",
-    transition: "color 0.3s ease, background-color 0.3s ease",
-    "&:hover": {
-      color: theme2.palette.common.white,
-      backgroundColor: theme2.palette.common.light
+const Collapse = styled$1(Fab$1)(
+  ({ theme: theme2, collapsed }) => ({
+    position: "absolute",
+    right: 0,
+    top: "60px",
+    transform: "translateX(50%)",
+    transition: "opacity 0.15s ease, visibility 0.15s ease",
+    color: theme2.palette.common.white,
+    ...collapsed && {
+      backgroundColor: "transparent",
+      color: theme2.palette.primary.main,
+      boxShadow: "none",
+      transform: "translate(4em, -58px)",
+      transition: "color 0.3s ease, background-color 0.3s ease",
+      "&:hover": {
+        color: theme2.palette.common.white
+        // backgroundColor: theme.palette.common.light
+      }
     }
-  }
-}));
-const SidebarWrap = styled$1(Box$1)(({ theme: theme2, collapsed }) => ({
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-  ...collapsed && {
-    [`& .MuiPaper-root`]: {
-      display: "none"
+  })
+);
+const SidebarWrap = styled$1(Box$1)(
+  ({ theme: theme2, collapsed }) => ({
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    ...collapsed && {
+      [`& .MuiPaper-root`]: {
+        display: "none"
+      }
+    },
+    ...!collapsed && {
+      "&:not(:hover) .MuiFab-root": {
+        opacity: 0,
+        visibility: "hidden"
+      }
     }
-  },
-  ...!collapsed && {
-    "&:not(:hover) .MuiFab-root": {
-      opacity: 0,
-      visibility: "hidden"
-    }
-  }
-}));
+  })
+);
 const SidebarInner = styled$1(Paper$1)({
   display: "flex",
   flexDirection: "column",
@@ -56489,14 +56494,14 @@ const HelpLink = styled$1(List$1)(({ theme: theme2 }) => ({
 }));
 const Sidebar = () => {
   const [collapsed, setCollapsed] = reactExports.useState(
-    sessionStorage.getItem("collapsed_sidebar")
+    !!sessionStorage.getItem("collapsed_sidebar")
   );
   const [apiData, loading, error] = useApi(
     COURSEFLOW_APP.config.json_api_paths.get_sidebar
   );
   function toggleCollapse() {
     if (!collapsed) {
-      sessionStorage.setItem("collapsed_sidebar", true);
+      sessionStorage.setItem("collapsed_sidebar", "true");
     } else {
       sessionStorage.removeItem("collapsed_sidebar");
     }
@@ -57017,6 +57022,491 @@ var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)(
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
 default_1 = AddCircle.default = _default;
+class ImportMenu extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  submit(evt) {
+    $("#submit-button").attr("disabled", true);
+    setTimeout(() => {
+      this.props.actionFunction();
+      alert(
+        window.gettext(
+          "Your file has been submitted. Please wait while it is imported. You may close this message."
+        )
+      );
+    }, 100);
+    return true;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "form",
+        {
+          encType: "multipart/form-data",
+          action: COURSEFLOW_APP.config.post_paths.import_data,
+          method: "POST",
+          id: "upload-form",
+          target: "redirect-iframe",
+          onSubmit: this.submit.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                name: "csrfmiddlewaretoken",
+                value: window.getCsrfToken()
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectID",
+                name: "objectID",
+                value: JSON.stringify(this.props.data.object_id)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectType",
+                name: "objectType",
+                value: JSON.stringify(this.props.data.object_type)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "importType",
+                name: "importType",
+                value: this.props.data.import_type
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "file",
+                id: "myFile",
+                name: "myFile",
+                accept: ".xls, .xlsx, .csv",
+                required: true
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "The uploading process may take some time. It is not recommended to continue editing until it is complete."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+        }
+      )
+    ] });
+  }
+}
+class TitleText extends reactExports.Component {
+  render() {
+    var text = this.props.text;
+    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
+      text = this.props.defaultText;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "title-text",
+        title: text,
+        dangerouslySetInnerHTML: { __html: text }
+      }
+    );
+  }
+}
+class WorkflowTitle extends reactExports.Component {
+  render() {
+    const data2 = this.props.data;
+    let text = data2.title;
+    if (data2.code)
+      text = data2.code + " - " + text;
+    if (text == null || text == "") {
+      text = window.gettext("Untitled");
+    }
+    if (data2.url == "noaccess" || data2.url == "nouser") {
+      text += window.gettext(" (no access)");
+    }
+    if (data2.deleted) {
+      text += " (deleted)";
+    }
+    let href = data2.url;
+    if (!data2.url)
+      href = COURSEFLOW_APP.config.update_path[data2.type].replace("0", data2.id);
+    if (this.props.no_hyperlink || data2.url == "noaccess" || data2.url == "nouser") {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: this.props.class_name,
+          "data-test-id": this.props.test_id,
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
+        }
+      );
+    } else {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          onClick: (evt) => evt.stopPropagation(),
+          href,
+          className: this.props.class_name,
+          "data-test-id": this.props.test_id,
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
+        }
+      );
+    }
+  }
+}
+class WeekTitle extends reactExports.Component {
+  render() {
+    const data2 = this.props.data;
+    const default_text = data2.week_type_display + " " + (this.props.rank + 1);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text });
+  }
+}
+class NodeTitle extends reactExports.Component {
+  render() {
+    const data2 = this.props.data;
+    let text;
+    if (data2.represents_workflow && data2.linked_workflow_data) {
+      text = data2.linked_workflow_data.title;
+      if (data2.linked_workflow_data.code)
+        text = data2.linked_workflow_data.code + " - " + text;
+    } else
+      text = data2.title;
+    if (text == null || text == "") {
+      text = window.gettext("Untitled");
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "node-title",
+        title: text,
+        dangerouslySetInnerHTML: { __html: text }
+      }
+    );
+  }
+}
+class AssignmentTitle extends reactExports.Component {
+  render() {
+    const data2 = this.props.data;
+    let text;
+    if (data2.task.represents_workflow && data2.task.linked_workflow_data) {
+      text = data2.task.linked_workflow_data.title;
+      if (data2.task.linked_workflow_data.code)
+        text = data2.task.linked_workflow_data.code + " - " + text;
+    } else
+      text = data2.task.title;
+    if (text == null || text == "") {
+      text = window.gettext("Untitled");
+    }
+    if (this.props.user_role == role_keys.teacher) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          href: COURSEFLOW_APP.config.update_path.liveassignment.replace(
+            "0",
+            data2.id
+          ),
+          className: "workflow-title hover-shade",
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
+        }
+      );
+    } else {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "span",
+        {
+          className: "workflow-title",
+          title: text,
+          dangerouslySetInnerHTML: { __html: text }
+        }
+      );
+    }
+  }
+}
+class OutcomeTitle extends reactExports.Component {
+  render() {
+    const data2 = this.props.data;
+    let text = data2.title;
+    if (data2.title == null || data2.title == "") {
+      text = window.gettext("Untitled");
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { title: this.props.hovertext, className: "title-text", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: this.props.prefix + " - " }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { dangerouslySetInnerHTML: { __html: text } })
+    ] });
+  }
+}
+function getOutcomeTitle(data2, prefix2) {
+  let text = data2.title;
+  if (data2.title == null || data2.title == "") {
+    text = window.gettext("Untitled");
+  }
+  return prefix2 + " - " + text;
+}
+var ViewType = /* @__PURE__ */ ((ViewType2) => {
+  ViewType2["WORKFLOW"] = "workflowview";
+  ViewType2["OUTCOME_EDIT"] = "outcomeedit";
+  ViewType2["GRID"] = "grid";
+  ViewType2["OUTCOMETABLE"] = "outcometable";
+  ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
+  return ViewType2;
+})(ViewType || {});
+var WFContext = /* @__PURE__ */ ((WFContext2) => {
+  WFContext2["WORKFLOW"] = "workflow";
+  WFContext2["COMPARISON"] = "comparison";
+  return WFContext2;
+})(WFContext || {});
+var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
+  WorkflowType2["ACTIVITY"] = "activity";
+  WorkflowType2["PROJECT"] = "project";
+  WorkflowType2["PROGRAM"] = "program";
+  WorkflowType2["LIVE_PROJECT"] = "liveproject";
+  return WorkflowType2;
+})(WorkflowType || {});
+class WorkflowCard extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    __publicField(this, "mainDiv");
+    __publicField(this, "workflow");
+    __publicField(this, "updateWorkflow");
+    __publicField(this, "selectAction");
+    __publicField(this, "userRole");
+    __publicField(this, "readOnly");
+    __publicField(this, "projectData");
+    __publicField(this, "selected");
+    __publicField(this, "noHyperlink");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "TypeIndicator", () => {
+      const { type, is_strategy } = this.workflow;
+      let type_text = window.gettext(type);
+      if (type === WorkflowType.LIVE_PROJECT) {
+        type_text = window.gettext("classroom");
+      }
+      if (is_strategy) {
+        type_text += window.gettext(" strategy");
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
+    });
+    __publicField(this, "FavouriteButton", () => {
+      const favourite = this.state.favourite;
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.LIVE_PROJECT)
+        return null;
+      const favClass = favourite ? " filled" : "";
+      const toggleFavouriteAction = (evt) => {
+        toggleFavourite(workflow.id, workflow.type, !favourite);
+        this.setState({ favourite: !favourite });
+        evt.stopPropagation();
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "workflow-toggle-favourite hover-shade",
+          onClick: toggleFavouriteAction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: `material-symbols-outlined${favClass}`,
+              title: window.gettext("Favourite"),
+              children: "star"
+            }
+          )
+        },
+        "btn-workflow-toggle-favourite"
+      );
+    });
+    __publicField(this, "WorkflowDetails", () => {
+      const details = [];
+      const workflow = this.workflow;
+      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
+        );
+      }
+      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created workflow-live-classroom",
+              title: window.gettext("Live Classroom"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
+                ` ${window.gettext("Live Classroom")}`
+              ]
+            },
+            "workflow-created-group"
+          )
+        );
+      }
+      if (this.workflow.is_linked) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created linked-workflow-warning",
+              title: window.gettext(
+                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
+                ` ${window.gettext("Already in use")}`
+              ]
+            },
+            "workflow-created-warning"
+          )
+        );
+      }
+      return details;
+    });
+    __publicField(this, "Buttons", () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
+      ] });
+    });
+    __publicField(this, "Visible", () => {
+      const isTeacher = this.userRole === role_keys.teacher;
+      const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
+      if (!this.readOnly && isTeacher && isEligibleType) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "permission-select",
+            onClick: (evt) => evt.stopPropagation(),
+            onMouseDown: (evt) => evt.stopPropagation(),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "select",
+              {
+                value: String(this.workflow.is_visible),
+                onChange: (evt) => this.visibilityFunction(this.workflow.id, evt.target.value),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
+                ]
+              }
+            )
+          }
+        );
+      }
+      return null;
+    });
+    this.state = {
+      favourite: props2.workflowData.favourite
+    };
+    this.selected = this.props.selected;
+    this.noHyperlink = this.props.noHyperlink;
+    this.userRole = this.props.userRole;
+    this.readOnly = this.props.readOnly;
+    this.projectData = this.props.projectData;
+    this.updateWorkflow = this.props.updateWorkflow;
+    this.workflow = this.props.workflowData;
+    this.selectAction = this.props.selectAction;
+    this.mainDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    if (this.selectAction) {
+      this.selectAction(this.workflow.id);
+    } else {
+      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
+    }
+  }
+  visibilityFunction(id, is_visible) {
+    const isVisibleBool = is_visible === "true";
+    this.updateWorkflow(id, {
+      is_visible: isVisibleBool
+    });
+    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  renderCreationText(data2) {
+    let creationText = window.gettext("Created");
+    if (data2.author && data2.author !== "None") {
+      creationText += ` ${window.gettext("by")} ${data2.author}`;
+    }
+    creationText += `${window.gettext(" on ")}${data2.created_on}`;
+    return creationText;
+  }
+  renderDescription(description) {
+    if (!description) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-description" });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "workflow-description collapsible-text",
+        dangerouslySetInnerHTML: { __html: description }
+      }
+    );
+  }
+  render() {
+    const { selected, noHyperlink } = this.props;
+    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${selected ? " selected" : ""}`;
+    const creationText = this.renderCreationText(this.workflow);
+    const description = this.renderDescription(this.workflow.description);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        ref: this.mainDiv,
+        className: cssClass,
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => evt.preventDefault(),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowTitle,
+              {
+                no_hyperlink: noHyperlink,
+                class_name: "workflow-title",
+                data: this.workflow
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Visible, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
+          description,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Buttons, {})
+        ]
+      }
+    );
+  }
+}
 function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
@@ -57027,34 +57517,6 @@ function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only,
       self_only: JSON.stringify(self_only)
     },
     (data2) => {
-    }
-  );
-}
-function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () => console.log("success")) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_target_projects,
-    {
-      workflowPk: JSON.stringify(workflowPk)
-    },
-    (data2) => {
-      callBackFunction();
-    }
-  );
-}
-function createNew(create_url) {
-  COURSEFLOW_APP.tinyLoader.startLoad();
-  getTargetProjectMenu(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location = create_url.replace(
-          "/0/",
-          "/" + response_data.parentID + "/"
-        );
-      }
-    },
-    () => {
-      COURSEFLOW_APP.tinyLoader.endLoad();
     }
   );
 }
@@ -57099,6 +57561,354 @@ function insertedAt(renderer, objectID, objectType, parentID, parentType, newPos
       renderer.dragAction[throughType] = null;
       $(document).off(throughType + "-dropped");
     });
+}
+class MenuSection extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    this.dropdownDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const section_type = this.props.section_data.object_type;
+    const is_strategy = this.props.section_data.is_strategy;
+    const parentID = this.props.parentID;
+    let add_button;
+    let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        no_hyperlink: this.props.no_hyperlink,
+        type: this.props.type,
+        workflowData: object,
+        objectType: section_type,
+        selected: this.props.selected_id === object.id,
+        dispatch: this.props.dispatch,
+        selectAction: this.props.selectAction
+      },
+      object.id
+    ));
+    if (this.props.replacement_text)
+      objects = this.props.replacement_text;
+    if (COURSEFLOW_APP.config.create_path && this.props.add) {
+      let types;
+      if (section_type === "workflow")
+        types = ["program", "course", "activity"];
+      else
+        types = [section_type];
+      let adds;
+      {
+        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            className: "hover-shade",
+            href: COURSEFLOW_APP.config.create_path[this_type],
+            children: window.gettext("Create new ") + window.gettext(this_type)
+          }
+        ));
+        let import_text = window.gettext("Import ") + window.gettext(section_type);
+        if (is_strategy)
+          import_text += window.gettext(" strategy");
+        adds.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              className: "hover-shade",
+              onClick: () => {
+                getAddedWorkflowMenu(
+                  parentID,
+                  section_type,
+                  is_strategy,
+                  false
+                );
+              },
+              children: import_text
+            }
+          )
+        );
+      }
+      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
+            title: window.gettext("Add New"),
+            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
+      add_button,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: objects })
+    ] });
+  }
+}
+class MenuTab extends reactExports.Component {
+  render() {
+    let is_empty = true;
+    for (let i = 0; i < this.props.data.sections.length; i++) {
+      if (this.props.data.sections[i].objects.length > 0) {
+        is_empty = false;
+        break;
+      }
+    }
+    let replacement_text;
+    if (is_empty)
+      replacement_text = this.props.data.emptytext;
+    var sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      MenuSection,
+      {
+        no_hyperlink: this.props.no_hyperlink,
+        type: this.props.type,
+        replacement_text: i == 0 ? replacement_text : null,
+        section_data: section,
+        add: this.props.data.add,
+        selected_id: this.props.selected_id,
+        dispatch: this.props.dispatch,
+        selectAction: this.props.selectAction,
+        parentID: this.props.parentID,
+        duplicate: this.props.data.duplicate
+      }
+    ));
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
+  }
+}
+function closeMessageBox() {
+  reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
+}
+class WorkflowsMenu extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    this.state = {};
+    if (this.props.type === "target_project_menu") {
+      try {
+        this.current_project = project_data;
+      } catch (err) {
+      }
+      try {
+        this.current_project = workflow_data_package.project;
+      } catch (err) {
+      }
+      if (this.current_project)
+        this.state.selected = this.current_project.id;
+    }
+    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
+      this.project_workflows = props2.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    $("#workflow-tabs").tabs({ active: 0 });
+    $("#workflow-tabs .tab-header").on("click", () => {
+      this.setState({ selected: null });
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getTitle() {
+    switch (this.props.type) {
+      case "linked_workflow_menu":
+      case "added_workflow_menu":
+      case "workflow_select_menu":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
+      case "target_project_menu":
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
+    }
+    return null;
+  }
+  workflowSelected(selected_id, selected_type) {
+    this.setState({ selected: selected_id, selected_type });
+  }
+  getActions() {
+    const actions = [];
+    if (this.props.type === "linked_workflow_menu") {
+      let text = window.gettext("link to node");
+      if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+        text = window.gettext("Copy to Current Project and ") + text;
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow-cancel",
+            className: "secondary-button",
+            onClick: closeMessageBox,
+            children: window.gettext("Cancel")
+          }
+        )
+      );
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow-none",
+            className: "secondary-button",
+            onClick: () => {
+              setLinkedWorkflow(
+                this.props.data.node_id,
+                -1,
+                this.props.actionFunction
+              );
+              closeMessageBox();
+            },
+            children: window.gettext("Set to None")
+          }
+        )
+      );
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow",
+            disabled: !this.state.selected,
+            className: "primary-button",
+            onClick: () => {
+              setLinkedWorkflow(
+                this.props.data.node_id,
+                this.state.selected,
+                this.props.actionFunction
+              );
+              closeMessageBox();
+            },
+            children: text
+          }
+        )
+      );
+    } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
+      let text = "";
+      if (this.props.type === "added_workflow_menu") {
+        text = window.gettext("Select");
+        if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+          text = window.gettext("Copy to Current Project");
+      } else {
+        text = window.gettext("Select");
+      }
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow-cancel",
+            className: "secondary-button",
+            onClick: closeMessageBox,
+            children: window.gettext("Cancel")
+          }
+        )
+      );
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow",
+            className: "primary-button",
+            disabled: !this.state.selected,
+            onClick: () => {
+              this.props.actionFunction({ workflowID: this.state.selected });
+              closeMessageBox();
+            },
+            children: text
+          }
+        )
+      );
+    } else if (this.props.type === "target_project_menu") {
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow-cancel",
+            className: "secondary-button",
+            onClick: closeMessageBox,
+            children: window.gettext("Cancel")
+          }
+        )
+      );
+      actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            id: "set-linked-workflow",
+            className: "primary-button",
+            disabled: !this.state.selected,
+            onClick: () => {
+              this.props.actionFunction({ parentID: this.state.selected });
+              closeMessageBox();
+            },
+            children: window.gettext("Select project")
+          }
+        )
+      );
+    }
+    return actions;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data_package = this.props.data.data_package;
+    let no_hyperlink = false;
+    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
+      no_hyperlink = true;
+    const tabs = [];
+    const tab_li = [];
+    let i = 0;
+    for (const prop in data_package) {
+      tab_li.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: data_package[prop].title }) })
+      );
+      tabs.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          MenuTab,
+          {
+            no_hyperlink,
+            data: data_package[prop],
+            type: this.props.type,
+            identifier: i,
+            selected_id: this.state.selected,
+            selectAction: this.workflowSelected.bind(this)
+          }
+        )
+      );
+      i++;
+    }
+    let current_project;
+    if (this.current_project) {
+      current_project = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCard,
+          {
+            workflowData: this.current_project,
+            selected: this.state.selected === this.current_project.id,
+            noHyperlink: no_hyperlink,
+            type: this.props.type,
+            dispatch: this.props.dispatch,
+            selectAction: this.workflowSelected.bind(this)
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+        ",",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      this.getTitle(),
+      current_project,
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
+        tabs
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() })
+    ] });
+  }
 }
 function getDialogUtilityClass(slot) {
   return generateUtilityClass("MuiDialog", slot);
@@ -57475,53 +58285,63 @@ process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
   TransitionProps: PropTypes.object
 } : void 0;
 const Dialog$1 = Dialog;
-function getDialogTitleUtilityClass(slot) {
-  return generateUtilityClass("MuiDialogTitle", slot);
+function getDialogActionsUtilityClass(slot) {
+  return generateUtilityClass("MuiDialogActions", slot);
 }
-const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-const dialogTitleClasses$1 = dialogTitleClasses;
-const _excluded$4 = ["className", "id"];
+generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
+const _excluded$4 = ["className", "disableSpacing"];
 const useUtilityClasses$2 = (ownerState) => {
   const {
-    classes
+    classes,
+    disableSpacing
   } = ownerState;
   const slots = {
-    root: ["root"]
+    root: ["root", !disableSpacing && "spacing"]
   };
-  return composeClasses(slots, getDialogTitleUtilityClass, classes);
+  return composeClasses(slots, getDialogActionsUtilityClass, classes);
 };
-const DialogTitleRoot = styled$1(Typography$1, {
-  name: "MuiDialogTitle",
+const DialogActionsRoot = styled$1("div", {
+  name: "MuiDialogActions",
   slot: "Root",
-  overridesResolver: (props2, styles2) => styles2.root
-})({
-  padding: "16px 24px",
+  overridesResolver: (props2, styles2) => {
+    const {
+      ownerState
+    } = props2;
+    return [styles2.root, !ownerState.disableSpacing && styles2.spacing];
+  }
+})(({
+  ownerState
+}) => _extends$2({
+  display: "flex",
+  alignItems: "center",
+  padding: 8,
+  justifyContent: "flex-end",
   flex: "0 0 auto"
-});
-const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
+}, !ownerState.disableSpacing && {
+  "& > :not(style) ~ :not(style)": {
+    marginLeft: 8
+  }
+}));
+const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
   const props2 = useThemeProps({
     props: inProps,
-    name: "MuiDialogTitle"
+    name: "MuiDialogActions"
   });
   const {
     className,
-    id: idProp
+    disableSpacing = false
   } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$4);
-  const ownerState = props2;
+  const ownerState = _extends$2({}, props2, {
+    disableSpacing
+  });
   const classes = useUtilityClasses$2(ownerState);
-  const {
-    titleId = idProp
-  } = reactExports.useContext(DialogContext$1);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$2({
-    component: "h2",
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
-    ref,
-    variant: "h6",
-    id: idProp != null ? idProp : titleId
+    ref
   }, other));
 });
-process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
+process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
   // ----------------------------- Warning --------------------------------
   // | These PropTypes are generated from the TypeScript type definitions |
   // |     To update them edit the d.ts file and run "yarn proptypes"     |
@@ -57539,19 +58359,25 @@ process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
    */
   className: PropTypes.string,
   /**
-   * @ignore
+   * If `true`, the actions do not have additional margin.
+   * @default false
    */
-  id: PropTypes.string,
+  disableSpacing: PropTypes.bool,
   /**
    * The system prop that allows defining system overrides as well as additional CSS styles.
    */
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
-const DialogTitle$1 = DialogTitle;
+const DialogActions$1 = DialogActions;
 function getDialogContentUtilityClass(slot) {
   return generateUtilityClass("MuiDialogContent", slot);
 }
 generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
+function getDialogTitleUtilityClass(slot) {
+  return generateUtilityClass("MuiDialogTitle", slot);
+}
+const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
+const dialogTitleClasses$1 = dialogTitleClasses;
 const _excluded$3 = ["className", "dividers"];
 const useUtilityClasses$1 = (ownerState) => {
   const {
@@ -57637,63 +58463,48 @@ process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
 const DialogContent$1 = DialogContent;
-function getDialogActionsUtilityClass(slot) {
-  return generateUtilityClass("MuiDialogActions", slot);
-}
-generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-const _excluded$2 = ["className", "disableSpacing"];
+const _excluded$2 = ["className", "id"];
 const useUtilityClasses = (ownerState) => {
   const {
-    classes,
-    disableSpacing
+    classes
   } = ownerState;
   const slots = {
-    root: ["root", !disableSpacing && "spacing"]
+    root: ["root"]
   };
-  return composeClasses(slots, getDialogActionsUtilityClass, classes);
+  return composeClasses(slots, getDialogTitleUtilityClass, classes);
 };
-const DialogActionsRoot = styled$1("div", {
-  name: "MuiDialogActions",
+const DialogTitleRoot = styled$1(Typography$1, {
+  name: "MuiDialogTitle",
   slot: "Root",
-  overridesResolver: (props2, styles2) => {
-    const {
-      ownerState
-    } = props2;
-    return [styles2.root, !ownerState.disableSpacing && styles2.spacing];
-  }
-})(({
-  ownerState
-}) => _extends$2({
-  display: "flex",
-  alignItems: "center",
-  padding: 8,
-  justifyContent: "flex-end",
+  overridesResolver: (props2, styles2) => styles2.root
+})({
+  padding: "16px 24px",
   flex: "0 0 auto"
-}, !ownerState.disableSpacing && {
-  "& > :not(style) ~ :not(style)": {
-    marginLeft: 8
-  }
-}));
-const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
+});
+const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
   const props2 = useThemeProps({
     props: inProps,
-    name: "MuiDialogActions"
+    name: "MuiDialogTitle"
   });
   const {
     className,
-    disableSpacing = false
+    id: idProp
   } = props2, other = _objectWithoutPropertiesLoose$1(props2, _excluded$2);
-  const ownerState = _extends$2({}, props2, {
-    disableSpacing
-  });
+  const ownerState = props2;
   const classes = useUtilityClasses(ownerState);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$2({
+  const {
+    titleId = idProp
+  } = reactExports.useContext(DialogContext$1);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$2({
+    component: "h2",
     className: clsx(classes.root, className),
     ownerState,
-    ref
+    ref,
+    variant: "h6",
+    id: idProp != null ? idProp : titleId
   }, other));
 });
-process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
+process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
   // ----------------------------- Warning --------------------------------
   // | These PropTypes are generated from the TypeScript type definitions |
   // |     To update them edit the d.ts file and run "yarn proptypes"     |
@@ -57711,16 +58522,292 @@ process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
    */
   className: PropTypes.string,
   /**
-   * If `true`, the actions do not have additional margin.
-   * @default false
+   * @ignore
    */
-  disableSpacing: PropTypes.bool,
+  id: PropTypes.string,
   /**
    * The system prop that allows defining system overrides as well as additional CSS styles.
    */
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
-const DialogActions$1 = DialogActions;
+const DialogTitle$1 = DialogTitle;
+class MessageBox extends reactExports.Component {
+  constructor() {
+    super(...arguments);
+    __publicField(this, "getMenu", () => {
+      switch (this.props.message_type) {
+        case "linked_workflow_menu":
+        case "target_project_menu":
+        case "added_workflow_menu":
+        case "workflow_select_menu":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowsMenu,
+            {
+              type: this.props.message_type,
+              data: this.props.message_data,
+              actionFunction: this.props.actionFunction
+            }
+          );
+        default:
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      }
+    });
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "screen-barrier", onClick: (evt) => evt.stopPropagation(), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "message-box " + this.props.message_type, children: this.getMenu() }) });
+  }
+}
+function renderMessageBox(data2, type, updateFunction) {
+  reactDomExports.render(
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      MessageBox,
+      {
+        message_data: data2,
+        message_type: type,
+        actionFunction: updateFunction
+      }
+    ),
+    $("#popup-container")[0]
+  );
+}
+function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data2)
+    }).done(function(data22) {
+      callBackFunction(data22);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () => console.log("success")) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_target_projects,
+    {
+      workflowPk: JSON.stringify(workflowPk)
+    },
+    (data2) => {
+      callBackFunction();
+      openTargetProjectMenu(data2, updateFunction);
+    }
+  );
+}
+function openTargetProjectMenu(response, updateFunction) {
+  if (response.action === DATA_ACTIONS.POSTED) {
+    renderMessageBox(response, "target_project_menu", updateFunction);
+  } else {
+    alert("Failed to find potential projects.");
+  }
+}
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
+  if (["program", "course", "activity"].indexOf(objectType) >= 0)
+    objectType = "workflow";
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    console.log("err");
+    console.log(err);
+    window.fail_function();
+  }
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
+  const sendPostRequest = (url, data2) => {
+    $.post(url, data2).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+        outcomePk: itemPkString,
+        projectPk: projectPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data2) {
+      console.log("getWorkflowDataQuery data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (data2) => {
+      callBackFunction();
+    }
+  );
+}
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    console.log("workflowPk");
+    console.log(workflowPk);
+    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    }).catch((err) => {
+      console.log(err);
+    });
+  } catch (err) {
+    console.log("getParentWorkflowInfoQuery error in try/catc");
+    console.log(err);
+    window.fail_function();
+  }
+  console.log("MyError getParentWorkflowInfoQuery");
+}
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data2) {
+          if (data2.action === DATA_ACTIONS.POSTED) {
+            callBackFunction(data2);
+          } else
+            window.fail_function(data2.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
 const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
   "& .MuiDialogContent-root": {
     padding: theme2.spacing(2)
@@ -57729,7 +58816,11 @@ const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
     padding: theme2.spacing(1)
   }
 }));
-const ResetPasswordModal = ({ show, handleClose, handleContinue }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+const ResetPasswordModal = ({
+  show,
+  handleClose,
+  handleContinue
+}) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
   StyledDialog,
   {
     open: show,
@@ -57799,6 +58890,24 @@ const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
     top: "50%"
   }
 }));
+function openCreateActionModal(type) {
+  const createUrl = COURSEFLOW_APP.config.create_path[type];
+  COURSEFLOW_APP.tinyLoader.startLoad();
+  getTargetProjectMenu(
+    -1,
+    (response_data) => {
+      if (response_data.parentID !== null) {
+        window.location.href = createUrl.replace(
+          "/0/",
+          "/" + response_data.parentID + "/"
+        );
+      }
+    },
+    () => {
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    }
+  );
+}
 const TopBar = () => {
   const [anchorEl, setAnchorEl] = reactExports.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -57830,18 +58939,8 @@ const TopBar = () => {
     setAddMenuAnchorEl(null);
     setNotificationsMenuAnchorEl(null);
   };
-  const handleCreateClick = (type) => {
-    switch (type) {
-      case "program":
-        createNew(COURSEFLOW_APP.config.create_path.program);
-        break;
-      case "activity":
-        createNew(COURSEFLOW_APP.config.create_path.activity);
-        break;
-      case "course":
-        createNew(COURSEFLOW_APP.config.create_path.course);
-        break;
-    }
+  const handleCreateClick = (resourceType) => {
+    openCreateActionModal(resourceType);
     closeAllMenus();
   };
   const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -58020,7 +59119,7 @@ const TopBar = () => {
         handleClose: () => {
           setResetPassword(false);
         },
-        handleContinue: () => window.location = apiData.menus.account.resetPasswordUrl
+        handleContinue: () => window.location.href = apiData.menus.account.resetPasswordUrl
       }
     )
   ] });
@@ -59416,509 +60515,6 @@ function compose() {
       return a(b.apply(void 0, arguments));
     };
   });
-}
-class TitleText extends reactExports.Component {
-  render() {
-    var text = this.props.text;
-    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
-      text = this.props.defaultText;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "title-text",
-        title: text,
-        dangerouslySetInnerHTML: { __html: text }
-      }
-    );
-  }
-}
-class WorkflowTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    let text = data2.title;
-    if (data2.code)
-      text = data2.code + " - " + text;
-    if (text == null || text == "") {
-      text = window.gettext("Untitled");
-    }
-    if (data2.url == "noaccess" || data2.url == "nouser") {
-      text += window.gettext(" (no access)");
-    }
-    if (data2.deleted) {
-      text += " (deleted)";
-    }
-    let href = data2.url;
-    if (!data2.url)
-      href = COURSEFLOW_APP.config.update_path[data2.type].replace("0", data2.id);
-    if (this.props.no_hyperlink || data2.url == "noaccess" || data2.url == "nouser") {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: this.props.class_name,
-          "data-test-id": this.props.test_id,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    } else {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          onClick: (evt) => evt.stopPropagation(),
-          href,
-          className: this.props.class_name,
-          "data-test-id": this.props.test_id,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    }
-  }
-}
-class WeekTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    const default_text = data2.week_type_display + " " + (this.props.rank + 1);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text });
-  }
-}
-class NodeTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    let text;
-    if (data2.represents_workflow && data2.linked_workflow_data) {
-      text = data2.linked_workflow_data.title;
-      if (data2.linked_workflow_data.code)
-        text = data2.linked_workflow_data.code + " - " + text;
-    } else
-      text = data2.title;
-    if (text == null || text == "") {
-      text = window.gettext("Untitled");
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "node-title",
-        title: text,
-        dangerouslySetInnerHTML: { __html: text }
-      }
-    );
-  }
-}
-class AssignmentTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    let text;
-    if (data2.task.represents_workflow && data2.task.linked_workflow_data) {
-      text = data2.task.linked_workflow_data.title;
-      if (data2.task.linked_workflow_data.code)
-        text = data2.task.linked_workflow_data.code + " - " + text;
-    } else
-      text = data2.task.title;
-    if (text == null || text == "") {
-      text = window.gettext("Untitled");
-    }
-    if (this.props.user_role == role_keys.teacher) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          href: COURSEFLOW_APP.config.update_path.liveassignment.replace(
-            "0",
-            data2.id
-          ),
-          className: "workflow-title hover-shade",
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    } else {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "span",
-        {
-          className: "workflow-title",
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    }
-  }
-}
-class OutcomeTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    let text = data2.title;
-    if (data2.title == null || data2.title == "") {
-      text = window.gettext("Untitled");
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { title: this.props.hovertext, className: "title-text", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: this.props.prefix + " - " }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { dangerouslySetInnerHTML: { __html: text } })
-    ] });
-  }
-}
-function getOutcomeTitle(data2, prefix2) {
-  let text = data2.title;
-  if (data2.title == null || data2.title == "") {
-    text = window.gettext("Untitled");
-  }
-  return prefix2 + " - " + text;
-}
-var ViewType = /* @__PURE__ */ ((ViewType2) => {
-  ViewType2["WORKFLOW"] = "workflowview";
-  ViewType2["OUTCOME_EDIT"] = "outcomeedit";
-  ViewType2["GRID"] = "grid";
-  ViewType2["OUTCOMETABLE"] = "outcometable";
-  ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
-  return ViewType2;
-})(ViewType || {});
-var WFContext = /* @__PURE__ */ ((WFContext2) => {
-  WFContext2["WORKFLOW"] = "workflow";
-  WFContext2["COMPARISON"] = "comparison";
-  return WFContext2;
-})(WFContext || {});
-var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
-  WorkflowType2["ACTIVITY"] = "activity";
-  WorkflowType2["PROJECT"] = "project";
-  WorkflowType2["PROGRAM"] = "program";
-  WorkflowType2["LIVE_PROJECT"] = "liveproject";
-  return WorkflowType2;
-})(WorkflowType || {});
-class WorkflowCard extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    __publicField(this, "mainDiv");
-    __publicField(this, "workflow");
-    __publicField(this, "updateWorkflow");
-    __publicField(this, "selectAction");
-    __publicField(this, "userRole");
-    __publicField(this, "readOnly");
-    __publicField(this, "projectData");
-    __publicField(this, "selected");
-    __publicField(this, "noHyperlink");
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    __publicField(this, "TypeIndicator", () => {
-      const { type, is_strategy } = this.workflow;
-      let type_text = window.gettext(type);
-      if (type === WorkflowType.LIVE_PROJECT) {
-        type_text = window.gettext("classroom");
-      }
-      if (is_strategy) {
-        type_text += window.gettext(" strategy");
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
-    });
-    __publicField(this, "FavouriteButton", () => {
-      const favourite = this.state.favourite;
-      const workflow = this.workflow;
-      if (workflow.type === WorkflowType.LIVE_PROJECT)
-        return null;
-      const favClass = favourite ? " filled" : "";
-      const toggleFavouriteAction = (evt) => {
-        toggleFavourite(workflow.id, workflow.type, !favourite);
-        this.setState({ favourite: !favourite });
-        evt.stopPropagation();
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "workflow-toggle-favourite hover-shade",
-          onClick: toggleFavouriteAction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              className: `material-symbols-outlined${favClass}`,
-              title: window.gettext("Favourite"),
-              children: "star"
-            }
-          )
-        },
-        "btn-workflow-toggle-favourite"
-      );
-    });
-    __publicField(this, "WorkflowDetails", () => {
-      const details = [];
-      const workflow = this.workflow;
-      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
-        );
-      }
-      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-created workflow-live-classroom",
-              title: window.gettext("Live Classroom"),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
-                ` ${window.gettext("Live Classroom")}`
-              ]
-            },
-            "workflow-created-group"
-          )
-        );
-      }
-      if (this.workflow.is_linked) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-created linked-workflow-warning",
-              title: window.gettext(
-                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
-              ),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
-                ` ${window.gettext("Already in use")}`
-              ]
-            },
-            "workflow-created-warning"
-          )
-        );
-      }
-      return details;
-    });
-    __publicField(this, "Buttons", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
-      ] });
-    });
-    __publicField(this, "Visible", () => {
-      const isTeacher = this.userRole === role_keys.teacher;
-      const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
-      if (!this.readOnly && isTeacher && isEligibleType) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "permission-select",
-            onClick: (evt) => evt.stopPropagation(),
-            onMouseDown: (evt) => evt.stopPropagation(),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "select",
-              {
-                value: String(this.workflow.is_visible),
-                onChange: (evt) => this.visibilityFunction(this.workflow.id, evt.target.value),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
-                ]
-              }
-            )
-          }
-        );
-      }
-      return null;
-    });
-    this.state = {
-      favourite: props2.workflowData.favourite
-    };
-    this.selected = this.props.selected;
-    this.noHyperlink = this.props.noHyperlink;
-    this.userRole = this.props.userRole;
-    this.readOnly = this.props.readOnly;
-    this.projectData = this.props.projectData;
-    this.updateWorkflow = this.props.updateWorkflow;
-    this.workflow = this.props.workflowData;
-    this.selectAction = this.props.selectAction;
-    this.mainDiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    if (this.selectAction) {
-      this.selectAction(this.workflow.id);
-    } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
-    }
-  }
-  visibilityFunction(id, is_visible) {
-    const isVisibleBool = is_visible === "true";
-    this.updateWorkflow(id, {
-      is_visible: isVisibleBool
-    });
-    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  renderCreationText(data2) {
-    let creationText = window.gettext("Created");
-    if (data2.author && data2.author !== "None") {
-      creationText += ` ${window.gettext("by")} ${data2.author}`;
-    }
-    creationText += `${window.gettext(" on ")}${data2.created_on}`;
-    return creationText;
-  }
-  renderDescription(description) {
-    if (!description) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-description" });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: "workflow-description collapsible-text",
-        dangerouslySetInnerHTML: { __html: description }
-      }
-    );
-  }
-  render() {
-    const { selected, noHyperlink } = this.props;
-    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${selected ? " selected" : ""}`;
-    const creationText = this.renderCreationText(this.workflow);
-    const description = this.renderDescription(this.workflow.description);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        ref: this.mainDiv,
-        className: cssClass,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => evt.preventDefault(),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowTitle,
-              {
-                no_hyperlink: noHyperlink,
-                class_name: "workflow-title",
-                data: this.workflow
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Visible, {}),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
-          description,
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Buttons, {})
-        ]
-      }
-    );
-  }
-}
-class MenuSection extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.dropdownDiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const section_type = this.props.section_data.object_type;
-    const is_strategy = this.props.section_data.is_strategy;
-    const parentID = this.props.parentID;
-    let add_button;
-    let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        no_hyperlink: this.props.no_hyperlink,
-        type: this.props.type,
-        workflowData: object,
-        objectType: section_type,
-        selected: this.props.selected_id === object.id,
-        dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction
-      },
-      object.id
-    ));
-    if (this.props.replacement_text)
-      objects = this.props.replacement_text;
-    if (COURSEFLOW_APP.config.create_path && this.props.add) {
-      let types;
-      if (section_type === "workflow")
-        types = ["program", "course", "activity"];
-      else
-        types = [section_type];
-      let adds;
-      {
-        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.create_path[this_type],
-            children: window.gettext("Create new ") + window.gettext(this_type)
-          }
-        ));
-        let import_text = window.gettext("Import ") + window.gettext(section_type);
-        if (is_strategy)
-          import_text += window.gettext(" strategy");
-        adds.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "hover-shade",
-              onClick: () => {
-                getAddedWorkflowMenu(
-                  parentID,
-                  section_type,
-                  is_strategy,
-                  false
-                );
-              },
-              children: import_text
-            }
-          )
-        );
-      }
-      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
-            title: window.gettext("Add New"),
-            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
-      add_button,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: objects })
-    ] });
-  }
-}
-class MenuTab extends reactExports.Component {
-  render() {
-    let is_empty = true;
-    for (let i = 0; i < this.props.data.sections.length; i++) {
-      if (this.props.data.sections[i].objects.length > 0) {
-        is_empty = false;
-        break;
-      }
-    }
-    let replacement_text;
-    if (is_empty)
-      replacement_text = this.props.data.emptytext;
-    var sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      MenuSection,
-      {
-        no_hyperlink: this.props.no_hyperlink,
-        type: this.props.type,
-        replacement_text: i == 0 ? replacement_text : null,
-        section_data: section,
-        add: this.props.data.add,
-        selected_id: this.props.selected_id,
-        dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction,
-        parentID: this.props.parentID,
-        duplicate: this.props.data.duplicate
-      }
-    ));
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
-  }
 }
 class WorkflowGridMenuUnconnected extends reactExports.Component {
   render() {
@@ -61951,225 +62547,6 @@ class RestoreBarItem extends ComponentWithToggleDrop {
     }
   }
 }
-function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data2)
-    }).done(function(data22) {
-      callBackFunction(data22);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
-  if (["program", "course", "activity"].indexOf(objectType) >= 0)
-    objectType = "workflow";
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    console.log("err");
-    console.log(err);
-    window.fail_function();
-  }
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
-  const sendPostRequest = (url, data2) => {
-    $.post(url, data2).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === DATA_ACTIONS.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    });
-  };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: itemPkString,
-        projectPk: projectPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data2) {
-      console.log("getWorkflowDataQuery data");
-      console.log(data2);
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (data2) => {
-      callBackFunction();
-    }
-  );
-}
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    console.log("workflowPk");
-    console.log(workflowPk);
-    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    }).catch((err) => {
-      console.log(err);
-    });
-  } catch (err) {
-    console.log("getParentWorkflowInfoQuery error in try/catc");
-    console.log(err);
-    window.fail_function();
-  }
-  console.log("MyError getParentWorkflowInfoQuery");
-}
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
-  const t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
-  }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
-    changeFieldID: 0
-  };
-  if (changeField) {
-    post_object.changeFieldID = // @ts-ignore
-    COURSEFLOW_APP.contextData.changeFieldID;
-  }
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data2) {
-          if (data2.action === DATA_ACTIONS.POSTED) {
-            callBackFunction(data2);
-          } else
-            window.fail_function(data2.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 class QuillDiv extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -63659,7 +64036,7 @@ const mapStateToProps$7 = (state) => ({
   ),
   workflow_type: state.workflow.type
 });
-const test = connect(
+const OutcomeBarConnected = connect(
   mapStateToProps$7,
   null
 )(OutcomeBarUnconnected);
@@ -64186,7 +64563,7 @@ class RightSideBar extends reactExports.Component {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer, jjj: 8 });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      test,
+      OutcomeBarConnected,
       {
         renderMethod: this.props.parentRender,
         readOnly: true,
@@ -66747,374 +67124,6 @@ class LegendLine extends reactExports.Component {
     ] });
   }
 }
-class ImportMenu extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  submit(evt) {
-    $("#submit-button").attr("disabled", true);
-    setTimeout(() => {
-      this.props.actionFunction();
-      alert(
-        window.gettext(
-          "Your file has been submitted. Please wait while it is imported. You may close this message."
-        )
-      );
-    }, 100);
-    return true;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "form",
-        {
-          encType: "multipart/form-data",
-          action: COURSEFLOW_APP.config.post_paths.import_data,
-          method: "POST",
-          id: "upload-form",
-          target: "redirect-iframe",
-          onSubmit: this.submit.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                name: "csrfmiddlewaretoken",
-                value: window.getCsrfToken()
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectID",
-                name: "objectID",
-                value: JSON.stringify(this.props.data.object_id)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectType",
-                name: "objectType",
-                value: JSON.stringify(this.props.data.object_type)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "importType",
-                name: "importType",
-                value: this.props.data.import_type
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "file",
-                id: "myFile",
-                name: "myFile",
-                accept: ".xls, .xlsx, .csv",
-                required: true
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "The uploading process may take some time. It is not recommended to continue editing until it is complete."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-        }
-      )
-    ] });
-  }
-}
-function closeMessageBox() {
-  reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
-}
-class WorkflowsMenu extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.state = {};
-    if (this.props.type === "target_project_menu") {
-      try {
-        this.current_project = project_data;
-      } catch (err) {
-      }
-      try {
-        this.current_project = workflow_data_package.project;
-      } catch (err) {
-      }
-      if (this.current_project)
-        this.state.selected = this.current_project.id;
-    }
-    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
-      this.project_workflows = props2.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    $("#workflow-tabs").tabs({ active: 0 });
-    $("#workflow-tabs .tab-header").on("click", () => {
-      this.setState({ selected: null });
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getTitle() {
-    switch (this.props.type) {
-      case "linked_workflow_menu":
-      case "added_workflow_menu":
-      case "workflow_select_menu":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
-      case "target_project_menu":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
-    }
-    return null;
-  }
-  workflowSelected(selected_id, selected_type) {
-    this.setState({ selected: selected_id, selected_type });
-  }
-  getActions() {
-    var actions = [];
-    if (this.props.type === "linked_workflow_menu") {
-      var text = window.gettext("link to node");
-      if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-        text = window.gettext("Copy to Current Project and ") + text;
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow-cancel",
-            className: "secondary-button",
-            onClick: closeMessageBox,
-            children: window.gettext("Cancel")
-          }
-        )
-      );
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow-none",
-            className: "secondary-button",
-            onClick: () => {
-              setLinkedWorkflow(
-                this.props.data.node_id,
-                -1,
-                this.props.actionFunction
-              );
-              closeMessageBox();
-            },
-            children: window.gettext("Set to None")
-          }
-        )
-      );
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow",
-            disabled: !this.state.selected,
-            className: "primary-button",
-            onClick: () => {
-              setLinkedWorkflow(
-                this.props.data.node_id,
-                this.state.selected,
-                this.props.actionFunction
-              );
-              closeMessageBox();
-            },
-            children: text
-          }
-        )
-      );
-    } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
-      var text;
-      if (this.props.type === "added_workflow_menu") {
-        text = window.gettext("Select");
-        if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-          text = window.gettext("Copy to Current Project");
-      } else {
-        text = window.gettext("Select");
-      }
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow-cancel",
-            className: "secondary-button",
-            onClick: closeMessageBox,
-            children: window.gettext("Cancel")
-          }
-        )
-      );
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow",
-            className: "primary-button",
-            disabled: !this.state.selected,
-            onClick: () => {
-              this.props.actionFunction({ workflowID: this.state.selected });
-              closeMessageBox();
-            },
-            children: text
-          }
-        )
-      );
-    } else if (this.props.type === "target_project_menu") {
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow-cancel",
-            className: "secondary-button",
-            onClick: closeMessageBox,
-            children: window.gettext("Cancel")
-          }
-        )
-      );
-      actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            id: "set-linked-workflow",
-            className: "primary-button",
-            disabled: !this.state.selected,
-            onClick: () => {
-              this.props.actionFunction({ parentID: this.state.selected });
-              closeMessageBox();
-            },
-            children: window.gettext("Select project")
-          }
-        )
-      );
-    }
-    return actions;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var data_package = this.props.data.data_package;
-    let no_hyperlink = false;
-    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
-      no_hyperlink = true;
-    var tabs = [];
-    var tab_li = [];
-    var i = 0;
-    for (var prop in data_package) {
-      tab_li.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: data_package[prop].title }) })
-      );
-      tabs.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuTab,
-          {
-            no_hyperlink,
-            data: data_package[prop],
-            type: this.props.type,
-            identifier: i,
-            selected_id: this.state.selected,
-            selectAction: this.workflowSelected.bind(this)
-          }
-        )
-      );
-      i++;
-    }
-    let current_project;
-    if (this.current_project) {
-      current_project = [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            workflowData: this.current_project,
-            selected: this.state.selected === this.current_project.id,
-            noHyperlink: no_hyperlink,
-            type: this.props.type,
-            dispatch: this.props.dispatch,
-            selectAction: this.workflowSelected.bind(this)
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-      ];
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      this.getTitle(),
-      current_project,
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
-        tabs
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() })
-    ] });
-  }
-}
-class MessageBox extends reactExports.Component {
-  constructor() {
-    super(...arguments);
-    __publicField(this, "getMenu", () => {
-      switch (this.props.message_type) {
-        case "linked_workflow_menu":
-        case "target_project_menu":
-        case "added_workflow_menu":
-        case "workflow_select_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowsMenu,
-            {
-              type: this.props.message_type,
-              data: this.props.message_data,
-              actionFunction: this.props.actionFunction
-            }
-          );
-        default:
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      }
-    });
-  }
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "screen-barrier", onClick: (evt) => evt.stopPropagation(), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "message-box " + this.props.message_type, children: this.getMenu() }) });
-  }
-}
-function renderMessageBox(data2, type, updateFunction) {
-  reactDomExports.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      MessageBox,
-      {
-        message_data: data2,
-        message_type: type,
-        actionFunction: updateFunction
-      }
-    ),
-    $("#popup-container")[0]
-  );
-}
 class OutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -68706,8 +68715,8 @@ function create() {
       const nextMatchingDefs = [];
       matchingSignatures.forEach((signature) => {
         const param = getParamAtIndex(signature.params, index);
-        const test2 = compileTest(param);
-        if ((index < signature.params.length || hasRestParam(signature.params)) && test2(args[index])) {
+        const test = compileTest(param);
+        if ((index < signature.params.length || hasRestParam(signature.params)) && test(args[index])) {
           nextMatchingDefs.push(signature);
         }
       });
@@ -69278,9 +69287,9 @@ function create() {
   function slice2(arr, start, end) {
     return Array.prototype.slice.call(arr, start, end);
   }
-  function findInArray(arr, test2) {
+  function findInArray(arr, test) {
     for (let i = 0; i < arr.length; i++) {
-      if (test2(arr[i])) {
+      if (test(arr[i])) {
         return arr[i];
       }
     }
@@ -87880,7 +87889,20 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
                   }
                 );
               } else {
-                getTargetProjectMenu(-1);
+                getTargetProjectMenu(-1, (response_data) => {
+                  if (response_data.parentID != null) {
+                    const utilLoader = new Loader("body");
+                    duplicateBaseItemQuery(
+                      this.data.id,
+                      this.data.type,
+                      response_data.parentID,
+                      (response_data2) => {
+                        utilLoader.endLoad();
+                        window.location = COURSEFLOW_APP.config.update_path[response_data2.new_item.type].replace("0", response_data2.new_item.id);
+                      }
+                    );
+                  }
+                });
               }
             },
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
@@ -90298,7 +90320,7 @@ class HomePage extends reactExports.Component {
       projectPath
     );
     let favouriteBox;
-    if (this.isTeacher == 1.1) {
+    if (this.isTeacher) {
       favouriteBox = this.renderHomeItem(
         "Favourites",
         favouritesContent,
@@ -90307,14 +90329,7 @@ class HomePage extends reactExports.Component {
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
       projectBox,
-      favouriteBox,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        test,
-        {
-          renderMethod: favouriteBox,
-          readOnly: true
-        }
-      )
+      favouriteBox
     ] });
   }
 }
@@ -90837,13 +90852,14 @@ const getAppComponent = () => {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsSettingsPage, { ...COURSEFLOW_APP.contextData });
     case "profileSettings":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(ProfileSettingsPage, { ...COURSEFLOW_APP.contextData });
-    case "projectComparison":
+    case "projectComparison": {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        myColour: "hsl(" + (DTOcontextData.user_id * 5 % 360 + 1) + ",50%,50%)",
+        myColour: "hsl(" + (DTOcontextData.user_id * 5 % 360 + 1) + ", 50%, 50%)",
         changeFieldID: Math.floor(Math.random() * 1e4)
       };
       return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowComparison, { ...thisContextData });
+    }
     case "workflowDetailView": {
       const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData);
       workflow_renderer.init();
