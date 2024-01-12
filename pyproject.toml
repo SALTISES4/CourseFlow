@@ -16,9 +16,9 @@ deps =
   redislite
   selenium
 allowlist_externals = sh
-commands_pre = sh -c 'redis-server &'
-commands = python -X dev -m pytest {posargs} --ignore-glob=*functional*
-commands_post = redis-cli shutdown
+#commands_pre = sh -c 'redis-server &'
+#commands = python -X dev -m pytest {posargs} --ignore-glob=*functional*
+#commands_post = redis-cli shutdown
 """
 
 [tool.black]
