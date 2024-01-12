@@ -18,7 +18,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '@cfModule/hooks/useApi'
-import { createNew } from '@XMLHTTP/postTemp'
+import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -55,6 +55,28 @@ type TopBarAPIResponse = {
       daliteText: string
     }
   }
+}
+
+// supported "add" menu actions
+type CreateActionType = 'program' | 'activity' | 'course'
+
+function onCreateNew(type: CreateActionType) {
+  const createUrl = COURSEFLOW_APP.config.create_path[type]
+  COURSEFLOW_APP.tinyLoader.startLoad()
+  getTargetProjectMenu(
+    -1,
+    (response_data) => {
+      if (response_data.parentID !== null) {
+        window.location.href = createUrl.replace(
+          '/0/',
+          '/' + response_data.parentID + '/'
+        )
+      }
+    },
+    () => {
+      COURSEFLOW_APP.tinyLoader.endLoad()
+    }
+  )
 }
 
 const TopBar = () => {
@@ -100,19 +122,8 @@ const TopBar = () => {
     setNotificationsMenuAnchorEl(null)
   }
 
-  const handleCreateClick = (type) => {
-    switch (type) {
-      case 'program':
-        createNew(COURSEFLOW_APP.config.create_path.program)
-        break
-      case 'activity':
-        createNew(COURSEFLOW_APP.config.create_path.activity)
-        break
-      case 'course':
-        createNew(COURSEFLOW_APP.config.create_path.course)
-        break
-    }
-
+  const handleCreateClick = (type: CreateActionType) => {
+    onCreateNew(type)
     closeAllMenus()
   }
 
