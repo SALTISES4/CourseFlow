@@ -57507,6 +57507,61 @@ class WorkflowCard extends reactExports.Component {
     );
   }
 }
+function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
+    {
+      projectPk: JSON.stringify(projectPk),
+      type_filter: JSON.stringify(type_filter),
+      get_strategies: JSON.stringify(get_strategies),
+      self_only: JSON.stringify(self_only)
+    },
+    (data2) => {
+    }
+  );
+}
+function columnChanged(renderer, objectID, columnID) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction["nodeweek"])
+    renderer.dragAction["nodeweek"] = {};
+  renderer.dragAction["nodeweek"] = {
+    ...renderer.dragAction["nodeweek"],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify("node"),
+    columnPk: JSON.stringify(columnID),
+    columnChange: JSON.stringify(true)
+  };
+  $(document).off("nodeweek-dropped");
+  $(document).on("nodeweek-dropped", () => {
+    dragAction(renderer.dragAction["nodeweek"]);
+    renderer.dragAction["nodeweek"] = null;
+    $(document).off("nodeweek-dropped");
+  });
+}
+function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction[throughType])
+    renderer.dragAction[throughType] = {};
+  renderer.dragAction[throughType] = {
+    ...renderer.dragAction[throughType],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true)
+  };
+  $(document).off(throughType + "-dropped");
+  if (objectID)
+    $(document).on(throughType + "-dropped", () => {
+      dragAction(renderer.dragAction[throughType]);
+      renderer.dragAction[throughType] = null;
+      $(document).off(throughType + "-dropped");
+    });
+}
 class MenuSection extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -57676,9 +57731,9 @@ class WorkflowsMenu extends reactExports.Component {
     this.setState({ selected: selected_id, selected_type });
   }
   getActions() {
-    var actions = [];
+    const actions = [];
     if (this.props.type === "linked_workflow_menu") {
-      var text = window.gettext("link to node");
+      let text = window.gettext("link to node");
       if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
         text = window.gettext("Copy to Current Project and ") + text;
       actions.push(
@@ -57730,7 +57785,7 @@ class WorkflowsMenu extends reactExports.Component {
         )
       );
     } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
-      var text;
+      let text = "";
       if (this.props.type === "added_workflow_menu") {
         text = window.gettext("Select");
         if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
@@ -57798,14 +57853,14 @@ class WorkflowsMenu extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data_package = this.props.data.data_package;
+    const data_package = this.props.data.data_package;
     let no_hyperlink = false;
     if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
       no_hyperlink = true;
-    var tabs = [];
-    var tab_li = [];
-    var i = 0;
-    for (var prop in data_package) {
+    const tabs = [];
+    const tab_li = [];
+    let i = 0;
+    for (const prop in data_package) {
       tab_li.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: data_package[prop].title }) })
       );
@@ -57826,7 +57881,7 @@ class WorkflowsMenu extends reactExports.Component {
     }
     let current_project;
     if (this.current_project) {
-      current_project = [
+      current_project = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
@@ -57840,8 +57895,9 @@ class WorkflowsMenu extends reactExports.Component {
           }
         ) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+        ",",
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-      ];
+      ] });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
       this.getTitle(),
@@ -58514,25 +58570,35 @@ function renderMessageBox(data2, type, updateFunction) {
     $("#popup-container")[0]
   );
 }
-function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, "target_project_menu", updateFunction);
-  } else {
-    alert("Failed to find potential projects.");
+function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
   }
 }
-function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-    {
-      projectPk: JSON.stringify(projectPk),
-      type_filter: JSON.stringify(type_filter),
-      get_strategies: JSON.stringify(get_strategies),
-      self_only: JSON.stringify(self_only)
-    },
-    (data2) => {
-    }
-  );
+function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data2)
+    }).done(function(data22) {
+      callBackFunction(data22);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
 }
 function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () => console.log("success")) {
   $.post(
@@ -58546,47 +58612,201 @@ function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () 
     }
   );
 }
-function columnChanged(renderer, objectID, columnID) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction["nodeweek"])
-    renderer.dragAction["nodeweek"] = {};
-  renderer.dragAction["nodeweek"] = {
-    ...renderer.dragAction["nodeweek"],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify("node"),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
-  };
-  $(document).off("nodeweek-dropped");
-  $(document).on("nodeweek-dropped", () => {
-    dragAction(renderer.dragAction["nodeweek"]);
-    renderer.dragAction["nodeweek"] = null;
-    $(document).off("nodeweek-dropped");
-  });
+function openTargetProjectMenu(response, updateFunction) {
+  if (response.action === DATA_ACTIONS.POSTED) {
+    renderMessageBox(response, "target_project_menu", updateFunction);
+  } else {
+    alert("Failed to find potential projects.");
+  }
 }
-function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction[throughType])
-    renderer.dragAction[throughType] = {};
-  renderer.dragAction[throughType] = {
-    ...renderer.dragAction[throughType],
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
+  if (["program", "course", "activity"].indexOf(objectType) >= 0)
+    objectType = "workflow";
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    console.log("err");
+    console.log(err);
+    window.fail_function();
+  }
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
+  const sendPostRequest = (url, data2) => {
+    $.post(url, data2).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.OUTCOME) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+        outcomePk: itemPkString,
+        projectPk: projectPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(data2) {
+      callBackFunction(data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data2) {
+      console.log("getWorkflowDataQuery data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (data2) => {
+      callBackFunction();
+    }
+  );
+}
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+  try {
+    console.log("workflowPk");
+    console.log(workflowPk);
+    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    }).catch((err) => {
+      console.log(err);
+    });
+  } catch (err) {
+    console.log("getParentWorkflowInfoQuery error in try/catc");
+    console.log(err);
+    window.fail_function();
+  }
+  console.log("MyError getParentWorkflowInfoQuery");
+}
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
+    data: JSON.stringify(json),
+    changeFieldID: 0
   };
-  $(document).off(throughType + "-dropped");
-  if (objectID)
-    $(document).on(throughType + "-dropped", () => {
-      dragAction(renderer.dragAction[throughType]);
-      renderer.dragAction[throughType] = null;
-      $(document).off(throughType + "-dropped");
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data2) {
+          if (data2.action === DATA_ACTIONS.POSTED) {
+            callBackFunction(data2);
+          } else
+            window.fail_function(data2.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
     });
+  } catch (err) {
+    window.fail_function();
+  }
 }
 const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
   "& .MuiDialogContent-root": {
@@ -58670,7 +58890,7 @@ const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
     top: "50%"
   }
 }));
-function onCreateNew(type) {
+function openCreateActionModal(type) {
   const createUrl = COURSEFLOW_APP.config.create_path[type];
   COURSEFLOW_APP.tinyLoader.startLoad();
   getTargetProjectMenu(
@@ -58719,8 +58939,8 @@ const TopBar = () => {
     setAddMenuAnchorEl(null);
     setNotificationsMenuAnchorEl(null);
   };
-  const handleCreateClick = (type) => {
-    onCreateNew(type);
+  const handleCreateClick = (resourceType) => {
+    openCreateActionModal(resourceType);
     closeAllMenus();
   };
   const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -62325,225 +62545,6 @@ class RestoreBarItem extends ComponentWithToggleDrop {
         COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
-  }
-}
-function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data2)
-    }).done(function(data22) {
-      callBackFunction(data22);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
-  if (["program", "course", "activity"].indexOf(objectType) >= 0)
-    objectType = "workflow";
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    console.log("err");
-    console.log(err);
-    window.fail_function();
-  }
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
-  const sendPostRequest = (url, data2) => {
-    $.post(url, data2).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === DATA_ACTIONS.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    });
-  };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: itemPkString,
-        projectPk: projectPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data2) {
-      console.log("getWorkflowDataQuery data");
-      console.log(data2);
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (data2) => {
-      callBackFunction();
-    }
-  );
-}
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
-  try {
-    console.log("workflowPk");
-    console.log(workflowPk);
-    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    }).catch((err) => {
-      console.log(err);
-    });
-  } catch (err) {
-    console.log("getParentWorkflowInfoQuery error in try/catc");
-    console.log(err);
-    window.fail_function();
-  }
-  console.log("MyError getParentWorkflowInfoQuery");
-}
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
-  const t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
-  }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
-    changeFieldID: 0
-  };
-  if (changeField) {
-    post_object.changeFieldID = // @ts-ignore
-    COURSEFLOW_APP.contextData.changeFieldID;
-  }
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data2) {
-          if (data2.action === DATA_ACTIONS.POSTED) {
-            callBackFunction(data2);
-          } else
-            window.fail_function(data2.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
   }
 }
 class QuillDiv extends reactExports.Component {

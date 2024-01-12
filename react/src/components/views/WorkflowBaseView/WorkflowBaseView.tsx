@@ -10,7 +10,6 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { ConnectionBar } from '@cfModule/ConnectedUsers.jsx'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/PostFunctions.js'
-import { getTargetProjectMenu } from '@XMLHTTP/postTemp.jsx'
 
 import { WorkflowView } from '../WorkflowView/index.js'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
@@ -19,7 +18,8 @@ import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import {
   duplicateBaseItemQuery,
-  getUsersForObjectQuery
+  getUsersForObjectQuery,
+  getTargetProjectMenu
 } from '@XMLHTTP/APIFunctions'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'

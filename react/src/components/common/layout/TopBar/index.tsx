@@ -18,7 +18,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '@cfModule/hooks/useApi'
-import { getTargetProjectMenu } from '@XMLHTTP/postTemp'
+import { getTargetProjectMenu } from '@XMLHTTP/APIFunctions'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -60,10 +60,10 @@ type TopBarAPIResponse = {
 // supported "add" menu actions
 type CreateActionType = 'program' | 'activity' | 'course'
 
-function onCreateNew(type: CreateActionType) {
+function openCreateActionModal(type: CreateActionType) {
   const createUrl = COURSEFLOW_APP.config.create_path[type]
   COURSEFLOW_APP.tinyLoader.startLoad()
-  getTargetProjectMenu(
+  getTargetProjectMenu<{ parentID: number }>(
     -1,
     (response_data) => {
       if (response_data.parentID !== null) {
@@ -122,8 +122,8 @@ const TopBar = () => {
     setNotificationsMenuAnchorEl(null)
   }
 
-  const handleCreateClick = (type: CreateActionType) => {
-    onCreateNew(type)
+  const handleCreateClick = (resourceType: CreateActionType) => {
+    openCreateActionModal(resourceType)
     closeAllMenus()
   }
 

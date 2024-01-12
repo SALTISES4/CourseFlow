@@ -30,14 +30,6 @@ function openWorkflowSelectMenu(response, updateFunction) {
   }
 }
 
-function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
-    renderMessageBox(response, 'target_project_menu', updateFunction)
-  } else {
-    alert('Failed to find potential projects.')
-  }
-}
-
 //Get a list of possible workflows we can add to this project
 export function getAddedWorkflowMenu(
   projectPk,
@@ -82,25 +74,6 @@ export function getWorkflowSelectMenu(
       // @TODO call to react render
       //  openWorkflowSelectMenu(data, updateFunction)
       if (receiptFunction) receiptFunction()
-    }
-  )
-}
-
-//Get possible projects that can be a target for the workflow to be duplicated into
-export function getTargetProjectMenu(
-  workflowPk,
-  updateFunction,
-  callBackFunction = () => console.log('success')
-) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_target_projects,
-    {
-      workflowPk: JSON.stringify(workflowPk)
-    },
-    (data) => {
-      callBackFunction()
-      // @TODO call to react render
-      openTargetProjectMenu(data, updateFunction)
     }
   )
 }
