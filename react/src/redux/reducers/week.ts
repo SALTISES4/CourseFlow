@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Week } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {

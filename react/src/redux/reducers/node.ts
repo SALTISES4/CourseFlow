@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Utility from '@cfUtility'
 import {
   ColumnActions,
@@ -113,6 +112,7 @@ export default function nodeReducer(
     case NodeActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
+        // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
       ) {
         return state

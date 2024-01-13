@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   CommonActions,
   OutcomeActions,
@@ -140,7 +139,7 @@ export default function outcomeReducer(
         return item
       })
 
-    case OutcomeOutcomeActions.MOVED_TO:
+    case OutcomeOutcomeActions.MOVED_TO: {
       const { oldParent, oldParentIndex, newParent, newParentIndex } =
         findParentIndices(state, action)
       if (!oldParent || !newParent) return state
@@ -162,8 +161,8 @@ export default function outcomeReducer(
           child_outcome_links: newParentLinks
         }
       }
-
       return newState
+    }
 
     /*******************************************************
      * OUTCOME BASE
@@ -237,6 +236,7 @@ export default function outcomeReducer(
     case OutcomeBaseActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
+        // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
       )
         return state
@@ -250,6 +250,7 @@ export default function outcomeReducer(
     case OutcomeBaseActions.CHANGE_FIELD_MANY:
       if (
         action.payload.changeFieldID ===
+        // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
       )
         return state

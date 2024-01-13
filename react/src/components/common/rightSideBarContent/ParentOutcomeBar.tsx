@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -6,6 +5,7 @@ import * as Utility from '@cfUtility'
 import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
 import { AppState } from '@cfRedux/type'
+import CompletionImg from '@cfUIComponents/CompletionImg'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
@@ -42,11 +42,17 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
             <h4>{categoryItem.objectset.title}</h4>
             {categoryItem.outcomes.map((outcomeItem, index) => (
               <div key={index} className="parent-outcome-node">
-                {Utility.getCompletionImg(outcomeItem.degree, 1)}
+                <CompletionImg
+                  outcomesType={outcomeItem.degree}
+                  completionStatus={1}
+                />
                 <ParentOutcome
                   key={outcomeItem.id}
                   objectID={outcomeItem.id}
-                  renderer={this.props.renderer}
+                  // renderer={this.props.renderer} // @todo previous props were undefined, are they needed?
+                  parentID={this.props.renderer.parentID}
+                  readOnly={this.props.renderer.readOnly}
+                  throughParentID={this.props.data.id}
                 />
               </div>
             ))}

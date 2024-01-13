@@ -36,9 +36,9 @@ export type Outcomenode = {
 }
 
 export type Outcome = {
-  deleted: boolean
-  deleted_on: Date
   id: number
+  deleted: boolean
+  deleted_on: Date | string
   title: null
   code: null
   description: null
@@ -175,6 +175,7 @@ export type Workflow = {
   importing: boolean
   public_view: boolean
   url: string
+  lock?: boolean
 }
 
 /*******************************************************

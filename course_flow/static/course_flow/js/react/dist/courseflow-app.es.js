@@ -23,6 +23,7 @@ function _mergeNamespaces(n, m2) {
   }
   return Object.freeze(Object.defineProperty(n, Symbol.toStringTag, { value: "Module" }));
 }
+var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
 }
@@ -513,7 +514,7 @@ function requireReact_development() {
             }
           }
         }
-        var ReactElement = function(type, key, ref, self, source, owner, props2) {
+        var ReactElement = function(type, key, ref, self2, source, owner, props2) {
           var element = {
             // This tag allows us to uniquely identify this as a React Element
             $$typeof: REACT_ELEMENT_TYPE,
@@ -537,7 +538,7 @@ function requireReact_development() {
               configurable: false,
               enumerable: false,
               writable: false,
-              value: self
+              value: self2
             });
             Object.defineProperty(element, "_source", {
               configurable: false,
@@ -557,7 +558,7 @@ function requireReact_development() {
           var props2 = {};
           var key = null;
           var ref = null;
-          var self = null;
+          var self2 = null;
           var source = null;
           if (config3 != null) {
             if (hasValidRef(config3)) {
@@ -572,7 +573,7 @@ function requireReact_development() {
               }
               key = "" + config3.key;
             }
-            self = config3.__self === void 0 ? null : config3.__self;
+            self2 = config3.__self === void 0 ? null : config3.__self;
             source = config3.__source === void 0 ? null : config3.__source;
             for (propName in config3) {
               if (hasOwnProperty2.call(config3, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
@@ -614,7 +615,7 @@ function requireReact_development() {
               }
             }
           }
-          return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props2);
+          return ReactElement(type, key, ref, self2, source, ReactCurrentOwner.current, props2);
         }
         function cloneAndReplaceKey(oldElement, newKey) {
           var newElement = ReactElement(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
@@ -628,7 +629,7 @@ function requireReact_development() {
           var props2 = assign2({}, element.props);
           var key = element.key;
           var ref = element.ref;
-          var self = element._self;
+          var self2 = element._self;
           var source = element._source;
           var owner = element._owner;
           if (config3 != null) {
@@ -666,7 +667,7 @@ function requireReact_development() {
             }
             props2.children = childArray;
           }
-          return ReactElement(element.type, key, ref, self, source, owner, props2);
+          return ReactElement(element.type, key, ref, self2, source, owner, props2);
         }
         function isValidElement(object) {
           return typeof object === "object" && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
@@ -2766,9 +2767,9 @@ function requireReactJsxRuntime_development() {
         }
         return config3.key !== void 0;
       }
-      function warnIfStringRefCannotBeAutoConverted(config3, self) {
+      function warnIfStringRefCannotBeAutoConverted(config3, self2) {
         {
-          if (typeof config3.ref === "string" && ReactCurrentOwner.current && self && ReactCurrentOwner.current.stateNode !== self) {
+          if (typeof config3.ref === "string" && ReactCurrentOwner.current && self2 && ReactCurrentOwner.current.stateNode !== self2) {
             var componentName = getComponentNameFromType(ReactCurrentOwner.current.type);
             if (!didWarnAboutStringRefs[componentName]) {
               error('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref', getComponentNameFromType(ReactCurrentOwner.current.type), config3.ref);
@@ -2807,7 +2808,7 @@ function requireReactJsxRuntime_development() {
           });
         }
       }
-      var ReactElement = function(type, key, ref, self, source, owner, props2) {
+      var ReactElement = function(type, key, ref, self2, source, owner, props2) {
         var element = {
           // This tag allows us to uniquely identify this as a React Element
           $$typeof: REACT_ELEMENT_TYPE,
@@ -2831,7 +2832,7 @@ function requireReactJsxRuntime_development() {
             configurable: false,
             enumerable: false,
             writable: false,
-            value: self
+            value: self2
           });
           Object.defineProperty(element, "_source", {
             configurable: false,
@@ -2846,7 +2847,7 @@ function requireReactJsxRuntime_development() {
         }
         return element;
       };
-      function jsxDEV(type, config3, maybeKey, source, self) {
+      function jsxDEV(type, config3, maybeKey, source, self2) {
         {
           var propName;
           var props2 = {};
@@ -2866,7 +2867,7 @@ function requireReactJsxRuntime_development() {
           }
           if (hasValidRef(config3)) {
             ref = config3.ref;
-            warnIfStringRefCannotBeAutoConverted(config3, self);
+            warnIfStringRefCannotBeAutoConverted(config3, self2);
           }
           for (propName in config3) {
             if (hasOwnProperty2.call(config3, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
@@ -2890,7 +2891,7 @@ function requireReactJsxRuntime_development() {
               defineRefPropWarningGetter(props2, displayName);
             }
           }
-          return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props2);
+          return ReactElement(type, key, ref, self2, source, ReactCurrentOwner.current, props2);
         }
       }
       var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
@@ -3049,7 +3050,7 @@ function requireReactJsxRuntime_development() {
           }
         }
       }
-      function jsxWithValidation(type, props2, key, isStaticChildren, source, self) {
+      function jsxWithValidation(type, props2, key, isStaticChildren, source, self2) {
         {
           var validType = isValidElementType(type);
           if (!validType) {
@@ -3076,7 +3077,7 @@ function requireReactJsxRuntime_development() {
             }
             error("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, info);
           }
-          var element = jsxDEV(type, props2, key, source, self);
+          var element = jsxDEV(type, props2, key, source, self2);
           if (element == null) {
             return element;
           }
@@ -5829,10 +5830,10 @@ var createCache = function createCache2(options) {
     }
   }
   var inserted = {};
-  var container2;
+  var container;
   var nodesToHydrate = [];
   {
-    container2 = options.container || document.head;
+    container = options.container || document.head;
     Array.prototype.forEach.call(
       // this means we will ignore elements which don't have a space in them which
       // means that the style elements we're looking at are only Emotion 11 server-rendered style elements
@@ -5891,7 +5892,7 @@ var createCache = function createCache2(options) {
     key,
     sheet: new StyleSheet({
       key,
-      container: container2,
+      container,
       nonce: options.nonce,
       speedy: options.speedy,
       prepend: options.prepend,
@@ -15828,25 +15829,25 @@ function requireReactDom_development() {
         }
         return listenerWrapper.bind(null, domEventName, eventSystemFlags, targetContainer);
       }
-      function dispatchDiscreteEvent(domEventName, eventSystemFlags, container2, nativeEvent) {
+      function dispatchDiscreteEvent(domEventName, eventSystemFlags, container, nativeEvent) {
         var previousPriority = getCurrentUpdatePriority();
         var prevTransition = ReactCurrentBatchConfig.transition;
         ReactCurrentBatchConfig.transition = null;
         try {
           setCurrentUpdatePriority(DiscreteEventPriority);
-          dispatchEvent(domEventName, eventSystemFlags, container2, nativeEvent);
+          dispatchEvent(domEventName, eventSystemFlags, container, nativeEvent);
         } finally {
           setCurrentUpdatePriority(previousPriority);
           ReactCurrentBatchConfig.transition = prevTransition;
         }
       }
-      function dispatchContinuousEvent(domEventName, eventSystemFlags, container2, nativeEvent) {
+      function dispatchContinuousEvent(domEventName, eventSystemFlags, container, nativeEvent) {
         var previousPriority = getCurrentUpdatePriority();
         var prevTransition = ReactCurrentBatchConfig.transition;
         ReactCurrentBatchConfig.transition = null;
         try {
           setCurrentUpdatePriority(ContinuousEventPriority);
-          dispatchEvent(domEventName, eventSystemFlags, container2, nativeEvent);
+          dispatchEvent(domEventName, eventSystemFlags, container, nativeEvent);
         } finally {
           setCurrentUpdatePriority(previousPriority);
           ReactCurrentBatchConfig.transition = prevTransition;
@@ -17539,8 +17540,8 @@ function requireReactDom_development() {
                 }
                 var nodeTag = node2.tag;
                 if (nodeTag === HostRoot || nodeTag === HostPortal) {
-                  var container2 = node2.stateNode.containerInfo;
-                  if (isMatchingRootContainer(container2, targetContainerNode)) {
+                  var container = node2.stateNode.containerInfo;
+                  if (isMatchingRootContainer(container, targetContainerNode)) {
                     break;
                   }
                   if (nodeTag === HostPortal) {
@@ -17556,8 +17557,8 @@ function requireReactDom_development() {
                       grandNode = grandNode.return;
                     }
                   }
-                  while (container2 !== null) {
-                    var parentNode = getClosestInstanceFromNode(container2);
+                  while (container !== null) {
+                    var parentNode = getClosestInstanceFromNode(container);
                     if (parentNode === null) {
                       return;
                     }
@@ -17566,7 +17567,7 @@ function requireReactDom_development() {
                       node2 = ancestorInst = parentNode;
                       continue mainLoop;
                     }
-                    container2 = container2.parentNode;
+                    container = container.parentNode;
                   }
                 }
                 node2 = node2.return;
@@ -18689,9 +18690,9 @@ function requireReactDom_development() {
             break;
           }
           default: {
-            var container2 = nodeType === COMMENT_NODE ? rootContainerInstance.parentNode : rootContainerInstance;
-            var ownNamespace = container2.namespaceURI || null;
-            type = container2.tagName;
+            var container = nodeType === COMMENT_NODE ? rootContainerInstance.parentNode : rootContainerInstance;
+            var ownNamespace = container.namespaceURI || null;
+            type = container.tagName;
             namespace = getChildNamespace(ownNamespace, type);
             break;
           }
@@ -18839,16 +18840,16 @@ function requireReactDom_development() {
       function appendChild(parentInstance, child) {
         parentInstance.appendChild(child);
       }
-      function appendChildToContainer(container2, child) {
+      function appendChildToContainer(container, child) {
         var parentNode;
-        if (container2.nodeType === COMMENT_NODE) {
-          parentNode = container2.parentNode;
-          parentNode.insertBefore(child, container2);
+        if (container.nodeType === COMMENT_NODE) {
+          parentNode = container.parentNode;
+          parentNode.insertBefore(child, container);
         } else {
-          parentNode = container2;
+          parentNode = container;
           parentNode.appendChild(child);
         }
-        var reactRootContainer = container2._reactRootContainer;
+        var reactRootContainer = container._reactRootContainer;
         if ((reactRootContainer === null || reactRootContainer === void 0) && parentNode.onclick === null) {
           trapClickOnNonInteractiveElement(parentNode);
         }
@@ -18856,21 +18857,21 @@ function requireReactDom_development() {
       function insertBefore(parentInstance, child, beforeChild) {
         parentInstance.insertBefore(child, beforeChild);
       }
-      function insertInContainerBefore(container2, child, beforeChild) {
-        if (container2.nodeType === COMMENT_NODE) {
-          container2.parentNode.insertBefore(child, beforeChild);
+      function insertInContainerBefore(container, child, beforeChild) {
+        if (container.nodeType === COMMENT_NODE) {
+          container.parentNode.insertBefore(child, beforeChild);
         } else {
-          container2.insertBefore(child, beforeChild);
+          container.insertBefore(child, beforeChild);
         }
       }
       function removeChild(parentInstance, child) {
         parentInstance.removeChild(child);
       }
-      function removeChildFromContainer(container2, child) {
-        if (container2.nodeType === COMMENT_NODE) {
-          container2.parentNode.removeChild(child);
+      function removeChildFromContainer(container, child) {
+        if (container.nodeType === COMMENT_NODE) {
+          container.parentNode.removeChild(child);
         } else {
-          container2.removeChild(child);
+          container.removeChild(child);
         }
       }
       function clearSuspenseBoundary(parentInstance, suspenseInstance) {
@@ -18897,13 +18898,13 @@ function requireReactDom_development() {
         } while (node2);
         retryIfBlockedOn(suspenseInstance);
       }
-      function clearSuspenseBoundaryFromContainer(container2, suspenseInstance) {
-        if (container2.nodeType === COMMENT_NODE) {
-          clearSuspenseBoundary(container2.parentNode, suspenseInstance);
-        } else if (container2.nodeType === ELEMENT_NODE) {
-          clearSuspenseBoundary(container2, suspenseInstance);
+      function clearSuspenseBoundaryFromContainer(container, suspenseInstance) {
+        if (container.nodeType === COMMENT_NODE) {
+          clearSuspenseBoundary(container.parentNode, suspenseInstance);
+        } else if (container.nodeType === ELEMENT_NODE) {
+          clearSuspenseBoundary(container, suspenseInstance);
         }
-        retryIfBlockedOn(container2);
+        retryIfBlockedOn(container);
       }
       function hideInstance(instance) {
         instance = instance;
@@ -18926,12 +18927,12 @@ function requireReactDom_development() {
       function unhideTextInstance(textInstance, text) {
         textInstance.nodeValue = text;
       }
-      function clearContainer(container2) {
-        if (container2.nodeType === ELEMENT_NODE) {
-          container2.textContent = "";
-        } else if (container2.nodeType === DOCUMENT_NODE) {
-          if (container2.documentElement) {
-            container2.removeChild(container2.documentElement);
+      function clearContainer(container) {
+        if (container.nodeType === ELEMENT_NODE) {
+          container.textContent = "";
+        } else if (container.nodeType === DOCUMENT_NODE) {
+          if (container.documentElement) {
+            container.removeChild(container.documentElement);
           }
         }
       }
@@ -19069,8 +19070,8 @@ function requireReactDom_development() {
         }
         return null;
       }
-      function commitHydratedContainer(container2) {
-        retryIfBlockedOn(container2);
+      function commitHydratedContainer(container) {
+        retryIfBlockedOn(container);
       }
       function commitHydratedSuspenseInstance(suspenseInstance) {
         retryIfBlockedOn(suspenseInstance);
@@ -31122,21 +31123,21 @@ function requireReactDom_development() {
         scheduleInitialHydrationOnRoot(root2, lane, eventTime);
         return root2;
       }
-      function updateContainer(element, container2, parentComponent, callback) {
+      function updateContainer(element, container, parentComponent, callback) {
         {
-          onScheduleRoot(container2, element);
+          onScheduleRoot(container, element);
         }
-        var current$1 = container2.current;
+        var current$1 = container.current;
         var eventTime = requestEventTime();
         var lane = requestUpdateLane(current$1);
         {
           markRenderScheduled(lane);
         }
         var context = getContextForSubtree(parentComponent);
-        if (container2.context === null) {
-          container2.context = context;
+        if (container.context === null) {
+          container.context = context;
         } else {
-          container2.pendingContext = context;
+          container.pendingContext = context;
         }
         {
           if (isRendering && current !== null && !didWarnAboutNestedUpdates) {
@@ -31164,8 +31165,8 @@ function requireReactDom_development() {
         }
         return lane;
       }
-      function getPublicRootInstance(container2) {
-        var containerFiber = container2.current;
+      function getPublicRootInstance(container) {
+        var containerFiber = container.current;
         if (!containerFiber.child) {
           return null;
         }
@@ -31489,11 +31490,11 @@ function requireReactDom_development() {
           } else if (typeof arguments[1] !== "undefined") {
             error("You passed a second argument to root.render(...) but it only accepts one argument.");
           }
-          var container2 = root2.containerInfo;
-          if (container2.nodeType !== COMMENT_NODE) {
+          var container = root2.containerInfo;
+          if (container.nodeType !== COMMENT_NODE) {
             var hostInstance = findHostInstanceWithNoPortals(root2.current);
             if (hostInstance) {
-              if (hostInstance.parentNode !== container2) {
+              if (hostInstance.parentNode !== container) {
                 error("render(...): It looks like the React-rendered content of the root container was removed without using React. This is not supported and will cause errors. Instead, call root.unmount() to empty a root's container.");
               }
             }
@@ -31510,7 +31511,7 @@ function requireReactDom_development() {
         var root2 = this._internalRoot;
         if (root2 !== null) {
           this._internalRoot = null;
-          var container2 = root2.containerInfo;
+          var container = root2.containerInfo;
           {
             if (isAlreadyRendering()) {
               error("Attempted to synchronously unmount a root while React was already rendering. React cannot finish unmounting the root until the current render has completed, which may lead to a race condition.");
@@ -31519,14 +31520,14 @@ function requireReactDom_development() {
           flushSync(function() {
             updateContainer(null, root2, null, null);
           });
-          unmarkContainerAsRoot(container2);
+          unmarkContainerAsRoot(container);
         }
       };
-      function createRoot2(container2, options2) {
-        if (!isValidContainer(container2)) {
+      function createRoot2(container, options2) {
+        if (!isValidContainer(container)) {
           throw new Error("createRoot(...): Target container is not a DOM element.");
         }
-        warnIfReactDOMContainerInDEV(container2);
+        warnIfReactDOMContainerInDEV(container);
         var isStrictMode = false;
         var concurrentUpdatesByDefaultOverride = false;
         var identifierPrefix = "";
@@ -31554,9 +31555,9 @@ function requireReactDom_development() {
             options2.transitionCallbacks;
           }
         }
-        var root2 = createContainer(container2, ConcurrentRoot, null, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
-        markContainerAsRoot(root2.current, container2);
-        var rootContainerElement = container2.nodeType === COMMENT_NODE ? container2.parentNode : container2;
+        var root2 = createContainer(container, ConcurrentRoot, null, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
+        markContainerAsRoot(root2.current, container);
+        var rootContainerElement = container.nodeType === COMMENT_NODE ? container.parentNode : container;
         listenToAllSupportedEvents(rootContainerElement);
         return new ReactDOMRoot(root2);
       }
@@ -31569,11 +31570,11 @@ function requireReactDom_development() {
         }
       }
       ReactDOMHydrationRoot.prototype.unstable_scheduleHydration = scheduleHydration;
-      function hydrateRoot(container2, initialChildren, options2) {
-        if (!isValidContainer(container2)) {
+      function hydrateRoot(container, initialChildren, options2) {
+        if (!isValidContainer(container)) {
           throw new Error("hydrateRoot(...): Target container is not a DOM element.");
         }
-        warnIfReactDOMContainerInDEV(container2);
+        warnIfReactDOMContainerInDEV(container);
         {
           if (initialChildren === void 0) {
             error("Must provide initial children as second argument to hydrateRoot. Example usage: hydrateRoot(domContainer, <App />)");
@@ -31596,9 +31597,9 @@ function requireReactDom_development() {
             onRecoverableError = options2.onRecoverableError;
           }
         }
-        var root2 = createHydrationContainer(initialChildren, null, container2, ConcurrentRoot, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
-        markContainerAsRoot(root2.current, container2);
-        listenToAllSupportedEvents(container2);
+        var root2 = createHydrationContainer(initialChildren, null, container, ConcurrentRoot, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
+        markContainerAsRoot(root2.current, container);
+        listenToAllSupportedEvents(container);
         if (mutableSources) {
           for (var i = 0; i < mutableSources.length; i++) {
             var mutableSource = mutableSources[i];
@@ -31613,13 +31614,13 @@ function requireReactDom_development() {
       function isValidContainerLegacy(node2) {
         return !!(node2 && (node2.nodeType === ELEMENT_NODE || node2.nodeType === DOCUMENT_NODE || node2.nodeType === DOCUMENT_FRAGMENT_NODE || node2.nodeType === COMMENT_NODE && node2.nodeValue === " react-mount-point-unstable "));
       }
-      function warnIfReactDOMContainerInDEV(container2) {
+      function warnIfReactDOMContainerInDEV(container) {
         {
-          if (container2.nodeType === ELEMENT_NODE && container2.tagName && container2.tagName.toUpperCase() === "BODY") {
+          if (container.nodeType === ELEMENT_NODE && container.tagName && container.tagName.toUpperCase() === "BODY") {
             error("createRoot(): Creating roots directly with document.body is discouraged, since its children are often manipulated by third-party scripts and browser extensions. This may lead to subtle reconciliation issues. Try using a container element created for your app.");
           }
-          if (isContainerMarkedAsRoot(container2)) {
-            if (container2._reactRootContainer) {
+          if (isContainerMarkedAsRoot(container)) {
+            if (container._reactRootContainer) {
               error("You are calling ReactDOMClient.createRoot() on a container that was previously passed to ReactDOM.render(). This is not supported.");
             } else {
               error("You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.");
@@ -31630,39 +31631,39 @@ function requireReactDom_development() {
       var ReactCurrentOwner$3 = ReactSharedInternals.ReactCurrentOwner;
       var topLevelUpdateWarnings;
       {
-        topLevelUpdateWarnings = function(container2) {
-          if (container2._reactRootContainer && container2.nodeType !== COMMENT_NODE) {
-            var hostInstance = findHostInstanceWithNoPortals(container2._reactRootContainer.current);
+        topLevelUpdateWarnings = function(container) {
+          if (container._reactRootContainer && container.nodeType !== COMMENT_NODE) {
+            var hostInstance = findHostInstanceWithNoPortals(container._reactRootContainer.current);
             if (hostInstance) {
-              if (hostInstance.parentNode !== container2) {
+              if (hostInstance.parentNode !== container) {
                 error("render(...): It looks like the React-rendered content of this container was removed without using React. This is not supported and will cause errors. Instead, call ReactDOM.unmountComponentAtNode to empty a container.");
               }
             }
           }
-          var isRootRenderedBySomeReact = !!container2._reactRootContainer;
-          var rootEl = getReactRootElementInContainer(container2);
+          var isRootRenderedBySomeReact = !!container._reactRootContainer;
+          var rootEl = getReactRootElementInContainer(container);
           var hasNonRootReactChild = !!(rootEl && getInstanceFromNode(rootEl));
           if (hasNonRootReactChild && !isRootRenderedBySomeReact) {
             error("render(...): Replacing React-rendered children with a new root component. If you intended to update the children of this node, you should instead have the existing children update their state and render the new components instead of calling ReactDOM.render.");
           }
-          if (container2.nodeType === ELEMENT_NODE && container2.tagName && container2.tagName.toUpperCase() === "BODY") {
+          if (container.nodeType === ELEMENT_NODE && container.tagName && container.tagName.toUpperCase() === "BODY") {
             error("render(): Rendering components directly into document.body is discouraged, since its children are often manipulated by third-party scripts and browser extensions. This may lead to subtle reconciliation issues. Try rendering into a container element created for your app.");
           }
         };
       }
-      function getReactRootElementInContainer(container2) {
-        if (!container2) {
+      function getReactRootElementInContainer(container) {
+        if (!container) {
           return null;
         }
-        if (container2.nodeType === DOCUMENT_NODE) {
-          return container2.documentElement;
+        if (container.nodeType === DOCUMENT_NODE) {
+          return container.documentElement;
         } else {
-          return container2.firstChild;
+          return container.firstChild;
         }
       }
       function noopOnRecoverableError() {
       }
-      function legacyCreateRootFromDOMContainer(container2, initialChildren, parentComponent, callback, isHydrationContainer) {
+      function legacyCreateRootFromDOMContainer(container, initialChildren, parentComponent, callback, isHydrationContainer) {
         if (isHydrationContainer) {
           if (typeof callback === "function") {
             var originalCallback = callback;
@@ -31674,7 +31675,7 @@ function requireReactDom_development() {
           var root2 = createHydrationContainer(
             initialChildren,
             callback,
-            container2,
+            container,
             LegacyRoot,
             null,
             // hydrationCallbacks
@@ -31686,16 +31687,16 @@ function requireReactDom_development() {
             // identifierPrefix
             noopOnRecoverableError
           );
-          container2._reactRootContainer = root2;
-          markContainerAsRoot(root2.current, container2);
-          var rootContainerElement = container2.nodeType === COMMENT_NODE ? container2.parentNode : container2;
+          container._reactRootContainer = root2;
+          markContainerAsRoot(root2.current, container);
+          var rootContainerElement = container.nodeType === COMMENT_NODE ? container.parentNode : container;
           listenToAllSupportedEvents(rootContainerElement);
           flushSync();
           return root2;
         } else {
           var rootSibling;
-          while (rootSibling = container2.lastChild) {
-            container2.removeChild(rootSibling);
+          while (rootSibling = container.lastChild) {
+            container.removeChild(rootSibling);
           }
           if (typeof callback === "function") {
             var _originalCallback = callback;
@@ -31705,7 +31706,7 @@ function requireReactDom_development() {
             };
           }
           var _root = createContainer(
-            container2,
+            container,
             LegacyRoot,
             null,
             // hydrationCallbacks
@@ -31717,9 +31718,9 @@ function requireReactDom_development() {
             // identifierPrefix
             noopOnRecoverableError
           );
-          container2._reactRootContainer = _root;
-          markContainerAsRoot(_root.current, container2);
-          var _rootContainerElement = container2.nodeType === COMMENT_NODE ? container2.parentNode : container2;
+          container._reactRootContainer = _root;
+          markContainerAsRoot(_root.current, container);
+          var _rootContainerElement = container.nodeType === COMMENT_NODE ? container.parentNode : container;
           listenToAllSupportedEvents(_rootContainerElement);
           flushSync(function() {
             updateContainer(initialChildren, _root, parentComponent, callback);
@@ -31734,15 +31735,15 @@ function requireReactDom_development() {
           }
         }
       }
-      function legacyRenderSubtreeIntoContainer(parentComponent, children, container2, forceHydrate, callback) {
+      function legacyRenderSubtreeIntoContainer(parentComponent, children, container, forceHydrate, callback) {
         {
-          topLevelUpdateWarnings(container2);
+          topLevelUpdateWarnings(container);
           warnOnInvalidCallback$1(callback === void 0 ? null : callback, "render");
         }
-        var maybeRoot = container2._reactRootContainer;
+        var maybeRoot = container._reactRootContainer;
         var root2;
         if (!maybeRoot) {
-          root2 = legacyCreateRootFromDOMContainer(container2, children, parentComponent, callback, forceHydrate);
+          root2 = legacyCreateRootFromDOMContainer(container, children, parentComponent, callback, forceHydrate);
         } else {
           root2 = maybeRoot;
           if (typeof callback === "function") {
@@ -31777,35 +31778,35 @@ function requireReactDom_development() {
           return findHostInstanceWithWarning(componentOrElement, "findDOMNode");
         }
       }
-      function hydrate(element, container2, callback) {
+      function hydrate(element, container, callback) {
         {
           error("ReactDOM.hydrate is no longer supported in React 18. Use hydrateRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot");
         }
-        if (!isValidContainerLegacy(container2)) {
+        if (!isValidContainerLegacy(container)) {
           throw new Error("Target container is not a DOM element.");
         }
         {
-          var isModernRoot = isContainerMarkedAsRoot(container2) && container2._reactRootContainer === void 0;
+          var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === void 0;
           if (isModernRoot) {
             error("You are calling ReactDOM.hydrate() on a container that was previously passed to ReactDOMClient.createRoot(). This is not supported. Did you mean to call hydrateRoot(container, element)?");
           }
         }
-        return legacyRenderSubtreeIntoContainer(null, element, container2, true, callback);
+        return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
       }
-      function render(element, container2, callback) {
+      function render(element, container, callback) {
         {
           error("ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot");
         }
-        if (!isValidContainerLegacy(container2)) {
+        if (!isValidContainerLegacy(container)) {
           throw new Error("Target container is not a DOM element.");
         }
         {
-          var isModernRoot = isContainerMarkedAsRoot(container2) && container2._reactRootContainer === void 0;
+          var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === void 0;
           if (isModernRoot) {
             error("You are calling ReactDOM.render() on a container that was previously passed to ReactDOMClient.createRoot(). This is not supported. Did you mean to call root.render(element)?");
           }
         }
-        return legacyRenderSubtreeIntoContainer(null, element, container2, false, callback);
+        return legacyRenderSubtreeIntoContainer(null, element, container, false, callback);
       }
       function unstable_renderSubtreeIntoContainer(parentComponent, element, containerNode, callback) {
         {
@@ -31819,36 +31820,36 @@ function requireReactDom_development() {
         }
         return legacyRenderSubtreeIntoContainer(parentComponent, element, containerNode, false, callback);
       }
-      function unmountComponentAtNode(container2) {
-        if (!isValidContainerLegacy(container2)) {
+      function unmountComponentAtNode(container) {
+        if (!isValidContainerLegacy(container)) {
           throw new Error("unmountComponentAtNode(...): Target container is not a DOM element.");
         }
         {
-          var isModernRoot = isContainerMarkedAsRoot(container2) && container2._reactRootContainer === void 0;
+          var isModernRoot = isContainerMarkedAsRoot(container) && container._reactRootContainer === void 0;
           if (isModernRoot) {
             error("You are calling ReactDOM.unmountComponentAtNode() on a container that was previously passed to ReactDOMClient.createRoot(). This is not supported. Did you mean to call root.unmount()?");
           }
         }
-        if (container2._reactRootContainer) {
+        if (container._reactRootContainer) {
           {
-            var rootEl = getReactRootElementInContainer(container2);
+            var rootEl = getReactRootElementInContainer(container);
             var renderedByDifferentReact = rootEl && !getInstanceFromNode(rootEl);
             if (renderedByDifferentReact) {
               error("unmountComponentAtNode(): The node you're attempting to unmount was rendered by another copy of React.");
             }
           }
           flushSync(function() {
-            legacyRenderSubtreeIntoContainer(null, null, container2, false, function() {
-              container2._reactRootContainer = null;
-              unmarkContainerAsRoot(container2);
+            legacyRenderSubtreeIntoContainer(null, null, container, false, function() {
+              container._reactRootContainer = null;
+              unmarkContainerAsRoot(container);
             });
           });
           return true;
         } else {
           {
-            var _rootEl = getReactRootElementInContainer(container2);
+            var _rootEl = getReactRootElementInContainer(container);
             var hasNonRootReactChild = !!(_rootEl && getInstanceFromNode(_rootEl));
-            var isContainerReactRoot = container2.nodeType === ELEMENT_NODE && isValidContainerLegacy(container2.parentNode) && !!container2.parentNode._reactRootContainer;
+            var isContainerReactRoot = container.nodeType === ELEMENT_NODE && isValidContainerLegacy(container.parentNode) && !!container.parentNode._reactRootContainer;
             if (hasNonRootReactChild) {
               error("unmountComponentAtNode(): The node you're attempting to unmount was rendered by React and is not a top-level container. %s", isContainerReactRoot ? "You may have accidentally passed in a React root node instead of its container." : "Instead, have the parent component update its state and rerender in order to remove this component.");
             }
@@ -31870,12 +31871,12 @@ function requireReactDom_development() {
       }
       setRestoreImplementation(restoreControlledState$3);
       setBatchingImplementation(batchedUpdates$1, discreteUpdates, flushSync);
-      function createPortal$1(children, container2) {
+      function createPortal$1(children, container) {
         var key = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : null;
-        if (!isValidContainer(container2)) {
+        if (!isValidContainer(container)) {
           throw new Error("Target container is not a DOM element.");
         }
-        return createPortal(children, container2, null, key);
+        return createPortal(children, container, null, key);
       }
       function renderSubtreeIntoContainer(parentComponent, element, containerNode, callback) {
         return unstable_renderSubtreeIntoContainer(parentComponent, element, containerNode, callback);
@@ -31886,21 +31887,21 @@ function requireReactDom_development() {
         // This is an array for better minification.
         Events: [getInstanceFromNode, getNodeFromInstance, getFiberCurrentPropsFromNode, enqueueStateRestore, restoreStateIfNeeded, batchedUpdates$1]
       };
-      function createRoot$1(container2, options2) {
+      function createRoot$1(container, options2) {
         {
           if (!Internals.usingClientEntryPoint && true) {
             error('You are importing createRoot from "react-dom" which is not supported. You should instead import it from "react-dom/client".');
           }
         }
-        return createRoot2(container2, options2);
+        return createRoot2(container, options2);
       }
-      function hydrateRoot$1(container2, initialChildren, options2) {
+      function hydrateRoot$1(container, initialChildren, options2) {
         {
           if (!Internals.usingClientEntryPoint && true) {
             error('You are importing hydrateRoot from "react-dom" which is not supported. You should instead import it from "react-dom/client".');
           }
         }
-        return hydrateRoot(container2, initialChildren, options2);
+        return hydrateRoot(container, initialChildren, options2);
       }
       function flushSync$1(fn) {
         {
@@ -39550,22 +39551,22 @@ process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   FocusTrap["propTypes"] = exactProp(FocusTrap.propTypes);
 }
-function getContainer$1(container2) {
-  return typeof container2 === "function" ? container2() : container2;
+function getContainer$1(container) {
+  return typeof container === "function" ? container() : container;
 }
 const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props2, forwardedRef) {
   const {
     children,
-    container: container2,
+    container,
     disablePortal = false
   } = props2;
   const [mountNode, setMountNode] = reactExports.useState(null);
   const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
   useEnhancedEffect$1(() => {
     if (!disablePortal) {
-      setMountNode(getContainer$1(container2) || document.body);
+      setMountNode(getContainer$1(container) || document.body);
     }
-  }, [container2, disablePortal]);
+  }, [container, disablePortal]);
   useEnhancedEffect$1(() => {
     if (mountNode && !disablePortal) {
       setRef(forwardedRef, mountNode);
@@ -39616,12 +39617,12 @@ process.env.NODE_ENV !== "production" ? Portal.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   Portal["propTypes"] = exactProp(Portal.propTypes);
 }
-function isOverflowing(container2) {
-  const doc = ownerDocument(container2);
-  if (doc.body === container2) {
-    return ownerWindow(container2).innerWidth > doc.documentElement.clientWidth;
+function isOverflowing(container) {
+  const doc = ownerDocument(container);
+  if (doc.body === container) {
+    return ownerWindow(container).innerWidth > doc.documentElement.clientWidth;
   }
-  return container2.scrollHeight > container2.clientHeight;
+  return container.scrollHeight > container.clientHeight;
 }
 function ariaHidden(element, show) {
   if (show) {
@@ -39639,9 +39640,9 @@ function isAriaHiddenForbiddenOnElement(element) {
   const isInputHidden = element.tagName === "INPUT" && element.getAttribute("type") === "hidden";
   return isForbiddenTagName || isInputHidden;
 }
-function ariaHiddenSiblings(container2, mountElement, currentElement, elementsToExclude, show) {
+function ariaHiddenSiblings(container, mountElement, currentElement, elementsToExclude, show) {
   const blacklist = [mountElement, currentElement, ...elementsToExclude];
-  [].forEach.call(container2.children, (element) => {
+  [].forEach.call(container.children, (element) => {
     const isNotExcludedElement = blacklist.indexOf(element) === -1;
     const isNotForbiddenElement = !isAriaHiddenForbiddenOnElement(element);
     if (isNotExcludedElement && isNotForbiddenElement) {
@@ -39662,17 +39663,17 @@ function findIndexOf(items, callback) {
 }
 function handleContainer(containerInfo, props2) {
   const restoreStyle = [];
-  const container2 = containerInfo.container;
+  const container = containerInfo.container;
   if (!props2.disableScrollLock) {
-    if (isOverflowing(container2)) {
-      const scrollbarSize = getScrollbarSize(ownerDocument(container2));
+    if (isOverflowing(container)) {
+      const scrollbarSize = getScrollbarSize(ownerDocument(container));
       restoreStyle.push({
-        value: container2.style.paddingRight,
+        value: container.style.paddingRight,
         property: "padding-right",
-        el: container2
+        el: container
       });
-      container2.style.paddingRight = `${getPaddingRight(container2) + scrollbarSize}px`;
-      const fixedElements2 = ownerDocument(container2).querySelectorAll(".mui-fixed");
+      container.style.paddingRight = `${getPaddingRight(container) + scrollbarSize}px`;
+      const fixedElements2 = ownerDocument(container).querySelectorAll(".mui-fixed");
       [].forEach.call(fixedElements2, (element) => {
         restoreStyle.push({
           value: element.style.paddingRight,
@@ -39683,12 +39684,12 @@ function handleContainer(containerInfo, props2) {
       });
     }
     let scrollContainer;
-    if (container2.parentNode instanceof DocumentFragment) {
-      scrollContainer = ownerDocument(container2).body;
+    if (container.parentNode instanceof DocumentFragment) {
+      scrollContainer = ownerDocument(container).body;
     } else {
-      const parent = container2.parentElement;
-      const containerWindow = ownerWindow(container2);
-      scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container2;
+      const parent = container.parentElement;
+      const containerWindow = ownerWindow(container);
+      scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container;
     }
     restoreStyle.push({
       value: scrollContainer.style.overflow,
@@ -39720,9 +39721,9 @@ function handleContainer(containerInfo, props2) {
   };
   return restore;
 }
-function getHiddenSiblings(container2) {
+function getHiddenSiblings(container) {
   const hiddenSiblings = [];
-  [].forEach.call(container2.children, (element) => {
+  [].forEach.call(container.children, (element) => {
     if (element.getAttribute("aria-hidden") === "true") {
       hiddenSiblings.push(element);
     }
@@ -39736,7 +39737,7 @@ class ModalManager {
     this.modals = [];
     this.containers = [];
   }
-  add(modal, container2) {
+  add(modal, container) {
     let modalIndex = this.modals.indexOf(modal);
     if (modalIndex !== -1) {
       return modalIndex;
@@ -39746,16 +39747,16 @@ class ModalManager {
     if (modal.modalRef) {
       ariaHidden(modal.modalRef, false);
     }
-    const hiddenSiblings = getHiddenSiblings(container2);
-    ariaHiddenSiblings(container2, modal.mount, modal.modalRef, hiddenSiblings, true);
-    const containerIndex = findIndexOf(this.containers, (item) => item.container === container2);
+    const hiddenSiblings = getHiddenSiblings(container);
+    ariaHiddenSiblings(container, modal.mount, modal.modalRef, hiddenSiblings, true);
+    const containerIndex = findIndexOf(this.containers, (item) => item.container === container);
     if (containerIndex !== -1) {
       this.containers[containerIndex].modals.push(modal);
       return modalIndex;
     }
     this.containers.push({
       modals: [modal],
-      container: container2,
+      container,
       restore: null,
       hiddenSiblings
     });
@@ -39798,8 +39799,8 @@ class ModalManager {
     return this.modals.length > 0 && this.modals[this.modals.length - 1] === modal;
   }
 }
-function getContainer(container2) {
-  return typeof container2 === "function" ? container2() : container2;
+function getContainer(container) {
+  return typeof container === "function" ? container() : container;
 }
 function getHasTransition(children) {
   return children ? children.props.hasOwnProperty("in") : false;
@@ -39807,7 +39808,7 @@ function getHasTransition(children) {
 const defaultManager = new ModalManager();
 function useModal(parameters) {
   const {
-    container: container2,
+    container,
     disableEscapeKeyDown = false,
     disableScrollLock = false,
     // @ts-ignore internal logic - Base UI supports the manager as a prop too
@@ -39845,7 +39846,7 @@ function useModal(parameters) {
     }
   };
   const handleOpen = useEventCallback(() => {
-    const resolvedContainer = getContainer(container2) || getDoc().body;
+    const resolvedContainer = getContainer(container) || getDoc().body;
     manager.add(getModal(), resolvedContainer);
     if (modalRef.current) {
       handleMounted();
@@ -41646,11 +41647,11 @@ Transition.ENTERING = ENTERING;
 Transition.ENTERED = ENTERED;
 Transition.EXITING = EXITING;
 const Transition$1 = Transition;
-function _assertThisInitialized(self) {
-  if (self === void 0) {
+function _assertThisInitialized(self2) {
+  if (self2 === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
-  return self;
+  return self2;
 }
 function getChildMapping(children, mapFn) {
   var mapper = function mapper2(child) {
@@ -42088,7 +42089,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
   const ignoringMouseDown = reactExports.useRef(false);
   const startTimer = reactExports.useRef(0);
   const startTimerCommit = reactExports.useRef(null);
-  const container2 = reactExports.useRef(null);
+  const container = reactExports.useRef(null);
   reactExports.useEffect(() => {
     return () => {
       if (startTimer.current) {
@@ -42137,7 +42138,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
     if ((event2 == null ? void 0 : event2.type) === "touchstart") {
       ignoringMouseDown.current = true;
     }
-    const element = fakeElement ? null : container2.current;
+    const element = fakeElement ? null : container.current;
     const rect = element ? element.getBoundingClientRect() : {
       width: 0,
       height: 0,
@@ -42227,7 +42228,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
   }), [pulsate, start, stop]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TouchRippleRoot, _extends$2({
     className: clsx(touchRippleClasses$1.root, classes.root, className),
-    ref: container2
+    ref: container
   }, other, {
     children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionGroup$1, {
       component: null,
@@ -45827,7 +45828,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
     className,
     closeAfterTransition = false,
     children,
-    container: container2,
+    container,
     component,
     components = {},
     componentsProps = {},
@@ -45923,7 +45924,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, {
     ref: portalRef,
-    container: container2,
+    container,
     disablePortal,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(RootSlot, _extends$2({}, rootProps, {
       children: [!hideBackdrop && BackdropComponent ? /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropSlot, _extends$2({}, backdropProps)) : null, /* @__PURE__ */ jsxRuntimeExports.jsx(FocusTrap, {
@@ -46501,7 +46502,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
   if (transitionDurationProp === "auto" && !TransitionComponent.muiSupportAuto) {
     transitionDuration = void 0;
   }
-  const container2 = containerProp || (anchorEl ? ownerDocument(resolveAnchorEl(anchorEl)).body : void 0);
+  const container = containerProp || (anchorEl ? ownerDocument(resolveAnchorEl(anchorEl)).body : void 0);
   const RootSlot = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : PopoverRoot;
   const PaperSlot = (_slots$paper = slots == null ? void 0 : slots.paper) != null ? _slots$paper : PopoverPaper;
   const paperProps = useSlotProps({
@@ -46529,7 +46530,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
           invisible: true
         }
       },
-      container: container2,
+      container,
       open
     },
     ownerState,
@@ -47657,644 +47658,6 @@ const OuterContentWrap = styled$1(Box$1, {
     paddingRight: theme2.spacing(2)
   }
 }));
-const lock_times = {
-  move: 5e3,
-  update: 5e3,
-  select: 6e4
-};
-const node_keys = ["activity", "course", "program"];
-const columnwidth = 160;
-const node_ports = {
-  source: {
-    e: [1, 0.6],
-    w: [0, 0.6],
-    s: [0.5, 1]
-  },
-  target: {
-    n: [0.5, 0],
-    e: [1, 0.4],
-    w: [0, 0.4]
-  }
-};
-const port_keys = ["n", "e", "s", "w"];
-const port_direction = [
-  [0, -1],
-  [1, 0],
-  [0, 1],
-  [-1, 0]
-];
-const port_padding = 10;
-const task_keys = {
-  0: "",
-  1: "research",
-  2: "discuss",
-  3: "problem",
-  4: "analyze",
-  5: "peerreview",
-  6: "debate",
-  7: "play",
-  8: "create",
-  9: "practice",
-  10: "reading",
-  11: "write",
-  12: "present",
-  13: "experiment",
-  14: "quiz",
-  15: "curation",
-  16: "orchestration",
-  17: "instrevaluate",
-  18: "other",
-  101: "jigsaw",
-  102: "peer-instruction",
-  103: "case-studies",
-  104: "gallery-walk",
-  105: "reflective-writing",
-  106: "two-stage-exam",
-  107: "toolkit",
-  108: "one-minute-paper",
-  109: "distributed-problem-solving",
-  110: "peer-assessment"
-};
-const context_keys = {
-  0: "",
-  1: "solo",
-  2: "group",
-  3: "class",
-  101: "exercise",
-  102: "test",
-  103: "exam"
-};
-const strategy_keys = {
-  0: "",
-  1: "jigsaw",
-  2: "peer-instruction",
-  3: "case-studies",
-  4: "gallery-walk",
-  5: "reflective-writing",
-  6: "two-stage-exam",
-  7: "toolkit",
-  8: "one-minute-paper",
-  9: "distributed-problem-solving",
-  10: "peer-assessment",
-  11: "other"
-};
-const default_column_settings = {
-  0: { colour: "#6738ff", icon: "other" },
-  1: { colour: "#0b118a", icon: "ooci" },
-  2: { colour: "#114cd4", icon: "home" },
-  3: { colour: "#11b3d4", icon: "instruct" },
-  4: { colour: "#04d07d", icon: "students" },
-  10: { colour: "#6738ff", icon: "other" },
-  11: { colour: "#ad351d", icon: "homework" },
-  12: { colour: "#ed4a28", icon: "lesson" },
-  13: { colour: "#ed8934", icon: "artifact" },
-  14: { colour: "#f7ba2a", icon: "assessment" },
-  20: { colour: "#369934", icon: "other" }
-};
-const node_type_keys = {
-  0: "activity node",
-  1: "course node",
-  2: "program node"
-};
-const object_dictionary = {
-  nodelink: "nodelink",
-  node: "node",
-  week: "week",
-  column: "column",
-  outcome: "outcome",
-  outcome_base: "outcome",
-  workflow: "workflow",
-  outcomenode: "outcomenode"
-};
-const parent_dictionary = {
-  nodelink: "node",
-  node: "week",
-  week: "workflow",
-  column: "workflow",
-  outcome: "outcome",
-  outcome_base: "workflow"
-};
-const through_parent_dictionary = {
-  node: "nodeweek",
-  week: "weekworkflow",
-  column: "columnworkflow",
-  outcome: "outcomeoutcome",
-  outcome_base: "outcomeworkflow"
-};
-const get_verbose = function(data2, object_type) {
-  switch (object_type) {
-    case "node":
-      return data2.node_type_display;
-    case "workflow":
-    case "activity":
-    case "course":
-    case "program":
-      return {
-        activity: window.gettext("Activity"),
-        course: window.gettext("Course"),
-        program: window.gettext("Program"),
-        workflow: window.gettext("Workflow")
-      }[data2.type];
-    case "week":
-      return data2.week_type_display;
-  }
-  return {
-    outcome_base: window.gettext("Outcome"),
-    nodelink: window.gettext("Node Link"),
-    outcome: window.gettext("Outcome"),
-    column: window.gettext("Column"),
-    project: window.gettext("Project"),
-    outcomehorizontallink: window.gettext("Association to the parent outcome"),
-    outcomenode: window.gettext("Association to the outcome")
-  }[object_type];
-};
-const permission_keys = {
-  none: 0,
-  view: 1,
-  edit: 2,
-  comment: 3,
-  student: 4
-};
-const role_keys = {
-  none: 0,
-  student: 1,
-  teacher: 2
-};
-const default_drop_state = {
-  node: false,
-  week: true,
-  outcome: [true, false, false, false, false]
-};
-const get_default_drop_state = (objectID, objectType, depth = 1) => {
-  let default_drop = default_drop_state[objectType];
-  if (objectType === "outcome") {
-    if (depth < default_drop.length)
-      default_drop = default_drop[depth];
-    else
-      default_drop = false;
-  }
-  return default_drop;
-};
-function getColumnColour(data2) {
-  var _a;
-  if (data2.colour == null)
-    return default_column_settings[data2.column_type].colour;
-  else
-    return "#" + ("000000" + ((_a = data2.colour) == null ? void 0 : _a.toString(16))).slice(-6);
-}
-function object_sets_types() {
-  return {
-    "program outcome": capFirst(window.gettext("program outcome")),
-    "course outcome": capFirst(window.gettext("course outcome")),
-    "activity outcome": capFirst(window.gettext("activity outcome")),
-    "program node": capFirst(window.gettext("program node")),
-    "course node": capFirst(window.gettext("course node")),
-    "activity node": capFirst(window.gettext("activity node"))
-  };
-}
-const getColumnByID = (state, id) => {
-  for (const i in state.column) {
-    const column2 = state.column[i];
-    if (column2.id == id)
-      return {
-        data: column2,
-        sibling_count: state.workflow.columnworkflow_set.length,
-        columnworkflows: state.workflow.columnworkflow_set,
-        column_order: state.workflow.columnworkflow_set.map(
-          (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
-        )
-      };
-  }
-};
-const getWeekByID = (state, id) => {
-  for (const i in state.week) {
-    const week = state.week[i];
-    if (week.id == id) {
-      if (week.is_dropped === void 0) {
-        week.is_dropped = getDropped(id, "week");
-      }
-      return {
-        data: week,
-        column_order: state.workflow.columnworkflow_set.map(
-          (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
-        ),
-        sibling_count: state.workflow.weekworkflow_set.length,
-        nodeweeks: state.nodeweek,
-        workflow_id: state.workflow.id
-      };
-    }
-  }
-};
-const getTermByID = (state, id) => {
-  for (const i in state.week) {
-    const week = state.week[i];
-    if (week.id == id) {
-      if (week.is_dropped === void 0) {
-        week.is_dropped = getDropped(id, "week");
-      }
-      const nodeweeks = week.nodeweek_set;
-      const column_order = filterThenSortByID(
-        state.columnworkflow,
-        state.workflow.columnworkflow_set
-      ).map((columnworkflow) => columnworkflow.column);
-      const nodes_by_column = {};
-      for (var j = 0; j < column_order.length; j++) {
-        nodes_by_column[column_order[j]] = [];
-      }
-      for (var j = 0; j < nodeweeks.length; j++) {
-        const node_week = getNodeWeekByID(state, nodeweeks[j]).data;
-        const node2 = getNodeByID(state, node_week.node).data;
-        if (node2.column)
-          nodes_by_column[node2.column].push(nodeweeks[j]);
-        else
-          nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j]);
-      }
-      return {
-        data: week,
-        column_order,
-        nodes_by_column,
-        nodeweeks: state.nodeweek
-      };
-    }
-  }
-};
-const getWeekWorkflowByID = (state, id) => {
-  for (const i in state.weekworkflow) {
-    const weekworkflow = state.weekworkflow[i];
-    if (weekworkflow.id == id)
-      return { data: weekworkflow, order: state.workflow.weekworkflow_set };
-  }
-};
-const getNodeByID = (state, id) => {
-  for (const i in state.node) {
-    var node2 = state.node[i];
-    if (node2.id === id) {
-      if (node2.is_dropped === void 0) {
-        node2.is_dropped = getDropped(id, "node");
-      }
-      return {
-        data: node2,
-        column: state.column.find((column2) => column2.id === node2.column),
-        object_sets: state.objectset
-      };
-    }
-  }
-  console.log("failed to find node");
-};
-const getNodeWeekByID = (state, id) => {
-  for (const i in state.nodeweek) {
-    const nodeweek = state.nodeweek[i];
-    if (nodeweek.id === id) {
-      const node2 = getNodeByID(state, nodeweek.node).data;
-      return {
-        data: nodeweek,
-        order: getWeekByID(state, nodeweek.week).nodeweek_set,
-        column: node2.column
-      };
-    }
-  }
-};
-const getNodeLinkByID = (state, id) => {
-  for (const i in state.nodelink) {
-    const nodelink = state.nodelink[i];
-    if (nodelink.id === id)
-      return { data: nodelink };
-  }
-};
-const getColumnWorkflowByID = (state, id) => {
-  for (const i in state.columnworkflow) {
-    const columnWorkflow = state.columnworkflow[i];
-    if (columnWorkflow.id === id) {
-      return {
-        data: columnWorkflow,
-        order: state.workflow.columnworkflow_set
-      };
-    }
-  }
-  return {
-    data: void 0,
-    order: void 0
-  };
-};
-const getStrategyByID = (state, id) => {
-  const strategies = Object.values(state.strategy);
-  const foundStrategy = strategies.find((strategy) => strategy.id === id);
-  return foundStrategy ? { data: foundStrategy } : { data: void 0 };
-};
-function findRootOutcome(state, id, rank) {
-  for (let i = 0; i < state.length; i++) {
-    if (state[i].child === id) {
-      rank.unshift({ parent: state[i].parent, through: state[i].id });
-      return findRootOutcome(state, state[i].parent, rank);
-    }
-  }
-  return { id, rank };
-}
-function findTopRank(state, outcome) {
-  for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome === outcome.id) {
-      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
-        return state.workflow.outcomeworkflow_set.indexOf(
-          state.outcomeworkflow[j].id
-        ) + 1;
-      }
-      for (let k = 0; k < state.child_workflow.length; k++) {
-        const index = state.child_workflow[k].outcomeworkflow_set.indexOf(
-          state.outcomeworkflow[j].id
-        );
-        if (index >= 0) {
-          return index + 1;
-        }
-      }
-      for (let k = 0; k < state.parent_workflow.length; k++) {
-        const index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
-          state.outcomeworkflow[j].id
-        );
-        if (index >= 0) {
-          return index + 1;
-        }
-      }
-    }
-  }
-}
-const getOutcomeByID = (state, id) => {
-  const state_section = state.outcome;
-  for (const i in state_section) {
-    const outcome = state_section[i];
-    if (outcome.id === id) {
-      if (outcome.is_dropped === void 0) {
-        outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
-      }
-      let root_outcome;
-      let rank = [];
-      let titles = [];
-      let top_rank;
-      if (outcome.depth > 0) {
-        const state_outcomeoutcome_section = state.outcomeoutcome;
-        const root_info = findRootOutcome(
-          state_outcomeoutcome_section,
-          outcome.id,
-          []
-        );
-        rank = root_info.rank.map((x) => null);
-        titles = rank.map((x) => null);
-        for (let j = 0; j < state_section.length; j++) {
-          if (state_section[j].id === root_info.id)
-            root_outcome = state_section[j];
-          for (let k = 0; k < root_info.rank.length; k++) {
-            if (root_info.rank[k].parent === state_section[j].id) {
-              titles[k] = state_section[j].title;
-              if (rank[k])
-                continue;
-              if (state_section[j].code) {
-                if (k > 0)
-                  rank[k - 1] = state_section[j].code;
-                else
-                  top_rank = state_section[j].code;
-              }
-              rank[k] = state_section[j].child_outcome_links.indexOf(
-                root_info.rank[k].through
-              ) + 1;
-            }
-          }
-        }
-      } else {
-        root_outcome = outcome;
-        if (outcome.code)
-          top_rank = outcome.code;
-      }
-      if (!top_rank)
-        top_rank = findTopRank(state, root_outcome);
-      titles.push(outcome.title);
-      rank.unshift(top_rank);
-      const hovertext = rank.map((rank_i, i2) => rank_i + ". " + titles[i2]).join(" -> ");
-      const prefix2 = rank.join(".");
-      return {
-        data: outcome,
-        hovertext,
-        prefix: prefix2,
-        object_sets: state.objectset,
-        workflow_id: state.workflow.id
-      };
-    }
-  }
-  console.log("failed to find outcome");
-};
-const getChildWorkflowByID = (state, id) => {
-  for (const i in state.child_workflow) {
-    const workflow = state.child_workflow[i];
-    if (workflow.id === id)
-      return { data: workflow };
-  }
-  console.log("failed to find child workflow");
-  return -1;
-};
-const getOutcomeOutcomeByID = (state, id) => {
-  const state_section = state.outcomeoutcome;
-  for (const i in state_section) {
-    const outcomeoutcome = state_section[i];
-    if (outcomeoutcome.id === id)
-      return { data: outcomeoutcome };
-  }
-  console.log("failed to find outcomeoutcome");
-};
-const getOutcomeNodeByID = (state, id) => {
-  const outcomeNode = state.outcomenode.find((node2) => node2.id === id);
-  if (outcomeNode) {
-    return {
-      data: outcomeNode
-    };
-  } else {
-    console.log("Failed to find outcomenode with ID:", id);
-  }
-};
-const getOutcomeHorizontalLinkByID = (state, id) => {
-  for (const i in state.outcomehorizontallink) {
-    const outcomehorizontallink = state.outcomehorizontallink[i];
-    if (outcomehorizontallink.id == id)
-      return { data: outcomehorizontallink };
-  }
-  console.log("failed to find outcomehorizontallink");
-};
-const getSortedOutcomeNodesFromNodes = (state, nodes) => {
-  let outcomenode_ids = [];
-  for (let i = 0; i < nodes.length; i++) {
-    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
-  }
-  const outcomenodes = filterThenSortByID(
-    state.outcomenode,
-    outcomenode_ids
-  );
-  const outcomes = filterThenSortByID(
-    state.outcome,
-    outcomenodes.map((outcomenode) => outcomenode.outcome)
-  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }));
-  if (outcomes.length === 0) {
-    return outcomes;
-  }
-  const base_title = capWords(window.gettext("outcomes"));
-  const object_sets = state.objectset.filter(
-    (objectset) => objectset.term === outcomes[0].type
-  );
-  if (object_sets.length === 0)
-    return [
-      {
-        objectset: {
-          title: base_title
-        },
-        outcomes
-      }
-    ];
-  const categories = [
-    {
-      objectset: { title: window.gettext("Uncategorized") },
-      outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
-    },
-    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-      objectset,
-      outcomes: outcomes.filter(
-        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-      )
-    }))
-  ];
-  console.log("returm from getSortedOutcomeNodesFromNodes");
-  console.log(categories);
-  return categories;
-};
-const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
-  console.log("getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set");
-  console.log(outcomeworkflow_set);
-  const outcomeworkflows = filterThenSortByID(
-    state.outcomeworkflow,
-    outcomeworkflow_set
-  );
-  const outcome_ids = outcomeworkflows.map(
-    (outcomeworkflow) => outcomeworkflow.outcome
-  );
-  const outcomes = filterThenSortByID(state.outcome, outcome_ids);
-  if (outcomes.length === 0) {
-    return outcomes;
-  }
-  for (let i = 0; i < outcomes.length; i++) {
-    outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
-    outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
-  }
-  const base_title = capWords(window.gettext("outcomes"));
-  const object_sets = state.objectset.filter(
-    (objectset) => objectset.term === outcomes[0].type
-  );
-  if (object_sets.length === 0) {
-    return [
-      {
-        objectset: {
-          title: base_title
-        },
-        outcomes
-      }
-    ];
-  }
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
-  let categories = [];
-  if (uncategorized.length > 0)
-    categories = [
-      {
-        objectset: { title: window.gettext("Uncategorized") },
-        outcomes: uncategorized
-      }
-    ];
-  categories = [
-    ...categories,
-    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-      objectset,
-      outcomes: outcomes.filter(
-        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-      )
-    }))
-  ];
-  console.log("categories");
-  console.log(categories);
-  return categories;
-};
-const getDescendantOutcomes = (state, outcome, outcomes) => {
-  if (outcome.depth >= 2)
-    return;
-  const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
-    (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-  );
-  for (let i = 0; i < children.length; i++) {
-    outcomes.push(children[i].id);
-    getDescendantOutcomes(state, children[i], outcomes);
-  }
-};
-const getDropped = (objectId, objectType, depth = 1) => {
-  const default_drop = get_default_drop_state(
-    objectId,
-    objectType,
-    depth
-  );
-  try {
-    const storedDrop = JSON.parse(
-      window.localStorage.getItem(objectType + objectId)
-    );
-    if (storedDrop === null)
-      return default_drop;
-    return storedDrop;
-  } catch (err) {
-    return default_drop;
-  }
-};
-const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
-  for (const i in outcomeNodes) {
-    const outcomeNode = outcomeNodes[i];
-    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
-      return { data: outcomeNode };
-  }
-  return { data: null };
-};
-const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomeworkflows_unsorted, outcomeworkflow_set, object_sets_unfiltered) => {
-  const outcomeworkflows = filterThenSortByID(
-    outcomeworkflows_unsorted,
-    outcomeworkflow_set
-  );
-  const outcome_ids = outcomeworkflows.map(
-    (outcomeworkflow) => outcomeworkflow.outcome
-  );
-  const outcomes = filterThenSortByID(outcomes_unsorted, outcome_ids);
-  for (let i = 0; i < outcomes.length; i++) {
-    outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
-    outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
-  }
-  if (outcomes.length === 0)
-    return outcomes.map((outcome) => outcome.id);
-  const base_title = capWords(window.gettext("outcomes"));
-  const object_sets = object_sets_unfiltered.filter(
-    (objectset) => objectset.term === outcomes[0].type
-  );
-  if (object_sets.length === 0)
-    return [
-      {
-        objectset: { title: base_title },
-        outcomes: outcomes.map((outcome) => outcome.id)
-      }
-    ];
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0).map((outcome) => outcome.id);
-  let categories = [];
-  if (uncategorized.length > 0)
-    categories = [
-      {
-        objectset: { title: window.gettext("Uncategorized") },
-        outcomes: uncategorized
-      }
-    ];
-  categories = [
-    ...categories,
-    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-      objectset,
-      outcomes: outcomes.filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0).map((outcome) => outcome.id)
-    }))
-  ];
-  return categories;
-};
 function permission_translate() {
   return {
     author: window.gettext("Owner"),
@@ -48335,7 +47698,7 @@ function checkSetHidden(data2, objectsets) {
   let hidden = false;
   if (data2.sets.length > 0 && objectsets) {
     hidden = true;
-    for (var i = 0; i < objectsets.length; i++) {
+    for (let i = 0; i < objectsets.length; i++) {
       if (!objectsets[i].hidden && data2.sets.indexOf(objectsets[i].id) >= 0) {
         hidden = false;
         break;
@@ -48401,7 +47764,7 @@ function mouseOutsidePadding(evt, elem, padding2) {
 function triggerHandlerEach(trigger, eventname) {
   return trigger.each((i, element) => {
     if (element) {
-      var event2 = new Event(eventname, {
+      const event2 = new Event(eventname, {
         bubbles: true,
         // This makes the event bubble up
         cancelable: true
@@ -48442,130 +47805,6 @@ const debounce$1 = (func, timeout2 = 300) => {
     }, timeout2);
   };
 };
-function createOutcomeNodeBranch(props2, outcome_id, nodecategory) {
-  for (let i = 0; i < props2.outcome.length; i++) {
-    if (props2.outcome[i].id === outcome_id) {
-      let children;
-      if (props2.outcome[i].child_outcome_links.length === 0 || props2.outcome[i].depth >= 2)
-        children = [];
-      else
-        children = filterThenSortByID(
-          props2.outcomeoutcome,
-          props2.outcome[i].child_outcome_links
-        ).map(
-          (outcomeoutcome) => createOutcomeNodeBranch(props2, outcomeoutcome.child, nodecategory)
-        );
-      const outcomenodes = [];
-      for (var ii = 0; ii < nodecategory.length; ii++) {
-        const category = nodecategory[ii];
-        const outcomenodes_group = [];
-        for (var j = 0; j < category.nodes.length; j++) {
-          const node2 = category.nodes[j];
-          const outcomenode = getTableOutcomeNodeByID(
-            props2.outcomenode,
-            node2,
-            outcome_id
-          ).data;
-          if (outcomenode) {
-            outcomenodes_group.push({
-              node_id: node2,
-              degree: outcomenode.degree
-            });
-            continue;
-          }
-          let added = false;
-          for (var k = 0; k < children.length; k++) {
-            if (children[k].outcomenodes[ii][j].degree !== null) {
-              outcomenodes_group.push({ node_id: node2, degree: 0 });
-              added = true;
-              break;
-            }
-          }
-          if (!added)
-            outcomenodes_group.push({ node_id: node2, degree: null });
-        }
-        let total2 = null;
-        if (children.length > 0) {
-          total2 = 15;
-          let all_null = true;
-          for (let k2 = 0; k2 < children.length; k2++) {
-            var child_total = children[k2].outcomenodes[ii].total;
-            if (child_total !== null)
-              all_null = false;
-            total2 &= child_total;
-          }
-          if (all_null)
-            total2 = null;
-        } else {
-          total2 = outcomenodes_group.reduce((acc, curr) => {
-            if (curr.degree === null)
-              return acc;
-            if (acc === null)
-              return curr.degree;
-            return acc | curr.degree;
-          }, null);
-        }
-        outcomenodes_group.total = total2;
-        outcomenodes.push(outcomenodes_group);
-      }
-      let total = null;
-      if (children.length > 0) {
-        total = 15;
-        let all_null = true;
-        for (let k2 = 0; k2 < children.length; k2++) {
-          var child_total = children[k2].outcomenodes.total;
-          if (child_total !== null)
-            all_null = false;
-          total &= child_total;
-        }
-        if (all_null)
-          total = null;
-      } else {
-        total = outcomenodes.reduce((acc, curr) => {
-          if (curr.total === null)
-            return acc;
-          if (acc === null)
-            return curr.total;
-          return acc | curr.total;
-        }, null);
-      }
-      outcomenodes.total = total;
-      return { id: outcome_id, children, outcomenodes };
-    }
-  }
-  return null;
-}
-function getCompletionImg(completion_status, outcomes_type) {
-  const contents = [];
-  if (outcomes_type === 0 || completion_status & 1) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "img",
-      {
-        className: "self-completed",
-        src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
-      }
-    );
-  }
-  if (completion_status & 2) {
-    const divclass = "";
-    contents.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
-    );
-  }
-  if (completion_status & 4) {
-    const divclass = "";
-    contents.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
-    );
-  }
-  if (completion_status & 8) {
-    const divclass = "";
-    contents.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
-    );
-  }
-  return contents;
-}
 const DATA_ACTIONS = Enum({
   POSTED: "posted"
 });
@@ -48574,6 +47813,6356 @@ const OBJECT_TYPE = Enum({
   PROJECT: "project",
   STRATEGY: "strategy"
 });
+var jquery = { exports: {} };
+/*!
+ * jQuery JavaScript Library v3.7.1
+ * https://jquery.com/
+ *
+ * Copyright OpenJS Foundation and other contributors
+ * Released under the MIT license
+ * https://jquery.org/license
+ *
+ * Date: 2023-08-28T13:37Z
+ */
+(function(module) {
+  (function(global2, factory2) {
+    {
+      module.exports = global2.document ? factory2(global2, true) : function(w) {
+        if (!w.document) {
+          throw new Error("jQuery requires a window with a document");
+        }
+        return factory2(w);
+      };
+    }
+  })(typeof window !== "undefined" ? window : commonjsGlobal, function(window2, noGlobal) {
+    var arr = [];
+    var getProto = Object.getPrototypeOf;
+    var slice2 = arr.slice;
+    var flat = arr.flat ? function(array) {
+      return arr.flat.call(array);
+    } : function(array) {
+      return arr.concat.apply([], array);
+    };
+    var push = arr.push;
+    var indexOf = arr.indexOf;
+    var class2type = {};
+    var toString = class2type.toString;
+    var hasOwn = class2type.hasOwnProperty;
+    var fnToString = hasOwn.toString;
+    var ObjectFunctionString = fnToString.call(Object);
+    var support = {};
+    var isFunction2 = function isFunction3(obj) {
+      return typeof obj === "function" && typeof obj.nodeType !== "number" && typeof obj.item !== "function";
+    };
+    var isWindow = function isWindow2(obj) {
+      return obj != null && obj === obj.window;
+    };
+    var document2 = window2.document;
+    var preservedScriptAttributes = {
+      type: true,
+      src: true,
+      nonce: true,
+      noModule: true
+    };
+    function DOMEval(code, node2, doc) {
+      doc = doc || document2;
+      var i, val, script = doc.createElement("script");
+      script.text = code;
+      if (node2) {
+        for (i in preservedScriptAttributes) {
+          val = node2[i] || node2.getAttribute && node2.getAttribute(i);
+          if (val) {
+            script.setAttribute(i, val);
+          }
+        }
+      }
+      doc.head.appendChild(script).parentNode.removeChild(script);
+    }
+    function toType(obj) {
+      if (obj == null) {
+        return obj + "";
+      }
+      return typeof obj === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj;
+    }
+    var version = "3.7.1", rhtmlSuffix = /HTML$/i, jQuery2 = function(selector, context) {
+      return new jQuery2.fn.init(selector, context);
+    };
+    jQuery2.fn = jQuery2.prototype = {
+      // The current version of jQuery being used
+      jquery: version,
+      constructor: jQuery2,
+      // The default length of a jQuery object is 0
+      length: 0,
+      toArray: function() {
+        return slice2.call(this);
+      },
+      // Get the Nth element in the matched element set OR
+      // Get the whole matched element set as a clean array
+      get: function(num) {
+        if (num == null) {
+          return slice2.call(this);
+        }
+        return num < 0 ? this[num + this.length] : this[num];
+      },
+      // Take an array of elements and push it onto the stack
+      // (returning the new matched element set)
+      pushStack: function(elems) {
+        var ret = jQuery2.merge(this.constructor(), elems);
+        ret.prevObject = this;
+        return ret;
+      },
+      // Execute a callback for every element in the matched set.
+      each: function(callback) {
+        return jQuery2.each(this, callback);
+      },
+      map: function(callback) {
+        return this.pushStack(jQuery2.map(this, function(elem, i) {
+          return callback.call(elem, i, elem);
+        }));
+      },
+      slice: function() {
+        return this.pushStack(slice2.apply(this, arguments));
+      },
+      first: function() {
+        return this.eq(0);
+      },
+      last: function() {
+        return this.eq(-1);
+      },
+      even: function() {
+        return this.pushStack(jQuery2.grep(this, function(_elem, i) {
+          return (i + 1) % 2;
+        }));
+      },
+      odd: function() {
+        return this.pushStack(jQuery2.grep(this, function(_elem, i) {
+          return i % 2;
+        }));
+      },
+      eq: function(i) {
+        var len = this.length, j = +i + (i < 0 ? len : 0);
+        return this.pushStack(j >= 0 && j < len ? [this[j]] : []);
+      },
+      end: function() {
+        return this.prevObject || this.constructor();
+      },
+      // For internal use only.
+      // Behaves like an Array's method, not like a jQuery method.
+      push,
+      sort: arr.sort,
+      splice: arr.splice
+    };
+    jQuery2.extend = jQuery2.fn.extend = function() {
+      var options, name2, src, copy2, copyIsArray, clone2, target = arguments[0] || {}, i = 1, length2 = arguments.length, deep = false;
+      if (typeof target === "boolean") {
+        deep = target;
+        target = arguments[i] || {};
+        i++;
+      }
+      if (typeof target !== "object" && !isFunction2(target)) {
+        target = {};
+      }
+      if (i === length2) {
+        target = this;
+        i--;
+      }
+      for (; i < length2; i++) {
+        if ((options = arguments[i]) != null) {
+          for (name2 in options) {
+            copy2 = options[name2];
+            if (name2 === "__proto__" || target === copy2) {
+              continue;
+            }
+            if (deep && copy2 && (jQuery2.isPlainObject(copy2) || (copyIsArray = Array.isArray(copy2)))) {
+              src = target[name2];
+              if (copyIsArray && !Array.isArray(src)) {
+                clone2 = [];
+              } else if (!copyIsArray && !jQuery2.isPlainObject(src)) {
+                clone2 = {};
+              } else {
+                clone2 = src;
+              }
+              copyIsArray = false;
+              target[name2] = jQuery2.extend(deep, clone2, copy2);
+            } else if (copy2 !== void 0) {
+              target[name2] = copy2;
+            }
+          }
+        }
+      }
+      return target;
+    };
+    jQuery2.extend({
+      // Unique for each copy of jQuery on the page
+      expando: "jQuery" + (version + Math.random()).replace(/\D/g, ""),
+      // Assume jQuery is ready without the ready module
+      isReady: true,
+      error: function(msg) {
+        throw new Error(msg);
+      },
+      noop: function() {
+      },
+      isPlainObject: function(obj) {
+        var proto, Ctor;
+        if (!obj || toString.call(obj) !== "[object Object]") {
+          return false;
+        }
+        proto = getProto(obj);
+        if (!proto) {
+          return true;
+        }
+        Ctor = hasOwn.call(proto, "constructor") && proto.constructor;
+        return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
+      },
+      isEmptyObject: function(obj) {
+        var name2;
+        for (name2 in obj) {
+          return false;
+        }
+        return true;
+      },
+      // Evaluates a script in a provided context; falls back to the global one
+      // if not specified.
+      globalEval: function(code, options, doc) {
+        DOMEval(code, { nonce: options && options.nonce }, doc);
+      },
+      each: function(obj, callback) {
+        var length2, i = 0;
+        if (isArrayLike(obj)) {
+          length2 = obj.length;
+          for (; i < length2; i++) {
+            if (callback.call(obj[i], i, obj[i]) === false) {
+              break;
+            }
+          }
+        } else {
+          for (i in obj) {
+            if (callback.call(obj[i], i, obj[i]) === false) {
+              break;
+            }
+          }
+        }
+        return obj;
+      },
+      // Retrieve the text value of an array of DOM nodes
+      text: function(elem) {
+        var node2, ret = "", i = 0, nodeType = elem.nodeType;
+        if (!nodeType) {
+          while (node2 = elem[i++]) {
+            ret += jQuery2.text(node2);
+          }
+        }
+        if (nodeType === 1 || nodeType === 11) {
+          return elem.textContent;
+        }
+        if (nodeType === 9) {
+          return elem.documentElement.textContent;
+        }
+        if (nodeType === 3 || nodeType === 4) {
+          return elem.nodeValue;
+        }
+        return ret;
+      },
+      // results is for internal usage only
+      makeArray: function(arr2, results) {
+        var ret = results || [];
+        if (arr2 != null) {
+          if (isArrayLike(Object(arr2))) {
+            jQuery2.merge(
+              ret,
+              typeof arr2 === "string" ? [arr2] : arr2
+            );
+          } else {
+            push.call(ret, arr2);
+          }
+        }
+        return ret;
+      },
+      inArray: function(elem, arr2, i) {
+        return arr2 == null ? -1 : indexOf.call(arr2, elem, i);
+      },
+      isXMLDoc: function(elem) {
+        var namespace = elem && elem.namespaceURI, docElem = elem && (elem.ownerDocument || elem).documentElement;
+        return !rhtmlSuffix.test(namespace || docElem && docElem.nodeName || "HTML");
+      },
+      // Support: Android <=4.0 only, PhantomJS 1 only
+      // push.apply(_, arraylike) throws on ancient WebKit
+      merge: function(first, second) {
+        var len = +second.length, j = 0, i = first.length;
+        for (; j < len; j++) {
+          first[i++] = second[j];
+        }
+        first.length = i;
+        return first;
+      },
+      grep: function(elems, callback, invert) {
+        var callbackInverse, matches = [], i = 0, length2 = elems.length, callbackExpect = !invert;
+        for (; i < length2; i++) {
+          callbackInverse = !callback(elems[i], i);
+          if (callbackInverse !== callbackExpect) {
+            matches.push(elems[i]);
+          }
+        }
+        return matches;
+      },
+      // arg is for internal usage only
+      map: function(elems, callback, arg) {
+        var length2, value, i = 0, ret = [];
+        if (isArrayLike(elems)) {
+          length2 = elems.length;
+          for (; i < length2; i++) {
+            value = callback(elems[i], i, arg);
+            if (value != null) {
+              ret.push(value);
+            }
+          }
+        } else {
+          for (i in elems) {
+            value = callback(elems[i], i, arg);
+            if (value != null) {
+              ret.push(value);
+            }
+          }
+        }
+        return flat(ret);
+      },
+      // A global GUID counter for objects
+      guid: 1,
+      // jQuery.support is not used in Core but other projects attach their
+      // properties to it so it needs to exist.
+      support
+    });
+    if (typeof Symbol === "function") {
+      jQuery2.fn[Symbol.iterator] = arr[Symbol.iterator];
+    }
+    jQuery2.each(
+      "Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "),
+      function(_i, name2) {
+        class2type["[object " + name2 + "]"] = name2.toLowerCase();
+      }
+    );
+    function isArrayLike(obj) {
+      var length2 = !!obj && "length" in obj && obj.length, type = toType(obj);
+      if (isFunction2(obj) || isWindow(obj)) {
+        return false;
+      }
+      return type === "array" || length2 === 0 || typeof length2 === "number" && length2 > 0 && length2 - 1 in obj;
+    }
+    function nodeName(elem, name2) {
+      return elem.nodeName && elem.nodeName.toLowerCase() === name2.toLowerCase();
+    }
+    var pop = arr.pop;
+    var sort = arr.sort;
+    var splice = arr.splice;
+    var whitespace2 = "[\\x20\\t\\r\\n\\f]";
+    var rtrimCSS = new RegExp(
+      "^" + whitespace2 + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace2 + "+$",
+      "g"
+    );
+    jQuery2.contains = function(a, b) {
+      var bup = b && b.parentNode;
+      return a === bup || !!(bup && bup.nodeType === 1 && // Support: IE 9 - 11+
+      // IE doesn't have `contains` on SVG.
+      (a.contains ? a.contains(bup) : a.compareDocumentPosition && a.compareDocumentPosition(bup) & 16));
+    };
+    var rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g;
+    function fcssescape(ch, asCodePoint) {
+      if (asCodePoint) {
+        if (ch === "\0") {
+          return "�";
+        }
+        return ch.slice(0, -1) + "\\" + ch.charCodeAt(ch.length - 1).toString(16) + " ";
+      }
+      return "\\" + ch;
+    }
+    jQuery2.escapeSelector = function(sel) {
+      return (sel + "").replace(rcssescape, fcssescape);
+    };
+    var preferredDoc = document2, pushNative = push;
+    (function() {
+      var i, Expr, outermostContext, sortInput, hasDuplicate, push2 = pushNative, document3, documentElement2, documentIsHTML, rbuggyQSA, matches, expando = jQuery2.expando, dirruns = 0, done = 0, classCache = createCache3(), tokenCache = createCache3(), compilerCache = createCache3(), nonnativeSelectorCache = createCache3(), sortOrder = function(a, b) {
+        if (a === b) {
+          hasDuplicate = true;
+        }
+        return 0;
+      }, booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped", identifier2 = "(?:\\\\[\\da-fA-F]{1,6}" + whitespace2 + "?|\\\\[^\\r\\n\\f]|[\\w-]|[^\0-\\x7f])+", attributes = "\\[" + whitespace2 + "*(" + identifier2 + ")(?:" + whitespace2 + // Operator (capture 2)
+      "*([*^$|!~]?=)" + whitespace2 + // "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
+      `*(?:'((?:\\\\.|[^\\\\'])*)'|"((?:\\\\.|[^\\\\"])*)"|(` + identifier2 + "))|)" + whitespace2 + "*\\]", pseudos = ":(" + identifier2 + `)(?:\\((('((?:\\\\.|[^\\\\'])*)'|"((?:\\\\.|[^\\\\"])*)")|((?:\\\\.|[^\\\\()[\\]]|` + attributes + ")*)|.*)\\)|)", rwhitespace = new RegExp(whitespace2 + "+", "g"), rcomma = new RegExp("^" + whitespace2 + "*," + whitespace2 + "*"), rleadingCombinator = new RegExp("^" + whitespace2 + "*([>+~]|" + whitespace2 + ")" + whitespace2 + "*"), rdescend = new RegExp(whitespace2 + "|>"), rpseudo = new RegExp(pseudos), ridentifier = new RegExp("^" + identifier2 + "$"), matchExpr = {
+        ID: new RegExp("^#(" + identifier2 + ")"),
+        CLASS: new RegExp("^\\.(" + identifier2 + ")"),
+        TAG: new RegExp("^(" + identifier2 + "|[*])"),
+        ATTR: new RegExp("^" + attributes),
+        PSEUDO: new RegExp("^" + pseudos),
+        CHILD: new RegExp(
+          "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace2 + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace2 + "*(?:([+-]|)" + whitespace2 + "*(\\d+)|))" + whitespace2 + "*\\)|)",
+          "i"
+        ),
+        bool: new RegExp("^(?:" + booleans + ")$", "i"),
+        // For use in libraries implementing .is()
+        // We use this for POS matching in `select`
+        needsContext: new RegExp("^" + whitespace2 + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace2 + "*((?:-\\d)?\\d*)" + whitespace2 + "*\\)|)(?=[^-]|$)", "i")
+      }, rinputs = /^(?:input|select|textarea|button)$/i, rheader = /^h\d$/i, rquickExpr2 = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/, rsibling = /[+~]/, runescape = new RegExp("\\\\[\\da-fA-F]{1,6}" + whitespace2 + "?|\\\\([^\\r\\n\\f])", "g"), funescape = function(escape, nonHex) {
+        var high = "0x" + escape.slice(1) - 65536;
+        if (nonHex) {
+          return nonHex;
+        }
+        return high < 0 ? String.fromCharCode(high + 65536) : String.fromCharCode(high >> 10 | 55296, high & 1023 | 56320);
+      }, unloadHandler = function() {
+        setDocument();
+      }, inDisabledFieldset = addCombinator(
+        function(elem) {
+          return elem.disabled === true && nodeName(elem, "fieldset");
+        },
+        { dir: "parentNode", next: "legend" }
+      );
+      function safeActiveElement() {
+        try {
+          return document3.activeElement;
+        } catch (err) {
+        }
+      }
+      try {
+        push2.apply(
+          arr = slice2.call(preferredDoc.childNodes),
+          preferredDoc.childNodes
+        );
+        arr[preferredDoc.childNodes.length].nodeType;
+      } catch (e) {
+        push2 = {
+          apply: function(target, els) {
+            pushNative.apply(target, slice2.call(els));
+          },
+          call: function(target) {
+            pushNative.apply(target, slice2.call(arguments, 1));
+          }
+        };
+      }
+      function find(selector, context, results, seed) {
+        var m2, i2, elem, nid, match2, groups, newSelector, newContext = context && context.ownerDocument, nodeType = context ? context.nodeType : 9;
+        results = results || [];
+        if (typeof selector !== "string" || !selector || nodeType !== 1 && nodeType !== 9 && nodeType !== 11) {
+          return results;
+        }
+        if (!seed) {
+          setDocument(context);
+          context = context || document3;
+          if (documentIsHTML) {
+            if (nodeType !== 11 && (match2 = rquickExpr2.exec(selector))) {
+              if (m2 = match2[1]) {
+                if (nodeType === 9) {
+                  if (elem = context.getElementById(m2)) {
+                    if (elem.id === m2) {
+                      push2.call(results, elem);
+                      return results;
+                    }
+                  } else {
+                    return results;
+                  }
+                } else {
+                  if (newContext && (elem = newContext.getElementById(m2)) && find.contains(context, elem) && elem.id === m2) {
+                    push2.call(results, elem);
+                    return results;
+                  }
+                }
+              } else if (match2[2]) {
+                push2.apply(results, context.getElementsByTagName(selector));
+                return results;
+              } else if ((m2 = match2[3]) && context.getElementsByClassName) {
+                push2.apply(results, context.getElementsByClassName(m2));
+                return results;
+              }
+            }
+            if (!nonnativeSelectorCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector))) {
+              newSelector = selector;
+              newContext = context;
+              if (nodeType === 1 && (rdescend.test(selector) || rleadingCombinator.test(selector))) {
+                newContext = rsibling.test(selector) && testContext(context.parentNode) || context;
+                if (newContext != context || !support.scope) {
+                  if (nid = context.getAttribute("id")) {
+                    nid = jQuery2.escapeSelector(nid);
+                  } else {
+                    context.setAttribute("id", nid = expando);
+                  }
+                }
+                groups = tokenize(selector);
+                i2 = groups.length;
+                while (i2--) {
+                  groups[i2] = (nid ? "#" + nid : ":scope") + " " + toSelector(groups[i2]);
+                }
+                newSelector = groups.join(",");
+              }
+              try {
+                push2.apply(
+                  results,
+                  newContext.querySelectorAll(newSelector)
+                );
+                return results;
+              } catch (qsaError) {
+                nonnativeSelectorCache(selector, true);
+              } finally {
+                if (nid === expando) {
+                  context.removeAttribute("id");
+                }
+              }
+            }
+          }
+        }
+        return select(selector.replace(rtrimCSS, "$1"), context, results, seed);
+      }
+      function createCache3() {
+        var keys = [];
+        function cache2(key, value) {
+          if (keys.push(key + " ") > Expr.cacheLength) {
+            delete cache2[keys.shift()];
+          }
+          return cache2[key + " "] = value;
+        }
+        return cache2;
+      }
+      function markFunction(fn) {
+        fn[expando] = true;
+        return fn;
+      }
+      function assert(fn) {
+        var el = document3.createElement("fieldset");
+        try {
+          return !!fn(el);
+        } catch (e) {
+          return false;
+        } finally {
+          if (el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+          el = null;
+        }
+      }
+      function createInputPseudo(type) {
+        return function(elem) {
+          return nodeName(elem, "input") && elem.type === type;
+        };
+      }
+      function createButtonPseudo(type) {
+        return function(elem) {
+          return (nodeName(elem, "input") || nodeName(elem, "button")) && elem.type === type;
+        };
+      }
+      function createDisabledPseudo(disabled) {
+        return function(elem) {
+          if ("form" in elem) {
+            if (elem.parentNode && elem.disabled === false) {
+              if ("label" in elem) {
+                if ("label" in elem.parentNode) {
+                  return elem.parentNode.disabled === disabled;
+                } else {
+                  return elem.disabled === disabled;
+                }
+              }
+              return elem.isDisabled === disabled || // Where there is no isDisabled, check manually
+              elem.isDisabled !== !disabled && inDisabledFieldset(elem) === disabled;
+            }
+            return elem.disabled === disabled;
+          } else if ("label" in elem) {
+            return elem.disabled === disabled;
+          }
+          return false;
+        };
+      }
+      function createPositionalPseudo(fn) {
+        return markFunction(function(argument) {
+          argument = +argument;
+          return markFunction(function(seed, matches2) {
+            var j, matchIndexes = fn([], seed.length, argument), i2 = matchIndexes.length;
+            while (i2--) {
+              if (seed[j = matchIndexes[i2]]) {
+                seed[j] = !(matches2[j] = seed[j]);
+              }
+            }
+          });
+        });
+      }
+      function testContext(context) {
+        return context && typeof context.getElementsByTagName !== "undefined" && context;
+      }
+      function setDocument(node2) {
+        var subWindow, doc = node2 ? node2.ownerDocument || node2 : preferredDoc;
+        if (doc == document3 || doc.nodeType !== 9 || !doc.documentElement) {
+          return document3;
+        }
+        document3 = doc;
+        documentElement2 = document3.documentElement;
+        documentIsHTML = !jQuery2.isXMLDoc(document3);
+        matches = documentElement2.matches || documentElement2.webkitMatchesSelector || documentElement2.msMatchesSelector;
+        if (documentElement2.msMatchesSelector && // Support: IE 11+, Edge 17 - 18+
+        // IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+        // two documents; shallow comparisons work.
+        // eslint-disable-next-line eqeqeq
+        preferredDoc != document3 && (subWindow = document3.defaultView) && subWindow.top !== subWindow) {
+          subWindow.addEventListener("unload", unloadHandler);
+        }
+        support.getById = assert(function(el) {
+          documentElement2.appendChild(el).id = jQuery2.expando;
+          return !document3.getElementsByName || !document3.getElementsByName(jQuery2.expando).length;
+        });
+        support.disconnectedMatch = assert(function(el) {
+          return matches.call(el, "*");
+        });
+        support.scope = assert(function() {
+          return document3.querySelectorAll(":scope");
+        });
+        support.cssHas = assert(function() {
+          try {
+            document3.querySelector(":has(*,:jqfake)");
+            return false;
+          } catch (e) {
+            return true;
+          }
+        });
+        if (support.getById) {
+          Expr.filter.ID = function(id) {
+            var attrId = id.replace(runescape, funescape);
+            return function(elem) {
+              return elem.getAttribute("id") === attrId;
+            };
+          };
+          Expr.find.ID = function(id, context) {
+            if (typeof context.getElementById !== "undefined" && documentIsHTML) {
+              var elem = context.getElementById(id);
+              return elem ? [elem] : [];
+            }
+          };
+        } else {
+          Expr.filter.ID = function(id) {
+            var attrId = id.replace(runescape, funescape);
+            return function(elem) {
+              var node3 = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
+              return node3 && node3.value === attrId;
+            };
+          };
+          Expr.find.ID = function(id, context) {
+            if (typeof context.getElementById !== "undefined" && documentIsHTML) {
+              var node3, i2, elems, elem = context.getElementById(id);
+              if (elem) {
+                node3 = elem.getAttributeNode("id");
+                if (node3 && node3.value === id) {
+                  return [elem];
+                }
+                elems = context.getElementsByName(id);
+                i2 = 0;
+                while (elem = elems[i2++]) {
+                  node3 = elem.getAttributeNode("id");
+                  if (node3 && node3.value === id) {
+                    return [elem];
+                  }
+                }
+              }
+              return [];
+            }
+          };
+        }
+        Expr.find.TAG = function(tag2, context) {
+          if (typeof context.getElementsByTagName !== "undefined") {
+            return context.getElementsByTagName(tag2);
+          } else {
+            return context.querySelectorAll(tag2);
+          }
+        };
+        Expr.find.CLASS = function(className, context) {
+          if (typeof context.getElementsByClassName !== "undefined" && documentIsHTML) {
+            return context.getElementsByClassName(className);
+          }
+        };
+        rbuggyQSA = [];
+        assert(function(el) {
+          var input;
+          documentElement2.appendChild(el).innerHTML = "<a id='" + expando + "' href='' disabled='disabled'></a><select id='" + expando + "-\r\\' disabled='disabled'><option selected=''></option></select>";
+          if (!el.querySelectorAll("[selected]").length) {
+            rbuggyQSA.push("\\[" + whitespace2 + "*(?:value|" + booleans + ")");
+          }
+          if (!el.querySelectorAll("[id~=" + expando + "-]").length) {
+            rbuggyQSA.push("~=");
+          }
+          if (!el.querySelectorAll("a#" + expando + "+*").length) {
+            rbuggyQSA.push(".#.+[+~]");
+          }
+          if (!el.querySelectorAll(":checked").length) {
+            rbuggyQSA.push(":checked");
+          }
+          input = document3.createElement("input");
+          input.setAttribute("type", "hidden");
+          el.appendChild(input).setAttribute("name", "D");
+          documentElement2.appendChild(el).disabled = true;
+          if (el.querySelectorAll(":disabled").length !== 2) {
+            rbuggyQSA.push(":enabled", ":disabled");
+          }
+          input = document3.createElement("input");
+          input.setAttribute("name", "");
+          el.appendChild(input);
+          if (!el.querySelectorAll("[name='']").length) {
+            rbuggyQSA.push("\\[" + whitespace2 + "*name" + whitespace2 + "*=" + whitespace2 + `*(?:''|"")`);
+          }
+        });
+        if (!support.cssHas) {
+          rbuggyQSA.push(":has");
+        }
+        rbuggyQSA = rbuggyQSA.length && new RegExp(rbuggyQSA.join("|"));
+        sortOrder = function(a, b) {
+          if (a === b) {
+            hasDuplicate = true;
+            return 0;
+          }
+          var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
+          if (compare) {
+            return compare;
+          }
+          compare = (a.ownerDocument || a) == (b.ownerDocument || b) ? a.compareDocumentPosition(b) : (
+            // Otherwise we know they are disconnected
+            1
+          );
+          if (compare & 1 || !support.sortDetached && b.compareDocumentPosition(a) === compare) {
+            if (a === document3 || a.ownerDocument == preferredDoc && find.contains(preferredDoc, a)) {
+              return -1;
+            }
+            if (b === document3 || b.ownerDocument == preferredDoc && find.contains(preferredDoc, b)) {
+              return 1;
+            }
+            return sortInput ? indexOf.call(sortInput, a) - indexOf.call(sortInput, b) : 0;
+          }
+          return compare & 4 ? -1 : 1;
+        };
+        return document3;
+      }
+      find.matches = function(expr, elements) {
+        return find(expr, null, null, elements);
+      };
+      find.matchesSelector = function(elem, expr) {
+        setDocument(elem);
+        if (documentIsHTML && !nonnativeSelectorCache[expr + " "] && (!rbuggyQSA || !rbuggyQSA.test(expr))) {
+          try {
+            var ret = matches.call(elem, expr);
+            if (ret || support.disconnectedMatch || // As well, disconnected nodes are said to be in a document
+            // fragment in IE 9
+            elem.document && elem.document.nodeType !== 11) {
+              return ret;
+            }
+          } catch (e) {
+            nonnativeSelectorCache(expr, true);
+          }
+        }
+        return find(expr, document3, null, [elem]).length > 0;
+      };
+      find.contains = function(context, elem) {
+        if ((context.ownerDocument || context) != document3) {
+          setDocument(context);
+        }
+        return jQuery2.contains(context, elem);
+      };
+      find.attr = function(elem, name2) {
+        if ((elem.ownerDocument || elem) != document3) {
+          setDocument(elem);
+        }
+        var fn = Expr.attrHandle[name2.toLowerCase()], val = fn && hasOwn.call(Expr.attrHandle, name2.toLowerCase()) ? fn(elem, name2, !documentIsHTML) : void 0;
+        if (val !== void 0) {
+          return val;
+        }
+        return elem.getAttribute(name2);
+      };
+      find.error = function(msg) {
+        throw new Error("Syntax error, unrecognized expression: " + msg);
+      };
+      jQuery2.uniqueSort = function(results) {
+        var elem, duplicates = [], j = 0, i2 = 0;
+        hasDuplicate = !support.sortStable;
+        sortInput = !support.sortStable && slice2.call(results, 0);
+        sort.call(results, sortOrder);
+        if (hasDuplicate) {
+          while (elem = results[i2++]) {
+            if (elem === results[i2]) {
+              j = duplicates.push(i2);
+            }
+          }
+          while (j--) {
+            splice.call(results, duplicates[j], 1);
+          }
+        }
+        sortInput = null;
+        return results;
+      };
+      jQuery2.fn.uniqueSort = function() {
+        return this.pushStack(jQuery2.uniqueSort(slice2.apply(this)));
+      };
+      Expr = jQuery2.expr = {
+        // Can be adjusted by the user
+        cacheLength: 50,
+        createPseudo: markFunction,
+        match: matchExpr,
+        attrHandle: {},
+        find: {},
+        relative: {
+          ">": { dir: "parentNode", first: true },
+          " ": { dir: "parentNode" },
+          "+": { dir: "previousSibling", first: true },
+          "~": { dir: "previousSibling" }
+        },
+        preFilter: {
+          ATTR: function(match2) {
+            match2[1] = match2[1].replace(runescape, funescape);
+            match2[3] = (match2[3] || match2[4] || match2[5] || "").replace(runescape, funescape);
+            if (match2[2] === "~=") {
+              match2[3] = " " + match2[3] + " ";
+            }
+            return match2.slice(0, 4);
+          },
+          CHILD: function(match2) {
+            match2[1] = match2[1].toLowerCase();
+            if (match2[1].slice(0, 3) === "nth") {
+              if (!match2[3]) {
+                find.error(match2[0]);
+              }
+              match2[4] = +(match2[4] ? match2[5] + (match2[6] || 1) : 2 * (match2[3] === "even" || match2[3] === "odd"));
+              match2[5] = +(match2[7] + match2[8] || match2[3] === "odd");
+            } else if (match2[3]) {
+              find.error(match2[0]);
+            }
+            return match2;
+          },
+          PSEUDO: function(match2) {
+            var excess, unquoted = !match2[6] && match2[2];
+            if (matchExpr.CHILD.test(match2[0])) {
+              return null;
+            }
+            if (match2[3]) {
+              match2[2] = match2[4] || match2[5] || "";
+            } else if (unquoted && rpseudo.test(unquoted) && // Get excess from tokenize (recursively)
+            (excess = tokenize(unquoted, true)) && // advance to the next closing parenthesis
+            (excess = unquoted.indexOf(")", unquoted.length - excess) - unquoted.length)) {
+              match2[0] = match2[0].slice(0, excess);
+              match2[2] = unquoted.slice(0, excess);
+            }
+            return match2.slice(0, 3);
+          }
+        },
+        filter: {
+          TAG: function(nodeNameSelector) {
+            var expectedNodeName = nodeNameSelector.replace(runescape, funescape).toLowerCase();
+            return nodeNameSelector === "*" ? function() {
+              return true;
+            } : function(elem) {
+              return nodeName(elem, expectedNodeName);
+            };
+          },
+          CLASS: function(className) {
+            var pattern = classCache[className + " "];
+            return pattern || (pattern = new RegExp("(^|" + whitespace2 + ")" + className + "(" + whitespace2 + "|$)")) && classCache(className, function(elem) {
+              return pattern.test(
+                typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || ""
+              );
+            });
+          },
+          ATTR: function(name2, operator, check) {
+            return function(elem) {
+              var result = find.attr(elem, name2);
+              if (result == null) {
+                return operator === "!=";
+              }
+              if (!operator) {
+                return true;
+              }
+              result += "";
+              if (operator === "=") {
+                return result === check;
+              }
+              if (operator === "!=") {
+                return result !== check;
+              }
+              if (operator === "^=") {
+                return check && result.indexOf(check) === 0;
+              }
+              if (operator === "*=") {
+                return check && result.indexOf(check) > -1;
+              }
+              if (operator === "$=") {
+                return check && result.slice(-check.length) === check;
+              }
+              if (operator === "~=") {
+                return (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1;
+              }
+              if (operator === "|=") {
+                return result === check || result.slice(0, check.length + 1) === check + "-";
+              }
+              return false;
+            };
+          },
+          CHILD: function(type, what, _argument, first, last) {
+            var simple = type.slice(0, 3) !== "nth", forward = type.slice(-4) !== "last", ofType = what === "of-type";
+            return first === 1 && last === 0 ? (
+              // Shortcut for :nth-*(n)
+              function(elem) {
+                return !!elem.parentNode;
+              }
+            ) : function(elem, _context, xml) {
+              var cache2, outerCache, node2, nodeIndex, start, dir2 = simple !== forward ? "nextSibling" : "previousSibling", parent = elem.parentNode, name2 = ofType && elem.nodeName.toLowerCase(), useCache = !xml && !ofType, diff = false;
+              if (parent) {
+                if (simple) {
+                  while (dir2) {
+                    node2 = elem;
+                    while (node2 = node2[dir2]) {
+                      if (ofType ? nodeName(node2, name2) : node2.nodeType === 1) {
+                        return false;
+                      }
+                    }
+                    start = dir2 = type === "only" && !start && "nextSibling";
+                  }
+                  return true;
+                }
+                start = [forward ? parent.firstChild : parent.lastChild];
+                if (forward && useCache) {
+                  outerCache = parent[expando] || (parent[expando] = {});
+                  cache2 = outerCache[type] || [];
+                  nodeIndex = cache2[0] === dirruns && cache2[1];
+                  diff = nodeIndex && cache2[2];
+                  node2 = nodeIndex && parent.childNodes[nodeIndex];
+                  while (node2 = ++nodeIndex && node2 && node2[dir2] || // Fallback to seeking `elem` from the start
+                  (diff = nodeIndex = 0) || start.pop()) {
+                    if (node2.nodeType === 1 && ++diff && node2 === elem) {
+                      outerCache[type] = [dirruns, nodeIndex, diff];
+                      break;
+                    }
+                  }
+                } else {
+                  if (useCache) {
+                    outerCache = elem[expando] || (elem[expando] = {});
+                    cache2 = outerCache[type] || [];
+                    nodeIndex = cache2[0] === dirruns && cache2[1];
+                    diff = nodeIndex;
+                  }
+                  if (diff === false) {
+                    while (node2 = ++nodeIndex && node2 && node2[dir2] || (diff = nodeIndex = 0) || start.pop()) {
+                      if ((ofType ? nodeName(node2, name2) : node2.nodeType === 1) && ++diff) {
+                        if (useCache) {
+                          outerCache = node2[expando] || (node2[expando] = {});
+                          outerCache[type] = [dirruns, diff];
+                        }
+                        if (node2 === elem) {
+                          break;
+                        }
+                      }
+                    }
+                  }
+                }
+                diff -= last;
+                return diff === first || diff % first === 0 && diff / first >= 0;
+              }
+            };
+          },
+          PSEUDO: function(pseudo, argument) {
+            var args, fn = Expr.pseudos[pseudo] || Expr.setFilters[pseudo.toLowerCase()] || find.error("unsupported pseudo: " + pseudo);
+            if (fn[expando]) {
+              return fn(argument);
+            }
+            if (fn.length > 1) {
+              args = [pseudo, pseudo, "", argument];
+              return Expr.setFilters.hasOwnProperty(pseudo.toLowerCase()) ? markFunction(function(seed, matches2) {
+                var idx, matched = fn(seed, argument), i2 = matched.length;
+                while (i2--) {
+                  idx = indexOf.call(seed, matched[i2]);
+                  seed[idx] = !(matches2[idx] = matched[i2]);
+                }
+              }) : function(elem) {
+                return fn(elem, 0, args);
+              };
+            }
+            return fn;
+          }
+        },
+        pseudos: {
+          // Potentially complex pseudos
+          not: markFunction(function(selector) {
+            var input = [], results = [], matcher = compile2(selector.replace(rtrimCSS, "$1"));
+            return matcher[expando] ? markFunction(function(seed, matches2, _context, xml) {
+              var elem, unmatched = matcher(seed, null, xml, []), i2 = seed.length;
+              while (i2--) {
+                if (elem = unmatched[i2]) {
+                  seed[i2] = !(matches2[i2] = elem);
+                }
+              }
+            }) : function(elem, _context, xml) {
+              input[0] = elem;
+              matcher(input, null, xml, results);
+              input[0] = null;
+              return !results.pop();
+            };
+          }),
+          has: markFunction(function(selector) {
+            return function(elem) {
+              return find(selector, elem).length > 0;
+            };
+          }),
+          contains: markFunction(function(text) {
+            text = text.replace(runescape, funescape);
+            return function(elem) {
+              return (elem.textContent || jQuery2.text(elem)).indexOf(text) > -1;
+            };
+          }),
+          // "Whether an element is represented by a :lang() selector
+          // is based solely on the element's language value
+          // being equal to the identifier C,
+          // or beginning with the identifier C immediately followed by "-".
+          // The matching of C against the element's language value is performed case-insensitively.
+          // The identifier C does not have to be a valid language name."
+          // https://www.w3.org/TR/selectors/#lang-pseudo
+          lang: markFunction(function(lang) {
+            if (!ridentifier.test(lang || "")) {
+              find.error("unsupported lang: " + lang);
+            }
+            lang = lang.replace(runescape, funescape).toLowerCase();
+            return function(elem) {
+              var elemLang;
+              do {
+                if (elemLang = documentIsHTML ? elem.lang : elem.getAttribute("xml:lang") || elem.getAttribute("lang")) {
+                  elemLang = elemLang.toLowerCase();
+                  return elemLang === lang || elemLang.indexOf(lang + "-") === 0;
+                }
+              } while ((elem = elem.parentNode) && elem.nodeType === 1);
+              return false;
+            };
+          }),
+          // Miscellaneous
+          target: function(elem) {
+            var hash2 = window2.location && window2.location.hash;
+            return hash2 && hash2.slice(1) === elem.id;
+          },
+          root: function(elem) {
+            return elem === documentElement2;
+          },
+          focus: function(elem) {
+            return elem === safeActiveElement() && document3.hasFocus() && !!(elem.type || elem.href || ~elem.tabIndex);
+          },
+          // Boolean properties
+          enabled: createDisabledPseudo(false),
+          disabled: createDisabledPseudo(true),
+          checked: function(elem) {
+            return nodeName(elem, "input") && !!elem.checked || nodeName(elem, "option") && !!elem.selected;
+          },
+          selected: function(elem) {
+            if (elem.parentNode) {
+              elem.parentNode.selectedIndex;
+            }
+            return elem.selected === true;
+          },
+          // Contents
+          empty: function(elem) {
+            for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
+              if (elem.nodeType < 6) {
+                return false;
+              }
+            }
+            return true;
+          },
+          parent: function(elem) {
+            return !Expr.pseudos.empty(elem);
+          },
+          // Element/input types
+          header: function(elem) {
+            return rheader.test(elem.nodeName);
+          },
+          input: function(elem) {
+            return rinputs.test(elem.nodeName);
+          },
+          button: function(elem) {
+            return nodeName(elem, "input") && elem.type === "button" || nodeName(elem, "button");
+          },
+          text: function(elem) {
+            var attr;
+            return nodeName(elem, "input") && elem.type === "text" && // Support: IE <10 only
+            // New HTML5 attribute values (e.g., "search") appear
+            // with elem.type === "text"
+            ((attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text");
+          },
+          // Position-in-collection
+          first: createPositionalPseudo(function() {
+            return [0];
+          }),
+          last: createPositionalPseudo(function(_matchIndexes, length2) {
+            return [length2 - 1];
+          }),
+          eq: createPositionalPseudo(function(_matchIndexes, length2, argument) {
+            return [argument < 0 ? argument + length2 : argument];
+          }),
+          even: createPositionalPseudo(function(matchIndexes, length2) {
+            var i2 = 0;
+            for (; i2 < length2; i2 += 2) {
+              matchIndexes.push(i2);
+            }
+            return matchIndexes;
+          }),
+          odd: createPositionalPseudo(function(matchIndexes, length2) {
+            var i2 = 1;
+            for (; i2 < length2; i2 += 2) {
+              matchIndexes.push(i2);
+            }
+            return matchIndexes;
+          }),
+          lt: createPositionalPseudo(function(matchIndexes, length2, argument) {
+            var i2;
+            if (argument < 0) {
+              i2 = argument + length2;
+            } else if (argument > length2) {
+              i2 = length2;
+            } else {
+              i2 = argument;
+            }
+            for (; --i2 >= 0; ) {
+              matchIndexes.push(i2);
+            }
+            return matchIndexes;
+          }),
+          gt: createPositionalPseudo(function(matchIndexes, length2, argument) {
+            var i2 = argument < 0 ? argument + length2 : argument;
+            for (; ++i2 < length2; ) {
+              matchIndexes.push(i2);
+            }
+            return matchIndexes;
+          })
+        }
+      };
+      Expr.pseudos.nth = Expr.pseudos.eq;
+      for (i in { radio: true, checkbox: true, file: true, password: true, image: true }) {
+        Expr.pseudos[i] = createInputPseudo(i);
+      }
+      for (i in { submit: true, reset: true }) {
+        Expr.pseudos[i] = createButtonPseudo(i);
+      }
+      function setFilters() {
+      }
+      setFilters.prototype = Expr.filters = Expr.pseudos;
+      Expr.setFilters = new setFilters();
+      function tokenize(selector, parseOnly) {
+        var matched, match2, tokens, type, soFar, groups, preFilters, cached = tokenCache[selector + " "];
+        if (cached) {
+          return parseOnly ? 0 : cached.slice(0);
+        }
+        soFar = selector;
+        groups = [];
+        preFilters = Expr.preFilter;
+        while (soFar) {
+          if (!matched || (match2 = rcomma.exec(soFar))) {
+            if (match2) {
+              soFar = soFar.slice(match2[0].length) || soFar;
+            }
+            groups.push(tokens = []);
+          }
+          matched = false;
+          if (match2 = rleadingCombinator.exec(soFar)) {
+            matched = match2.shift();
+            tokens.push({
+              value: matched,
+              // Cast descendant combinators to space
+              type: match2[0].replace(rtrimCSS, " ")
+            });
+            soFar = soFar.slice(matched.length);
+          }
+          for (type in Expr.filter) {
+            if ((match2 = matchExpr[type].exec(soFar)) && (!preFilters[type] || (match2 = preFilters[type](match2)))) {
+              matched = match2.shift();
+              tokens.push({
+                value: matched,
+                type,
+                matches: match2
+              });
+              soFar = soFar.slice(matched.length);
+            }
+          }
+          if (!matched) {
+            break;
+          }
+        }
+        if (parseOnly) {
+          return soFar.length;
+        }
+        return soFar ? find.error(selector) : (
+          // Cache the tokens
+          tokenCache(selector, groups).slice(0)
+        );
+      }
+      function toSelector(tokens) {
+        var i2 = 0, len = tokens.length, selector = "";
+        for (; i2 < len; i2++) {
+          selector += tokens[i2].value;
+        }
+        return selector;
+      }
+      function addCombinator(matcher, combinator, base) {
+        var dir2 = combinator.dir, skip = combinator.next, key = skip || dir2, checkNonElements = base && key === "parentNode", doneName = done++;
+        return combinator.first ? (
+          // Check against closest ancestor/preceding element
+          function(elem, context, xml) {
+            while (elem = elem[dir2]) {
+              if (elem.nodeType === 1 || checkNonElements) {
+                return matcher(elem, context, xml);
+              }
+            }
+            return false;
+          }
+        ) : (
+          // Check against all ancestor/preceding elements
+          function(elem, context, xml) {
+            var oldCache, outerCache, newCache = [dirruns, doneName];
+            if (xml) {
+              while (elem = elem[dir2]) {
+                if (elem.nodeType === 1 || checkNonElements) {
+                  if (matcher(elem, context, xml)) {
+                    return true;
+                  }
+                }
+              }
+            } else {
+              while (elem = elem[dir2]) {
+                if (elem.nodeType === 1 || checkNonElements) {
+                  outerCache = elem[expando] || (elem[expando] = {});
+                  if (skip && nodeName(elem, skip)) {
+                    elem = elem[dir2] || elem;
+                  } else if ((oldCache = outerCache[key]) && oldCache[0] === dirruns && oldCache[1] === doneName) {
+                    return newCache[2] = oldCache[2];
+                  } else {
+                    outerCache[key] = newCache;
+                    if (newCache[2] = matcher(elem, context, xml)) {
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+            return false;
+          }
+        );
+      }
+      function elementMatcher(matchers) {
+        return matchers.length > 1 ? function(elem, context, xml) {
+          var i2 = matchers.length;
+          while (i2--) {
+            if (!matchers[i2](elem, context, xml)) {
+              return false;
+            }
+          }
+          return true;
+        } : matchers[0];
+      }
+      function multipleContexts(selector, contexts, results) {
+        var i2 = 0, len = contexts.length;
+        for (; i2 < len; i2++) {
+          find(selector, contexts[i2], results);
+        }
+        return results;
+      }
+      function condense(unmatched, map, filter, context, xml) {
+        var elem, newUnmatched = [], i2 = 0, len = unmatched.length, mapped = map != null;
+        for (; i2 < len; i2++) {
+          if (elem = unmatched[i2]) {
+            if (!filter || filter(elem, context, xml)) {
+              newUnmatched.push(elem);
+              if (mapped) {
+                map.push(i2);
+              }
+            }
+          }
+        }
+        return newUnmatched;
+      }
+      function setMatcher(preFilter, selector, matcher, postFilter, postFinder, postSelector) {
+        if (postFilter && !postFilter[expando]) {
+          postFilter = setMatcher(postFilter);
+        }
+        if (postFinder && !postFinder[expando]) {
+          postFinder = setMatcher(postFinder, postSelector);
+        }
+        return markFunction(function(seed, results, context, xml) {
+          var temp, i2, elem, matcherOut, preMap = [], postMap = [], preexisting = results.length, elems = seed || multipleContexts(
+            selector || "*",
+            context.nodeType ? [context] : context,
+            []
+          ), matcherIn = preFilter && (seed || !selector) ? condense(elems, preMap, preFilter, context, xml) : elems;
+          if (matcher) {
+            matcherOut = postFinder || (seed ? preFilter : preexisting || postFilter) ? (
+              // ...intermediate processing is necessary
+              []
+            ) : (
+              // ...otherwise use results directly
+              results
+            );
+            matcher(matcherIn, matcherOut, context, xml);
+          } else {
+            matcherOut = matcherIn;
+          }
+          if (postFilter) {
+            temp = condense(matcherOut, postMap);
+            postFilter(temp, [], context, xml);
+            i2 = temp.length;
+            while (i2--) {
+              if (elem = temp[i2]) {
+                matcherOut[postMap[i2]] = !(matcherIn[postMap[i2]] = elem);
+              }
+            }
+          }
+          if (seed) {
+            if (postFinder || preFilter) {
+              if (postFinder) {
+                temp = [];
+                i2 = matcherOut.length;
+                while (i2--) {
+                  if (elem = matcherOut[i2]) {
+                    temp.push(matcherIn[i2] = elem);
+                  }
+                }
+                postFinder(null, matcherOut = [], temp, xml);
+              }
+              i2 = matcherOut.length;
+              while (i2--) {
+                if ((elem = matcherOut[i2]) && (temp = postFinder ? indexOf.call(seed, elem) : preMap[i2]) > -1) {
+                  seed[temp] = !(results[temp] = elem);
+                }
+              }
+            }
+          } else {
+            matcherOut = condense(
+              matcherOut === results ? matcherOut.splice(preexisting, matcherOut.length) : matcherOut
+            );
+            if (postFinder) {
+              postFinder(null, results, matcherOut, xml);
+            } else {
+              push2.apply(results, matcherOut);
+            }
+          }
+        });
+      }
+      function matcherFromTokens(tokens) {
+        var checkContext, matcher, j, len = tokens.length, leadingRelative = Expr.relative[tokens[0].type], implicitRelative = leadingRelative || Expr.relative[" "], i2 = leadingRelative ? 1 : 0, matchContext = addCombinator(function(elem) {
+          return elem === checkContext;
+        }, implicitRelative, true), matchAnyContext = addCombinator(function(elem) {
+          return indexOf.call(checkContext, elem) > -1;
+        }, implicitRelative, true), matchers = [function(elem, context, xml) {
+          var ret = !leadingRelative && (xml || context != outermostContext) || ((checkContext = context).nodeType ? matchContext(elem, context, xml) : matchAnyContext(elem, context, xml));
+          checkContext = null;
+          return ret;
+        }];
+        for (; i2 < len; i2++) {
+          if (matcher = Expr.relative[tokens[i2].type]) {
+            matchers = [addCombinator(elementMatcher(matchers), matcher)];
+          } else {
+            matcher = Expr.filter[tokens[i2].type].apply(null, tokens[i2].matches);
+            if (matcher[expando]) {
+              j = ++i2;
+              for (; j < len; j++) {
+                if (Expr.relative[tokens[j].type]) {
+                  break;
+                }
+              }
+              return setMatcher(
+                i2 > 1 && elementMatcher(matchers),
+                i2 > 1 && toSelector(
+                  // If the preceding token was a descendant combinator, insert an implicit any-element `*`
+                  tokens.slice(0, i2 - 1).concat({ value: tokens[i2 - 2].type === " " ? "*" : "" })
+                ).replace(rtrimCSS, "$1"),
+                matcher,
+                i2 < j && matcherFromTokens(tokens.slice(i2, j)),
+                j < len && matcherFromTokens(tokens = tokens.slice(j)),
+                j < len && toSelector(tokens)
+              );
+            }
+            matchers.push(matcher);
+          }
+        }
+        return elementMatcher(matchers);
+      }
+      function matcherFromGroupMatchers(elementMatchers, setMatchers) {
+        var bySet = setMatchers.length > 0, byElement = elementMatchers.length > 0, superMatcher = function(seed, context, xml, results, outermost) {
+          var elem, j, matcher, matchedCount = 0, i2 = "0", unmatched = seed && [], setMatched = [], contextBackup = outermostContext, elems = seed || byElement && Expr.find.TAG("*", outermost), dirrunsUnique = dirruns += contextBackup == null ? 1 : Math.random() || 0.1, len = elems.length;
+          if (outermost) {
+            outermostContext = context == document3 || context || outermost;
+          }
+          for (; i2 !== len && (elem = elems[i2]) != null; i2++) {
+            if (byElement && elem) {
+              j = 0;
+              if (!context && elem.ownerDocument != document3) {
+                setDocument(elem);
+                xml = !documentIsHTML;
+              }
+              while (matcher = elementMatchers[j++]) {
+                if (matcher(elem, context || document3, xml)) {
+                  push2.call(results, elem);
+                  break;
+                }
+              }
+              if (outermost) {
+                dirruns = dirrunsUnique;
+              }
+            }
+            if (bySet) {
+              if (elem = !matcher && elem) {
+                matchedCount--;
+              }
+              if (seed) {
+                unmatched.push(elem);
+              }
+            }
+          }
+          matchedCount += i2;
+          if (bySet && i2 !== matchedCount) {
+            j = 0;
+            while (matcher = setMatchers[j++]) {
+              matcher(unmatched, setMatched, context, xml);
+            }
+            if (seed) {
+              if (matchedCount > 0) {
+                while (i2--) {
+                  if (!(unmatched[i2] || setMatched[i2])) {
+                    setMatched[i2] = pop.call(results);
+                  }
+                }
+              }
+              setMatched = condense(setMatched);
+            }
+            push2.apply(results, setMatched);
+            if (outermost && !seed && setMatched.length > 0 && matchedCount + setMatchers.length > 1) {
+              jQuery2.uniqueSort(results);
+            }
+          }
+          if (outermost) {
+            dirruns = dirrunsUnique;
+            outermostContext = contextBackup;
+          }
+          return unmatched;
+        };
+        return bySet ? markFunction(superMatcher) : superMatcher;
+      }
+      function compile2(selector, match2) {
+        var i2, setMatchers = [], elementMatchers = [], cached = compilerCache[selector + " "];
+        if (!cached) {
+          if (!match2) {
+            match2 = tokenize(selector);
+          }
+          i2 = match2.length;
+          while (i2--) {
+            cached = matcherFromTokens(match2[i2]);
+            if (cached[expando]) {
+              setMatchers.push(cached);
+            } else {
+              elementMatchers.push(cached);
+            }
+          }
+          cached = compilerCache(
+            selector,
+            matcherFromGroupMatchers(elementMatchers, setMatchers)
+          );
+          cached.selector = selector;
+        }
+        return cached;
+      }
+      function select(selector, context, results, seed) {
+        var i2, tokens, token2, type, find2, compiled = typeof selector === "function" && selector, match2 = !seed && tokenize(selector = compiled.selector || selector);
+        results = results || [];
+        if (match2.length === 1) {
+          tokens = match2[0] = match2[0].slice(0);
+          if (tokens.length > 2 && (token2 = tokens[0]).type === "ID" && context.nodeType === 9 && documentIsHTML && Expr.relative[tokens[1].type]) {
+            context = (Expr.find.ID(
+              token2.matches[0].replace(runescape, funescape),
+              context
+            ) || [])[0];
+            if (!context) {
+              return results;
+            } else if (compiled) {
+              context = context.parentNode;
+            }
+            selector = selector.slice(tokens.shift().value.length);
+          }
+          i2 = matchExpr.needsContext.test(selector) ? 0 : tokens.length;
+          while (i2--) {
+            token2 = tokens[i2];
+            if (Expr.relative[type = token2.type]) {
+              break;
+            }
+            if (find2 = Expr.find[type]) {
+              if (seed = find2(
+                token2.matches[0].replace(runescape, funescape),
+                rsibling.test(tokens[0].type) && testContext(context.parentNode) || context
+              )) {
+                tokens.splice(i2, 1);
+                selector = seed.length && toSelector(tokens);
+                if (!selector) {
+                  push2.apply(results, seed);
+                  return results;
+                }
+                break;
+              }
+            }
+          }
+        }
+        (compiled || compile2(selector, match2))(
+          seed,
+          context,
+          !documentIsHTML,
+          results,
+          !context || rsibling.test(selector) && testContext(context.parentNode) || context
+        );
+        return results;
+      }
+      support.sortStable = expando.split("").sort(sortOrder).join("") === expando;
+      setDocument();
+      support.sortDetached = assert(function(el) {
+        return el.compareDocumentPosition(document3.createElement("fieldset")) & 1;
+      });
+      jQuery2.find = find;
+      jQuery2.expr[":"] = jQuery2.expr.pseudos;
+      jQuery2.unique = jQuery2.uniqueSort;
+      find.compile = compile2;
+      find.select = select;
+      find.setDocument = setDocument;
+      find.tokenize = tokenize;
+      find.escape = jQuery2.escapeSelector;
+      find.getText = jQuery2.text;
+      find.isXML = jQuery2.isXMLDoc;
+      find.selectors = jQuery2.expr;
+      find.support = jQuery2.support;
+      find.uniqueSort = jQuery2.uniqueSort;
+    })();
+    var dir = function(elem, dir2, until) {
+      var matched = [], truncate2 = until !== void 0;
+      while ((elem = elem[dir2]) && elem.nodeType !== 9) {
+        if (elem.nodeType === 1) {
+          if (truncate2 && jQuery2(elem).is(until)) {
+            break;
+          }
+          matched.push(elem);
+        }
+      }
+      return matched;
+    };
+    var siblings = function(n, elem) {
+      var matched = [];
+      for (; n; n = n.nextSibling) {
+        if (n.nodeType === 1 && n !== elem) {
+          matched.push(n);
+        }
+      }
+      return matched;
+    };
+    var rneedsContext = jQuery2.expr.match.needsContext;
+    var rsingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
+    function winnow(elements, qualifier, not) {
+      if (isFunction2(qualifier)) {
+        return jQuery2.grep(elements, function(elem, i) {
+          return !!qualifier.call(elem, i, elem) !== not;
+        });
+      }
+      if (qualifier.nodeType) {
+        return jQuery2.grep(elements, function(elem) {
+          return elem === qualifier !== not;
+        });
+      }
+      if (typeof qualifier !== "string") {
+        return jQuery2.grep(elements, function(elem) {
+          return indexOf.call(qualifier, elem) > -1 !== not;
+        });
+      }
+      return jQuery2.filter(qualifier, elements, not);
+    }
+    jQuery2.filter = function(expr, elems, not) {
+      var elem = elems[0];
+      if (not) {
+        expr = ":not(" + expr + ")";
+      }
+      if (elems.length === 1 && elem.nodeType === 1) {
+        return jQuery2.find.matchesSelector(elem, expr) ? [elem] : [];
+      }
+      return jQuery2.find.matches(expr, jQuery2.grep(elems, function(elem2) {
+        return elem2.nodeType === 1;
+      }));
+    };
+    jQuery2.fn.extend({
+      find: function(selector) {
+        var i, ret, len = this.length, self2 = this;
+        if (typeof selector !== "string") {
+          return this.pushStack(jQuery2(selector).filter(function() {
+            for (i = 0; i < len; i++) {
+              if (jQuery2.contains(self2[i], this)) {
+                return true;
+              }
+            }
+          }));
+        }
+        ret = this.pushStack([]);
+        for (i = 0; i < len; i++) {
+          jQuery2.find(selector, self2[i], ret);
+        }
+        return len > 1 ? jQuery2.uniqueSort(ret) : ret;
+      },
+      filter: function(selector) {
+        return this.pushStack(winnow(this, selector || [], false));
+      },
+      not: function(selector) {
+        return this.pushStack(winnow(this, selector || [], true));
+      },
+      is: function(selector) {
+        return !!winnow(
+          this,
+          // If this is a positional/relative selector, check membership in the returned set
+          // so $("p:first").is("p:last") won't return true for a doc with two "p".
+          typeof selector === "string" && rneedsContext.test(selector) ? jQuery2(selector) : selector || [],
+          false
+        ).length;
+      }
+    });
+    var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery2.fn.init = function(selector, context, root) {
+      var match2, elem;
+      if (!selector) {
+        return this;
+      }
+      root = root || rootjQuery;
+      if (typeof selector === "string") {
+        if (selector[0] === "<" && selector[selector.length - 1] === ">" && selector.length >= 3) {
+          match2 = [null, selector, null];
+        } else {
+          match2 = rquickExpr.exec(selector);
+        }
+        if (match2 && (match2[1] || !context)) {
+          if (match2[1]) {
+            context = context instanceof jQuery2 ? context[0] : context;
+            jQuery2.merge(this, jQuery2.parseHTML(
+              match2[1],
+              context && context.nodeType ? context.ownerDocument || context : document2,
+              true
+            ));
+            if (rsingleTag.test(match2[1]) && jQuery2.isPlainObject(context)) {
+              for (match2 in context) {
+                if (isFunction2(this[match2])) {
+                  this[match2](context[match2]);
+                } else {
+                  this.attr(match2, context[match2]);
+                }
+              }
+            }
+            return this;
+          } else {
+            elem = document2.getElementById(match2[2]);
+            if (elem) {
+              this[0] = elem;
+              this.length = 1;
+            }
+            return this;
+          }
+        } else if (!context || context.jquery) {
+          return (context || root).find(selector);
+        } else {
+          return this.constructor(context).find(selector);
+        }
+      } else if (selector.nodeType) {
+        this[0] = selector;
+        this.length = 1;
+        return this;
+      } else if (isFunction2(selector)) {
+        return root.ready !== void 0 ? root.ready(selector) : (
+          // Execute immediately if ready is not present
+          selector(jQuery2)
+        );
+      }
+      return jQuery2.makeArray(selector, this);
+    };
+    init.prototype = jQuery2.fn;
+    rootjQuery = jQuery2(document2);
+    var rparentsprev = /^(?:parents|prev(?:Until|All))/, guaranteedUnique = {
+      children: true,
+      contents: true,
+      next: true,
+      prev: true
+    };
+    jQuery2.fn.extend({
+      has: function(target) {
+        var targets = jQuery2(target, this), l = targets.length;
+        return this.filter(function() {
+          var i = 0;
+          for (; i < l; i++) {
+            if (jQuery2.contains(this, targets[i])) {
+              return true;
+            }
+          }
+        });
+      },
+      closest: function(selectors, context) {
+        var cur, i = 0, l = this.length, matched = [], targets = typeof selectors !== "string" && jQuery2(selectors);
+        if (!rneedsContext.test(selectors)) {
+          for (; i < l; i++) {
+            for (cur = this[i]; cur && cur !== context; cur = cur.parentNode) {
+              if (cur.nodeType < 11 && (targets ? targets.index(cur) > -1 : (
+                // Don't pass non-elements to jQuery#find
+                cur.nodeType === 1 && jQuery2.find.matchesSelector(cur, selectors)
+              ))) {
+                matched.push(cur);
+                break;
+              }
+            }
+          }
+        }
+        return this.pushStack(matched.length > 1 ? jQuery2.uniqueSort(matched) : matched);
+      },
+      // Determine the position of an element within the set
+      index: function(elem) {
+        if (!elem) {
+          return this[0] && this[0].parentNode ? this.first().prevAll().length : -1;
+        }
+        if (typeof elem === "string") {
+          return indexOf.call(jQuery2(elem), this[0]);
+        }
+        return indexOf.call(
+          this,
+          // If it receives a jQuery object, the first element is used
+          elem.jquery ? elem[0] : elem
+        );
+      },
+      add: function(selector, context) {
+        return this.pushStack(
+          jQuery2.uniqueSort(
+            jQuery2.merge(this.get(), jQuery2(selector, context))
+          )
+        );
+      },
+      addBack: function(selector) {
+        return this.add(
+          selector == null ? this.prevObject : this.prevObject.filter(selector)
+        );
+      }
+    });
+    function sibling(cur, dir2) {
+      while ((cur = cur[dir2]) && cur.nodeType !== 1) {
+      }
+      return cur;
+    }
+    jQuery2.each({
+      parent: function(elem) {
+        var parent = elem.parentNode;
+        return parent && parent.nodeType !== 11 ? parent : null;
+      },
+      parents: function(elem) {
+        return dir(elem, "parentNode");
+      },
+      parentsUntil: function(elem, _i, until) {
+        return dir(elem, "parentNode", until);
+      },
+      next: function(elem) {
+        return sibling(elem, "nextSibling");
+      },
+      prev: function(elem) {
+        return sibling(elem, "previousSibling");
+      },
+      nextAll: function(elem) {
+        return dir(elem, "nextSibling");
+      },
+      prevAll: function(elem) {
+        return dir(elem, "previousSibling");
+      },
+      nextUntil: function(elem, _i, until) {
+        return dir(elem, "nextSibling", until);
+      },
+      prevUntil: function(elem, _i, until) {
+        return dir(elem, "previousSibling", until);
+      },
+      siblings: function(elem) {
+        return siblings((elem.parentNode || {}).firstChild, elem);
+      },
+      children: function(elem) {
+        return siblings(elem.firstChild);
+      },
+      contents: function(elem) {
+        if (elem.contentDocument != null && // Support: IE 11+
+        // <object> elements with no `data` attribute has an object
+        // `contentDocument` with a `null` prototype.
+        getProto(elem.contentDocument)) {
+          return elem.contentDocument;
+        }
+        if (nodeName(elem, "template")) {
+          elem = elem.content || elem;
+        }
+        return jQuery2.merge([], elem.childNodes);
+      }
+    }, function(name2, fn) {
+      jQuery2.fn[name2] = function(until, selector) {
+        var matched = jQuery2.map(this, fn, until);
+        if (name2.slice(-5) !== "Until") {
+          selector = until;
+        }
+        if (selector && typeof selector === "string") {
+          matched = jQuery2.filter(selector, matched);
+        }
+        if (this.length > 1) {
+          if (!guaranteedUnique[name2]) {
+            jQuery2.uniqueSort(matched);
+          }
+          if (rparentsprev.test(name2)) {
+            matched.reverse();
+          }
+        }
+        return this.pushStack(matched);
+      };
+    });
+    var rnothtmlwhite = /[^\x20\t\r\n\f]+/g;
+    function createOptions(options) {
+      var object = {};
+      jQuery2.each(options.match(rnothtmlwhite) || [], function(_2, flag) {
+        object[flag] = true;
+      });
+      return object;
+    }
+    jQuery2.Callbacks = function(options) {
+      options = typeof options === "string" ? createOptions(options) : jQuery2.extend({}, options);
+      var firing, memory, fired, locked, list = [], queue = [], firingIndex = -1, fire = function() {
+        locked = locked || options.once;
+        fired = firing = true;
+        for (; queue.length; firingIndex = -1) {
+          memory = queue.shift();
+          while (++firingIndex < list.length) {
+            if (list[firingIndex].apply(memory[0], memory[1]) === false && options.stopOnFalse) {
+              firingIndex = list.length;
+              memory = false;
+            }
+          }
+        }
+        if (!options.memory) {
+          memory = false;
+        }
+        firing = false;
+        if (locked) {
+          if (memory) {
+            list = [];
+          } else {
+            list = "";
+          }
+        }
+      }, self2 = {
+        // Add a callback or a collection of callbacks to the list
+        add: function() {
+          if (list) {
+            if (memory && !firing) {
+              firingIndex = list.length - 1;
+              queue.push(memory);
+            }
+            (function add2(args) {
+              jQuery2.each(args, function(_2, arg) {
+                if (isFunction2(arg)) {
+                  if (!options.unique || !self2.has(arg)) {
+                    list.push(arg);
+                  }
+                } else if (arg && arg.length && toType(arg) !== "string") {
+                  add2(arg);
+                }
+              });
+            })(arguments);
+            if (memory && !firing) {
+              fire();
+            }
+          }
+          return this;
+        },
+        // Remove a callback from the list
+        remove: function() {
+          jQuery2.each(arguments, function(_2, arg) {
+            var index;
+            while ((index = jQuery2.inArray(arg, list, index)) > -1) {
+              list.splice(index, 1);
+              if (index <= firingIndex) {
+                firingIndex--;
+              }
+            }
+          });
+          return this;
+        },
+        // Check if a given callback is in the list.
+        // If no argument is given, return whether or not list has callbacks attached.
+        has: function(fn) {
+          return fn ? jQuery2.inArray(fn, list) > -1 : list.length > 0;
+        },
+        // Remove all callbacks from the list
+        empty: function() {
+          if (list) {
+            list = [];
+          }
+          return this;
+        },
+        // Disable .fire and .add
+        // Abort any current/pending executions
+        // Clear all callbacks and values
+        disable: function() {
+          locked = queue = [];
+          list = memory = "";
+          return this;
+        },
+        disabled: function() {
+          return !list;
+        },
+        // Disable .fire
+        // Also disable .add unless we have memory (since it would have no effect)
+        // Abort any pending executions
+        lock: function() {
+          locked = queue = [];
+          if (!memory && !firing) {
+            list = memory = "";
+          }
+          return this;
+        },
+        locked: function() {
+          return !!locked;
+        },
+        // Call all callbacks with the given context and arguments
+        fireWith: function(context, args) {
+          if (!locked) {
+            args = args || [];
+            args = [context, args.slice ? args.slice() : args];
+            queue.push(args);
+            if (!firing) {
+              fire();
+            }
+          }
+          return this;
+        },
+        // Call all the callbacks with the given arguments
+        fire: function() {
+          self2.fireWith(this, arguments);
+          return this;
+        },
+        // To know if the callbacks have already been called at least once
+        fired: function() {
+          return !!fired;
+        }
+      };
+      return self2;
+    };
+    function Identity(v) {
+      return v;
+    }
+    function Thrower(ex) {
+      throw ex;
+    }
+    function adoptValue(value, resolve, reject, noValue) {
+      var method;
+      try {
+        if (value && isFunction2(method = value.promise)) {
+          method.call(value).done(resolve).fail(reject);
+        } else if (value && isFunction2(method = value.then)) {
+          method.call(value, resolve, reject);
+        } else {
+          resolve.apply(void 0, [value].slice(noValue));
+        }
+      } catch (value2) {
+        reject.apply(void 0, [value2]);
+      }
+    }
+    jQuery2.extend({
+      Deferred: function(func) {
+        var tuples = [
+          // action, add listener, callbacks,
+          // ... .then handlers, argument index, [final state]
+          [
+            "notify",
+            "progress",
+            jQuery2.Callbacks("memory"),
+            jQuery2.Callbacks("memory"),
+            2
+          ],
+          [
+            "resolve",
+            "done",
+            jQuery2.Callbacks("once memory"),
+            jQuery2.Callbacks("once memory"),
+            0,
+            "resolved"
+          ],
+          [
+            "reject",
+            "fail",
+            jQuery2.Callbacks("once memory"),
+            jQuery2.Callbacks("once memory"),
+            1,
+            "rejected"
+          ]
+        ], state = "pending", promise = {
+          state: function() {
+            return state;
+          },
+          always: function() {
+            deferred.done(arguments).fail(arguments);
+            return this;
+          },
+          "catch": function(fn) {
+            return promise.then(null, fn);
+          },
+          // Keep pipe for back-compat
+          pipe: function() {
+            var fns = arguments;
+            return jQuery2.Deferred(function(newDefer) {
+              jQuery2.each(tuples, function(_i, tuple) {
+                var fn = isFunction2(fns[tuple[4]]) && fns[tuple[4]];
+                deferred[tuple[1]](function() {
+                  var returned = fn && fn.apply(this, arguments);
+                  if (returned && isFunction2(returned.promise)) {
+                    returned.promise().progress(newDefer.notify).done(newDefer.resolve).fail(newDefer.reject);
+                  } else {
+                    newDefer[tuple[0] + "With"](
+                      this,
+                      fn ? [returned] : arguments
+                    );
+                  }
+                });
+              });
+              fns = null;
+            }).promise();
+          },
+          then: function(onFulfilled, onRejected, onProgress) {
+            var maxDepth = 0;
+            function resolve(depth, deferred2, handler, special) {
+              return function() {
+                var that = this, args = arguments, mightThrow = function() {
+                  var returned, then;
+                  if (depth < maxDepth) {
+                    return;
+                  }
+                  returned = handler.apply(that, args);
+                  if (returned === deferred2.promise()) {
+                    throw new TypeError("Thenable self-resolution");
+                  }
+                  then = returned && // Support: Promises/A+ section 2.3.4
+                  // https://promisesaplus.com/#point-64
+                  // Only check objects and functions for thenability
+                  (typeof returned === "object" || typeof returned === "function") && returned.then;
+                  if (isFunction2(then)) {
+                    if (special) {
+                      then.call(
+                        returned,
+                        resolve(maxDepth, deferred2, Identity, special),
+                        resolve(maxDepth, deferred2, Thrower, special)
+                      );
+                    } else {
+                      maxDepth++;
+                      then.call(
+                        returned,
+                        resolve(maxDepth, deferred2, Identity, special),
+                        resolve(maxDepth, deferred2, Thrower, special),
+                        resolve(
+                          maxDepth,
+                          deferred2,
+                          Identity,
+                          deferred2.notifyWith
+                        )
+                      );
+                    }
+                  } else {
+                    if (handler !== Identity) {
+                      that = void 0;
+                      args = [returned];
+                    }
+                    (special || deferred2.resolveWith)(that, args);
+                  }
+                }, process2 = special ? mightThrow : function() {
+                  try {
+                    mightThrow();
+                  } catch (e) {
+                    if (jQuery2.Deferred.exceptionHook) {
+                      jQuery2.Deferred.exceptionHook(
+                        e,
+                        process2.error
+                      );
+                    }
+                    if (depth + 1 >= maxDepth) {
+                      if (handler !== Thrower) {
+                        that = void 0;
+                        args = [e];
+                      }
+                      deferred2.rejectWith(that, args);
+                    }
+                  }
+                };
+                if (depth) {
+                  process2();
+                } else {
+                  if (jQuery2.Deferred.getErrorHook) {
+                    process2.error = jQuery2.Deferred.getErrorHook();
+                  } else if (jQuery2.Deferred.getStackHook) {
+                    process2.error = jQuery2.Deferred.getStackHook();
+                  }
+                  window2.setTimeout(process2);
+                }
+              };
+            }
+            return jQuery2.Deferred(function(newDefer) {
+              tuples[0][3].add(
+                resolve(
+                  0,
+                  newDefer,
+                  isFunction2(onProgress) ? onProgress : Identity,
+                  newDefer.notifyWith
+                )
+              );
+              tuples[1][3].add(
+                resolve(
+                  0,
+                  newDefer,
+                  isFunction2(onFulfilled) ? onFulfilled : Identity
+                )
+              );
+              tuples[2][3].add(
+                resolve(
+                  0,
+                  newDefer,
+                  isFunction2(onRejected) ? onRejected : Thrower
+                )
+              );
+            }).promise();
+          },
+          // Get a promise for this deferred
+          // If obj is provided, the promise aspect is added to the object
+          promise: function(obj) {
+            return obj != null ? jQuery2.extend(obj, promise) : promise;
+          }
+        }, deferred = {};
+        jQuery2.each(tuples, function(i, tuple) {
+          var list = tuple[2], stateString = tuple[5];
+          promise[tuple[1]] = list.add;
+          if (stateString) {
+            list.add(
+              function() {
+                state = stateString;
+              },
+              // rejected_callbacks.disable
+              // fulfilled_callbacks.disable
+              tuples[3 - i][2].disable,
+              // rejected_handlers.disable
+              // fulfilled_handlers.disable
+              tuples[3 - i][3].disable,
+              // progress_callbacks.lock
+              tuples[0][2].lock,
+              // progress_handlers.lock
+              tuples[0][3].lock
+            );
+          }
+          list.add(tuple[3].fire);
+          deferred[tuple[0]] = function() {
+            deferred[tuple[0] + "With"](this === deferred ? void 0 : this, arguments);
+            return this;
+          };
+          deferred[tuple[0] + "With"] = list.fireWith;
+        });
+        promise.promise(deferred);
+        if (func) {
+          func.call(deferred, deferred);
+        }
+        return deferred;
+      },
+      // Deferred helper
+      when: function(singleValue) {
+        var remaining = arguments.length, i = remaining, resolveContexts = Array(i), resolveValues = slice2.call(arguments), primary = jQuery2.Deferred(), updateFunc = function(i2) {
+          return function(value) {
+            resolveContexts[i2] = this;
+            resolveValues[i2] = arguments.length > 1 ? slice2.call(arguments) : value;
+            if (!--remaining) {
+              primary.resolveWith(resolveContexts, resolveValues);
+            }
+          };
+        };
+        if (remaining <= 1) {
+          adoptValue(
+            singleValue,
+            primary.done(updateFunc(i)).resolve,
+            primary.reject,
+            !remaining
+          );
+          if (primary.state() === "pending" || isFunction2(resolveValues[i] && resolveValues[i].then)) {
+            return primary.then();
+          }
+        }
+        while (i--) {
+          adoptValue(resolveValues[i], updateFunc(i), primary.reject);
+        }
+        return primary.promise();
+      }
+    });
+    var rerrorNames = /^(Eval|Internal|Range|Reference|Syntax|Type|URI)Error$/;
+    jQuery2.Deferred.exceptionHook = function(error, asyncError) {
+      if (window2.console && window2.console.warn && error && rerrorNames.test(error.name)) {
+        window2.console.warn(
+          "jQuery.Deferred exception: " + error.message,
+          error.stack,
+          asyncError
+        );
+      }
+    };
+    jQuery2.readyException = function(error) {
+      window2.setTimeout(function() {
+        throw error;
+      });
+    };
+    var readyList = jQuery2.Deferred();
+    jQuery2.fn.ready = function(fn) {
+      readyList.then(fn).catch(function(error) {
+        jQuery2.readyException(error);
+      });
+      return this;
+    };
+    jQuery2.extend({
+      // Is the DOM ready to be used? Set to true once it occurs.
+      isReady: false,
+      // A counter to track how many items to wait for before
+      // the ready event fires. See trac-6781
+      readyWait: 1,
+      // Handle when the DOM is ready
+      ready: function(wait) {
+        if (wait === true ? --jQuery2.readyWait : jQuery2.isReady) {
+          return;
+        }
+        jQuery2.isReady = true;
+        if (wait !== true && --jQuery2.readyWait > 0) {
+          return;
+        }
+        readyList.resolveWith(document2, [jQuery2]);
+      }
+    });
+    jQuery2.ready.then = readyList.then;
+    function completed() {
+      document2.removeEventListener("DOMContentLoaded", completed);
+      window2.removeEventListener("load", completed);
+      jQuery2.ready();
+    }
+    if (document2.readyState === "complete" || document2.readyState !== "loading" && !document2.documentElement.doScroll) {
+      window2.setTimeout(jQuery2.ready);
+    } else {
+      document2.addEventListener("DOMContentLoaded", completed);
+      window2.addEventListener("load", completed);
+    }
+    var access = function(elems, fn, key, value, chainable, emptyGet, raw) {
+      var i = 0, len = elems.length, bulk = key == null;
+      if (toType(key) === "object") {
+        chainable = true;
+        for (i in key) {
+          access(elems, fn, i, key[i], true, emptyGet, raw);
+        }
+      } else if (value !== void 0) {
+        chainable = true;
+        if (!isFunction2(value)) {
+          raw = true;
+        }
+        if (bulk) {
+          if (raw) {
+            fn.call(elems, value);
+            fn = null;
+          } else {
+            bulk = fn;
+            fn = function(elem, _key, value2) {
+              return bulk.call(jQuery2(elem), value2);
+            };
+          }
+        }
+        if (fn) {
+          for (; i < len; i++) {
+            fn(
+              elems[i],
+              key,
+              raw ? value : value.call(elems[i], i, fn(elems[i], key))
+            );
+          }
+        }
+      }
+      if (chainable) {
+        return elems;
+      }
+      if (bulk) {
+        return fn.call(elems);
+      }
+      return len ? fn(elems[0], key) : emptyGet;
+    };
+    var rmsPrefix = /^-ms-/, rdashAlpha = /-([a-z])/g;
+    function fcamelCase(_all, letter) {
+      return letter.toUpperCase();
+    }
+    function camelCase(string) {
+      return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
+    }
+    var acceptData = function(owner) {
+      return owner.nodeType === 1 || owner.nodeType === 9 || !+owner.nodeType;
+    };
+    function Data() {
+      this.expando = jQuery2.expando + Data.uid++;
+    }
+    Data.uid = 1;
+    Data.prototype = {
+      cache: function(owner) {
+        var value = owner[this.expando];
+        if (!value) {
+          value = {};
+          if (acceptData(owner)) {
+            if (owner.nodeType) {
+              owner[this.expando] = value;
+            } else {
+              Object.defineProperty(owner, this.expando, {
+                value,
+                configurable: true
+              });
+            }
+          }
+        }
+        return value;
+      },
+      set: function(owner, data2, value) {
+        var prop, cache2 = this.cache(owner);
+        if (typeof data2 === "string") {
+          cache2[camelCase(data2)] = value;
+        } else {
+          for (prop in data2) {
+            cache2[camelCase(prop)] = data2[prop];
+          }
+        }
+        return cache2;
+      },
+      get: function(owner, key) {
+        return key === void 0 ? this.cache(owner) : (
+          // Always use camelCase key (gh-2257)
+          owner[this.expando] && owner[this.expando][camelCase(key)]
+        );
+      },
+      access: function(owner, key, value) {
+        if (key === void 0 || key && typeof key === "string" && value === void 0) {
+          return this.get(owner, key);
+        }
+        this.set(owner, key, value);
+        return value !== void 0 ? value : key;
+      },
+      remove: function(owner, key) {
+        var i, cache2 = owner[this.expando];
+        if (cache2 === void 0) {
+          return;
+        }
+        if (key !== void 0) {
+          if (Array.isArray(key)) {
+            key = key.map(camelCase);
+          } else {
+            key = camelCase(key);
+            key = key in cache2 ? [key] : key.match(rnothtmlwhite) || [];
+          }
+          i = key.length;
+          while (i--) {
+            delete cache2[key[i]];
+          }
+        }
+        if (key === void 0 || jQuery2.isEmptyObject(cache2)) {
+          if (owner.nodeType) {
+            owner[this.expando] = void 0;
+          } else {
+            delete owner[this.expando];
+          }
+        }
+      },
+      hasData: function(owner) {
+        var cache2 = owner[this.expando];
+        return cache2 !== void 0 && !jQuery2.isEmptyObject(cache2);
+      }
+    };
+    var dataPriv = new Data();
+    var dataUser = new Data();
+    var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/, rmultiDash = /[A-Z]/g;
+    function getData(data2) {
+      if (data2 === "true") {
+        return true;
+      }
+      if (data2 === "false") {
+        return false;
+      }
+      if (data2 === "null") {
+        return null;
+      }
+      if (data2 === +data2 + "") {
+        return +data2;
+      }
+      if (rbrace.test(data2)) {
+        return JSON.parse(data2);
+      }
+      return data2;
+    }
+    function dataAttr(elem, key, data2) {
+      var name2;
+      if (data2 === void 0 && elem.nodeType === 1) {
+        name2 = "data-" + key.replace(rmultiDash, "-$&").toLowerCase();
+        data2 = elem.getAttribute(name2);
+        if (typeof data2 === "string") {
+          try {
+            data2 = getData(data2);
+          } catch (e) {
+          }
+          dataUser.set(elem, key, data2);
+        } else {
+          data2 = void 0;
+        }
+      }
+      return data2;
+    }
+    jQuery2.extend({
+      hasData: function(elem) {
+        return dataUser.hasData(elem) || dataPriv.hasData(elem);
+      },
+      data: function(elem, name2, data2) {
+        return dataUser.access(elem, name2, data2);
+      },
+      removeData: function(elem, name2) {
+        dataUser.remove(elem, name2);
+      },
+      // TODO: Now that all calls to _data and _removeData have been replaced
+      // with direct calls to dataPriv methods, these can be deprecated.
+      _data: function(elem, name2, data2) {
+        return dataPriv.access(elem, name2, data2);
+      },
+      _removeData: function(elem, name2) {
+        dataPriv.remove(elem, name2);
+      }
+    });
+    jQuery2.fn.extend({
+      data: function(key, value) {
+        var i, name2, data2, elem = this[0], attrs = elem && elem.attributes;
+        if (key === void 0) {
+          if (this.length) {
+            data2 = dataUser.get(elem);
+            if (elem.nodeType === 1 && !dataPriv.get(elem, "hasDataAttrs")) {
+              i = attrs.length;
+              while (i--) {
+                if (attrs[i]) {
+                  name2 = attrs[i].name;
+                  if (name2.indexOf("data-") === 0) {
+                    name2 = camelCase(name2.slice(5));
+                    dataAttr(elem, name2, data2[name2]);
+                  }
+                }
+              }
+              dataPriv.set(elem, "hasDataAttrs", true);
+            }
+          }
+          return data2;
+        }
+        if (typeof key === "object") {
+          return this.each(function() {
+            dataUser.set(this, key);
+          });
+        }
+        return access(this, function(value2) {
+          var data3;
+          if (elem && value2 === void 0) {
+            data3 = dataUser.get(elem, key);
+            if (data3 !== void 0) {
+              return data3;
+            }
+            data3 = dataAttr(elem, key);
+            if (data3 !== void 0) {
+              return data3;
+            }
+            return;
+          }
+          this.each(function() {
+            dataUser.set(this, key, value2);
+          });
+        }, null, value, arguments.length > 1, null, true);
+      },
+      removeData: function(key) {
+        return this.each(function() {
+          dataUser.remove(this, key);
+        });
+      }
+    });
+    jQuery2.extend({
+      queue: function(elem, type, data2) {
+        var queue;
+        if (elem) {
+          type = (type || "fx") + "queue";
+          queue = dataPriv.get(elem, type);
+          if (data2) {
+            if (!queue || Array.isArray(data2)) {
+              queue = dataPriv.access(elem, type, jQuery2.makeArray(data2));
+            } else {
+              queue.push(data2);
+            }
+          }
+          return queue || [];
+        }
+      },
+      dequeue: function(elem, type) {
+        type = type || "fx";
+        var queue = jQuery2.queue(elem, type), startLength = queue.length, fn = queue.shift(), hooks = jQuery2._queueHooks(elem, type), next2 = function() {
+          jQuery2.dequeue(elem, type);
+        };
+        if (fn === "inprogress") {
+          fn = queue.shift();
+          startLength--;
+        }
+        if (fn) {
+          if (type === "fx") {
+            queue.unshift("inprogress");
+          }
+          delete hooks.stop;
+          fn.call(elem, next2, hooks);
+        }
+        if (!startLength && hooks) {
+          hooks.empty.fire();
+        }
+      },
+      // Not public - generate a queueHooks object, or return the current one
+      _queueHooks: function(elem, type) {
+        var key = type + "queueHooks";
+        return dataPriv.get(elem, key) || dataPriv.access(elem, key, {
+          empty: jQuery2.Callbacks("once memory").add(function() {
+            dataPriv.remove(elem, [type + "queue", key]);
+          })
+        });
+      }
+    });
+    jQuery2.fn.extend({
+      queue: function(type, data2) {
+        var setter = 2;
+        if (typeof type !== "string") {
+          data2 = type;
+          type = "fx";
+          setter--;
+        }
+        if (arguments.length < setter) {
+          return jQuery2.queue(this[0], type);
+        }
+        return data2 === void 0 ? this : this.each(function() {
+          var queue = jQuery2.queue(this, type, data2);
+          jQuery2._queueHooks(this, type);
+          if (type === "fx" && queue[0] !== "inprogress") {
+            jQuery2.dequeue(this, type);
+          }
+        });
+      },
+      dequeue: function(type) {
+        return this.each(function() {
+          jQuery2.dequeue(this, type);
+        });
+      },
+      clearQueue: function(type) {
+        return this.queue(type || "fx", []);
+      },
+      // Get a promise resolved when queues of a certain type
+      // are emptied (fx is the type by default)
+      promise: function(type, obj) {
+        var tmp, count = 1, defer = jQuery2.Deferred(), elements = this, i = this.length, resolve = function() {
+          if (!--count) {
+            defer.resolveWith(elements, [elements]);
+          }
+        };
+        if (typeof type !== "string") {
+          obj = type;
+          type = void 0;
+        }
+        type = type || "fx";
+        while (i--) {
+          tmp = dataPriv.get(elements[i], type + "queueHooks");
+          if (tmp && tmp.empty) {
+            count++;
+            tmp.empty.add(resolve);
+          }
+        }
+        resolve();
+        return defer.promise(obj);
+      }
+    });
+    var pnum = /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source;
+    var rcssNum = new RegExp("^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i");
+    var cssExpand = ["Top", "Right", "Bottom", "Left"];
+    var documentElement = document2.documentElement;
+    var isAttached = function(elem) {
+      return jQuery2.contains(elem.ownerDocument, elem);
+    }, composed = { composed: true };
+    if (documentElement.getRootNode) {
+      isAttached = function(elem) {
+        return jQuery2.contains(elem.ownerDocument, elem) || elem.getRootNode(composed) === elem.ownerDocument;
+      };
+    }
+    var isHiddenWithinTree = function(elem, el) {
+      elem = el || elem;
+      return elem.style.display === "none" || elem.style.display === "" && // Otherwise, check computed style
+      // Support: Firefox <=43 - 45
+      // Disconnected elements can have computed display: none, so first confirm that elem is
+      // in the document.
+      isAttached(elem) && jQuery2.css(elem, "display") === "none";
+    };
+    function adjustCSS(elem, prop, valueParts, tween) {
+      var adjusted, scale, maxIterations = 20, currentValue = tween ? function() {
+        return tween.cur();
+      } : function() {
+        return jQuery2.css(elem, prop, "");
+      }, initial = currentValue(), unit = valueParts && valueParts[3] || (jQuery2.cssNumber[prop] ? "" : "px"), initialInUnit = elem.nodeType && (jQuery2.cssNumber[prop] || unit !== "px" && +initial) && rcssNum.exec(jQuery2.css(elem, prop));
+      if (initialInUnit && initialInUnit[3] !== unit) {
+        initial = initial / 2;
+        unit = unit || initialInUnit[3];
+        initialInUnit = +initial || 1;
+        while (maxIterations--) {
+          jQuery2.style(elem, prop, initialInUnit + unit);
+          if ((1 - scale) * (1 - (scale = currentValue() / initial || 0.5)) <= 0) {
+            maxIterations = 0;
+          }
+          initialInUnit = initialInUnit / scale;
+        }
+        initialInUnit = initialInUnit * 2;
+        jQuery2.style(elem, prop, initialInUnit + unit);
+        valueParts = valueParts || [];
+      }
+      if (valueParts) {
+        initialInUnit = +initialInUnit || +initial || 0;
+        adjusted = valueParts[1] ? initialInUnit + (valueParts[1] + 1) * valueParts[2] : +valueParts[2];
+        if (tween) {
+          tween.unit = unit;
+          tween.start = initialInUnit;
+          tween.end = adjusted;
+        }
+      }
+      return adjusted;
+    }
+    var defaultDisplayMap = {};
+    function getDefaultDisplay(elem) {
+      var temp, doc = elem.ownerDocument, nodeName2 = elem.nodeName, display = defaultDisplayMap[nodeName2];
+      if (display) {
+        return display;
+      }
+      temp = doc.body.appendChild(doc.createElement(nodeName2));
+      display = jQuery2.css(temp, "display");
+      temp.parentNode.removeChild(temp);
+      if (display === "none") {
+        display = "block";
+      }
+      defaultDisplayMap[nodeName2] = display;
+      return display;
+    }
+    function showHide(elements, show) {
+      var display, elem, values2 = [], index = 0, length2 = elements.length;
+      for (; index < length2; index++) {
+        elem = elements[index];
+        if (!elem.style) {
+          continue;
+        }
+        display = elem.style.display;
+        if (show) {
+          if (display === "none") {
+            values2[index] = dataPriv.get(elem, "display") || null;
+            if (!values2[index]) {
+              elem.style.display = "";
+            }
+          }
+          if (elem.style.display === "" && isHiddenWithinTree(elem)) {
+            values2[index] = getDefaultDisplay(elem);
+          }
+        } else {
+          if (display !== "none") {
+            values2[index] = "none";
+            dataPriv.set(elem, "display", display);
+          }
+        }
+      }
+      for (index = 0; index < length2; index++) {
+        if (values2[index] != null) {
+          elements[index].style.display = values2[index];
+        }
+      }
+      return elements;
+    }
+    jQuery2.fn.extend({
+      show: function() {
+        return showHide(this, true);
+      },
+      hide: function() {
+        return showHide(this);
+      },
+      toggle: function(state) {
+        if (typeof state === "boolean") {
+          return state ? this.show() : this.hide();
+        }
+        return this.each(function() {
+          if (isHiddenWithinTree(this)) {
+            jQuery2(this).show();
+          } else {
+            jQuery2(this).hide();
+          }
+        });
+      }
+    });
+    var rcheckableType = /^(?:checkbox|radio)$/i;
+    var rtagName = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i;
+    var rscriptType = /^$|^module$|\/(?:java|ecma)script/i;
+    (function() {
+      var fragment = document2.createDocumentFragment(), div2 = fragment.appendChild(document2.createElement("div")), input = document2.createElement("input");
+      input.setAttribute("type", "radio");
+      input.setAttribute("checked", "checked");
+      input.setAttribute("name", "t");
+      div2.appendChild(input);
+      support.checkClone = div2.cloneNode(true).cloneNode(true).lastChild.checked;
+      div2.innerHTML = "<textarea>x</textarea>";
+      support.noCloneChecked = !!div2.cloneNode(true).lastChild.defaultValue;
+      div2.innerHTML = "<option></option>";
+      support.option = !!div2.lastChild;
+    })();
+    var wrapMap = {
+      // XHTML parsers do not magically insert elements in the
+      // same way that tag soup parsers do. So we cannot shorten
+      // this by omitting <tbody> or other required elements.
+      thead: [1, "<table>", "</table>"],
+      col: [2, "<table><colgroup>", "</colgroup></table>"],
+      tr: [2, "<table><tbody>", "</tbody></table>"],
+      td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+      _default: [0, "", ""]
+    };
+    wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
+    wrapMap.th = wrapMap.td;
+    if (!support.option) {
+      wrapMap.optgroup = wrapMap.option = [1, "<select multiple='multiple'>", "</select>"];
+    }
+    function getAll(context, tag2) {
+      var ret;
+      if (typeof context.getElementsByTagName !== "undefined") {
+        ret = context.getElementsByTagName(tag2 || "*");
+      } else if (typeof context.querySelectorAll !== "undefined") {
+        ret = context.querySelectorAll(tag2 || "*");
+      } else {
+        ret = [];
+      }
+      if (tag2 === void 0 || tag2 && nodeName(context, tag2)) {
+        return jQuery2.merge([context], ret);
+      }
+      return ret;
+    }
+    function setGlobalEval(elems, refElements) {
+      var i = 0, l = elems.length;
+      for (; i < l; i++) {
+        dataPriv.set(
+          elems[i],
+          "globalEval",
+          !refElements || dataPriv.get(refElements[i], "globalEval")
+        );
+      }
+    }
+    var rhtml = /<|&#?\w+;/;
+    function buildFragment(elems, context, scripts, selection, ignored) {
+      var elem, tmp, tag2, wrap, attached, j, fragment = context.createDocumentFragment(), nodes = [], i = 0, l = elems.length;
+      for (; i < l; i++) {
+        elem = elems[i];
+        if (elem || elem === 0) {
+          if (toType(elem) === "object") {
+            jQuery2.merge(nodes, elem.nodeType ? [elem] : elem);
+          } else if (!rhtml.test(elem)) {
+            nodes.push(context.createTextNode(elem));
+          } else {
+            tmp = tmp || fragment.appendChild(context.createElement("div"));
+            tag2 = (rtagName.exec(elem) || ["", ""])[1].toLowerCase();
+            wrap = wrapMap[tag2] || wrapMap._default;
+            tmp.innerHTML = wrap[1] + jQuery2.htmlPrefilter(elem) + wrap[2];
+            j = wrap[0];
+            while (j--) {
+              tmp = tmp.lastChild;
+            }
+            jQuery2.merge(nodes, tmp.childNodes);
+            tmp = fragment.firstChild;
+            tmp.textContent = "";
+          }
+        }
+      }
+      fragment.textContent = "";
+      i = 0;
+      while (elem = nodes[i++]) {
+        if (selection && jQuery2.inArray(elem, selection) > -1) {
+          if (ignored) {
+            ignored.push(elem);
+          }
+          continue;
+        }
+        attached = isAttached(elem);
+        tmp = getAll(fragment.appendChild(elem), "script");
+        if (attached) {
+          setGlobalEval(tmp);
+        }
+        if (scripts) {
+          j = 0;
+          while (elem = tmp[j++]) {
+            if (rscriptType.test(elem.type || "")) {
+              scripts.push(elem);
+            }
+          }
+        }
+      }
+      return fragment;
+    }
+    var rtypenamespace = /^([^.]*)(?:\.(.+)|)/;
+    function returnTrue() {
+      return true;
+    }
+    function returnFalse() {
+      return false;
+    }
+    function on(elem, types, selector, data2, fn, one) {
+      var origFn, type;
+      if (typeof types === "object") {
+        if (typeof selector !== "string") {
+          data2 = data2 || selector;
+          selector = void 0;
+        }
+        for (type in types) {
+          on(elem, type, selector, data2, types[type], one);
+        }
+        return elem;
+      }
+      if (data2 == null && fn == null) {
+        fn = selector;
+        data2 = selector = void 0;
+      } else if (fn == null) {
+        if (typeof selector === "string") {
+          fn = data2;
+          data2 = void 0;
+        } else {
+          fn = data2;
+          data2 = selector;
+          selector = void 0;
+        }
+      }
+      if (fn === false) {
+        fn = returnFalse;
+      } else if (!fn) {
+        return elem;
+      }
+      if (one === 1) {
+        origFn = fn;
+        fn = function(event2) {
+          jQuery2().off(event2);
+          return origFn.apply(this, arguments);
+        };
+        fn.guid = origFn.guid || (origFn.guid = jQuery2.guid++);
+      }
+      return elem.each(function() {
+        jQuery2.event.add(this, types, fn, data2, selector);
+      });
+    }
+    jQuery2.event = {
+      global: {},
+      add: function(elem, types, handler, data2, selector) {
+        var handleObjIn, eventHandle, tmp, events, t, handleObj, special, handlers, type, namespaces, origType, elemData = dataPriv.get(elem);
+        if (!acceptData(elem)) {
+          return;
+        }
+        if (handler.handler) {
+          handleObjIn = handler;
+          handler = handleObjIn.handler;
+          selector = handleObjIn.selector;
+        }
+        if (selector) {
+          jQuery2.find.matchesSelector(documentElement, selector);
+        }
+        if (!handler.guid) {
+          handler.guid = jQuery2.guid++;
+        }
+        if (!(events = elemData.events)) {
+          events = elemData.events = /* @__PURE__ */ Object.create(null);
+        }
+        if (!(eventHandle = elemData.handle)) {
+          eventHandle = elemData.handle = function(e) {
+            return typeof jQuery2 !== "undefined" && jQuery2.event.triggered !== e.type ? jQuery2.event.dispatch.apply(elem, arguments) : void 0;
+          };
+        }
+        types = (types || "").match(rnothtmlwhite) || [""];
+        t = types.length;
+        while (t--) {
+          tmp = rtypenamespace.exec(types[t]) || [];
+          type = origType = tmp[1];
+          namespaces = (tmp[2] || "").split(".").sort();
+          if (!type) {
+            continue;
+          }
+          special = jQuery2.event.special[type] || {};
+          type = (selector ? special.delegateType : special.bindType) || type;
+          special = jQuery2.event.special[type] || {};
+          handleObj = jQuery2.extend({
+            type,
+            origType,
+            data: data2,
+            handler,
+            guid: handler.guid,
+            selector,
+            needsContext: selector && jQuery2.expr.match.needsContext.test(selector),
+            namespace: namespaces.join(".")
+          }, handleObjIn);
+          if (!(handlers = events[type])) {
+            handlers = events[type] = [];
+            handlers.delegateCount = 0;
+            if (!special.setup || special.setup.call(elem, data2, namespaces, eventHandle) === false) {
+              if (elem.addEventListener) {
+                elem.addEventListener(type, eventHandle);
+              }
+            }
+          }
+          if (special.add) {
+            special.add.call(elem, handleObj);
+            if (!handleObj.handler.guid) {
+              handleObj.handler.guid = handler.guid;
+            }
+          }
+          if (selector) {
+            handlers.splice(handlers.delegateCount++, 0, handleObj);
+          } else {
+            handlers.push(handleObj);
+          }
+          jQuery2.event.global[type] = true;
+        }
+      },
+      // Detach an event or set of events from an element
+      remove: function(elem, types, handler, selector, mappedTypes) {
+        var j, origCount, tmp, events, t, handleObj, special, handlers, type, namespaces, origType, elemData = dataPriv.hasData(elem) && dataPriv.get(elem);
+        if (!elemData || !(events = elemData.events)) {
+          return;
+        }
+        types = (types || "").match(rnothtmlwhite) || [""];
+        t = types.length;
+        while (t--) {
+          tmp = rtypenamespace.exec(types[t]) || [];
+          type = origType = tmp[1];
+          namespaces = (tmp[2] || "").split(".").sort();
+          if (!type) {
+            for (type in events) {
+              jQuery2.event.remove(elem, type + types[t], handler, selector, true);
+            }
+            continue;
+          }
+          special = jQuery2.event.special[type] || {};
+          type = (selector ? special.delegateType : special.bindType) || type;
+          handlers = events[type] || [];
+          tmp = tmp[2] && new RegExp("(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)");
+          origCount = j = handlers.length;
+          while (j--) {
+            handleObj = handlers[j];
+            if ((mappedTypes || origType === handleObj.origType) && (!handler || handler.guid === handleObj.guid) && (!tmp || tmp.test(handleObj.namespace)) && (!selector || selector === handleObj.selector || selector === "**" && handleObj.selector)) {
+              handlers.splice(j, 1);
+              if (handleObj.selector) {
+                handlers.delegateCount--;
+              }
+              if (special.remove) {
+                special.remove.call(elem, handleObj);
+              }
+            }
+          }
+          if (origCount && !handlers.length) {
+            if (!special.teardown || special.teardown.call(elem, namespaces, elemData.handle) === false) {
+              jQuery2.removeEvent(elem, type, elemData.handle);
+            }
+            delete events[type];
+          }
+        }
+        if (jQuery2.isEmptyObject(events)) {
+          dataPriv.remove(elem, "handle events");
+        }
+      },
+      dispatch: function(nativeEvent) {
+        var i, j, ret, matched, handleObj, handlerQueue, args = new Array(arguments.length), event2 = jQuery2.event.fix(nativeEvent), handlers = (dataPriv.get(this, "events") || /* @__PURE__ */ Object.create(null))[event2.type] || [], special = jQuery2.event.special[event2.type] || {};
+        args[0] = event2;
+        for (i = 1; i < arguments.length; i++) {
+          args[i] = arguments[i];
+        }
+        event2.delegateTarget = this;
+        if (special.preDispatch && special.preDispatch.call(this, event2) === false) {
+          return;
+        }
+        handlerQueue = jQuery2.event.handlers.call(this, event2, handlers);
+        i = 0;
+        while ((matched = handlerQueue[i++]) && !event2.isPropagationStopped()) {
+          event2.currentTarget = matched.elem;
+          j = 0;
+          while ((handleObj = matched.handlers[j++]) && !event2.isImmediatePropagationStopped()) {
+            if (!event2.rnamespace || handleObj.namespace === false || event2.rnamespace.test(handleObj.namespace)) {
+              event2.handleObj = handleObj;
+              event2.data = handleObj.data;
+              ret = ((jQuery2.event.special[handleObj.origType] || {}).handle || handleObj.handler).apply(matched.elem, args);
+              if (ret !== void 0) {
+                if ((event2.result = ret) === false) {
+                  event2.preventDefault();
+                  event2.stopPropagation();
+                }
+              }
+            }
+          }
+        }
+        if (special.postDispatch) {
+          special.postDispatch.call(this, event2);
+        }
+        return event2.result;
+      },
+      handlers: function(event2, handlers) {
+        var i, handleObj, sel, matchedHandlers, matchedSelectors, handlerQueue = [], delegateCount = handlers.delegateCount, cur = event2.target;
+        if (delegateCount && // Support: IE <=9
+        // Black-hole SVG <use> instance trees (trac-13180)
+        cur.nodeType && // Support: Firefox <=42
+        // Suppress spec-violating clicks indicating a non-primary pointer button (trac-3861)
+        // https://www.w3.org/TR/DOM-Level-3-Events/#event-type-click
+        // Support: IE 11 only
+        // ...but not arrow key "clicks" of radio inputs, which can have `button` -1 (gh-2343)
+        !(event2.type === "click" && event2.button >= 1)) {
+          for (; cur !== this; cur = cur.parentNode || this) {
+            if (cur.nodeType === 1 && !(event2.type === "click" && cur.disabled === true)) {
+              matchedHandlers = [];
+              matchedSelectors = {};
+              for (i = 0; i < delegateCount; i++) {
+                handleObj = handlers[i];
+                sel = handleObj.selector + " ";
+                if (matchedSelectors[sel] === void 0) {
+                  matchedSelectors[sel] = handleObj.needsContext ? jQuery2(sel, this).index(cur) > -1 : jQuery2.find(sel, this, null, [cur]).length;
+                }
+                if (matchedSelectors[sel]) {
+                  matchedHandlers.push(handleObj);
+                }
+              }
+              if (matchedHandlers.length) {
+                handlerQueue.push({ elem: cur, handlers: matchedHandlers });
+              }
+            }
+          }
+        }
+        cur = this;
+        if (delegateCount < handlers.length) {
+          handlerQueue.push({ elem: cur, handlers: handlers.slice(delegateCount) });
+        }
+        return handlerQueue;
+      },
+      addProp: function(name2, hook) {
+        Object.defineProperty(jQuery2.Event.prototype, name2, {
+          enumerable: true,
+          configurable: true,
+          get: isFunction2(hook) ? function() {
+            if (this.originalEvent) {
+              return hook(this.originalEvent);
+            }
+          } : function() {
+            if (this.originalEvent) {
+              return this.originalEvent[name2];
+            }
+          },
+          set: function(value) {
+            Object.defineProperty(this, name2, {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value
+            });
+          }
+        });
+      },
+      fix: function(originalEvent) {
+        return originalEvent[jQuery2.expando] ? originalEvent : new jQuery2.Event(originalEvent);
+      },
+      special: {
+        load: {
+          // Prevent triggered image.load events from bubbling to window.load
+          noBubble: true
+        },
+        click: {
+          // Utilize native event to ensure correct state for checkable inputs
+          setup: function(data2) {
+            var el = this || data2;
+            if (rcheckableType.test(el.type) && el.click && nodeName(el, "input")) {
+              leverageNative(el, "click", true);
+            }
+            return false;
+          },
+          trigger: function(data2) {
+            var el = this || data2;
+            if (rcheckableType.test(el.type) && el.click && nodeName(el, "input")) {
+              leverageNative(el, "click");
+            }
+            return true;
+          },
+          // For cross-browser consistency, suppress native .click() on links
+          // Also prevent it if we're currently inside a leveraged native-event stack
+          _default: function(event2) {
+            var target = event2.target;
+            return rcheckableType.test(target.type) && target.click && nodeName(target, "input") && dataPriv.get(target, "click") || nodeName(target, "a");
+          }
+        },
+        beforeunload: {
+          postDispatch: function(event2) {
+            if (event2.result !== void 0 && event2.originalEvent) {
+              event2.originalEvent.returnValue = event2.result;
+            }
+          }
+        }
+      }
+    };
+    function leverageNative(el, type, isSetup) {
+      if (!isSetup) {
+        if (dataPriv.get(el, type) === void 0) {
+          jQuery2.event.add(el, type, returnTrue);
+        }
+        return;
+      }
+      dataPriv.set(el, type, false);
+      jQuery2.event.add(el, type, {
+        namespace: false,
+        handler: function(event2) {
+          var result, saved = dataPriv.get(this, type);
+          if (event2.isTrigger & 1 && this[type]) {
+            if (!saved) {
+              saved = slice2.call(arguments);
+              dataPriv.set(this, type, saved);
+              this[type]();
+              result = dataPriv.get(this, type);
+              dataPriv.set(this, type, false);
+              if (saved !== result) {
+                event2.stopImmediatePropagation();
+                event2.preventDefault();
+                return result;
+              }
+            } else if ((jQuery2.event.special[type] || {}).delegateType) {
+              event2.stopPropagation();
+            }
+          } else if (saved) {
+            dataPriv.set(this, type, jQuery2.event.trigger(
+              saved[0],
+              saved.slice(1),
+              this
+            ));
+            event2.stopPropagation();
+            event2.isImmediatePropagationStopped = returnTrue;
+          }
+        }
+      });
+    }
+    jQuery2.removeEvent = function(elem, type, handle) {
+      if (elem.removeEventListener) {
+        elem.removeEventListener(type, handle);
+      }
+    };
+    jQuery2.Event = function(src, props2) {
+      if (!(this instanceof jQuery2.Event)) {
+        return new jQuery2.Event(src, props2);
+      }
+      if (src && src.type) {
+        this.originalEvent = src;
+        this.type = src.type;
+        this.isDefaultPrevented = src.defaultPrevented || src.defaultPrevented === void 0 && // Support: Android <=2.3 only
+        src.returnValue === false ? returnTrue : returnFalse;
+        this.target = src.target && src.target.nodeType === 3 ? src.target.parentNode : src.target;
+        this.currentTarget = src.currentTarget;
+        this.relatedTarget = src.relatedTarget;
+      } else {
+        this.type = src;
+      }
+      if (props2) {
+        jQuery2.extend(this, props2);
+      }
+      this.timeStamp = src && src.timeStamp || Date.now();
+      this[jQuery2.expando] = true;
+    };
+    jQuery2.Event.prototype = {
+      constructor: jQuery2.Event,
+      isDefaultPrevented: returnFalse,
+      isPropagationStopped: returnFalse,
+      isImmediatePropagationStopped: returnFalse,
+      isSimulated: false,
+      preventDefault: function() {
+        var e = this.originalEvent;
+        this.isDefaultPrevented = returnTrue;
+        if (e && !this.isSimulated) {
+          e.preventDefault();
+        }
+      },
+      stopPropagation: function() {
+        var e = this.originalEvent;
+        this.isPropagationStopped = returnTrue;
+        if (e && !this.isSimulated) {
+          e.stopPropagation();
+        }
+      },
+      stopImmediatePropagation: function() {
+        var e = this.originalEvent;
+        this.isImmediatePropagationStopped = returnTrue;
+        if (e && !this.isSimulated) {
+          e.stopImmediatePropagation();
+        }
+        this.stopPropagation();
+      }
+    };
+    jQuery2.each({
+      altKey: true,
+      bubbles: true,
+      cancelable: true,
+      changedTouches: true,
+      ctrlKey: true,
+      detail: true,
+      eventPhase: true,
+      metaKey: true,
+      pageX: true,
+      pageY: true,
+      shiftKey: true,
+      view: true,
+      "char": true,
+      code: true,
+      charCode: true,
+      key: true,
+      keyCode: true,
+      button: true,
+      buttons: true,
+      clientX: true,
+      clientY: true,
+      offsetX: true,
+      offsetY: true,
+      pointerId: true,
+      pointerType: true,
+      screenX: true,
+      screenY: true,
+      targetTouches: true,
+      toElement: true,
+      touches: true,
+      which: true
+    }, jQuery2.event.addProp);
+    jQuery2.each({ focus: "focusin", blur: "focusout" }, function(type, delegateType) {
+      function focusMappedHandler(nativeEvent) {
+        if (document2.documentMode) {
+          var handle = dataPriv.get(this, "handle"), event2 = jQuery2.event.fix(nativeEvent);
+          event2.type = nativeEvent.type === "focusin" ? "focus" : "blur";
+          event2.isSimulated = true;
+          handle(nativeEvent);
+          if (event2.target === event2.currentTarget) {
+            handle(event2);
+          }
+        } else {
+          jQuery2.event.simulate(
+            delegateType,
+            nativeEvent.target,
+            jQuery2.event.fix(nativeEvent)
+          );
+        }
+      }
+      jQuery2.event.special[type] = {
+        // Utilize native event if possible so blur/focus sequence is correct
+        setup: function() {
+          var attaches;
+          leverageNative(this, type, true);
+          if (document2.documentMode) {
+            attaches = dataPriv.get(this, delegateType);
+            if (!attaches) {
+              this.addEventListener(delegateType, focusMappedHandler);
+            }
+            dataPriv.set(this, delegateType, (attaches || 0) + 1);
+          } else {
+            return false;
+          }
+        },
+        trigger: function() {
+          leverageNative(this, type);
+          return true;
+        },
+        teardown: function() {
+          var attaches;
+          if (document2.documentMode) {
+            attaches = dataPriv.get(this, delegateType) - 1;
+            if (!attaches) {
+              this.removeEventListener(delegateType, focusMappedHandler);
+              dataPriv.remove(this, delegateType);
+            } else {
+              dataPriv.set(this, delegateType, attaches);
+            }
+          } else {
+            return false;
+          }
+        },
+        // Suppress native focus or blur if we're currently inside
+        // a leveraged native-event stack
+        _default: function(event2) {
+          return dataPriv.get(event2.target, type);
+        },
+        delegateType
+      };
+      jQuery2.event.special[delegateType] = {
+        setup: function() {
+          var doc = this.ownerDocument || this.document || this, dataHolder = document2.documentMode ? this : doc, attaches = dataPriv.get(dataHolder, delegateType);
+          if (!attaches) {
+            if (document2.documentMode) {
+              this.addEventListener(delegateType, focusMappedHandler);
+            } else {
+              doc.addEventListener(type, focusMappedHandler, true);
+            }
+          }
+          dataPriv.set(dataHolder, delegateType, (attaches || 0) + 1);
+        },
+        teardown: function() {
+          var doc = this.ownerDocument || this.document || this, dataHolder = document2.documentMode ? this : doc, attaches = dataPriv.get(dataHolder, delegateType) - 1;
+          if (!attaches) {
+            if (document2.documentMode) {
+              this.removeEventListener(delegateType, focusMappedHandler);
+            } else {
+              doc.removeEventListener(type, focusMappedHandler, true);
+            }
+            dataPriv.remove(dataHolder, delegateType);
+          } else {
+            dataPriv.set(dataHolder, delegateType, attaches);
+          }
+        }
+      };
+    });
+    jQuery2.each({
+      mouseenter: "mouseover",
+      mouseleave: "mouseout",
+      pointerenter: "pointerover",
+      pointerleave: "pointerout"
+    }, function(orig, fix) {
+      jQuery2.event.special[orig] = {
+        delegateType: fix,
+        bindType: fix,
+        handle: function(event2) {
+          var ret, target = this, related = event2.relatedTarget, handleObj = event2.handleObj;
+          if (!related || related !== target && !jQuery2.contains(target, related)) {
+            event2.type = handleObj.origType;
+            ret = handleObj.handler.apply(this, arguments);
+            event2.type = fix;
+          }
+          return ret;
+        }
+      };
+    });
+    jQuery2.fn.extend({
+      on: function(types, selector, data2, fn) {
+        return on(this, types, selector, data2, fn);
+      },
+      one: function(types, selector, data2, fn) {
+        return on(this, types, selector, data2, fn, 1);
+      },
+      off: function(types, selector, fn) {
+        var handleObj, type;
+        if (types && types.preventDefault && types.handleObj) {
+          handleObj = types.handleObj;
+          jQuery2(types.delegateTarget).off(
+            handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType,
+            handleObj.selector,
+            handleObj.handler
+          );
+          return this;
+        }
+        if (typeof types === "object") {
+          for (type in types) {
+            this.off(type, selector, types[type]);
+          }
+          return this;
+        }
+        if (selector === false || typeof selector === "function") {
+          fn = selector;
+          selector = void 0;
+        }
+        if (fn === false) {
+          fn = returnFalse;
+        }
+        return this.each(function() {
+          jQuery2.event.remove(this, types, fn, selector);
+        });
+      }
+    });
+    var rnoInnerhtml = /<script|<style|<link/i, rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i, rcleanScript = /^\s*<!\[CDATA\[|\]\]>\s*$/g;
+    function manipulationTarget(elem, content) {
+      if (nodeName(elem, "table") && nodeName(content.nodeType !== 11 ? content : content.firstChild, "tr")) {
+        return jQuery2(elem).children("tbody")[0] || elem;
+      }
+      return elem;
+    }
+    function disableScript(elem) {
+      elem.type = (elem.getAttribute("type") !== null) + "/" + elem.type;
+      return elem;
+    }
+    function restoreScript(elem) {
+      if ((elem.type || "").slice(0, 5) === "true/") {
+        elem.type = elem.type.slice(5);
+      } else {
+        elem.removeAttribute("type");
+      }
+      return elem;
+    }
+    function cloneCopyEvent(src, dest) {
+      var i, l, type, pdataOld, udataOld, udataCur, events;
+      if (dest.nodeType !== 1) {
+        return;
+      }
+      if (dataPriv.hasData(src)) {
+        pdataOld = dataPriv.get(src);
+        events = pdataOld.events;
+        if (events) {
+          dataPriv.remove(dest, "handle events");
+          for (type in events) {
+            for (i = 0, l = events[type].length; i < l; i++) {
+              jQuery2.event.add(dest, type, events[type][i]);
+            }
+          }
+        }
+      }
+      if (dataUser.hasData(src)) {
+        udataOld = dataUser.access(src);
+        udataCur = jQuery2.extend({}, udataOld);
+        dataUser.set(dest, udataCur);
+      }
+    }
+    function fixInput(src, dest) {
+      var nodeName2 = dest.nodeName.toLowerCase();
+      if (nodeName2 === "input" && rcheckableType.test(src.type)) {
+        dest.checked = src.checked;
+      } else if (nodeName2 === "input" || nodeName2 === "textarea") {
+        dest.defaultValue = src.defaultValue;
+      }
+    }
+    function domManip(collection, args, callback, ignored) {
+      args = flat(args);
+      var fragment, first, scripts, hasScripts, node2, doc, i = 0, l = collection.length, iNoClone = l - 1, value = args[0], valueIsFunction = isFunction2(value);
+      if (valueIsFunction || l > 1 && typeof value === "string" && !support.checkClone && rchecked.test(value)) {
+        return collection.each(function(index) {
+          var self2 = collection.eq(index);
+          if (valueIsFunction) {
+            args[0] = value.call(this, index, self2.html());
+          }
+          domManip(self2, args, callback, ignored);
+        });
+      }
+      if (l) {
+        fragment = buildFragment(args, collection[0].ownerDocument, false, collection, ignored);
+        first = fragment.firstChild;
+        if (fragment.childNodes.length === 1) {
+          fragment = first;
+        }
+        if (first || ignored) {
+          scripts = jQuery2.map(getAll(fragment, "script"), disableScript);
+          hasScripts = scripts.length;
+          for (; i < l; i++) {
+            node2 = fragment;
+            if (i !== iNoClone) {
+              node2 = jQuery2.clone(node2, true, true);
+              if (hasScripts) {
+                jQuery2.merge(scripts, getAll(node2, "script"));
+              }
+            }
+            callback.call(collection[i], node2, i);
+          }
+          if (hasScripts) {
+            doc = scripts[scripts.length - 1].ownerDocument;
+            jQuery2.map(scripts, restoreScript);
+            for (i = 0; i < hasScripts; i++) {
+              node2 = scripts[i];
+              if (rscriptType.test(node2.type || "") && !dataPriv.access(node2, "globalEval") && jQuery2.contains(doc, node2)) {
+                if (node2.src && (node2.type || "").toLowerCase() !== "module") {
+                  if (jQuery2._evalUrl && !node2.noModule) {
+                    jQuery2._evalUrl(node2.src, {
+                      nonce: node2.nonce || node2.getAttribute("nonce")
+                    }, doc);
+                  }
+                } else {
+                  DOMEval(node2.textContent.replace(rcleanScript, ""), node2, doc);
+                }
+              }
+            }
+          }
+        }
+      }
+      return collection;
+    }
+    function remove(elem, selector, keepData) {
+      var node2, nodes = selector ? jQuery2.filter(selector, elem) : elem, i = 0;
+      for (; (node2 = nodes[i]) != null; i++) {
+        if (!keepData && node2.nodeType === 1) {
+          jQuery2.cleanData(getAll(node2));
+        }
+        if (node2.parentNode) {
+          if (keepData && isAttached(node2)) {
+            setGlobalEval(getAll(node2, "script"));
+          }
+          node2.parentNode.removeChild(node2);
+        }
+      }
+      return elem;
+    }
+    jQuery2.extend({
+      htmlPrefilter: function(html2) {
+        return html2;
+      },
+      clone: function(elem, dataAndEvents, deepDataAndEvents) {
+        var i, l, srcElements, destElements, clone2 = elem.cloneNode(true), inPage = isAttached(elem);
+        if (!support.noCloneChecked && (elem.nodeType === 1 || elem.nodeType === 11) && !jQuery2.isXMLDoc(elem)) {
+          destElements = getAll(clone2);
+          srcElements = getAll(elem);
+          for (i = 0, l = srcElements.length; i < l; i++) {
+            fixInput(srcElements[i], destElements[i]);
+          }
+        }
+        if (dataAndEvents) {
+          if (deepDataAndEvents) {
+            srcElements = srcElements || getAll(elem);
+            destElements = destElements || getAll(clone2);
+            for (i = 0, l = srcElements.length; i < l; i++) {
+              cloneCopyEvent(srcElements[i], destElements[i]);
+            }
+          } else {
+            cloneCopyEvent(elem, clone2);
+          }
+        }
+        destElements = getAll(clone2, "script");
+        if (destElements.length > 0) {
+          setGlobalEval(destElements, !inPage && getAll(elem, "script"));
+        }
+        return clone2;
+      },
+      cleanData: function(elems) {
+        var data2, elem, type, special = jQuery2.event.special, i = 0;
+        for (; (elem = elems[i]) !== void 0; i++) {
+          if (acceptData(elem)) {
+            if (data2 = elem[dataPriv.expando]) {
+              if (data2.events) {
+                for (type in data2.events) {
+                  if (special[type]) {
+                    jQuery2.event.remove(elem, type);
+                  } else {
+                    jQuery2.removeEvent(elem, type, data2.handle);
+                  }
+                }
+              }
+              elem[dataPriv.expando] = void 0;
+            }
+            if (elem[dataUser.expando]) {
+              elem[dataUser.expando] = void 0;
+            }
+          }
+        }
+      }
+    });
+    jQuery2.fn.extend({
+      detach: function(selector) {
+        return remove(this, selector, true);
+      },
+      remove: function(selector) {
+        return remove(this, selector);
+      },
+      text: function(value) {
+        return access(this, function(value2) {
+          return value2 === void 0 ? jQuery2.text(this) : this.empty().each(function() {
+            if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
+              this.textContent = value2;
+            }
+          });
+        }, null, value, arguments.length);
+      },
+      append: function() {
+        return domManip(this, arguments, function(elem) {
+          if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
+            var target = manipulationTarget(this, elem);
+            target.appendChild(elem);
+          }
+        });
+      },
+      prepend: function() {
+        return domManip(this, arguments, function(elem) {
+          if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
+            var target = manipulationTarget(this, elem);
+            target.insertBefore(elem, target.firstChild);
+          }
+        });
+      },
+      before: function() {
+        return domManip(this, arguments, function(elem) {
+          if (this.parentNode) {
+            this.parentNode.insertBefore(elem, this);
+          }
+        });
+      },
+      after: function() {
+        return domManip(this, arguments, function(elem) {
+          if (this.parentNode) {
+            this.parentNode.insertBefore(elem, this.nextSibling);
+          }
+        });
+      },
+      empty: function() {
+        var elem, i = 0;
+        for (; (elem = this[i]) != null; i++) {
+          if (elem.nodeType === 1) {
+            jQuery2.cleanData(getAll(elem, false));
+            elem.textContent = "";
+          }
+        }
+        return this;
+      },
+      clone: function(dataAndEvents, deepDataAndEvents) {
+        dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
+        deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
+        return this.map(function() {
+          return jQuery2.clone(this, dataAndEvents, deepDataAndEvents);
+        });
+      },
+      html: function(value) {
+        return access(this, function(value2) {
+          var elem = this[0] || {}, i = 0, l = this.length;
+          if (value2 === void 0 && elem.nodeType === 1) {
+            return elem.innerHTML;
+          }
+          if (typeof value2 === "string" && !rnoInnerhtml.test(value2) && !wrapMap[(rtagName.exec(value2) || ["", ""])[1].toLowerCase()]) {
+            value2 = jQuery2.htmlPrefilter(value2);
+            try {
+              for (; i < l; i++) {
+                elem = this[i] || {};
+                if (elem.nodeType === 1) {
+                  jQuery2.cleanData(getAll(elem, false));
+                  elem.innerHTML = value2;
+                }
+              }
+              elem = 0;
+            } catch (e) {
+            }
+          }
+          if (elem) {
+            this.empty().append(value2);
+          }
+        }, null, value, arguments.length);
+      },
+      replaceWith: function() {
+        var ignored = [];
+        return domManip(this, arguments, function(elem) {
+          var parent = this.parentNode;
+          if (jQuery2.inArray(this, ignored) < 0) {
+            jQuery2.cleanData(getAll(this));
+            if (parent) {
+              parent.replaceChild(elem, this);
+            }
+          }
+        }, ignored);
+      }
+    });
+    jQuery2.each({
+      appendTo: "append",
+      prependTo: "prepend",
+      insertBefore: "before",
+      insertAfter: "after",
+      replaceAll: "replaceWith"
+    }, function(name2, original) {
+      jQuery2.fn[name2] = function(selector) {
+        var elems, ret = [], insert = jQuery2(selector), last = insert.length - 1, i = 0;
+        for (; i <= last; i++) {
+          elems = i === last ? this : this.clone(true);
+          jQuery2(insert[i])[original](elems);
+          push.apply(ret, elems.get());
+        }
+        return this.pushStack(ret);
+      };
+    });
+    var rnumnonpx = new RegExp("^(" + pnum + ")(?!px)[a-z%]+$", "i");
+    var rcustomProp = /^--/;
+    var getStyles = function(elem) {
+      var view = elem.ownerDocument.defaultView;
+      if (!view || !view.opener) {
+        view = window2;
+      }
+      return view.getComputedStyle(elem);
+    };
+    var swap = function(elem, options, callback) {
+      var ret, name2, old = {};
+      for (name2 in options) {
+        old[name2] = elem.style[name2];
+        elem.style[name2] = options[name2];
+      }
+      ret = callback.call(elem);
+      for (name2 in options) {
+        elem.style[name2] = old[name2];
+      }
+      return ret;
+    };
+    var rboxStyle = new RegExp(cssExpand.join("|"), "i");
+    (function() {
+      function computeStyleTests() {
+        if (!div2) {
+          return;
+        }
+        container.style.cssText = "position:absolute;left:-11111px;width:60px;margin-top:1px;padding:0;border:0";
+        div2.style.cssText = "position:relative;display:block;box-sizing:border-box;overflow:scroll;margin:auto;border:1px;padding:1px;width:60%;top:1%";
+        documentElement.appendChild(container).appendChild(div2);
+        var divStyle = window2.getComputedStyle(div2);
+        pixelPositionVal = divStyle.top !== "1%";
+        reliableMarginLeftVal = roundPixelMeasures(divStyle.marginLeft) === 12;
+        div2.style.right = "60%";
+        pixelBoxStylesVal = roundPixelMeasures(divStyle.right) === 36;
+        boxSizingReliableVal = roundPixelMeasures(divStyle.width) === 36;
+        div2.style.position = "absolute";
+        scrollboxSizeVal = roundPixelMeasures(div2.offsetWidth / 3) === 12;
+        documentElement.removeChild(container);
+        div2 = null;
+      }
+      function roundPixelMeasures(measure) {
+        return Math.round(parseFloat(measure));
+      }
+      var pixelPositionVal, boxSizingReliableVal, scrollboxSizeVal, pixelBoxStylesVal, reliableTrDimensionsVal, reliableMarginLeftVal, container = document2.createElement("div"), div2 = document2.createElement("div");
+      if (!div2.style) {
+        return;
+      }
+      div2.style.backgroundClip = "content-box";
+      div2.cloneNode(true).style.backgroundClip = "";
+      support.clearCloneStyle = div2.style.backgroundClip === "content-box";
+      jQuery2.extend(support, {
+        boxSizingReliable: function() {
+          computeStyleTests();
+          return boxSizingReliableVal;
+        },
+        pixelBoxStyles: function() {
+          computeStyleTests();
+          return pixelBoxStylesVal;
+        },
+        pixelPosition: function() {
+          computeStyleTests();
+          return pixelPositionVal;
+        },
+        reliableMarginLeft: function() {
+          computeStyleTests();
+          return reliableMarginLeftVal;
+        },
+        scrollboxSize: function() {
+          computeStyleTests();
+          return scrollboxSizeVal;
+        },
+        // Support: IE 9 - 11+, Edge 15 - 18+
+        // IE/Edge misreport `getComputedStyle` of table rows with width/height
+        // set in CSS while `offset*` properties report correct values.
+        // Behavior in IE 9 is more subtle than in newer versions & it passes
+        // some versions of this test; make sure not to make it pass there!
+        //
+        // Support: Firefox 70+
+        // Only Firefox includes border widths
+        // in computed dimensions. (gh-4529)
+        reliableTrDimensions: function() {
+          var table, tr, trChild, trStyle;
+          if (reliableTrDimensionsVal == null) {
+            table = document2.createElement("table");
+            tr = document2.createElement("tr");
+            trChild = document2.createElement("div");
+            table.style.cssText = "position:absolute;left:-11111px;border-collapse:separate";
+            tr.style.cssText = "box-sizing:content-box;border:1px solid";
+            tr.style.height = "1px";
+            trChild.style.height = "9px";
+            trChild.style.display = "block";
+            documentElement.appendChild(table).appendChild(tr).appendChild(trChild);
+            trStyle = window2.getComputedStyle(tr);
+            reliableTrDimensionsVal = parseInt(trStyle.height, 10) + parseInt(trStyle.borderTopWidth, 10) + parseInt(trStyle.borderBottomWidth, 10) === tr.offsetHeight;
+            documentElement.removeChild(table);
+          }
+          return reliableTrDimensionsVal;
+        }
+      });
+    })();
+    function curCSS(elem, name2, computed) {
+      var width2, minWidth2, maxWidth2, ret, isCustomProp = rcustomProp.test(name2), style2 = elem.style;
+      computed = computed || getStyles(elem);
+      if (computed) {
+        ret = computed.getPropertyValue(name2) || computed[name2];
+        if (isCustomProp && ret) {
+          ret = ret.replace(rtrimCSS, "$1") || void 0;
+        }
+        if (ret === "" && !isAttached(elem)) {
+          ret = jQuery2.style(elem, name2);
+        }
+        if (!support.pixelBoxStyles() && rnumnonpx.test(ret) && rboxStyle.test(name2)) {
+          width2 = style2.width;
+          minWidth2 = style2.minWidth;
+          maxWidth2 = style2.maxWidth;
+          style2.minWidth = style2.maxWidth = style2.width = ret;
+          ret = computed.width;
+          style2.width = width2;
+          style2.minWidth = minWidth2;
+          style2.maxWidth = maxWidth2;
+        }
+      }
+      return ret !== void 0 ? (
+        // Support: IE <=9 - 11 only
+        // IE returns zIndex value as an integer.
+        ret + ""
+      ) : ret;
+    }
+    function addGetHookIf(conditionFn, hookFn) {
+      return {
+        get: function() {
+          if (conditionFn()) {
+            delete this.get;
+            return;
+          }
+          return (this.get = hookFn).apply(this, arguments);
+        }
+      };
+    }
+    var cssPrefixes = ["Webkit", "Moz", "ms"], emptyStyle = document2.createElement("div").style, vendorProps = {};
+    function vendorPropName(name2) {
+      var capName = name2[0].toUpperCase() + name2.slice(1), i = cssPrefixes.length;
+      while (i--) {
+        name2 = cssPrefixes[i] + capName;
+        if (name2 in emptyStyle) {
+          return name2;
+        }
+      }
+    }
+    function finalPropName(name2) {
+      var final = jQuery2.cssProps[name2] || vendorProps[name2];
+      if (final) {
+        return final;
+      }
+      if (name2 in emptyStyle) {
+        return name2;
+      }
+      return vendorProps[name2] = vendorPropName(name2) || name2;
+    }
+    var rdisplayswap = /^(none|table(?!-c[ea]).+)/, cssShow = { position: "absolute", visibility: "hidden", display: "block" }, cssNormalTransform = {
+      letterSpacing: "0",
+      fontWeight: "400"
+    };
+    function setPositiveNumber(_elem, value, subtract2) {
+      var matches = rcssNum.exec(value);
+      return matches ? (
+        // Guard against undefined "subtract", e.g., when used as in cssHooks
+        Math.max(0, matches[2] - (subtract2 || 0)) + (matches[3] || "px")
+      ) : value;
+    }
+    function boxModelAdjustment(elem, dimension, box, isBorderBox, styles2, computedVal) {
+      var i = dimension === "width" ? 1 : 0, extra = 0, delta = 0, marginDelta = 0;
+      if (box === (isBorderBox ? "border" : "content")) {
+        return 0;
+      }
+      for (; i < 4; i += 2) {
+        if (box === "margin") {
+          marginDelta += jQuery2.css(elem, box + cssExpand[i], true, styles2);
+        }
+        if (!isBorderBox) {
+          delta += jQuery2.css(elem, "padding" + cssExpand[i], true, styles2);
+          if (box !== "padding") {
+            delta += jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles2);
+          } else {
+            extra += jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles2);
+          }
+        } else {
+          if (box === "content") {
+            delta -= jQuery2.css(elem, "padding" + cssExpand[i], true, styles2);
+          }
+          if (box !== "margin") {
+            delta -= jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles2);
+          }
+        }
+      }
+      if (!isBorderBox && computedVal >= 0) {
+        delta += Math.max(0, Math.ceil(
+          elem["offset" + dimension[0].toUpperCase() + dimension.slice(1)] - computedVal - delta - extra - 0.5
+          // If offsetWidth/offsetHeight is unknown, then we can't determine content-box scroll gutter
+          // Use an explicit zero to avoid NaN (gh-3964)
+        )) || 0;
+      }
+      return delta + marginDelta;
+    }
+    function getWidthOrHeight(elem, dimension, extra) {
+      var styles2 = getStyles(elem), boxSizingNeeded = !support.boxSizingReliable() || extra, isBorderBox = boxSizingNeeded && jQuery2.css(elem, "boxSizing", false, styles2) === "border-box", valueIsBorderBox = isBorderBox, val = curCSS(elem, dimension, styles2), offsetProp = "offset" + dimension[0].toUpperCase() + dimension.slice(1);
+      if (rnumnonpx.test(val)) {
+        if (!extra) {
+          return val;
+        }
+        val = "auto";
+      }
+      if ((!support.boxSizingReliable() && isBorderBox || // Support: IE 10 - 11+, Edge 15 - 18+
+      // IE/Edge misreport `getComputedStyle` of table rows with width/height
+      // set in CSS while `offset*` properties report correct values.
+      // Interestingly, in some cases IE 9 doesn't suffer from this issue.
+      !support.reliableTrDimensions() && nodeName(elem, "tr") || // Fall back to offsetWidth/offsetHeight when value is "auto"
+      // This happens for inline elements with no explicit setting (gh-3571)
+      val === "auto" || // Support: Android <=4.1 - 4.3 only
+      // Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
+      !parseFloat(val) && jQuery2.css(elem, "display", false, styles2) === "inline") && // Make sure the element is visible & connected
+      elem.getClientRects().length) {
+        isBorderBox = jQuery2.css(elem, "boxSizing", false, styles2) === "border-box";
+        valueIsBorderBox = offsetProp in elem;
+        if (valueIsBorderBox) {
+          val = elem[offsetProp];
+        }
+      }
+      val = parseFloat(val) || 0;
+      return val + boxModelAdjustment(
+        elem,
+        dimension,
+        extra || (isBorderBox ? "border" : "content"),
+        valueIsBorderBox,
+        styles2,
+        // Provide the current computed size to request scroll gutter calculation (gh-3589)
+        val
+      ) + "px";
+    }
+    jQuery2.extend({
+      // Add in style property hooks for overriding the default
+      // behavior of getting and setting a style property
+      cssHooks: {
+        opacity: {
+          get: function(elem, computed) {
+            if (computed) {
+              var ret = curCSS(elem, "opacity");
+              return ret === "" ? "1" : ret;
+            }
+          }
+        }
+      },
+      // Don't automatically add "px" to these possibly-unitless properties
+      cssNumber: {
+        animationIterationCount: true,
+        aspectRatio: true,
+        borderImageSlice: true,
+        columnCount: true,
+        flexGrow: true,
+        flexShrink: true,
+        fontWeight: true,
+        gridArea: true,
+        gridColumn: true,
+        gridColumnEnd: true,
+        gridColumnStart: true,
+        gridRow: true,
+        gridRowEnd: true,
+        gridRowStart: true,
+        lineHeight: true,
+        opacity: true,
+        order: true,
+        orphans: true,
+        scale: true,
+        widows: true,
+        zIndex: true,
+        zoom: true,
+        // SVG-related
+        fillOpacity: true,
+        floodOpacity: true,
+        stopOpacity: true,
+        strokeMiterlimit: true,
+        strokeOpacity: true
+      },
+      // Add in properties whose names you wish to fix before
+      // setting or getting the value
+      cssProps: {},
+      // Get and set the style property on a DOM Node
+      style: function(elem, name2, value, extra) {
+        if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
+          return;
+        }
+        var ret, type, hooks, origName = camelCase(name2), isCustomProp = rcustomProp.test(name2), style2 = elem.style;
+        if (!isCustomProp) {
+          name2 = finalPropName(origName);
+        }
+        hooks = jQuery2.cssHooks[name2] || jQuery2.cssHooks[origName];
+        if (value !== void 0) {
+          type = typeof value;
+          if (type === "string" && (ret = rcssNum.exec(value)) && ret[1]) {
+            value = adjustCSS(elem, name2, ret);
+            type = "number";
+          }
+          if (value == null || value !== value) {
+            return;
+          }
+          if (type === "number" && !isCustomProp) {
+            value += ret && ret[3] || (jQuery2.cssNumber[origName] ? "" : "px");
+          }
+          if (!support.clearCloneStyle && value === "" && name2.indexOf("background") === 0) {
+            style2[name2] = "inherit";
+          }
+          if (!hooks || !("set" in hooks) || (value = hooks.set(elem, value, extra)) !== void 0) {
+            if (isCustomProp) {
+              style2.setProperty(name2, value);
+            } else {
+              style2[name2] = value;
+            }
+          }
+        } else {
+          if (hooks && "get" in hooks && (ret = hooks.get(elem, false, extra)) !== void 0) {
+            return ret;
+          }
+          return style2[name2];
+        }
+      },
+      css: function(elem, name2, extra, styles2) {
+        var val, num, hooks, origName = camelCase(name2), isCustomProp = rcustomProp.test(name2);
+        if (!isCustomProp) {
+          name2 = finalPropName(origName);
+        }
+        hooks = jQuery2.cssHooks[name2] || jQuery2.cssHooks[origName];
+        if (hooks && "get" in hooks) {
+          val = hooks.get(elem, true, extra);
+        }
+        if (val === void 0) {
+          val = curCSS(elem, name2, styles2);
+        }
+        if (val === "normal" && name2 in cssNormalTransform) {
+          val = cssNormalTransform[name2];
+        }
+        if (extra === "" || extra) {
+          num = parseFloat(val);
+          return extra === true || isFinite(num) ? num || 0 : val;
+        }
+        return val;
+      }
+    });
+    jQuery2.each(["height", "width"], function(_i, dimension) {
+      jQuery2.cssHooks[dimension] = {
+        get: function(elem, computed, extra) {
+          if (computed) {
+            return rdisplayswap.test(jQuery2.css(elem, "display")) && // Support: Safari 8+
+            // Table columns in Safari have non-zero offsetWidth & zero
+            // getBoundingClientRect().width unless display is changed.
+            // Support: IE <=11 only
+            // Running getBoundingClientRect on a disconnected node
+            // in IE throws an error.
+            (!elem.getClientRects().length || !elem.getBoundingClientRect().width) ? swap(elem, cssShow, function() {
+              return getWidthOrHeight(elem, dimension, extra);
+            }) : getWidthOrHeight(elem, dimension, extra);
+          }
+        },
+        set: function(elem, value, extra) {
+          var matches, styles2 = getStyles(elem), scrollboxSizeBuggy = !support.scrollboxSize() && styles2.position === "absolute", boxSizingNeeded = scrollboxSizeBuggy || extra, isBorderBox = boxSizingNeeded && jQuery2.css(elem, "boxSizing", false, styles2) === "border-box", subtract2 = extra ? boxModelAdjustment(
+            elem,
+            dimension,
+            extra,
+            isBorderBox,
+            styles2
+          ) : 0;
+          if (isBorderBox && scrollboxSizeBuggy) {
+            subtract2 -= Math.ceil(
+              elem["offset" + dimension[0].toUpperCase() + dimension.slice(1)] - parseFloat(styles2[dimension]) - boxModelAdjustment(elem, dimension, "border", false, styles2) - 0.5
+            );
+          }
+          if (subtract2 && (matches = rcssNum.exec(value)) && (matches[3] || "px") !== "px") {
+            elem.style[dimension] = value;
+            value = jQuery2.css(elem, dimension);
+          }
+          return setPositiveNumber(elem, value, subtract2);
+        }
+      };
+    });
+    jQuery2.cssHooks.marginLeft = addGetHookIf(
+      support.reliableMarginLeft,
+      function(elem, computed) {
+        if (computed) {
+          return (parseFloat(curCSS(elem, "marginLeft")) || elem.getBoundingClientRect().left - swap(elem, { marginLeft: 0 }, function() {
+            return elem.getBoundingClientRect().left;
+          })) + "px";
+        }
+      }
+    );
+    jQuery2.each({
+      margin: "",
+      padding: "",
+      border: "Width"
+    }, function(prefix2, suffix) {
+      jQuery2.cssHooks[prefix2 + suffix] = {
+        expand: function(value) {
+          var i = 0, expanded = {}, parts = typeof value === "string" ? value.split(" ") : [value];
+          for (; i < 4; i++) {
+            expanded[prefix2 + cssExpand[i] + suffix] = parts[i] || parts[i - 2] || parts[0];
+          }
+          return expanded;
+        }
+      };
+      if (prefix2 !== "margin") {
+        jQuery2.cssHooks[prefix2 + suffix].set = setPositiveNumber;
+      }
+    });
+    jQuery2.fn.extend({
+      css: function(name2, value) {
+        return access(this, function(elem, name3, value2) {
+          var styles2, len, map = {}, i = 0;
+          if (Array.isArray(name3)) {
+            styles2 = getStyles(elem);
+            len = name3.length;
+            for (; i < len; i++) {
+              map[name3[i]] = jQuery2.css(elem, name3[i], false, styles2);
+            }
+            return map;
+          }
+          return value2 !== void 0 ? jQuery2.style(elem, name3, value2) : jQuery2.css(elem, name3);
+        }, name2, value, arguments.length > 1);
+      }
+    });
+    function Tween(elem, options, prop, end, easing2) {
+      return new Tween.prototype.init(elem, options, prop, end, easing2);
+    }
+    jQuery2.Tween = Tween;
+    Tween.prototype = {
+      constructor: Tween,
+      init: function(elem, options, prop, end, easing2, unit) {
+        this.elem = elem;
+        this.prop = prop;
+        this.easing = easing2 || jQuery2.easing._default;
+        this.options = options;
+        this.start = this.now = this.cur();
+        this.end = end;
+        this.unit = unit || (jQuery2.cssNumber[prop] ? "" : "px");
+      },
+      cur: function() {
+        var hooks = Tween.propHooks[this.prop];
+        return hooks && hooks.get ? hooks.get(this) : Tween.propHooks._default.get(this);
+      },
+      run: function(percent) {
+        var eased, hooks = Tween.propHooks[this.prop];
+        if (this.options.duration) {
+          this.pos = eased = jQuery2.easing[this.easing](
+            percent,
+            this.options.duration * percent,
+            0,
+            1,
+            this.options.duration
+          );
+        } else {
+          this.pos = eased = percent;
+        }
+        this.now = (this.end - this.start) * eased + this.start;
+        if (this.options.step) {
+          this.options.step.call(this.elem, this.now, this);
+        }
+        if (hooks && hooks.set) {
+          hooks.set(this);
+        } else {
+          Tween.propHooks._default.set(this);
+        }
+        return this;
+      }
+    };
+    Tween.prototype.init.prototype = Tween.prototype;
+    Tween.propHooks = {
+      _default: {
+        get: function(tween) {
+          var result;
+          if (tween.elem.nodeType !== 1 || tween.elem[tween.prop] != null && tween.elem.style[tween.prop] == null) {
+            return tween.elem[tween.prop];
+          }
+          result = jQuery2.css(tween.elem, tween.prop, "");
+          return !result || result === "auto" ? 0 : result;
+        },
+        set: function(tween) {
+          if (jQuery2.fx.step[tween.prop]) {
+            jQuery2.fx.step[tween.prop](tween);
+          } else if (tween.elem.nodeType === 1 && (jQuery2.cssHooks[tween.prop] || tween.elem.style[finalPropName(tween.prop)] != null)) {
+            jQuery2.style(tween.elem, tween.prop, tween.now + tween.unit);
+          } else {
+            tween.elem[tween.prop] = tween.now;
+          }
+        }
+      }
+    };
+    Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
+      set: function(tween) {
+        if (tween.elem.nodeType && tween.elem.parentNode) {
+          tween.elem[tween.prop] = tween.now;
+        }
+      }
+    };
+    jQuery2.easing = {
+      linear: function(p) {
+        return p;
+      },
+      swing: function(p) {
+        return 0.5 - Math.cos(p * Math.PI) / 2;
+      },
+      _default: "swing"
+    };
+    jQuery2.fx = Tween.prototype.init;
+    jQuery2.fx.step = {};
+    var fxNow, inProgress, rfxtypes = /^(?:toggle|show|hide)$/, rrun = /queueHooks$/;
+    function schedule() {
+      if (inProgress) {
+        if (document2.hidden === false && window2.requestAnimationFrame) {
+          window2.requestAnimationFrame(schedule);
+        } else {
+          window2.setTimeout(schedule, jQuery2.fx.interval);
+        }
+        jQuery2.fx.tick();
+      }
+    }
+    function createFxNow() {
+      window2.setTimeout(function() {
+        fxNow = void 0;
+      });
+      return fxNow = Date.now();
+    }
+    function genFx(type, includeWidth) {
+      var which, i = 0, attrs = { height: type };
+      includeWidth = includeWidth ? 1 : 0;
+      for (; i < 4; i += 2 - includeWidth) {
+        which = cssExpand[i];
+        attrs["margin" + which] = attrs["padding" + which] = type;
+      }
+      if (includeWidth) {
+        attrs.opacity = attrs.width = type;
+      }
+      return attrs;
+    }
+    function createTween(value, prop, animation) {
+      var tween, collection = (Animation.tweeners[prop] || []).concat(Animation.tweeners["*"]), index = 0, length2 = collection.length;
+      for (; index < length2; index++) {
+        if (tween = collection[index].call(animation, prop, value)) {
+          return tween;
+        }
+      }
+    }
+    function defaultPrefilter(elem, props2, opts) {
+      var prop, value, toggle, hooks, oldfire, propTween, restoreDisplay, display, isBox = "width" in props2 || "height" in props2, anim = this, orig = {}, style2 = elem.style, hidden = elem.nodeType && isHiddenWithinTree(elem), dataShow = dataPriv.get(elem, "fxshow");
+      if (!opts.queue) {
+        hooks = jQuery2._queueHooks(elem, "fx");
+        if (hooks.unqueued == null) {
+          hooks.unqueued = 0;
+          oldfire = hooks.empty.fire;
+          hooks.empty.fire = function() {
+            if (!hooks.unqueued) {
+              oldfire();
+            }
+          };
+        }
+        hooks.unqueued++;
+        anim.always(function() {
+          anim.always(function() {
+            hooks.unqueued--;
+            if (!jQuery2.queue(elem, "fx").length) {
+              hooks.empty.fire();
+            }
+          });
+        });
+      }
+      for (prop in props2) {
+        value = props2[prop];
+        if (rfxtypes.test(value)) {
+          delete props2[prop];
+          toggle = toggle || value === "toggle";
+          if (value === (hidden ? "hide" : "show")) {
+            if (value === "show" && dataShow && dataShow[prop] !== void 0) {
+              hidden = true;
+            } else {
+              continue;
+            }
+          }
+          orig[prop] = dataShow && dataShow[prop] || jQuery2.style(elem, prop);
+        }
+      }
+      propTween = !jQuery2.isEmptyObject(props2);
+      if (!propTween && jQuery2.isEmptyObject(orig)) {
+        return;
+      }
+      if (isBox && elem.nodeType === 1) {
+        opts.overflow = [style2.overflow, style2.overflowX, style2.overflowY];
+        restoreDisplay = dataShow && dataShow.display;
+        if (restoreDisplay == null) {
+          restoreDisplay = dataPriv.get(elem, "display");
+        }
+        display = jQuery2.css(elem, "display");
+        if (display === "none") {
+          if (restoreDisplay) {
+            display = restoreDisplay;
+          } else {
+            showHide([elem], true);
+            restoreDisplay = elem.style.display || restoreDisplay;
+            display = jQuery2.css(elem, "display");
+            showHide([elem]);
+          }
+        }
+        if (display === "inline" || display === "inline-block" && restoreDisplay != null) {
+          if (jQuery2.css(elem, "float") === "none") {
+            if (!propTween) {
+              anim.done(function() {
+                style2.display = restoreDisplay;
+              });
+              if (restoreDisplay == null) {
+                display = style2.display;
+                restoreDisplay = display === "none" ? "" : display;
+              }
+            }
+            style2.display = "inline-block";
+          }
+        }
+      }
+      if (opts.overflow) {
+        style2.overflow = "hidden";
+        anim.always(function() {
+          style2.overflow = opts.overflow[0];
+          style2.overflowX = opts.overflow[1];
+          style2.overflowY = opts.overflow[2];
+        });
+      }
+      propTween = false;
+      for (prop in orig) {
+        if (!propTween) {
+          if (dataShow) {
+            if ("hidden" in dataShow) {
+              hidden = dataShow.hidden;
+            }
+          } else {
+            dataShow = dataPriv.access(elem, "fxshow", { display: restoreDisplay });
+          }
+          if (toggle) {
+            dataShow.hidden = !hidden;
+          }
+          if (hidden) {
+            showHide([elem], true);
+          }
+          anim.done(function() {
+            if (!hidden) {
+              showHide([elem]);
+            }
+            dataPriv.remove(elem, "fxshow");
+            for (prop in orig) {
+              jQuery2.style(elem, prop, orig[prop]);
+            }
+          });
+        }
+        propTween = createTween(hidden ? dataShow[prop] : 0, prop, anim);
+        if (!(prop in dataShow)) {
+          dataShow[prop] = propTween.start;
+          if (hidden) {
+            propTween.end = propTween.start;
+            propTween.start = 0;
+          }
+        }
+      }
+    }
+    function propFilter(props2, specialEasing) {
+      var index, name2, easing2, value, hooks;
+      for (index in props2) {
+        name2 = camelCase(index);
+        easing2 = specialEasing[name2];
+        value = props2[index];
+        if (Array.isArray(value)) {
+          easing2 = value[1];
+          value = props2[index] = value[0];
+        }
+        if (index !== name2) {
+          props2[name2] = value;
+          delete props2[index];
+        }
+        hooks = jQuery2.cssHooks[name2];
+        if (hooks && "expand" in hooks) {
+          value = hooks.expand(value);
+          delete props2[name2];
+          for (index in value) {
+            if (!(index in props2)) {
+              props2[index] = value[index];
+              specialEasing[index] = easing2;
+            }
+          }
+        } else {
+          specialEasing[name2] = easing2;
+        }
+      }
+    }
+    function Animation(elem, properties2, options) {
+      var result, stopped, index = 0, length2 = Animation.prefilters.length, deferred = jQuery2.Deferred().always(function() {
+        delete tick.elem;
+      }), tick = function() {
+        if (stopped) {
+          return false;
+        }
+        var currentTime = fxNow || createFxNow(), remaining = Math.max(0, animation.startTime + animation.duration - currentTime), temp = remaining / animation.duration || 0, percent = 1 - temp, index2 = 0, length3 = animation.tweens.length;
+        for (; index2 < length3; index2++) {
+          animation.tweens[index2].run(percent);
+        }
+        deferred.notifyWith(elem, [animation, percent, remaining]);
+        if (percent < 1 && length3) {
+          return remaining;
+        }
+        if (!length3) {
+          deferred.notifyWith(elem, [animation, 1, 0]);
+        }
+        deferred.resolveWith(elem, [animation]);
+        return false;
+      }, animation = deferred.promise({
+        elem,
+        props: jQuery2.extend({}, properties2),
+        opts: jQuery2.extend(true, {
+          specialEasing: {},
+          easing: jQuery2.easing._default
+        }, options),
+        originalProperties: properties2,
+        originalOptions: options,
+        startTime: fxNow || createFxNow(),
+        duration: options.duration,
+        tweens: [],
+        createTween: function(prop, end) {
+          var tween = jQuery2.Tween(
+            elem,
+            animation.opts,
+            prop,
+            end,
+            animation.opts.specialEasing[prop] || animation.opts.easing
+          );
+          animation.tweens.push(tween);
+          return tween;
+        },
+        stop: function(gotoEnd) {
+          var index2 = 0, length3 = gotoEnd ? animation.tweens.length : 0;
+          if (stopped) {
+            return this;
+          }
+          stopped = true;
+          for (; index2 < length3; index2++) {
+            animation.tweens[index2].run(1);
+          }
+          if (gotoEnd) {
+            deferred.notifyWith(elem, [animation, 1, 0]);
+            deferred.resolveWith(elem, [animation, gotoEnd]);
+          } else {
+            deferred.rejectWith(elem, [animation, gotoEnd]);
+          }
+          return this;
+        }
+      }), props2 = animation.props;
+      propFilter(props2, animation.opts.specialEasing);
+      for (; index < length2; index++) {
+        result = Animation.prefilters[index].call(animation, elem, props2, animation.opts);
+        if (result) {
+          if (isFunction2(result.stop)) {
+            jQuery2._queueHooks(animation.elem, animation.opts.queue).stop = result.stop.bind(result);
+          }
+          return result;
+        }
+      }
+      jQuery2.map(props2, createTween, animation);
+      if (isFunction2(animation.opts.start)) {
+        animation.opts.start.call(elem, animation);
+      }
+      animation.progress(animation.opts.progress).done(animation.opts.done, animation.opts.complete).fail(animation.opts.fail).always(animation.opts.always);
+      jQuery2.fx.timer(
+        jQuery2.extend(tick, {
+          elem,
+          anim: animation,
+          queue: animation.opts.queue
+        })
+      );
+      return animation;
+    }
+    jQuery2.Animation = jQuery2.extend(Animation, {
+      tweeners: {
+        "*": [function(prop, value) {
+          var tween = this.createTween(prop, value);
+          adjustCSS(tween.elem, prop, rcssNum.exec(value), tween);
+          return tween;
+        }]
+      },
+      tweener: function(props2, callback) {
+        if (isFunction2(props2)) {
+          callback = props2;
+          props2 = ["*"];
+        } else {
+          props2 = props2.match(rnothtmlwhite);
+        }
+        var prop, index = 0, length2 = props2.length;
+        for (; index < length2; index++) {
+          prop = props2[index];
+          Animation.tweeners[prop] = Animation.tweeners[prop] || [];
+          Animation.tweeners[prop].unshift(callback);
+        }
+      },
+      prefilters: [defaultPrefilter],
+      prefilter: function(callback, prepend) {
+        if (prepend) {
+          Animation.prefilters.unshift(callback);
+        } else {
+          Animation.prefilters.push(callback);
+        }
+      }
+    });
+    jQuery2.speed = function(speed, easing2, fn) {
+      var opt = speed && typeof speed === "object" ? jQuery2.extend({}, speed) : {
+        complete: fn || !fn && easing2 || isFunction2(speed) && speed,
+        duration: speed,
+        easing: fn && easing2 || easing2 && !isFunction2(easing2) && easing2
+      };
+      if (jQuery2.fx.off) {
+        opt.duration = 0;
+      } else {
+        if (typeof opt.duration !== "number") {
+          if (opt.duration in jQuery2.fx.speeds) {
+            opt.duration = jQuery2.fx.speeds[opt.duration];
+          } else {
+            opt.duration = jQuery2.fx.speeds._default;
+          }
+        }
+      }
+      if (opt.queue == null || opt.queue === true) {
+        opt.queue = "fx";
+      }
+      opt.old = opt.complete;
+      opt.complete = function() {
+        if (isFunction2(opt.old)) {
+          opt.old.call(this);
+        }
+        if (opt.queue) {
+          jQuery2.dequeue(this, opt.queue);
+        }
+      };
+      return opt;
+    };
+    jQuery2.fn.extend({
+      fadeTo: function(speed, to, easing2, callback) {
+        return this.filter(isHiddenWithinTree).css("opacity", 0).show().end().animate({ opacity: to }, speed, easing2, callback);
+      },
+      animate: function(prop, speed, easing2, callback) {
+        var empty = jQuery2.isEmptyObject(prop), optall = jQuery2.speed(speed, easing2, callback), doAnimation = function() {
+          var anim = Animation(this, jQuery2.extend({}, prop), optall);
+          if (empty || dataPriv.get(this, "finish")) {
+            anim.stop(true);
+          }
+        };
+        doAnimation.finish = doAnimation;
+        return empty || optall.queue === false ? this.each(doAnimation) : this.queue(optall.queue, doAnimation);
+      },
+      stop: function(type, clearQueue, gotoEnd) {
+        var stopQueue = function(hooks) {
+          var stop = hooks.stop;
+          delete hooks.stop;
+          stop(gotoEnd);
+        };
+        if (typeof type !== "string") {
+          gotoEnd = clearQueue;
+          clearQueue = type;
+          type = void 0;
+        }
+        if (clearQueue) {
+          this.queue(type || "fx", []);
+        }
+        return this.each(function() {
+          var dequeue = true, index = type != null && type + "queueHooks", timers = jQuery2.timers, data2 = dataPriv.get(this);
+          if (index) {
+            if (data2[index] && data2[index].stop) {
+              stopQueue(data2[index]);
+            }
+          } else {
+            for (index in data2) {
+              if (data2[index] && data2[index].stop && rrun.test(index)) {
+                stopQueue(data2[index]);
+              }
+            }
+          }
+          for (index = timers.length; index--; ) {
+            if (timers[index].elem === this && (type == null || timers[index].queue === type)) {
+              timers[index].anim.stop(gotoEnd);
+              dequeue = false;
+              timers.splice(index, 1);
+            }
+          }
+          if (dequeue || !gotoEnd) {
+            jQuery2.dequeue(this, type);
+          }
+        });
+      },
+      finish: function(type) {
+        if (type !== false) {
+          type = type || "fx";
+        }
+        return this.each(function() {
+          var index, data2 = dataPriv.get(this), queue = data2[type + "queue"], hooks = data2[type + "queueHooks"], timers = jQuery2.timers, length2 = queue ? queue.length : 0;
+          data2.finish = true;
+          jQuery2.queue(this, type, []);
+          if (hooks && hooks.stop) {
+            hooks.stop.call(this, true);
+          }
+          for (index = timers.length; index--; ) {
+            if (timers[index].elem === this && timers[index].queue === type) {
+              timers[index].anim.stop(true);
+              timers.splice(index, 1);
+            }
+          }
+          for (index = 0; index < length2; index++) {
+            if (queue[index] && queue[index].finish) {
+              queue[index].finish.call(this);
+            }
+          }
+          delete data2.finish;
+        });
+      }
+    });
+    jQuery2.each(["toggle", "show", "hide"], function(_i, name2) {
+      var cssFn = jQuery2.fn[name2];
+      jQuery2.fn[name2] = function(speed, easing2, callback) {
+        return speed == null || typeof speed === "boolean" ? cssFn.apply(this, arguments) : this.animate(genFx(name2, true), speed, easing2, callback);
+      };
+    });
+    jQuery2.each({
+      slideDown: genFx("show"),
+      slideUp: genFx("hide"),
+      slideToggle: genFx("toggle"),
+      fadeIn: { opacity: "show" },
+      fadeOut: { opacity: "hide" },
+      fadeToggle: { opacity: "toggle" }
+    }, function(name2, props2) {
+      jQuery2.fn[name2] = function(speed, easing2, callback) {
+        return this.animate(props2, speed, easing2, callback);
+      };
+    });
+    jQuery2.timers = [];
+    jQuery2.fx.tick = function() {
+      var timer, i = 0, timers = jQuery2.timers;
+      fxNow = Date.now();
+      for (; i < timers.length; i++) {
+        timer = timers[i];
+        if (!timer() && timers[i] === timer) {
+          timers.splice(i--, 1);
+        }
+      }
+      if (!timers.length) {
+        jQuery2.fx.stop();
+      }
+      fxNow = void 0;
+    };
+    jQuery2.fx.timer = function(timer) {
+      jQuery2.timers.push(timer);
+      jQuery2.fx.start();
+    };
+    jQuery2.fx.interval = 13;
+    jQuery2.fx.start = function() {
+      if (inProgress) {
+        return;
+      }
+      inProgress = true;
+      schedule();
+    };
+    jQuery2.fx.stop = function() {
+      inProgress = null;
+    };
+    jQuery2.fx.speeds = {
+      slow: 600,
+      fast: 200,
+      // Default speed
+      _default: 400
+    };
+    jQuery2.fn.delay = function(time, type) {
+      time = jQuery2.fx ? jQuery2.fx.speeds[time] || time : time;
+      type = type || "fx";
+      return this.queue(type, function(next2, hooks) {
+        var timeout2 = window2.setTimeout(next2, time);
+        hooks.stop = function() {
+          window2.clearTimeout(timeout2);
+        };
+      });
+    };
+    (function() {
+      var input = document2.createElement("input"), select = document2.createElement("select"), opt = select.appendChild(document2.createElement("option"));
+      input.type = "checkbox";
+      support.checkOn = input.value !== "";
+      support.optSelected = opt.selected;
+      input = document2.createElement("input");
+      input.value = "t";
+      input.type = "radio";
+      support.radioValue = input.value === "t";
+    })();
+    var boolHook, attrHandle = jQuery2.expr.attrHandle;
+    jQuery2.fn.extend({
+      attr: function(name2, value) {
+        return access(this, jQuery2.attr, name2, value, arguments.length > 1);
+      },
+      removeAttr: function(name2) {
+        return this.each(function() {
+          jQuery2.removeAttr(this, name2);
+        });
+      }
+    });
+    jQuery2.extend({
+      attr: function(elem, name2, value) {
+        var ret, hooks, nType = elem.nodeType;
+        if (nType === 3 || nType === 8 || nType === 2) {
+          return;
+        }
+        if (typeof elem.getAttribute === "undefined") {
+          return jQuery2.prop(elem, name2, value);
+        }
+        if (nType !== 1 || !jQuery2.isXMLDoc(elem)) {
+          hooks = jQuery2.attrHooks[name2.toLowerCase()] || (jQuery2.expr.match.bool.test(name2) ? boolHook : void 0);
+        }
+        if (value !== void 0) {
+          if (value === null) {
+            jQuery2.removeAttr(elem, name2);
+            return;
+          }
+          if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name2)) !== void 0) {
+            return ret;
+          }
+          elem.setAttribute(name2, value + "");
+          return value;
+        }
+        if (hooks && "get" in hooks && (ret = hooks.get(elem, name2)) !== null) {
+          return ret;
+        }
+        ret = jQuery2.find.attr(elem, name2);
+        return ret == null ? void 0 : ret;
+      },
+      attrHooks: {
+        type: {
+          set: function(elem, value) {
+            if (!support.radioValue && value === "radio" && nodeName(elem, "input")) {
+              var val = elem.value;
+              elem.setAttribute("type", value);
+              if (val) {
+                elem.value = val;
+              }
+              return value;
+            }
+          }
+        }
+      },
+      removeAttr: function(elem, value) {
+        var name2, i = 0, attrNames = value && value.match(rnothtmlwhite);
+        if (attrNames && elem.nodeType === 1) {
+          while (name2 = attrNames[i++]) {
+            elem.removeAttribute(name2);
+          }
+        }
+      }
+    });
+    boolHook = {
+      set: function(elem, value, name2) {
+        if (value === false) {
+          jQuery2.removeAttr(elem, name2);
+        } else {
+          elem.setAttribute(name2, name2);
+        }
+        return name2;
+      }
+    };
+    jQuery2.each(jQuery2.expr.match.bool.source.match(/\w+/g), function(_i, name2) {
+      var getter = attrHandle[name2] || jQuery2.find.attr;
+      attrHandle[name2] = function(elem, name3, isXML) {
+        var ret, handle, lowercaseName = name3.toLowerCase();
+        if (!isXML) {
+          handle = attrHandle[lowercaseName];
+          attrHandle[lowercaseName] = ret;
+          ret = getter(elem, name3, isXML) != null ? lowercaseName : null;
+          attrHandle[lowercaseName] = handle;
+        }
+        return ret;
+      };
+    });
+    var rfocusable = /^(?:input|select|textarea|button)$/i, rclickable = /^(?:a|area)$/i;
+    jQuery2.fn.extend({
+      prop: function(name2, value) {
+        return access(this, jQuery2.prop, name2, value, arguments.length > 1);
+      },
+      removeProp: function(name2) {
+        return this.each(function() {
+          delete this[jQuery2.propFix[name2] || name2];
+        });
+      }
+    });
+    jQuery2.extend({
+      prop: function(elem, name2, value) {
+        var ret, hooks, nType = elem.nodeType;
+        if (nType === 3 || nType === 8 || nType === 2) {
+          return;
+        }
+        if (nType !== 1 || !jQuery2.isXMLDoc(elem)) {
+          name2 = jQuery2.propFix[name2] || name2;
+          hooks = jQuery2.propHooks[name2];
+        }
+        if (value !== void 0) {
+          if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name2)) !== void 0) {
+            return ret;
+          }
+          return elem[name2] = value;
+        }
+        if (hooks && "get" in hooks && (ret = hooks.get(elem, name2)) !== null) {
+          return ret;
+        }
+        return elem[name2];
+      },
+      propHooks: {
+        tabIndex: {
+          get: function(elem) {
+            var tabindex = jQuery2.find.attr(elem, "tabindex");
+            if (tabindex) {
+              return parseInt(tabindex, 10);
+            }
+            if (rfocusable.test(elem.nodeName) || rclickable.test(elem.nodeName) && elem.href) {
+              return 0;
+            }
+            return -1;
+          }
+        }
+      },
+      propFix: {
+        "for": "htmlFor",
+        "class": "className"
+      }
+    });
+    if (!support.optSelected) {
+      jQuery2.propHooks.selected = {
+        get: function(elem) {
+          var parent = elem.parentNode;
+          if (parent && parent.parentNode) {
+            parent.parentNode.selectedIndex;
+          }
+          return null;
+        },
+        set: function(elem) {
+          var parent = elem.parentNode;
+          if (parent) {
+            parent.selectedIndex;
+            if (parent.parentNode) {
+              parent.parentNode.selectedIndex;
+            }
+          }
+        }
+      };
+    }
+    jQuery2.each([
+      "tabIndex",
+      "readOnly",
+      "maxLength",
+      "cellSpacing",
+      "cellPadding",
+      "rowSpan",
+      "colSpan",
+      "useMap",
+      "frameBorder",
+      "contentEditable"
+    ], function() {
+      jQuery2.propFix[this.toLowerCase()] = this;
+    });
+    function stripAndCollapse(value) {
+      var tokens = value.match(rnothtmlwhite) || [];
+      return tokens.join(" ");
+    }
+    function getClass(elem) {
+      return elem.getAttribute && elem.getAttribute("class") || "";
+    }
+    function classesToArray(value) {
+      if (Array.isArray(value)) {
+        return value;
+      }
+      if (typeof value === "string") {
+        return value.match(rnothtmlwhite) || [];
+      }
+      return [];
+    }
+    jQuery2.fn.extend({
+      addClass: function(value) {
+        var classNames, cur, curValue, className, i, finalValue;
+        if (isFunction2(value)) {
+          return this.each(function(j) {
+            jQuery2(this).addClass(value.call(this, j, getClass(this)));
+          });
+        }
+        classNames = classesToArray(value);
+        if (classNames.length) {
+          return this.each(function() {
+            curValue = getClass(this);
+            cur = this.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
+            if (cur) {
+              for (i = 0; i < classNames.length; i++) {
+                className = classNames[i];
+                if (cur.indexOf(" " + className + " ") < 0) {
+                  cur += className + " ";
+                }
+              }
+              finalValue = stripAndCollapse(cur);
+              if (curValue !== finalValue) {
+                this.setAttribute("class", finalValue);
+              }
+            }
+          });
+        }
+        return this;
+      },
+      removeClass: function(value) {
+        var classNames, cur, curValue, className, i, finalValue;
+        if (isFunction2(value)) {
+          return this.each(function(j) {
+            jQuery2(this).removeClass(value.call(this, j, getClass(this)));
+          });
+        }
+        if (!arguments.length) {
+          return this.attr("class", "");
+        }
+        classNames = classesToArray(value);
+        if (classNames.length) {
+          return this.each(function() {
+            curValue = getClass(this);
+            cur = this.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
+            if (cur) {
+              for (i = 0; i < classNames.length; i++) {
+                className = classNames[i];
+                while (cur.indexOf(" " + className + " ") > -1) {
+                  cur = cur.replace(" " + className + " ", " ");
+                }
+              }
+              finalValue = stripAndCollapse(cur);
+              if (curValue !== finalValue) {
+                this.setAttribute("class", finalValue);
+              }
+            }
+          });
+        }
+        return this;
+      },
+      toggleClass: function(value, stateVal) {
+        var classNames, className, i, self2, type = typeof value, isValidValue = type === "string" || Array.isArray(value);
+        if (isFunction2(value)) {
+          return this.each(function(i2) {
+            jQuery2(this).toggleClass(
+              value.call(this, i2, getClass(this), stateVal),
+              stateVal
+            );
+          });
+        }
+        if (typeof stateVal === "boolean" && isValidValue) {
+          return stateVal ? this.addClass(value) : this.removeClass(value);
+        }
+        classNames = classesToArray(value);
+        return this.each(function() {
+          if (isValidValue) {
+            self2 = jQuery2(this);
+            for (i = 0; i < classNames.length; i++) {
+              className = classNames[i];
+              if (self2.hasClass(className)) {
+                self2.removeClass(className);
+              } else {
+                self2.addClass(className);
+              }
+            }
+          } else if (value === void 0 || type === "boolean") {
+            className = getClass(this);
+            if (className) {
+              dataPriv.set(this, "__className__", className);
+            }
+            if (this.setAttribute) {
+              this.setAttribute(
+                "class",
+                className || value === false ? "" : dataPriv.get(this, "__className__") || ""
+              );
+            }
+          }
+        });
+      },
+      hasClass: function(selector) {
+        var className, elem, i = 0;
+        className = " " + selector + " ";
+        while (elem = this[i++]) {
+          if (elem.nodeType === 1 && (" " + stripAndCollapse(getClass(elem)) + " ").indexOf(className) > -1) {
+            return true;
+          }
+        }
+        return false;
+      }
+    });
+    var rreturn = /\r/g;
+    jQuery2.fn.extend({
+      val: function(value) {
+        var hooks, ret, valueIsFunction, elem = this[0];
+        if (!arguments.length) {
+          if (elem) {
+            hooks = jQuery2.valHooks[elem.type] || jQuery2.valHooks[elem.nodeName.toLowerCase()];
+            if (hooks && "get" in hooks && (ret = hooks.get(elem, "value")) !== void 0) {
+              return ret;
+            }
+            ret = elem.value;
+            if (typeof ret === "string") {
+              return ret.replace(rreturn, "");
+            }
+            return ret == null ? "" : ret;
+          }
+          return;
+        }
+        valueIsFunction = isFunction2(value);
+        return this.each(function(i) {
+          var val;
+          if (this.nodeType !== 1) {
+            return;
+          }
+          if (valueIsFunction) {
+            val = value.call(this, i, jQuery2(this).val());
+          } else {
+            val = value;
+          }
+          if (val == null) {
+            val = "";
+          } else if (typeof val === "number") {
+            val += "";
+          } else if (Array.isArray(val)) {
+            val = jQuery2.map(val, function(value2) {
+              return value2 == null ? "" : value2 + "";
+            });
+          }
+          hooks = jQuery2.valHooks[this.type] || jQuery2.valHooks[this.nodeName.toLowerCase()];
+          if (!hooks || !("set" in hooks) || hooks.set(this, val, "value") === void 0) {
+            this.value = val;
+          }
+        });
+      }
+    });
+    jQuery2.extend({
+      valHooks: {
+        option: {
+          get: function(elem) {
+            var val = jQuery2.find.attr(elem, "value");
+            return val != null ? val : (
+              // Support: IE <=10 - 11 only
+              // option.text throws exceptions (trac-14686, trac-14858)
+              // Strip and collapse whitespace
+              // https://html.spec.whatwg.org/#strip-and-collapse-whitespace
+              stripAndCollapse(jQuery2.text(elem))
+            );
+          }
+        },
+        select: {
+          get: function(elem) {
+            var value, option, i, options = elem.options, index = elem.selectedIndex, one = elem.type === "select-one", values2 = one ? null : [], max2 = one ? index + 1 : options.length;
+            if (index < 0) {
+              i = max2;
+            } else {
+              i = one ? index : 0;
+            }
+            for (; i < max2; i++) {
+              option = options[i];
+              if ((option.selected || i === index) && // Don't return options that are disabled or in a disabled optgroup
+              !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, "optgroup"))) {
+                value = jQuery2(option).val();
+                if (one) {
+                  return value;
+                }
+                values2.push(value);
+              }
+            }
+            return values2;
+          },
+          set: function(elem, value) {
+            var optionSet, option, options = elem.options, values2 = jQuery2.makeArray(value), i = options.length;
+            while (i--) {
+              option = options[i];
+              if (option.selected = jQuery2.inArray(jQuery2.valHooks.option.get(option), values2) > -1) {
+                optionSet = true;
+              }
+            }
+            if (!optionSet) {
+              elem.selectedIndex = -1;
+            }
+            return values2;
+          }
+        }
+      }
+    });
+    jQuery2.each(["radio", "checkbox"], function() {
+      jQuery2.valHooks[this] = {
+        set: function(elem, value) {
+          if (Array.isArray(value)) {
+            return elem.checked = jQuery2.inArray(jQuery2(elem).val(), value) > -1;
+          }
+        }
+      };
+      if (!support.checkOn) {
+        jQuery2.valHooks[this].get = function(elem) {
+          return elem.getAttribute("value") === null ? "on" : elem.value;
+        };
+      }
+    });
+    var location2 = window2.location;
+    var nonce = { guid: Date.now() };
+    var rquery = /\?/;
+    jQuery2.parseXML = function(data2) {
+      var xml, parserErrorElem;
+      if (!data2 || typeof data2 !== "string") {
+        return null;
+      }
+      try {
+        xml = new window2.DOMParser().parseFromString(data2, "text/xml");
+      } catch (e) {
+      }
+      parserErrorElem = xml && xml.getElementsByTagName("parsererror")[0];
+      if (!xml || parserErrorElem) {
+        jQuery2.error("Invalid XML: " + (parserErrorElem ? jQuery2.map(parserErrorElem.childNodes, function(el) {
+          return el.textContent;
+        }).join("\n") : data2));
+      }
+      return xml;
+    };
+    var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/, stopPropagationCallback = function(e) {
+      e.stopPropagation();
+    };
+    jQuery2.extend(jQuery2.event, {
+      trigger: function(event2, data2, elem, onlyHandlers) {
+        var i, cur, tmp, bubbleType, ontype, handle, special, lastElement, eventPath = [elem || document2], type = hasOwn.call(event2, "type") ? event2.type : event2, namespaces = hasOwn.call(event2, "namespace") ? event2.namespace.split(".") : [];
+        cur = lastElement = tmp = elem = elem || document2;
+        if (elem.nodeType === 3 || elem.nodeType === 8) {
+          return;
+        }
+        if (rfocusMorph.test(type + jQuery2.event.triggered)) {
+          return;
+        }
+        if (type.indexOf(".") > -1) {
+          namespaces = type.split(".");
+          type = namespaces.shift();
+          namespaces.sort();
+        }
+        ontype = type.indexOf(":") < 0 && "on" + type;
+        event2 = event2[jQuery2.expando] ? event2 : new jQuery2.Event(type, typeof event2 === "object" && event2);
+        event2.isTrigger = onlyHandlers ? 2 : 3;
+        event2.namespace = namespaces.join(".");
+        event2.rnamespace = event2.namespace ? new RegExp("(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)") : null;
+        event2.result = void 0;
+        if (!event2.target) {
+          event2.target = elem;
+        }
+        data2 = data2 == null ? [event2] : jQuery2.makeArray(data2, [event2]);
+        special = jQuery2.event.special[type] || {};
+        if (!onlyHandlers && special.trigger && special.trigger.apply(elem, data2) === false) {
+          return;
+        }
+        if (!onlyHandlers && !special.noBubble && !isWindow(elem)) {
+          bubbleType = special.delegateType || type;
+          if (!rfocusMorph.test(bubbleType + type)) {
+            cur = cur.parentNode;
+          }
+          for (; cur; cur = cur.parentNode) {
+            eventPath.push(cur);
+            tmp = cur;
+          }
+          if (tmp === (elem.ownerDocument || document2)) {
+            eventPath.push(tmp.defaultView || tmp.parentWindow || window2);
+          }
+        }
+        i = 0;
+        while ((cur = eventPath[i++]) && !event2.isPropagationStopped()) {
+          lastElement = cur;
+          event2.type = i > 1 ? bubbleType : special.bindType || type;
+          handle = (dataPriv.get(cur, "events") || /* @__PURE__ */ Object.create(null))[event2.type] && dataPriv.get(cur, "handle");
+          if (handle) {
+            handle.apply(cur, data2);
+          }
+          handle = ontype && cur[ontype];
+          if (handle && handle.apply && acceptData(cur)) {
+            event2.result = handle.apply(cur, data2);
+            if (event2.result === false) {
+              event2.preventDefault();
+            }
+          }
+        }
+        event2.type = type;
+        if (!onlyHandlers && !event2.isDefaultPrevented()) {
+          if ((!special._default || special._default.apply(eventPath.pop(), data2) === false) && acceptData(elem)) {
+            if (ontype && isFunction2(elem[type]) && !isWindow(elem)) {
+              tmp = elem[ontype];
+              if (tmp) {
+                elem[ontype] = null;
+              }
+              jQuery2.event.triggered = type;
+              if (event2.isPropagationStopped()) {
+                lastElement.addEventListener(type, stopPropagationCallback);
+              }
+              elem[type]();
+              if (event2.isPropagationStopped()) {
+                lastElement.removeEventListener(type, stopPropagationCallback);
+              }
+              jQuery2.event.triggered = void 0;
+              if (tmp) {
+                elem[ontype] = tmp;
+              }
+            }
+          }
+        }
+        return event2.result;
+      },
+      // Piggyback on a donor event to simulate a different one
+      // Used only for `focus(in | out)` events
+      simulate: function(type, elem, event2) {
+        var e = jQuery2.extend(
+          new jQuery2.Event(),
+          event2,
+          {
+            type,
+            isSimulated: true
+          }
+        );
+        jQuery2.event.trigger(e, null, elem);
+      }
+    });
+    jQuery2.fn.extend({
+      trigger: function(type, data2) {
+        return this.each(function() {
+          jQuery2.event.trigger(type, data2, this);
+        });
+      },
+      triggerHandler: function(type, data2) {
+        var elem = this[0];
+        if (elem) {
+          return jQuery2.event.trigger(type, data2, elem, true);
+        }
+      }
+    });
+    var rbracket = /\[\]$/, rCRLF = /\r?\n/g, rsubmitterTypes = /^(?:submit|button|image|reset|file)$/i, rsubmittable = /^(?:input|select|textarea|keygen)/i;
+    function buildParams(prefix2, obj, traditional, add2) {
+      var name2;
+      if (Array.isArray(obj)) {
+        jQuery2.each(obj, function(i, v) {
+          if (traditional || rbracket.test(prefix2)) {
+            add2(prefix2, v);
+          } else {
+            buildParams(
+              prefix2 + "[" + (typeof v === "object" && v != null ? i : "") + "]",
+              v,
+              traditional,
+              add2
+            );
+          }
+        });
+      } else if (!traditional && toType(obj) === "object") {
+        for (name2 in obj) {
+          buildParams(prefix2 + "[" + name2 + "]", obj[name2], traditional, add2);
+        }
+      } else {
+        add2(prefix2, obj);
+      }
+    }
+    jQuery2.param = function(a, traditional) {
+      var prefix2, s = [], add2 = function(key, valueOrFunction) {
+        var value = isFunction2(valueOrFunction) ? valueOrFunction() : valueOrFunction;
+        s[s.length] = encodeURIComponent(key) + "=" + encodeURIComponent(value == null ? "" : value);
+      };
+      if (a == null) {
+        return "";
+      }
+      if (Array.isArray(a) || a.jquery && !jQuery2.isPlainObject(a)) {
+        jQuery2.each(a, function() {
+          add2(this.name, this.value);
+        });
+      } else {
+        for (prefix2 in a) {
+          buildParams(prefix2, a[prefix2], traditional, add2);
+        }
+      }
+      return s.join("&");
+    };
+    jQuery2.fn.extend({
+      serialize: function() {
+        return jQuery2.param(this.serializeArray());
+      },
+      serializeArray: function() {
+        return this.map(function() {
+          var elements = jQuery2.prop(this, "elements");
+          return elements ? jQuery2.makeArray(elements) : this;
+        }).filter(function() {
+          var type = this.type;
+          return this.name && !jQuery2(this).is(":disabled") && rsubmittable.test(this.nodeName) && !rsubmitterTypes.test(type) && (this.checked || !rcheckableType.test(type));
+        }).map(function(_i, elem) {
+          var val = jQuery2(this).val();
+          if (val == null) {
+            return null;
+          }
+          if (Array.isArray(val)) {
+            return jQuery2.map(val, function(val2) {
+              return { name: elem.name, value: val2.replace(rCRLF, "\r\n") };
+            });
+          }
+          return { name: elem.name, value: val.replace(rCRLF, "\r\n") };
+        }).get();
+      }
+    });
+    var r20 = /%20/g, rhash = /#.*$/, rantiCache = /([?&])_=[^&]*/, rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg, rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/, rnoContent = /^(?:GET|HEAD)$/, rprotocol = /^\/\//, prefilters = {}, transports = {}, allTypes = "*/".concat("*"), originAnchor = document2.createElement("a");
+    originAnchor.href = location2.href;
+    function addToPrefiltersOrTransports(structure) {
+      return function(dataTypeExpression, func) {
+        if (typeof dataTypeExpression !== "string") {
+          func = dataTypeExpression;
+          dataTypeExpression = "*";
+        }
+        var dataType, i = 0, dataTypes = dataTypeExpression.toLowerCase().match(rnothtmlwhite) || [];
+        if (isFunction2(func)) {
+          while (dataType = dataTypes[i++]) {
+            if (dataType[0] === "+") {
+              dataType = dataType.slice(1) || "*";
+              (structure[dataType] = structure[dataType] || []).unshift(func);
+            } else {
+              (structure[dataType] = structure[dataType] || []).push(func);
+            }
+          }
+        }
+      };
+    }
+    function inspectPrefiltersOrTransports(structure, options, originalOptions, jqXHR) {
+      var inspected = {}, seekingTransport = structure === transports;
+      function inspect(dataType) {
+        var selected;
+        inspected[dataType] = true;
+        jQuery2.each(structure[dataType] || [], function(_2, prefilterOrFactory) {
+          var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
+          if (typeof dataTypeOrTransport === "string" && !seekingTransport && !inspected[dataTypeOrTransport]) {
+            options.dataTypes.unshift(dataTypeOrTransport);
+            inspect(dataTypeOrTransport);
+            return false;
+          } else if (seekingTransport) {
+            return !(selected = dataTypeOrTransport);
+          }
+        });
+        return selected;
+      }
+      return inspect(options.dataTypes[0]) || !inspected["*"] && inspect("*");
+    }
+    function ajaxExtend(target, src) {
+      var key, deep, flatOptions = jQuery2.ajaxSettings.flatOptions || {};
+      for (key in src) {
+        if (src[key] !== void 0) {
+          (flatOptions[key] ? target : deep || (deep = {}))[key] = src[key];
+        }
+      }
+      if (deep) {
+        jQuery2.extend(true, target, deep);
+      }
+      return target;
+    }
+    function ajaxHandleResponses(s, jqXHR, responses) {
+      var ct, type, finalDataType, firstDataType, contents = s.contents, dataTypes = s.dataTypes;
+      while (dataTypes[0] === "*") {
+        dataTypes.shift();
+        if (ct === void 0) {
+          ct = s.mimeType || jqXHR.getResponseHeader("Content-Type");
+        }
+      }
+      if (ct) {
+        for (type in contents) {
+          if (contents[type] && contents[type].test(ct)) {
+            dataTypes.unshift(type);
+            break;
+          }
+        }
+      }
+      if (dataTypes[0] in responses) {
+        finalDataType = dataTypes[0];
+      } else {
+        for (type in responses) {
+          if (!dataTypes[0] || s.converters[type + " " + dataTypes[0]]) {
+            finalDataType = type;
+            break;
+          }
+          if (!firstDataType) {
+            firstDataType = type;
+          }
+        }
+        finalDataType = finalDataType || firstDataType;
+      }
+      if (finalDataType) {
+        if (finalDataType !== dataTypes[0]) {
+          dataTypes.unshift(finalDataType);
+        }
+        return responses[finalDataType];
+      }
+    }
+    function ajaxConvert(s, response, jqXHR, isSuccess) {
+      var conv2, current, conv, tmp, prev2, converters = {}, dataTypes = s.dataTypes.slice();
+      if (dataTypes[1]) {
+        for (conv in s.converters) {
+          converters[conv.toLowerCase()] = s.converters[conv];
+        }
+      }
+      current = dataTypes.shift();
+      while (current) {
+        if (s.responseFields[current]) {
+          jqXHR[s.responseFields[current]] = response;
+        }
+        if (!prev2 && isSuccess && s.dataFilter) {
+          response = s.dataFilter(response, s.dataType);
+        }
+        prev2 = current;
+        current = dataTypes.shift();
+        if (current) {
+          if (current === "*") {
+            current = prev2;
+          } else if (prev2 !== "*" && prev2 !== current) {
+            conv = converters[prev2 + " " + current] || converters["* " + current];
+            if (!conv) {
+              for (conv2 in converters) {
+                tmp = conv2.split(" ");
+                if (tmp[1] === current) {
+                  conv = converters[prev2 + " " + tmp[0]] || converters["* " + tmp[0]];
+                  if (conv) {
+                    if (conv === true) {
+                      conv = converters[conv2];
+                    } else if (converters[conv2] !== true) {
+                      current = tmp[0];
+                      dataTypes.unshift(tmp[1]);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            if (conv !== true) {
+              if (conv && s.throws) {
+                response = conv(response);
+              } else {
+                try {
+                  response = conv(response);
+                } catch (e) {
+                  return {
+                    state: "parsererror",
+                    error: conv ? e : "No conversion from " + prev2 + " to " + current
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+      return { state: "success", data: response };
+    }
+    jQuery2.extend({
+      // Counter for holding the number of active queries
+      active: 0,
+      // Last-Modified header cache for next request
+      lastModified: {},
+      etag: {},
+      ajaxSettings: {
+        url: location2.href,
+        type: "GET",
+        isLocal: rlocalProtocol.test(location2.protocol),
+        global: true,
+        processData: true,
+        async: true,
+        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+        /*
+        timeout: 0,
+        data: null,
+        dataType: null,
+        username: null,
+        password: null,
+        cache: null,
+        throws: false,
+        traditional: false,
+        headers: {},
+        */
+        accepts: {
+          "*": allTypes,
+          text: "text/plain",
+          html: "text/html",
+          xml: "application/xml, text/xml",
+          json: "application/json, text/javascript"
+        },
+        contents: {
+          xml: /\bxml\b/,
+          html: /\bhtml/,
+          json: /\bjson\b/
+        },
+        responseFields: {
+          xml: "responseXML",
+          text: "responseText",
+          json: "responseJSON"
+        },
+        // Data converters
+        // Keys separate source (or catchall "*") and destination types with a single space
+        converters: {
+          // Convert anything to text
+          "* text": String,
+          // Text to html (true = no transformation)
+          "text html": true,
+          // Evaluate text as a json expression
+          "text json": JSON.parse,
+          // Parse text as xml
+          "text xml": jQuery2.parseXML
+        },
+        // For options that shouldn't be deep extended:
+        // you can add your own custom options here if
+        // and when you create one that shouldn't be
+        // deep extended (see ajaxExtend)
+        flatOptions: {
+          url: true,
+          context: true
+        }
+      },
+      // Creates a full fledged settings object into target
+      // with both ajaxSettings and settings fields.
+      // If target is omitted, writes into ajaxSettings.
+      ajaxSetup: function(target, settings) {
+        return settings ? (
+          // Building a settings object
+          ajaxExtend(ajaxExtend(target, jQuery2.ajaxSettings), settings)
+        ) : (
+          // Extending ajaxSettings
+          ajaxExtend(jQuery2.ajaxSettings, target)
+        );
+      },
+      ajaxPrefilter: addToPrefiltersOrTransports(prefilters),
+      ajaxTransport: addToPrefiltersOrTransports(transports),
+      // Main method
+      ajax: function(url, options) {
+        if (typeof url === "object") {
+          options = url;
+          url = void 0;
+        }
+        options = options || {};
+        var transport, cacheURL, responseHeadersString, responseHeaders, timeoutTimer, urlAnchor, completed2, fireGlobals, i, uncached, s = jQuery2.ajaxSetup({}, options), callbackContext = s.context || s, globalEventContext = s.context && (callbackContext.nodeType || callbackContext.jquery) ? jQuery2(callbackContext) : jQuery2.event, deferred = jQuery2.Deferred(), completeDeferred = jQuery2.Callbacks("once memory"), statusCode = s.statusCode || {}, requestHeaders = {}, requestHeadersNames = {}, strAbort = "canceled", jqXHR = {
+          readyState: 0,
+          // Builds headers hashtable if needed
+          getResponseHeader: function(key) {
+            var match2;
+            if (completed2) {
+              if (!responseHeaders) {
+                responseHeaders = {};
+                while (match2 = rheaders.exec(responseHeadersString)) {
+                  responseHeaders[match2[1].toLowerCase() + " "] = (responseHeaders[match2[1].toLowerCase() + " "] || []).concat(match2[2]);
+                }
+              }
+              match2 = responseHeaders[key.toLowerCase() + " "];
+            }
+            return match2 == null ? null : match2.join(", ");
+          },
+          // Raw string
+          getAllResponseHeaders: function() {
+            return completed2 ? responseHeadersString : null;
+          },
+          // Caches the header
+          setRequestHeader: function(name2, value) {
+            if (completed2 == null) {
+              name2 = requestHeadersNames[name2.toLowerCase()] = requestHeadersNames[name2.toLowerCase()] || name2;
+              requestHeaders[name2] = value;
+            }
+            return this;
+          },
+          // Overrides response content-type header
+          overrideMimeType: function(type) {
+            if (completed2 == null) {
+              s.mimeType = type;
+            }
+            return this;
+          },
+          // Status-dependent callbacks
+          statusCode: function(map) {
+            var code;
+            if (map) {
+              if (completed2) {
+                jqXHR.always(map[jqXHR.status]);
+              } else {
+                for (code in map) {
+                  statusCode[code] = [statusCode[code], map[code]];
+                }
+              }
+            }
+            return this;
+          },
+          // Cancel the request
+          abort: function(statusText) {
+            var finalText = statusText || strAbort;
+            if (transport) {
+              transport.abort(finalText);
+            }
+            done(0, finalText);
+            return this;
+          }
+        };
+        deferred.promise(jqXHR);
+        s.url = ((url || s.url || location2.href) + "").replace(rprotocol, location2.protocol + "//");
+        s.type = options.method || options.type || s.method || s.type;
+        s.dataTypes = (s.dataType || "*").toLowerCase().match(rnothtmlwhite) || [""];
+        if (s.crossDomain == null) {
+          urlAnchor = document2.createElement("a");
+          try {
+            urlAnchor.href = s.url;
+            urlAnchor.href = urlAnchor.href;
+            s.crossDomain = originAnchor.protocol + "//" + originAnchor.host !== urlAnchor.protocol + "//" + urlAnchor.host;
+          } catch (e) {
+            s.crossDomain = true;
+          }
+        }
+        if (s.data && s.processData && typeof s.data !== "string") {
+          s.data = jQuery2.param(s.data, s.traditional);
+        }
+        inspectPrefiltersOrTransports(prefilters, s, options, jqXHR);
+        if (completed2) {
+          return jqXHR;
+        }
+        fireGlobals = jQuery2.event && s.global;
+        if (fireGlobals && jQuery2.active++ === 0) {
+          jQuery2.event.trigger("ajaxStart");
+        }
+        s.type = s.type.toUpperCase();
+        s.hasContent = !rnoContent.test(s.type);
+        cacheURL = s.url.replace(rhash, "");
+        if (!s.hasContent) {
+          uncached = s.url.slice(cacheURL.length);
+          if (s.data && (s.processData || typeof s.data === "string")) {
+            cacheURL += (rquery.test(cacheURL) ? "&" : "?") + s.data;
+            delete s.data;
+          }
+          if (s.cache === false) {
+            cacheURL = cacheURL.replace(rantiCache, "$1");
+            uncached = (rquery.test(cacheURL) ? "&" : "?") + "_=" + nonce.guid++ + uncached;
+          }
+          s.url = cacheURL + uncached;
+        } else if (s.data && s.processData && (s.contentType || "").indexOf("application/x-www-form-urlencoded") === 0) {
+          s.data = s.data.replace(r20, "+");
+        }
+        if (s.ifModified) {
+          if (jQuery2.lastModified[cacheURL]) {
+            jqXHR.setRequestHeader("If-Modified-Since", jQuery2.lastModified[cacheURL]);
+          }
+          if (jQuery2.etag[cacheURL]) {
+            jqXHR.setRequestHeader("If-None-Match", jQuery2.etag[cacheURL]);
+          }
+        }
+        if (s.data && s.hasContent && s.contentType !== false || options.contentType) {
+          jqXHR.setRequestHeader("Content-Type", s.contentType);
+        }
+        jqXHR.setRequestHeader(
+          "Accept",
+          s.dataTypes[0] && s.accepts[s.dataTypes[0]] ? s.accepts[s.dataTypes[0]] + (s.dataTypes[0] !== "*" ? ", " + allTypes + "; q=0.01" : "") : s.accepts["*"]
+        );
+        for (i in s.headers) {
+          jqXHR.setRequestHeader(i, s.headers[i]);
+        }
+        if (s.beforeSend && (s.beforeSend.call(callbackContext, jqXHR, s) === false || completed2)) {
+          return jqXHR.abort();
+        }
+        strAbort = "abort";
+        completeDeferred.add(s.complete);
+        jqXHR.done(s.success);
+        jqXHR.fail(s.error);
+        transport = inspectPrefiltersOrTransports(transports, s, options, jqXHR);
+        if (!transport) {
+          done(-1, "No Transport");
+        } else {
+          jqXHR.readyState = 1;
+          if (fireGlobals) {
+            globalEventContext.trigger("ajaxSend", [jqXHR, s]);
+          }
+          if (completed2) {
+            return jqXHR;
+          }
+          if (s.async && s.timeout > 0) {
+            timeoutTimer = window2.setTimeout(function() {
+              jqXHR.abort("timeout");
+            }, s.timeout);
+          }
+          try {
+            completed2 = false;
+            transport.send(requestHeaders, done);
+          } catch (e) {
+            if (completed2) {
+              throw e;
+            }
+            done(-1, e);
+          }
+        }
+        function done(status, nativeStatusText, responses, headers) {
+          var isSuccess, success, error, response, modified, statusText = nativeStatusText;
+          if (completed2) {
+            return;
+          }
+          completed2 = true;
+          if (timeoutTimer) {
+            window2.clearTimeout(timeoutTimer);
+          }
+          transport = void 0;
+          responseHeadersString = headers || "";
+          jqXHR.readyState = status > 0 ? 4 : 0;
+          isSuccess = status >= 200 && status < 300 || status === 304;
+          if (responses) {
+            response = ajaxHandleResponses(s, jqXHR, responses);
+          }
+          if (!isSuccess && jQuery2.inArray("script", s.dataTypes) > -1 && jQuery2.inArray("json", s.dataTypes) < 0) {
+            s.converters["text script"] = function() {
+            };
+          }
+          response = ajaxConvert(s, response, jqXHR, isSuccess);
+          if (isSuccess) {
+            if (s.ifModified) {
+              modified = jqXHR.getResponseHeader("Last-Modified");
+              if (modified) {
+                jQuery2.lastModified[cacheURL] = modified;
+              }
+              modified = jqXHR.getResponseHeader("etag");
+              if (modified) {
+                jQuery2.etag[cacheURL] = modified;
+              }
+            }
+            if (status === 204 || s.type === "HEAD") {
+              statusText = "nocontent";
+            } else if (status === 304) {
+              statusText = "notmodified";
+            } else {
+              statusText = response.state;
+              success = response.data;
+              error = response.error;
+              isSuccess = !error;
+            }
+          } else {
+            error = statusText;
+            if (status || !statusText) {
+              statusText = "error";
+              if (status < 0) {
+                status = 0;
+              }
+            }
+          }
+          jqXHR.status = status;
+          jqXHR.statusText = (nativeStatusText || statusText) + "";
+          if (isSuccess) {
+            deferred.resolveWith(callbackContext, [success, statusText, jqXHR]);
+          } else {
+            deferred.rejectWith(callbackContext, [jqXHR, statusText, error]);
+          }
+          jqXHR.statusCode(statusCode);
+          statusCode = void 0;
+          if (fireGlobals) {
+            globalEventContext.trigger(
+              isSuccess ? "ajaxSuccess" : "ajaxError",
+              [jqXHR, s, isSuccess ? success : error]
+            );
+          }
+          completeDeferred.fireWith(callbackContext, [jqXHR, statusText]);
+          if (fireGlobals) {
+            globalEventContext.trigger("ajaxComplete", [jqXHR, s]);
+            if (!--jQuery2.active) {
+              jQuery2.event.trigger("ajaxStop");
+            }
+          }
+        }
+        return jqXHR;
+      },
+      getJSON: function(url, data2, callback) {
+        return jQuery2.get(url, data2, callback, "json");
+      },
+      getScript: function(url, callback) {
+        return jQuery2.get(url, void 0, callback, "script");
+      }
+    });
+    jQuery2.each(["get", "post"], function(_i, method) {
+      jQuery2[method] = function(url, data2, callback, type) {
+        if (isFunction2(data2)) {
+          type = type || callback;
+          callback = data2;
+          data2 = void 0;
+        }
+        return jQuery2.ajax(jQuery2.extend({
+          url,
+          type: method,
+          dataType: type,
+          data: data2,
+          success: callback
+        }, jQuery2.isPlainObject(url) && url));
+      };
+    });
+    jQuery2.ajaxPrefilter(function(s) {
+      var i;
+      for (i in s.headers) {
+        if (i.toLowerCase() === "content-type") {
+          s.contentType = s.headers[i] || "";
+        }
+      }
+    });
+    jQuery2._evalUrl = function(url, options, doc) {
+      return jQuery2.ajax({
+        url,
+        // Make this explicit, since user can override this through ajaxSetup (trac-11264)
+        type: "GET",
+        dataType: "script",
+        cache: true,
+        async: false,
+        global: false,
+        // Only evaluate the response if it is successful (gh-4126)
+        // dataFilter is not invoked for failure responses, so using it instead
+        // of the default converter is kludgy but it works.
+        converters: {
+          "text script": function() {
+          }
+        },
+        dataFilter: function(response) {
+          jQuery2.globalEval(response, options, doc);
+        }
+      });
+    };
+    jQuery2.fn.extend({
+      wrapAll: function(html2) {
+        var wrap;
+        if (this[0]) {
+          if (isFunction2(html2)) {
+            html2 = html2.call(this[0]);
+          }
+          wrap = jQuery2(html2, this[0].ownerDocument).eq(0).clone(true);
+          if (this[0].parentNode) {
+            wrap.insertBefore(this[0]);
+          }
+          wrap.map(function() {
+            var elem = this;
+            while (elem.firstElementChild) {
+              elem = elem.firstElementChild;
+            }
+            return elem;
+          }).append(this);
+        }
+        return this;
+      },
+      wrapInner: function(html2) {
+        if (isFunction2(html2)) {
+          return this.each(function(i) {
+            jQuery2(this).wrapInner(html2.call(this, i));
+          });
+        }
+        return this.each(function() {
+          var self2 = jQuery2(this), contents = self2.contents();
+          if (contents.length) {
+            contents.wrapAll(html2);
+          } else {
+            self2.append(html2);
+          }
+        });
+      },
+      wrap: function(html2) {
+        var htmlIsFunction = isFunction2(html2);
+        return this.each(function(i) {
+          jQuery2(this).wrapAll(htmlIsFunction ? html2.call(this, i) : html2);
+        });
+      },
+      unwrap: function(selector) {
+        this.parent(selector).not("body").each(function() {
+          jQuery2(this).replaceWith(this.childNodes);
+        });
+        return this;
+      }
+    });
+    jQuery2.expr.pseudos.hidden = function(elem) {
+      return !jQuery2.expr.pseudos.visible(elem);
+    };
+    jQuery2.expr.pseudos.visible = function(elem) {
+      return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+    };
+    jQuery2.ajaxSettings.xhr = function() {
+      try {
+        return new window2.XMLHttpRequest();
+      } catch (e) {
+      }
+    };
+    var xhrSuccessStatus = {
+      // File protocol always yields status code 0, assume 200
+      0: 200,
+      // Support: IE <=9 only
+      // trac-1450: sometimes IE returns 1223 when it should be 204
+      1223: 204
+    }, xhrSupported = jQuery2.ajaxSettings.xhr();
+    support.cors = !!xhrSupported && "withCredentials" in xhrSupported;
+    support.ajax = xhrSupported = !!xhrSupported;
+    jQuery2.ajaxTransport(function(options) {
+      var callback, errorCallback;
+      if (support.cors || xhrSupported && !options.crossDomain) {
+        return {
+          send: function(headers, complete) {
+            var i, xhr = options.xhr();
+            xhr.open(
+              options.type,
+              options.url,
+              options.async,
+              options.username,
+              options.password
+            );
+            if (options.xhrFields) {
+              for (i in options.xhrFields) {
+                xhr[i] = options.xhrFields[i];
+              }
+            }
+            if (options.mimeType && xhr.overrideMimeType) {
+              xhr.overrideMimeType(options.mimeType);
+            }
+            if (!options.crossDomain && !headers["X-Requested-With"]) {
+              headers["X-Requested-With"] = "XMLHttpRequest";
+            }
+            for (i in headers) {
+              xhr.setRequestHeader(i, headers[i]);
+            }
+            callback = function(type) {
+              return function() {
+                if (callback) {
+                  callback = errorCallback = xhr.onload = xhr.onerror = xhr.onabort = xhr.ontimeout = xhr.onreadystatechange = null;
+                  if (type === "abort") {
+                    xhr.abort();
+                  } else if (type === "error") {
+                    if (typeof xhr.status !== "number") {
+                      complete(0, "error");
+                    } else {
+                      complete(
+                        // File: protocol always yields status 0; see trac-8605, trac-14207
+                        xhr.status,
+                        xhr.statusText
+                      );
+                    }
+                  } else {
+                    complete(
+                      xhrSuccessStatus[xhr.status] || xhr.status,
+                      xhr.statusText,
+                      // Support: IE <=9 only
+                      // IE9 has no XHR2 but throws on binary (trac-11426)
+                      // For XHR2 non-text, let the caller handle it (gh-2498)
+                      (xhr.responseType || "text") !== "text" || typeof xhr.responseText !== "string" ? { binary: xhr.response } : { text: xhr.responseText },
+                      xhr.getAllResponseHeaders()
+                    );
+                  }
+                }
+              };
+            };
+            xhr.onload = callback();
+            errorCallback = xhr.onerror = xhr.ontimeout = callback("error");
+            if (xhr.onabort !== void 0) {
+              xhr.onabort = errorCallback;
+            } else {
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                  window2.setTimeout(function() {
+                    if (callback) {
+                      errorCallback();
+                    }
+                  });
+                }
+              };
+            }
+            callback = callback("abort");
+            try {
+              xhr.send(options.hasContent && options.data || null);
+            } catch (e) {
+              if (callback) {
+                throw e;
+              }
+            }
+          },
+          abort: function() {
+            if (callback) {
+              callback();
+            }
+          }
+        };
+      }
+    });
+    jQuery2.ajaxPrefilter(function(s) {
+      if (s.crossDomain) {
+        s.contents.script = false;
+      }
+    });
+    jQuery2.ajaxSetup({
+      accepts: {
+        script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
+      },
+      contents: {
+        script: /\b(?:java|ecma)script\b/
+      },
+      converters: {
+        "text script": function(text) {
+          jQuery2.globalEval(text);
+          return text;
+        }
+      }
+    });
+    jQuery2.ajaxPrefilter("script", function(s) {
+      if (s.cache === void 0) {
+        s.cache = false;
+      }
+      if (s.crossDomain) {
+        s.type = "GET";
+      }
+    });
+    jQuery2.ajaxTransport("script", function(s) {
+      if (s.crossDomain || s.scriptAttrs) {
+        var script, callback;
+        return {
+          send: function(_2, complete) {
+            script = jQuery2("<script>").attr(s.scriptAttrs || {}).prop({ charset: s.scriptCharset, src: s.url }).on("load error", callback = function(evt) {
+              script.remove();
+              callback = null;
+              if (evt) {
+                complete(evt.type === "error" ? 404 : 200, evt.type);
+              }
+            });
+            document2.head.appendChild(script[0]);
+          },
+          abort: function() {
+            if (callback) {
+              callback();
+            }
+          }
+        };
+      }
+    });
+    var oldCallbacks = [], rjsonp = /(=)\?(?=&|$)|\?\?/;
+    jQuery2.ajaxSetup({
+      jsonp: "callback",
+      jsonpCallback: function() {
+        var callback = oldCallbacks.pop() || jQuery2.expando + "_" + nonce.guid++;
+        this[callback] = true;
+        return callback;
+      }
+    });
+    jQuery2.ajaxPrefilter("json jsonp", function(s, originalSettings, jqXHR) {
+      var callbackName, overwritten, responseContainer, jsonProp = s.jsonp !== false && (rjsonp.test(s.url) ? "url" : typeof s.data === "string" && (s.contentType || "").indexOf("application/x-www-form-urlencoded") === 0 && rjsonp.test(s.data) && "data");
+      if (jsonProp || s.dataTypes[0] === "jsonp") {
+        callbackName = s.jsonpCallback = isFunction2(s.jsonpCallback) ? s.jsonpCallback() : s.jsonpCallback;
+        if (jsonProp) {
+          s[jsonProp] = s[jsonProp].replace(rjsonp, "$1" + callbackName);
+        } else if (s.jsonp !== false) {
+          s.url += (rquery.test(s.url) ? "&" : "?") + s.jsonp + "=" + callbackName;
+        }
+        s.converters["script json"] = function() {
+          if (!responseContainer) {
+            jQuery2.error(callbackName + " was not called");
+          }
+          return responseContainer[0];
+        };
+        s.dataTypes[0] = "json";
+        overwritten = window2[callbackName];
+        window2[callbackName] = function() {
+          responseContainer = arguments;
+        };
+        jqXHR.always(function() {
+          if (overwritten === void 0) {
+            jQuery2(window2).removeProp(callbackName);
+          } else {
+            window2[callbackName] = overwritten;
+          }
+          if (s[callbackName]) {
+            s.jsonpCallback = originalSettings.jsonpCallback;
+            oldCallbacks.push(callbackName);
+          }
+          if (responseContainer && isFunction2(overwritten)) {
+            overwritten(responseContainer[0]);
+          }
+          responseContainer = overwritten = void 0;
+        });
+        return "script";
+      }
+    });
+    support.createHTMLDocument = function() {
+      var body2 = document2.implementation.createHTMLDocument("").body;
+      body2.innerHTML = "<form></form><form></form>";
+      return body2.childNodes.length === 2;
+    }();
+    jQuery2.parseHTML = function(data2, context, keepScripts) {
+      if (typeof data2 !== "string") {
+        return [];
+      }
+      if (typeof context === "boolean") {
+        keepScripts = context;
+        context = false;
+      }
+      var base, parsed, scripts;
+      if (!context) {
+        if (support.createHTMLDocument) {
+          context = document2.implementation.createHTMLDocument("");
+          base = context.createElement("base");
+          base.href = document2.location.href;
+          context.head.appendChild(base);
+        } else {
+          context = document2;
+        }
+      }
+      parsed = rsingleTag.exec(data2);
+      scripts = !keepScripts && [];
+      if (parsed) {
+        return [context.createElement(parsed[1])];
+      }
+      parsed = buildFragment([data2], context, scripts);
+      if (scripts && scripts.length) {
+        jQuery2(scripts).remove();
+      }
+      return jQuery2.merge([], parsed.childNodes);
+    };
+    jQuery2.fn.load = function(url, params, callback) {
+      var selector, type, response, self2 = this, off = url.indexOf(" ");
+      if (off > -1) {
+        selector = stripAndCollapse(url.slice(off));
+        url = url.slice(0, off);
+      }
+      if (isFunction2(params)) {
+        callback = params;
+        params = void 0;
+      } else if (params && typeof params === "object") {
+        type = "POST";
+      }
+      if (self2.length > 0) {
+        jQuery2.ajax({
+          url,
+          // If "type" variable is undefined, then "GET" method will be used.
+          // Make value of this field explicit since
+          // user can override it through ajaxSetup method
+          type: type || "GET",
+          dataType: "html",
+          data: params
+        }).done(function(responseText) {
+          response = arguments;
+          self2.html(selector ? (
+            // If a selector was specified, locate the right elements in a dummy div
+            // Exclude scripts to avoid IE 'Permission Denied' errors
+            jQuery2("<div>").append(jQuery2.parseHTML(responseText)).find(selector)
+          ) : (
+            // Otherwise use the full result
+            responseText
+          ));
+        }).always(callback && function(jqXHR, status) {
+          self2.each(function() {
+            callback.apply(this, response || [jqXHR.responseText, status, jqXHR]);
+          });
+        });
+      }
+      return this;
+    };
+    jQuery2.expr.pseudos.animated = function(elem) {
+      return jQuery2.grep(jQuery2.timers, function(fn) {
+        return elem === fn.elem;
+      }).length;
+    };
+    jQuery2.offset = {
+      setOffset: function(elem, options, i) {
+        var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition, position2 = jQuery2.css(elem, "position"), curElem = jQuery2(elem), props2 = {};
+        if (position2 === "static") {
+          elem.style.position = "relative";
+        }
+        curOffset = curElem.offset();
+        curCSSTop = jQuery2.css(elem, "top");
+        curCSSLeft = jQuery2.css(elem, "left");
+        calculatePosition = (position2 === "absolute" || position2 === "fixed") && (curCSSTop + curCSSLeft).indexOf("auto") > -1;
+        if (calculatePosition) {
+          curPosition = curElem.position();
+          curTop = curPosition.top;
+          curLeft = curPosition.left;
+        } else {
+          curTop = parseFloat(curCSSTop) || 0;
+          curLeft = parseFloat(curCSSLeft) || 0;
+        }
+        if (isFunction2(options)) {
+          options = options.call(elem, i, jQuery2.extend({}, curOffset));
+        }
+        if (options.top != null) {
+          props2.top = options.top - curOffset.top + curTop;
+        }
+        if (options.left != null) {
+          props2.left = options.left - curOffset.left + curLeft;
+        }
+        if ("using" in options) {
+          options.using.call(elem, props2);
+        } else {
+          curElem.css(props2);
+        }
+      }
+    };
+    jQuery2.fn.extend({
+      // offset() relates an element's border box to the document origin
+      offset: function(options) {
+        if (arguments.length) {
+          return options === void 0 ? this : this.each(function(i) {
+            jQuery2.offset.setOffset(this, options, i);
+          });
+        }
+        var rect, win, elem = this[0];
+        if (!elem) {
+          return;
+        }
+        if (!elem.getClientRects().length) {
+          return { top: 0, left: 0 };
+        }
+        rect = elem.getBoundingClientRect();
+        win = elem.ownerDocument.defaultView;
+        return {
+          top: rect.top + win.pageYOffset,
+          left: rect.left + win.pageXOffset
+        };
+      },
+      // position() relates an element's margin box to its offset parent's padding box
+      // This corresponds to the behavior of CSS absolute positioning
+      position: function() {
+        if (!this[0]) {
+          return;
+        }
+        var offsetParent, offset, doc, elem = this[0], parentOffset = { top: 0, left: 0 };
+        if (jQuery2.css(elem, "position") === "fixed") {
+          offset = elem.getBoundingClientRect();
+        } else {
+          offset = this.offset();
+          doc = elem.ownerDocument;
+          offsetParent = elem.offsetParent || doc.documentElement;
+          while (offsetParent && (offsetParent === doc.body || offsetParent === doc.documentElement) && jQuery2.css(offsetParent, "position") === "static") {
+            offsetParent = offsetParent.parentNode;
+          }
+          if (offsetParent && offsetParent !== elem && offsetParent.nodeType === 1) {
+            parentOffset = jQuery2(offsetParent).offset();
+            parentOffset.top += jQuery2.css(offsetParent, "borderTopWidth", true);
+            parentOffset.left += jQuery2.css(offsetParent, "borderLeftWidth", true);
+          }
+        }
+        return {
+          top: offset.top - parentOffset.top - jQuery2.css(elem, "marginTop", true),
+          left: offset.left - parentOffset.left - jQuery2.css(elem, "marginLeft", true)
+        };
+      },
+      // This method will return documentElement in the following cases:
+      // 1) For the element inside the iframe without offsetParent, this method will return
+      //    documentElement of the parent window
+      // 2) For the hidden or detached element
+      // 3) For body or html element, i.e. in case of the html node - it will return itself
+      //
+      // but those exceptions were never presented as a real life use-cases
+      // and might be considered as more preferable results.
+      //
+      // This logic, however, is not guaranteed and can change at any point in the future
+      offsetParent: function() {
+        return this.map(function() {
+          var offsetParent = this.offsetParent;
+          while (offsetParent && jQuery2.css(offsetParent, "position") === "static") {
+            offsetParent = offsetParent.offsetParent;
+          }
+          return offsetParent || documentElement;
+        });
+      }
+    });
+    jQuery2.each({ scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function(method, prop) {
+      var top = "pageYOffset" === prop;
+      jQuery2.fn[method] = function(val) {
+        return access(this, function(elem, method2, val2) {
+          var win;
+          if (isWindow(elem)) {
+            win = elem;
+          } else if (elem.nodeType === 9) {
+            win = elem.defaultView;
+          }
+          if (val2 === void 0) {
+            return win ? win[prop] : elem[method2];
+          }
+          if (win) {
+            win.scrollTo(
+              !top ? val2 : win.pageXOffset,
+              top ? val2 : win.pageYOffset
+            );
+          } else {
+            elem[method2] = val2;
+          }
+        }, method, val, arguments.length);
+      };
+    });
+    jQuery2.each(["top", "left"], function(_i, prop) {
+      jQuery2.cssHooks[prop] = addGetHookIf(
+        support.pixelPosition,
+        function(elem, computed) {
+          if (computed) {
+            computed = curCSS(elem, prop);
+            return rnumnonpx.test(computed) ? jQuery2(elem).position()[prop] + "px" : computed;
+          }
+        }
+      );
+    });
+    jQuery2.each({ Height: "height", Width: "width" }, function(name2, type) {
+      jQuery2.each({
+        padding: "inner" + name2,
+        content: type,
+        "": "outer" + name2
+      }, function(defaultExtra, funcName) {
+        jQuery2.fn[funcName] = function(margin2, value) {
+          var chainable = arguments.length && (defaultExtra || typeof margin2 !== "boolean"), extra = defaultExtra || (margin2 === true || value === true ? "margin" : "border");
+          return access(this, function(elem, type2, value2) {
+            var doc;
+            if (isWindow(elem)) {
+              return funcName.indexOf("outer") === 0 ? elem["inner" + name2] : elem.document.documentElement["client" + name2];
+            }
+            if (elem.nodeType === 9) {
+              doc = elem.documentElement;
+              return Math.max(
+                elem.body["scroll" + name2],
+                doc["scroll" + name2],
+                elem.body["offset" + name2],
+                doc["offset" + name2],
+                doc["client" + name2]
+              );
+            }
+            return value2 === void 0 ? (
+              // Get width or height on the element, requesting but not forcing parseFloat
+              jQuery2.css(elem, type2, extra)
+            ) : (
+              // Set width or height on the element
+              jQuery2.style(elem, type2, value2, extra)
+            );
+          }, type, chainable ? margin2 : void 0, chainable);
+        };
+      });
+    });
+    jQuery2.each([
+      "ajaxStart",
+      "ajaxStop",
+      "ajaxComplete",
+      "ajaxError",
+      "ajaxSuccess",
+      "ajaxSend"
+    ], function(_i, type) {
+      jQuery2.fn[type] = function(fn) {
+        return this.on(type, fn);
+      };
+    });
+    jQuery2.fn.extend({
+      bind: function(types, data2, fn) {
+        return this.on(types, null, data2, fn);
+      },
+      unbind: function(types, fn) {
+        return this.off(types, null, fn);
+      },
+      delegate: function(selector, types, data2, fn) {
+        return this.on(types, selector, data2, fn);
+      },
+      undelegate: function(selector, types, fn) {
+        return arguments.length === 1 ? this.off(selector, "**") : this.off(types, selector || "**", fn);
+      },
+      hover: function(fnOver, fnOut) {
+        return this.on("mouseenter", fnOver).on("mouseleave", fnOut || fnOver);
+      }
+    });
+    jQuery2.each(
+      "blur focus focusin focusout resize scroll click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup contextmenu".split(" "),
+      function(_i, name2) {
+        jQuery2.fn[name2] = function(data2, fn) {
+          return arguments.length > 0 ? this.on(name2, null, data2, fn) : this.trigger(name2);
+        };
+      }
+    );
+    var rtrim = /^[\s\uFEFF\xA0]+|([^\s\uFEFF\xA0])[\s\uFEFF\xA0]+$/g;
+    jQuery2.proxy = function(fn, context) {
+      var tmp, args, proxy;
+      if (typeof context === "string") {
+        tmp = fn[context];
+        context = fn;
+        fn = tmp;
+      }
+      if (!isFunction2(fn)) {
+        return void 0;
+      }
+      args = slice2.call(arguments, 2);
+      proxy = function() {
+        return fn.apply(context || this, args.concat(slice2.call(arguments)));
+      };
+      proxy.guid = fn.guid = fn.guid || jQuery2.guid++;
+      return proxy;
+    };
+    jQuery2.holdReady = function(hold) {
+      if (hold) {
+        jQuery2.readyWait++;
+      } else {
+        jQuery2.ready(true);
+      }
+    };
+    jQuery2.isArray = Array.isArray;
+    jQuery2.parseJSON = JSON.parse;
+    jQuery2.nodeName = nodeName;
+    jQuery2.isFunction = isFunction2;
+    jQuery2.isWindow = isWindow;
+    jQuery2.camelCase = camelCase;
+    jQuery2.type = toType;
+    jQuery2.now = Date.now;
+    jQuery2.isNumeric = function(obj) {
+      var type = jQuery2.type(obj);
+      return (type === "number" || type === "string") && // parseFloat NaNs numeric-cast false positives ("")
+      // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+      // subtraction forces infinities to NaN
+      !isNaN(obj - parseFloat(obj));
+    };
+    jQuery2.trim = function(text) {
+      return text == null ? "" : (text + "").replace(rtrim, "$1");
+    };
+    var _jQuery = window2.jQuery, _$ = window2.$;
+    jQuery2.noConflict = function(deep) {
+      if (window2.$ === jQuery2) {
+        window2.$ = _$;
+      }
+      if (deep && window2.jQuery === jQuery2) {
+        window2.jQuery = _jQuery;
+      }
+      return jQuery2;
+    };
+    if (typeof noGlobal === "undefined") {
+      window2.jQuery = window2.$ = jQuery2;
+    }
+    return jQuery2;
+  });
+})(jquery);
+var jqueryExports = jquery.exports;
+const $$1 = /* @__PURE__ */ getDefaultExportFromCjs(jqueryExports);
 function API_POST(url = "", data2 = {}) {
   if (!url) {
     return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -48599,7 +54188,7 @@ function API_POST(url = "", data2 = {}) {
   });
 }
 function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => console.log("success")) {
-  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+  $$1.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
   }).done(function(data2) {
@@ -48609,26 +54198,9 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => consol
       window.fail_function(data2.action);
   });
 }
-function newNode(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-      weekPk: JSON.stringify(weekPk),
-      position: JSON.stringify(position2),
-      columnPk: JSON.stringify(column2),
-      columnType: JSON.stringify(column_type)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
       nodePk: JSON.stringify(source_node),
       objectID: JSON.stringify(target_node),
       objectType: JSON.stringify("node"),
@@ -48644,80 +54216,9 @@ function newNodeLink(source_node, target_node, source_port, target_port, callBac
     window.fail_function();
   }
 }
-function addStrategy(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-      workflowPk: JSON.stringify(workflowPk),
-      position: JSON.stringify(position2),
-      objectID: JSON.stringify(strategyPk),
-      objectType: JSON.stringify("workflow")
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function toggleStrategy(weekPk, is_strategy, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = () => console.log("success")) {
-  let path;
-  if (soft)
-    path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
-  else
-    path = COURSEFLOW_APP.config.post_paths.delete_self;
-  try {
-    $.post(path, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      console.log("deleteSelfQuery data");
-      console.log(data2);
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function restoreSelfQuery(objectID, objectType, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      console.log("restoreSelfQuery data");
-      console.log(data2);
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function removeComment(objectID, objectType, commentPk, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
       objectID: JSON.stringify(objectID),
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
@@ -48733,7 +54234,7 @@ function removeComment(objectID, objectType, commentPk, callBackFunction = () =>
 }
 function removeAllComments(objectID, objectType, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data2) {
@@ -48748,7 +54249,7 @@ function removeAllComments(objectID, objectType, callBackFunction = () => consol
 }
 function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
       nodePk: JSON.stringify(nodeID),
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
@@ -48762,68 +54263,17 @@ function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = ()
     window.fail_function();
   }
 }
-function duplicateSelf(objectID, objectType, parentID, parentType, throughType, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function insertSibling(objectID, objectType, parentID, parentType, throughType, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function insertChild(objectID, objectType, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function dragAction(action_data, callBackFunction = () => console.log("success")) {
   try {
     COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
+    $$1(".ui-draggable").draggable("disable");
+    $$1.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
       function(data2) {
         if (data2.action === DATA_ACTIONS.POSTED)
           callBackFunction(data2);
         else
           window.fail_function(data2.action);
-        $(".ui-draggable").draggable("enable");
+        $$1(".ui-draggable").draggable("enable");
         COURSEFLOW_APP.tinyLoader.endLoad();
       }
     );
@@ -48835,8 +54285,8 @@ function dragAction(action_data, callBackFunction = () => console.log("success")
 function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = () => console.log("success")) {
   try {
     COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+    $$1(".ui-draggable").draggable("disable");
+    $$1.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       parentID: JSON.stringify(parentID),
@@ -48850,7 +54300,7 @@ function insertedAtInstant(objectID, objectType, parentID, parentType, newPositi
         callBackFunction(data2);
       else
         window.fail_function(data2.action);
-      $(".ui-draggable").draggable("enable");
+      $$1(".ui-draggable").draggable("enable");
       COURSEFLOW_APP.tinyLoader.endLoad();
     });
   } catch (err) {
@@ -48860,7 +54310,7 @@ function insertedAtInstant(objectID, objectType, parentID, parentType, newPositi
 }
 function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = () => console.log("success")) {
   try {
-    $.post(
+    $$1.post(
       COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
       {
         outcomePk: JSON.stringify(outcomePk),
@@ -48880,7 +54330,7 @@ function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBa
 }
 function toggleFavourite(objectID, objectType, favourite, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
@@ -48896,7 +54346,7 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = () 
 }
 function getWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function(data2) {
       console.log("getWorkflowParentData");
@@ -48912,7 +54362,7 @@ function getWorkflowParentDataQuery(workflowPk, callBackFunction = () => console
 }
 function getWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
     }).done(function(data2) {
       console.log("getWorkflowChildData");
@@ -48928,7 +54378,7 @@ function getWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log(
 }
 function getPublicWorkflowDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
   try {
-    $.get(
+    $$1.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
         "0",
         workflowPk
@@ -48947,7 +54397,7 @@ function getPublicWorkflowDataQuery(workflowPk, callBackFunction = () => console
 }
 function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
   try {
-    $.get(
+    $$1.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
         "0",
         workflowPk
@@ -48966,7 +54416,7 @@ function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = () => c
 }
 function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
   try {
-    $.get(
+    $$1.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
         "0",
         nodePk
@@ -48985,7 +54435,7 @@ function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = () => consol
 }
 function setUserPermission(user_id2, objectID, objectType, permission_type, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.set_permission, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       permission_user: JSON.stringify(user_id2),
@@ -49000,38 +54450,9 @@ function setUserPermission(user_id2, objectID, objectType, permission_type, call
     window.fail_function();
   }
 }
-function getUserList(filter, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getCommentsForObject(objectID, objectType, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function addComment(objectID, objectType, text, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.add_comment, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
@@ -49045,26 +54466,9 @@ function addComment(objectID, objectType, text, callBackFunction = () => console
     window.fail_function();
   }
 }
-function addTerminology(projectPk, term, title, translation_plural, callBackFunction = () => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-      projectPk: JSON.stringify(projectPk),
-      term: JSON.stringify(term),
-      title: JSON.stringify(title),
-      translation_plural: JSON.stringify(translation_plural)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       objectsetPk: JSON.stringify(objectsetPk),
@@ -49081,7 +54485,7 @@ function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFuncti
 }
 function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => console.log("success")) {
   try {
-    $.get(
+    $$1.get(
       COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
         "0",
         workflowPk
@@ -49098,7 +54502,7 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => consol
 }
 function makeProjectLiveQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
       projectPk: JSON.stringify(projectPk)
     }).done(function(data2) {
       console.log("makeProjectLiveQuery data");
@@ -49114,7 +54518,7 @@ function makeProjectLiveQuery(projectPk, callBackFunction = (data2) => console.l
 }
 function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
       liveprojectPk: JSON.stringify(liveprojectPk),
       workflowPk: JSON.stringify(workflowPk),
       visible: JSON.stringify(visible)
@@ -49132,7 +54536,7 @@ function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBack
 }
 function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
       nodePk: JSON.stringify(nodePk),
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function(data2) {
@@ -49147,7 +54551,7 @@ function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = () => c
 }
 function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
       userassignmentPk: JSON.stringify(userassignmentPk),
       completed: JSON.stringify(completed)
     }).done(function(data2) {
@@ -49162,7 +54566,7 @@ function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunct
 }
 function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
       nodePk: JSON.stringify(nodePk)
     }).done(function(data2) {
       if (data2.action === DATA_ACTIONS.POSTED)
@@ -49176,7 +54580,7 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
 }
 function getFavouritesQuery(callBackFunction = () => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
+    $$1.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
       callBackFunction(data2);
     });
   } catch (err) {
@@ -57022,107 +62426,200 @@ var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)(
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
 default_1 = AddCircle.default = _default;
-class ImportMenu extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
+const lock_times = {
+  move: 5e3,
+  update: 5e3,
+  select: 6e4
+};
+const node_keys = ["activity", "course", "program"];
+const columnwidth = 160;
+const node_ports = {
+  source: {
+    e: [1, 0.6],
+    w: [0, 0.6],
+    s: [0.5, 1]
+  },
+  target: {
+    n: [0.5, 0],
+    e: [1, 0.4],
+    w: [0, 0.4]
   }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  submit(evt) {
-    $("#submit-button").attr("disabled", true);
-    setTimeout(() => {
-      this.props.actionFunction();
-      alert(
-        window.gettext(
-          "Your file has been submitted. Please wait while it is imported. You may close this message."
-        )
-      );
-    }, 100);
-    return true;
+};
+const port_keys = ["n", "e", "s", "w"];
+const port_direction = [
+  [0, -1],
+  [1, 0],
+  [0, 1],
+  [-1, 0]
+];
+const port_padding = 10;
+const task_keys = {
+  0: "",
+  1: "research",
+  2: "discuss",
+  3: "problem",
+  4: "analyze",
+  5: "peerreview",
+  6: "debate",
+  7: "play",
+  8: "create",
+  9: "practice",
+  10: "reading",
+  11: "write",
+  12: "present",
+  13: "experiment",
+  14: "quiz",
+  15: "curation",
+  16: "orchestration",
+  17: "instrevaluate",
+  18: "other",
+  101: "jigsaw",
+  102: "peer-instruction",
+  103: "case-studies",
+  104: "gallery-walk",
+  105: "reflective-writing",
+  106: "two-stage-exam",
+  107: "toolkit",
+  108: "one-minute-paper",
+  109: "distributed-problem-solving",
+  110: "peer-assessment"
+};
+const context_keys = {
+  0: "",
+  1: "solo",
+  2: "group",
+  3: "class",
+  101: "exercise",
+  102: "test",
+  103: "exam"
+};
+const strategy_keys = {
+  0: "",
+  1: "jigsaw",
+  2: "peer-instruction",
+  3: "case-studies",
+  4: "gallery-walk",
+  5: "reflective-writing",
+  6: "two-stage-exam",
+  7: "toolkit",
+  8: "one-minute-paper",
+  9: "distributed-problem-solving",
+  10: "peer-assessment",
+  11: "other"
+};
+const default_column_settings = {
+  0: { colour: "#6738ff", icon: "other" },
+  1: { colour: "#0b118a", icon: "ooci" },
+  2: { colour: "#114cd4", icon: "home" },
+  3: { colour: "#11b3d4", icon: "instruct" },
+  4: { colour: "#04d07d", icon: "students" },
+  10: { colour: "#6738ff", icon: "other" },
+  11: { colour: "#ad351d", icon: "homework" },
+  12: { colour: "#ed4a28", icon: "lesson" },
+  13: { colour: "#ed8934", icon: "artifact" },
+  14: { colour: "#f7ba2a", icon: "assessment" },
+  20: { colour: "#369934", icon: "other" }
+};
+const node_type_keys = {
+  0: "activity node",
+  1: "course node",
+  2: "program node"
+};
+const object_dictionary = {
+  nodelink: "nodelink",
+  node: "node",
+  week: "week",
+  column: "column",
+  outcome: "outcome",
+  outcome_base: "outcome",
+  workflow: "workflow",
+  outcomenode: "outcomenode"
+};
+const parent_dictionary = {
+  nodelink: "node",
+  node: "week",
+  week: "workflow",
+  column: "workflow",
+  outcome: "outcome",
+  outcome_base: "workflow"
+};
+const through_parent_dictionary = {
+  node: "nodeweek",
+  week: "weekworkflow",
+  column: "columnworkflow",
+  outcome: "outcomeoutcome",
+  outcome_base: "outcomeworkflow"
+};
+const get_verbose = function(data2, object_type) {
+  switch (object_type) {
+    case "node":
+      return data2.node_type_display;
+    case "workflow":
+    case "activity":
+    case "course":
+    case "program":
+      return {
+        activity: window.gettext("Activity"),
+        course: window.gettext("Course"),
+        program: window.gettext("Program"),
+        workflow: window.gettext("Workflow")
+      }[data2.type];
+    case "week":
+      return data2.week_type_display;
   }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "form",
-        {
-          encType: "multipart/form-data",
-          action: COURSEFLOW_APP.config.post_paths.import_data,
-          method: "POST",
-          id: "upload-form",
-          target: "redirect-iframe",
-          onSubmit: this.submit.bind(this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                name: "csrfmiddlewaretoken",
-                value: window.getCsrfToken()
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectID",
-                name: "objectID",
-                value: JSON.stringify(this.props.data.object_id)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "objectType",
-                name: "objectType",
-                value: JSON.stringify(this.props.data.object_type)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "hidden",
-                id: "importType",
-                name: "importType",
-                value: this.props.data.import_type
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "file",
-                id: "myFile",
-                name: "myFile",
-                accept: ".xls, .xlsx, .csv",
-                required: true
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-        "The uploading process may take some time. It is not recommended to continue editing until it is complete."
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "window-close-button",
-          onClick: this.props.actionFunction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-        }
-      )
-    ] });
+  return {
+    outcome_base: window.gettext("Outcome"),
+    nodelink: window.gettext("Node Link"),
+    outcome: window.gettext("Outcome"),
+    column: window.gettext("Column"),
+    project: window.gettext("Project"),
+    outcomehorizontallink: window.gettext("Association to the parent outcome"),
+    outcomenode: window.gettext("Association to the outcome")
+  }[object_type];
+};
+const permission_keys = {
+  none: 0,
+  view: 1,
+  edit: 2,
+  comment: 3,
+  student: 4
+};
+const role_keys = {
+  none: 0,
+  student: 1,
+  teacher: 2
+};
+const default_drop_state = {
+  node: false,
+  week: true,
+  outcome: [true, false, false, false, false]
+};
+const get_default_drop_state = (objectID, objectType, depth = 1) => {
+  let default_drop = default_drop_state[objectType];
+  if (objectType === "outcome") {
+    if (depth < default_drop.length)
+      default_drop = default_drop[depth];
+    else
+      default_drop = false;
   }
+  return default_drop;
+};
+function getColumnColour(data2) {
+  var _a;
+  if (data2.colour == null)
+    return default_column_settings[data2.column_type].colour;
+  else
+    return "#" + ("000000" + ((_a = data2.colour) == null ? void 0 : _a.toString(16))).slice(-6);
+}
+function object_sets_types() {
+  return {
+    "program outcome": capFirst(window.gettext("program outcome")),
+    "course outcome": capFirst(window.gettext("course outcome")),
+    "activity outcome": capFirst(window.gettext("activity outcome")),
+    "program node": capFirst(window.gettext("program node")),
+    "course node": capFirst(window.gettext("course node")),
+    "activity node": capFirst(window.gettext("activity node"))
+  };
 }
 class TitleText extends reactExports.Component {
   render() {
@@ -57296,13 +62793,6 @@ class WorkflowCard extends reactExports.Component {
     super(props2);
     __publicField(this, "mainDiv");
     __publicField(this, "workflow");
-    __publicField(this, "updateWorkflow");
-    __publicField(this, "selectAction");
-    __publicField(this, "userRole");
-    __publicField(this, "readOnly");
-    __publicField(this, "projectData");
-    __publicField(this, "selected");
-    __publicField(this, "noHyperlink");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
@@ -57396,9 +62886,9 @@ class WorkflowCard extends reactExports.Component {
       ] });
     });
     __publicField(this, "Visible", () => {
-      const isTeacher = this.userRole === role_keys.teacher;
+      const isTeacher = this.props.userRole === role_keys.teacher;
       const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
-      if (!this.readOnly && isTeacher && isEligibleType) {
+      if (!this.props.readOnly && isTeacher && isEligibleType) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -57424,32 +62914,25 @@ class WorkflowCard extends reactExports.Component {
     this.state = {
       favourite: props2.workflowData.favourite
     };
-    this.selected = this.props.selected;
-    this.noHyperlink = this.props.noHyperlink;
-    this.userRole = this.props.userRole;
-    this.readOnly = this.props.readOnly;
-    this.projectData = this.props.projectData;
-    this.updateWorkflow = this.props.updateWorkflow;
     this.workflow = this.props.workflowData;
-    this.selectAction = this.props.selectAction;
     this.mainDiv = reactExports.createRef();
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   clickAction() {
-    if (this.selectAction) {
-      this.selectAction(this.workflow.id);
+    if (this.props.selectAction) {
+      this.props.selectAction(this.workflow.id);
     } else {
       window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
     }
   }
   visibilityFunction(id, is_visible) {
     const isVisibleBool = is_visible === "true";
-    this.updateWorkflow(id, {
+    this.props.updateWorkflow(id, {
       is_visible: isVisibleBool
     });
-    setWorkflowVisibilityQuery(this.projectData.id, id, isVisibleBool);
+    setWorkflowVisibilityQuery(this.props.projectData.id, id, isVisibleBool);
   }
   /*******************************************************
    * RENDER
@@ -57508,7 +62991,7 @@ class WorkflowCard extends reactExports.Component {
   }
 }
 function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-  $.post(
+  $$1.post(
     COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
     {
       projectPk: JSON.stringify(projectPk),
@@ -57532,11 +63015,11 @@ function columnChanged(renderer, objectID, columnID) {
     columnPk: JSON.stringify(columnID),
     columnChange: JSON.stringify(true)
   };
-  $(document).off("nodeweek-dropped");
-  $(document).on("nodeweek-dropped", () => {
+  $$1(document).off("nodeweek-dropped");
+  $$1(document).on("nodeweek-dropped", () => {
     dragAction(renderer.dragAction["nodeweek"]);
     renderer.dragAction["nodeweek"] = null;
-    $(document).off("nodeweek-dropped");
+    $$1(document).off("nodeweek-dropped");
   });
 }
 function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
@@ -57554,17 +63037,18 @@ function insertedAt(renderer, objectID, objectType, parentID, parentType, newPos
     throughType: JSON.stringify(throughType),
     inserted: JSON.stringify(true)
   };
-  $(document).off(throughType + "-dropped");
+  $$1(document).off(throughType + "-dropped");
   if (objectID)
-    $(document).on(throughType + "-dropped", () => {
+    $$1(document).on(throughType + "-dropped", () => {
       dragAction(renderer.dragAction[throughType]);
       renderer.dragAction[throughType] = null;
-      $(document).off(throughType + "-dropped");
+      $$1(document).off(throughType + "-dropped");
     });
 }
 class MenuSection extends reactExports.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "dropdownDiv");
     this.dropdownDiv = reactExports.createRef();
   }
   /*******************************************************
@@ -57664,7 +63148,7 @@ class MenuTab extends reactExports.Component {
     let replacement_text;
     if (is_empty)
       replacement_text = this.props.data.emptytext;
-    var sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuSection,
       {
         no_hyperlink: this.props.no_hyperlink,
@@ -57683,23 +63167,17 @@ class MenuTab extends reactExports.Component {
   }
 }
 function closeMessageBox() {
-  reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
+  reactDomExports.unmountComponentAtNode($$1("#popup-container")[0]);
 }
 class WorkflowsMenu extends reactExports.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "current_project");
+    __publicField(this, "project_workflows");
     this.state = {};
     if (this.props.type === "target_project_menu") {
-      try {
-        this.current_project = project_data;
-      } catch (err) {
-      }
-      try {
-        this.current_project = workflow_data_package.project;
-      } catch (err) {
-      }
       if (this.current_project)
-        this.state.selected = this.current_project.id;
+        ;
     }
     if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
       this.project_workflows = props2.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
@@ -57708,8 +63186,8 @@ class WorkflowsMenu extends reactExports.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    $("#workflow-tabs").tabs({ active: 0 });
-    $("#workflow-tabs .tab-header").on("click", () => {
+    $$1("#workflow-tabs").tabs({ active: 0 });
+    $$1("#workflow-tabs .tab-header").on("click", () => {
       this.setState({ selected: null });
     });
   }
@@ -57879,26 +63357,24 @@ class WorkflowsMenu extends reactExports.Component {
       );
       i++;
     }
-    let current_project;
-    if (this.current_project) {
-      current_project = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            workflowData: this.current_project,
-            selected: this.state.selected === this.current_project.id,
-            noHyperlink: no_hyperlink,
-            type: this.props.type,
-            dispatch: this.props.dispatch,
-            selectAction: this.workflowSelected.bind(this)
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
-        ",",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-      ] });
-    }
+    const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCard,
+        {
+          workflowData: this.current_project,
+          selected: this.state.selected === this.current_project.id,
+          noHyperlink: no_hyperlink,
+          type: this.props.type,
+          dispatch: this.props.dispatch,
+          selectAction: this.workflowSelected.bind(this)
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
       this.getTitle(),
       current_project,
@@ -58567,33 +64043,33 @@ function renderMessageBox(data2, type, updateFunction) {
         actionFunction: updateFunction
       }
     ),
-    $("#popup-container")[0]
+    $$1("#popup-container")[0]
   );
 }
-function getLibraryQuery(callBackFunction = (data2) => console.log("success")) {
+function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
+    $$1.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
       callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function searchAllObjectsQuery(filter, data2, callBackFunction = (data22) => console.log("success")) {
+function searchAllObjectsQuery(filter, data2, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
       filter: JSON.stringify(filter),
       additional_data: JSON.stringify(data2)
-    }).done(function(data22) {
-      callBackFunction(data22);
+    }).done(function(_data2) {
+      callBackFunction(_data2);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
+function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
+    $$1.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
       callBackFunction(data2);
     });
   } catch (err) {
@@ -58601,7 +64077,7 @@ function getHomeQuery(callBackFunction = (data2) => console.log("success")) {
   }
 }
 function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () => console.log("success")) {
-  $.post(
+  $$1.post(
     COURSEFLOW_APP.config.post_paths.get_target_projects,
     {
       workflowPk: JSON.stringify(workflowPk)
@@ -58619,11 +64095,11 @@ function openTargetProjectMenu(response, updateFunction) {
     alert("Failed to find potential projects.");
   }
 }
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2) => console.log("success")) {
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function(data2) {
@@ -58638,9 +64114,9 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (data2)
     window.fail_function();
   }
 }
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (data2) => console.log("success")) {
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
   const sendPostRequest = (url, data2) => {
-    $.post(url, data2).done(function(response) {
+    $$1.post(url, data2).done(function(response) {
       console.log("duplicateBaseItemQuery response");
       console.log(response);
       if (response.action === DATA_ACTIONS.POSTED) {
@@ -58677,20 +64153,20 @@ function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction 
     window.fail_function();
   }
 }
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
       projectPk
-    }).done(function(data2) {
-      callBackFunction(data2);
+    }).done(function(_data2) {
+      callBackFunction(_data2);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function(data2) {
       console.log("getWorkflowDataQuery data");
@@ -58704,22 +64180,22 @@ function getWorkflowDataQuery(workflowPk, callBackFunction = (data2) => console.
     window.fail_function();
   }
 }
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (data2) => console.log("success")) {
-  $.post(
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+  $$1.post(
     COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },
-    (data2) => {
+    (_data2) => {
       callBackFunction();
     }
   );
 }
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => console.log("success")) {
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     console.log("workflowPk");
     console.log(workflowPk);
-    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function(data2) {
       if (data2.action === DATA_ACTIONS.POSTED)
@@ -58736,9 +64212,9 @@ function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (data2) => co
   }
   console.log("MyError getParentWorkflowInfoQuery");
 }
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (data2) => console.log("success")) {
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
     }).done(function(data2) {
@@ -58778,10 +64254,10 @@ function updateValueQuery(objectID, objectType, json, changeField = false, callB
   }
   document.lastUpdateCallFunction = () => {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+      $$1.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
         function(data2) {
           if (data2.action === DATA_ACTIONS.POSTED) {
-            callBackFunction(data2);
+            callBackFunction(_data);
           } else
             window.fail_function(data2.action);
         }
@@ -58792,9 +64268,9 @@ function updateValueQuery(objectID, objectType, json, changeField = false, callB
   };
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
 }
-function updateValueInstant(objectID, objectType, json, callBackFunction = () => console.log("success")) {
+function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+    $$1.post(COURSEFLOW_APP.config.post_paths.update_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
@@ -58803,6 +64279,200 @@ function updateValueInstant(objectID, objectType, json, callBackFunction = () =>
         callBackFunction(data2);
       else
         window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      console.log("getCommentsForObject data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
+    }).done(function(data2) {
+      console.log("toggleStrategyQuery data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+      projectPk: JSON.stringify(projectPk),
+      term: JSON.stringify(term),
+      title: JSON.stringify(title),
+      translation_plural: JSON.stringify(translation_plural)
+    }).done(function(data2) {
+      console.log("addTerminologyQuery query");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data2);
+      } else {
+        window.fail_function(data2.action);
+      }
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+      filter: JSON.stringify(filter)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      console.log("restoreSelfQuery data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+  let path;
+  if (soft)
+    path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
+  else
+    path = COURSEFLOW_APP.config.post_paths.delete_self;
+  try {
+    $$1.post(path, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      console.log("deleteSelfQuery data");
+      console.log(data2);
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.new_node, {
+      weekPk: JSON.stringify(weekPk),
+      position: JSON.stringify(position2),
+      columnPk: JSON.stringify(column2),
+      columnType: JSON.stringify(column_type)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data2);
+      } else {
+        window.fail_function(data2.action);
+      }
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $$1.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+      workflowPk: JSON.stringify(workflowPk),
+      position: JSON.stringify(position2),
+      objectID: JSON.stringify(strategyPk),
+      objectType: JSON.stringify("workflow")
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data2);
+      } else {
+        window.fail_function(data2.action);
+      }
     });
   } catch (err) {
     window.fail_function();
@@ -60518,10 +66188,10 @@ function compose() {
 }
 class WorkflowGridMenuUnconnected extends reactExports.Component {
   render() {
-    var tabs = [];
-    var tab_li = [];
-    var i = 0;
-    for (var prop in this.props.data_package) {
+    const tabs = [];
+    const tab_li = [];
+    let i = 0;
+    for (const prop in this.props.data_package) {
       tab_li.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: this.props.data_package[prop].title }) })
       );
@@ -60544,8 +66214,9 @@ class WorkflowGridMenuUnconnected extends reactExports.Component {
     ] }) });
   }
 }
+const mapStateToProps$h = (state) => ({ data_package: state });
 const WorkflowGridMenu = connect(
-  (state) => ({ data_package: state }),
+  mapStateToProps$h,
   null
 )(WorkflowGridMenuUnconnected);
 var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
@@ -60697,10 +66368,10 @@ function gridMenuReducer(state = {}, action) {
 class WorkflowGrid extends React.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "store");
     this.store = createStore(gridMenuReducer, this.props.data_package);
   }
   render() {
-    this.container = container;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowGridMenu, {}) });
   }
 }
@@ -60845,7 +66516,7 @@ function outcomeReducer(state = [], action) {
         }
         return item;
       });
-    case OutcomeOutcomeActions.MOVED_TO:
+    case OutcomeOutcomeActions.MOVED_TO: {
       const { oldParent, oldParentIndex, newParent, newParentIndex } = findParentIndices(state, action);
       if (!oldParent || !newParent)
         return state;
@@ -60866,6 +66537,7 @@ function outcomeReducer(state = [], action) {
         };
       }
       return newState;
+    }
     case OutcomeBaseActions.DELETE_SELF:
       return state.filter((item) => item.id !== action.payload.id);
     case OutcomeBaseActions.DELETE_SELF_SOFT:
@@ -60900,8 +66572,8 @@ function outcomeReducer(state = [], action) {
       );
       if (parentIndex === -1)
         return state;
-      const newState2 = state.slice();
-      const parentItem = { ...newState2[parentIndex] };
+      const newState = state.slice();
+      const parentItem = { ...newState[parentIndex] };
       const newChildOutcomeLinks = [...parentItem.child_outcome_links];
       newChildOutcomeLinks.splice(
         action.payload.new_through.rank,
@@ -60909,20 +66581,22 @@ function outcomeReducer(state = [], action) {
         action.payload.new_through.id
       );
       parentItem.child_outcome_links = newChildOutcomeLinks;
-      newState2[parentIndex] = parentItem;
+      newState[parentIndex] = parentItem;
       const childrenToAdd = action.payload.children ? action.payload.children.outcome : [];
-      return [...newState2, action.payload.new_model, ...childrenToAdd];
+      return [...newState, action.payload.new_model, ...childrenToAdd];
     }
     case OutcomeActions.CHANGE_FIELD:
     case OutcomeBaseActions.CHANGE_FIELD:
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+      if (action.payload.changeFieldID === // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID)
         return state;
       return state.map(
         (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
       );
     case OutcomeActions.CHANGE_FIELD_MANY:
     case OutcomeBaseActions.CHANGE_FIELD_MANY:
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+      if (action.payload.changeFieldID === // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID)
         return state;
       return state.map(
         (item) => action.payload.ids.includes(item.id) ? { ...item, ...action.payload.json } : item
@@ -60984,7 +66658,8 @@ function columnReducer(state = [], action) {
     case ColumnActions.INSERT_BELOW:
       return [...state, action.payload.new_model];
     case ColumnActions.CHANGE_FIELD:
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID)
+      if (action.payload.changeFieldID === // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID)
         return state;
       return state.map(
         (item) => item.id === action.payload.id ? { ...item, ...action.payload.json } : item
@@ -61177,7 +66852,7 @@ function nodeReducer(state = [], action) {
         const shouldUpdateColumn = isDeleteAction ? item.column === action.payload.id : action.payload.extra_data.includes(item.id);
         return shouldUpdateColumn ? { ...item, column: newColumn } : item;
       });
-      triggerHandlerEach($(".week .node"), "component-updated");
+      triggerHandlerEach($$1(".week .node"), "component-updated");
       return updatedState2;
     }
     case NodeActions.CHANGED_COLUMN:
@@ -61185,7 +66860,7 @@ function nodeReducer(state = [], action) {
         (item) => item.id === action.payload.id ? { ...item, column: action.payload.new_column } : item
       );
     case NodeActions.DELETE_SELF: {
-      triggerHandlerEach($(".week .node"), "component-updated");
+      triggerHandlerEach($$1(".week .node"), "component-updated");
       return state.filter((item) => item.id !== action.payload.id);
     }
     case NodeActions.CREATE_LOCK:
@@ -61193,7 +66868,7 @@ function nodeReducer(state = [], action) {
         (item) => item.id === action.payload.id ? { ...item, lock: action.payload.lock } : item
       );
     case NodeActions.DELETE_SELF_SOFT: {
-      triggerHandlerEach($(".week .node"), "component-updated");
+      triggerHandlerEach($$1(".week .node"), "component-updated");
       return state.map(
         (item) => item.id === action.payload.id ? {
           ...item,
@@ -61203,7 +66878,7 @@ function nodeReducer(state = [], action) {
       );
     }
     case NodeActions.RESTORE_SELF:
-      triggerHandlerEach($(".week .node"), "component-updated");
+      triggerHandlerEach($$1(".week .node"), "component-updated");
       return state.map(
         (item) => item.id === action.payload.id ? { ...item, deleted: false } : item
       );
@@ -61212,7 +66887,8 @@ function nodeReducer(state = [], action) {
       return [...state, action.payload.new_model];
     }
     case NodeActions.CHANGE_FIELD:
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID) {
+      if (action.payload.changeFieldID === // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID) {
         return state;
       }
       return state.map(
@@ -61345,7 +67021,8 @@ function nodelinkReducer(state = [], action) {
         (item) => item.id === action.payload.id ? { ...item, lock: action.payload.lock } : item
       );
     case NodeLinkActions.CHANGE_FIELD:
-      if (action.payload.changeFieldID === COURSEFLOW_APP.contextData.changeFieldID) {
+      if (action.payload.changeFieldID === //@ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID) {
         return state;
       }
       return state.map(
@@ -61537,7 +67214,10 @@ function workflowReducer(state = {}, action) {
       };
     case WorkFlowActions.CREATELOCK: {
       if (state.id === action.payload.id) {
-        return { ...state, lock: action.payload.lock };
+        return {
+          ...state,
+          lock: action.payload.lock
+        };
       }
       return state;
     }
@@ -61868,7 +67548,10 @@ function objectSetReducer(state = [], action) {
   switch (action.type) {
     case ObjectSetActions.TOGGLE_OBJECT_SET:
       return state.map(
-        (item) => item.id === action.payload.id ? { ...item, hidden: action.payload.hidden } : item
+        (item) => (
+          // @ts-ignore
+          item.id === action.payload.id ? { ...item, hidden: action.payload.hidden } : item
+        )
       );
     default:
       return state;
@@ -62270,10 +67953,11 @@ class ViewBarUnconnected extends reactExports.Component {
     ] });
   }
 }
+const mapStateToProps$g = (state) => ({
+  object_sets: state.objectset
+});
 const ViewBar = connect(
-  (state) => ({
-    object_sets: state.objectset
-  }),
+  mapStateToProps$g,
   null
 )(ViewBarUnconnected);
 class SelectionManager {
@@ -62289,32 +67973,32 @@ class SelectionManager {
     this.lastSidebarTab = this.getActiveTab();
   }
   setupEventListeners() {
-    $(document).on("mousedown", () => {
+    $$1(document).on("mousedown", () => {
       this.mouseClicked = true;
       setTimeout(() => {
         this.mouseClicked = false;
       }, 500);
     });
-    $(document).on("mousemove", () => {
+    $$1(document).on("mousemove", () => {
       this.mouseClicked = false;
     });
-    $(document).on("mouseup", (evt) => {
+    $$1(document).on("mouseup", (evt) => {
       if (this.mouseClicked) {
         this.changeSelection(evt);
       }
     });
   }
   getActiveTab() {
-    return $("#sidebar").tabs("option", "active");
+    return $$1("#sidebar").tabs("option", "active");
   }
   setActiveTab(tabIndex) {
-    $("#sidebar").tabs("option", "active", tabIndex);
+    $$1("#sidebar").tabs("option", "active", tabIndex);
   }
   enableTab(tabIndex) {
-    $("#sidebar").tabs("enable", tabIndex);
+    $$1("#sidebar").tabs("enable", tabIndex);
   }
   disableTab(tabIndex) {
-    $("#sidebar").tabs("disable", tabIndex);
+    $$1("#sidebar").tabs("disable", tabIndex);
   }
   /**
    * Changes the current selection to the new selection.
@@ -62399,11 +68083,9 @@ function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth
   );
 }
 class ComponentWithToggleDrop extends reactExports.Component {
-  // @todo reconcile the two var spellings
   constructor(props2) {
     super(props2);
     __publicField(this, "mainDiv");
-    __publicField(this, "maindiv");
     __publicField(this, "toggleDrop", (evt) => {
       evt.stopPropagation();
       toggleDropReduxAction(
@@ -62416,15 +68098,78 @@ class ComponentWithToggleDrop extends reactExports.Component {
       );
     });
     this.mainDiv = reactExports.createRef();
-    this.maindiv = reactExports.createRef();
     this.state = {};
+  }
+}
+class RestoreBarItem extends ComponentWithToggleDrop {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getTitle() {
+    if (this.props.data.title && this.props.data.title !== "")
+      return this.props.data.title;
+    if (this.props.objectType == "node" && this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== "")
+      return this.props.data.linked_workflow_data.title;
+    return window.gettext("Untitled");
+  }
+  restore() {
+    this.setState({ disabled: true });
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    });
+  }
+  delete() {
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently delete this object?"
+      )
+    )) {
+      $$1(this.mainDiv.current).children("button").attr("disabled", true);
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.mainDiv, className: "restore-bar-item", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: window.gettext("Deleted") + " " + this.props.data.deleted_on }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: window.gettext("Restore") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Permanently Delete") })
+    ] });
   }
 }
 class RestoreBarUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    this.objectType = "workflow";
   }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.checkVisible();
+  }
+  componentDidUpdate() {
+    this.checkVisible();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  checkVisible() {
+    if (this.props.nodes.length == 0 && this.props.weeks.length == 0 && this.props.columns.length == 0 && this.props.outcomes.length == 0 && this.props.nodelinks.length == 0) {
+      $$1("a[href='#restore-bar']").parent().addClass("hidden");
+    } else {
+      $$1("a[href='#restore-bar']").parent().removeClass("hidden");
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     const columns = this.props.columns.map((column2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       RestoreBarItem,
@@ -62490,19 +68235,6 @@ class RestoreBarUnconnected extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodelinks })
     ] });
   }
-  componentDidMount() {
-    this.checkVisible();
-  }
-  componentDidUpdate() {
-    this.checkVisible();
-  }
-  checkVisible() {
-    if (this.props.nodes.length == 0 && this.props.weeks.length == 0 && this.props.columns.length == 0 && this.props.outcomes.length == 0 && this.props.nodelinks.length == 0) {
-      $("a[href='#restore-bar']").parent().addClass("hidden");
-    } else {
-      $("a[href='#restore-bar']").parent().removeClass("hidden");
-    }
-  }
 }
 const mapRestoreBarStateToProps = (state) => ({
   weeks: state.week.filter((x) => x.deleted),
@@ -62512,1275 +68244,500 @@ const mapRestoreBarStateToProps = (state) => ({
   nodelinks: state.nodelink.filter((x) => x.deleted)
 });
 const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected);
-class RestoreBarItem extends ComponentWithToggleDrop {
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "restore-bar-item", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: window.gettext("Deleted") + " " + this.props.data.deleted_on }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: window.gettext("Restore") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Permanently Delete") })
-    ] });
+const getColumnByID = (state, id) => {
+  for (const i in state.column) {
+    const column2 = state.column[i];
+    if (column2.id == id)
+      return {
+        data: column2,
+        sibling_count: state.workflow.columnworkflow_set.length,
+        columnworkflows: state.workflow.columnworkflow_set,
+        column_order: state.workflow.columnworkflow_set.map(
+          (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
+        )
+      };
   }
-  getTitle() {
-    if (this.props.data.title && this.props.data.title !== "")
-      return this.props.data.title;
-    if (this.props.objectType == "node" && this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== "")
-      return this.props.data.linked_workflow_data.title;
-    return gettext("Untitled");
-  }
-  restore() {
-    this.setState({ disabled: true });
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  }
-  delete() {
-    if (window.confirm(
-      gettext("Are you sure you want to permanently delete this object?")
-    )) {
-      $(this.maindiv.current).children("button").attr("disabled", true);
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    }
-  }
-}
-class QuillDiv extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.maindiv = reactExports.createRef();
-    if (props2.text)
-      this.state = { charlength: props2.text.length };
-    else
-      this.state = { charlength: 0 };
-  }
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: this.maindiv, className: "quill-div" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "character-length", children: this.state.charlength + " " + window.gettext("characters") })
-    ] });
-  }
-  componentDidMount() {
-    const renderer = this.props.renderer;
-    const quill_container = this.maindiv.current;
-    const toolbarOptions = [
-      ["bold", "italic", "underline"],
-      [{ script: "sub" }, { script: "super" }],
-      [{ list: "bullet" }, { list: "ordered" }],
-      ["link"]
-      /*,['formula']*/
-    ];
-    const quill = new Quill(quill_container, {
-      theme: "snow",
-      modules: {
-        toolbar: toolbarOptions
-      },
-      placeholder: this.props.placeholder
-    });
-    this.quill = quill;
-    if (this.props.text)
-      quill.clipboard.dangerouslyPasteHTML(this.props.text);
-    quill.on("text-change", () => {
-      const text = quill_container.childNodes[0].innerHTML.replace(
-        /\<p\>\<br\>\<\/p\>\<ul\>/g,
-        "<ul>"
-      );
-      this.props.textChangeFunction(text);
-      this.setState({ charlength: text.length });
-    });
-    const toolbar = quill.getModule("toolbar");
-    toolbar.defaultLinkFunction = toolbar.handlers["link"];
-    toolbar.addHandler("link", function customLinkFunction(value) {
-      const select = quill.getSelection();
-      if (value && select["length"] == 0 && !renderer.read_only) {
-        quill.insertText(select["index"], "link");
-        quill.setSelection(select["index"], 4);
+};
+const getWeekByID = (state, id) => {
+  for (const i in state.week) {
+    const week = state.week[i];
+    if (week.id == id) {
+      if (week.is_dropped === void 0) {
+        week.is_dropped = getDropped(id, "week");
       }
-      this.defaultLinkFunction(value);
-    });
-    this.quill.enable(!this.props.disabled);
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.disabled != this.props.disabled) {
-      if (prevProps.text != this.props.text)
-        this.quill.clipboard.dangerouslyPasteHTML(this.props.text, "silent");
-      this.quill.enable(!this.props.disabled);
-    }
-    $(this.maindiv.current).find("a").click(() => {
-      $(this).attr("target", "_blank");
-    });
-  }
-}
-class EditableComponent extends ComponentWithToggleDrop {
-  //Makes the item selectable
-  addEditable(data2, no_delete = false) {
-    var _a;
-    const read_only = this.props.renderer.read_only;
-    if (this.state.selected) {
-      const type = object_dictionary[this.objectType];
-      let title_length = "100";
-      if (type == "outcome")
-        title_length = "500";
-      this.props;
-      let override = false;
-      const title = unescapeCharacters(data2.title || "");
-      const description = data2.description || "";
-      if (data2.represents_workflow)
-        override = true;
-      let sets;
-      if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
-        let term_type = data2.type;
-        if (type == "node")
-          term_type = node_type_keys[data2.node_type];
-        const allowed_sets = this.props.object_sets.filter(
-          (set) => set.term == term_type
-        );
-        if (allowed_sets.length >= 0) {
-          let disable_sets = false;
-          if (data2.depth || read_only)
-            disable_sets = true;
-          const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                disabled: disable_sets,
-                type: "checkbox",
-                name: set.id,
-                checked: data2.sets.indexOf(set.id) >= 0,
-                onChange: this.setChanged.bind(this, set.id)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
-          ] }));
-          sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
-        }
-      }
-      return reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "right-panel-inner",
-            onClick: (evt) => evt.stopPropagation(),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
-              [
-                "node",
-                "week",
-                "column",
-                "workflow",
-                "outcome",
-                "nodelink"
-              ].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "textarea",
-                  {
-                    resize: "none",
-                    disabled: override || read_only,
-                    autoComplete: "off",
-                    id: "title-editor",
-                    type: "text",
-                    value: title,
-                    maxLength: title_length,
-                    onChange: this.inputChanged.bind(this, "title")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "character-length", children: [
-                  title.length,
-                  "/",
-                  title_length,
-                  " ",
-                  window.gettext("characters")
-                ] })
-              ] }),
-              ["node", "workflow", "outcome"].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  QuillDiv,
-                  {
-                    disabled: override || read_only,
-                    text: description,
-                    maxlength: "500",
-                    textChangeFunction: this.valueChanged.bind(this, "description"),
-                    placholder: "Insert description here"
-                  }
-                )
-              ] }),
-              type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Custom Icon") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-                  "Browse options",
-                  " ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities", children: "here" }),
-                  "."
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    autoComplete: "off",
-                    id: "column-icon-editor",
-                    type: "text",
-                    value: data2.icon,
-                    maxLength: 50,
-                    onChange: this.inputChanged.bind(this, "icon")
-                  }
-                )
-              ] }),
-              (type == "outcome" && data2.depth == 0 || type == "workflow" && data2.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Code (Optional)") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    autoComplete: "off",
-                    disabled: read_only,
-                    id: "code-editor",
-                    type: "text",
-                    value: data2.code,
-                    maxLength: "50",
-                    onChange: this.inputChanged.bind(this, "code")
-                  }
-                )
-              ] }),
-              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Context") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "select",
-                  {
-                    id: "context-editor",
-                    disabled: read_only,
-                    value: data2.context_classification,
-                    onChange: this.inputChanged.bind(
-                      this,
-                      "context_classification"
-                    ),
-                    children: this.props.renderer.context_choices.filter(
-                      (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
-                    ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
-                  }
-                )
-              ] }),
-              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Task") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "select",
-                  {
-                    id: "task-editor",
-                    disabled: read_only,
-                    value: data2.task_classification,
-                    onChange: this.inputChanged.bind(this, "task_classification"),
-                    children: this.props.renderer.task_choices.filter(
-                      (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
-                    ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
-                  }
-                )
-              ] }),
-              (type == "node" || type == "workflow") && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Time") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      disabled: override || read_only,
-                      autoComplete: "off",
-                      id: "time-editor",
-                      className: "half-width",
-                      type: "text",
-                      value: data2.time_required,
-                      maxLength: "30",
-                      onChange: this.inputChanged.bind(this, "time_required")
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "select",
-                    {
-                      disabled: override || read_only,
-                      id: "time-units-editor",
-                      className: "half-width",
-                      value: data2.time_units,
-                      onChange: this.inputChanged.bind(this, "time_units"),
-                      children: this.props.renderer.time_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
-                    }
-                  )
-                ] })
-              ] }),
-              type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Colour") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: read_only,
-                    autoComplete: "off",
-                    id: "colour-editor",
-                    className: "half-width",
-                    type: "color",
-                    value: "#" + ((_a = data2.colour) == null ? void 0 : _a.toString(16)),
-                    maxLength: "30",
-                    onChange: this.inputChanged.bind(this, "colour")
-                  }
-                ) })
-              ] }),
-              (type == "workflow" && data2.type == "course" || type == "node" && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Ponderation") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    autoComplete: "off",
-                    className: "half-width",
-                    id: "ponderation-theory",
-                    type: "number",
-                    value: data2.ponderation_theory,
-                    onChange: this.inputChanged.bind(this, "ponderation_theory")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Theory") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    autoComplete: "off",
-                    className: "half-width",
-                    id: "ponderation-practical",
-                    type: "number",
-                    value: data2.ponderation_practical,
-                    onChange: this.inputChanged.bind(this, "ponderation_practical")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Practical") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    className: "half-width",
-                    autoComplete: "off",
-                    id: "ponderation-individual",
-                    type: "number",
-                    value: data2.ponderation_individual,
-                    onChange: this.inputChanged.bind(
-                      this,
-                      "ponderation_individual"
-                    )
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Individual") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    className: "half-width",
-                    autoComplete: "off",
-                    id: "time-general-hours",
-                    type: "number",
-                    value: data2.time_general_hours,
-                    onChange: this.inputChanged.bind(this, "time_general_hours")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. General Education") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: override || read_only,
-                    className: "half-width",
-                    autoComplete: "off",
-                    id: "time-specific-hours",
-                    type: "number",
-                    value: data2.time_specific_hours,
-                    onChange: this.inputChanged.bind(this, "time_specific_hours")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Specific Education") })
-              ] }),
-              type === "node" && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.linked_workflow && data2.linked_workflow_data.title }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    className: "primary-button",
-                    disabled: read_only,
-                    id: "linked-workflow-editor",
-                    onClick: () => {
-                      COURSEFLOW_APP.tinyLoader.startLoad();
-                      getLinkedWorkflowMenuQuery(
-                        data2,
-                        (response_data) => {
-                          console.log("linked a workflow");
-                        },
-                        () => {
-                          COURSEFLOW_APP.tinyLoader.endLoad();
-                        }
-                      );
-                    },
-                    children: window.gettext("Change")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: read_only,
-                    type: "checkbox",
-                    name: "respresents_workflow",
-                    checked: data2.represents_workflow,
-                    onChange: this.checkboxChanged.bind(
-                      this,
-                      "represents_workflow"
-                    )
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "repesents_workflow", children: window.gettext("Display linked workflow data") })
-              ] }),
-              type == "node" && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Other") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    disabled: read_only,
-                    type: "checkbox",
-                    name: "has_autolink",
-                    checked: data2.has_autolink,
-                    onChange: this.checkboxChanged.bind(this, "has_autolink")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "has_autolink", children: window.gettext("Draw arrow to next node") })
-              ] }),
-              type == "nodelink" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Style") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      disabled: read_only,
-                      type: "checkbox",
-                      name: "dashed",
-                      checked: data2.dashed,
-                      onChange: this.checkboxChanged.bind(this, "dashed")
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "dashed", children: window.gettext("Dashed Line") })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "text-position-range", children: window.gettext("Text Position") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "slidecontainer", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      disabled: read_only,
-                      type: "range",
-                      min: "1",
-                      max: "100",
-                      value: data2.text_position,
-                      className: "range-slider",
-                      id: "text-position-range",
-                      onChange: this.inputChanged.bind(this, "text_position")
-                    }
-                  ) })
-                ] })
-              ] }),
-              type == "workflow" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Settings") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "outcomes_type", children: window.gettext("Outcomes Style") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "select",
-                    {
-                      disabled: read_only,
-                      name: "outcomes_type",
-                      value: data2.outcomes_type,
-                      onChange: this.inputChanged.bind(this, "outcomes_type"),
-                      children: this.props.renderer.outcome_type_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "condensed", children: window.gettext("Condensed View") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      disabled: read_only,
-                      type: "checkbox",
-                      name: "condensed",
-                      checked: data2.condensed,
-                      onChange: this.checkboxChanged.bind(this, "condensed")
-                    }
-                  )
-                ] }),
-                data2.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "is_published", children: window.gettext("Published") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "input",
-                    {
-                      disabled: read_only,
-                      type: "checkbox",
-                      name: "is_published",
-                      checked: data2.published,
-                      onChange: this.checkboxChanged.bind(this, "published")
-                    }
-                  )
-                ] })
-              ] }),
-              type == "week" && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Strategy") }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "select",
-                  {
-                    disabled: read_only,
-                    value: data2.strategy_classification,
-                    onChange: this.inputChanged.bind(
-                      this,
-                      "strategy_classification"
-                    ),
-                    children: this.props.renderer.strategy_classification_choices.map(
-                      (choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name })
-                    )
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "button",
-                  {
-                    disabled: read_only,
-                    id: "toggle-strategy-editor",
-                    onClick: () => {
-                      const loader = new Loader("body");
-                      toggleStrategy(data2.id, data2.is_strategy, (response_data) => {
-                        loader.endLoad();
-                      });
-                    },
-                    children: [
-                      data2.is_strategy && window.gettext("Remove Strategy Status"),
-                      !data2.is_strategy && window.gettext("Save as Template")
-                    ]
-                  }
-                )
-              ] }),
-              sets,
-              this.getDeleteForSidebar(read_only, no_delete, type, data2)
-            ]
-          }
+      return {
+        data: week,
+        column_order: state.workflow.columnworkflow_set.map(
+          (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
         ),
-        $("#edit-menu")[0]
-      );
+        sibling_count: state.workflow.weekworkflow_set.length,
+        nodeweeks: state.nodeweek,
+        workflow_id: state.workflow.id
+      };
     }
   }
-  getDeleteForSidebar(read_only, no_delete, type, data2) {
-    if (!read_only && !no_delete && (type != "outcome" || data2.depth > 0)) {
-      if (type == "workflow")
-        return [null];
-      else
-        return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data2)];
-    }
-  }
-  inputChanged(field, evt) {
-    let value = evt.target.value;
-    if (evt.target.type == "number")
-      value = parseInt(value) || 0;
-    else if (!value)
-      value = "";
-    if (field == "colour")
-      value = parseInt(value.replace("#", ""), 16);
-    if (evt.target.type == "number" && value == "")
-      value = 0;
-    this.props.renderer.change_field(
-      this.props.data.id,
-      object_dictionary[this.objectType],
-      field,
-      value
-    );
-  }
-  setChanged(set_id, evt) {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    updateObjectSet(
-      this.props.data.id,
-      object_dictionary[this.objectType],
-      set_id,
-      evt.target.checked,
-      () => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
+};
+const getTermByID = (state, id) => {
+  for (const i in state.week) {
+    const week = state.week[i];
+    if (week.id == id) {
+      if (week.is_dropped === void 0) {
+        week.is_dropped = getDropped(id, "week");
       }
-    );
-  }
-  checkboxChanged(field, evt) {
-    this.props.renderer.change_field(
-      this.props.data.id,
-      object_dictionary[this.objectType],
-      field,
-      evt.target.checked
-    );
-  }
-  valueChanged(field, new_value) {
-    this.props.renderer.change_field(
-      this.props.data.id,
-      object_dictionary[this.objectType],
-      field,
-      new_value
-    );
-  }
-  get_border_style() {
-    const data2 = this.props.data;
-    if (!data2)
-      return;
-    const style2 = {};
-    if (data2.lock) {
-      style2.border = "2px solid " + data2.lock.user_colour;
-    }
-    return style2;
-  }
-}
-class ActionButton extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.handleClick = this.handleClick.bind(this);
-  }
-  handleClick(evt) {
-    this.props.handleClick(evt);
-    evt.stopPropagation();
-  }
-  render() {
-    const { buttonClass, titleText, buttonIcon } = this.props;
-    const iconPath = COURSEFLOW_APP.config.icon_path + buttonIcon;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: `${buttonClass} action-button`,
-        title: titleText,
-        onClick: this.handleClick,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: iconPath, alt: titleText })
+      const nodeweeks = week.nodeweek_set;
+      const column_order = filterThenSortByID(
+        state.columnworkflow,
+        state.workflow.columnworkflow_set
+      ).map((columnworkflow) => columnworkflow.column);
+      const nodes_by_column = {};
+      for (var j = 0; j < column_order.length; j++) {
+        nodes_by_column[column_order[j]] = [];
       }
-    );
+      for (var j = 0; j < nodeweeks.length; j++) {
+        const node_week = getNodeWeekByID(state, nodeweeks[j]).data;
+        const node2 = getNodeByID(state, node_week.node).data;
+        if (node2.column)
+          nodes_by_column[node2.column].push(nodeweeks[j]);
+        else
+          nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j]);
+      }
+      return {
+        data: week,
+        column_order,
+        nodes_by_column,
+        nodeweeks: state.nodeweek
+      };
+    }
   }
+};
+const getWeekWorkflowByID = (state, id) => {
+  for (const i in state.weekworkflow) {
+    const weekworkflow = state.weekworkflow[i];
+    if (weekworkflow.id == id)
+      return { data: weekworkflow, order: state.workflow.weekworkflow_set };
+  }
+};
+const getNodeByID = (state, id) => {
+  for (const i in state.node) {
+    var node2 = state.node[i];
+    if (node2.id === id) {
+      if (node2.is_dropped === void 0) {
+        node2.is_dropped = getDropped(id, "node");
+      }
+      return {
+        data: node2,
+        column: state.column.find((column2) => column2.id === node2.column),
+        object_sets: state.objectset
+      };
+    }
+  }
+  console.log("failed to find node");
+};
+const getNodeWeekByID = (state, id) => {
+  for (const i in state.nodeweek) {
+    const nodeweek = state.nodeweek[i];
+    if (nodeweek.id === id) {
+      const node2 = getNodeByID(state, nodeweek.node).data;
+      return {
+        data: nodeweek,
+        order: getWeekByID(state, nodeweek.week).nodeweek_set,
+        column: node2.column
+      };
+    }
+  }
+};
+const getNodeLinkByID = (state, id) => {
+  for (const i in state.nodelink) {
+    const nodelink = state.nodelink[i];
+    if (nodelink.id === id)
+      return { data: nodelink };
+  }
+};
+const getColumnWorkflowByID = (state, id) => {
+  for (const i in state.columnworkflow) {
+    const columnWorkflow = state.columnworkflow[i];
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: state.workflow.columnworkflow_set
+      };
+    }
+  }
+  return {
+    data: void 0,
+    order: void 0
+  };
+};
+const getStrategyByID = (state, id) => {
+  const strategies = Object.values(state.strategy);
+  const foundStrategy = strategies.find((strategy) => strategy.id === id);
+  return foundStrategy ? { data: foundStrategy } : { data: void 0 };
+};
+function findRootOutcome(state, id, rank) {
+  for (let i = 0; i < state.length; i++) {
+    if (state[i].child === id) {
+      rank.unshift({ parent: state[i].parent, through: state[i].id });
+      return findRootOutcome(state, state[i].parent, rank);
+    }
+  }
+  return { id, rank };
 }
-class CommentBox extends ComponentWithToggleDrop {
-  constructor(props2) {
-    super(props2);
-    this.input = reactExports.createRef();
-    this.submit = reactExports.createRef();
-    this.state = {};
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.setState({ has_rendered: true });
-  }
-  componentDidUpdate(prevProps) {
-    if (prevProps.show && !this.props.show) {
-      this.commentsSeen();
-      if (this.state.tagging)
-        this.setState({ tagging: false });
-    }
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addUserTag(user) {
-    const cursor_pos = this.tag_position;
-    const current_value = this.input.current.value;
-    let to_add = "";
-    if (cursor_pos > 0 && current_value[cursor_pos - 1] != " ")
-      to_add += " ";
-    to_add += "@" + user.username + " ";
-    const new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
-    this.input.current.value = new_value;
-    this.input.current.selectionStart = this.input.current.value.length;
-    this.setState({ tagging: false });
-  }
-  textChange(evt) {
-    if ($(this.input.current)[0].value && $(this.input.current)[0].value != "") {
-      $(this.submit.current).removeClass("hidden");
-    } else {
-      $(this.submit.current).addClass("hidden");
-    }
-    if (evt.nativeEvent && evt.nativeEvent.data === "@") {
-      this.tag_position = this.input.current.selectionStart - 1;
-      const loader = COURSEFLOW_APP.tinyLoader;
-      loader.startLoad();
-      getUsersForObjectQuery(
-        this.props.renderer.workflowID,
-        "workflow",
-        (response) => {
-          loader.endLoad();
-          this.setState({
-            tagging: true,
-            user_list: response.editors.concat(response.commentors)
-          });
+function findTopRank(state, outcome) {
+  for (let j = 0; j < state.outcomeworkflow.length; j++) {
+    if (state.outcomeworkflow[j].outcome === outcome.id) {
+      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
+        return state.workflow.outcomeworkflow_set.indexOf(
+          state.outcomeworkflow[j].id
+        ) + 1;
+      }
+      for (let k = 0; k < state.child_workflow.length; k++) {
+        const index = state.child_workflow[k].outcomeworkflow_set.indexOf(
+          state.outcomeworkflow[j].id
+        );
+        if (index >= 0) {
+          return index + 1;
         }
-      );
-    } else if (this.state.tagging) {
-      this.setState({ tagging: false });
+      }
+      for (let k = 0; k < state.parent_workflow.length; k++) {
+        const index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
+          state.outcomeworkflow[j].id
+        );
+        if (index >= 0) {
+          return index + 1;
+        }
+      }
     }
   }
-  removeComment(id) {
-    const parent = this.props.parent;
-    const props2 = parent.props;
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to permanently clear this comment?"
+}
+const getOutcomeByID = (state, id) => {
+  const state_section = state.outcome;
+  for (const i in state_section) {
+    const outcome = state_section[i];
+    if (outcome.id === id) {
+      if (outcome.is_dropped === void 0) {
+        outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
+      }
+      let root_outcome;
+      let rank = [];
+      let titles = [];
+      let top_rank;
+      if (outcome.depth > 0) {
+        const state_outcomeoutcome_section = state.outcomeoutcome;
+        const root_info = findRootOutcome(
+          state_outcomeoutcome_section,
+          outcome.id,
+          []
+        );
+        rank = root_info.rank.map((x) => null);
+        titles = rank.map((x) => null);
+        for (let j = 0; j < state_section.length; j++) {
+          if (state_section[j].id === root_info.id)
+            root_outcome = state_section[j];
+          for (let k = 0; k < root_info.rank.length; k++) {
+            if (root_info.rank[k].parent === state_section[j].id) {
+              titles[k] = state_section[j].title;
+              if (rank[k])
+                continue;
+              if (state_section[j].code) {
+                if (k > 0)
+                  rank[k - 1] = state_section[j].code;
+                else
+                  top_rank = state_section[j].code;
+              }
+              rank[k] = state_section[j].child_outcome_links.indexOf(
+                root_info.rank[k].through
+              ) + 1;
+            }
+          }
+        }
+      } else {
+        root_outcome = outcome;
+        if (outcome.code)
+          top_rank = outcome.code;
+      }
+      if (!top_rank)
+        top_rank = findTopRank(state, root_outcome);
+      titles.push(outcome.title);
+      rank.unshift(top_rank);
+      const hovertext = rank.map((rank_i, i2) => rank_i + ". " + titles[i2]).join(" -> ");
+      const prefix2 = rank.join(".");
+      return {
+        data: outcome,
+        hovertext,
+        prefix: prefix2,
+        object_sets: state.objectset,
+        workflow_id: state.workflow.id
+      };
+    }
+  }
+  console.log("failed to find outcome");
+};
+const getChildWorkflowByID = (state, id) => {
+  for (const i in state.child_workflow) {
+    const workflow = state.child_workflow[i];
+    if (workflow.id === id)
+      return { data: workflow };
+  }
+  console.log("failed to find child workflow");
+  return -1;
+};
+const getOutcomeOutcomeByID = (state, id) => {
+  const state_section = state.outcomeoutcome;
+  for (const i in state_section) {
+    const outcomeOutcome = state_section[i];
+    if (outcomeOutcome.id === id) {
+      return {
+        data: outcomeOutcome
+      };
+    }
+  }
+  console.log("failed to find outcomeoutcome");
+};
+const getOutcomeNodeByID = (state, id) => {
+  const outcomeNode = state.outcomenode.find((node2) => node2.id === id);
+  if (outcomeNode) {
+    return {
+      data: outcomeNode
+    };
+  }
+  console.log("Failed to find outcomenode with ID:", id);
+};
+const getOutcomeHorizontalLinkByID = (state, id) => {
+  for (const i in state.outcomehorizontallink) {
+    const outcomeHorizontalLink = state.outcomehorizontallink[i];
+    if (outcomeHorizontalLink.id == id) {
+      return {
+        data: outcomeHorizontalLink
+      };
+    }
+  }
+  console.log("failed to find outcomehorizontallink");
+};
+const getSortedOutcomeNodesFromNodes = (state, nodes) => {
+  let outcomenode_ids = [];
+  for (let i = 0; i < nodes.length; i++) {
+    outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
+  }
+  const outcomenodes = filterThenSortByID(
+    state.outcomenode,
+    outcomenode_ids
+  );
+  const outcomes = filterThenSortByID(
+    state.outcome,
+    outcomenodes.map((outcomenode) => outcomenode.outcome)
+  ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }));
+  if (outcomes.length === 0) {
+    return outcomes;
+  }
+  const base_title = capWords(window.gettext("outcomes"));
+  const object_sets = state.objectset.filter(
+    (objectset) => objectset.term === outcomes[0].type
+  );
+  if (object_sets.length === 0)
+    return [
+      {
+        objectset: {
+          title: base_title
+        },
+        outcomes
+      }
+    ];
+  const categories = [
+    {
+      objectset: { title: window.gettext("Uncategorized") },
+      outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
+    },
+    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+      objectset,
+      outcomes: outcomes.filter(
+        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
       )
-    )) {
-      removeComment(
-        props2.objectID,
-        object_dictionary[parent.objectType],
-        id,
-        parent.reloadComments.bind(parent)
-      );
-    }
+    }))
+  ];
+  console.log("returm from getSortedOutcomeNodesFromNodes");
+  console.log(categories);
+  return categories;
+};
+const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
+  console.log("getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set");
+  console.log(outcomeworkflow_set);
+  const outcomeworkflows = filterThenSortByID(
+    state.outcomeworkflow,
+    outcomeworkflow_set
+  );
+  const outcome_ids = outcomeworkflows.map(
+    (outcomeworkflow) => outcomeworkflow.outcome
+  );
+  const outcomes = filterThenSortByID(state.outcome, outcome_ids);
+  if (outcomes.length === 0) {
+    return outcomes;
   }
-  removeAllComments() {
-    const parent = this.props.parent;
-    const props2 = parent.props;
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to permanently clear all comments from this object?"
+  for (let i = 0; i < outcomes.length; i++) {
+    outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
+    outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
+  }
+  const base_title = capWords(window.gettext("outcomes"));
+  const object_sets = state.objectset.filter(
+    (objectset) => objectset.term === outcomes[0].type
+  );
+  if (object_sets.length === 0) {
+    return [
+      {
+        objectset: {
+          title: base_title
+        },
+        outcomes
+      }
+    ];
+  }
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
+  let categories = [];
+  if (uncategorized.length > 0)
+    categories = [
+      {
+        objectset: { title: window.gettext("Uncategorized") },
+        outcomes: uncategorized
+      }
+    ];
+  categories = [
+    ...categories,
+    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+      objectset,
+      outcomes: outcomes.filter(
+        (outcome) => outcome.sets.indexOf(objectset.id) >= 0
       )
-    )) {
-      removeAllComments(
-        props2.objectID,
-        object_dictionary[parent.objectType],
-        parent.reloadComments.bind(parent)
-      );
-    }
+    }))
+  ];
+  console.log("categories");
+  console.log(categories);
+  return categories;
+};
+const getDescendantOutcomes = (state, outcome, outcomes) => {
+  if (outcome.depth >= 2)
+    return;
+  const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
+    (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+  );
+  for (let i = 0; i < children.length; i++) {
+    outcomes.push(children[i].id);
+    getDescendantOutcomes(state, children[i], outcomes);
   }
-  appendComment() {
-    const text = $(this.input.current)[0].value;
-    if (!text)
-      return;
-    const parent = this.props.parent;
-    const props2 = parent.props;
-    $(this.input.current)[0].value = "";
-    $(this.submit.current).addClass("hidden");
-    addComment(
-      props2.objectID,
-      object_dictionary[parent.objectType],
-      text,
-      parent.reloadComments.bind(parent)
+};
+const getDropped = (objectId, objectType, depth = 1) => {
+  const default_drop = get_default_drop_state(
+    objectId,
+    objectType,
+    depth
+  );
+  try {
+    const storedDrop = JSON.parse(
+      window.localStorage.getItem(objectType + objectId)
     );
+    if (storedDrop === null)
+      return default_drop;
+    return storedDrop;
+  } catch (err) {
+    return default_drop;
   }
-  commentsSeen() {
-    const unread_comments = this.props.renderer.unread_comments.slice();
-    const comments = this.props.comments.map((comment2) => comment2.id);
-    this.props.renderer.unread_comments = unread_comments.filter(
-      (comment2) => comments.indexOf(comment2) < 0
-    );
+};
+const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
+  for (const i in outcomeNodes) {
+    const outcomeNode = outcomeNodes[i];
+    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
+      return { data: outcomeNode };
+  }
+  return { data: null };
+};
+const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomeworkflows_unsorted, outcomeworkflow_set, object_sets_unfiltered) => {
+  const outcomeworkflows = filterThenSortByID(
+    outcomeworkflows_unsorted,
+    outcomeworkflow_set
+  );
+  const outcome_ids = outcomeworkflows.map(
+    (outcomeworkflow) => outcomeworkflow.outcome
+  );
+  const outcomes = filterThenSortByID(outcomes_unsorted, outcome_ids);
+  for (let i = 0; i < outcomes.length; i++) {
+    outcomes[i].outcomeworkflow = outcomeworkflows[i].id;
+    outcomes[i].through_no_drag = outcomeworkflows[i].no_drag;
+  }
+  if (outcomes.length === 0)
+    return outcomes.map((outcome) => outcome.id);
+  const base_title = capWords(window.gettext("outcomes"));
+  const object_sets = object_sets_unfiltered.filter(
+    (objectset) => objectset.term === outcomes[0].type
+  );
+  if (object_sets.length === 0)
+    return [
+      {
+        objectset: { title: base_title },
+        outcomes: outcomes.map((outcome) => outcome.id)
+      }
+    ];
+  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0).map((outcome) => outcome.id);
+  let categories = [];
+  if (uncategorized.length > 0)
+    categories = [
+      {
+        objectset: { title: window.gettext("Uncategorized") },
+        outcomes: uncategorized
+      }
+    ];
+  categories = [
+    ...categories,
+    ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+      objectset,
+      outcomes: outcomes.filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0).map((outcome) => outcome.id)
+    }))
+  ];
+  console.log("getSortedOutcomeIDFromOutcomeWorkflowSet categories");
+  console.log(categories);
+  return categories;
+};
+class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    var _a, _b, _c, _d;
-    let has_comments = false;
-    const has_unread = this.props.comments.filter((value) => {
-      var _a2, _b2, _c2;
-      return (_c2 = (_b2 = (_a2 = this.props) == null ? void 0 : _a2.renderer) == null ? void 0 : _b2.unread_comments) == null ? void 0 : _c2.includes(value);
-    }).length > 0;
-    if (this.state.has_rendered) {
-      has_comments = this.props.comments.length > 0;
+    if (!this.props.data) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     }
-    let render_div;
-    const side_actions = $((_b = (_a = this.props.parent) == null ? void 0 : _a.maindiv) == null ? void 0 : _b.current).children(".side-actions").children(".comment-indicator-container");
-    if (side_actions.length > 0)
-      render_div = side_actions[0];
-    else
-      render_div = (_d = (_c = this.props.parent) == null ? void 0 : _c.maindiv) == null ? void 0 : _d.current;
-    let comment_indicator = null;
-    if (has_comments) {
-      let indicator_class = "comment-indicator hover-shade";
-      if (has_unread)
-        indicator_class += " unread";
-      comment_indicator = reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: indicator_class,
-            onClick: this.props.parent.commentClick.bind(this.props.parent),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "comment_new.svg" })
-          }
-        ),
-        render_div
-      );
-    }
-    if (!this.props.show) {
-      return comment_indicator;
-    }
-    let comments;
-    if (this.props.comments)
-      comments = this.props.comments.map((comment2) => {
-        const is_unread = this.props.renderer.unread_comments.indexOf(comment2.id) >= 0;
-        let comment_class = "comment";
-        if (is_unread)
-          comment_class += " unread";
-        const text = comment2.text.replace(
-          /@\w[@a-zA-Z0-9_.]{1,}/g,
-          (val) => "<b>" + val + "</b>"
-        );
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: comment_class, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-by", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-user", children: getUserDisplay(comment2.user) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-on", children: comment2.created_on })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "comment-text",
-              dangerouslySetInnerHTML: { __html: text }
-            }
-          ),
-          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "action-button",
-              title: window.gettext("Delete Comment"),
-              onClick: this.removeComment.bind(this, comment2.id),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "rubbish.svg" })
-            }
-          ) })
-        ] });
-      });
-    const top_contents = [];
-    top_contents.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+    return (
+      // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: this.props.data.id, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        OutcomeBarOutcome,
         {
-          className: "hover-shade",
-          title: window.gettext("Close"),
-          onClick: this.props.parent.commentClick.bind(this.props.parent),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+          objectID: this.props.data.child,
+          parentID: this.props.parentID,
+          throughParentID: this.props.data.id,
+          readOnly: this.props.readOnly
         }
-      )
-    );
-    if (!this.props.renderer.read_only && comments.length > 1)
-      top_contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            title: window.gettext("Clear All Comments"),
-            onClick: this.removeAllComments.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "rubbish.svg" })
-          }
-        )
-      );
-    let input_default = window.gettext("Add a comment");
-    if (this.props.comments && this.props.comments.length > 0)
-      input_default = window.gettext("Reply");
-    let tag_box;
-    if (this.state.tagging) {
-      tag_box = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-tag-box", children: this.state.user_list.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "user-name hover-shade",
-          onClick: this.addUserTag.bind(this, user),
-          children: getUserDisplay(user)
-        }
-      )) });
-    }
-    return reactDomExports.createPortal(
-      [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "comment-box",
-            onClick: (evt) => evt.stopPropagation(),
-            onMouseDown: (evt) => evt.stopPropagation(),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-top-row", children: top_contents }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-block", children: comments }),
-              this.props.renderer.add_comments && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-input-line", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "textarea",
-                  {
-                    className: "comment-input",
-                    placeholder: input_default,
-                    contentEditable: "true",
-                    onInput: this.textChange.bind(this),
-                    ref: this.input
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "img",
-                  {
-                    ref: this.submit,
-                    src: COURSEFLOW_APP.config.icon_path + "add_new.svg",
-                    className: "add-comment-button hidden hover-shade",
-                    onClick: this.appendComment.bind(this),
-                    title: window.gettext("Submit")
-                  }
-                )
-              ] })
-            ]
-          }
-        ),
-        tag_box,
-        comment_indicator
-      ],
-      render_div
+      ) })
     );
   }
 }
-class EditableComponentWithComments extends EditableComponent {
-  //Adds a button that opens/closes the comments dialogue
-  // @todo data is not used
-  // addCommenting(data) {
-  addCommenting(data2) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ActionButton,
-        {
-          buttonIcon: "comment_new.svg",
-          buttonClass: "comment-button",
-          titleText: window.gettext("Comments"),
-          handleClick: this.commentClick.bind(this)
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        CommentBox,
-        {
-          show: this.state.show_comments,
-          comments: this.props.data.comments,
-          parent: this,
-          renderer: this.props.renderer
-        }
-      )
-    ] });
-  }
-  commentClick(evt) {
-    evt.stopPropagation();
-    if (!this.state.show_comments) {
-      this.reloadComments(true);
-    } else
-      this.setState({ show_comments: false });
-  }
-  reloadComments(show_comments) {
-    const props2 = this.props;
-    const data2 = props2.data;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    getCommentsForObject(
-      data2.id,
-      object_dictionary[this.objectType],
-      (response_data) => {
-        this.props.dispatch(
-          ActionCreator.reloadCommentsAction(
-            this.props.data.id,
-            object_dictionary[this.objectType],
-            response_data.data_package
-          )
-        );
-        if (show_comments) {
-          this.setState({ show_comments: true });
-        }
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  }
-}
-class EditableComponentWithActions extends EditableComponentWithComments {
-  //Adds a button that restores the item.
-  addRestoreSelf(data2, alt_icon) {
-    const icon = alt_icon || "restore.svg";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: icon,
-        buttonClass: "delete-self-button",
-        titleText: window.gettext("Restore"),
-        handleClick: this.restoreSelf.bind(this, data2)
-      }
-    );
-  }
-  restoreSelf(data2) {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    restoreSelfQuery(
-      data2.id,
-      object_dictionary[this.objectType],
-      (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad;
-      }
-    );
-  }
-  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
-  addDeleteSelf(data2, alt_icon) {
-    const icon = alt_icon || "rubbish.svg";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: icon,
-        buttonClass: "delete-self-button",
-        titleText: window.gettext("Delete"),
-        handleClick: this.deleteSelf.bind(this, data2)
-      }
-    );
-  }
-  deleteSelf(data2) {
-    if (this.props.renderer)
-      this.props.renderer.selection_manager.deleted(this);
-    if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
-      alert(window.gettext("You cannot delete the last ") + this.objectType);
-      return;
-    }
-    if (window.confirm(
-      window.gettext("Are you sure you want to delete this ") + get_verbose(
-        this.props.data,
-        this.objectType
-      ).toLowerCase() + "?"
-    )) {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      deleteSelfQuery(
-        data2.id,
-        object_dictionary[this.objectType],
-        true,
-        (response_data) => {
-          COURSEFLOW_APP.tinyLoader.endLoad();
-        }
-      );
-    }
-  }
-  //Adds a button that duplicates the item (with a confirmation).
-  addDuplicateSelf(data2) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: "duplicate.svg",
-        buttonClass: "duplicate-self-button",
-        titleText: window.gettext("Duplicate"),
-        handleClick: this.duplicateSelf.bind(this, data2)
-      }
-    );
-  }
-  duplicateSelf(data2) {
-    var props2 = this.props;
-    var type = this.objectType;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    duplicateSelf(
-      data2.id,
-      object_dictionary[type],
-      props2.parentID,
-      parent_dictionary[type],
-      through_parent_dictionary[type],
-      (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  }
-  //Adds a button that inserts a sibling below the item.
-  addInsertSibling(data2) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: "add_new.svg",
-        buttonClass: "insert-sibling-button",
-        titleText: window.gettext("Insert Below"),
-        handleClick: this.insertSibling.bind(this, data2)
-      }
-    );
-  }
-  insertSibling(data2) {
-    var type = this.objectType;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    insertSibling(
-      data2.id,
-      object_dictionary[type],
-      this.props.parentID,
-      parent_dictionary[type],
-      through_parent_dictionary[type],
-      (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  }
-  //Adds a button that inserts a child to them item
-  addInsertChild(data2) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: "create_new_child.svg",
-        buttonClass: "insert-child-button",
-        titleText: window.gettext("Insert Child"),
-        handleClick: this.insertChild.bind(this, data2)
-      }
-    );
-  }
-  insertChild(data2) {
-    const type = this.objectType;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    insertChild(data2.id, object_dictionary[type], (response_data) => {
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  }
-}
-class EditableComponentWithSorting extends EditableComponentWithActions {
-  makeSortableNode(sortable_block, parent_id, draggable_type, draggable_selector, axis = false, grid = false, restrictTo = null, handle = false, containment = ".workflow-container") {
-    if (this.props.renderer.read_only)
-      return;
-    let cursorAt = {};
-    if (draggable_type == "weekworkflow")
-      cursorAt = { top: 20 };
-    if (draggable_type == "nodeweek")
-      cursorAt = { top: 20, left: 50 };
-    var props2 = this.props;
-    sortable_block.draggable({
-      containment,
-      axis,
-      cursor: "move",
-      cursorAt,
-      handle,
-      distance: 10,
-      refreshPositions: true,
-      helper: (e, item) => {
-        var helper = $(document.createElement("div"));
-        helper.addClass(draggable_type + "-ghost");
-        helper.appendTo(".workflow-wrapper > .workflow-container");
-        helper.width($(e.target).width());
-        return helper;
-      },
-      start: (e, ui) => {
-        var drag_item = $(e.target);
-        if (drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")) {
-          e.preventDefault();
-          return false;
-        }
-        if (drag_item.children(".locked:not(.locked-" + COURSEFLOW_APP.contextData.user_id + ")").length > 0) {
-          e.preventDefault();
-          return false;
-        }
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
-        drag_item.attr("data-old-parent-id", parent_id);
-        drag_item.attr("data-restrict-to", restrictTo);
-        var old_index = drag_item.prevAll().length;
-        drag_item.attr("data-old-index", old_index);
-        props2.renderer.selection_manager.changeSelection(null, null);
-        this.startSortFunction(
-          parseInt(drag_item.attr("data-child-id")),
-          draggable_type
-        );
-      },
-      drag: (e, ui) => {
-        if (draggable_type == "nodeweek") {
-          const new_target = $(
-            "#" + $(e.target).attr("id") + draggable_selector
-          );
-          var delta_x = Math.round(
-            (ui.helper.offset().left - $("#" + $(e.target).attr("id") + draggable_selector).children(handle).first().offset().left) / columnwidth
-          );
-          if (delta_x != 0) {
-            const child_id = parseInt($(e.target).attr("data-child-id"));
-            this.sortableColumnChangedFunction(
-              child_id,
-              delta_x,
-              parseInt(new_target.attr("data-column-id"))
-            );
-          }
-        }
-      },
-      stop: (e, ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
-        $(document).triggerHandler(draggable_type + "-dropped");
-      }
-    });
-    sortable_block.droppable({
-      tolerance: "pointer",
-      droppable: ".node-ghost",
-      over: (e, ui) => {
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        var new_index = drop_item.prevAll().length;
-        var new_parent_id = parseInt(drop_item.parent().attr("id"));
-        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
-          drag_helper.addClass("valid-drop");
-          drop_item.addClass("new-node-drop-over");
-        } else if (drag_item.is(draggable_selector)) {
-          var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
-          var old_index = parseInt(drag_item.attr("data-old-index"));
-          if (old_parent_id != new_parent_id || old_index != new_index) {
-            const child_id = parseInt(drag_item.attr("data-child-id"));
-            if (restrictTo && drag_item.attr("data-restrict-to") != restrictTo) {
-              this.sortableMovedOutFunction(
-                parseInt(drag_item.attr("id")),
-                new_index,
-                draggable_type,
-                new_parent_id,
-                child_id
-              );
-            } else {
-              drag_item.attr("data-old-parent-id", new_parent_id);
-              drag_item.attr("data-old-index", new_index);
-              this.sortableMovedFunction(
-                parseInt(drag_item.attr("id")),
-                new_index,
-                draggable_type,
-                new_parent_id,
-                child_id
-              );
-            }
-            this.lockChild(child_id, true, draggable_type);
-          }
-        } else
-          ;
-      },
-      out: (e, ui) => {
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        var drop_item = $(e.target);
-        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
-          drag_helper.removeClass("valid-drop");
-          drop_item.removeClass("new-node-drop-over");
-        }
-      },
-      drop: (e, ui) => {
-        $(".new-node-drop-over").removeClass("new-node-drop-over");
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var new_index = drop_item.prevAll().length + 1;
-        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
-          newNode(
-            this.props.objectID,
-            new_index,
-            drag_item[0].dataDraggable.column,
-            drag_item[0].dataDraggable.column_type,
-            (response_data) => {
-            }
-          );
-        }
-      }
-    });
-  }
-  sortableMovedOutFunction() {
-    console.log(
-      "A sortable was moved out, but no specific function was given to the component."
-    );
-  }
-  stopSortFunction() {
-  }
-  startSortFunction(id, through_type) {
-    this.lockChild(id, true, through_type);
-  }
-  lockChild(id, lock2, through_type) {
-    let object_type;
-    if (through_type == "nodeweek")
-      object_type = "node";
-    if (through_type == "weekworkflow")
-      object_type = "week";
-    if (through_type == "columnworkflow")
-      object_type = "column";
-    if (through_type == "outcomeoutcome")
-      object_type = "outcome";
-    if (through_type == "outcomeworkflow")
-      object_type = "outcome";
-    this.props.renderer.lock_update(
-      { object_id: id, object_type },
-      lock_times.move,
-      lock2
-    );
-  }
-}
+const mapOutcomeOutcomeStateToProps$1 = (state, ownProps) => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID);
+};
+const OutcomeBarOutcomeOutcome = connect(
+  mapOutcomeOutcomeStateToProps$1,
+  null
+)(OutcomeBarOutcomeOutcomeUnconnected);
 class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
+  // private objectType: string
   constructor(props2) {
     super(props2);
-    this.objectType = "outcome";
+    __publicField(this, "children_block");
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    __publicField(this, "toggleDrop", (evt) => {
+      evt.stopPropagation();
+      this.setState({ is_dropped: !this.state.is_dropped });
+    });
     this.children_block = reactExports.createRef();
     this.state = { is_dropped: props2.data.depth < 1 };
   }
@@ -63789,26 +68746,19 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = { outcome: this.props.data.id };
-    $(this.maindiv.current).mouseenter((evt) => {
+    $$1(this.mainDiv.current)[0].dataDraggable = { outcome: this.props.data.id };
+    $$1(this.mainDiv.current).mouseenter((evt) => {
       this.toggleCSS(true, "hover");
     });
-    $(this.maindiv.current).mouseleave((evt) => {
+    $$1(this.mainDiv.current).mouseleave((evt) => {
       this.toggleCSS(false, "hover");
     });
-    $(this.children_block.current).mouseleave((evt) => {
+    $$1(this.children_block.current).mouseleave((evt) => {
       this.toggleCSS(true, "hover");
     });
-    $(this.children_block.current).mouseenter((evt) => {
+    $$1(this.children_block.current).mouseenter((evt) => {
       this.toggleCSS(false, "hover");
     });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  toggleDrop(evt) {
-    evt.stopPropagation();
-    this.setState({ is_dropped: !this.state.is_dropped });
   }
   makeDraggable() {
     var _a;
@@ -63816,9 +68766,9 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
       return;
     const draggable_selector = "outcome";
     const draggable_type = "outcome";
-    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
-      helper: (e, item) => {
-        var helper = $(document.createElement("div"));
+    $$1((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+      helper: (_e, _item) => {
+        const helper = $$1(document.createElement("div"));
         helper.addClass("outcome-ghost");
         helper.appendTo(document.body);
         return helper;
@@ -63826,13 +68776,13 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
       cursor: "move",
       cursorAt: { top: 20, left: 100 },
       distance: 10,
-      start: (e, ui) => {
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
+      start: (_e, _ui) => {
+        $$1(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $$1(draggable_selector).addClass("dragging");
       },
-      stop: (e, ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
+      stop: (_e, _ui) => {
+        $$1(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $$1(draggable_selector).removeClass("dragging");
       }
     });
   }
@@ -63845,23 +68795,23 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
   }
   toggleCSS(is_toggled, type) {
     if (is_toggled) {
-      $(".outcome-" + this.props.data.id).addClass("outcome-" + type);
+      $$1(".outcome-" + this.props.data.id).addClass("outcome-" + type);
       if (this.props.nodes.length)
-        $(this.props.nodes.map((node2) => ".node#" + node2).join(", ")).addClass(
+        $$1(this.props.nodes.map((node2) => ".node#" + node2).join(", ")).addClass(
           "outcome-" + type
         );
       if (this.props.horizontaloutcomes.length)
-        $(
+        $$1(
           this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
         ).addClass("outcome-" + type);
     } else {
-      $(".outcome-" + this.props.data.id).removeClass("outcome-" + type);
+      $$1(".outcome-" + this.props.data.id).removeClass("outcome-" + type);
       if (this.props.nodes.length)
-        $(
+        $$1(
           this.props.nodes.map((node2) => ".node#" + node2).join(", ")
         ).removeClass("outcome-" + type);
       if (this.props.horizontaloutcomes.length)
-        $(
+        $$1(
           this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
         ).removeClass("outcome-" + type);
     }
@@ -63893,7 +68843,7 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
     if (this.state.is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.ngettext(
         "descendant",
         "descendants",
         data2.child_outcome_links.length
@@ -63902,7 +68852,7 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
       "div",
       {
         className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeTitle,
@@ -63939,54 +68889,24 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
     );
   }
 }
-const mapOutcomeBarOutcomeStateToProps$1 = (state, own_props) => ({
-  ...getOutcomeByID(state, own_props.objectID),
-  nodes: state.outcomenode.filter((outcomenode) => outcomenode.outcome == own_props.objectID).map((outcomenode) => outcomenode.node),
-  horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == own_props.objectID).map((ochl) => ochl.outcome)
+const mapOutcomeBarOutcomeStateToProps = (state, ownProps) => ({
+  ...getOutcomeByID(state, ownProps.objectID),
+  nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == ownProps.objectID).map((outcomeNode) => outcomeNode.node),
+  horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == ownProps.objectID).map((ochl) => ochl.outcome)
 });
 const OutcomeBarOutcome = connect(
-  mapOutcomeBarOutcomeStateToProps$1,
+  mapOutcomeBarOutcomeStateToProps,
   null
 )(OutcomeBarOutcomeUnconnected);
-class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.objectType = "outcomeoutcome";
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OutcomeBarOutcome,
-      {
-        objectID: data2.child,
-        parentID: this.props.parentID,
-        throughParentID: data2.id,
-        readOnly: this.props.readOnly
-      }
-    ) });
-  }
-}
-const mapOutcomeOutcomeStateToProps$2 = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
-const OutcomeBarOutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps$2,
-  null
-)(OutcomeBarOutcomeOutcomeUnconnected);
 class OutcomeBarUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    __publicField(this, "readOnly");
-    __publicField(this, "renderMethod");
-    this.readOnly = this.props.readOnly;
-    this.renderMethod = this.props.renderMethod;
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
-    this.renderMethod($("#container"), ViewType.OUTCOME_EDIT);
+    this.props.renderMethod($$1("#container"), ViewType.OUTCOME_EDIT);
   }
   /*******************************************************
    * RENDER
@@ -64016,7 +68936,7 @@ class OutcomeBarUnconnected extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomeBlock }),
-      !this.readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      !this.props.readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
           className: "primary-button",
@@ -64029,7 +68949,7 @@ class OutcomeBarUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapStateToProps$7 = (state) => ({
+const mapStateToProps$f = (state) => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
@@ -64037,39 +68957,62 @@ const mapStateToProps$7 = (state) => ({
   workflow_type: state.workflow.type
 });
 const OutcomeBarConnected = connect(
-  mapStateToProps$7,
+  mapStateToProps$f,
   null
 )(OutcomeBarUnconnected);
+class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return (
+      // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> // @todo this.mainDiv is not defined or used
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: this.props.data.id, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ParentOutcome,
+        {
+          objectID: this.props.data.child,
+          parentID: this.props.parentID,
+          throughParentID: this.props.data.id,
+          readOnly: this.props.readOnly
+        }
+      ) })
+    );
+  }
+}
+const mapParentOutcomeOutcomeStateToProps = (state, own_props) => {
+  return getOutcomeOutcomeByID(state, own_props.objectID);
+};
+const ParentOutcomeOutcome = connect(
+  mapParentOutcomeOutcomeStateToProps,
+  null
+)(ParentOutcomeOutcomeUnconnected);
 class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    const children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const children = data2.child_outcome_links.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       ParentOutcomeOutcome,
       {
-        objectID: outcomeoutcome,
+        objectID: item,
         parentID: data2.id,
-        renderer: this.props.renderer
+        readOnly: this.props.readOnly
       },
-      outcomeoutcome
+      item
     ));
-    let dropIcon;
-    if (this.state.is_dropped)
-      dropIcon = "droptriangleup";
-    else
-      dropIcon = "droptriangledown";
+    const dropIcon = this.state.is_dropped ? "droptriangleup" : "droptriangledown";
     let droptext;
-    if (this.state.is_dropped)
-      droptext = gettext("hide");
-    else
-      droptext = gettext("show ") + children.length + " " + ngettext("descendant", "descendants", children.length);
+    if (this.state.is_dropped) {
+      droptext = window.gettext("hide");
+    } else {
+      droptext = window.gettext("show ") + children.length + " " + window.ngettext("descendant", "descendants", children.length);
+    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             OutcomeTitle,
@@ -64106,65 +69049,88 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
     );
   }
 }
-const mapOutcomeBarOutcomeStateToProps = (state, own_props) => ({
+const MapStateToProps = (state, own_props) => ({
   ...getOutcomeByID(state, own_props.objectID),
-  nodes: state.outcomenode.filter((outcomenode) => outcomenode.outcome == own_props.objectID).map((outcomenode) => outcomenode.node),
+  nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == own_props.objectID).map((outcomeNode) => outcomeNode.node),
   horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == own_props.objectID).map((ochl) => ochl.outcome)
 });
 const ParentOutcome = connect(
-  mapOutcomeBarOutcomeStateToProps,
+  MapStateToProps,
   null
 )(ParentOutcomeUnconnected);
-class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ParentOutcome,
+const CompletionImg = ({
+  completionStatus,
+  outcomesType
+}) => {
+  const contents = [];
+  if (outcomesType === 0 || completionStatus & 1) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "img",
       {
-        objectID: data2.child,
-        parentID: this.props.parentID,
-        throughParentID: data2.id,
-        renderer: this.props.renderer
+        className: "self-completed",
+        src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
       }
-    ) });
+    );
   }
-}
-const mapParentOutcomeOutcomeStateToProps = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
-const ParentOutcomeOutcome = connect(
-  mapParentOutcomeOutcomeStateToProps,
-  null
-)(ParentOutcomeOutcomeUnconnected);
+  if (completionStatus & 2) {
+    const divclass = "";
+    contents.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
+    );
+  }
+  if (completionStatus & 4) {
+    const divclass = "";
+    contents.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
+    );
+  }
+  if (completionStatus & 8) {
+    const divclass = "";
+    contents.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
+    );
+  }
+  return contents;
+};
 class ParentOutcomeBarUnconnected extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+  }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    var outcomebaroutcomes = data2.map((category) => [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
-        category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "parent-outcome-node", children: [
-          getCompletionImg(outcome.degree, 1),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ParentOutcome,
-            {
-              objectID: outcome.id,
-              renderer: this.props.renderer
-            },
-            outcome.id
-          )
-        ] }))
-      ] })
-    ]);
-    if (outcomebaroutcomes.length == 0) {
-      outcomebaroutcomes = gettext(
-        "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
-      );
-    }
+    const placeholderText = window.gettext(
+      "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
+    );
+    const outcomeBarOutcomes = data2.map((categoryItem, index) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: categoryItem.objectset.title }),
+          categoryItem.outcomes.map((outcomeItem, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "parent-outcome-node", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              CompletionImg,
+              {
+                outcomesType: outcomeItem.degree,
+                completionStatus: 1
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ParentOutcome,
+              {
+                objectID: outcomeItem.id,
+                parentID: this.props.renderer.parentID,
+                readOnly: this.props.renderer.readOnly,
+                throughParentID: this.props.data.id
+              },
+              outcomeItem.id
+            )
+          ] }, index2))
+        ] })
+      ] }, index);
+    });
     let multiple_parent_warning;
     if (this.props.parent_nodes.length > 1) {
       multiple_parent_warning = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -64178,12 +69144,12 @@ class ParentOutcomeBarUnconnected extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes from Parent Workflow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-bar-outcome-block", children: [
         multiple_parent_warning,
-        outcomebaroutcomes
+        outcomeBarOutcomes.length ? outcomeBarOutcomes : placeholderText
       ] })
     ] });
   }
 }
-const mapParentOutcomeBarStateToProps = (state) => {
+const mapStateToProps$e = (state) => {
   return {
     data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
     workflow: state.workflow,
@@ -64191,7 +69157,7 @@ const mapParentOutcomeBarStateToProps = (state) => {
   };
 };
 const ParentOutcomeBar = connect(
-  mapParentOutcomeBarStateToProps,
+  mapStateToProps$e,
   null
 )(ParentOutcomeBarUnconnected);
 class ComparisonViewBar extends reactExports.Component {
@@ -64238,7 +69204,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = {
+    $$1(this.mainDiv.current)[0].dataDraggable = {
       column: this.props.data.id,
       column_type: null
     };
@@ -64250,9 +69216,9 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
     var _a;
     const draggable_selector = "node-week";
     const draggable_type = "nodeweek";
-    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
+    $$1((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
       helper: (_e, _item) => {
-        const helper = $(document.createElement("div"));
+        const helper = $$1(document.createElement("div"));
         helper.addClass("node-ghost");
         helper.appendTo(document.body);
         return helper;
@@ -64261,12 +69227,12 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
       cursorAt: { top: 20, left: 100 },
       distance: 10,
       start: (_e, _ui) => {
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
+        $$1(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $$1(draggable_selector).addClass("dragging");
       },
       stop: (_e, _ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
+        $$1(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $$1(draggable_selector).removeClass("dragging");
       }
     });
   }
@@ -64281,7 +69247,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
       {
         dangerouslySetInnerHTML: { __html: title },
         className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         style: { backgroundColor: getColumnColour(data2) }
       }
     );
@@ -64293,7 +69259,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = {
+    $$1(this.mainDiv.current)[0].dataDraggable = {
       column: null,
       column_type: this.props.columnType
     };
@@ -64310,7 +69276,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
       "div",
       {
         className: "new-node new-column node-bar-column node-bar-sortable",
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: title
       }
     );
@@ -64329,8 +69295,8 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
     if (this.props.data)
       return (
         // @todo was
-        // <div className="node-bar-column-workflow" ref={this.maindiv}>
-        // however this.maindiv is not defined in this class
+        // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+        // however this.mainDiv is not defined in this class
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBarColumn,
           {
@@ -64343,8 +69309,8 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
     else
       return (
         // @todo was
-        // <div className="node-bar-column-workflow" ref={this.maindiv}>
-        // however this.maindiv is not defined in this class
+        // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+        // however this.mainDiv is not defined in this class
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBarColumnCreator,
           {
@@ -64355,11 +69321,11 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
       );
   }
 }
-const mapStateToProps$6 = (state, ownProps) => {
+const mapStateToProps$d = (state, ownProps) => {
   return getColumnWorkflowByID(state, ownProps.objectID);
 };
 const NodeBarColumnWorkflow = connect(
-  mapStateToProps$6,
+  mapStateToProps$d,
   null
 )(NodeBarColumnWorkflowUnconnected);
 class StrategyUnconnected extends ComponentWithToggleDrop {
@@ -64375,7 +69341,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable();
-    $(this.maindiv.current)[0].dataDraggable = { strategy: this.props.data.id };
+    $$1(this.mainDiv.current)[0].dataDraggable = { strategy: this.props.data.id };
   }
   /*******************************************************
    * FUNCTIONS
@@ -64384,9 +69350,9 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
     var _a;
     const draggable_selector = "week-workflow";
     const draggable_type = "weekworkflow";
-    $((_a = this.maindiv) == null ? void 0 : _a.current).draggable({
+    $$1((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
       helper: (_e, _item) => {
-        const helper = $(document.createElement("div"));
+        const helper = $$1(document.createElement("div"));
         helper.addClass("week-ghost");
         helper.appendTo(document.body);
         return helper;
@@ -64395,12 +69361,12 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
       cursorAt: { top: 20, left: 100 },
       distance: 10,
       start: (_e, _ui) => {
-        $(".workflow-canvas").addClass("dragging-" + draggable_type);
-        $(draggable_selector).addClass("dragging");
+        $$1(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $$1(draggable_selector).addClass("dragging");
       },
       stop: (_e, _ui) => {
-        $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-        $(draggable_selector).removeClass("dragging");
+        $$1(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $$1(draggable_selector).removeClass("dragging");
       }
     });
   }
@@ -64420,7 +69386,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop {
       "div",
       {
         className: "strategy-bar-strategy strategy new-strategy",
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           strategyIcon,
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: title })
@@ -64436,10 +69402,6 @@ const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
 class NodeBarUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    __publicField(this, "columnChoices");
-    __publicField(this, "readOnly");
-    this.columnChoices = this.props.columnChoices;
-    this.readOnly = this.props.readOnly;
   }
   /*******************************************************
    * RENDER
@@ -64452,7 +69414,7 @@ class NodeBarUnconnected extends reactExports.Component {
         NodeBarColumnWorkflow,
         {
           objectID: columnWorkflow,
-          columnChoices: this.columnChoices
+          columnChoices: this.props.columnChoices
         },
         `NodeBarColumnWorkflow-${index}`
       )
@@ -64465,7 +69427,7 @@ class NodeBarUnconnected extends reactExports.Component {
             NodeBarColumnWorkflow,
             {
               columnType: data2.DEFAULT_COLUMNS[i2],
-              columnChoices: this.columnChoices
+              columnChoices: this.props.columnChoices
             }
           )
         );
@@ -64477,12 +69439,12 @@ class NodeBarUnconnected extends reactExports.Component {
         NodeBarColumnWorkflow,
         {
           columnType: data2.DEFAULT_CUSTOM_COLUMN,
-          columnChoices: this.columnChoices
+          columnChoices: this.props.columnChoices
         },
         `NodeBarColumnWorkflow-last-${i}`
       )
     );
-    if (!this.readOnly) {
+    if (!this.props.readOnly) {
       nodebar_nodes = [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarColumnWorkflows })
@@ -64499,20 +69461,24 @@ class NodeBarUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapNodeBarStateToProps = (state) => ({
+const mapStateToProps$c = (state) => ({
   data: state.workflow,
   columns: state.column,
   available_strategies: state.strategy
   // saltise_strategies: state.saltise_strategy
 });
-const NodeBar = connect(mapNodeBarStateToProps, null)(NodeBarUnconnected);
+const NodeBar = connect(
+  mapStateToProps$c,
+  null
+)(NodeBarUnconnected);
 class RightSideBar extends reactExports.Component {
   /*******************************************************
-   * props
-   *  renderer.view_type
+   * props from renderer
+   *
+   *  view_type
    *  is_strategy
    *  read_only
-   *
+   *  column_choices
    *******************************************************/
   /*******************************************************
    * LIFECYCLE
@@ -64524,25 +69490,28 @@ class RightSideBar extends reactExports.Component {
    * FUNCTIONS
    *******************************************************/
   makeTabs() {
-    $("#sidebar").tabs({
+    $$1("#sidebar").tabs({
       active: 1,
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
         if (ui.oldTab.length === 0)
-          $("#sidebar").removeClass("collapsed");
+          $$1("#sidebar").removeClass("collapsed");
         else if (ui.newTab.length === 0)
-          $("#sidebar").addClass("collapsed");
+          $$1("#sidebar").addClass("collapsed");
       }
     });
-    $("#sidebar").on("dblclick mousedown", (evt) => {
+    $$1("#sidebar").on("dblclick mousedown", (evt) => {
       evt.stopPropagation();
     });
-    $("#side-bar-close-button").on("click", () => {
-      $("#sidebar").addClass("collapsed");
-      $("#sidebar").tabs("option", "active", false);
+    $$1("#side-bar-close-button").on("click", () => {
+      $$1("#sidebar").addClass("collapsed");
+      $$1("#sidebar").tabs("option", "active", false);
     });
   }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   getNodeBar() {
     if (this.props.context === "workflow")
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -64560,14 +69529,13 @@ class RightSideBar extends reactExports.Component {
       return null;
     }
     if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer, jjj: 8 });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       OutcomeBarConnected,
       {
         renderMethod: this.props.parentRender,
-        readOnly: true,
-        yes: true
+        readOnly: true
       }
     );
   }
@@ -64651,6 +69619,1343 @@ class RightSideBar extends reactExports.Component {
       !renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", id: "side-bar-close-button", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_forward" }) })
     ] });
+  }
+}
+class QuillDiv extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    __publicField(this, "mainDiv");
+    // @todo see below, referencing global quill object
+    // @ts-ignore
+    __publicField(this, "quill");
+    this.mainDiv = reactExports.createRef();
+    const charlength = this.props.text ? this.props.text.length : 0;
+    this.state = {
+      charlength
+    };
+  }
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: this.mainDiv, className: "quill-div" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "character-length", children: this.state.charlength + " " + window.gettext("characters") })
+    ] });
+  }
+  componentDidMount() {
+    const quill_container = this.mainDiv.current;
+    const readOnly = this.props.readOnly;
+    const toolbarOptions = [
+      ["bold", "italic", "underline"],
+      [{ script: "sub" }, { script: "super" }],
+      [{ list: "bullet" }, { list: "ordered" }],
+      ["link"]
+      /*,['formula']*/
+    ];
+    const quill = new Quill(quill_container, {
+      theme: "snow",
+      modules: {
+        toolbar: toolbarOptions
+      },
+      placeholder: this.props.placeholder
+    });
+    this.quill = quill;
+    if (this.props.text) {
+      quill.clipboard.dangerouslyPasteHTML(this.props.text);
+    }
+    quill.on("text-change", () => {
+      const text = quill_container.childNodes[0].innerHTML.replace(
+        /\<p\>\<br\>\<\/p\>\<ul\>/g,
+        "<ul>"
+      );
+      this.props.textChangeFunction(text);
+      this.setState({ charlength: text.length });
+    });
+    const toolbar = quill.getModule("toolbar");
+    toolbar.defaultLinkFunction = toolbar.handlers["link"];
+    toolbar.addHandler("link", function customLinkFunction(value) {
+      const select = quill.getSelection();
+      if (value && select["length"] == 0 && !readOnly) {
+        quill.insertText(select["index"], "link");
+        quill.setSelection(select["index"], 4);
+      }
+      this.defaultLinkFunction(value);
+    });
+    this.quill.enable(!this.props.disabled);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.disabled != this.props.disabled) {
+      if (prevProps.text != this.props.text)
+        this.quill.clipboard.dangerouslyPasteHTML(this.props.text, "silent");
+      this.quill.enable(!this.props.disabled);
+    }
+    $$1(this.mainDiv.current).find("a").click(() => {
+      $$1(this).attr("target", "_blank");
+    });
+  }
+}
+class EditableComponent extends ComponentWithToggleDrop {
+  constructor() {
+    super(...arguments);
+    //Makes the item selectable
+    __publicField(this, "objectType");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "BrowseOptions", ({ data: data2, override, readOnly }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Custom Icon") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+          "Browse options",
+          " ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities", children: "here" }),
+          "."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            disabled: override || readOnly,
+            autoComplete: "off",
+            id: "column-icon-editor",
+            type: "text",
+            value: data2.icon,
+            maxLength: 50,
+            onChange: this.inputChanged.bind(this, "icon")
+          }
+        )
+      ] });
+    });
+    __publicField(this, "Task", ({ data: data2, readOnly }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Task") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            id: "task-editor",
+            disabled: readOnly,
+            value: data2.task_classification,
+            onChange: this.inputChanged.bind(this, "task_classification"),
+            children: this.props.renderer.task_choices.filter(
+              (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
+            ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+          }
+        )
+      ] });
+    });
+    __publicField(this, "Time", ({ data: data2, readOnly, override }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Time") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: override || readOnly,
+              autoComplete: "off",
+              id: "time-editor",
+              className: "half-width",
+              type: "text",
+              value: data2.time_required,
+              maxLength: 30,
+              onChange: this.inputChanged.bind(this, "time_required")
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "select",
+            {
+              disabled: override || readOnly,
+              id: "time-units-editor",
+              className: "half-width",
+              value: data2.time_units,
+              onChange: this.inputChanged.bind(this, "time_units"),
+              children: this.props.renderer.time_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+            }
+          )
+        ] })
+      ] });
+    });
+    __publicField(this, "Colour", ({ data: data2, readOnly }) => {
+      var _a;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Colour") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            disabled: readOnly,
+            autoComplete: "off",
+            id: "colour-editor",
+            className: "half-width",
+            type: "color",
+            value: "#" + ((_a = data2.colour) == null ? void 0 : _a.toString(16)),
+            maxLength: 30,
+            onChange: this.inputChanged.bind(this, "colour")
+          }
+        ) })
+      ] });
+    });
+    __publicField(this, "CodeOptional", ({ data: data2, readOnly }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Code (Optional)") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            autoComplete: "off",
+            disabled: readOnly,
+            id: "code-editor",
+            type: "text",
+            value: data2.code,
+            maxLength: 50,
+            onChange: this.inputChanged.bind(this, "code")
+          }
+        )
+      ] });
+    });
+    __publicField(this, "Description", ({ readOnly, override, description }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          QuillDiv,
+          {
+            disabled: override || readOnly,
+            text: description,
+            maxlength: 500,
+            textChangeFunction: this.valueChanged.bind(this, "description"),
+            placeholder: "Insert description here",
+            readOnly: this.props.renderer.read_only
+          }
+        )
+      ] });
+    });
+    __publicField(this, "Context", ({ data: data2, readOnly }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Context") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            id: "context-editor",
+            disabled: readOnly,
+            value: data2.context_classification,
+            onChange: this.inputChanged.bind(this, "context_classification"),
+            children: this.props.renderer.context_choices.filter(
+              (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
+            ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+          }
+        )
+      ] });
+    });
+    __publicField(this, "Ponderation", ({ data: data2, override, read_only }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Ponderation") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          disabled: override || read_only,
+          autoComplete: "off",
+          className: "half-width",
+          id: "ponderation-theory",
+          type: "number",
+          value: data2.ponderation_theory,
+          onChange: this.inputChanged.bind(this, "ponderation_theory")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Theory") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          disabled: override || read_only,
+          autoComplete: "off",
+          className: "half-width",
+          id: "ponderation-practical",
+          type: "number",
+          value: data2.ponderation_practical,
+          onChange: this.inputChanged.bind(this, "ponderation_practical")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Practical") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          disabled: override || read_only,
+          className: "half-width",
+          autoComplete: "off",
+          id: "ponderation-individual",
+          type: "number",
+          value: data2.ponderation_individual,
+          onChange: this.inputChanged.bind(this, "ponderation_individual")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Individual") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          disabled: override || read_only,
+          className: "half-width",
+          autoComplete: "off",
+          id: "time-general-hours",
+          type: "number",
+          value: data2.time_general_hours,
+          onChange: this.inputChanged.bind(this, "time_general_hours")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. General Education") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          disabled: override || read_only,
+          className: "half-width",
+          autoComplete: "off",
+          id: "time-specific-hours",
+          type: "number",
+          value: data2.time_specific_hours,
+          onChange: this.inputChanged.bind(this, "time_specific_hours")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width", children: window.gettext("hrs. Specific Education") })
+    ] }));
+    __publicField(this, "Workflow", ({ data: data2, readOnly }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Settings") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "outcomes_type", children: window.gettext("Outcomes Style") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "select",
+            {
+              disabled: readOnly,
+              name: "outcomes_type",
+              value: data2.outcomes_type,
+              onChange: this.inputChanged.bind(this, "outcomes_type"),
+              children: this.props.renderer.outcome_type_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "condensed", children: window.gettext("Condensed View") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: readOnly,
+              type: "checkbox",
+              name: "condensed",
+              checked: data2.condensed,
+              onChange: this.checkboxChanged.bind(this, "condensed")
+            }
+          )
+        ] }),
+        data2.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "is_published", children: window.gettext("Published") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: readOnly,
+              type: "checkbox",
+              name: "is_published",
+              checked: data2.published,
+              onChange: this.checkboxChanged.bind(this, "published")
+            }
+          )
+        ] })
+      ] });
+    });
+    __publicField(this, "Style", ({ readOnly, data: data2 }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Style") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: readOnly,
+              type: "checkbox",
+              name: "dashed",
+              checked: data2.dashed,
+              onChange: this.checkboxChanged.bind(this, "dashed")
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "dashed", children: window.gettext("Dashed Line") })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "text-position-range", children: window.gettext("Text Position") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "slidecontainer", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: readOnly,
+              type: "range",
+              min: "1",
+              max: "100",
+              value: data2.text_position,
+              className: "range-slider",
+              id: "text-position-range",
+              onChange: this.inputChanged.bind(this, "text_position")
+            }
+          ) })
+        ] })
+      ] });
+    });
+    __publicField(this, "Title", ({ readOnly, override, title, titleLength }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Title") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "textarea",
+          {
+            style: { resize: "none" },
+            disabled: override || readOnly,
+            autoComplete: "off",
+            id: "title-editor",
+            value: title,
+            maxLength: Number(titleLength),
+            onChange: this.inputChanged.bind(this, "title")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "character-length", children: [
+          title.length,
+          "/",
+          titleLength,
+          " ",
+          window.gettext("characters")
+        ] })
+      ] });
+    });
+    __publicField(this, "Other", ({ readOnly, data: data2 }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Other") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            disabled: readOnly,
+            type: "checkbox",
+            name: "has_autolink",
+            checked: data2.has_autolink,
+            onChange: this.checkboxChanged.bind(this, "has_autolink")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "has_autolink", children: window.gettext("Draw arrow to next node") })
+      ] });
+    });
+    __publicField(this, "LinkedWorkflow", ({ readOnly, data: data2 }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.linked_workflow && data2.linked_workflow_data.title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "primary-button",
+            disabled: readOnly,
+            id: "linked-workflow-editor",
+            onClick: () => {
+              COURSEFLOW_APP.tinyLoader.startLoad();
+              getLinkedWorkflowMenuQuery(
+                data2,
+                (response_data) => {
+                  console.log("linked a workflow");
+                },
+                () => {
+                  COURSEFLOW_APP.tinyLoader.endLoad();
+                }
+              );
+            },
+            children: window.gettext("Change")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            disabled: readOnly,
+            type: "checkbox",
+            name: "respresents_workflow",
+            checked: data2.represents_workflow,
+            onChange: this.checkboxChanged.bind(this, "represents_workflow")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "repesents_workflow", children: window.gettext("Display linked workflow data") })
+      ] });
+    });
+    __publicField(this, "Strategy", ({ readOnly, data: data2 }) => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Strategy") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            disabled: readOnly,
+            value: data2.strategy_classification,
+            onChange: this.inputChanged.bind(this, "strategy_classification"),
+            children: this.props.renderer.strategy_classification_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            disabled: readOnly,
+            id: "toggle-strategy-editor",
+            onClick: () => {
+              const loader = new Loader("body");
+              toggleStrategyQuery(data2.id, data2.is_strategy, (response_data) => {
+                loader.endLoad();
+              });
+            },
+            children: [
+              data2.is_strategy && window.gettext("Remove Strategy Status"),
+              !data2.is_strategy && window.gettext("Save as Template")
+            ]
+          }
+        )
+      ] });
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  setChanged(set_id, evt) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    updateObjectSet(
+      this.props.data.id,
+      object_dictionary[this.objectType],
+      set_id,
+      evt.target.checked,
+      () => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+  checkboxChanged(field, evt) {
+    this.props.renderer.change_field(
+      this.props.data.id,
+      object_dictionary[this.objectType],
+      field,
+      evt.target.checked
+    );
+  }
+  valueChanged(field, new_value) {
+    this.props.renderer.change_field(
+      this.props.data.id,
+      object_dictionary[this.objectType],
+      field,
+      new_value
+    );
+  }
+  get_border_style() {
+    const data2 = this.props.data;
+    if (!data2)
+      return;
+    const border2 = data2.lock ? "2px solid " + data2.lock.user_colour : void 0;
+    return {
+      border: border2
+    };
+  }
+  inputChanged(field, evt) {
+    let value = evt.target.value;
+    if (evt.target.type == "number")
+      value = parseInt(value) || 0;
+    else if (!value)
+      value = "";
+    if (field == "colour")
+      value = parseInt(value.replace("#", ""), 16);
+    if (evt.target.type == "number" && value == "")
+      value = 0;
+    this.props.renderer.change_field(
+      this.props.data.id,
+      object_dictionary[this.objectType],
+      field,
+      value
+    );
+  }
+  getDeleteForSidebar(read_only, no_delete, type, data2) {
+    if (!read_only && !no_delete && (type != "outcome" || data2.depth > 0)) {
+      if (type == "workflow") {
+        return [null];
+      } else {
+        return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data2)];
+      }
+    }
+  }
+  //  @todo only implemented in children
+  addDeleteSelf(_data2, _alt_icon) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+  }
+  /*******************************************************
+   * PORTAL
+   *******************************************************/
+  addEditable(data2, no_delete = false) {
+    let sets;
+    const read_only = this.props.renderer.read_only;
+    const title = unescapeCharacters(data2.title || "");
+    const type = object_dictionary[this.objectType];
+    const override = data2.represents_workflow ? true : false;
+    const title_length = type === "outcome" ? 500 : 100;
+    const description = data2.description || "";
+    if (this.state.selected) {
+      if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
+        const term_type = type == "node" ? node_type_keys[data2.node_type] : data2.type;
+        const allowed_sets = this.props.object_sets.filter(
+          (set) => set.term == term_type
+        );
+        if (allowed_sets.length >= 0) {
+          const disable_sets = data2.depth || read_only ? true : false;
+          const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                disabled: disable_sets,
+                type: "checkbox",
+                name: set.id,
+                checked: data2.sets.indexOf(set.id) >= 0,
+                onChange: this.setChanged.bind(this, set.id)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
+          ] }));
+          sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
+        }
+      }
+      return reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "right-panel-inner",
+            onClick: (evt) => evt.stopPropagation(),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
+              [
+                "node",
+                "week",
+                "column",
+                "workflow",
+                "outcome",
+                "nodelink"
+              ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Title,
+                {
+                  readOnly: read_only,
+                  override,
+                  title,
+                  titleLength: title_length
+                }
+              ),
+              ["node", "workflow", "outcome"].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Description,
+                {
+                  readOnly: read_only,
+                  override,
+                  description
+                }
+              ),
+              type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.BrowseOptions,
+                {
+                  data: data2,
+                  readOnly: read_only,
+                  override
+                }
+              ),
+              (type == "outcome" && data2.depth == 0 || type == "workflow" && data2.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
+              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
+              type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
+              (type == "node" || type == "workflow") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
+              type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
+              (type == "workflow" && data2.type == "course" || type == "node" && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Ponderation,
+                {
+                  data: data2,
+                  override,
+                  read_only
+                }
+              ),
+              type === "node" && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
+              type == "node" && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
+              type == "nodelink" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
+              type == "workflow" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
+              type == "week" && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
+              sets,
+              this.getDeleteForSidebar(read_only, no_delete, type, data2)
+            ]
+          }
+        ),
+        $$1("#edit-menu")[0]
+      );
+    }
+  }
+}
+class ActionButton extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(evt) {
+    this.props.handleClick(evt);
+    evt.stopPropagation();
+  }
+  render() {
+    const { buttonClass, titleText, buttonIcon } = this.props;
+    const iconPath = COURSEFLOW_APP.config.icon_path + buttonIcon;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: `${buttonClass} action-button`,
+        title: titleText,
+        onClick: this.handleClick,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: iconPath, alt: titleText })
+      }
+    );
+  }
+}
+class CommentBox extends ComponentWithToggleDrop {
+  constructor(props2) {
+    super(props2);
+    __publicField(this, "input");
+    __publicField(this, "submit");
+    __publicField(this, "tagPosition");
+    // @todo this was previously not defined
+    __publicField(this, "unread_comments");
+    this.input = reactExports.createRef();
+    this.submit = reactExports.createRef();
+    this.state = {};
+    this.tagPosition = 0;
+    this.unread_comments = this.props.unread_comments;
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.setState({
+      has_rendered: true
+    });
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.show && !this.props.show) {
+      this.commentsSeen();
+      if (this.state.tagging) {
+        this.setState({
+          tagging: false
+        });
+      }
+    }
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  addUserTag(user) {
+    const cursor_pos = this.tagPosition;
+    const current_value = this.input.current.value;
+    let to_add = "";
+    if (cursor_pos > 0 && current_value[cursor_pos - 1] != " ")
+      to_add += " ";
+    to_add += "@" + user.username + " ";
+    const new_value = current_value.slice(0, cursor_pos) + to_add + current_value.slice(cursor_pos + 1);
+    this.input.current.value = new_value;
+    this.input.current.selectionStart = this.input.current.value.length;
+    this.setState({
+      tagging: false
+    });
+  }
+  textChange(evt) {
+    if ($$1(this.input.current)[0].value && $$1(this.input.current)[0].value != "") {
+      $$1(this.submit.current).removeClass("hidden");
+    } else {
+      $$1(this.submit.current).addClass("hidden");
+    }
+    if (evt.nativeEvent && evt.nativeEvent.data === "@") {
+      this.tagPosition = this.input.current.selectionStart - 1;
+      const loader = COURSEFLOW_APP.tinyLoader;
+      loader.startLoad();
+      getUsersForObjectQuery(this.props.workflowID, "workflow", (response) => {
+        loader.endLoad();
+        this.setState({
+          tagging: true,
+          user_list: response.editors.concat(response.commentors)
+        });
+      });
+    } else if (this.state.tagging) {
+      this.setState({ tagging: false });
+    }
+  }
+  removeComment(id) {
+    const parent = this.props.parent;
+    const props2 = parent.props;
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently clear this comment?"
+      )
+    )) {
+      removeComment(
+        props2.objectID,
+        object_dictionary[parent.objectType],
+        id,
+        parent.reloadComments.bind(parent)
+      );
+    }
+  }
+  removeAllComments() {
+    const parent = this.props.parent;
+    const props2 = parent.props;
+    if (window.confirm(
+      window.gettext(
+        "Are you sure you want to permanently clear all comments from this object?"
+      )
+    )) {
+      removeAllComments(
+        props2.objectID,
+        object_dictionary[parent.objectType],
+        parent.reloadComments.bind(parent)
+      );
+    }
+  }
+  appendComment() {
+    const text = $$1(this.input.current)[0].value;
+    if (!text)
+      return;
+    const parent = this.props.parent;
+    const props2 = parent.props;
+    $$1(this.input.current)[0].value = "";
+    $$1(this.submit.current).addClass("hidden");
+    addComment(
+      props2.objectID,
+      object_dictionary[parent.objectType],
+      text,
+      parent.reloadComments.bind(parent)
+    );
+  }
+  commentsSeen() {
+    const unread_comments = this.unread_comments.slice();
+    const comments = this.props.comments.map((comment2) => comment2.id);
+    this.unread_comments = unread_comments.filter(
+      (comment2) => comments.indexOf(comment2) < 0
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var _a, _b, _c, _d;
+    let has_comments = false;
+    const has_unread = this.props.comments.filter((value) => {
+      var _a2;
+      return (_a2 = this.unread_comments) == null ? void 0 : _a2.includes(value);
+    }).length > 0;
+    if (this.state.has_rendered) {
+      has_comments = this.props.comments.length > 0;
+    }
+    let render_div;
+    const side_actions = $$1((_b = (_a = this.props.parent) == null ? void 0 : _a.mainDiv) == null ? void 0 : _b.current).children(".side-actions").children(".comment-indicator-container");
+    if (side_actions.length > 0)
+      render_div = side_actions[0];
+    else
+      render_div = (_d = (_c = this.props.parent) == null ? void 0 : _c.mainDiv) == null ? void 0 : _d.current;
+    let comment_indicator = null;
+    if (has_comments) {
+      let indicator_class = "comment-indicator hover-shade";
+      if (has_unread)
+        indicator_class += " unread";
+      comment_indicator = reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: indicator_class,
+            onClick: this.props.parent.commentClick.bind(this.props.parent),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "comment_new.svg" })
+          }
+        ),
+        render_div
+      );
+    }
+    if (!this.props.show) {
+      return comment_indicator;
+    }
+    let comments;
+    if (this.props.comments)
+      comments = this.props.comments.map((comment2) => {
+        const is_unread = this.unread_comments.indexOf(comment2.id) >= 0;
+        let comment_class = "comment";
+        if (is_unread)
+          comment_class += " unread";
+        const text = comment2.text.replace(
+          /@\w[@a-zA-Z0-9_.]{1,}/g,
+          (val) => "<b>" + val + "</b>"
+        );
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: comment_class, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-by", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-user", children: getUserDisplay(comment2.user) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-on", children: comment2.created_on })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "comment-text",
+              dangerouslySetInnerHTML: { __html: text }
+            }
+          ),
+          !this.props.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "action-button",
+              title: window.gettext("Delete Comment"),
+              onClick: this.removeComment.bind(this, comment2.id),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "rubbish.svg" })
+            }
+          ) })
+        ] });
+      });
+    const top_contents = [];
+    top_contents.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "hover-shade",
+          title: window.gettext("Close"),
+          onClick: this.props.parent.commentClick.bind(this.props.parent),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+        }
+      )
+    );
+    if (!this.props.read_only && comments.length > 1)
+      top_contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            title: window.gettext("Clear All Comments"),
+            onClick: this.removeAllComments.bind(this),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "rubbish.svg" })
+          }
+        )
+      );
+    let input_default = window.gettext("Add a comment");
+    if (this.props.comments && this.props.comments.length > 0)
+      input_default = window.gettext("Reply");
+    let tag_box;
+    if (this.state.tagging) {
+      tag_box = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-tag-box", children: this.state.user_list.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "user-name hover-shade",
+          onClick: this.addUserTag.bind(this, user),
+          children: getUserDisplay(user)
+        }
+      )) });
+    }
+    return reactDomExports.createPortal(
+      [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "comment-box",
+            onClick: (evt) => evt.stopPropagation(),
+            onMouseDown: (evt) => evt.stopPropagation(),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-top-row", children: top_contents }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-block", children: comments }),
+              this.props.add_comments && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-input-line", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "textarea",
+                  {
+                    ref: this.input,
+                    className: "comment-input",
+                    placeholder: input_default,
+                    contentEditable: "true",
+                    onInput: this.textChange.bind(this)
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    ref: this.submit,
+                    src: COURSEFLOW_APP.config.icon_path + "add_new.svg",
+                    className: "add-comment-button hidden hover-shade",
+                    onClick: this.appendComment.bind(this),
+                    title: window.gettext("Submit")
+                  }
+                )
+              ] })
+            ]
+          }
+        ),
+        tag_box,
+        comment_indicator
+      ],
+      render_div
+    );
+  }
+}
+class EditableComponentWithComments extends EditableComponent {
+  //Adds a button that opens/closes the comments dialogue
+  // @todo sometimes dota is not used
+  // addCommenting(data) {
+  // addCommenting(_data: any) {
+  addCommenting() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ActionButton,
+        {
+          buttonIcon: "comment_new.svg",
+          buttonClass: "comment-button",
+          titleText: window.gettext("Comments"),
+          handleClick: this.commentClick.bind(this)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CommentBox,
+        {
+          show: this.state.show_comments,
+          comments: this.props.data.comments,
+          parent: this,
+          renderer: this.props.renderer,
+          workflowID: this.props.renderer.workflowID,
+          unread_comments: this.props.renderer.unread_comments,
+          read_only: this.props.renderer.read_only,
+          add_comments: this.props.renderer.add_comments
+        }
+      )
+    ] });
+  }
+  commentClick(evt) {
+    evt.stopPropagation();
+    if (!this.state.show_comments) {
+      this.reloadComments(true);
+    } else
+      this.setState({ show_comments: false });
+  }
+  reloadComments(show_comments) {
+    const data2 = this.props.data;
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    getCommentsForObjectQuery(
+      data2.id,
+      object_dictionary[this.objectType],
+      (response_data) => {
+        this.props.dispatch(
+          ActionCreator.reloadCommentsAction(
+            this.props.data.id,
+            object_dictionary[this.objectType],
+            response_data.data_package
+          )
+        );
+        if (show_comments) {
+          this.setState({ show_comments: true });
+        }
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+}
+class EditableComponentWithActions extends EditableComponentWithComments {
+  //Adds a button that restores the item.
+  addRestoreSelf(data2, alt_icon) {
+    const icon = alt_icon || "restore.svg";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Restore"),
+        handleClick: this.restoreSelf.bind(this, data2)
+      }
+    );
+  }
+  restoreSelf(data2) {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    restoreSelfQuery(
+      data2.id,
+      object_dictionary[this.objectType],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad;
+      }
+    );
+  }
+  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
+  addDeleteSelf(data2, alt_icon) {
+    const icon = alt_icon || "rubbish.svg";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Delete"),
+        handleClick: this.deleteSelf.bind(this, data2)
+      }
+    );
+  }
+  deleteSelf(data2) {
+    if (this.props.renderer) {
+      this.props.renderer.selection_manager.deleted(this);
+    }
+    if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
+      alert(window.gettext("You cannot delete the last ") + this.objectType);
+      return;
+    }
+    if (window.confirm(
+      window.gettext("Are you sure you want to delete this ") + get_verbose(
+        this.props.data,
+        this.objectType
+      ).toLowerCase() + "?"
+    )) {
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      deleteSelfQuery(
+        data2.id,
+        object_dictionary[this.objectType],
+        true,
+        (response_data) => {
+          COURSEFLOW_APP.tinyLoader.endLoad();
+        }
+      );
+    }
+  }
+  //Adds a button that duplicates the item (with a confirmation).
+  addDuplicateSelf(data2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: "duplicate.svg",
+        buttonClass: "duplicate-self-button",
+        titleText: window.gettext("Duplicate"),
+        handleClick: this.duplicateSelf.bind(this, data2)
+      }
+    );
+  }
+  duplicateSelf(data2) {
+    this.props;
+    const type = this.objectType;
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    duplicateSelfQuery(
+      data2.id,
+      object_dictionary[type],
+      this.props.parentID,
+      parent_dictionary[type],
+      through_parent_dictionary[type],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+  //Adds a button that inserts a sibling below the item.
+  addInsertSibling(data2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: "add_new.svg",
+        buttonClass: "insert-sibling-button",
+        titleText: window.gettext("Insert Below"),
+        handleClick: this.insertSibling.bind(this, data2)
+      }
+    );
+  }
+  insertSibling(data2) {
+    const type = this.objectType;
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    insertSiblingQuery(
+      data2.id,
+      object_dictionary[type],
+      this.props.parentID,
+      parent_dictionary[type],
+      through_parent_dictionary[type],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+  //Adds a button that inserts a child to them item
+  addInsertChild(data2) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: "create_new_child.svg",
+        buttonClass: "insert-child-button",
+        titleText: window.gettext("Insert Child"),
+        handleClick: this.insertChild.bind(this, data2)
+      }
+    );
+  }
+  insertChild(data2) {
+    const type = this.objectType;
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    insertChildQuery(
+      data2.id,
+      object_dictionary[type],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  }
+}
+class EditableComponentWithSorting extends EditableComponentWithActions {
+  /*******************************************************
+   * PLACHOLDERS
+   *******************************************************/
+  // @todo this is an 'abstract like' placholder
+  // this needs to be untangled
+  sortableColumnChangedFunction(id, delta_x, old_column) {
+    console.log("column change not sent");
+  }
+  sortableMovedFunction(_drag_item_id, _new_index, _draggable_type, _new_parent_id, _child_id) {
+    console.log(
+      "A sortable was moved out, but no specific function was given to the component."
+    );
+  }
+  sortableMovedOutFunction(_drag_item_id, _new_index, _draggable_type, _new_parent_id, _child_id) {
+    console.log(
+      "A sortable was moved out, but no specific function was given to the component."
+    );
+  }
+  makeSortableNode(sortable_block, parent_id, draggable_type, draggable_selector, axis = false, grid = false, restrictTo = null, handle = false, containment = ".workflow-container") {
+    if (this.props.renderer.read_only)
+      return;
+    let cursorAt = {};
+    if (draggable_type == "weekworkflow")
+      cursorAt = { top: 20 };
+    if (draggable_type == "nodeweek")
+      cursorAt = { top: 20, left: 50 };
+    const props2 = this.props;
+    sortable_block.draggable({
+      containment,
+      // @ts-ignore
+      axis,
+      cursor: "move",
+      cursorAt,
+      handle,
+      distance: 10,
+      refreshPositions: true,
+      helper: (e, item) => {
+        const helper = $$1(document.createElement("div"));
+        helper.addClass(draggable_type + "-ghost");
+        helper.appendTo(".workflow-wrapper > .workflow-container");
+        helper.width($$1(e.target).width());
+        return helper;
+      },
+      start: (e, ui) => {
+        const drag_item = $$1(e.target);
+        if (drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")) {
+          e.preventDefault();
+          return false;
+        }
+        if (drag_item.children(
+          // @ts-ignore
+          ".locked:not(.locked-" + COURSEFLOW_APP.contextData.user_id + ")"
+        ).length > 0) {
+          e.preventDefault();
+          return false;
+        }
+        $$1(".workflow-canvas").addClass("dragging-" + draggable_type);
+        $$1(draggable_selector).addClass("dragging");
+        drag_item.attr("data-old-parent-id", parent_id);
+        drag_item.attr("data-restrict-to", restrictTo);
+        const old_index = drag_item.prevAll().length;
+        drag_item.attr("data-old-index", old_index);
+        props2.renderer.selection_manager.changeSelection(null, null);
+        this.startSortFunction(
+          parseInt(drag_item.attr("data-child-id")),
+          draggable_type
+        );
+      },
+      drag: (e, ui) => {
+        if (draggable_type == "nodeweek") {
+          const new_target = $$1(
+            "#" + $$1(e.target).attr("id") + draggable_selector
+          );
+          const delta_x = Math.round(
+            (ui.helper.offset().left - $$1("#" + $$1(e.target).attr("id") + draggable_selector).children(handle).first().offset().left) / columnwidth
+          );
+          if (delta_x != 0) {
+            const child_id = parseInt($$1(e.target).attr("data-child-id"));
+            this.sortableColumnChangedFunction(
+              child_id,
+              delta_x,
+              parseInt(new_target.attr("data-column-id"))
+            );
+          }
+        }
+      },
+      stop: (e, ui) => {
+        $$1(".workflow-canvas").removeClass("dragging-" + draggable_type);
+        $$1(draggable_selector).removeClass("dragging");
+        $$1(document).triggerHandler(draggable_type + "-dropped");
+      }
+    });
+    sortable_block.droppable({
+      tolerance: "pointer",
+      // @ts-ignore
+      droppable: ".node-ghost",
+      over: (e, ui) => {
+        const drop_item = $$1(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
+        const new_index = drop_item.prevAll().length;
+        const new_parent_id = parseInt(drop_item.parent().attr("id"));
+        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
+          drag_helper.addClass("valid-drop");
+          drop_item.addClass("new-node-drop-over");
+        } else if (drag_item.is(draggable_selector)) {
+          const old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
+          const old_index = parseInt(drag_item.attr("data-old-index"));
+          if (old_parent_id != new_parent_id || old_index != new_index) {
+            const child_id = parseInt(drag_item.attr("data-child-id"));
+            if (restrictTo && drag_item.attr("data-restrict-to") != restrictTo) {
+              this.sortableMovedOutFunction(
+                parseInt(drag_item.attr("id")),
+                new_index,
+                draggable_type,
+                new_parent_id,
+                child_id
+              );
+            } else {
+              drag_item.attr("data-old-parent-id", new_parent_id);
+              drag_item.attr("data-old-index", new_index);
+              this.sortableMovedFunction(
+                parseInt(drag_item.attr("id")),
+                new_index,
+                draggable_type,
+                new_parent_id,
+                child_id
+              );
+            }
+            this.lockChild(child_id, true, draggable_type);
+          }
+        } else
+          ;
+      },
+      out: (e, ui) => {
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
+        const drop_item = $$1(e.target);
+        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
+          drag_helper.removeClass("valid-drop");
+          drop_item.removeClass("new-node-drop-over");
+        }
+      },
+      drop: (e, ui) => {
+        $$1(".new-node-drop-over").removeClass("new-node-drop-over");
+        const drop_item = $$1(e.target);
+        const drag_item = ui.draggable;
+        const new_index = drop_item.prevAll().length + 1;
+        if (draggable_type == "nodeweek" && drag_item.hasClass("new-node")) {
+          newNodeQuery(
+            this.props.objectID,
+            new_index,
+            // @ts-ignore
+            drag_item[0].dataDraggable.column,
+            // @ts-ignore
+            drag_item[0].dataDraggable.column_type,
+            (response_data) => {
+            }
+          );
+        }
+      }
+    });
+  }
+  stopSortFunction() {
+  }
+  startSortFunction(id, through_type) {
+    this.lockChild(id, true, through_type);
+  }
+  lockChild(id, lock2, through_type) {
+    let object_type;
+    if (through_type == "nodeweek")
+      object_type = "node";
+    if (through_type == "weekworkflow")
+      object_type = "week";
+    if (through_type == "columnworkflow")
+      object_type = "column";
+    if (through_type == "outcomeoutcome")
+      object_type = "outcome";
+    if (through_type == "outcomeworkflow")
+      object_type = "outcome";
+    this.props.renderer.lock_update(
+      { object_id: id, object_type },
+      lock_times.move,
+      lock2
+    );
   }
 }
 class Slider extends reactExports.Component {
@@ -65226,119 +71531,119 @@ var __spreadArrays = function() {
 };
 var DEBOUNCED_CHANGE_MS = 300;
 function FlatpickrInstance(element, instanceConfig) {
-  var self = {
+  var self2 = {
     config: __assign(__assign({}, defaults), flatpickr.defaultConfig),
     l10n: english
   };
-  self.parseDate = createDateParser({ config: self.config, l10n: self.l10n });
-  self._handlers = [];
-  self.pluginElements = [];
-  self.loadedPlugins = [];
-  self._bind = bind;
-  self._setHoursFromDate = setHoursFromDate;
-  self._positionCalendar = positionCalendar;
-  self.changeMonth = changeMonth;
-  self.changeYear = changeYear;
-  self.clear = clear;
-  self.close = close;
-  self.onMouseOver = onMouseOver;
-  self._createElement = createElement;
-  self.createDay = createDay;
-  self.destroy = destroy;
-  self.isEnabled = isEnabled;
-  self.jumpToDate = jumpToDate;
-  self.updateValue = updateValue;
-  self.open = open;
-  self.redraw = redraw;
-  self.set = set;
-  self.setDate = setDate;
-  self.toggle = toggle;
+  self2.parseDate = createDateParser({ config: self2.config, l10n: self2.l10n });
+  self2._handlers = [];
+  self2.pluginElements = [];
+  self2.loadedPlugins = [];
+  self2._bind = bind;
+  self2._setHoursFromDate = setHoursFromDate;
+  self2._positionCalendar = positionCalendar;
+  self2.changeMonth = changeMonth;
+  self2.changeYear = changeYear;
+  self2.clear = clear;
+  self2.close = close;
+  self2.onMouseOver = onMouseOver;
+  self2._createElement = createElement;
+  self2.createDay = createDay;
+  self2.destroy = destroy;
+  self2.isEnabled = isEnabled;
+  self2.jumpToDate = jumpToDate;
+  self2.updateValue = updateValue;
+  self2.open = open;
+  self2.redraw = redraw;
+  self2.set = set;
+  self2.setDate = setDate;
+  self2.toggle = toggle;
   function setupHelperFunctions() {
-    self.utils = {
+    self2.utils = {
       getDaysInMonth: function(month, yr) {
         if (month === void 0) {
-          month = self.currentMonth;
+          month = self2.currentMonth;
         }
         if (yr === void 0) {
-          yr = self.currentYear;
+          yr = self2.currentYear;
         }
         if (month === 1 && (yr % 4 === 0 && yr % 100 !== 0 || yr % 400 === 0))
           return 29;
-        return self.l10n.daysInMonth[month];
+        return self2.l10n.daysInMonth[month];
       }
     };
   }
   function init() {
-    self.element = self.input = element;
-    self.isOpen = false;
+    self2.element = self2.input = element;
+    self2.isOpen = false;
     parseConfig();
     setupLocale();
     setupInputs();
     setupDates();
     setupHelperFunctions();
-    if (!self.isMobile)
+    if (!self2.isMobile)
       build();
     bindEvents();
-    if (self.selectedDates.length || self.config.noCalendar) {
-      if (self.config.enableTime) {
-        setHoursFromDate(self.config.noCalendar ? self.latestSelectedDateObj : void 0);
+    if (self2.selectedDates.length || self2.config.noCalendar) {
+      if (self2.config.enableTime) {
+        setHoursFromDate(self2.config.noCalendar ? self2.latestSelectedDateObj : void 0);
       }
       updateValue(false);
     }
     setCalendarWidth();
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (!self.isMobile && isSafari) {
+    if (!self2.isMobile && isSafari) {
       positionCalendar();
     }
     triggerEvent("onReady");
   }
   function getClosestActiveElement() {
     var _a;
-    return ((_a = self.calendarContainer) === null || _a === void 0 ? void 0 : _a.getRootNode()).activeElement || document.activeElement;
+    return ((_a = self2.calendarContainer) === null || _a === void 0 ? void 0 : _a.getRootNode()).activeElement || document.activeElement;
   }
   function bindToInstance(fn) {
-    return fn.bind(self);
+    return fn.bind(self2);
   }
   function setCalendarWidth() {
-    var config3 = self.config;
+    var config3 = self2.config;
     if (config3.weekNumbers === false && config3.showMonths === 1) {
       return;
     } else if (config3.noCalendar !== true) {
       window.requestAnimationFrame(function() {
-        if (self.calendarContainer !== void 0) {
-          self.calendarContainer.style.visibility = "hidden";
-          self.calendarContainer.style.display = "block";
+        if (self2.calendarContainer !== void 0) {
+          self2.calendarContainer.style.visibility = "hidden";
+          self2.calendarContainer.style.display = "block";
         }
-        if (self.daysContainer !== void 0) {
-          var daysWidth = (self.days.offsetWidth + 1) * config3.showMonths;
-          self.daysContainer.style.width = daysWidth + "px";
-          self.calendarContainer.style.width = daysWidth + (self.weekWrapper !== void 0 ? self.weekWrapper.offsetWidth : 0) + "px";
-          self.calendarContainer.style.removeProperty("visibility");
-          self.calendarContainer.style.removeProperty("display");
+        if (self2.daysContainer !== void 0) {
+          var daysWidth = (self2.days.offsetWidth + 1) * config3.showMonths;
+          self2.daysContainer.style.width = daysWidth + "px";
+          self2.calendarContainer.style.width = daysWidth + (self2.weekWrapper !== void 0 ? self2.weekWrapper.offsetWidth : 0) + "px";
+          self2.calendarContainer.style.removeProperty("visibility");
+          self2.calendarContainer.style.removeProperty("display");
         }
       });
     }
   }
   function updateTime(e) {
-    if (self.selectedDates.length === 0) {
-      var defaultDate = self.config.minDate === void 0 || compareDates(/* @__PURE__ */ new Date(), self.config.minDate) >= 0 ? /* @__PURE__ */ new Date() : new Date(self.config.minDate.getTime());
-      var defaults2 = getDefaultHours(self.config);
+    if (self2.selectedDates.length === 0) {
+      var defaultDate = self2.config.minDate === void 0 || compareDates(/* @__PURE__ */ new Date(), self2.config.minDate) >= 0 ? /* @__PURE__ */ new Date() : new Date(self2.config.minDate.getTime());
+      var defaults2 = getDefaultHours(self2.config);
       defaultDate.setHours(defaults2.hours, defaults2.minutes, defaults2.seconds, defaultDate.getMilliseconds());
-      self.selectedDates = [defaultDate];
-      self.latestSelectedDateObj = defaultDate;
+      self2.selectedDates = [defaultDate];
+      self2.latestSelectedDateObj = defaultDate;
     }
     if (e !== void 0 && e.type !== "blur") {
       timeWrapper(e);
     }
-    var prevValue = self._input.value;
+    var prevValue = self2._input.value;
     setHoursFromInputs();
     updateValue();
-    if (self._input.value !== prevValue) {
-      self._debouncedChange();
+    if (self2._input.value !== prevValue) {
+      self2._debouncedChange();
     }
   }
   function ampm2military(hour, amPM) {
-    return hour % 12 + 12 * int(amPM === self.l10n.amPM[1]);
+    return hour % 12 + 12 * int(amPM === self2.l10n.amPM[1]);
   }
   function military2ampm(hour) {
     switch (hour % 24) {
@@ -65350,17 +71655,17 @@ function FlatpickrInstance(element, instanceConfig) {
     }
   }
   function setHoursFromInputs() {
-    if (self.hourElement === void 0 || self.minuteElement === void 0)
+    if (self2.hourElement === void 0 || self2.minuteElement === void 0)
       return;
-    var hours = (parseInt(self.hourElement.value.slice(-2), 10) || 0) % 24, minutes = (parseInt(self.minuteElement.value, 10) || 0) % 60, seconds = self.secondElement !== void 0 ? (parseInt(self.secondElement.value, 10) || 0) % 60 : 0;
-    if (self.amPM !== void 0) {
-      hours = ampm2military(hours, self.amPM.textContent);
+    var hours = (parseInt(self2.hourElement.value.slice(-2), 10) || 0) % 24, minutes = (parseInt(self2.minuteElement.value, 10) || 0) % 60, seconds = self2.secondElement !== void 0 ? (parseInt(self2.secondElement.value, 10) || 0) % 60 : 0;
+    if (self2.amPM !== void 0) {
+      hours = ampm2military(hours, self2.amPM.textContent);
     }
-    var limitMinHours = self.config.minTime !== void 0 || self.config.minDate && self.minDateHasTime && self.latestSelectedDateObj && compareDates(self.latestSelectedDateObj, self.config.minDate, true) === 0;
-    var limitMaxHours = self.config.maxTime !== void 0 || self.config.maxDate && self.maxDateHasTime && self.latestSelectedDateObj && compareDates(self.latestSelectedDateObj, self.config.maxDate, true) === 0;
-    if (self.config.maxTime !== void 0 && self.config.minTime !== void 0 && self.config.minTime > self.config.maxTime) {
-      var minBound = calculateSecondsSinceMidnight(self.config.minTime.getHours(), self.config.minTime.getMinutes(), self.config.minTime.getSeconds());
-      var maxBound = calculateSecondsSinceMidnight(self.config.maxTime.getHours(), self.config.maxTime.getMinutes(), self.config.maxTime.getSeconds());
+    var limitMinHours = self2.config.minTime !== void 0 || self2.config.minDate && self2.minDateHasTime && self2.latestSelectedDateObj && compareDates(self2.latestSelectedDateObj, self2.config.minDate, true) === 0;
+    var limitMaxHours = self2.config.maxTime !== void 0 || self2.config.maxDate && self2.maxDateHasTime && self2.latestSelectedDateObj && compareDates(self2.latestSelectedDateObj, self2.config.maxDate, true) === 0;
+    if (self2.config.maxTime !== void 0 && self2.config.minTime !== void 0 && self2.config.minTime > self2.config.maxTime) {
+      var minBound = calculateSecondsSinceMidnight(self2.config.minTime.getHours(), self2.config.minTime.getMinutes(), self2.config.minTime.getSeconds());
+      var maxBound = calculateSecondsSinceMidnight(self2.config.maxTime.getHours(), self2.config.maxTime.getMinutes(), self2.config.maxTime.getSeconds());
       var currentTime = calculateSecondsSinceMidnight(hours, minutes, seconds);
       if (currentTime > maxBound && currentTime < minBound) {
         var result = parseSeconds(minBound);
@@ -65370,7 +71675,7 @@ function FlatpickrInstance(element, instanceConfig) {
       }
     } else {
       if (limitMaxHours) {
-        var maxTime = self.config.maxTime !== void 0 ? self.config.maxTime : self.config.maxDate;
+        var maxTime = self2.config.maxTime !== void 0 ? self2.config.maxTime : self2.config.maxDate;
         hours = Math.min(hours, maxTime.getHours());
         if (hours === maxTime.getHours())
           minutes = Math.min(minutes, maxTime.getMinutes());
@@ -65378,7 +71683,7 @@ function FlatpickrInstance(element, instanceConfig) {
           seconds = Math.min(seconds, maxTime.getSeconds());
       }
       if (limitMinHours) {
-        var minTime = self.config.minTime !== void 0 ? self.config.minTime : self.config.minDate;
+        var minTime = self2.config.minTime !== void 0 ? self2.config.minTime : self2.config.minDate;
         hours = Math.max(hours, minTime.getHours());
         if (hours === minTime.getHours() && minutes < minTime.getMinutes())
           minutes = minTime.getMinutes();
@@ -65389,23 +71694,23 @@ function FlatpickrInstance(element, instanceConfig) {
     setHours(hours, minutes, seconds);
   }
   function setHoursFromDate(dateObj) {
-    var date = dateObj || self.latestSelectedDateObj;
+    var date = dateObj || self2.latestSelectedDateObj;
     if (date && date instanceof Date) {
       setHours(date.getHours(), date.getMinutes(), date.getSeconds());
     }
   }
   function setHours(hours, minutes, seconds) {
-    if (self.latestSelectedDateObj !== void 0) {
-      self.latestSelectedDateObj.setHours(hours % 24, minutes, seconds || 0, 0);
+    if (self2.latestSelectedDateObj !== void 0) {
+      self2.latestSelectedDateObj.setHours(hours % 24, minutes, seconds || 0, 0);
     }
-    if (!self.hourElement || !self.minuteElement || self.isMobile)
+    if (!self2.hourElement || !self2.minuteElement || self2.isMobile)
       return;
-    self.hourElement.value = pad(!self.config.time_24hr ? (12 + hours) % 12 + 12 * int(hours % 12 === 0) : hours);
-    self.minuteElement.value = pad(minutes);
-    if (self.amPM !== void 0)
-      self.amPM.textContent = self.l10n.amPM[int(hours >= 12)];
-    if (self.secondElement !== void 0)
-      self.secondElement.value = pad(seconds);
+    self2.hourElement.value = pad(!self2.config.time_24hr ? (12 + hours) % 12 + 12 * int(hours % 12 === 0) : hours);
+    self2.minuteElement.value = pad(minutes);
+    if (self2.amPM !== void 0)
+      self2.amPM.textContent = self2.l10n.amPM[int(hours >= 12)];
+    if (self2.secondElement !== void 0)
+      self2.secondElement.value = pad(seconds);
   }
   function onYearInput(event2) {
     var eventTarget = getEventTarget(event2);
@@ -65424,7 +71729,7 @@ function FlatpickrInstance(element, instanceConfig) {
         return bind(el, event2, handler, options);
       });
     element2.addEventListener(event2, handler, options);
-    self._handlers.push({
+    self2._handlers.push({
       remove: function() {
         return element2.removeEventListener(event2, handler, options);
       }
@@ -65434,87 +71739,87 @@ function FlatpickrInstance(element, instanceConfig) {
     triggerEvent("onChange");
   }
   function bindEvents() {
-    if (self.config.wrap) {
+    if (self2.config.wrap) {
       ["open", "close", "toggle", "clear"].forEach(function(evt) {
-        Array.prototype.forEach.call(self.element.querySelectorAll("[data-" + evt + "]"), function(el) {
-          return bind(el, "click", self[evt]);
+        Array.prototype.forEach.call(self2.element.querySelectorAll("[data-" + evt + "]"), function(el) {
+          return bind(el, "click", self2[evt]);
         });
       });
     }
-    if (self.isMobile) {
+    if (self2.isMobile) {
       setupMobile();
       return;
     }
     var debouncedResize = debounce(onResize, 50);
-    self._debouncedChange = debounce(triggerChange, DEBOUNCED_CHANGE_MS);
-    if (self.daysContainer && !/iPhone|iPad|iPod/i.test(navigator.userAgent))
-      bind(self.daysContainer, "mouseover", function(e) {
-        if (self.config.mode === "range")
+    self2._debouncedChange = debounce(triggerChange, DEBOUNCED_CHANGE_MS);
+    if (self2.daysContainer && !/iPhone|iPad|iPod/i.test(navigator.userAgent))
+      bind(self2.daysContainer, "mouseover", function(e) {
+        if (self2.config.mode === "range")
           onMouseOver(getEventTarget(e));
       });
-    bind(self._input, "keydown", onKeyDown);
-    if (self.calendarContainer !== void 0) {
-      bind(self.calendarContainer, "keydown", onKeyDown);
+    bind(self2._input, "keydown", onKeyDown);
+    if (self2.calendarContainer !== void 0) {
+      bind(self2.calendarContainer, "keydown", onKeyDown);
     }
-    if (!self.config.inline && !self.config.static)
+    if (!self2.config.inline && !self2.config.static)
       bind(window, "resize", debouncedResize);
     if (window.ontouchstart !== void 0)
       bind(window.document, "touchstart", documentClick);
     else
       bind(window.document, "mousedown", documentClick);
     bind(window.document, "focus", documentClick, { capture: true });
-    if (self.config.clickOpens === true) {
-      bind(self._input, "focus", self.open);
-      bind(self._input, "click", self.open);
+    if (self2.config.clickOpens === true) {
+      bind(self2._input, "focus", self2.open);
+      bind(self2._input, "click", self2.open);
     }
-    if (self.daysContainer !== void 0) {
-      bind(self.monthNav, "click", onMonthNavClick);
-      bind(self.monthNav, ["keyup", "increment"], onYearInput);
-      bind(self.daysContainer, "click", selectDate);
+    if (self2.daysContainer !== void 0) {
+      bind(self2.monthNav, "click", onMonthNavClick);
+      bind(self2.monthNav, ["keyup", "increment"], onYearInput);
+      bind(self2.daysContainer, "click", selectDate);
     }
-    if (self.timeContainer !== void 0 && self.minuteElement !== void 0 && self.hourElement !== void 0) {
+    if (self2.timeContainer !== void 0 && self2.minuteElement !== void 0 && self2.hourElement !== void 0) {
       var selText = function(e) {
         return getEventTarget(e).select();
       };
-      bind(self.timeContainer, ["increment"], updateTime);
-      bind(self.timeContainer, "blur", updateTime, { capture: true });
-      bind(self.timeContainer, "click", timeIncrement);
-      bind([self.hourElement, self.minuteElement], ["focus", "click"], selText);
-      if (self.secondElement !== void 0)
-        bind(self.secondElement, "focus", function() {
-          return self.secondElement && self.secondElement.select();
+      bind(self2.timeContainer, ["increment"], updateTime);
+      bind(self2.timeContainer, "blur", updateTime, { capture: true });
+      bind(self2.timeContainer, "click", timeIncrement);
+      bind([self2.hourElement, self2.minuteElement], ["focus", "click"], selText);
+      if (self2.secondElement !== void 0)
+        bind(self2.secondElement, "focus", function() {
+          return self2.secondElement && self2.secondElement.select();
         });
-      if (self.amPM !== void 0) {
-        bind(self.amPM, "click", function(e) {
+      if (self2.amPM !== void 0) {
+        bind(self2.amPM, "click", function(e) {
           updateTime(e);
         });
       }
     }
-    if (self.config.allowInput) {
-      bind(self._input, "blur", onBlur);
+    if (self2.config.allowInput) {
+      bind(self2._input, "blur", onBlur);
     }
   }
   function jumpToDate(jumpDate, triggerChange2) {
-    var jumpTo = jumpDate !== void 0 ? self.parseDate(jumpDate) : self.latestSelectedDateObj || (self.config.minDate && self.config.minDate > self.now ? self.config.minDate : self.config.maxDate && self.config.maxDate < self.now ? self.config.maxDate : self.now);
-    var oldYear = self.currentYear;
-    var oldMonth = self.currentMonth;
+    var jumpTo = jumpDate !== void 0 ? self2.parseDate(jumpDate) : self2.latestSelectedDateObj || (self2.config.minDate && self2.config.minDate > self2.now ? self2.config.minDate : self2.config.maxDate && self2.config.maxDate < self2.now ? self2.config.maxDate : self2.now);
+    var oldYear = self2.currentYear;
+    var oldMonth = self2.currentMonth;
     try {
       if (jumpTo !== void 0) {
-        self.currentYear = jumpTo.getFullYear();
-        self.currentMonth = jumpTo.getMonth();
+        self2.currentYear = jumpTo.getFullYear();
+        self2.currentMonth = jumpTo.getMonth();
       }
     } catch (e) {
       e.message = "Invalid date supplied: " + jumpTo;
-      self.config.errorHandler(e);
+      self2.config.errorHandler(e);
     }
-    if (triggerChange2 && self.currentYear !== oldYear) {
+    if (triggerChange2 && self2.currentYear !== oldYear) {
       triggerEvent("onYearChange");
       buildMonthSwitch();
     }
-    if (triggerChange2 && (self.currentYear !== oldYear || self.currentMonth !== oldMonth)) {
+    if (triggerChange2 && (self2.currentYear !== oldYear || self2.currentMonth !== oldMonth)) {
       triggerEvent("onMonthChange");
     }
-    self.redraw();
+    self2.redraw();
   }
   function timeIncrement(e) {
     var eventTarget = getEventTarget(e);
@@ -65530,64 +71835,64 @@ function FlatpickrInstance(element, instanceConfig) {
   }
   function build() {
     var fragment = window.document.createDocumentFragment();
-    self.calendarContainer = createElement("div", "flatpickr-calendar");
-    self.calendarContainer.tabIndex = -1;
-    if (!self.config.noCalendar) {
+    self2.calendarContainer = createElement("div", "flatpickr-calendar");
+    self2.calendarContainer.tabIndex = -1;
+    if (!self2.config.noCalendar) {
       fragment.appendChild(buildMonthNav());
-      self.innerContainer = createElement("div", "flatpickr-innerContainer");
-      if (self.config.weekNumbers) {
+      self2.innerContainer = createElement("div", "flatpickr-innerContainer");
+      if (self2.config.weekNumbers) {
         var _a = buildWeeks(), weekWrapper = _a.weekWrapper, weekNumbers = _a.weekNumbers;
-        self.innerContainer.appendChild(weekWrapper);
-        self.weekNumbers = weekNumbers;
-        self.weekWrapper = weekWrapper;
+        self2.innerContainer.appendChild(weekWrapper);
+        self2.weekNumbers = weekNumbers;
+        self2.weekWrapper = weekWrapper;
       }
-      self.rContainer = createElement("div", "flatpickr-rContainer");
-      self.rContainer.appendChild(buildWeekdays());
-      if (!self.daysContainer) {
-        self.daysContainer = createElement("div", "flatpickr-days");
-        self.daysContainer.tabIndex = -1;
+      self2.rContainer = createElement("div", "flatpickr-rContainer");
+      self2.rContainer.appendChild(buildWeekdays());
+      if (!self2.daysContainer) {
+        self2.daysContainer = createElement("div", "flatpickr-days");
+        self2.daysContainer.tabIndex = -1;
       }
       buildDays();
-      self.rContainer.appendChild(self.daysContainer);
-      self.innerContainer.appendChild(self.rContainer);
-      fragment.appendChild(self.innerContainer);
+      self2.rContainer.appendChild(self2.daysContainer);
+      self2.innerContainer.appendChild(self2.rContainer);
+      fragment.appendChild(self2.innerContainer);
     }
-    if (self.config.enableTime) {
+    if (self2.config.enableTime) {
       fragment.appendChild(buildTime());
     }
-    toggleClass(self.calendarContainer, "rangeMode", self.config.mode === "range");
-    toggleClass(self.calendarContainer, "animate", self.config.animate === true);
-    toggleClass(self.calendarContainer, "multiMonth", self.config.showMonths > 1);
-    self.calendarContainer.appendChild(fragment);
-    var customAppend = self.config.appendTo !== void 0 && self.config.appendTo.nodeType !== void 0;
-    if (self.config.inline || self.config.static) {
-      self.calendarContainer.classList.add(self.config.inline ? "inline" : "static");
-      if (self.config.inline) {
-        if (!customAppend && self.element.parentNode)
-          self.element.parentNode.insertBefore(self.calendarContainer, self._input.nextSibling);
-        else if (self.config.appendTo !== void 0)
-          self.config.appendTo.appendChild(self.calendarContainer);
+    toggleClass(self2.calendarContainer, "rangeMode", self2.config.mode === "range");
+    toggleClass(self2.calendarContainer, "animate", self2.config.animate === true);
+    toggleClass(self2.calendarContainer, "multiMonth", self2.config.showMonths > 1);
+    self2.calendarContainer.appendChild(fragment);
+    var customAppend = self2.config.appendTo !== void 0 && self2.config.appendTo.nodeType !== void 0;
+    if (self2.config.inline || self2.config.static) {
+      self2.calendarContainer.classList.add(self2.config.inline ? "inline" : "static");
+      if (self2.config.inline) {
+        if (!customAppend && self2.element.parentNode)
+          self2.element.parentNode.insertBefore(self2.calendarContainer, self2._input.nextSibling);
+        else if (self2.config.appendTo !== void 0)
+          self2.config.appendTo.appendChild(self2.calendarContainer);
       }
-      if (self.config.static) {
+      if (self2.config.static) {
         var wrapper = createElement("div", "flatpickr-wrapper");
-        if (self.element.parentNode)
-          self.element.parentNode.insertBefore(wrapper, self.element);
-        wrapper.appendChild(self.element);
-        if (self.altInput)
-          wrapper.appendChild(self.altInput);
-        wrapper.appendChild(self.calendarContainer);
+        if (self2.element.parentNode)
+          self2.element.parentNode.insertBefore(wrapper, self2.element);
+        wrapper.appendChild(self2.element);
+        if (self2.altInput)
+          wrapper.appendChild(self2.altInput);
+        wrapper.appendChild(self2.calendarContainer);
       }
     }
-    if (!self.config.static && !self.config.inline)
-      (self.config.appendTo !== void 0 ? self.config.appendTo : window.document.body).appendChild(self.calendarContainer);
+    if (!self2.config.static && !self2.config.inline)
+      (self2.config.appendTo !== void 0 ? self2.config.appendTo : window.document.body).appendChild(self2.calendarContainer);
   }
   function createDay(className, date, _dayNumber, i) {
     var dateIsEnabled = isEnabled(date, true), dayElement = createElement("span", className, date.getDate().toString());
     dayElement.dateObj = date;
     dayElement.$i = i;
-    dayElement.setAttribute("aria-label", self.formatDate(date, self.config.ariaDateFormat));
-    if (className.indexOf("hidden") === -1 && compareDates(date, self.now) === 0) {
-      self.todayDateElem = dayElement;
+    dayElement.setAttribute("aria-label", self2.formatDate(date, self2.config.ariaDateFormat));
+    if (className.indexOf("hidden") === -1 && compareDates(date, self2.now) === 0) {
+      self2.todayDateElem = dayElement;
       dayElement.classList.add("today");
       dayElement.setAttribute("aria-current", "date");
     }
@@ -65595,10 +71900,10 @@ function FlatpickrInstance(element, instanceConfig) {
       dayElement.tabIndex = -1;
       if (isDateSelected(date)) {
         dayElement.classList.add("selected");
-        self.selectedDateElem = dayElement;
-        if (self.config.mode === "range") {
-          toggleClass(dayElement, "startRange", self.selectedDates[0] && compareDates(date, self.selectedDates[0], true) === 0);
-          toggleClass(dayElement, "endRange", self.selectedDates[1] && compareDates(date, self.selectedDates[1], true) === 0);
+        self2.selectedDateElem = dayElement;
+        if (self2.config.mode === "range") {
+          toggleClass(dayElement, "startRange", self2.selectedDates[0] && compareDates(date, self2.selectedDates[0], true) === 0);
+          toggleClass(dayElement, "endRange", self2.selectedDates[1] && compareDates(date, self2.selectedDates[1], true) === 0);
           if (className === "nextMonthDay")
             dayElement.classList.add("inRange");
         }
@@ -65606,26 +71911,26 @@ function FlatpickrInstance(element, instanceConfig) {
     } else {
       dayElement.classList.add("flatpickr-disabled");
     }
-    if (self.config.mode === "range") {
+    if (self2.config.mode === "range") {
       if (isDateInRange(date) && !isDateSelected(date))
         dayElement.classList.add("inRange");
     }
-    if (self.weekNumbers && self.config.showMonths === 1 && className !== "prevMonthDay" && i % 7 === 6) {
-      self.weekNumbers.insertAdjacentHTML("beforeend", "<span class='flatpickr-day'>" + self.config.getWeek(date) + "</span>");
+    if (self2.weekNumbers && self2.config.showMonths === 1 && className !== "prevMonthDay" && i % 7 === 6) {
+      self2.weekNumbers.insertAdjacentHTML("beforeend", "<span class='flatpickr-day'>" + self2.config.getWeek(date) + "</span>");
     }
     triggerEvent("onDayCreate", dayElement);
     return dayElement;
   }
   function focusOnDayElem(targetNode) {
     targetNode.focus();
-    if (self.config.mode === "range")
+    if (self2.config.mode === "range")
       onMouseOver(targetNode);
   }
   function getFirstAvailableDay(delta) {
-    var startMonth = delta > 0 ? 0 : self.config.showMonths - 1;
-    var endMonth = delta > 0 ? self.config.showMonths : -1;
+    var startMonth = delta > 0 ? 0 : self2.config.showMonths - 1;
+    var endMonth = delta > 0 ? self2.config.showMonths : -1;
     for (var m2 = startMonth; m2 != endMonth; m2 += delta) {
-      var month = self.daysContainer.children[m2];
+      var month = self2.daysContainer.children[m2];
       var startIndex = delta > 0 ? 0 : month.children.length - 1;
       var endIndex = delta > 0 ? month.children.length : -1;
       for (var i = startIndex; i != endIndex; i += delta) {
@@ -65637,12 +71942,12 @@ function FlatpickrInstance(element, instanceConfig) {
     return void 0;
   }
   function getNextAvailableDay(current, delta) {
-    var givenMonth = current.className.indexOf("Month") === -1 ? current.dateObj.getMonth() : self.currentMonth;
-    var endMonth = delta > 0 ? self.config.showMonths : -1;
+    var givenMonth = current.className.indexOf("Month") === -1 ? current.dateObj.getMonth() : self2.currentMonth;
+    var endMonth = delta > 0 ? self2.config.showMonths : -1;
     var loopDelta = delta > 0 ? 1 : -1;
-    for (var m2 = givenMonth - self.currentMonth; m2 != endMonth; m2 += loopDelta) {
-      var month = self.daysContainer.children[m2];
-      var startIndex = givenMonth - self.currentMonth === m2 ? current.$i + delta : delta < 0 ? month.children.length - 1 : 0;
+    for (var m2 = givenMonth - self2.currentMonth; m2 != endMonth; m2 += loopDelta) {
+      var month = self2.daysContainer.children[m2];
+      var startIndex = givenMonth - self2.currentMonth === m2 ? current.$i + delta : delta < 0 ? month.children.length - 1 : 0;
       var numMonthDays = month.children.length;
       for (var i = startIndex; i >= 0 && i < numMonthDays && i != (delta > 0 ? numMonthDays : -1); i += loopDelta) {
         var c = month.children[i];
@@ -65650,16 +71955,16 @@ function FlatpickrInstance(element, instanceConfig) {
           return focusOnDayElem(c);
       }
     }
-    self.changeMonth(loopDelta);
+    self2.changeMonth(loopDelta);
     focusOnDay(getFirstAvailableDay(loopDelta), 0);
     return void 0;
   }
   function focusOnDay(current, offset) {
     var activeElement = getClosestActiveElement();
     var dayFocused = isInView(activeElement || document.body);
-    var startElem = current !== void 0 ? current : dayFocused ? activeElement : self.selectedDateElem !== void 0 && isInView(self.selectedDateElem) ? self.selectedDateElem : self.todayDateElem !== void 0 && isInView(self.todayDateElem) ? self.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
+    var startElem = current !== void 0 ? current : dayFocused ? activeElement : self2.selectedDateElem !== void 0 && isInView(self2.selectedDateElem) ? self2.selectedDateElem : self2.todayDateElem !== void 0 && isInView(self2.todayDateElem) ? self2.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
     if (startElem === void 0) {
-      self._input.focus();
+      self2._input.focus();
     } else if (!dayFocused) {
       focusOnDayElem(startElem);
     } else {
@@ -65667,9 +71972,9 @@ function FlatpickrInstance(element, instanceConfig) {
     }
   }
   function buildMonthDays(year, month) {
-    var firstOfMonth = (new Date(year, month, 1).getDay() - self.l10n.firstDayOfWeek + 7) % 7;
-    var prevMonthDays = self.utils.getDaysInMonth((month - 1 + 12) % 12, year);
-    var daysInMonth = self.utils.getDaysInMonth(month, year), days = window.document.createDocumentFragment(), isMultiMonth = self.config.showMonths > 1, prevMonthDayClass = isMultiMonth ? "prevMonthDay hidden" : "prevMonthDay", nextMonthDayClass = isMultiMonth ? "nextMonthDay hidden" : "nextMonthDay";
+    var firstOfMonth = (new Date(year, month, 1).getDay() - self2.l10n.firstDayOfWeek + 7) % 7;
+    var prevMonthDays = self2.utils.getDaysInMonth((month - 1 + 12) % 12, year);
+    var daysInMonth = self2.utils.getDaysInMonth(month, year), days = window.document.createDocumentFragment(), isMultiMonth = self2.config.showMonths > 1, prevMonthDayClass = isMultiMonth ? "prevMonthDay hidden" : "prevMonthDay", nextMonthDayClass = isMultiMonth ? "nextMonthDay hidden" : "nextMonthDay";
     var dayNumber = prevMonthDays + 1 - firstOfMonth, dayIndex = 0;
     for (; dayNumber <= prevMonthDays; dayNumber++, dayIndex++) {
       days.appendChild(createDay("flatpickr-day " + prevMonthDayClass, new Date(year, month - 1, dayNumber), dayNumber, dayIndex));
@@ -65677,7 +71982,7 @@ function FlatpickrInstance(element, instanceConfig) {
     for (dayNumber = 1; dayNumber <= daysInMonth; dayNumber++, dayIndex++) {
       days.appendChild(createDay("flatpickr-day", new Date(year, month, dayNumber), dayNumber, dayIndex));
     }
-    for (var dayNum = daysInMonth + 1; dayNum <= 42 - firstOfMonth && (self.config.showMonths === 1 || dayIndex % 7 !== 0); dayNum++, dayIndex++) {
+    for (var dayNum = daysInMonth + 1; dayNum <= 42 - firstOfMonth && (self2.config.showMonths === 1 || dayIndex % 7 !== 0); dayNum++, dayIndex++) {
       days.appendChild(createDay("flatpickr-day " + nextMonthDayClass, new Date(year, month + 1, dayNum % daysInMonth), dayNum, dayIndex));
     }
     var dayContainer = createElement("div", "dayContainer");
@@ -65685,218 +71990,218 @@ function FlatpickrInstance(element, instanceConfig) {
     return dayContainer;
   }
   function buildDays() {
-    if (self.daysContainer === void 0) {
+    if (self2.daysContainer === void 0) {
       return;
     }
-    clearNode(self.daysContainer);
-    if (self.weekNumbers)
-      clearNode(self.weekNumbers);
+    clearNode(self2.daysContainer);
+    if (self2.weekNumbers)
+      clearNode(self2.weekNumbers);
     var frag = document.createDocumentFragment();
-    for (var i = 0; i < self.config.showMonths; i++) {
-      var d = new Date(self.currentYear, self.currentMonth, 1);
-      d.setMonth(self.currentMonth + i);
+    for (var i = 0; i < self2.config.showMonths; i++) {
+      var d = new Date(self2.currentYear, self2.currentMonth, 1);
+      d.setMonth(self2.currentMonth + i);
       frag.appendChild(buildMonthDays(d.getFullYear(), d.getMonth()));
     }
-    self.daysContainer.appendChild(frag);
-    self.days = self.daysContainer.firstChild;
-    if (self.config.mode === "range" && self.selectedDates.length === 1) {
+    self2.daysContainer.appendChild(frag);
+    self2.days = self2.daysContainer.firstChild;
+    if (self2.config.mode === "range" && self2.selectedDates.length === 1) {
       onMouseOver();
     }
   }
   function buildMonthSwitch() {
-    if (self.config.showMonths > 1 || self.config.monthSelectorType !== "dropdown")
+    if (self2.config.showMonths > 1 || self2.config.monthSelectorType !== "dropdown")
       return;
     var shouldBuildMonth = function(month2) {
-      if (self.config.minDate !== void 0 && self.currentYear === self.config.minDate.getFullYear() && month2 < self.config.minDate.getMonth()) {
+      if (self2.config.minDate !== void 0 && self2.currentYear === self2.config.minDate.getFullYear() && month2 < self2.config.minDate.getMonth()) {
         return false;
       }
-      return !(self.config.maxDate !== void 0 && self.currentYear === self.config.maxDate.getFullYear() && month2 > self.config.maxDate.getMonth());
+      return !(self2.config.maxDate !== void 0 && self2.currentYear === self2.config.maxDate.getFullYear() && month2 > self2.config.maxDate.getMonth());
     };
-    self.monthsDropdownContainer.tabIndex = -1;
-    self.monthsDropdownContainer.innerHTML = "";
+    self2.monthsDropdownContainer.tabIndex = -1;
+    self2.monthsDropdownContainer.innerHTML = "";
     for (var i = 0; i < 12; i++) {
       if (!shouldBuildMonth(i))
         continue;
       var month = createElement("option", "flatpickr-monthDropdown-month");
-      month.value = new Date(self.currentYear, i).getMonth().toString();
-      month.textContent = monthToStr(i, self.config.shorthandCurrentMonth, self.l10n);
+      month.value = new Date(self2.currentYear, i).getMonth().toString();
+      month.textContent = monthToStr(i, self2.config.shorthandCurrentMonth, self2.l10n);
       month.tabIndex = -1;
-      if (self.currentMonth === i) {
+      if (self2.currentMonth === i) {
         month.selected = true;
       }
-      self.monthsDropdownContainer.appendChild(month);
+      self2.monthsDropdownContainer.appendChild(month);
     }
   }
   function buildMonth() {
-    var container2 = createElement("div", "flatpickr-month");
+    var container = createElement("div", "flatpickr-month");
     var monthNavFragment = window.document.createDocumentFragment();
     var monthElement;
-    if (self.config.showMonths > 1 || self.config.monthSelectorType === "static") {
+    if (self2.config.showMonths > 1 || self2.config.monthSelectorType === "static") {
       monthElement = createElement("span", "cur-month");
     } else {
-      self.monthsDropdownContainer = createElement("select", "flatpickr-monthDropdown-months");
-      self.monthsDropdownContainer.setAttribute("aria-label", self.l10n.monthAriaLabel);
-      bind(self.monthsDropdownContainer, "change", function(e) {
+      self2.monthsDropdownContainer = createElement("select", "flatpickr-monthDropdown-months");
+      self2.monthsDropdownContainer.setAttribute("aria-label", self2.l10n.monthAriaLabel);
+      bind(self2.monthsDropdownContainer, "change", function(e) {
         var target = getEventTarget(e);
         var selectedMonth = parseInt(target.value, 10);
-        self.changeMonth(selectedMonth - self.currentMonth);
+        self2.changeMonth(selectedMonth - self2.currentMonth);
         triggerEvent("onMonthChange");
       });
       buildMonthSwitch();
-      monthElement = self.monthsDropdownContainer;
+      monthElement = self2.monthsDropdownContainer;
     }
     var yearInput = createNumberInput("cur-year", { tabindex: "-1" });
     var yearElement = yearInput.getElementsByTagName("input")[0];
-    yearElement.setAttribute("aria-label", self.l10n.yearAriaLabel);
-    if (self.config.minDate) {
-      yearElement.setAttribute("min", self.config.minDate.getFullYear().toString());
+    yearElement.setAttribute("aria-label", self2.l10n.yearAriaLabel);
+    if (self2.config.minDate) {
+      yearElement.setAttribute("min", self2.config.minDate.getFullYear().toString());
     }
-    if (self.config.maxDate) {
-      yearElement.setAttribute("max", self.config.maxDate.getFullYear().toString());
-      yearElement.disabled = !!self.config.minDate && self.config.minDate.getFullYear() === self.config.maxDate.getFullYear();
+    if (self2.config.maxDate) {
+      yearElement.setAttribute("max", self2.config.maxDate.getFullYear().toString());
+      yearElement.disabled = !!self2.config.minDate && self2.config.minDate.getFullYear() === self2.config.maxDate.getFullYear();
     }
     var currentMonth = createElement("div", "flatpickr-current-month");
     currentMonth.appendChild(monthElement);
     currentMonth.appendChild(yearInput);
     monthNavFragment.appendChild(currentMonth);
-    container2.appendChild(monthNavFragment);
+    container.appendChild(monthNavFragment);
     return {
-      container: container2,
+      container,
       yearElement,
       monthElement
     };
   }
   function buildMonths() {
-    clearNode(self.monthNav);
-    self.monthNav.appendChild(self.prevMonthNav);
-    if (self.config.showMonths) {
-      self.yearElements = [];
-      self.monthElements = [];
+    clearNode(self2.monthNav);
+    self2.monthNav.appendChild(self2.prevMonthNav);
+    if (self2.config.showMonths) {
+      self2.yearElements = [];
+      self2.monthElements = [];
     }
-    for (var m2 = self.config.showMonths; m2--; ) {
+    for (var m2 = self2.config.showMonths; m2--; ) {
       var month = buildMonth();
-      self.yearElements.push(month.yearElement);
-      self.monthElements.push(month.monthElement);
-      self.monthNav.appendChild(month.container);
+      self2.yearElements.push(month.yearElement);
+      self2.monthElements.push(month.monthElement);
+      self2.monthNav.appendChild(month.container);
     }
-    self.monthNav.appendChild(self.nextMonthNav);
+    self2.monthNav.appendChild(self2.nextMonthNav);
   }
   function buildMonthNav() {
-    self.monthNav = createElement("div", "flatpickr-months");
-    self.yearElements = [];
-    self.monthElements = [];
-    self.prevMonthNav = createElement("span", "flatpickr-prev-month");
-    self.prevMonthNav.innerHTML = self.config.prevArrow;
-    self.nextMonthNav = createElement("span", "flatpickr-next-month");
-    self.nextMonthNav.innerHTML = self.config.nextArrow;
+    self2.monthNav = createElement("div", "flatpickr-months");
+    self2.yearElements = [];
+    self2.monthElements = [];
+    self2.prevMonthNav = createElement("span", "flatpickr-prev-month");
+    self2.prevMonthNav.innerHTML = self2.config.prevArrow;
+    self2.nextMonthNav = createElement("span", "flatpickr-next-month");
+    self2.nextMonthNav.innerHTML = self2.config.nextArrow;
     buildMonths();
-    Object.defineProperty(self, "_hidePrevMonthArrow", {
+    Object.defineProperty(self2, "_hidePrevMonthArrow", {
       get: function() {
-        return self.__hidePrevMonthArrow;
+        return self2.__hidePrevMonthArrow;
       },
       set: function(bool) {
-        if (self.__hidePrevMonthArrow !== bool) {
-          toggleClass(self.prevMonthNav, "flatpickr-disabled", bool);
-          self.__hidePrevMonthArrow = bool;
+        if (self2.__hidePrevMonthArrow !== bool) {
+          toggleClass(self2.prevMonthNav, "flatpickr-disabled", bool);
+          self2.__hidePrevMonthArrow = bool;
         }
       }
     });
-    Object.defineProperty(self, "_hideNextMonthArrow", {
+    Object.defineProperty(self2, "_hideNextMonthArrow", {
       get: function() {
-        return self.__hideNextMonthArrow;
+        return self2.__hideNextMonthArrow;
       },
       set: function(bool) {
-        if (self.__hideNextMonthArrow !== bool) {
-          toggleClass(self.nextMonthNav, "flatpickr-disabled", bool);
-          self.__hideNextMonthArrow = bool;
+        if (self2.__hideNextMonthArrow !== bool) {
+          toggleClass(self2.nextMonthNav, "flatpickr-disabled", bool);
+          self2.__hideNextMonthArrow = bool;
         }
       }
     });
-    self.currentYearElement = self.yearElements[0];
+    self2.currentYearElement = self2.yearElements[0];
     updateNavigationCurrentMonth();
-    return self.monthNav;
+    return self2.monthNav;
   }
   function buildTime() {
-    self.calendarContainer.classList.add("hasTime");
-    if (self.config.noCalendar)
-      self.calendarContainer.classList.add("noCalendar");
-    var defaults2 = getDefaultHours(self.config);
-    self.timeContainer = createElement("div", "flatpickr-time");
-    self.timeContainer.tabIndex = -1;
+    self2.calendarContainer.classList.add("hasTime");
+    if (self2.config.noCalendar)
+      self2.calendarContainer.classList.add("noCalendar");
+    var defaults2 = getDefaultHours(self2.config);
+    self2.timeContainer = createElement("div", "flatpickr-time");
+    self2.timeContainer.tabIndex = -1;
     var separator = createElement("span", "flatpickr-time-separator", ":");
     var hourInput = createNumberInput("flatpickr-hour", {
-      "aria-label": self.l10n.hourAriaLabel
+      "aria-label": self2.l10n.hourAriaLabel
     });
-    self.hourElement = hourInput.getElementsByTagName("input")[0];
+    self2.hourElement = hourInput.getElementsByTagName("input")[0];
     var minuteInput = createNumberInput("flatpickr-minute", {
-      "aria-label": self.l10n.minuteAriaLabel
+      "aria-label": self2.l10n.minuteAriaLabel
     });
-    self.minuteElement = minuteInput.getElementsByTagName("input")[0];
-    self.hourElement.tabIndex = self.minuteElement.tabIndex = -1;
-    self.hourElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getHours() : self.config.time_24hr ? defaults2.hours : military2ampm(defaults2.hours));
-    self.minuteElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getMinutes() : defaults2.minutes);
-    self.hourElement.setAttribute("step", self.config.hourIncrement.toString());
-    self.minuteElement.setAttribute("step", self.config.minuteIncrement.toString());
-    self.hourElement.setAttribute("min", self.config.time_24hr ? "0" : "1");
-    self.hourElement.setAttribute("max", self.config.time_24hr ? "23" : "12");
-    self.hourElement.setAttribute("maxlength", "2");
-    self.minuteElement.setAttribute("min", "0");
-    self.minuteElement.setAttribute("max", "59");
-    self.minuteElement.setAttribute("maxlength", "2");
-    self.timeContainer.appendChild(hourInput);
-    self.timeContainer.appendChild(separator);
-    self.timeContainer.appendChild(minuteInput);
-    if (self.config.time_24hr)
-      self.timeContainer.classList.add("time24hr");
-    if (self.config.enableSeconds) {
-      self.timeContainer.classList.add("hasSeconds");
+    self2.minuteElement = minuteInput.getElementsByTagName("input")[0];
+    self2.hourElement.tabIndex = self2.minuteElement.tabIndex = -1;
+    self2.hourElement.value = pad(self2.latestSelectedDateObj ? self2.latestSelectedDateObj.getHours() : self2.config.time_24hr ? defaults2.hours : military2ampm(defaults2.hours));
+    self2.minuteElement.value = pad(self2.latestSelectedDateObj ? self2.latestSelectedDateObj.getMinutes() : defaults2.minutes);
+    self2.hourElement.setAttribute("step", self2.config.hourIncrement.toString());
+    self2.minuteElement.setAttribute("step", self2.config.minuteIncrement.toString());
+    self2.hourElement.setAttribute("min", self2.config.time_24hr ? "0" : "1");
+    self2.hourElement.setAttribute("max", self2.config.time_24hr ? "23" : "12");
+    self2.hourElement.setAttribute("maxlength", "2");
+    self2.minuteElement.setAttribute("min", "0");
+    self2.minuteElement.setAttribute("max", "59");
+    self2.minuteElement.setAttribute("maxlength", "2");
+    self2.timeContainer.appendChild(hourInput);
+    self2.timeContainer.appendChild(separator);
+    self2.timeContainer.appendChild(minuteInput);
+    if (self2.config.time_24hr)
+      self2.timeContainer.classList.add("time24hr");
+    if (self2.config.enableSeconds) {
+      self2.timeContainer.classList.add("hasSeconds");
       var secondInput = createNumberInput("flatpickr-second");
-      self.secondElement = secondInput.getElementsByTagName("input")[0];
-      self.secondElement.value = pad(self.latestSelectedDateObj ? self.latestSelectedDateObj.getSeconds() : defaults2.seconds);
-      self.secondElement.setAttribute("step", self.minuteElement.getAttribute("step"));
-      self.secondElement.setAttribute("min", "0");
-      self.secondElement.setAttribute("max", "59");
-      self.secondElement.setAttribute("maxlength", "2");
-      self.timeContainer.appendChild(createElement("span", "flatpickr-time-separator", ":"));
-      self.timeContainer.appendChild(secondInput);
+      self2.secondElement = secondInput.getElementsByTagName("input")[0];
+      self2.secondElement.value = pad(self2.latestSelectedDateObj ? self2.latestSelectedDateObj.getSeconds() : defaults2.seconds);
+      self2.secondElement.setAttribute("step", self2.minuteElement.getAttribute("step"));
+      self2.secondElement.setAttribute("min", "0");
+      self2.secondElement.setAttribute("max", "59");
+      self2.secondElement.setAttribute("maxlength", "2");
+      self2.timeContainer.appendChild(createElement("span", "flatpickr-time-separator", ":"));
+      self2.timeContainer.appendChild(secondInput);
     }
-    if (!self.config.time_24hr) {
-      self.amPM = createElement("span", "flatpickr-am-pm", self.l10n.amPM[int((self.latestSelectedDateObj ? self.hourElement.value : self.config.defaultHour) > 11)]);
-      self.amPM.title = self.l10n.toggleTitle;
-      self.amPM.tabIndex = -1;
-      self.timeContainer.appendChild(self.amPM);
+    if (!self2.config.time_24hr) {
+      self2.amPM = createElement("span", "flatpickr-am-pm", self2.l10n.amPM[int((self2.latestSelectedDateObj ? self2.hourElement.value : self2.config.defaultHour) > 11)]);
+      self2.amPM.title = self2.l10n.toggleTitle;
+      self2.amPM.tabIndex = -1;
+      self2.timeContainer.appendChild(self2.amPM);
     }
-    return self.timeContainer;
+    return self2.timeContainer;
   }
   function buildWeekdays() {
-    if (!self.weekdayContainer)
-      self.weekdayContainer = createElement("div", "flatpickr-weekdays");
+    if (!self2.weekdayContainer)
+      self2.weekdayContainer = createElement("div", "flatpickr-weekdays");
     else
-      clearNode(self.weekdayContainer);
-    for (var i = self.config.showMonths; i--; ) {
-      var container2 = createElement("div", "flatpickr-weekdaycontainer");
-      self.weekdayContainer.appendChild(container2);
+      clearNode(self2.weekdayContainer);
+    for (var i = self2.config.showMonths; i--; ) {
+      var container = createElement("div", "flatpickr-weekdaycontainer");
+      self2.weekdayContainer.appendChild(container);
     }
     updateWeekdays();
-    return self.weekdayContainer;
+    return self2.weekdayContainer;
   }
   function updateWeekdays() {
-    if (!self.weekdayContainer) {
+    if (!self2.weekdayContainer) {
       return;
     }
-    var firstDayOfWeek = self.l10n.firstDayOfWeek;
-    var weekdays = __spreadArrays(self.l10n.weekdays.shorthand);
+    var firstDayOfWeek = self2.l10n.firstDayOfWeek;
+    var weekdays = __spreadArrays(self2.l10n.weekdays.shorthand);
     if (firstDayOfWeek > 0 && firstDayOfWeek < weekdays.length) {
       weekdays = __spreadArrays(weekdays.splice(firstDayOfWeek, weekdays.length), weekdays.splice(0, firstDayOfWeek));
     }
-    for (var i = self.config.showMonths; i--; ) {
-      self.weekdayContainer.children[i].innerHTML = "\n      <span class='flatpickr-weekday'>\n        " + weekdays.join("</span><span class='flatpickr-weekday'>") + "\n      </span>\n      ";
+    for (var i = self2.config.showMonths; i--; ) {
+      self2.weekdayContainer.children[i].innerHTML = "\n      <span class='flatpickr-weekday'>\n        " + weekdays.join("</span><span class='flatpickr-weekday'>") + "\n      </span>\n      ";
     }
   }
   function buildWeeks() {
-    self.calendarContainer.classList.add("hasWeeks");
+    self2.calendarContainer.classList.add("hasWeeks");
     var weekWrapper = createElement("div", "flatpickr-weekwrapper");
-    weekWrapper.appendChild(createElement("span", "flatpickr-weekday", self.l10n.weekAbbreviation));
+    weekWrapper.appendChild(createElement("span", "flatpickr-weekday", self2.l10n.weekAbbreviation));
     var weekNumbers = createElement("div", "flatpickr-weeks");
     weekWrapper.appendChild(weekNumbers);
     return {
@@ -65908,13 +72213,13 @@ function FlatpickrInstance(element, instanceConfig) {
     if (isOffset === void 0) {
       isOffset = true;
     }
-    var delta = isOffset ? value : value - self.currentMonth;
-    if (delta < 0 && self._hidePrevMonthArrow === true || delta > 0 && self._hideNextMonthArrow === true)
+    var delta = isOffset ? value : value - self2.currentMonth;
+    if (delta < 0 && self2._hidePrevMonthArrow === true || delta > 0 && self2._hideNextMonthArrow === true)
       return;
-    self.currentMonth += delta;
-    if (self.currentMonth < 0 || self.currentMonth > 11) {
-      self.currentYear += self.currentMonth > 11 ? 1 : -1;
-      self.currentMonth = (self.currentMonth + 12) % 12;
+    self2.currentMonth += delta;
+    if (self2.currentMonth < 0 || self2.currentMonth > 11) {
+      self2.currentYear += self2.currentMonth > 11 ? 1 : -1;
+      self2.currentMonth = (self2.currentMonth + 12) % 12;
       triggerEvent("onYearChange");
       buildMonthSwitch();
     }
@@ -65929,51 +72234,51 @@ function FlatpickrInstance(element, instanceConfig) {
     if (toInitial === void 0) {
       toInitial = true;
     }
-    self.input.value = "";
-    if (self.altInput !== void 0)
-      self.altInput.value = "";
-    if (self.mobileInput !== void 0)
-      self.mobileInput.value = "";
-    self.selectedDates = [];
-    self.latestSelectedDateObj = void 0;
+    self2.input.value = "";
+    if (self2.altInput !== void 0)
+      self2.altInput.value = "";
+    if (self2.mobileInput !== void 0)
+      self2.mobileInput.value = "";
+    self2.selectedDates = [];
+    self2.latestSelectedDateObj = void 0;
     if (toInitial === true) {
-      self.currentYear = self._initialDate.getFullYear();
-      self.currentMonth = self._initialDate.getMonth();
+      self2.currentYear = self2._initialDate.getFullYear();
+      self2.currentMonth = self2._initialDate.getMonth();
     }
-    if (self.config.enableTime === true) {
-      var _a = getDefaultHours(self.config), hours = _a.hours, minutes = _a.minutes, seconds = _a.seconds;
+    if (self2.config.enableTime === true) {
+      var _a = getDefaultHours(self2.config), hours = _a.hours, minutes = _a.minutes, seconds = _a.seconds;
       setHours(hours, minutes, seconds);
     }
-    self.redraw();
+    self2.redraw();
     if (triggerChangeEvent)
       triggerEvent("onChange");
   }
   function close() {
-    self.isOpen = false;
-    if (!self.isMobile) {
-      if (self.calendarContainer !== void 0) {
-        self.calendarContainer.classList.remove("open");
+    self2.isOpen = false;
+    if (!self2.isMobile) {
+      if (self2.calendarContainer !== void 0) {
+        self2.calendarContainer.classList.remove("open");
       }
-      if (self._input !== void 0) {
-        self._input.classList.remove("active");
+      if (self2._input !== void 0) {
+        self2._input.classList.remove("active");
       }
     }
     triggerEvent("onClose");
   }
   function destroy() {
-    if (self.config !== void 0)
+    if (self2.config !== void 0)
       triggerEvent("onDestroy");
-    for (var i = self._handlers.length; i--; ) {
-      self._handlers[i].remove();
+    for (var i = self2._handlers.length; i--; ) {
+      self2._handlers[i].remove();
     }
-    self._handlers = [];
-    if (self.mobileInput) {
-      if (self.mobileInput.parentNode)
-        self.mobileInput.parentNode.removeChild(self.mobileInput);
-      self.mobileInput = void 0;
-    } else if (self.calendarContainer && self.calendarContainer.parentNode) {
-      if (self.config.static && self.calendarContainer.parentNode) {
-        var wrapper = self.calendarContainer.parentNode;
+    self2._handlers = [];
+    if (self2.mobileInput) {
+      if (self2.mobileInput.parentNode)
+        self2.mobileInput.parentNode.removeChild(self2.mobileInput);
+      self2.mobileInput = void 0;
+    } else if (self2.calendarContainer && self2.calendarContainer.parentNode) {
+      if (self2.config.static && self2.calendarContainer.parentNode) {
+        var wrapper = self2.calendarContainer.parentNode;
         wrapper.lastChild && wrapper.removeChild(wrapper.lastChild);
         if (wrapper.parentNode) {
           while (wrapper.firstChild)
@@ -65981,18 +72286,18 @@ function FlatpickrInstance(element, instanceConfig) {
           wrapper.parentNode.removeChild(wrapper);
         }
       } else
-        self.calendarContainer.parentNode.removeChild(self.calendarContainer);
+        self2.calendarContainer.parentNode.removeChild(self2.calendarContainer);
     }
-    if (self.altInput) {
-      self.input.type = "text";
-      if (self.altInput.parentNode)
-        self.altInput.parentNode.removeChild(self.altInput);
-      delete self.altInput;
+    if (self2.altInput) {
+      self2.input.type = "text";
+      if (self2.altInput.parentNode)
+        self2.altInput.parentNode.removeChild(self2.altInput);
+      delete self2.altInput;
     }
-    if (self.input) {
-      self.input.type = self.input._type;
-      self.input.classList.remove("flatpickr-input");
-      self.input.removeAttribute("readonly");
+    if (self2.input) {
+      self2.input.type = self2.input._type;
+      self2.input.classList.remove("flatpickr-input");
+      self2.input.removeAttribute("readonly");
     }
     [
       "_showTimeInput",
@@ -66026,48 +72331,48 @@ function FlatpickrInstance(element, instanceConfig) {
       "config"
     ].forEach(function(k) {
       try {
-        delete self[k];
+        delete self2[k];
       } catch (_2) {
       }
     });
   }
   function isCalendarElem(elem) {
-    return self.calendarContainer.contains(elem);
+    return self2.calendarContainer.contains(elem);
   }
   function documentClick(e) {
-    if (self.isOpen && !self.config.inline) {
+    if (self2.isOpen && !self2.config.inline) {
       var eventTarget_1 = getEventTarget(e);
       var isCalendarElement = isCalendarElem(eventTarget_1);
-      var isInput = eventTarget_1 === self.input || eventTarget_1 === self.altInput || self.element.contains(eventTarget_1) || e.path && e.path.indexOf && (~e.path.indexOf(self.input) || ~e.path.indexOf(self.altInput));
+      var isInput = eventTarget_1 === self2.input || eventTarget_1 === self2.altInput || self2.element.contains(eventTarget_1) || e.path && e.path.indexOf && (~e.path.indexOf(self2.input) || ~e.path.indexOf(self2.altInput));
       var lostFocus = !isInput && !isCalendarElement && !isCalendarElem(e.relatedTarget);
-      var isIgnored = !self.config.ignoredFocusElements.some(function(elem) {
+      var isIgnored = !self2.config.ignoredFocusElements.some(function(elem) {
         return elem.contains(eventTarget_1);
       });
       if (lostFocus && isIgnored) {
-        if (self.config.allowInput) {
-          self.setDate(self._input.value, false, self.config.altInput ? self.config.altFormat : self.config.dateFormat);
+        if (self2.config.allowInput) {
+          self2.setDate(self2._input.value, false, self2.config.altInput ? self2.config.altFormat : self2.config.dateFormat);
         }
-        if (self.timeContainer !== void 0 && self.minuteElement !== void 0 && self.hourElement !== void 0 && self.input.value !== "" && self.input.value !== void 0) {
+        if (self2.timeContainer !== void 0 && self2.minuteElement !== void 0 && self2.hourElement !== void 0 && self2.input.value !== "" && self2.input.value !== void 0) {
           updateTime();
         }
-        self.close();
-        if (self.config && self.config.mode === "range" && self.selectedDates.length === 1)
-          self.clear(false);
+        self2.close();
+        if (self2.config && self2.config.mode === "range" && self2.selectedDates.length === 1)
+          self2.clear(false);
       }
     }
   }
   function changeYear(newYear) {
-    if (!newYear || self.config.minDate && newYear < self.config.minDate.getFullYear() || self.config.maxDate && newYear > self.config.maxDate.getFullYear())
+    if (!newYear || self2.config.minDate && newYear < self2.config.minDate.getFullYear() || self2.config.maxDate && newYear > self2.config.maxDate.getFullYear())
       return;
-    var newYearNum = newYear, isNewYear = self.currentYear !== newYearNum;
-    self.currentYear = newYearNum || self.currentYear;
-    if (self.config.maxDate && self.currentYear === self.config.maxDate.getFullYear()) {
-      self.currentMonth = Math.min(self.config.maxDate.getMonth(), self.currentMonth);
-    } else if (self.config.minDate && self.currentYear === self.config.minDate.getFullYear()) {
-      self.currentMonth = Math.max(self.config.minDate.getMonth(), self.currentMonth);
+    var newYearNum = newYear, isNewYear = self2.currentYear !== newYearNum;
+    self2.currentYear = newYearNum || self2.currentYear;
+    if (self2.config.maxDate && self2.currentYear === self2.config.maxDate.getFullYear()) {
+      self2.currentMonth = Math.min(self2.config.maxDate.getMonth(), self2.currentMonth);
+    } else if (self2.config.minDate && self2.currentYear === self2.config.minDate.getFullYear()) {
+      self2.currentMonth = Math.max(self2.config.minDate.getMonth(), self2.currentMonth);
     }
     if (isNewYear) {
-      self.redraw();
+      self2.redraw();
       triggerEvent("onYearChange");
       buildMonthSwitch();
     }
@@ -66077,14 +72382,14 @@ function FlatpickrInstance(element, instanceConfig) {
     if (timeless === void 0) {
       timeless = true;
     }
-    var dateToCheck = self.parseDate(date, void 0, timeless);
-    if (self.config.minDate && dateToCheck && compareDates(dateToCheck, self.config.minDate, timeless !== void 0 ? timeless : !self.minDateHasTime) < 0 || self.config.maxDate && dateToCheck && compareDates(dateToCheck, self.config.maxDate, timeless !== void 0 ? timeless : !self.maxDateHasTime) > 0)
+    var dateToCheck = self2.parseDate(date, void 0, timeless);
+    if (self2.config.minDate && dateToCheck && compareDates(dateToCheck, self2.config.minDate, timeless !== void 0 ? timeless : !self2.minDateHasTime) < 0 || self2.config.maxDate && dateToCheck && compareDates(dateToCheck, self2.config.maxDate, timeless !== void 0 ? timeless : !self2.maxDateHasTime) > 0)
       return false;
-    if (!self.config.enable && self.config.disable.length === 0)
+    if (!self2.config.enable && self2.config.disable.length === 0)
       return true;
     if (dateToCheck === void 0)
       return false;
-    var bool = !!self.config.enable, array = (_a = self.config.enable) !== null && _a !== void 0 ? _a : self.config.disable;
+    var bool = !!self2.config.enable, array = (_a = self2.config.enable) !== null && _a !== void 0 ? _a : self2.config.disable;
     for (var i = 0, d = void 0; i < array.length; i++) {
       d = array[i];
       if (typeof d === "function" && d(dateToCheck))
@@ -66092,7 +72397,7 @@ function FlatpickrInstance(element, instanceConfig) {
       else if (d instanceof Date && dateToCheck !== void 0 && d.getTime() === dateToCheck.getTime())
         return bool;
       else if (typeof d === "string") {
-        var parsed = self.parseDate(d, void 0, true);
+        var parsed = self2.parseDate(d, void 0, true);
         return parsed && parsed.getTime() === dateToCheck.getTime() ? bool : !bool;
       } else if (typeof d === "object" && dateToCheck !== void 0 && d.from && d.to && dateToCheck.getTime() >= d.from.getTime() && dateToCheck.getTime() <= d.to.getTime())
         return bool;
@@ -66100,33 +72405,33 @@ function FlatpickrInstance(element, instanceConfig) {
     return !bool;
   }
   function isInView(elem) {
-    if (self.daysContainer !== void 0)
-      return elem.className.indexOf("hidden") === -1 && elem.className.indexOf("flatpickr-disabled") === -1 && self.daysContainer.contains(elem);
+    if (self2.daysContainer !== void 0)
+      return elem.className.indexOf("hidden") === -1 && elem.className.indexOf("flatpickr-disabled") === -1 && self2.daysContainer.contains(elem);
     return false;
   }
   function onBlur(e) {
-    var isInput = e.target === self._input;
-    var valueChanged = self._input.value.trimEnd() !== getDateStr();
+    var isInput = e.target === self2._input;
+    var valueChanged = self2._input.value.trimEnd() !== getDateStr();
     if (isInput && valueChanged && !(e.relatedTarget && isCalendarElem(e.relatedTarget))) {
-      self.setDate(self._input.value, true, e.target === self.altInput ? self.config.altFormat : self.config.dateFormat);
+      self2.setDate(self2._input.value, true, e.target === self2.altInput ? self2.config.altFormat : self2.config.dateFormat);
     }
   }
   function onKeyDown(e) {
     var eventTarget = getEventTarget(e);
-    var isInput = self.config.wrap ? element.contains(eventTarget) : eventTarget === self._input;
-    var allowInput = self.config.allowInput;
-    var allowKeydown = self.isOpen && (!allowInput || !isInput);
-    var allowInlineKeydown = self.config.inline && isInput && !allowInput;
+    var isInput = self2.config.wrap ? element.contains(eventTarget) : eventTarget === self2._input;
+    var allowInput = self2.config.allowInput;
+    var allowKeydown = self2.isOpen && (!allowInput || !isInput);
+    var allowInlineKeydown = self2.config.inline && isInput && !allowInput;
     if (e.keyCode === 13 && isInput) {
       if (allowInput) {
-        self.setDate(self._input.value, true, eventTarget === self.altInput ? self.config.altFormat : self.config.dateFormat);
-        self.close();
+        self2.setDate(self2._input.value, true, eventTarget === self2.altInput ? self2.config.altFormat : self2.config.dateFormat);
+        self2.close();
         return eventTarget.blur();
       } else {
-        self.open();
+        self2.open();
       }
     } else if (isCalendarElem(eventTarget) || allowKeydown || allowInlineKeydown) {
-      var isTimeObj = !!self.timeContainer && self.timeContainer.contains(eventTarget);
+      var isTimeObj = !!self2.timeContainer && self2.timeContainer.contains(eventTarget);
       switch (e.keyCode) {
         case 13:
           if (isTimeObj) {
@@ -66142,9 +72447,9 @@ function FlatpickrInstance(element, instanceConfig) {
           break;
         case 8:
         case 46:
-          if (isInput && !self.config.allowInput) {
+          if (isInput && !self2.config.allowInput) {
             e.preventDefault();
-            self.clear();
+            self2.clear();
           }
           break;
         case 37:
@@ -66152,7 +72457,7 @@ function FlatpickrInstance(element, instanceConfig) {
           if (!isTimeObj && !isInput) {
             e.preventDefault();
             var activeElement = getClosestActiveElement();
-            if (self.daysContainer !== void 0 && (allowInput === false || activeElement && isInView(activeElement))) {
+            if (self2.daysContainer !== void 0 && (allowInput === false || activeElement && isInView(activeElement))) {
               var delta_1 = e.keyCode === 39 ? 1 : -1;
               if (!e.ctrlKey)
                 focusOnDay(void 0, delta_1);
@@ -66162,63 +72467,63 @@ function FlatpickrInstance(element, instanceConfig) {
                 focusOnDay(getFirstAvailableDay(1), 0);
               }
             }
-          } else if (self.hourElement)
-            self.hourElement.focus();
+          } else if (self2.hourElement)
+            self2.hourElement.focus();
           break;
         case 38:
         case 40:
           e.preventDefault();
           var delta = e.keyCode === 40 ? 1 : -1;
-          if (self.daysContainer && eventTarget.$i !== void 0 || eventTarget === self.input || eventTarget === self.altInput) {
+          if (self2.daysContainer && eventTarget.$i !== void 0 || eventTarget === self2.input || eventTarget === self2.altInput) {
             if (e.ctrlKey) {
               e.stopPropagation();
-              changeYear(self.currentYear - delta);
+              changeYear(self2.currentYear - delta);
               focusOnDay(getFirstAvailableDay(1), 0);
             } else if (!isTimeObj)
               focusOnDay(void 0, delta * 7);
-          } else if (eventTarget === self.currentYearElement) {
-            changeYear(self.currentYear - delta);
-          } else if (self.config.enableTime) {
-            if (!isTimeObj && self.hourElement)
-              self.hourElement.focus();
+          } else if (eventTarget === self2.currentYearElement) {
+            changeYear(self2.currentYear - delta);
+          } else if (self2.config.enableTime) {
+            if (!isTimeObj && self2.hourElement)
+              self2.hourElement.focus();
             updateTime(e);
-            self._debouncedChange();
+            self2._debouncedChange();
           }
           break;
         case 9:
           if (isTimeObj) {
             var elems = [
-              self.hourElement,
-              self.minuteElement,
-              self.secondElement,
-              self.amPM
-            ].concat(self.pluginElements).filter(function(x) {
+              self2.hourElement,
+              self2.minuteElement,
+              self2.secondElement,
+              self2.amPM
+            ].concat(self2.pluginElements).filter(function(x) {
               return x;
             });
             var i = elems.indexOf(eventTarget);
             if (i !== -1) {
               var target = elems[i + (e.shiftKey ? -1 : 1)];
               e.preventDefault();
-              (target || self._input).focus();
+              (target || self2._input).focus();
             }
-          } else if (!self.config.noCalendar && self.daysContainer && self.daysContainer.contains(eventTarget) && e.shiftKey) {
+          } else if (!self2.config.noCalendar && self2.daysContainer && self2.daysContainer.contains(eventTarget) && e.shiftKey) {
             e.preventDefault();
-            self._input.focus();
+            self2._input.focus();
           }
           break;
       }
     }
-    if (self.amPM !== void 0 && eventTarget === self.amPM) {
+    if (self2.amPM !== void 0 && eventTarget === self2.amPM) {
       switch (e.key) {
-        case self.l10n.amPM[0].charAt(0):
-        case self.l10n.amPM[0].charAt(0).toLowerCase():
-          self.amPM.textContent = self.l10n.amPM[0];
+        case self2.l10n.amPM[0].charAt(0):
+        case self2.l10n.amPM[0].charAt(0).toLowerCase():
+          self2.amPM.textContent = self2.l10n.amPM[0];
           setHoursFromInputs();
           updateValue();
           break;
-        case self.l10n.amPM[1].charAt(0):
-        case self.l10n.amPM[1].charAt(0).toLowerCase():
-          self.amPM.textContent = self.l10n.amPM[1];
+        case self2.l10n.amPM[1].charAt(0):
+        case self2.l10n.amPM[1].charAt(0).toLowerCase():
+          self2.amPM.textContent = self2.l10n.amPM[1];
           setHoursFromInputs();
           updateValue();
           break;
@@ -66232,9 +72537,9 @@ function FlatpickrInstance(element, instanceConfig) {
     if (cellClass === void 0) {
       cellClass = "flatpickr-day";
     }
-    if (self.selectedDates.length !== 1 || elem && (!elem.classList.contains(cellClass) || elem.classList.contains("flatpickr-disabled")))
+    if (self2.selectedDates.length !== 1 || elem && (!elem.classList.contains(cellClass) || elem.classList.contains("flatpickr-disabled")))
       return;
-    var hoverDate = elem ? elem.dateObj.getTime() : self.days.firstElementChild.dateObj.getTime(), initialDate = self.parseDate(self.selectedDates[0], void 0, true).getTime(), rangeStartDate = Math.min(hoverDate, self.selectedDates[0].getTime()), rangeEndDate = Math.max(hoverDate, self.selectedDates[0].getTime());
+    var hoverDate = elem ? elem.dateObj.getTime() : self2.days.firstElementChild.dateObj.getTime(), initialDate = self2.parseDate(self2.selectedDates[0], void 0, true).getTime(), rangeStartDate = Math.min(hoverDate, self2.selectedDates[0].getTime()), rangeEndDate = Math.max(hoverDate, self2.selectedDates[0].getTime());
     var containsDisabled = false;
     var minRange = 0, maxRange = 0;
     for (var t = rangeStartDate; t < rangeEndDate; t += duration.DAY) {
@@ -66246,7 +72551,7 @@ function FlatpickrInstance(element, instanceConfig) {
           maxRange = t;
       }
     }
-    var hoverableCells = Array.from(self.rContainer.querySelectorAll("*:nth-child(-n+" + self.config.showMonths + ") > ." + cellClass));
+    var hoverableCells = Array.from(self2.rContainer.querySelectorAll("*:nth-child(-n+" + self2.config.showMonths + ") > ." + cellClass));
     hoverableCells.forEach(function(dayElem) {
       var date = dayElem.dateObj;
       var timestamp = date.getTime();
@@ -66263,7 +72568,7 @@ function FlatpickrInstance(element, instanceConfig) {
         dayElem.classList.remove(c);
       });
       if (elem !== void 0) {
-        elem.classList.add(hoverDate <= self.selectedDates[0].getTime() ? "startRange" : "endRange");
+        elem.classList.add(hoverDate <= self2.selectedDates[0].getTime() ? "startRange" : "endRange");
         if (initialDate < hoverDate && timestamp === initialDate)
           dayElem.classList.add("startRange");
         else if (initialDate > hoverDate && timestamp === initialDate)
@@ -66274,14 +72579,14 @@ function FlatpickrInstance(element, instanceConfig) {
     });
   }
   function onResize() {
-    if (self.isOpen && !self.config.static && !self.config.inline)
+    if (self2.isOpen && !self2.config.static && !self2.config.inline)
       positionCalendar();
   }
   function open(e, positionElement) {
     if (positionElement === void 0) {
-      positionElement = self._positionElement;
+      positionElement = self2._positionElement;
     }
-    if (self.isMobile === true) {
+    if (self2.isMobile === true) {
       if (e) {
         e.preventDefault();
         var eventTarget = getEventTarget(e);
@@ -66289,53 +72594,53 @@ function FlatpickrInstance(element, instanceConfig) {
           eventTarget.blur();
         }
       }
-      if (self.mobileInput !== void 0) {
-        self.mobileInput.focus();
-        self.mobileInput.click();
+      if (self2.mobileInput !== void 0) {
+        self2.mobileInput.focus();
+        self2.mobileInput.click();
       }
       triggerEvent("onOpen");
       return;
-    } else if (self._input.disabled || self.config.inline) {
+    } else if (self2._input.disabled || self2.config.inline) {
       return;
     }
-    var wasOpen = self.isOpen;
-    self.isOpen = true;
+    var wasOpen = self2.isOpen;
+    self2.isOpen = true;
     if (!wasOpen) {
-      self.calendarContainer.classList.add("open");
-      self._input.classList.add("active");
+      self2.calendarContainer.classList.add("open");
+      self2._input.classList.add("active");
       triggerEvent("onOpen");
       positionCalendar(positionElement);
     }
-    if (self.config.enableTime === true && self.config.noCalendar === true) {
-      if (self.config.allowInput === false && (e === void 0 || !self.timeContainer.contains(e.relatedTarget))) {
+    if (self2.config.enableTime === true && self2.config.noCalendar === true) {
+      if (self2.config.allowInput === false && (e === void 0 || !self2.timeContainer.contains(e.relatedTarget))) {
         setTimeout(function() {
-          return self.hourElement.select();
+          return self2.hourElement.select();
         }, 50);
       }
     }
   }
   function minMaxDateSetter(type) {
     return function(date) {
-      var dateObj = self.config["_" + type + "Date"] = self.parseDate(date, self.config.dateFormat);
-      var inverseDateObj = self.config["_" + (type === "min" ? "max" : "min") + "Date"];
+      var dateObj = self2.config["_" + type + "Date"] = self2.parseDate(date, self2.config.dateFormat);
+      var inverseDateObj = self2.config["_" + (type === "min" ? "max" : "min") + "Date"];
       if (dateObj !== void 0) {
-        self[type === "min" ? "minDateHasTime" : "maxDateHasTime"] = dateObj.getHours() > 0 || dateObj.getMinutes() > 0 || dateObj.getSeconds() > 0;
+        self2[type === "min" ? "minDateHasTime" : "maxDateHasTime"] = dateObj.getHours() > 0 || dateObj.getMinutes() > 0 || dateObj.getSeconds() > 0;
       }
-      if (self.selectedDates) {
-        self.selectedDates = self.selectedDates.filter(function(d) {
+      if (self2.selectedDates) {
+        self2.selectedDates = self2.selectedDates.filter(function(d) {
           return isEnabled(d);
         });
-        if (!self.selectedDates.length && type === "min")
+        if (!self2.selectedDates.length && type === "min")
           setHoursFromDate(dateObj);
         updateValue();
       }
-      if (self.daysContainer) {
+      if (self2.daysContainer) {
         redraw();
         if (dateObj !== void 0)
-          self.currentYearElement[type] = dateObj.getFullYear().toString();
+          self2.currentYearElement[type] = dateObj.getFullYear().toString();
         else
-          self.currentYearElement.removeAttribute(type);
-        self.currentYearElement.disabled = !!inverseDateObj && dateObj !== void 0 && inverseDateObj.getFullYear() === dateObj.getFullYear();
+          self2.currentYearElement.removeAttribute(type);
+        self2.currentYearElement.disabled = !!inverseDateObj && dateObj !== void 0 && inverseDateObj.getFullYear() === dateObj.getFullYear();
       }
     };
   }
@@ -66358,22 +72663,22 @@ function FlatpickrInstance(element, instanceConfig) {
     ];
     var userConfig = __assign(__assign({}, JSON.parse(JSON.stringify(element.dataset || {}))), instanceConfig);
     var formats2 = {};
-    self.config.parseDate = userConfig.parseDate;
-    self.config.formatDate = userConfig.formatDate;
-    Object.defineProperty(self.config, "enable", {
+    self2.config.parseDate = userConfig.parseDate;
+    self2.config.formatDate = userConfig.formatDate;
+    Object.defineProperty(self2.config, "enable", {
       get: function() {
-        return self.config._enable;
+        return self2.config._enable;
       },
       set: function(dates) {
-        self.config._enable = parseDateRules(dates);
+        self2.config._enable = parseDateRules(dates);
       }
     });
-    Object.defineProperty(self.config, "disable", {
+    Object.defineProperty(self2.config, "disable", {
       get: function() {
-        return self.config._disable;
+        return self2.config._disable;
       },
       set: function(dates) {
-        self.config._disable = parseDateRules(dates);
+        self2.config._disable = parseDateRules(dates);
       }
     });
     var timeMode = userConfig.mode === "time";
@@ -66385,96 +72690,96 @@ function FlatpickrInstance(element, instanceConfig) {
       var defaultAltFormat = flatpickr.defaultConfig.altFormat || defaults.altFormat;
       formats2.altFormat = userConfig.noCalendar || timeMode ? "h:i" + (userConfig.enableSeconds ? ":S K" : " K") : defaultAltFormat + (" h:i" + (userConfig.enableSeconds ? ":S" : "") + " K");
     }
-    Object.defineProperty(self.config, "minDate", {
+    Object.defineProperty(self2.config, "minDate", {
       get: function() {
-        return self.config._minDate;
+        return self2.config._minDate;
       },
       set: minMaxDateSetter("min")
     });
-    Object.defineProperty(self.config, "maxDate", {
+    Object.defineProperty(self2.config, "maxDate", {
       get: function() {
-        return self.config._maxDate;
+        return self2.config._maxDate;
       },
       set: minMaxDateSetter("max")
     });
     var minMaxTimeSetter = function(type) {
       return function(val) {
-        self.config[type === "min" ? "_minTime" : "_maxTime"] = self.parseDate(val, "H:i:S");
+        self2.config[type === "min" ? "_minTime" : "_maxTime"] = self2.parseDate(val, "H:i:S");
       };
     };
-    Object.defineProperty(self.config, "minTime", {
+    Object.defineProperty(self2.config, "minTime", {
       get: function() {
-        return self.config._minTime;
+        return self2.config._minTime;
       },
       set: minMaxTimeSetter("min")
     });
-    Object.defineProperty(self.config, "maxTime", {
+    Object.defineProperty(self2.config, "maxTime", {
       get: function() {
-        return self.config._maxTime;
+        return self2.config._maxTime;
       },
       set: minMaxTimeSetter("max")
     });
     if (userConfig.mode === "time") {
-      self.config.noCalendar = true;
-      self.config.enableTime = true;
+      self2.config.noCalendar = true;
+      self2.config.enableTime = true;
     }
-    Object.assign(self.config, formats2, userConfig);
+    Object.assign(self2.config, formats2, userConfig);
     for (var i = 0; i < boolOpts.length; i++)
-      self.config[boolOpts[i]] = self.config[boolOpts[i]] === true || self.config[boolOpts[i]] === "true";
+      self2.config[boolOpts[i]] = self2.config[boolOpts[i]] === true || self2.config[boolOpts[i]] === "true";
     HOOKS.filter(function(hook) {
-      return self.config[hook] !== void 0;
+      return self2.config[hook] !== void 0;
     }).forEach(function(hook) {
-      self.config[hook] = arrayify(self.config[hook] || []).map(bindToInstance);
+      self2.config[hook] = arrayify(self2.config[hook] || []).map(bindToInstance);
     });
-    self.isMobile = !self.config.disableMobile && !self.config.inline && self.config.mode === "single" && !self.config.disable.length && !self.config.enable && !self.config.weekNumbers && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    for (var i = 0; i < self.config.plugins.length; i++) {
-      var pluginConf = self.config.plugins[i](self) || {};
+    self2.isMobile = !self2.config.disableMobile && !self2.config.inline && self2.config.mode === "single" && !self2.config.disable.length && !self2.config.enable && !self2.config.weekNumbers && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    for (var i = 0; i < self2.config.plugins.length; i++) {
+      var pluginConf = self2.config.plugins[i](self2) || {};
       for (var key in pluginConf) {
         if (HOOKS.indexOf(key) > -1) {
-          self.config[key] = arrayify(pluginConf[key]).map(bindToInstance).concat(self.config[key]);
+          self2.config[key] = arrayify(pluginConf[key]).map(bindToInstance).concat(self2.config[key]);
         } else if (typeof userConfig[key] === "undefined")
-          self.config[key] = pluginConf[key];
+          self2.config[key] = pluginConf[key];
       }
     }
     if (!userConfig.altInputClass) {
-      self.config.altInputClass = getInputElem().className + " " + self.config.altInputClass;
+      self2.config.altInputClass = getInputElem().className + " " + self2.config.altInputClass;
     }
     triggerEvent("onParseConfig");
   }
   function getInputElem() {
-    return self.config.wrap ? element.querySelector("[data-input]") : element;
+    return self2.config.wrap ? element.querySelector("[data-input]") : element;
   }
   function setupLocale() {
-    if (typeof self.config.locale !== "object" && typeof flatpickr.l10ns[self.config.locale] === "undefined")
-      self.config.errorHandler(new Error("flatpickr: invalid locale " + self.config.locale));
-    self.l10n = __assign(__assign({}, flatpickr.l10ns.default), typeof self.config.locale === "object" ? self.config.locale : self.config.locale !== "default" ? flatpickr.l10ns[self.config.locale] : void 0);
-    tokenRegex.D = "(" + self.l10n.weekdays.shorthand.join("|") + ")";
-    tokenRegex.l = "(" + self.l10n.weekdays.longhand.join("|") + ")";
-    tokenRegex.M = "(" + self.l10n.months.shorthand.join("|") + ")";
-    tokenRegex.F = "(" + self.l10n.months.longhand.join("|") + ")";
-    tokenRegex.K = "(" + self.l10n.amPM[0] + "|" + self.l10n.amPM[1] + "|" + self.l10n.amPM[0].toLowerCase() + "|" + self.l10n.amPM[1].toLowerCase() + ")";
+    if (typeof self2.config.locale !== "object" && typeof flatpickr.l10ns[self2.config.locale] === "undefined")
+      self2.config.errorHandler(new Error("flatpickr: invalid locale " + self2.config.locale));
+    self2.l10n = __assign(__assign({}, flatpickr.l10ns.default), typeof self2.config.locale === "object" ? self2.config.locale : self2.config.locale !== "default" ? flatpickr.l10ns[self2.config.locale] : void 0);
+    tokenRegex.D = "(" + self2.l10n.weekdays.shorthand.join("|") + ")";
+    tokenRegex.l = "(" + self2.l10n.weekdays.longhand.join("|") + ")";
+    tokenRegex.M = "(" + self2.l10n.months.shorthand.join("|") + ")";
+    tokenRegex.F = "(" + self2.l10n.months.longhand.join("|") + ")";
+    tokenRegex.K = "(" + self2.l10n.amPM[0] + "|" + self2.l10n.amPM[1] + "|" + self2.l10n.amPM[0].toLowerCase() + "|" + self2.l10n.amPM[1].toLowerCase() + ")";
     var userConfig = __assign(__assign({}, instanceConfig), JSON.parse(JSON.stringify(element.dataset || {})));
     if (userConfig.time_24hr === void 0 && flatpickr.defaultConfig.time_24hr === void 0) {
-      self.config.time_24hr = self.l10n.time_24hr;
+      self2.config.time_24hr = self2.l10n.time_24hr;
     }
-    self.formatDate = createDateFormatter(self);
-    self.parseDate = createDateParser({ config: self.config, l10n: self.l10n });
+    self2.formatDate = createDateFormatter(self2);
+    self2.parseDate = createDateParser({ config: self2.config, l10n: self2.l10n });
   }
   function positionCalendar(customPositionElement) {
-    if (typeof self.config.position === "function") {
-      return void self.config.position(self, customPositionElement);
+    if (typeof self2.config.position === "function") {
+      return void self2.config.position(self2, customPositionElement);
     }
-    if (self.calendarContainer === void 0)
+    if (self2.calendarContainer === void 0)
       return;
     triggerEvent("onPreCalendarPosition");
-    var positionElement = customPositionElement || self._positionElement;
-    var calendarHeight = Array.prototype.reduce.call(self.calendarContainer.children, function(acc, child) {
+    var positionElement = customPositionElement || self2._positionElement;
+    var calendarHeight = Array.prototype.reduce.call(self2.calendarContainer.children, function(acc, child) {
       return acc + child.offsetHeight;
-    }, 0), calendarWidth = self.calendarContainer.offsetWidth, configPos = self.config.position.split(" "), configPosVertical = configPos[0], configPosHorizontal = configPos.length > 1 ? configPos[1] : null, inputBounds = positionElement.getBoundingClientRect(), distanceFromBottom = window.innerHeight - inputBounds.bottom, showOnTop = configPosVertical === "above" || configPosVertical !== "below" && distanceFromBottom < calendarHeight && inputBounds.top > calendarHeight;
+    }, 0), calendarWidth = self2.calendarContainer.offsetWidth, configPos = self2.config.position.split(" "), configPosVertical = configPos[0], configPosHorizontal = configPos.length > 1 ? configPos[1] : null, inputBounds = positionElement.getBoundingClientRect(), distanceFromBottom = window.innerHeight - inputBounds.bottom, showOnTop = configPosVertical === "above" || configPosVertical !== "below" && distanceFromBottom < calendarHeight && inputBounds.top > calendarHeight;
     var top = window.pageYOffset + inputBounds.top + (!showOnTop ? positionElement.offsetHeight + 2 : -calendarHeight - 2);
-    toggleClass(self.calendarContainer, "arrowTop", !showOnTop);
-    toggleClass(self.calendarContainer, "arrowBottom", showOnTop);
-    if (self.config.inline)
+    toggleClass(self2.calendarContainer, "arrowTop", !showOnTop);
+    toggleClass(self2.calendarContainer, "arrowBottom", showOnTop);
+    if (self2.config.inline)
       return;
     var left = window.pageXOffset + inputBounds.left;
     var isCenter = false;
@@ -66486,22 +72791,22 @@ function FlatpickrInstance(element, instanceConfig) {
       left -= calendarWidth - inputBounds.width;
       isRight = true;
     }
-    toggleClass(self.calendarContainer, "arrowLeft", !isCenter && !isRight);
-    toggleClass(self.calendarContainer, "arrowCenter", isCenter);
-    toggleClass(self.calendarContainer, "arrowRight", isRight);
+    toggleClass(self2.calendarContainer, "arrowLeft", !isCenter && !isRight);
+    toggleClass(self2.calendarContainer, "arrowCenter", isCenter);
+    toggleClass(self2.calendarContainer, "arrowRight", isRight);
     var right = window.document.body.offsetWidth - (window.pageXOffset + inputBounds.right);
     var rightMost = left + calendarWidth > window.document.body.offsetWidth;
     var centerMost = right + calendarWidth > window.document.body.offsetWidth;
-    toggleClass(self.calendarContainer, "rightMost", rightMost);
-    if (self.config.static)
+    toggleClass(self2.calendarContainer, "rightMost", rightMost);
+    if (self2.config.static)
       return;
-    self.calendarContainer.style.top = top + "px";
+    self2.calendarContainer.style.top = top + "px";
     if (!rightMost) {
-      self.calendarContainer.style.left = left + "px";
-      self.calendarContainer.style.right = "auto";
+      self2.calendarContainer.style.left = left + "px";
+      self2.calendarContainer.style.right = "auto";
     } else if (!centerMost) {
-      self.calendarContainer.style.left = "auto";
-      self.calendarContainer.style.right = right + "px";
+      self2.calendarContainer.style.left = "auto";
+      self2.calendarContainer.style.right = right + "px";
     } else {
       var doc = getDocumentStyleSheet();
       if (doc === void 0)
@@ -66512,11 +72817,11 @@ function FlatpickrInstance(element, instanceConfig) {
       var centerAfter = ".flatpickr-calendar.centerMost:after";
       var centerIndex = doc.cssRules.length;
       var centerStyle = "{left:" + inputBounds.left + "px;right:auto;}";
-      toggleClass(self.calendarContainer, "rightMost", false);
-      toggleClass(self.calendarContainer, "centerMost", true);
+      toggleClass(self2.calendarContainer, "rightMost", false);
+      toggleClass(self2.calendarContainer, "centerMost", true);
       doc.insertRule(centerBefore + "," + centerAfter + centerStyle, centerIndex);
-      self.calendarContainer.style.left = centerLeft + "px";
-      self.calendarContainer.style.right = "auto";
+      self2.calendarContainer.style.left = centerLeft + "px";
+      self2.calendarContainer.style.right = "auto";
     }
   }
   function getDocumentStyleSheet() {
@@ -66541,18 +72846,18 @@ function FlatpickrInstance(element, instanceConfig) {
     return style2.sheet;
   }
   function redraw() {
-    if (self.config.noCalendar || self.isMobile)
+    if (self2.config.noCalendar || self2.isMobile)
       return;
     buildMonthSwitch();
     updateNavigationCurrentMonth();
     buildDays();
   }
   function focusAndClose() {
-    self._input.focus();
+    self2._input.focus();
     if (window.navigator.userAgent.indexOf("MSIE") !== -1 || navigator.msMaxTouchPoints !== void 0) {
-      setTimeout(self.close, 0);
+      setTimeout(self2.close, 0);
     } else {
-      self.close();
+      self2.close();
     }
   }
   function selectDate(e) {
@@ -66565,33 +72870,33 @@ function FlatpickrInstance(element, instanceConfig) {
     if (t === void 0)
       return;
     var target = t;
-    var selectedDate = self.latestSelectedDateObj = new Date(target.dateObj.getTime());
-    var shouldChangeMonth = (selectedDate.getMonth() < self.currentMonth || selectedDate.getMonth() > self.currentMonth + self.config.showMonths - 1) && self.config.mode !== "range";
-    self.selectedDateElem = target;
-    if (self.config.mode === "single")
-      self.selectedDates = [selectedDate];
-    else if (self.config.mode === "multiple") {
+    var selectedDate = self2.latestSelectedDateObj = new Date(target.dateObj.getTime());
+    var shouldChangeMonth = (selectedDate.getMonth() < self2.currentMonth || selectedDate.getMonth() > self2.currentMonth + self2.config.showMonths - 1) && self2.config.mode !== "range";
+    self2.selectedDateElem = target;
+    if (self2.config.mode === "single")
+      self2.selectedDates = [selectedDate];
+    else if (self2.config.mode === "multiple") {
       var selectedIndex = isDateSelected(selectedDate);
       if (selectedIndex)
-        self.selectedDates.splice(parseInt(selectedIndex), 1);
+        self2.selectedDates.splice(parseInt(selectedIndex), 1);
       else
-        self.selectedDates.push(selectedDate);
-    } else if (self.config.mode === "range") {
-      if (self.selectedDates.length === 2) {
-        self.clear(false, false);
+        self2.selectedDates.push(selectedDate);
+    } else if (self2.config.mode === "range") {
+      if (self2.selectedDates.length === 2) {
+        self2.clear(false, false);
       }
-      self.latestSelectedDateObj = selectedDate;
-      self.selectedDates.push(selectedDate);
-      if (compareDates(selectedDate, self.selectedDates[0], true) !== 0)
-        self.selectedDates.sort(function(a, b) {
+      self2.latestSelectedDateObj = selectedDate;
+      self2.selectedDates.push(selectedDate);
+      if (compareDates(selectedDate, self2.selectedDates[0], true) !== 0)
+        self2.selectedDates.sort(function(a, b) {
           return a.getTime() - b.getTime();
         });
     }
     setHoursFromInputs();
     if (shouldChangeMonth) {
-      var isNewYear = self.currentYear !== selectedDate.getFullYear();
-      self.currentYear = selectedDate.getFullYear();
-      self.currentMonth = selectedDate.getMonth();
+      var isNewYear = self2.currentYear !== selectedDate.getFullYear();
+      self2.currentYear = selectedDate.getFullYear();
+      self2.currentMonth = selectedDate.getMonth();
       if (isNewYear) {
         triggerEvent("onYearChange");
         buildMonthSwitch();
@@ -66601,16 +72906,16 @@ function FlatpickrInstance(element, instanceConfig) {
     updateNavigationCurrentMonth();
     buildDays();
     updateValue();
-    if (!shouldChangeMonth && self.config.mode !== "range" && self.config.showMonths === 1)
+    if (!shouldChangeMonth && self2.config.mode !== "range" && self2.config.showMonths === 1)
       focusOnDayElem(target);
-    else if (self.selectedDateElem !== void 0 && self.hourElement === void 0) {
-      self.selectedDateElem && self.selectedDateElem.focus();
+    else if (self2.selectedDateElem !== void 0 && self2.hourElement === void 0) {
+      self2.selectedDateElem && self2.selectedDateElem.focus();
     }
-    if (self.hourElement !== void 0)
-      self.hourElement !== void 0 && self.hourElement.focus();
-    if (self.config.closeOnSelect) {
-      var single = self.config.mode === "single" && !self.config.enableTime;
-      var range2 = self.config.mode === "range" && self.selectedDates.length === 2 && !self.config.enableTime;
+    if (self2.hourElement !== void 0)
+      self2.hourElement !== void 0 && self2.hourElement.focus();
+    if (self2.config.closeOnSelect) {
+      var single = self2.config.mode === "single" && !self2.config.enableTime;
+      var range2 = self2.config.mode === "range" && self2.selectedDates.length === 2 && !self2.config.enableTime;
       if (single || range2) {
         focusAndClose();
       }
@@ -66625,19 +72930,19 @@ function FlatpickrInstance(element, instanceConfig) {
     positionElement: [updatePositionElement],
     clickOpens: [
       function() {
-        if (self.config.clickOpens === true) {
-          bind(self._input, "focus", self.open);
-          bind(self._input, "click", self.open);
+        if (self2.config.clickOpens === true) {
+          bind(self2._input, "focus", self2.open);
+          bind(self2._input, "click", self2.open);
         } else {
-          self._input.removeEventListener("focus", self.open);
-          self._input.removeEventListener("click", self.open);
+          self2._input.removeEventListener("focus", self2.open);
+          self2._input.removeEventListener("click", self2.open);
         }
       }
     ]
   };
   function set(option, value) {
     if (option !== null && typeof option === "object") {
-      Object.assign(self.config, option);
+      Object.assign(self2.config, option);
       for (var key in option) {
         if (CALLBACKS[key] !== void 0)
           CALLBACKS[key].forEach(function(x) {
@@ -66645,49 +72950,49 @@ function FlatpickrInstance(element, instanceConfig) {
           });
       }
     } else {
-      self.config[option] = value;
+      self2.config[option] = value;
       if (CALLBACKS[option] !== void 0)
         CALLBACKS[option].forEach(function(x) {
           return x();
         });
       else if (HOOKS.indexOf(option) > -1)
-        self.config[option] = arrayify(value);
+        self2.config[option] = arrayify(value);
     }
-    self.redraw();
+    self2.redraw();
     updateValue(true);
   }
   function setSelectedDate(inputDate, format2) {
     var dates = [];
     if (inputDate instanceof Array)
       dates = inputDate.map(function(d) {
-        return self.parseDate(d, format2);
+        return self2.parseDate(d, format2);
       });
     else if (inputDate instanceof Date || typeof inputDate === "number")
-      dates = [self.parseDate(inputDate, format2)];
+      dates = [self2.parseDate(inputDate, format2)];
     else if (typeof inputDate === "string") {
-      switch (self.config.mode) {
+      switch (self2.config.mode) {
         case "single":
         case "time":
-          dates = [self.parseDate(inputDate, format2)];
+          dates = [self2.parseDate(inputDate, format2)];
           break;
         case "multiple":
-          dates = inputDate.split(self.config.conjunction).map(function(date) {
-            return self.parseDate(date, format2);
+          dates = inputDate.split(self2.config.conjunction).map(function(date) {
+            return self2.parseDate(date, format2);
           });
           break;
         case "range":
-          dates = inputDate.split(self.l10n.rangeSeparator).map(function(date) {
-            return self.parseDate(date, format2);
+          dates = inputDate.split(self2.l10n.rangeSeparator).map(function(date) {
+            return self2.parseDate(date, format2);
           });
           break;
       }
     } else
-      self.config.errorHandler(new Error("Invalid date supplied: " + JSON.stringify(inputDate)));
-    self.selectedDates = self.config.allowInvalidPreload ? dates : dates.filter(function(d) {
+      self2.config.errorHandler(new Error("Invalid date supplied: " + JSON.stringify(inputDate)));
+    self2.selectedDates = self2.config.allowInvalidPreload ? dates : dates.filter(function(d) {
       return d instanceof Date && isEnabled(d, false);
     });
-    if (self.config.mode === "range")
-      self.selectedDates.sort(function(a, b) {
+    if (self2.config.mode === "range")
+      self2.selectedDates.sort(function(a, b) {
         return a.getTime() - b.getTime();
       });
   }
@@ -66696,17 +73001,17 @@ function FlatpickrInstance(element, instanceConfig) {
       triggerChange2 = false;
     }
     if (format2 === void 0) {
-      format2 = self.config.dateFormat;
+      format2 = self2.config.dateFormat;
     }
     if (date !== 0 && !date || date instanceof Array && date.length === 0)
-      return self.clear(triggerChange2);
+      return self2.clear(triggerChange2);
     setSelectedDate(date, format2);
-    self.latestSelectedDateObj = self.selectedDates[self.selectedDates.length - 1];
-    self.redraw();
+    self2.latestSelectedDateObj = self2.selectedDates[self2.selectedDates.length - 1];
+    self2.redraw();
     jumpToDate(void 0, triggerChange2);
     setHoursFromDate();
-    if (self.selectedDates.length === 0) {
-      self.clear(false);
+    if (self2.selectedDates.length === 0) {
+      self2.clear(false);
     }
     updateValue(triggerChange2);
     if (triggerChange2)
@@ -66715,11 +73020,11 @@ function FlatpickrInstance(element, instanceConfig) {
   function parseDateRules(arr) {
     return arr.slice().map(function(rule) {
       if (typeof rule === "string" || typeof rule === "number" || rule instanceof Date) {
-        return self.parseDate(rule, void 0, true);
+        return self2.parseDate(rule, void 0, true);
       } else if (rule && typeof rule === "object" && rule.from && rule.to)
         return {
-          from: self.parseDate(rule.from, void 0),
-          to: self.parseDate(rule.to, void 0)
+          from: self2.parseDate(rule.from, void 0),
+          to: self2.parseDate(rule.to, void 0)
         };
       return rule;
     }).filter(function(x) {
@@ -66727,100 +73032,100 @@ function FlatpickrInstance(element, instanceConfig) {
     });
   }
   function setupDates() {
-    self.selectedDates = [];
-    self.now = self.parseDate(self.config.now) || /* @__PURE__ */ new Date();
-    var preloadedDate = self.config.defaultDate || ((self.input.nodeName === "INPUT" || self.input.nodeName === "TEXTAREA") && self.input.placeholder && self.input.value === self.input.placeholder ? null : self.input.value);
+    self2.selectedDates = [];
+    self2.now = self2.parseDate(self2.config.now) || /* @__PURE__ */ new Date();
+    var preloadedDate = self2.config.defaultDate || ((self2.input.nodeName === "INPUT" || self2.input.nodeName === "TEXTAREA") && self2.input.placeholder && self2.input.value === self2.input.placeholder ? null : self2.input.value);
     if (preloadedDate)
-      setSelectedDate(preloadedDate, self.config.dateFormat);
-    self._initialDate = self.selectedDates.length > 0 ? self.selectedDates[0] : self.config.minDate && self.config.minDate.getTime() > self.now.getTime() ? self.config.minDate : self.config.maxDate && self.config.maxDate.getTime() < self.now.getTime() ? self.config.maxDate : self.now;
-    self.currentYear = self._initialDate.getFullYear();
-    self.currentMonth = self._initialDate.getMonth();
-    if (self.selectedDates.length > 0)
-      self.latestSelectedDateObj = self.selectedDates[0];
-    if (self.config.minTime !== void 0)
-      self.config.minTime = self.parseDate(self.config.minTime, "H:i");
-    if (self.config.maxTime !== void 0)
-      self.config.maxTime = self.parseDate(self.config.maxTime, "H:i");
-    self.minDateHasTime = !!self.config.minDate && (self.config.minDate.getHours() > 0 || self.config.minDate.getMinutes() > 0 || self.config.minDate.getSeconds() > 0);
-    self.maxDateHasTime = !!self.config.maxDate && (self.config.maxDate.getHours() > 0 || self.config.maxDate.getMinutes() > 0 || self.config.maxDate.getSeconds() > 0);
+      setSelectedDate(preloadedDate, self2.config.dateFormat);
+    self2._initialDate = self2.selectedDates.length > 0 ? self2.selectedDates[0] : self2.config.minDate && self2.config.minDate.getTime() > self2.now.getTime() ? self2.config.minDate : self2.config.maxDate && self2.config.maxDate.getTime() < self2.now.getTime() ? self2.config.maxDate : self2.now;
+    self2.currentYear = self2._initialDate.getFullYear();
+    self2.currentMonth = self2._initialDate.getMonth();
+    if (self2.selectedDates.length > 0)
+      self2.latestSelectedDateObj = self2.selectedDates[0];
+    if (self2.config.minTime !== void 0)
+      self2.config.minTime = self2.parseDate(self2.config.minTime, "H:i");
+    if (self2.config.maxTime !== void 0)
+      self2.config.maxTime = self2.parseDate(self2.config.maxTime, "H:i");
+    self2.minDateHasTime = !!self2.config.minDate && (self2.config.minDate.getHours() > 0 || self2.config.minDate.getMinutes() > 0 || self2.config.minDate.getSeconds() > 0);
+    self2.maxDateHasTime = !!self2.config.maxDate && (self2.config.maxDate.getHours() > 0 || self2.config.maxDate.getMinutes() > 0 || self2.config.maxDate.getSeconds() > 0);
   }
   function setupInputs() {
-    self.input = getInputElem();
-    if (!self.input) {
-      self.config.errorHandler(new Error("Invalid input element specified"));
+    self2.input = getInputElem();
+    if (!self2.input) {
+      self2.config.errorHandler(new Error("Invalid input element specified"));
       return;
     }
-    self.input._type = self.input.type;
-    self.input.type = "text";
-    self.input.classList.add("flatpickr-input");
-    self._input = self.input;
-    if (self.config.altInput) {
-      self.altInput = createElement(self.input.nodeName, self.config.altInputClass);
-      self._input = self.altInput;
-      self.altInput.placeholder = self.input.placeholder;
-      self.altInput.disabled = self.input.disabled;
-      self.altInput.required = self.input.required;
-      self.altInput.tabIndex = self.input.tabIndex;
-      self.altInput.type = "text";
-      self.input.setAttribute("type", "hidden");
-      if (!self.config.static && self.input.parentNode)
-        self.input.parentNode.insertBefore(self.altInput, self.input.nextSibling);
+    self2.input._type = self2.input.type;
+    self2.input.type = "text";
+    self2.input.classList.add("flatpickr-input");
+    self2._input = self2.input;
+    if (self2.config.altInput) {
+      self2.altInput = createElement(self2.input.nodeName, self2.config.altInputClass);
+      self2._input = self2.altInput;
+      self2.altInput.placeholder = self2.input.placeholder;
+      self2.altInput.disabled = self2.input.disabled;
+      self2.altInput.required = self2.input.required;
+      self2.altInput.tabIndex = self2.input.tabIndex;
+      self2.altInput.type = "text";
+      self2.input.setAttribute("type", "hidden");
+      if (!self2.config.static && self2.input.parentNode)
+        self2.input.parentNode.insertBefore(self2.altInput, self2.input.nextSibling);
     }
-    if (!self.config.allowInput)
-      self._input.setAttribute("readonly", "readonly");
+    if (!self2.config.allowInput)
+      self2._input.setAttribute("readonly", "readonly");
     updatePositionElement();
   }
   function updatePositionElement() {
-    self._positionElement = self.config.positionElement || self._input;
+    self2._positionElement = self2.config.positionElement || self2._input;
   }
   function setupMobile() {
-    var inputType = self.config.enableTime ? self.config.noCalendar ? "time" : "datetime-local" : "date";
-    self.mobileInput = createElement("input", self.input.className + " flatpickr-mobile");
-    self.mobileInput.tabIndex = 1;
-    self.mobileInput.type = inputType;
-    self.mobileInput.disabled = self.input.disabled;
-    self.mobileInput.required = self.input.required;
-    self.mobileInput.placeholder = self.input.placeholder;
-    self.mobileFormatStr = inputType === "datetime-local" ? "Y-m-d\\TH:i:S" : inputType === "date" ? "Y-m-d" : "H:i:S";
-    if (self.selectedDates.length > 0) {
-      self.mobileInput.defaultValue = self.mobileInput.value = self.formatDate(self.selectedDates[0], self.mobileFormatStr);
+    var inputType = self2.config.enableTime ? self2.config.noCalendar ? "time" : "datetime-local" : "date";
+    self2.mobileInput = createElement("input", self2.input.className + " flatpickr-mobile");
+    self2.mobileInput.tabIndex = 1;
+    self2.mobileInput.type = inputType;
+    self2.mobileInput.disabled = self2.input.disabled;
+    self2.mobileInput.required = self2.input.required;
+    self2.mobileInput.placeholder = self2.input.placeholder;
+    self2.mobileFormatStr = inputType === "datetime-local" ? "Y-m-d\\TH:i:S" : inputType === "date" ? "Y-m-d" : "H:i:S";
+    if (self2.selectedDates.length > 0) {
+      self2.mobileInput.defaultValue = self2.mobileInput.value = self2.formatDate(self2.selectedDates[0], self2.mobileFormatStr);
     }
-    if (self.config.minDate)
-      self.mobileInput.min = self.formatDate(self.config.minDate, "Y-m-d");
-    if (self.config.maxDate)
-      self.mobileInput.max = self.formatDate(self.config.maxDate, "Y-m-d");
-    if (self.input.getAttribute("step"))
-      self.mobileInput.step = String(self.input.getAttribute("step"));
-    self.input.type = "hidden";
-    if (self.altInput !== void 0)
-      self.altInput.type = "hidden";
+    if (self2.config.minDate)
+      self2.mobileInput.min = self2.formatDate(self2.config.minDate, "Y-m-d");
+    if (self2.config.maxDate)
+      self2.mobileInput.max = self2.formatDate(self2.config.maxDate, "Y-m-d");
+    if (self2.input.getAttribute("step"))
+      self2.mobileInput.step = String(self2.input.getAttribute("step"));
+    self2.input.type = "hidden";
+    if (self2.altInput !== void 0)
+      self2.altInput.type = "hidden";
     try {
-      if (self.input.parentNode)
-        self.input.parentNode.insertBefore(self.mobileInput, self.input.nextSibling);
+      if (self2.input.parentNode)
+        self2.input.parentNode.insertBefore(self2.mobileInput, self2.input.nextSibling);
     } catch (_a) {
     }
-    bind(self.mobileInput, "change", function(e) {
-      self.setDate(getEventTarget(e).value, false, self.mobileFormatStr);
+    bind(self2.mobileInput, "change", function(e) {
+      self2.setDate(getEventTarget(e).value, false, self2.mobileFormatStr);
       triggerEvent("onChange");
       triggerEvent("onClose");
     });
   }
   function toggle(e) {
-    if (self.isOpen === true)
-      return self.close();
-    self.open(e);
+    if (self2.isOpen === true)
+      return self2.close();
+    self2.open(e);
   }
   function triggerEvent(event2, data2) {
-    if (self.config === void 0)
+    if (self2.config === void 0)
       return;
-    var hooks = self.config[event2];
+    var hooks = self2.config[event2];
     if (hooks !== void 0 && hooks.length > 0) {
       for (var i = 0; hooks[i] && i < hooks.length; i++)
-        hooks[i](self.selectedDates, self.input.value, self, data2);
+        hooks[i](self2.selectedDates, self2.input.value, self2, data2);
     }
     if (event2 === "onChange") {
-      self.input.dispatchEvent(createEvent("change"));
-      self.input.dispatchEvent(createEvent("input"));
+      self2.input.dispatchEvent(createEvent("change"));
+      self2.input.dispatchEvent(createEvent("input"));
     }
   }
   function createEvent(name2) {
@@ -66829,97 +73134,97 @@ function FlatpickrInstance(element, instanceConfig) {
     return e;
   }
   function isDateSelected(date) {
-    for (var i = 0; i < self.selectedDates.length; i++) {
-      var selectedDate = self.selectedDates[i];
+    for (var i = 0; i < self2.selectedDates.length; i++) {
+      var selectedDate = self2.selectedDates[i];
       if (selectedDate instanceof Date && compareDates(selectedDate, date) === 0)
         return "" + i;
     }
     return false;
   }
   function isDateInRange(date) {
-    if (self.config.mode !== "range" || self.selectedDates.length < 2)
+    if (self2.config.mode !== "range" || self2.selectedDates.length < 2)
       return false;
-    return compareDates(date, self.selectedDates[0]) >= 0 && compareDates(date, self.selectedDates[1]) <= 0;
+    return compareDates(date, self2.selectedDates[0]) >= 0 && compareDates(date, self2.selectedDates[1]) <= 0;
   }
   function updateNavigationCurrentMonth() {
-    if (self.config.noCalendar || self.isMobile || !self.monthNav)
+    if (self2.config.noCalendar || self2.isMobile || !self2.monthNav)
       return;
-    self.yearElements.forEach(function(yearElement, i) {
-      var d = new Date(self.currentYear, self.currentMonth, 1);
-      d.setMonth(self.currentMonth + i);
-      if (self.config.showMonths > 1 || self.config.monthSelectorType === "static") {
-        self.monthElements[i].textContent = monthToStr(d.getMonth(), self.config.shorthandCurrentMonth, self.l10n) + " ";
+    self2.yearElements.forEach(function(yearElement, i) {
+      var d = new Date(self2.currentYear, self2.currentMonth, 1);
+      d.setMonth(self2.currentMonth + i);
+      if (self2.config.showMonths > 1 || self2.config.monthSelectorType === "static") {
+        self2.monthElements[i].textContent = monthToStr(d.getMonth(), self2.config.shorthandCurrentMonth, self2.l10n) + " ";
       } else {
-        self.monthsDropdownContainer.value = d.getMonth().toString();
+        self2.monthsDropdownContainer.value = d.getMonth().toString();
       }
       yearElement.value = d.getFullYear().toString();
     });
-    self._hidePrevMonthArrow = self.config.minDate !== void 0 && (self.currentYear === self.config.minDate.getFullYear() ? self.currentMonth <= self.config.minDate.getMonth() : self.currentYear < self.config.minDate.getFullYear());
-    self._hideNextMonthArrow = self.config.maxDate !== void 0 && (self.currentYear === self.config.maxDate.getFullYear() ? self.currentMonth + 1 > self.config.maxDate.getMonth() : self.currentYear > self.config.maxDate.getFullYear());
+    self2._hidePrevMonthArrow = self2.config.minDate !== void 0 && (self2.currentYear === self2.config.minDate.getFullYear() ? self2.currentMonth <= self2.config.minDate.getMonth() : self2.currentYear < self2.config.minDate.getFullYear());
+    self2._hideNextMonthArrow = self2.config.maxDate !== void 0 && (self2.currentYear === self2.config.maxDate.getFullYear() ? self2.currentMonth + 1 > self2.config.maxDate.getMonth() : self2.currentYear > self2.config.maxDate.getFullYear());
   }
   function getDateStr(specificFormat) {
-    var format2 = specificFormat || (self.config.altInput ? self.config.altFormat : self.config.dateFormat);
-    return self.selectedDates.map(function(dObj) {
-      return self.formatDate(dObj, format2);
+    var format2 = specificFormat || (self2.config.altInput ? self2.config.altFormat : self2.config.dateFormat);
+    return self2.selectedDates.map(function(dObj) {
+      return self2.formatDate(dObj, format2);
     }).filter(function(d, i, arr) {
-      return self.config.mode !== "range" || self.config.enableTime || arr.indexOf(d) === i;
-    }).join(self.config.mode !== "range" ? self.config.conjunction : self.l10n.rangeSeparator);
+      return self2.config.mode !== "range" || self2.config.enableTime || arr.indexOf(d) === i;
+    }).join(self2.config.mode !== "range" ? self2.config.conjunction : self2.l10n.rangeSeparator);
   }
   function updateValue(triggerChange2) {
     if (triggerChange2 === void 0) {
       triggerChange2 = true;
     }
-    if (self.mobileInput !== void 0 && self.mobileFormatStr) {
-      self.mobileInput.value = self.latestSelectedDateObj !== void 0 ? self.formatDate(self.latestSelectedDateObj, self.mobileFormatStr) : "";
+    if (self2.mobileInput !== void 0 && self2.mobileFormatStr) {
+      self2.mobileInput.value = self2.latestSelectedDateObj !== void 0 ? self2.formatDate(self2.latestSelectedDateObj, self2.mobileFormatStr) : "";
     }
-    self.input.value = getDateStr(self.config.dateFormat);
-    if (self.altInput !== void 0) {
-      self.altInput.value = getDateStr(self.config.altFormat);
+    self2.input.value = getDateStr(self2.config.dateFormat);
+    if (self2.altInput !== void 0) {
+      self2.altInput.value = getDateStr(self2.config.altFormat);
     }
     if (triggerChange2 !== false)
       triggerEvent("onValueUpdate");
   }
   function onMonthNavClick(e) {
     var eventTarget = getEventTarget(e);
-    var isPrevMonth = self.prevMonthNav.contains(eventTarget);
-    var isNextMonth = self.nextMonthNav.contains(eventTarget);
+    var isPrevMonth = self2.prevMonthNav.contains(eventTarget);
+    var isNextMonth = self2.nextMonthNav.contains(eventTarget);
     if (isPrevMonth || isNextMonth) {
       changeMonth(isPrevMonth ? -1 : 1);
-    } else if (self.yearElements.indexOf(eventTarget) >= 0) {
+    } else if (self2.yearElements.indexOf(eventTarget) >= 0) {
       eventTarget.select();
     } else if (eventTarget.classList.contains("arrowUp")) {
-      self.changeYear(self.currentYear + 1);
+      self2.changeYear(self2.currentYear + 1);
     } else if (eventTarget.classList.contains("arrowDown")) {
-      self.changeYear(self.currentYear - 1);
+      self2.changeYear(self2.currentYear - 1);
     }
   }
   function timeWrapper(e) {
     e.preventDefault();
     var isKeyDown = e.type === "keydown", eventTarget = getEventTarget(e), input = eventTarget;
-    if (self.amPM !== void 0 && eventTarget === self.amPM) {
-      self.amPM.textContent = self.l10n.amPM[int(self.amPM.textContent === self.l10n.amPM[0])];
+    if (self2.amPM !== void 0 && eventTarget === self2.amPM) {
+      self2.amPM.textContent = self2.l10n.amPM[int(self2.amPM.textContent === self2.l10n.amPM[0])];
     }
     var min2 = parseFloat(input.getAttribute("min")), max2 = parseFloat(input.getAttribute("max")), step = parseFloat(input.getAttribute("step")), curValue = parseInt(input.value, 10), delta = e.delta || (isKeyDown ? e.which === 38 ? 1 : -1 : 0);
     var newValue = curValue + step * delta;
     if (typeof input.value !== "undefined" && input.value.length === 2) {
-      var isHourElem = input === self.hourElement, isMinuteElem = input === self.minuteElement;
+      var isHourElem = input === self2.hourElement, isMinuteElem = input === self2.minuteElement;
       if (newValue < min2) {
-        newValue = max2 + newValue + int(!isHourElem) + (int(isHourElem) && int(!self.amPM));
+        newValue = max2 + newValue + int(!isHourElem) + (int(isHourElem) && int(!self2.amPM));
         if (isMinuteElem)
-          incrementNumInput(void 0, -1, self.hourElement);
+          incrementNumInput(void 0, -1, self2.hourElement);
       } else if (newValue > max2) {
-        newValue = input === self.hourElement ? newValue - max2 - int(!self.amPM) : min2;
+        newValue = input === self2.hourElement ? newValue - max2 - int(!self2.amPM) : min2;
         if (isMinuteElem)
-          incrementNumInput(void 0, 1, self.hourElement);
+          incrementNumInput(void 0, 1, self2.hourElement);
       }
-      if (self.amPM && isHourElem && (step === 1 ? newValue + curValue === 23 : Math.abs(newValue - curValue) > step)) {
-        self.amPM.textContent = self.l10n.amPM[int(self.amPM.textContent === self.l10n.amPM[0])];
+      if (self2.amPM && isHourElem && (step === 1 ? newValue + curValue === 23 : Math.abs(newValue - curValue) > step)) {
+        self2.amPM.textContent = self2.l10n.amPM[int(self2.amPM.textContent === self2.l10n.amPM[0])];
       }
       input.value = pad(newValue);
     }
   }
   init();
-  return self;
+  return self2;
 }
 function _flatpickr(nodeList, config3) {
   var nodes = Array.prototype.slice.call(nodeList).filter(function(x) {
@@ -67025,14 +73330,8 @@ class DatePicker extends reactExports.Component {
 class CollapsibleText extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
-    __publicField(this, "css_class");
-    __publicField(this, "defaultText");
-    __publicField(this, "text");
     this.state = {};
     this.mainDiv = reactExports.createRef();
-    this.css_class = this.props.css_class;
-    this.defaultText = this.props.defaultText;
-    this.text = this.props.text;
   }
   /*******************************************************
    * LIFECYCLE HOOKS
@@ -67062,8 +73361,8 @@ class CollapsibleText extends ComponentWithToggleDrop {
    *******************************************************/
   render() {
     let css_class = "";
-    if (this.css_class)
-      css_class = this.css_class + " ";
+    if (this.props.css_class)
+      css_class = this.props.css_class + " ";
     css_class += "title-text collapsible-text";
     let drop_text = window.gettext("show more");
     if (this.state.is_dropped) {
@@ -67083,9 +73382,9 @@ class CollapsibleText extends ComponentWithToggleDrop {
           children: drop_text
         }
       );
-    let text = this.text;
-    if ((this.text == null || this.text == "") && this.defaultText != null) {
-      text = this.defaultText;
+    let text = this.props.text;
+    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
+      text = this.props.defaultText;
     }
     return [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67127,7 +73426,6 @@ class LegendLine extends reactExports.Component {
 class OutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    this.objectType = "outcomeoutcome";
   }
   /*******************************************************
    * RENDER
@@ -67142,10 +73440,9 @@ class OutcomeOutcomeUnconnected extends reactExports.Component {
       {
         className: my_class,
         id: data2.id,
-        ref: this.maindiv,
         "data-child-id": data2.child,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Outcome$3,
+          Outcome$2,
           {
             objectID: data2.child,
             parentID: this.props.parentID,
@@ -67158,9 +73455,11 @@ class OutcomeOutcomeUnconnected extends reactExports.Component {
     );
   }
 }
-const mapOutcomeOutcomeStateToProps$1 = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
+const mapStateToProps$b = (state, ownProps) => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID);
+};
 const OutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps$1,
+  mapStateToProps$b,
   null
 )(OutcomeOutcomeUnconnected);
 class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
@@ -67190,7 +73489,7 @@ class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.maindiv, children: this.getChildType() });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.mainDiv, children: this.getChildType() });
   }
 }
 const mapOutcomeOutcomeStateToProps = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
@@ -67281,7 +73580,7 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
       {
         className: css_class,
         style: this.get_border_style(),
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67313,9 +73612,9 @@ class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     );
   }
 }
-const mapOutcomeStateToProps$4 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
+const mapOutcomeStateToProps$3 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
 const SimpleOutcome = connect(
-  mapOutcomeStateToProps$4,
+  mapOutcomeStateToProps$3,
   null
 )(SimpleOutcomeUnconnected);
 const SimpleOutcome$1 = SimpleOutcome;
@@ -67379,11 +73678,11 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
    * @todo what is this doing?
    */
   checkHidden() {
-    if ($(this.maindiv.current).children(".outcome").length == 0)
-      $(this.maindiv.current).css("display", "none");
+    if ($$1(this.mainDiv.current).children(".outcome").length == 0)
+      $$1(this.mainDiv.current).css("display", "none");
     else
-      $(this.maindiv.current).css("display", "");
-    const indicator = $(this.maindiv.current).closest(".outcome-node-indicator");
+      $$1(this.mainDiv.current).css("display", "");
+    const indicator = $$1(this.mainDiv.current).closest(".outcome-node-indicator");
     if (indicator.length >= 0) {
       const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
       indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
@@ -67405,7 +73704,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
       {
         className: "outcome-node outcome-" + data2.id,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67428,7 +73727,7 @@ const OutcomeHorizontalLink = connect(
   mapOutcomeHorizontalLinkStateToProps,
   null
 )(OutcomeHorizontalLinkUnconnected);
-let Outcome$2 = class Outcome extends EditableComponentWithSorting {
+let Outcome$1 = class Outcome extends EditableComponentWithSorting {
   constructor(props2) {
     super(props2);
     this.objectType = "outcome";
@@ -67452,7 +73751,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),
+      $$1(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),
       this.props.objectID,
       "outcomeoutcome",
       ".outcome-outcome-" + this.props.data.depth,
@@ -67507,11 +73806,11 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
   }
   makeDroppable() {
     const props2 = this.props;
-    $(this.maindiv.current).droppable({
+    $$1(this.mainDiv.current).droppable({
       tolerance: "pointer",
       droppable: ".outcome-ghost",
       over: (e, ui) => {
-        const drop_item = $(e.target);
+        const drop_item = $$1(e.target);
         const drag_item = ui.draggable;
         const drag_helper = ui.helper;
         drop_item.prevAll().length;
@@ -67527,15 +73826,15 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
       out: (e, ui) => {
         const drag_item = ui.draggable;
         const drag_helper = ui.helper;
-        const drop_item = $(e.target);
+        const drop_item = $$1(e.target);
         if (drag_item.hasClass("outcome")) {
           drag_helper.removeClass("valid-drop");
           drop_item.removeClass("outcome-drop-over");
         }
       },
       drop: (e, ui) => {
-        $(".outcome-drop-over").removeClass("outcome-drop-over");
-        $(e.target);
+        $$1(".outcome-drop-over").removeClass("outcome-drop-over");
+        $$1(e.target);
         const drag_item = ui.draggable;
         if (drag_item.hasClass("outcome")) {
           COURSEFLOW_APP.tinyLoader.startLoad();
@@ -67619,20 +73918,23 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
       if (data2.depth < 2)
         mouseover_actions.push(this.addInsertChild(data2));
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
-    if (data2.is_dropped)
+    if (this.props.renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
+    if (data2.is_dropped) {
       dropIcon = "droptriangleup";
-    else
+    } else {
       dropIcon = "droptriangledown";
-    if (data2.is_dropped)
+    }
+    if (data2.is_dropped) {
       droptext = window.gettext("hide");
-    else
+    } else {
       droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
         "descendant",
         "descendants",
         data2.child_outcome_links.length
       );
+    }
     if (!this.props.renderer.read_only && data2.depth < 2 && data2.child_outcome_links.length === 0 && children)
       children.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", style: { height: "5px" } })
@@ -67650,7 +73952,7 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
       {
         style: style2,
         className: css_class,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67693,9 +73995,9 @@ let Outcome$2 = class Outcome extends EditableComponentWithSorting {
     );
   }
 };
-const mapOutcomeStateToProps$3 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-const ConnectedOutcome = connect(mapOutcomeStateToProps$3, null)(Outcome$2);
-const Outcome$3 = ConnectedOutcome;
+const mapOutcomeStateToProps$2 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
+const ConnectedOutcome = connect(mapOutcomeStateToProps$2, null)(Outcome$1);
+const Outcome$2 = ConnectedOutcome;
 class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
   constructor(props2) {
     super(props2);
@@ -67740,7 +74042,7 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
   }
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.maindiv.current).find(".outcome-workflow").not("ui-draggable"),
+      $$1(this.mainDiv.current).find(".outcome-workflow").not("ui-draggable"),
       this.props.objectID,
       "outcomeworkflow",
       ".outcome-workflow"
@@ -67789,7 +74091,7 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
               "data-child-id": outcome.id,
               id: outcome.outcomeworkflow,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Outcome$3,
+                Outcome$2,
                 {
                   objectID: outcome.id,
                   parentID: this.props.workflow.id,
@@ -67817,7 +74119,7 @@ class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       {
         id: "#workflow-" + this.props.workflow.id,
         className: "workflow-details",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-edit", ref: this.maindiv, children: outcomes })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-edit", ref: this.mainDiv, children: outcomes })
       }
     );
   }
@@ -67842,7 +74144,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected {
   }
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.maindiv.current).find(".outcome-workflow").not("ui-draggable"),
+      $$1(this.mainDiv.current).find(".outcome-workflow").not("ui-draggable"),
       this.props.objectID,
       "outcomeworkflow",
       ".outcome-workflow",
@@ -67931,12 +74233,13 @@ class Column extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data2));
       mouseover_actions.push(this.addDeleteSelf(data2));
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
+    if (this.props.renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        ref: this.maindiv,
+        ref: this.mainDiv,
         style: style2,
         className: css_class,
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
@@ -67972,7 +74275,7 @@ class ColumnWorkflow extends reactExports.Component {
       "div",
       {
         className: my_class,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         id: data2.id,
         "data-child-id": data2.column,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -69090,7 +75393,7 @@ function create() {
     }
     return resolvedReferences;
   }
-  function resolveReferences(functionList, signatureMap, self) {
+  function resolveReferences(functionList, signatureMap, self2) {
     const resolvedFunctions = clearResolutions(functionList);
     const isResolved = new Array(resolvedFunctions.length).fill(false);
     let leftUnresolved = true;
@@ -69102,7 +75405,7 @@ function create() {
           continue;
         const fn = resolvedFunctions[i];
         if (isReferToSelf(fn)) {
-          resolvedFunctions[i] = fn.referToSelf.callback(self);
+          resolvedFunctions[i] = fn.referToSelf.callback(self2);
           resolvedFunctions[i].referToSelf = fn.referToSelf;
           isResolved[i] = true;
           nothingResolved = false;
@@ -75551,7 +81854,7 @@ var createIsInteger = /* @__PURE__ */ factory(name$12, dependencies$11, (_ref) =
     Fraction: function Fraction2(x) {
       return x.d === 1 && isFinite(x.n);
     },
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var n1$1 = "number";
@@ -75606,8 +81909,8 @@ var createIsPositive = /* @__PURE__ */ factory(name$11, dependencies$10, (_ref) 
     Fraction: function Fraction2(x) {
       return x.s > 0 && x.n > 0;
     },
-    Unit: typed2.referToSelf((self) => (x) => typed2.find(self, x.valueType())(x.value)),
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    Unit: typed2.referToSelf((self2) => (x) => typed2.find(self2, x.valueType())(x.value)),
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$10 = "isZero";
@@ -75627,8 +81930,8 @@ var createIsZero = /* @__PURE__ */ factory(name$10, dependencies$$, (_ref) => {
     Fraction: function Fraction2(x) {
       return x.d === 1 && x.n === 0;
     },
-    Unit: typed2.referToSelf((self) => (x) => typed2.find(self, x.valueType())(x.value)),
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    Unit: typed2.referToSelf((self2) => (x) => typed2.find(self2, x.valueType())(x.value)),
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 function nearlyEqual(x, y, epsilon) {
@@ -75660,11 +81963,11 @@ var createCompareUnits = /* @__PURE__ */ factory("compareUnits", ["typed"], (_re
     typed: typed2
   } = _ref;
   return {
-    "Unit, Unit": typed2.referToSelf((self) => (x, y) => {
+    "Unit, Unit": typed2.referToSelf((self2) => (x, y) => {
       if (!x.equalBase(y)) {
         throw new Error("Cannot compare units with different base");
       }
-      return typed2.find(self, [x.valueType(), y.valueType()])(x.value, y.value);
+      return typed2.find(self2, [x.valueType(), y.valueType()])(x.value, y.value);
     })
   };
 });
@@ -76616,9 +82919,9 @@ var createNumber = /* @__PURE__ */ factory(name$Z, dependencies$Y, (_ref) => {
     Fraction: function Fraction2(x) {
       return x.valueOf();
     },
-    Unit: typed2.referToSelf((self) => (x) => {
+    Unit: typed2.referToSelf((self2) => (x) => {
       var clone2 = x.clone();
-      clone2.value = self(x.value);
+      clone2.value = self2(x.value);
       return clone2;
     }),
     null: function _null(x) {
@@ -76627,7 +82930,7 @@ var createNumber = /* @__PURE__ */ factory(name$Z, dependencies$Y, (_ref) => {
     "Unit, string | Unit": function UnitStringUnit(unit, valuelessUnit) {
       return unit.toNumber(valuelessUnit);
     },
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
   number2.fromJSON = function(json) {
     return parseFloat(json.value);
@@ -76669,9 +82972,9 @@ var createBignumber = /* @__PURE__ */ factory(name$Y, dependencies$X, (_ref) => 
     BigNumber: function BigNumber3(x) {
       return x;
     },
-    Unit: typed2.referToSelf((self) => (x) => {
+    Unit: typed2.referToSelf((self2) => (x) => {
       var clone2 = x.clone();
-      clone2.value = self(x.value);
+      clone2.value = self2(x.value);
       return clone2;
     }),
     Fraction: function Fraction2(x) {
@@ -76680,7 +82983,7 @@ var createBignumber = /* @__PURE__ */ factory(name$Y, dependencies$X, (_ref) => 
     null: function _null(x) {
       return new BigNumber2(0);
     },
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$X = "complex";
@@ -76725,7 +83028,7 @@ var createComplex = /* @__PURE__ */ factory(name$X, dependencies$W, (_ref) => {
       }
       throw new Error("Expected object with properties (re and im) or (r and phi) or (abs and arg)");
     },
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$W = "fraction";
@@ -76757,15 +83060,15 @@ var createFraction = /* @__PURE__ */ factory(name$W, dependencies$V, (_ref) => {
     Fraction: function Fraction3(x) {
       return x;
     },
-    Unit: typed2.referToSelf((self) => (x) => {
+    Unit: typed2.referToSelf((self2) => (x) => {
       var clone2 = x.clone();
-      clone2.value = self(x.value);
+      clone2.value = self2(x.value);
       return clone2;
     }),
     Object: function Object2(x) {
       return new Fraction2(x);
     },
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$V = "matrix";
@@ -76870,13 +83173,13 @@ var createUnaryMinus = /* @__PURE__ */ factory(name$T, dependencies$S, (_ref) =>
   return typed2(name$T, {
     number: unaryMinusNumber,
     "Complex | BigNumber | Fraction": (x) => x.neg(),
-    Unit: typed2.referToSelf((self) => (x) => {
+    Unit: typed2.referToSelf((self2) => (x) => {
       var res = x.clone();
-      res.value = typed2.find(self, res.valueType())(x.value);
+      res.value = typed2.find(self2, res.valueType())(x.value);
       return res;
     }),
     // deep map collection, skip zeros since unaryMinus(0) = 0
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
     // TODO: add support for string
   });
 });
@@ -76890,7 +83193,7 @@ var createAbs = /* @__PURE__ */ factory(name$S, dependencies$R, (_ref) => {
     number: absNumber,
     "Complex | BigNumber | Fraction | Unit": (x) => x.abs(),
     // deep map collection, skip zeros since abs(0) = 0
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$R = "addScalar";
@@ -76910,7 +83213,7 @@ var createAddScalar = /* @__PURE__ */ factory(name$R, dependencies$Q, (_ref) => 
     "Fraction, Fraction": function FractionFraction(x, y) {
       return x.add(y);
     },
-    "Unit, Unit": typed2.referToSelf((self) => (x, y) => {
+    "Unit, Unit": typed2.referToSelf((self2) => (x, y) => {
       if (x.value === null || x.value === void 0) {
         throw new Error("Parameter x contains a unit with undefined value");
       }
@@ -76920,7 +83223,7 @@ var createAddScalar = /* @__PURE__ */ factory(name$R, dependencies$Q, (_ref) => 
       if (!x.equalBase(y))
         throw new Error("Units do not match");
       var res = x.clone();
-      res.value = typed2.find(self, [res.valueType(), y.valueType()])(res.value, y.value);
+      res.value = typed2.find(self2, [res.valueType(), y.valueType()])(res.value, y.value);
       res.fixPrefix = false;
       return res;
     })
@@ -77363,38 +83666,38 @@ var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$J, dependencies$J,
       }
     } else {
       matrixSignatures = {
-        "DenseMatrix, DenseMatrix": typed2.referToSelf((self) => (x, y) => {
-          return matAlgo13xDD(...broadcast(x, y), self);
+        "DenseMatrix, DenseMatrix": typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo13xDD(...broadcast(x, y), self2);
         }),
-        "Array, Array": typed2.referToSelf((self) => (x, y) => {
-          return matAlgo13xDD(...broadcast(matrix2(x), matrix2(y)), self).valueOf();
+        "Array, Array": typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo13xDD(...broadcast(matrix2(x), matrix2(y)), self2).valueOf();
         }),
-        "Array, DenseMatrix": typed2.referToSelf((self) => (x, y) => {
-          return matAlgo13xDD(...broadcast(matrix2(x), y), self);
+        "Array, DenseMatrix": typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo13xDD(...broadcast(matrix2(x), y), self2);
         }),
-        "DenseMatrix, Array": typed2.referToSelf((self) => (x, y) => {
-          return matAlgo13xDD(...broadcast(x, matrix2(y)), self);
+        "DenseMatrix, Array": typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo13xDD(...broadcast(x, matrix2(y)), self2);
         })
       };
       if (options.SS) {
-        matrixSignatures["SparseMatrix, SparseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return options.SS(...broadcast(x, y), self, false);
+        matrixSignatures["SparseMatrix, SparseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return options.SS(...broadcast(x, y), self2, false);
         });
       }
       if (options.DS) {
-        matrixSignatures["DenseMatrix, SparseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return options.DS(...broadcast(x, y), self, false);
+        matrixSignatures["DenseMatrix, SparseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return options.DS(...broadcast(x, y), self2, false);
         });
-        matrixSignatures["Array, SparseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return options.DS(...broadcast(matrix2(x), y), self, false);
+        matrixSignatures["Array, SparseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return options.DS(...broadcast(matrix2(x), y), self2, false);
         });
       }
       if (SD) {
-        matrixSignatures["SparseMatrix, DenseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return SD(...broadcast(y, x), self, true);
+        matrixSignatures["SparseMatrix, DenseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return SD(...broadcast(y, x), self2, true);
         });
-        matrixSignatures["SparseMatrix, Array"] = typed2.referToSelf((self) => (x, y) => {
-          return SD(...broadcast(matrix2(y), x), self, true);
+        matrixSignatures["SparseMatrix, Array"] = typed2.referToSelf((self2) => (x, y) => {
+          return SD(...broadcast(matrix2(y), x), self2, true);
         });
       }
     }
@@ -77407,17 +83710,17 @@ var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$J, dependencies$J,
         matrixSignatures["Array," + scalar] = (x, y) => matAlgo14xDs(matrix2(x), y, elop, false).valueOf();
         matrixSignatures[scalar + ", Array"] = (x, y) => matAlgo14xDs(matrix2(y), x, elop, true).valueOf();
       } else {
-        matrixSignatures["DenseMatrix," + scalar] = typed2.referToSelf((self) => (x, y) => {
-          return matAlgo14xDs(x, y, self, false);
+        matrixSignatures["DenseMatrix," + scalar] = typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo14xDs(x, y, self2, false);
         });
-        matrixSignatures[scalar + ", DenseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return matAlgo14xDs(y, x, self, true);
+        matrixSignatures[scalar + ", DenseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo14xDs(y, x, self2, true);
         });
-        matrixSignatures["Array," + scalar] = typed2.referToSelf((self) => (x, y) => {
-          return matAlgo14xDs(matrix2(x), y, self, false).valueOf();
+        matrixSignatures["Array," + scalar] = typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo14xDs(matrix2(x), y, self2, false).valueOf();
         });
-        matrixSignatures[scalar + ", Array"] = typed2.referToSelf((self) => (x, y) => {
-          return matAlgo14xDs(matrix2(y), x, self, true).valueOf();
+        matrixSignatures[scalar + ", Array"] = typed2.referToSelf((self2) => (x, y) => {
+          return matAlgo14xDs(matrix2(y), x, self2, true).valueOf();
         });
       }
     }
@@ -77431,13 +83734,13 @@ var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$J, dependencies$J,
       }
     } else {
       if (options.Ss) {
-        matrixSignatures["SparseMatrix," + scalar] = typed2.referToSelf((self) => (x, y) => {
-          return options.Ss(x, y, self, false);
+        matrixSignatures["SparseMatrix," + scalar] = typed2.referToSelf((self2) => (x, y) => {
+          return options.Ss(x, y, self2, false);
         });
       }
       if (sS) {
-        matrixSignatures[scalar + ", SparseMatrix"] = typed2.referToSelf((self) => (x, y) => {
-          return sS(y, x, self, true);
+        matrixSignatures[scalar + ", SparseMatrix"] = typed2.referToSelf((self2) => (x, y) => {
+          return sS(y, x, self2, true);
         });
       }
     }
@@ -78131,8 +84434,8 @@ var createMultiply = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
       return _multiplyMatrixMatrix(x, y);
     },
     "Matrix, Array": typed2.referTo("Matrix,Matrix", (selfMM) => (x, y) => selfMM(x, matrix2(y))),
-    "Array, Matrix": typed2.referToSelf((self) => (x, y) => {
-      return self(matrix2(x, y.storage()), y);
+    "Array, Matrix": typed2.referToSelf((self2) => (x, y) => {
+      return self2(matrix2(x, y.storage()), y);
     }),
     "SparseMatrix, any": function SparseMatrixAny(x, y) {
       return matAlgo11xS0s(x, y, multiplyScalar2, false);
@@ -78153,10 +84456,10 @@ var createMultiply = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
       return matAlgo14xDs(matrix2(y), x, multiplyScalar2, true).valueOf();
     },
     "any, any": multiplyScalar2,
-    "any, any, ...any": typed2.referToSelf((self) => (x, y, rest) => {
-      var result = self(x, y);
+    "any, any, ...any": typed2.referToSelf((self2) => (x, y, rest) => {
+      var result = self2(x, y);
       for (var i = 0; i < rest.length; i++) {
-        result = self(result, rest[i]);
+        result = self2(result, rest[i]);
       }
       return result;
     })
@@ -78183,12 +84486,12 @@ var createSign = /* @__PURE__ */ factory(name$D, dependencies$D, (_ref) => {
       return new _Fraction(x.s, 1);
     },
     // deep map collection, skip zeros since sign(0) = 0
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self)),
-    Unit: typed2.referToSelf((self) => (x) => {
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2)),
+    Unit: typed2.referToSelf((self2) => (x) => {
       if (!x._isDerived() && x.units[0].unit.offset !== 0) {
         throw new TypeError("sign is ambiguous for units with offset");
       }
-      return typed2.find(self, x.valueType())(x.value);
+      return typed2.find(self2, x.valueType())(x.value);
     })
   });
 });
@@ -78266,7 +84569,7 @@ var createSubtract = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
     "Complex, Complex": (x, y) => x.sub(y),
     "BigNumber, BigNumber": (x, y) => x.minus(y),
     "Fraction, Fraction": (x, y) => x.sub(y),
-    "Unit, Unit": typed2.referToSelf((self) => (x, y) => {
+    "Unit, Unit": typed2.referToSelf((self2) => (x, y) => {
       if (x.value === null) {
         throw new Error("Parameter x contains a unit with undefined value");
       }
@@ -78277,7 +84580,7 @@ var createSubtract = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
         throw new Error("Units do not match");
       }
       var res = x.clone();
-      res.value = typed2.find(self, [res.valueType(), y.valueType()])(res.value, y.value);
+      res.value = typed2.find(self2, [res.valueType(), y.valueType()])(res.value, y.value);
       res.fixPrefix = false;
       return res;
     })
@@ -78362,7 +84665,7 @@ var createConj = /* @__PURE__ */ factory(name$z, dependencies$z, (_ref) => {
   return typed2(name$z, {
     "number | BigNumber | Fraction": (x) => x,
     Complex: (x) => x.conjugate(),
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$y = "im";
@@ -78375,7 +84678,7 @@ var createIm = /* @__PURE__ */ factory(name$y, dependencies$y, (_ref) => {
     number: () => 0,
     "BigNumber | Fraction": (x) => x.mul(0),
     Complex: (x) => x.im,
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$x = "re";
@@ -78387,7 +84690,7 @@ var createRe = /* @__PURE__ */ factory(name$x, dependencies$x, (_ref) => {
   return typed2(name$x, {
     "number | BigNumber | Fraction": (x) => x,
     Complex: (x) => x.re,
-    "Array | Matrix": typed2.referToSelf((self) => (x) => deepMap(x, self))
+    "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
 var name$w = "concat";
@@ -80089,11 +86392,11 @@ var createTrigUnit = /* @__PURE__ */ factory("trigUnit", ["typed"], (_ref) => {
     typed: typed2
   } = _ref;
   return {
-    Unit: typed2.referToSelf((self) => (x) => {
+    Unit: typed2.referToSelf((self2) => (x) => {
       if (!x.hasBase(x.constructor.BASE_UNITS.ANGLE)) {
         throw new TypeError("Unit in function cot is no angle");
       }
-      return typed2.find(self, x.valueType())(x.value);
+      return typed2.find(self2, x.valueType())(x.value);
     })
   };
 });
@@ -80155,10 +86458,10 @@ var createAdd = /* @__PURE__ */ factory(name$6, dependencies$6, (_ref) => {
   });
   return typed2(name$6, {
     "any, any": addScalar2,
-    "any, any, ...any": typed2.referToSelf((self) => (x, y, rest) => {
-      var result = self(x, y);
+    "any, any, ...any": typed2.referToSelf((self2) => (x, y, rest) => {
+      var result = self2(x, y);
       for (var i = 0; i < rest.length; i++) {
-        result = self(result, rest[i]);
+        result = self2(result, rest[i]);
       }
       return result;
     })
@@ -82162,7 +88465,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
   //     this.props.selected ||
   //     this.props.node_selected
   //   ) {
-  //     // d3.select(this.maindiv.current).raise();
+  //     // d3.select(this.mainDiv.current).raise();
   //     // d3.selectAll(".node-ports").raise();
   //   }
   // }
@@ -82274,7 +88577,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
           }
         );
       }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { ref: this.maindiv, stroke: "black", fill: "none", children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { ref: this.mainDiv, stroke: "black", fill: "none", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "path",
           {
@@ -82350,7 +88653,7 @@ class AutoLink extends reactExports.Component {
       }
       if (this.target_node)
         this.target_node.off(this.rerenderEvents);
-      this.target_node = $(".week #" + target + ".node");
+      this.target_node = $$1(".week #" + target + ".node");
       this.target_port_handle = d3.select(
         "g.port-" + target + " circle[data-port-type='target'][data-port='n']"
       );
@@ -82366,7 +88669,7 @@ class AutoLink extends reactExports.Component {
   }
   render() {
     if (!this.source_node || this.source_node.length == 0 || !this.source_port_handle || this.source_port_handle.empty()) {
-      this.source_node = $(this.props.node_div.current);
+      this.source_node = $$1(this.props.node_div.current);
       this.source_port_handle = d3.select(
         "g.port-" + this.props.nodeID + " circle[data-port-type='source'][data-port='s']"
       );
@@ -82401,7 +88704,7 @@ class AutoLink extends reactExports.Component {
           target_dimensions: target_dims
         }
       ),
-      $(".workflow-canvas")[0]
+      $$1(".workflow-canvas")[0]
     ) });
   }
 }
@@ -82433,8 +88736,8 @@ class NodeLink extends EditableComponentWithActions {
   render() {
     const data2 = this.props.data;
     if (!this.source_node || !this.source_node.outerWidth() || !this.target_node || !this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()) {
-      this.source_node = $(this.props.node_div.current);
-      this.target_node = $("#" + data2.target_node + ".node");
+      this.source_node = $$1(this.props.node_div.current);
+      this.target_node = $$1("#" + data2.target_node + ".node");
       this.source_node.on(this.rerenderEvents, this.rerender.bind(this));
       this.target_node.on(this.rerenderEvents, this.rerender.bind(this));
       this.source_port_handle = d3.select(
@@ -82488,7 +88791,7 @@ class NodeLink extends EditableComponentWithActions {
             target_dimensions: target_dims
           }
         ),
-        $(".workflow-canvas")[0]
+        $$1(".workflow-canvas")[0]
       ),
       this.addEditable(data2)
     ] });
@@ -82686,7 +88989,7 @@ class AssignmentBox extends reactExports.Component {
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "assignment.svg" })
           }
         ),
-        $(this.props.parent.maindiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
+        $$1(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
       );
     if (!this.props.show) {
       return assignment_indicator;
@@ -82739,7 +89042,7 @@ class AssignmentBox extends reactExports.Component {
         ] }),
         assignment_indicator
       ],
-      $(this.props.parent.maindiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
+      $$1(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
     );
   }
 }
@@ -82789,12 +89092,12 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     }
   }
   checkHidden() {
-    if ($(this.maindiv.current).children(".outcome").length === 0) {
-      $(this.maindiv.current).css("display", "none");
+    if ($$1(this.mainDiv.current).children(".outcome").length === 0) {
+      $$1(this.mainDiv.current).css("display", "none");
     } else {
-      $(this.maindiv.current).css("display", "");
+      $$1(this.mainDiv.current).css("display", "");
     }
-    const indicator = $(this.maindiv.current).closest(".outcome-node-indicator");
+    const indicator = $$1(this.mainDiv.current).closest(".outcome-node-indicator");
     if (indicator.length >= 0) {
       const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
       indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
@@ -82816,10 +89119,10 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
       {
         className: "outcome-node outcomenode-" + data2.id,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
-          getCompletionImg(data2.degree, this.props.outcomes_type),
+          (void 0)(data2.degree, this.props.outcomes_type),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             SimpleOutcome$1,
             {
@@ -82837,15 +89140,15 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     );
   }
 }
-const mapStateToProps$5 = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
-const OutcomeNode = connect(mapStateToProps$5, null)(OutcomeNodeUnconnected);
+const mapStateToProps$a = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+const OutcomeNode = connect(mapStateToProps$a, null)(OutcomeNodeUnconnected);
 let Index$1 = class Index extends reactExports.Component {
   constructor(props2) {
     super(props2);
     this.state = {};
   }
   componentDidUpdate() {
-    $(this.props.node_div.current).triggerHandler("ports-rendered");
+    $$1(this.props.node_div.current).triggerHandler("ports-rendered");
   }
   componentDidMount() {
     var thisComponent = this;
@@ -82854,15 +89157,15 @@ let Index$1 = class Index extends reactExports.Component {
         "g.port-" + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
         d3.drag().on("start", function(d) {
-          $(".workflow-canvas").addClass("creating-node-link");
-          var canvas_offset = $(".workflow-canvas").offset();
+          $$1(".workflow-canvas").addClass("creating-node-link");
+          var canvas_offset = $$1(".workflow-canvas").offset();
           d3.select(".node-link-creator").remove();
           d3.select(".workflow-canvas").append("line").attr("class", "node-link-creator").attr("x1", event.x - canvas_offset.left).attr("y1", event.y - canvas_offset.top).attr("x2", event.x - canvas_offset.left).attr("y2", event.y - canvas_offset.top).attr("stroke", "red").attr("stroke-width", "2");
         }).on("drag", function(d) {
-          var canvas_offset = $(".workflow-canvas").offset();
+          var canvas_offset = $$1(".workflow-canvas").offset();
           d3.select(".node-link-creator").attr("x2", event.x - canvas_offset.left).attr("y2", event.y - canvas_offset.top);
         }).on("end", function(d) {
-          $(".workflow-canvas").removeClass("creating-node-link");
+          $$1(".workflow-canvas").removeClass("creating-node-link");
           var target = d3.select(event.target);
           if (target.attr("data-port-type") == "target") {
             thisComponent.nodeLinkAdded(
@@ -82875,7 +89178,7 @@ let Index$1 = class Index extends reactExports.Component {
         })
       );
     this.updatePorts();
-    $(this.props.node_div.current).on(
+    $$1(this.props.node_div.current).on(
       "component-updated",
       this.updatePorts.bind(this)
     );
@@ -82883,7 +89186,7 @@ let Index$1 = class Index extends reactExports.Component {
   updatePorts() {
     if (!this.props.node_div.current)
       return;
-    var node2 = $(this.props.node_div.current);
+    var node2 = $$1(this.props.node_div.current);
     var node_offset = getCanvasOffset(node2);
     var node_dimensions = {
       width: node2.outerWidth(),
@@ -82931,7 +89234,7 @@ let Index$1 = class Index extends reactExports.Component {
         );
       }
     var style2 = {};
-    if ($(this.props.node_div.current).css("display") == "none")
+    if ($$1(this.props.node_div.current).css("display") == "none")
       style2["display"] = "none";
     var transform;
     if (this.state.node_offset)
@@ -82964,16 +89267,30 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
   componentDidMount() {
     if (this.state.initial_render)
       this.setState({ initial_render: false });
-    $(this.maindiv.current).on("mouseenter", this.mouseIn.bind(this));
     this.makeDroppable();
-    $(this.maindiv.current).on("dblclick", this.doubleClick.bind(this));
     this.updateHidden();
+    this.mainDiv.current.addEventListener("mouseenter", this.mouseIn.bind(this));
+    this.mainDiv.current.addEventListener(
+      "dblclick",
+      this.doubleClick.bind(this)
+    );
+  }
+  componentWillUnmount() {
+    this.mainDiv.current.removeEventListener(
+      "mouseenter",
+      this.mouseIn.bind(this)
+    );
+    this.mainDiv.current.removeEventListener(
+      "dblclick",
+      this.doubleClick.bind(this)
+    );
   }
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.data.is_dropped == prevProps.data.is_dropped)
+    if (this.props.data.is_dropped == prevProps.data.is_dropped) {
       this.updatePorts();
-    else
-      triggerHandlerEach($(".node"), "component-updated");
+    } else {
+      triggerHandlerEach($$1(".node"), "component-updated");
+    }
     this.updateHidden();
   }
   /*******************************************************
@@ -82981,15 +89298,15 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
    *******************************************************/
   //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
-    if ($(this.maindiv.current).css("display") == "none") {
-      const week = $(this.maindiv.current).parent(".node-week").parent();
+    if ($$1(this.mainDiv.current).css("display") == "none") {
+      const week = $$1(this.mainDiv.current).parent(".node-week").parent();
       if (week.children(".node-week:not(.empty)").length > 1)
-        $(this.maindiv.current).parent(".node-week").addClass("empty");
+        $$1(this.mainDiv.current).parent(".node-week").addClass("empty");
     } else
-      $(this.maindiv.current).parent(".nodeweek").removeClass("empty");
+      $$1(this.mainDiv.current).parent(".nodeweek").removeClass("empty");
   }
   updatePorts() {
-    $(this.maindiv.current).triggerHandler("component-updated");
+    $$1(this.mainDiv.current).triggerHandler("component-updated");
   }
   doubleClick(evt) {
     evt.stopPropagation();
@@ -82999,13 +89316,13 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
   }
   makeDroppable() {
     this.props;
-    $(this.maindiv.current).droppable({
+    $$1(this.mainDiv.current).droppable({
       tolerance: "pointer",
       droppable: ".outcome-ghost",
       over: (e, ui) => {
-        var drop_item = $(e.target);
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
+        const drop_item = $$1(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
         drop_item.prevAll().length;
         parseInt(drop_item.parent().attr("id"));
         if (drag_item.hasClass("outcome")) {
@@ -83017,17 +89334,17 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
         }
       },
       out: (e, ui) => {
-        var drag_item = ui.draggable;
-        var drag_helper = ui.helper;
-        var drop_item = $(e.target);
+        const drag_item = ui.draggable;
+        const drag_helper = ui.helper;
+        const drop_item = $$1(e.target);
         if (drag_item.hasClass("outcome")) {
           drag_helper.removeClass("valid-drop");
           drop_item.removeClass("outcome-drop-over");
         }
       },
       drop: (e, ui) => {
-        $(".outcome-drop-over").removeClass("outcome-drop-over");
-        var drag_item = ui.draggable;
+        $$1(".outcome-drop-over").removeClass("outcome-drop-over");
+        const drag_item = ui.draggable;
         if (drag_item.hasClass("outcome")) {
           COURSEFLOW_APP.tinyLoader.startLoad();
           updateOutcomenodeDegree(
@@ -83043,21 +89360,21 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     });
   }
   mouseIn(evt) {
-    if ($(".workflow-canvas").hasClass("creating-node-link"))
+    if ($$1(".workflow-canvas").hasClass("creating-node-link"))
       return;
     if (!this.props.renderer.read_only)
-      $(
+      $$1(
         "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
       ).addClass("mouseover");
     d3.selectAll(".node-ports").raise();
-    var mycomponent = this;
+    const mycomponent = this;
     this.setState({ hovered: true });
-    $(document).on("mousemove", function(evt2) {
-      if (!mycomponent || !mycomponent.maindiv || mouseOutsidePadding(evt2, $(mycomponent.maindiv.current), 20)) {
-        $(
+    $$1(document).on("mousemove", function(evt2) {
+      if (!mycomponent || !mycomponent.mainDiv || mouseOutsidePadding(evt2, $$1(mycomponent.mainDiv.current), 20)) {
+        $$1(
           "circle[data-node-id='" + mycomponent.props.objectID + "'][data-port-type='source']"
         ).removeClass("mouseover");
-        $(document).off(evt2);
+        $$1(document).off(evt2);
         mycomponent.setState({ hovered: false });
       }
     });
@@ -83108,9 +89425,9 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       data_override = { ...data2 };
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
-    var nodePorts;
-    var node_links;
-    var auto_link;
+    let nodePorts;
+    let node_links;
+    let auto_link;
     if (!this.state.initial_render) {
       nodePorts = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83118,23 +89435,23 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
           {
             renderer,
             nodeID: this.props.objectID,
-            node_div: this.maindiv,
+            node_div: this.mainDiv,
             dispatch: this.props.dispatch
           }
         ),
-        $(".workflow-canvas")[0]
+        $$1(".workflow-canvas")[0]
       );
       node_links = data2.outgoing_links.map((link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeLink$1,
         {
           objectID: link,
-          node_div: this.maindiv,
+          node_div: this.mainDiv,
           renderer
         },
         link
       ));
       if (data2.has_autolink)
-        auto_link = /* @__PURE__ */ jsxRuntimeExports.jsx(AutoLink, { nodeID: this.props.objectID, node_div: this.maindiv });
+        auto_link = /* @__PURE__ */ jsxRuntimeExports.jsx(AutoLink, { nodeID: this.props.objectID, node_div: this.mainDiv });
     }
     let outcomenodes;
     if (this.state.show_outcomes)
@@ -83253,17 +89570,19 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data2));
       mouseover_actions.push(this.addDeleteSelf(data2));
     }
-    if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
-    if (renderer.show_assignments)
+    if (renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
+    if (renderer.show_assignments) {
       mouseover_actions.push(this.addShowAssignment(data2));
+    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         "data-selected": this.state.selected,
         "data-hovered": this.state.hovered,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
@@ -83308,8 +89627,8 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     );
   }
 };
-const mapNodeStateToProps$4 = (state, own_props) => getNodeByID(state, own_props.objectID);
-const Node$2 = connect(mapNodeStateToProps$4, null)(Node$1);
+const mapNodeStateToProps$3 = (state, own_props) => getNodeByID(state, own_props.objectID);
+const Node$2 = connect(mapNodeStateToProps$3, null)(Node$1);
 class NodeWeekUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -83347,7 +89666,7 @@ class NodeWeekUnconnected extends reactExports.Component {
         id: data2.id,
         "data-child-id": data2.node,
         "data-column-id": this.props.column,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: this.getNode()
       }
     );
@@ -83358,6 +89677,8 @@ const NodeWeek = connect(mapNodeWeekStateToProps$1, null)(NodeWeekUnconnected);
 class WeekUnconnected extends EditableComponentWithSorting {
   constructor(props2) {
     super(props2);
+    __publicField(this, "objectClass");
+    __publicField(this, "node_block");
     this.objectType = "week";
     this.objectClass = ".week";
     this.node_block = reactExports.createRef();
@@ -83371,7 +89692,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
   componentDidUpdate() {
     this.makeDragAndDrop();
     triggerHandlerEach(
-      $(this.maindiv.current).find(".node"),
+      $$1(this.mainDiv.current).find(".node"),
       "component-updated"
     );
   }
@@ -83397,11 +89718,12 @@ class WeekUnconnected extends EditableComponentWithSorting {
   }
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.node_block.current).children(".node-week").not(".ui-draggable"),
+      $$1(this.node_block.current).children(".node-week").not(".ui-draggable"),
       this.props.objectID,
       "nodeweek",
       ".node-week",
       false,
+      // @ts-ignore
       [200, 1],
       null,
       ".node",
@@ -83417,7 +89739,11 @@ class WeekUnconnected extends EditableComponentWithSorting {
       return;
     const new_column = columns[new_column_index];
     if (this.recently_sent_column_change) {
-      if (this.recently_sent_column_change.column === new_column && Date.now() - this.recently_sent_column_change.lastCall <= 500) {
+      if (
+        // @ts-ignore
+        this.recently_sent_column_change.column === new_column && // @ts-ignore
+        Date.now() - this.recently_sent_column_change.lastCall <= 500
+      ) {
         this.recently_sent_column_change.lastCall = Date.now();
         return;
       }
@@ -83457,11 +89783,12 @@ class WeekUnconnected extends EditableComponentWithSorting {
   makeDroppable() {
     var _a;
     this.props;
-    $((_a = this.maindiv) == null ? void 0 : _a.current).droppable({
+    $$1((_a = this.mainDiv) == null ? void 0 : _a.current).droppable({
       tolerance: "pointer",
+      // @ts-ignore
       droppable: ".strategy-ghost",
       over: (e, ui) => {
-        const drop_item = $(e.target);
+        const drop_item = $$1(e.target);
         const drag_item = ui.draggable;
         const drag_helper = ui.helper;
         if (drag_item.hasClass("new-strategy")) {
@@ -83474,22 +89801,23 @@ class WeekUnconnected extends EditableComponentWithSorting {
       out: (e, ui) => {
         const drag_item = ui.draggable;
         const drag_helper = ui.helper;
-        const drop_item = $(e.target);
+        const drop_item = $$1(e.target);
         if (drag_item.hasClass("new-strategy")) {
           drag_helper.removeClass("valid-drop");
           drop_item.removeClass("new-strategy-drop-over");
         }
       },
       drop: (e, ui) => {
-        $(".new-strategy-drop-over").removeClass("new-strategy-drop-over");
-        const drop_item = $(e.target);
+        $$1(".new-strategy-drop-over").removeClass("new-strategy-drop-over");
+        const drop_item = $$1(e.target);
         const drag_item = ui.draggable;
         const new_index = drop_item.parent().prevAll().length + 1;
         if (drag_item.hasClass("new-strategy")) {
           const loader = new Loader("body");
-          addStrategy(
+          addStrategyQuery(
             this.props.parentID,
             new_index,
+            // @ts-ignore
             drag_item[0].dataDraggable.strategy,
             (response_data) => {
               loader.endLoad();
@@ -83517,32 +89845,33 @@ class WeekUnconnected extends EditableComponentWithSorting {
     let default_text;
     if (!renderer.is_strategy)
       default_text = data2.week_type_display + " " + (this.props.rank + 1);
-    const style2 = {};
-    if (data2.lock) {
-      style2.border = "2px solid " + data2.lock.user_colour;
-    }
+    const style2 = {
+      border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
+    };
     let dropIcon;
     if (data2.is_dropped)
       dropIcon = "droptriangleup";
     else
       dropIcon = "droptriangledown";
-    const mouseover_actions = [];
+    const mouseoverActions = [];
     if (!this.props.renderer.read_only && !renderer.is_strategy) {
-      mouseover_actions.push(this.addInsertSibling(data2));
-      mouseover_actions.push(this.addDuplicateSelf(data2));
-      mouseover_actions.push(this.addDeleteSelf(data2));
+      mouseoverActions.push(this.addInsertSibling(data2));
+      mouseoverActions.push(this.addDuplicateSelf(data2));
+      mouseoverActions.push(this.addDeleteSelf(data2));
     }
-    if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
+    if (renderer.view_comments) {
+      mouseoverActions.push(this.addCommenting());
+    }
+    this.addEditable(data2);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseoverActions }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data2.title, defaultText: default_text }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
@@ -83565,7 +89894,6 @@ class WeekUnconnected extends EditableComponentWithSorting {
               ]
             }
           ),
-          this.addEditable(data2),
           data2.strategy_classification > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "strategy-tab", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-triangle" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-square", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-tab-circle", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83583,19 +89911,25 @@ class WeekUnconnected extends EditableComponentWithSorting {
     );
   }
 }
-const mapWeekStateToProps$4 = (state, own_props) => getWeekByID(state, own_props.objectID);
-const Week = connect(mapWeekStateToProps$4, null)(WeekUnconnected);
+const mapWeekStateToProps$3 = (state, ownProps) => {
+  return getWeekByID(state, ownProps.objectID);
+};
+const Week = connect(
+  mapWeekStateToProps$3,
+  null
+)(WeekUnconnected);
 class Term extends WeekUnconnected {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.node_block.current).children().children(".node-week").not(".ui-draggable"),
+      $$1(this.node_block.current).children().children(".node-week").not(".ui-draggable"),
       this.props.objectID,
       "nodeweek",
       ".node-week",
       false,
+      // @ts-ignore
       [200, 1],
       null,
       ".node"
@@ -83606,11 +89940,11 @@ class Term extends WeekUnconnected {
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    var node_blocks = [];
-    for (var i = 0; i < this.props.column_order.length; i++) {
+    const node_blocks = [];
+    for (let i = 0; i < this.props.column_order.length; i++) {
       const col = this.props.column_order[i];
       const nodeweeks = [];
-      for (var j = 0; j < data2.nodeweek_set.length; j++) {
+      for (let j = 0; j < data2.nodeweek_set.length; j++) {
         const nodeweek = data2.nodeweek_set[j];
         if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
@@ -83656,29 +89990,26 @@ class Term extends WeekUnconnected {
       css_class += " locked locked-" + data2.lock.user_id;
     if (data2.is_dropped)
       css_class += " dropped";
-    const style2 = {};
-    if (data2.lock) {
-      style2.border = "2px solid " + data2.lock.user_colour;
-    }
-    let dropIcon;
-    if (data2.is_dropped)
-      dropIcon = "droptriangleup";
-    else
-      dropIcon = "droptriangledown";
+    const style2 = {
+      border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
+    };
+    const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
     const mouseover_actions = [];
     if (!this.props.renderer.read_only) {
       mouseover_actions.push(this.addInsertSibling(data2));
       mouseover_actions.push(this.addDuplicateSelf(data2));
       mouseover_actions.push(this.addDeleteSelf(data2));
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
+    if (this.props.renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
+    this.addEditable(data2);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
@@ -83709,15 +90040,19 @@ class Term extends WeekUnconnected {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
               ]
             }
-          ),
-          this.addEditable(data2)
+          )
         ]
       }
     );
   }
 }
-const mapTermStateToProps = (state, own_props) => getTermByID(state, own_props.objectID);
-const Term$1 = connect(mapTermStateToProps, null)(Term);
+const mapStateToProps$9 = (state, ownProps) => {
+  return getTermByID(state, ownProps.objectID);
+};
+const Term$1 = connect(
+  mapStateToProps$9,
+  null
+)(Term);
 class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
@@ -83733,7 +90068,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
     let my_class = "week-workflow";
     if (data2.no_drag)
       my_class += " no-drag";
-    if ($((_a = this.maindiv) == null ? void 0 : _a.current).hasClass("dragging"))
+    if ($$1((_a = this.mainDiv) == null ? void 0 : _a.current).hasClass("dragging"))
       my_class += " dragging";
     var week;
     if (this.props.condensed)
@@ -83763,7 +90098,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
       {
         className: my_class,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         "data-child-id": data2.week,
         children: week
       }
@@ -83779,7 +90114,7 @@ class WorkflowLegendUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
     this.state = {
-      show_legend: JSON.parse(localStorage.getItem("show_legend")),
+      show_legend: !!JSON.parse(localStorage.getItem("show_legend")),
       show_slider: false
     };
   }
@@ -83787,17 +90122,19 @@ class WorkflowLegendUnconnected extends reactExports.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidUpdate() {
-    $(".workflow-legend").draggable();
+    $$1(".workflow-legend").draggable();
   }
   componentDidMount() {
-    $(".workflow-legend").draggable();
-    this.setState({ show_slider: true });
+    $$1(".workflow-legend").draggable();
+    this.setState({
+      show_slider: true
+    });
   }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   toggle() {
-    localStorage.setItem("show_legend", !this.state.show_legend);
+    localStorage.setItem("show_legend", String(!this.state.show_legend));
     this.setState({ show_legend: !this.state.show_legend });
   }
   getSlider() {
@@ -83813,7 +90150,7 @@ class WorkflowLegendUnconnected extends reactExports.Component {
             }
           )
         ],
-        $("#viewbar")[0]
+        $$1("#viewbar")[0]
       );
     }
     return null;
@@ -83822,8 +90159,10 @@ class WorkflowLegendUnconnected extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    if (!this.state.show_legend)
-      return this.getSlider();
+    this.getSlider();
+    if (!this.state.show_legend) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    }
     const contexts = this.props.contexts.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       LegendLine,
       {
@@ -83848,7 +90187,6 @@ class WorkflowLegendUnconnected extends reactExports.Component {
       }
     ));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-legend", children: [
-      this.getSlider(),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Legend" }),
       contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
@@ -83869,19 +90207,26 @@ class WorkflowLegendUnconnected extends reactExports.Component {
     ] });
   }
 }
-const mapStateToProps$4 = (state) => {
+const mapStateToProps$8 = (state) => {
   let contexts = [];
   let tasks = [];
   let strategies = [];
-  const uniqueTest = function(value, index, self) {
-    return self.indexOf(value) === index;
+  const uniqueTest = function(value, index, self2) {
+    return self2.indexOf(value) === index;
   };
   contexts = state.node.map((node2) => parseInt(node2.context_classification)).filter(uniqueTest).filter((value) => value > 0);
   tasks = state.node.map((node2) => parseInt(node2.task_classification)).filter(uniqueTest).filter((value) => value > 0);
   strategies = state.week.map((week) => parseInt(week.strategy_classification)).filter(uniqueTest).filter((value) => value > 0);
-  return { contexts, tasks, strategies };
+  return {
+    contexts,
+    tasks,
+    strategies
+  };
 };
-const WorkflowLegend = connect(mapStateToProps$4, null)(WorkflowLegendUnconnected);
+const WorkflowLegend = connect(
+  mapStateToProps$8,
+  null
+)(WorkflowLegendUnconnected);
 class WorkflowViewUnconnected extends EditableComponentWithSorting {
   constructor(props2) {
     super(props2);
@@ -83902,7 +90247,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(".column-row").children(".column-workflow").not(".ui-draggable"),
+      $$1(".column-row").children(".column-workflow").not(".ui-draggable"),
       this.props.objectID,
       "columnworkflow",
       ".column-workflow",
@@ -83913,7 +90258,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
       ".column-row"
     );
     this.makeSortableNode(
-      $(".week-block").children(".week-workflow").not(".ui-draggable"),
+      $$1(".week-block").children(".week-workflow").not(".ui-draggable"),
       this.props.objectID,
       "weekworkflow",
       ".week-workflow",
@@ -83925,7 +90270,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     );
   }
   stopSortFunction() {
-    triggerHandlerEach($(".week .node"), "component-updated");
+    triggerHandlerEach($$1(".week .node"), "component-updated");
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === "columnworkflow") {
@@ -84119,14 +90464,14 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       mouseover_actions.push(this.addDeleteSelf(data2));
     }
     if (renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data2));
+      mouseover_actions.push(this.addCommenting());
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         className: css_class,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
@@ -84149,9 +90494,9 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
     );
   }
 }
-const mapNodeStateToProps$3 = (state, own_props) => getNodeByID(state, own_props.objectID);
+const mapNodeStateToProps$2 = (state, own_props) => getNodeByID(state, own_props.objectID);
 const NodeComparison = connect(
-  mapNodeStateToProps$3,
+  mapNodeStateToProps$2,
   null
 )(NodeComparisonUnconnected);
 class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
@@ -84188,7 +90533,7 @@ class WeekComparisonUnconnected extends WeekUnconnected {
   componentDidUpdate() {
     this.makeDragAndDrop();
     triggerHandlerEach(
-      $(this.maindiv.current).find(".node"),
+      $$1(this.mainDiv.current).find(".node"),
       "component-updated"
     );
     this.alignAllWeeks();
@@ -84259,24 +90604,24 @@ class WeekComparisonUnconnected extends WeekUnconnected {
   }
   alignAllWeeks() {
     const rank = this.props.rank + 1;
-    $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
+    $$1(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
       height: ""
     });
     let max_height = 0;
-    $(".week-block .week-workflow:nth-child(" + rank + ") .week").each(
+    $$1(".week-block .week-workflow:nth-child(" + rank + ") .week").each(
       function() {
-        const this_height = $(this).height();
+        const this_height = $$1(this).height();
         if (this_height > max_height)
           max_height = this_height;
       }
     );
-    $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
+    $$1(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
       height: max_height + "px"
     });
   }
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.node_block.current).children(".node-week").not(".ui-draggable"),
+      $$1(this.node_block.current).children(".node-week").not(".ui-draggable"),
       this.props.objectID,
       "nodeweek",
       ".node-week",
@@ -84289,9 +90634,9 @@ class WeekComparisonUnconnected extends WeekUnconnected {
     this.makeDroppable();
   }
 }
-const mapWeekStateToProps$3 = (state, own_props) => getWeekByID(state, own_props.objectID);
+const mapWeekStateToProps$2 = (state, own_props) => getWeekByID(state, own_props.objectID);
 const WeekComparison = connect(
-  mapWeekStateToProps$3,
+  mapWeekStateToProps$2,
   null
 )(WeekComparisonUnconnected);
 class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
@@ -84318,7 +90663,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
       {
         className: my_class,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         "data-child-id": data2.week,
         children: week
       }
@@ -84350,7 +90695,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(".week-block").children(".week-workflow").not(".ui-draggable"),
+      $$1(".week-block").children(".week-workflow").not(".ui-draggable"),
       this.props.objectID,
       "weekworkflow",
       ".week-workflow",
@@ -84362,7 +90707,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
     );
   }
   stopSortFunction() {
-    triggerHandlerEach($(".week .node"), "component-updated");
+    triggerHandlerEach($$1(".week .node"), "component-updated");
   }
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === "weekworkflow") {
@@ -84428,21 +90773,21 @@ class WorkflowBaseUnconnected extends EditableComponent {
   }
   addObjectSetTrigger() {
     const props2 = this.props;
-    $(document).off("object_set_toggled." + this.props.data.id);
-    $(document).on("object_set_toggled." + this.props.data.id, (evt, data2) => {
+    $$1(document).off("object_set_toggled." + this.props.data.id);
+    $$1(document).on("object_set_toggled." + this.props.data.id, (evt, data2) => {
       props2.dispatch(ActionCreator.toggleObjectSet(data2.id, data2.hidden));
     });
   }
   alignAllHeaders() {
     this.props.rank + 1;
-    $(".comparison-view .workflow-header").css({ height: "" });
+    $$1(".comparison-view .workflow-header").css({ height: "" });
     let max_height = 0;
-    $(".comparison-view .workflow-header").each(function() {
-      const this_height = $(this).height();
+    $$1(".comparison-view .workflow-header").each(function() {
+      const this_height = $$1(this).height();
       if (this_height > max_height)
         max_height = this_height;
     });
-    $(".comparison-view .workflow-header").css({ height: max_height + "px" });
+    $$1(".comparison-view .workflow-header").css({ height: max_height + "px" });
   }
   /*******************************************************
    * RENDER
@@ -84624,7 +90969,7 @@ class AlignmentOutcomesBlock extends reactExports.Component {
         titlestr,
         ":"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Outcome$3, { renderer: this.props.renderer, objectID: data2.id })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Outcome$2, { renderer: this.props.renderer, objectID: data2.id })
     ] });
   }
 }
@@ -84666,7 +91011,7 @@ class OutcomeAdder extends reactExports.Component {
     this.props.addFunction(evt.target.value, 1, (response_data) => {
       COURSEFLOW_APP.tinyLoader.endLoad();
     });
-    $(".outcome-adder").val(0);
+    $$1(".outcome-adder").val(0);
   }
   /*******************************************************
    * RENDER
@@ -84687,9 +91032,9 @@ class OutcomeAdderOptionUnconnected extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: this.props.objectID, children: "  ".repeat(this.props.data.depth) + getOutcomeTitle(this.props.data, this.props.prefix) });
   }
 }
-const mapOutcomeStateToProps$2 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
+const mapOutcomeStateToProps$1 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
 const OutcomeAdderOption = connect(
-  mapOutcomeStateToProps$2,
+  mapOutcomeStateToProps$1,
   null
 )(OutcomeAdderOptionUnconnected);
 class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Component {
@@ -84731,7 +91076,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Com
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "child-outcome", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Outcome$3,
+        Outcome$2,
         {
           objectID: data2.id,
           comments: true,
@@ -84946,7 +91291,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
         style: style2,
         className: "node column-" + data2.column,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
-        ref: this.maindiv,
+        ref: this.mainDiv,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-block", children: [
@@ -85045,7 +91390,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
       "div",
       {
         className: "week",
-        ref: this.maindiv,
+        ref: this.mainDiv,
         style: this.get_border_style(),
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
@@ -85338,33 +91683,27 @@ class GridNodeUnconnected extends EditableComponentWithComments {
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
     const data2 = this.props.data;
-    let data_override;
-    if (data2.represents_workflow)
-      data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
-    else
-      data_override = data2;
-    let ponderation;
-    ponderation = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: data_override.ponderation_theory + "/" + data_override.ponderation_practical + "/" + data_override.ponderation_individual });
+    const data_override = data2.represents_workflow ? { ...data2, ...data2.linked_workflow_data, id: data2.id } : data2;
+    this.addEditable(data_override, true);
+    const ponderation = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: data_override.ponderation_theory + "/" + data_override.ponderation_practical + "/" + data_override.ponderation_individual });
     const style2 = {
-      backgroundColor: getColumnColour(this.props.column)
+      backgroundColor: getColumnColour(this.props.column),
+      outline: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
     };
-    if (data2.lock) {
-      style2.outline = "2px solid " + data2.lock.user_colour;
-    }
     let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
-    if (data2.is_dropped)
+    if (data2.is_dropped) {
       css_class += " dropped";
-    if (data2.lock)
+    }
+    if (data2.lock) {
       css_class += " locked locked-" + data2.lock.user_id;
-    let comments;
-    if (this.props.renderer.view_comments)
-      comments = this.addCommenting();
+    }
+    const comments = this.props.renderer.view_comments ? this.addCommenting() : void 0;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         style: style2,
         id: data2.id,
-        ref: this.maindiv,
+        ref: this.mainDiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         className: css_class,
         children: [
@@ -85373,21 +91712,22 @@ class GridNodeUnconnected extends EditableComponentWithComments {
             ponderation
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) }),
-          this.addEditable(data_override, true)
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
         ]
       }
     );
   }
 }
-const mapNodeStateToProps$2 = (state, own_props) => ({
-  column: state.column.find((column2) => column2.id == own_props.data.column)
+const mapStateToProps$7 = (state, ownProps) => ({
+  column: state.column.find((column2) => column2.id == ownProps.data.column)
 });
-const GridNode = connect(mapNodeStateToProps$2, null)(GridNodeUnconnected);
+const GridNode = connect(
+  mapStateToProps$7,
+  null
+)(GridNodeUnconnected);
 class GridWeekUnconnected extends EditableComponentWithComments {
   constructor(props2) {
     super(props2);
-    this.objectType = "week";
   }
   /*******************************************************
    * RENDER
@@ -85396,14 +91736,13 @@ class GridWeekUnconnected extends EditableComponentWithComments {
     const data2 = this.props.data;
     const default_text = data2.week_type_display + " " + (this.props.rank + 1);
     const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridNode, { renderer: this.props.renderer, data: node2 }));
-    let comments;
-    if (this.props.renderer.view_comments)
-      comments = this.addCommenting();
+    const comments = this.props.renderer.view_comments ? this.addCommenting() : void 0;
+    this.addEditable(data2, true);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         className: "week",
-        ref: this.maindiv,
+        ref: this.mainDiv,
         style: this.get_border_style(),
         onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
         children: [
@@ -85412,7 +91751,6 @@ class GridWeekUnconnected extends EditableComponentWithComments {
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: this.props.total_theory + "/" + this.props.total_practical + "/" + this.props.total_individual })
           ] }),
           nodes,
-          this.addEditable(data2, true),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
         ]
@@ -85420,8 +91758,8 @@ class GridWeekUnconnected extends EditableComponentWithComments {
     );
   }
 }
-const mapWeekStateToProps$2 = (state, own_props) => {
-  const data2 = own_props.data;
+const mapStateToProps$6 = (state, ownProps) => {
+  const data2 = ownProps.data;
   const node_weeks = filterThenSortByID(
     state.nodeweek,
     data2.nodeweek_set
@@ -85429,7 +91767,11 @@ const mapWeekStateToProps$2 = (state, own_props) => {
   const nodes_data = node_weeks.map((nodeweek) => getNodeByID(state, nodeweek.node).data).filter((node2) => !checkSetHidden(node2, state.objectset));
   const override_data = nodes_data.map((node2) => {
     if (node2.represents_workflow)
-      return { ...node2, ...node2.linked_workflow_data };
+      return {
+        ...node2,
+        // @ts-ignore
+        ...node2.linked_workflow_data
+      };
     else
       return node2;
   });
@@ -85487,30 +91829,45 @@ const mapWeekStateToProps$2 = (state, own_props) => {
     total_required
   };
 };
-const GridWeek = connect(mapWeekStateToProps$2, null)(GridWeekUnconnected);
-class GridView extends reactExports.Component {
+const GridWeek = connect(
+  mapStateToProps$6,
+  null
+)(GridWeekUnconnected);
+class GridViewUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    this.objectType = "workflow";
     this.state = { dropped_list: [] };
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    this.props.workflow;
-    const weeks = this.props.weeks.map((week, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(GridWeek, { renderer: this.props.renderer, data: week.data, rank: i }));
+    const weeks = this.props.weeks.map((week, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      GridWeek,
+      {
+        renderer: this.props.renderer,
+        data: week.data,
+        rank: i
+      },
+      i
+    ));
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: window.gettext("Times in hours shown in format") + ": " + gettext("Theory") + "/" + gettext("Practical") + "/" + gettext("Individual") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid-ponderation", children: window.gettext("Times in hours shown in format") + ": " + window.gettext("Theory") + "/" + window.gettext("Practical") + "/" + window.gettext("Individual") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-grid", children: weeks })
     ] });
   }
 }
-const mapStateToProps$3 = (state, own_props) => {
+const mapStateToProps$5 = (state, ownProps) => {
   const weeks = state.workflow.weekworkflow_set.map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week).map((week) => getWeekByID(state, week));
-  return { workflow: state.workflow, weeks };
+  return {
+    workflow: state.workflow,
+    weeks
+  };
 };
-const GridView$1 = connect(mapStateToProps$3, null)(GridView);
+const GridView = connect(
+  mapStateToProps$5,
+  null
+)(GridViewUnconnected);
 class JumpToWeekViewUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
@@ -85522,12 +91879,12 @@ class JumpToWeekViewUnconnected extends reactExports.Component {
    *******************************************************/
   jumpTo() {
     const week_id = this.props.data.id;
-    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week");
+    const week = $$1(".week-workflow[data-child-id='" + week_id + "'] > .week");
     if (week.length > 0) {
-      const container2 = $("#container");
-      $("#container").animate(
+      const container = $$1("#container");
+      $$1("#container").animate(
         {
-          scrollTop: week.offset().top + container2[0].scrollTop - container2.offset().top - 200
+          scrollTop: week.offset().top + container[0].scrollTop - container.offset().top - 200
         },
         300
       );
@@ -85656,7 +92013,7 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
         );
       return reactDomExports.createPortal(
         return_val,
-        $("#react-portal-left-panel-extra")[0]
+        $$1("#react-portal-left-panel-extra")[0]
       );
     }
     return null;
@@ -85675,6 +92032,86 @@ const ParentWorkflowIndicator = connect(
   mapParentWorkflowIndicatorStateToProps,
   null
 )(ParentWorkflowIndicatorUnconnected);
+function createOutcomeNodeBranch(props2, outcomeId, nodeCategories) {
+  console.log("createOutcomeNodeBranch props");
+  console.log(props2);
+  console.log("createOutcomeNodeBranch  nodeCategories");
+  console.log(nodeCategories);
+  const outcome = props2.outcome.find((o) => o.id === outcomeId);
+  if (!outcome)
+    return null;
+  const children = createChildren(outcome, props2, nodeCategories);
+  const outcomenodes = nodeCategories.map(
+    (category, categoryIndex) => createOutcomeNodesGroup(props2, category, outcomeId, children, categoryIndex)
+  );
+  const total = calculateTotal(children, outcomenodes);
+  return { id: outcomeId, children, outcomenodes, total };
+}
+function createChildren(outcome, props2, nodeCategories) {
+  if (outcome.child_outcome_links.length === 0 || outcome.depth >= 2)
+    return [];
+  return outcome.child_outcome_links.map(
+    (link) => createOutcomeNodeBranch(props2, link.child, nodeCategories)
+  );
+}
+function createOutcomeNodesGroup(props2, category, outcomeId, children, categoryIndex) {
+  const outcomenodesGroup = category.nodes.map((node2) => {
+    const outcomenode = getOutcomeNode(props2, node2, outcomeId);
+    if (outcomenode)
+      return { node_id: node2, degree: outcomenode.degree };
+    return createOutcomeNodeForChildren(node2, children, categoryIndex);
+  });
+  const total = calculateGroupTotal(children, outcomenodesGroup);
+  return { ...outcomenodesGroup, total };
+}
+function getOutcomeNode(props2, nodeId, outcomeId) {
+  return getTableOutcomeNodeByID(props2.outcomenode, nodeId, outcomeId).data;
+}
+function createOutcomeNodeForChildren(nodeId, children, categoryIndex) {
+  for (const child of children) {
+    if (child.outcomenodes[categoryIndex][nodeId].degree !== null) {
+      return { node_id: nodeId, degree: 0 };
+    }
+  }
+  return { node_id: nodeId, degree: null };
+}
+function calculateGroupTotal(children, outcomenodesGroup) {
+  if (children.length > 0) {
+    return calculateTotalForChildren(children, outcomenodesGroup);
+  }
+  return outcomenodesGroup.reduce((acc, curr) => {
+    if (curr.degree === null)
+      return acc;
+    return acc === null ? curr.degree : acc | curr.degree;
+  }, null);
+}
+function calculateTotalForChildren(children, outcomenodesGroup) {
+  let total = 15;
+  let allNull = true;
+  for (const child of children) {
+    const childTotal = outcomenodesGroup.map((group) => group.total);
+    if (childTotal !== null)
+      allNull = false;
+    total &= childTotal;
+  }
+  return allNull ? null : total;
+}
+function calculateTotal(children, outcomenodes) {
+  if (children.length > 0) {
+    return children.reduce((acc, child) => {
+      const childTotal = child.outcomenodes.total;
+      if (childTotal !== null)
+        return acc & childTotal;
+      return acc;
+    }, 15);
+  }
+  return outcomenodes.reduce((acc, group) => {
+    const groupTotal = group.total;
+    if (groupTotal === null)
+      return acc;
+    return acc === null ? groupTotal : acc | groupTotal;
+  }, null);
+}
 class TableCell extends reactExports.Component {
   /*******************************************************
    * FUNCTIONS
@@ -85704,7 +92141,7 @@ class TableCell extends reactExports.Component {
       value,
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad();
-        $(":focus").blur();
+        $$1(":focus").blur();
       }
     );
   }
@@ -85789,13 +92226,13 @@ class TableCell extends reactExports.Component {
         ] });
       }
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: class_name, ref: this.maindiv, children: [
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: class_name, ref: this.mainDiv, children: [
       this.getContents(degree, !this.props.total),
       input
     ] });
   }
 }
-let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleDrop {
+class OutcomeUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
     this.objectType = "outcome";
@@ -85808,7 +92245,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
   }
   getChildOutcomeView(child) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Outcome$1,
+      Outcome2,
       {
         outcomes_type: this.props.outcomes_type,
         objectID: child.id,
@@ -85843,7 +92280,7 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
       "div",
       {
         className: "outcome-head",
-        ref: this.maindiv,
+        ref: this.mainDiv,
         style: { paddingLeft: data2.depth * 12 },
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -85921,381 +92358,62 @@ let OutcomeUnconnected$1 = class OutcomeUnconnected extends ComponentWithToggleD
       );
     return [full_row, child_rows];
   }
-};
-const mapOutcomeStateToProps$1 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-const Outcome$1 = connect(mapOutcomeStateToProps$1, null)(OutcomeUnconnected$1);
+}
+const mapOutcomeStateToProps = (state, own_props) => getOutcomeByID(state, own_props.objectID);
+const Outcome2 = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected);
 class OutcomeBaseUnconnected extends ComponentWithToggleDrop {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getOutcomeView(outcome_tree) {
-    if (this.props.type === "outcome_table") {
+  constructor() {
+    super(...arguments);
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    __publicField(this, "OutcomeView", ({ outcomeTree }) => {
+      if (this.props.type === "outcome_table") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Outcome2,
+          {
+            outcomes_type: this.props.outcomes_type,
+            objectID: outcomeTree.id,
+            outcome_tree: outcomeTree,
+            renderer: this.props.renderer
+          }
+        );
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Outcome$1,
+        CompetencyMatrixView$1,
         {
           outcomes_type: this.props.outcomes_type,
-          objectID: this.outcome_tree.id,
-          outcome_tree: this.outcome_tree,
+          objectID: outcomeTree.id,
+          outcome_tree: outcomeTree,
           renderer: this.props.renderer
         }
       );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      MatrixOutcome,
-      {
-        outcomes_type: this.props.outcomes_type,
-        objectID: this.outcome_tree.id,
-        outcome_tree: this.outcome_tree,
-        renderer: this.props.renderer
-      }
-    );
+    });
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let outcome_tree = createOutcomeNodeBranch(
+    const outcomeTree = createOutcomeNodeBranch(
       this.props,
       this.props.objectID,
       this.props.nodecategory
     );
-    const outcome_tree_json = JSON.stringify(outcome_tree);
-    if (this.outcome_tree_json === outcome_tree_json) {
-      outcome_tree = this.outcome_tree;
-    } else {
-      this.outcome_tree = outcome_tree;
-      this.outcome_tree_json = outcome_tree_json;
-    }
-    return this.getOutcomeView(outcome_tree);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(this.OutcomeView, { outcomeTree });
   }
 }
-const OutcomeBase = connect((state, own_props) => {
+const mapStateToProps$4 = (state) => {
   return {
     outcomes_type: state.workflow.outcomes_type,
     outcome: state.outcome,
     outcomenode: state.outcomenode,
     outcomeoutcome: state.outcomeoutcome
   };
-}, null)(OutcomeBaseUnconnected);
-class OutcomeLegendUnconnected extends WorkflowLegendUnconnected {
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    if (!this.state.show_legend)
-      return this.getSlider();
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-legend", children: [
-      this.getSlider(),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Legend" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Outcomes:" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "solid_check", text: "Complete" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "check", text: "Completed (Auto-Calculated)" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "nocheck", text: "Partially Complete" })
-      ] }),
-      this.props.outcomes_type == 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Advanced Outcomes:" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "I",
-            divclass: "outcome-introduced self-completed",
-            text: "Introduced"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "D",
-            divclass: "outcome-developed self-completed",
-            text: "Developed"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "A",
-            divclass: "outcome-advanced self-completed",
-            text: "Advanced"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "I",
-            divclass: "outcome-introduced",
-            text: "Introduced (Auto-Calculated)"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "D",
-            divclass: "outcome-developed",
-            text: "Developed (Auto-Calculated)"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LegendLine,
-          {
-            div: "A",
-            divclass: "outcome-advanced",
-            text: "Advanced (Auto-Calculated)"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.toggle.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" }) })
-    ] });
-  }
-}
-const mapWorkflowOutcomeLegendStateToProps = (state) => {
-  return { outcomes_type: state.workflow.outcomes_type };
 };
-const OutcomeLegend = connect(
-  mapWorkflowOutcomeLegendStateToProps,
+const OutcomeBase = connect(
+  mapStateToProps$4,
   null
-)(OutcomeLegendUnconnected);
-class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
-  constructor(props2) {
-    super(props2);
-    this.objectType = "node";
-    this.state = {
-      initial_render: true
-    };
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    if (data2.represents_workflow)
-      ({ ...data2, ...data2.linked_workflow_data, id: data2.id });
-    this.props.renderer.selection_manager;
-    const style2 = {
-      backgroundColor: getColumnColour(this.props.column)
-    };
-    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
-    if (data2.is_dropped)
-      css_class += " dropped";
-    if (data2.lock)
-      css_class += " locked locked-" + data2.lock.user_id;
-    let comments;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.maindiv, className: "table-cell nodewrapper", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, style: style2, id: data2.id, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
-    ] });
-  }
-}
-const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
-const Index2 = connect(mapNodeStateToProps$1, null)(NodeOutcomeViewUnconnected);
-class OutcomeTableView extends reactExports.Component {
-  constructor(props2) {
-    super(props2);
-    this.objectType = "workflow";
-    this.state = {};
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getOutcomesSorted() {
-    return getSortedOutcomeIDFromOutcomeWorkflowSet(
-      this.props.outcomes,
-      this.props.outcomeworkflows,
-      this.props.outcomeworkflow_order,
-      this.props.object_sets
-    );
-  }
-  getNodecategory() {
-    const week_order = filterThenSortByID(
-      this.props.weekworkflows,
-      this.props.weekworkflow_order
-    ).map((weekworkflow) => weekworkflow.week);
-    const weeks_ordered = filterThenSortByID(
-      this.props.weeks,
-      week_order
-    );
-    const nodeweek_order = [].concat(
-      ...weeks_ordered.map((week) => week.nodeweek_set)
-    );
-    let nodeweeks_ordered = filterThenSortByID(
-      this.props.nodeweeks,
-      nodeweek_order
-    );
-    const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node);
-    const nodes_ordered = filterThenSortByID(
-      this.props.nodes,
-      node_order
-    ).filter((node2) => !checkSetHidden(node2, this.props.object_sets));
-    switch (parseInt(this.props.outcomes_sort)) {
-      case 0:
-        const nodes_allowed = nodes_ordered.map((node2) => node2.id);
-        nodeweeks_ordered = nodeweeks_ordered.filter(
-          (nodeweek) => nodes_allowed.indexOf(nodeweek.node) >= 0
-        );
-        const nodes_by_week = {};
-        for (let i = 0; i < nodeweeks_ordered.length; i++) {
-          const nodeweek = nodeweeks_ordered[i];
-          pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node);
-        }
-        return weeks_ordered.map((week, index) => {
-          return {
-            title: week.title || week.week_type_display + " " + (index + 1),
-            nodes: nodes_by_week[week.id] || []
-          };
-        });
-      case 1:
-        const column_order = filterThenSortByID(
-          this.props.columnworkflows,
-          this.props.columnworkflow_order
-        ).map((columnworkflow) => columnworkflow.column);
-        const columns_ordered = filterThenSortByID(
-          this.props.columns,
-          column_order
-        );
-        const nodes_by_column = {};
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node2 = nodes_ordered[i];
-          pushOrCreate(nodes_by_column, node2.column, node2.id);
-        }
-        return columns_ordered.map((column2, index) => {
-          return {
-            title: column2.title || column2.column_type_display,
-            nodes: nodes_by_column[column_order[index]] || []
-          };
-        });
-      case 2:
-        var workflow_type = ["activity", "course", "program"].indexOf(
-          this.props.workflow_type
-        );
-        const task_ordered = this.props.renderer.task_choices.filter(
-          (x) => x.type == 0 || x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1)
-        );
-        const nodes_by_task = {};
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node2 = nodes_ordered[i];
-          pushOrCreate(nodes_by_task, node2.task_classification, node2.id);
-        }
-        return task_ordered.map((task) => {
-          return { title: task.name, nodes: nodes_by_task[task.type] || [] };
-        });
-      case 3:
-        var workflow_type = ["activity", "course", "program"].indexOf(
-          this.props.workflow_type
-        );
-        const context_ordered = this.props.renderer.context_choices.filter(
-          (x) => x.type == 0 || x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1)
-        );
-        const nodes_by_context = {};
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node2 = nodes_ordered[i];
-          pushOrCreate(
-            nodes_by_context,
-            node2.context_classification,
-            node2.id
-          );
-        }
-        return context_ordered.map((context) => {
-          return {
-            title: context.name,
-            nodes: nodes_by_context[context.type] || []
-          };
-        });
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let nodecategory = this.getNodecategory();
-    const nodecategory_json = JSON.stringify(nodecategory);
-    if (this.nodecategory_json === nodecategory_json)
-      nodecategory = this.nodecategory;
-    else {
-      this.nodecategory = nodecategory;
-      this.nodecategory_json = nodecategory_json;
-    }
-    const outcomes_sorted = this.getOutcomesSorted();
-    let has_nodes = false;
-    for (let i = 0; i < nodecategory.length; i++) {
-      if (nodecategory[i].nodes.length > 0) {
-        has_nodes = true;
-        break;
-      }
-    }
-    if (outcomes_sorted.length === 0 || !has_nodes) {
-      let text;
-      if (this.props.renderer.view_type === "outcometable") {
-        text = gettext(
-          "This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started."
-        );
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "emptytext", children: text });
-    } else {
-      const nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header", children: nodecategory2.title }) }),
-        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Index2, { renderer: this.props.renderer, objectID: node2 }))
-      ] }));
-      const outcomes = outcomes_sorted.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        this.props.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-row outcome-category", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }) }) }),
-        category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          OutcomeBase,
-          {
-            renderer: this.props.renderer,
-            objectID: outcome,
-            nodecategory,
-            outcomes_type: this.props.outcomes_type,
-            type: "outcome_table"
-          },
-          outcome
-        ))
-      ] }));
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          OutcomeLegend,
-          {
-            renderer: this.props.renderer,
-            outcomes_type: this.props.outcomes_type
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-table node-rows", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row node-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head empty" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-cells", children: nodes }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "total-header", children: "Grand Total" }) })
-          ] }),
-          outcomes
-        ] })
-      ] });
-    }
-  }
-}
-const mapStateToProps$2 = (state) => {
-  return {
-    workflow_type: state.workflow.type,
-    outcomes_type: state.workflow.outcomes_type,
-    weekworkflows: state.weekworkflow,
-    weeks: state.week,
-    nodeweeks: state.nodeweek,
-    nodes: state.node,
-    object_sets: state.objectset,
-    weekworkflow_order: state.workflow.weekworkflow_set,
-    columnworkflow_order: state.workflow.columnworkflow_set,
-    columnworkflows: state.columnworkflow,
-    columns: state.column,
-    outcomes_sort: state.workflow.outcomes_sort,
-    outcomeworkflow_order: state.workflow.outcomeworkflow_set,
-    outcomeworkflows: state.outcomeworkflow,
-    outcomes: state.outcome
-  };
-};
-const OutcomeTableView$1 = connect(mapStateToProps$2, null)(OutcomeTableView);
+)(OutcomeBaseUnconnected);
 class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
@@ -86335,8 +92453,8 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop {
     ] });
   }
 }
-const mapNodeStateToProps = (state, own_props) => getNodeByID(state, own_props.objectID);
-const MatrixNode = connect(mapNodeStateToProps, null)(MatrixNodeUnconnected);
+const mapNodeStateToProps$1 = (state, own_props) => getNodeByID(state, own_props.objectID);
+const MatrixNode = connect(mapNodeStateToProps$1, null)(MatrixNodeUnconnected);
 class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   constructor(props2) {
     super(props2);
@@ -86437,7 +92555,126 @@ const mapWeekStateToProps = (state, own_props) => {
   };
 };
 const MatrixWeek = connect(mapWeekStateToProps, null)(MatrixWeekUnconnected);
-class CompetencyMatrixView extends reactExports.Component {
+class OutcomeLegendUnconnected extends WorkflowLegendUnconnected {
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    this.getSlider();
+    if (!this.state.show_legend) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-legend", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Legend" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Outcomes:" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "solid_check", text: "Complete" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "check", text: "Completed (Auto-Calculated)" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LegendLine, { icon: "nocheck", text: "Partially Complete" })
+      ] }),
+      this.props.outcomes_type == 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Advanced Outcomes:" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "I",
+            divclass: "outcome-introduced self-completed",
+            text: "Introduced"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "D",
+            divclass: "outcome-developed self-completed",
+            text: "Developed"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "A",
+            divclass: "outcome-advanced self-completed",
+            text: "Advanced"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "I",
+            divclass: "outcome-introduced",
+            text: "Introduced (Auto-Calculated)"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "D",
+            divclass: "outcome-developed",
+            text: "Developed (Auto-Calculated)"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LegendLine,
+          {
+            div: "A",
+            divclass: "outcome-advanced",
+            text: "Advanced (Auto-Calculated)"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.toggle.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" }) })
+    ] });
+  }
+}
+const mapStateToProps$3 = (state) => {
+  return {
+    outcomes_type: state.workflow.outcomes_type
+  };
+};
+const OutcomeLegend = connect(
+  mapStateToProps$3,
+  null
+)(OutcomeLegendUnconnected);
+class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
+  constructor(props2) {
+    super(props2);
+    this.objectType = "node";
+    this.state = {
+      initial_render: true
+    };
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data2 = this.props.data;
+    if (data2.represents_workflow)
+      ({ ...data2, ...data2.linked_workflow_data, id: data2.id });
+    this.props.renderer.selection_manager;
+    const style2 = {
+      backgroundColor: getColumnColour(this.props.column)
+    };
+    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
+    if (data2.is_dropped)
+      css_class += " dropped";
+    if (data2.lock)
+      css_class += " locked locked-" + data2.lock.user_id;
+    let comments;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.mainDiv, className: "table-cell nodewrapper", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, style: style2, id: data2.id, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
+    ] });
+  }
+}
+const mapNodeStateToProps = (state, own_props) => getNodeByID(state, own_props.objectID);
+const Index2 = connect(mapNodeStateToProps, null)(NodeOutcomeViewUnconnected);
+class CompetencyMatrixViewUnconnected extends reactExports.Component {
   constructor(props2) {
     super(props2);
     this.objectType = "workflow";
@@ -86680,7 +92917,7 @@ class CompetencyMatrixView extends reactExports.Component {
     }
   }
 }
-const mapStateToProps$1 = (state, own_props) => {
+const mapStateToProps$2 = (state, own_props) => {
   return {
     weekworkflows: state.weekworkflow,
     weeks: state.week,
@@ -86694,32 +92931,212 @@ const mapStateToProps$1 = (state, own_props) => {
     outcomes: state.outcome
   };
 };
-const CompetencyMatrixView$1 = connect(mapStateToProps$1, null)(CompetencyMatrixView);
-class OutcomeUnconnected2 extends OutcomeUnconnected$1 {
+const CompetencyMatrixView = connect(
+  mapStateToProps$2,
+  null
+)(CompetencyMatrixViewUnconnected);
+const CompetencyMatrixView$1 = CompetencyMatrixView;
+class OutcomeTableViewUnconnected extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+  }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  toggleDrop() {
-    this.setState({ is_dropped: !this.state.is_dropped });
-  }
-  getIsDropped() {
-    return this.state.is_dropped;
-  }
-  getChildOutcomeView(child) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Outcome2,
-      {
-        outcomes_type: this.props.outcomes_type,
-        objectID: child.id,
-        outcome_tree: child,
-        renderer: this.props.renderer
-      }
+  getOutcomesSorted() {
+    return getSortedOutcomeIDFromOutcomeWorkflowSet(
+      this.props.outcome,
+      this.props.outcomeworkflow,
+      this.props.workflow.outcomeworkflow_set,
+      this.props.objectset
     );
   }
+  getNodecategory() {
+    const week_order = filterThenSortByID(
+      this.props.weekworkflow,
+      this.props.workflow.weekworkflow_set
+    ).map((weekworkflow) => weekworkflow.week);
+    const weeks_ordered = filterThenSortByID(
+      this.props.week,
+      week_order
+    );
+    const nodeweek_order = [].concat(
+      ...weeks_ordered.map((week) => week.nodeweek_set)
+    );
+    let nodeweeks_ordered = filterThenSortByID(
+      this.props.nodeweek,
+      nodeweek_order
+    );
+    const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node);
+    const nodes_ordered = filterThenSortByID(
+      this.props.node,
+      node_order
+    ).filter((node2) => !checkSetHidden(node2, this.props.object_sets));
+    switch (parseInt(this.props.workflow.outcomes_sort)) {
+      case 0: {
+        const nodes_allowed = nodes_ordered.map((node2) => node2.id);
+        nodeweeks_ordered = nodeweeks_ordered.filter(
+          (nodeweek) => nodes_allowed.indexOf(nodeweek.node) >= 0
+        );
+        const nodes_by_week = {};
+        for (let i = 0; i < nodeweeks_ordered.length; i++) {
+          const nodeweek = nodeweeks_ordered[i];
+          pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node);
+        }
+        return weeks_ordered.map((week, index) => {
+          return {
+            title: week.title || week.week_type_display + " " + (index + 1),
+            nodes: nodes_by_week[week.id] || []
+          };
+        });
+      }
+      case 1: {
+        const column_order = filterThenSortByID(
+          this.props.columnworkflow,
+          this.props.workflow.columnworkflow_set
+        ).map((columnworkflow) => columnworkflow.column);
+        const columns_ordered = filterThenSortByID(
+          this.props.column,
+          column_order
+        );
+        const nodes_by_column = {};
+        for (let i = 0; i < nodes_ordered.length; i++) {
+          const node2 = nodes_ordered[i];
+          pushOrCreate(nodes_by_column, node2.column, node2.id);
+        }
+        return columns_ordered.map((column2, index) => {
+          return {
+            title: column2.title || column2.column_type_display,
+            nodes: nodes_by_column[column_order[index]] || []
+          };
+        });
+      }
+      case 2: {
+        const workflow_type = ["activity", "course", "program"].indexOf(
+          this.props.workflow.type
+        );
+        const task_ordered = this.props.renderer.task_choices.filter(
+          (x) => x.type == 0 || x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1)
+        );
+        const nodes_by_task = {};
+        for (let i = 0; i < nodes_ordered.length; i++) {
+          const node2 = nodes_ordered[i];
+          pushOrCreate(nodes_by_task, node2.task_classification, node2.id);
+        }
+        return task_ordered.map((task) => {
+          return { title: task.name, nodes: nodes_by_task[task.type] || [] };
+        });
+      }
+      case 3: {
+        const workflow_type = ["activity", "course", "program"].indexOf(
+          this.props.workflow.type
+        );
+        const context_ordered = this.props.renderer.context_choices.filter(
+          (x) => x.type == 0 || x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1)
+        );
+        const nodes_by_context = {};
+        for (let i = 0; i < nodes_ordered.length; i++) {
+          const node2 = nodes_ordered[i];
+          pushOrCreate(
+            nodes_by_context,
+            node2.context_classification,
+            node2.id
+          );
+        }
+        return context_ordered.map((context) => {
+          return {
+            title: context.name,
+            nodes: nodes_by_context[context.type] || []
+          };
+        });
+      }
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const nodecategory = this.getNodecategory();
+    const outcomes_sorted = this.getOutcomesSorted();
+    let has_nodes = false;
+    for (let i = 0; i < nodecategory.length; i++) {
+      if (nodecategory[i].nodes.length > 0) {
+        has_nodes = true;
+        break;
+      }
+    }
+    if (outcomes_sorted.length === 0 || !has_nodes) {
+      let text;
+      if (this.props.renderer.view_type === "outcometable") {
+        text = window.gettext(
+          "This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started."
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "emptytext", children: text });
+    } else {
+      const nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header", children: nodecategory2.title }) }),
+        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Index2, { renderer: this.props.renderer, objectID: node2 }))
+      ] }));
+      const outcomes = outcomes_sorted.map((category) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        this.props.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-row outcome-category", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }) }) }),
+        category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OutcomeBase,
+          {
+            renderer: this.props.renderer,
+            objectID: outcome,
+            nodecategory,
+            type: "outcome_table",
+            outcome_type: "asdf"
+          },
+          outcome
+        ))
+      ] }));
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-details", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OutcomeLegend,
+          {
+            renderer: this.props.renderer
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-table node-rows", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row node-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head empty" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-cells", children: nodes }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell total-cell grand-total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "total-header", children: "Grand Total" }) })
+          ] }),
+          outcomes
+        ] })
+      ] });
+    }
+  }
 }
-const mapOutcomeStateToProps = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-const Outcome2 = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected2);
-const MatrixOutcome = Outcome2;
+const mapStateToProps$1 = (state) => {
+  return {
+    // workflow_type: state.workflow.type,
+    // outcomes_type: state.workflow.outcomes_type,
+    // outcomeworkflow_order: state.workflow.outcomeworkflow_set,
+    // weekworkflow_order: state.workflow.weekworkflow_set,
+    // columnworkflow_order: state.workflow.columnworkflow_set,
+    // outcomes_sort: state.workflow.outcomes_sort,
+    workflow: state.workflow,
+    weekworkflow: state.weekworkflow,
+    week: state.week,
+    nodeweek: state.nodeweek,
+    node: state.node,
+    objectset: state.objectset,
+    columnworkflow: state.columnworkflow,
+    column: state.column,
+    outcomeworkflow: state.outcomeworkflow,
+    outcome: state.outcome
+  };
+};
+const OutcomeTableView = connect(
+  mapStateToProps$1,
+  null
+)(OutcomeTableViewUnconnected);
 class WorkflowTableView extends reactExports.Component {
   /*******************************************************
    * RENDER
@@ -86736,7 +93153,7 @@ class WorkflowTableView extends reactExports.Component {
       );
     else
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        OutcomeTableView$1,
+        OutcomeTableView,
         {
           view_type: this.props.view_type,
           renderer: this.props.renderer
@@ -86747,10 +93164,11 @@ class WorkflowTableView extends reactExports.Component {
 class UserLabel extends reactExports.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "select");
     this.select = reactExports.createRef();
   }
   /*******************************************************
-   * FUNCTIONS
+   * FUNCTIONSw
    *******************************************************/
   onChange(evt) {
     switch (evt.target.value) {
@@ -86786,7 +93204,7 @@ class UserLabel extends reactExports.Component {
             "button",
             {
               className: "primary-button",
-              onClick: () => this.props.addFunction($(this.select.current).val()),
+              onClick: () => this.props.addFunction($$1(this.select.current).val()),
               children: window.gettext("Share")
             }
           )
@@ -86820,6 +93238,7 @@ class UserLabel extends reactExports.Component {
 class UserAdd extends reactExports.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "input");
     this.input = reactExports.createRef();
     this.state = { selected: null };
   }
@@ -86828,9 +93247,9 @@ class UserAdd extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     const component = this;
-    $(this.input.current).autocomplete({
+    $$1(this.input.current).autocomplete({
       source: (request, response_function) => {
-        getUserList(request.term, (response) => {
+        getUserListQuery(request.term, (response) => {
           const user_list = response.user_list.map((user) => {
             return {
               label: user.first_name + " " + user.last_name + " - " + user.username,
@@ -86857,7 +93276,7 @@ class UserAdd extends reactExports.Component {
         permission_keys[value],
         this.state.selected
       );
-      $(this.input.current).val(null);
+      $$1(this.input.current).val(null);
       this.setState({ selected: null });
     }
   }
@@ -86936,13 +93355,15 @@ class ShareMenu extends reactExports.Component {
     if (data2.type === "project" || data2.is_strategy) {
       let public_class = "big-button make-public";
       let private_class = "big-button hover-shade make-private";
-      if (published)
+      if (published) {
         public_class += " active";
-      else
+      } else {
         private_class += " active";
+      }
       let public_disabled = !(data2.title && data2.title.length > 0);
-      if (data2.type == "project")
+      if (data2.type == "project") {
         public_disabled |= data2.disciplines.length == 0;
+      }
       if (!public_disabled && !published)
         public_class += " hover-shade";
       if (public_disabled)
@@ -86950,13 +93371,7 @@ class ShareMenu extends reactExports.Component {
       const public_text = window.gettext("Any CourseFlow teacher can view");
       let disabled_indicator;
       if (public_disabled) {
-        let disabled_text;
-        if (data2.type == "project")
-          disabled_text = window.gettext(
-            "Title and disciplines are required to publish."
-          );
-        else
-          disabled_text = window.gettext("Title is required to publish.");
+        const disabled_text = data2.type == "project" ? window.gettext("Title and disciplines are required to publish.") : window.gettext("Title is required to publish.");
         disabled_indicator = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "warning flex-middle", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red", children: "block" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: disabled_text })
@@ -87041,23 +93456,23 @@ class ShareMenu extends reactExports.Component {
                 className: "public-link-button  hover-shade",
                 onClick: () => {
                   navigator.clipboard.writeText(public_link);
-                  const copy_icon_text = $(
+                  const copy_icon_text = $$1(
                     "#public-page-link .copy-link-icon .material-symbols-rounded"
                   ).text();
-                  const copy_description_text = $(
+                  const copy_description_text = $$1(
                     "#public-page-link .copy-link-text"
                   ).text();
-                  $(
+                  $$1(
                     "#public-page-link .copy-link-icon .material-symbols-rounded"
                   ).text("done");
-                  $("#public-page-link .copy-link-text").text(
+                  $$1("#public-page-link .copy-link-text").text(
                     "Copied to Clipboard"
                   );
                   setTimeout(() => {
-                    $(
+                    $$1(
                       "#public-page-link .copy-link-icon .material-symbols-rounded"
                     ).text(copy_icon_text);
-                    $("#public-page-link .copy-link-text").text(
+                    $$1("#public-page-link .copy-link-text").text(
                       copy_description_text
                     );
                   }, 1e3);
@@ -87079,23 +93494,23 @@ class ShareMenu extends reactExports.Component {
                 onClick: () => {
                   const iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="' + public_link + '"></iframe>';
                   navigator.clipboard.writeText(iframe);
-                  const copy_icon_text = $(
+                  const copy_icon_text = $$1(
                     "#public-page-code .copy-link-icon .material-symbols-rounded"
                   ).text();
-                  const copy_description_text = $(
+                  const copy_description_text = $$1(
                     "#public-page-code .copy-link-text"
                   ).text();
-                  $(
+                  $$1(
                     "#public-page-code .copy-link-icon .material-symbols-rounded"
                   ).text("done");
-                  $("#public-page-code .copy-link-text").text(
+                  $$1("#public-page-code .copy-link-text").text(
                     "Copied to Clipboard"
                   );
                   setTimeout(() => {
-                    $(
+                    $$1(
                       "#public-page-code .copy-link-icon .material-symbols-rounded"
                     ).text(copy_icon_text);
-                    $("#public-page-code .copy-link-text").text(
+                    $$1("#public-page-code .copy-link-text").text(
                       copy_description_text
                     );
                   }, 1e3);
@@ -87133,7 +93548,7 @@ class ShareMenu extends reactExports.Component {
           "Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."
         )
       )) {
-        updateValueInstant(
+        updateValueInstantQuery(
           this.props.data.id,
           "workflow",
           { public_view },
@@ -87143,7 +93558,7 @@ class ShareMenu extends reactExports.Component {
         );
       }
     } else {
-      updateValueInstant(
+      updateValueInstantQuery(
         this.props.data.id,
         "workflow",
         { public_view },
@@ -87162,7 +93577,7 @@ class ShareMenu extends reactExports.Component {
         "Are you sure you want to publish this project, making it fully visible to anyone with an account?"
       )
     )) {
-      updateValueInstant(
+      updateValueInstantQuery(
         component.props.data.id,
         component.props.data.type,
         { published },
@@ -87314,10 +93729,43 @@ class ShareMenu extends reactExports.Component {
 class ExportMenu extends reactExports.Component {
   constructor(props2) {
     super(props2);
+    __publicField(this, "ctrlKey");
     this.state = { type: "outcome" };
   }
   /*******************************************************
    * FUNCTIONS
+   *******************************************************/
+  inputChange(type, id, evt) {
+    if (type == "set") {
+      const new_state = {};
+      new_state[id] = !evt.target.checked;
+      this.setState(new_state);
+    } else if (type == "type" && evt.target.checked) {
+      this.setState({ type: evt.target.value });
+    }
+  }
+  click(evt) {
+    if (evt.ctrlKey) {
+      this.ctrlKey = true;
+      $$1("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
+    }
+  }
+  submit(evt) {
+    $$1("#submit-button").attr("disabled", true);
+    setTimeout(() => {
+      if (!this.ctrlKey) {
+        this.props.actionFunction();
+      }
+      alert(
+        window.gettext(
+          "Your file is being generated and will be emailed to you shortly."
+        )
+      );
+    }, 100);
+    return true;
+  }
+  /*******************************************************
+   * COMPONENTS
    *******************************************************/
   getExportTypes() {
     const type = this.props.data.type;
@@ -87391,34 +93839,6 @@ class ExportMenu extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "export_type", children: window.gettext("Sobec Validation") })
       ]);
     return exports;
-  }
-  inputChange(type, id, evt) {
-    if (type == "set") {
-      const new_state = {};
-      new_state[id] = !evt.target.checked;
-      this.setState(new_state);
-    } else if (type == "type" && evt.target.checked) {
-      this.setState({ type: evt.target.value });
-    }
-  }
-  click(evt) {
-    if (evt.ctrlKey) {
-      this.ctrlKey = true;
-      $("#export-form")[0].action = COURSEFLOW_APP.config.post_paths.get_export_download;
-    }
-  }
-  submit(evt) {
-    $("#submit-button").attr("disabled", true);
-    setTimeout(() => {
-      if (!this.ctrlKey)
-        this.props.actionFunction();
-      alert(
-        window.gettext(
-          "Your file is being generated and will be emailed to you shortly."
-        )
-      );
-    }, 100);
-    return true;
   }
   /*******************************************************
    * RENDER
@@ -87523,28 +93943,111 @@ class ExportMenu extends reactExports.Component {
     ] });
   }
 }
+class ImportMenu extends reactExports.Component {
+  constructor(props2) {
+    super(props2);
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  submit(evt) {
+    $$1("#submit-button").attr("disabled", true);
+    setTimeout(() => {
+      this.props.actionFunction();
+      alert(
+        window.gettext(
+          "Your file has been submitted. Please wait while it is imported. You may close this message."
+        )
+      );
+    }, 100);
+    return true;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "form",
+        {
+          encType: "multipart/form-data",
+          action: COURSEFLOW_APP.config.post_paths.import_data,
+          method: "POST",
+          id: "upload-form",
+          target: "redirect-iframe",
+          onSubmit: this.submit.bind(this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                name: "csrfmiddlewaretoken",
+                value: window.getCsrfToken()
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectID",
+                name: "objectID",
+                value: JSON.stringify(this.props.data.object_id)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "objectType",
+                name: "objectType",
+                value: JSON.stringify(this.props.data.object_type)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "hidden",
+                id: "importType",
+                name: "importType",
+                value: this.props.data.import_type
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "file",
+                id: "myFile",
+                name: "myFile",
+                accept: ".xls, .xlsx, .csv",
+                required: true
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
+        "The uploading process may take some time. It is not recommended to continue editing until it is complete."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "window-close-button",
+          onClick: this.props.actionFunction,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
+        }
+      )
+    ] });
+  }
+}
 class WorkflowBaseViewUnconnected extends EditableComponent {
   constructor(props2) {
     super(props2);
-    __publicField(this, "objectType");
-    __publicField(this, "allowed_tabs");
-    __publicField(this, "readOnly");
-    __publicField(this, "public_view");
-    __publicField(this, "is_student");
-    __publicField(this, "project");
-    __publicField(this, "selection_manager");
-    __publicField(this, "view_type");
-    __publicField(this, "container");
-    __publicField(this, "renderMethod");
-    // @todo delete his after converrting to state mgmt
-    __publicField(this, "can_view");
-    __publicField(this, "websocket");
-    __publicField(this, "always_static");
-    __publicField(this, "user_id");
-    __publicField(this, "project_permission");
-    __publicField(this, "object_sets");
-    __publicField(this, "data");
-    __publicField(this, "workflowId");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
@@ -87615,7 +94118,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
       } else if (this.view_type == ViewType.GRID) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView$1, { renderer, view_type: this.view_type });
+        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView, { renderer, view_type: this.view_type });
         this.allowed_tabs = [3];
       } else {
         workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer });
@@ -88456,8 +94959,8 @@ class Workflow {
     } = props2.workflow_data_package;
     this.message_queue = [];
     this.messages_queued = true;
-    this.public_view = props2.public_view;
-    this.workflowID = props2.workflow_model_id;
+    this.public_view = this.props.public_view;
+    this.workflowID = this.props.workflow_model_id;
     this.column_choices = column_choices;
     this.context_choices = context_choices;
     this.task_choices = task_choices;
@@ -88478,7 +94981,7 @@ class Workflow {
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type;
     }
-    switch (props2.user_permission) {
+    switch (this.props.user_permission) {
       case permission_keys["view"]:
         this.can_view = true;
         break;
@@ -88494,7 +94997,7 @@ class Workflow {
         this.can_view = true;
         break;
     }
-    switch (props2.user_role) {
+    switch (this.props.user_role) {
       case role_keys["none"]:
         break;
       case role_keys["student"]:
@@ -88573,15 +95076,15 @@ class Workflow {
   /*******************************************************
    * REACT TO MOVE
    *******************************************************/
-  render(container2, view_type = "workflowview") {
+  render(container, view_type = "workflowview") {
     this.locks = {};
     this.selection_manager = new SelectionManager(this.read_only);
     this.child_data_needed = [];
     this.child_data_completed = -1;
     this.fetching_child_data = false;
     this.view_type = view_type;
-    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container2[0]);
-    this.container = container2;
+    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container[0]);
+    this.container = container;
     this.selection_manager.renderer = this;
     if (view_type === ViewType.OUTCOME_EDIT) {
       this.getWorkflowParentData(this.workflowID, (response) => {
@@ -88594,10 +95097,11 @@ class Workflow {
             {
               view_type,
               renderer: this,
-              parentRender: this.workflowRender
+              parentRender: this.workflowRender,
+              readOnly: this.read_only
             }
           ) }),
-          container2[0]
+          container[0]
         );
       });
     } else {
@@ -88612,7 +95116,7 @@ class Workflow {
               parentRender: this.workflowRender
             }
           ) }) }) }),
-          container2[0]
+          container[0]
         );
       }, 50);
     }
@@ -88654,7 +95158,7 @@ class Workflow {
         response.data_package,
         composeEnhancers()
       );
-      this.render($("#container"));
+      this.render($$1("#container"));
       this.clear_queue((_b = response.data_package) == null ? void 0 : _b.workflow.edit_count);
       if (reconnect) {
         this.attempt_reconnect();
@@ -88798,11 +95302,11 @@ class Workflow {
   }
 }
 class WorkflowComparison extends Workflow {
-  constructor(workflowID, data_package, container2, selection_manager, tiny_loader, view_type, initial_object_sets) {
+  constructor(workflowID, data_package, container, selection_manager, tiny_loader, view_type, initial_object_sets) {
     super(workflowID, data_package);
     this.selection_manager = selection_manager;
     this.tiny_loader = tiny_loader;
-    this.container = container2;
+    this.container = container;
     this.view_type = view_type;
     this.initial_object_sets = initial_object_sets;
   }
@@ -88870,7 +95374,7 @@ class WorkflowCardCondensed extends WorkflowCard {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        ref: this.maindiv,
+        ref: this.mainDiv,
         className: css_class,
         onClick: this.clickAction.bind(this),
         onMouseDown: (evt) => {
@@ -89011,7 +95515,7 @@ class WorkflowFilter extends reactExports.Component {
           onClick: (evt) => {
             evt.stopPropagation();
             this.sortChange(i);
-            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+            $$1(this.sortDOM.current).children(".create-dropdown").addClass("active");
           },
           children: [
             sort_dir,
@@ -89118,7 +95622,7 @@ class WorkflowFilter extends reactExports.Component {
         searchResults: [],
         searchFilter: ""
       });
-      $(this.searchDOM.current).removeClass("active");
+      $$1(this.searchDOM.current).removeClass("active");
       return;
     }
     const searchFunction = this.searchWithout ? this.searchWithout : this.searchWithin;
@@ -89129,7 +95633,7 @@ class WorkflowFilter extends reactExports.Component {
         searchResults: response,
         searchFilter: filter
       });
-      $(this.searchDOM.current).addClass("active");
+      $$1(this.searchDOM.current).addClass("active");
     });
   }
   searchWithout(request, response_function) {
@@ -89149,8 +95653,8 @@ class WorkflowFilter extends reactExports.Component {
       workflows: this.props.workflows,
       searchFilterLock: null
     });
-    $("#workflow-search").attr("disabled", String(false));
-    $("#workflow-search-input").attr("disabled", String(false));
+    $$1("#workflow-search").attr("disabled", String(false));
+    $$1("#workflow-search-input").attr("disabled", String(false));
     evt.stopPropagation();
   }
   /*******************************************************
@@ -89354,9 +95858,12 @@ const Header = ({
 class ProjectEditDialog extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    this.state = { ...this.props.data, selected_set: "none" };
+    __publicField(this, "object_set_updates");
+    this.state = {
+      ...this.props.data,
+      selected_set: "none"
+    };
     this.object_set_updates = {};
-    this.close = this.props.closeAction;
   }
   /*******************************************************
    * LIFECYCLE
@@ -89381,16 +95888,18 @@ class ProjectEditDialog extends reactExports.Component {
         if (new_state_dict[i].id === id) {
           deleteSelfQuery(id, "objectset");
           new_state_dict.splice(i, 1);
-          this.setState({ object_sets: new_state_dict });
+          this.setState({
+            object_sets: new_state_dict
+          });
           break;
         }
       }
     }
   }
   addTerm() {
-    const term = $("#nomenclature-select")[0].value;
-    const title = $("#term-singular")[0].value;
-    addTerminology(this.state.id, term, title, "", (response_data) => {
+    const term = $$1("#nomenclature-select")[0].value;
+    const title = $$1("#term-singular")[0].value;
+    addTerminologyQuery(this.state.id, term, title, "", (response_data) => {
       this.setState({
         object_sets: response_data.new_dict,
         selected_set: "none",
@@ -89400,7 +95909,7 @@ class ProjectEditDialog extends reactExports.Component {
   }
   termChanged(id, evt) {
     const new_sets = this.state.object_sets.slice();
-    for (var i = 0; i < new_sets.length; i++) {
+    for (let i = 0; i < new_sets.length; i++) {
       if (new_sets[i].id === id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value };
         this.object_set_updates[id] = { title: evt.target.value };
@@ -89409,8 +95918,9 @@ class ProjectEditDialog extends reactExports.Component {
     this.setState({ object_sets: new_sets, changed: true });
   }
   updateTerms() {
-    for (var object_set_id in this.object_set_updates) {
-      updateValueInstant(
+    for (const object_set_id in this.object_set_updates) {
+      updateValueInstantQuery(
+        // @ts-ignore @todo is this a number or string?
         object_set_id,
         "objectset",
         this.object_set_updates[object_set_id]
@@ -89438,16 +95948,16 @@ class ProjectEditDialog extends reactExports.Component {
     });
   }
   inputChanged(field, evt) {
-    var new_state = { changed: true };
+    const new_state = { changed: true };
     new_state[field] = evt.target.value;
     if (field === "selected_set")
       new_state["termsingular"] = "";
     this.setState(new_state);
   }
   getActions() {
-    var actions = [];
+    const actions = [];
     actions.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.close, children: window.gettext("Cancel") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "secondary-button", onClick: this.props.closeAction, children: window.gettext("Cancel") })
     );
     actions.push(
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -89457,15 +95967,18 @@ class ProjectEditDialog extends reactExports.Component {
           className: "primary-button",
           disabled: !this.state.changed,
           onClick: () => {
-            updateValueInstant(this.state.id, "project", {
+            updateValueInstantQuery(this.state.id, "project", {
               title: this.state.title,
               description: this.state.description,
               published: this.state.published,
               disciplines: this.state.disciplines
             });
             this.updateTerms();
-            this.props.actionFunction({ ...this.state, changed: false });
-            this.close();
+            this.props.actionFunction({
+              ...this.state,
+              changed: false
+            });
+            this.props.closeAction;
           },
           children: window.gettext("Save Changes")
         }
@@ -89473,41 +95986,29 @@ class ProjectEditDialog extends reactExports.Component {
     );
     return actions;
   }
-  // getLiveProjectSettings() {
-  //   if (this.props.user_role === Constants.role_keys.teacher) {
-  //     return (
-  //       <div>
-  //         <LiveProjectSettings
-  //           // renderer={this.props.renderer}
-  //           role={'teacher'}
-  //           objectID={this.state.id}
-  //           view_type={'settings'}
-  //           updateLiveProject={this.props.actionFunction}
-  //         />
-  //       </div>
-  //     )
-  //   }
-  //   return null
-  // }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   autocompleteDiscipline() {
     const choices = this.state.all_disciplines.filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0).map((discipline) => ({
       value: discipline.title,
       label: discipline.title,
       id: discipline.id
     }));
-    $("#project-discipline-input").autocomplete({
+    $$1("#project-discipline-input").autocomplete({
       source: choices,
       minLength: 0,
       focus: null,
       select: (evt, ui) => {
         this.addDiscipline(ui.item.id);
-        $("#project-discipline-input").val("");
+        $$1("#project-discipline-input").val("");
         return false;
       }
     }).focus(function() {
-      $("#project-discipline-input").autocomplete(
+      $$1("#project-discipline-input").autocomplete(
         "search",
-        $("#project-discipline-input").val()
+        // @ts-ignore
+        $$1("#project-discipline-input").val()
       );
     });
   }
@@ -89515,7 +96016,7 @@ class ProjectEditDialog extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data2 = this.state;
+    const data2 = this.state;
     let disciplines;
     if (data2.all_disciplines) {
       disciplines = data2.all_disciplines.filter((discipline) => data2.disciplines.indexOf(discipline.id) >= 0).map((discipline) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle discipline-tag", children: [
@@ -89535,8 +96036,9 @@ class ProjectEditDialog extends reactExports.Component {
     const object_sets = object_sets_types();
     const set_options = Object.keys(object_sets).map((key) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: key, children: object_sets[key] }));
     let selected_set;
-    if (this.state.selected_set)
+    if (this.state.selected_set) {
       selected_set = object_sets[this.state.selected_set];
+    }
     const sets_added = data2.object_sets.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "nomenclature-row", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: object_sets[item.term] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -89558,10 +96060,11 @@ class ProjectEditDialog extends reactExports.Component {
     const published_enabled = data2.title && data2.disciplines.length > 0;
     if (data2.published && !published_enabled)
       this.setState({ published: false });
-    if (!published_enabled)
+    if (!published_enabled) {
       window.gettext(
         "A title and at least one discipline is required for publishing."
       );
+    }
     let add_term_css = "material-symbols-rounded filled";
     let clickEvt;
     if (this.addTermDisabled(selected_set)) {
@@ -89632,7 +96135,7 @@ class ProjectEditDialog extends reactExports.Component {
               placeholder: window.gettext("Set name"),
               type: "text",
               id: "term-singular",
-              maxLength: "50",
+              maxLength: 50,
               value: this.state.termsingular,
               onChange: this.inputChanged.bind(this, "termsingular"),
               disabled: selected_set == null
@@ -89642,21 +96145,15 @@ class ProjectEditDialog extends reactExports.Component {
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: this.getActions() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.close, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.props.closeAction, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "close" }) })
     ] });
   }
 }
 class ProjectMenu extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    __publicField(this, "readOnly");
-    __publicField(this, "userId");
     __publicField(this, "createDiv");
-    __publicField(this, "projectPaths");
-    __publicField(this, "userRole");
-    __publicField(this, "allDisciplines");
     __publicField(this, "viewButtons");
-    __publicField(this, "data");
     /*******************************************************
      * COMPONENTS
      *******************************************************/
@@ -89673,7 +96170,7 @@ class ProjectMenu extends reactExports.Component {
       ];
     });
     __publicField(this, "ExportButton", () => {
-      if (this.userId) {
+      if (this.props.userId) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -89689,7 +96186,7 @@ class ProjectMenu extends reactExports.Component {
       return null;
     });
     __publicField(this, "CopyButton", () => {
-      if (this.userId) {
+      if (this.props.userId) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -89699,8 +96196,8 @@ class ProjectMenu extends reactExports.Component {
               const loader = COURSEFLOW_APP.tinyLoader;
               loader.startLoad();
               duplicateBaseItemQuery(
-                this.data.id,
-                this.data.type,
+                this.props.data.id,
+                this.props.data.type,
                 null,
                 (response_data) => {
                   loader.endLoad();
@@ -89716,10 +96213,9 @@ class ProjectMenu extends reactExports.Component {
     });
     __publicField(this, "OverflowLinks", () => {
       const data2 = this.state.data;
-      const userId = this.userId;
       let liveproject;
       const overflow_links = [];
-      if (data2.author_id === userId) {
+      if (data2.author_id === this.props.userId) {
         if (data2.liveproject) {
           liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
             "a",
@@ -89752,7 +96248,7 @@ class ProjectMenu extends reactExports.Component {
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
-      if (data2.author_id === userId) {
+      if (data2.author_id === this.props.userId) {
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
       }
@@ -89762,7 +96258,7 @@ class ProjectMenu extends reactExports.Component {
      * VISIBLE BUTTONS
      *******************************************************/
     __publicField(this, "Edit", () => {
-      if (!this.readOnly) {
+      if (!this.props.readOnly) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -89777,7 +96273,7 @@ class ProjectMenu extends reactExports.Component {
       return null;
     });
     __publicField(this, "Create", () => {
-      if (!this.readOnly) {
+      if (!this.props.readOnly) {
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -89792,7 +96288,7 @@ class ProjectMenu extends reactExports.Component {
                   "a",
                   {
                     id: "activity-create-project",
-                    href: this.projectPaths.activity,
+                    href: this.props.projectPaths.activity,
                     className: "hover-shade",
                     children: window.gettext("New activity")
                   }
@@ -89801,7 +96297,7 @@ class ProjectMenu extends reactExports.Component {
                   "a",
                   {
                     id: "course-create-project",
-                    href: this.projectPaths.course,
+                    href: this.props.projectPaths.course,
                     className: "hover-shade",
                     children: window.gettext("New course")
                   }
@@ -89810,7 +96306,7 @@ class ProjectMenu extends reactExports.Component {
                   "a",
                   {
                     id: "program-create-project",
-                    href: this.projectPaths.program,
+                    href: this.props.projectPaths.program,
                     className: "hover-shade",
                     children: window.gettext("New program")
                   }
@@ -89823,7 +96319,7 @@ class ProjectMenu extends reactExports.Component {
       return null;
     });
     __publicField(this, "Share", () => {
-      if (!this.readOnly)
+      if (!this.props.readOnly)
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -89848,7 +96344,7 @@ class ProjectMenu extends reactExports.Component {
      *******************************************************/
     __publicField(this, "Content", () => {
       const return_val = [];
-      if (this.state.data.liveproject && this.userRole === role_keys.teacher)
+      if (this.state.data.liveproject && this.props.userRole === role_keys.teacher)
         return_val.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
             let view_class = "hover-shade";
@@ -89868,8 +96364,8 @@ class ProjectMenu extends reactExports.Component {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowFilter,
         {
-          user_role: this.userRole,
-          read_only: this.readOnly,
+          user_role: this.props.userRole,
+          read_only: this.props.readOnly,
           project_data: this.state.data,
           workflows: this.state.workflow_data,
           updateWorkflow: this.updateWorkflow.bind(this),
@@ -89902,8 +96398,8 @@ class ProjectMenu extends reactExports.Component {
           type: "project_edit_menu",
           data: {
             ...this.state.data,
-            all_disciplines: this.allDisciplines,
-            user_role: this.userRole
+            all_disciplines: this.props.allDisciplines,
+            user_role: this.props.userRole
             // renderer: this.props.renderer
           },
           actionFunction: this.updateFunction,
@@ -89924,12 +96420,6 @@ class ProjectMenu extends reactExports.Component {
       { type: "assignments", name: window.gettext("Assignments") },
       { type: "completion_table", name: window.gettext("Completion Table") }
     ];
-    this.userId = this.props.userId;
-    this.userRole = this.props.userRole;
-    this.readOnly = this.props.readOnly;
-    this.projectPaths = this.props.projectPaths;
-    this.allDisciplines = this.props.allDisciplines;
-    this.data = this.props.data;
     this.state = {
       data: this.props.data,
       view_type: "workflows",
@@ -89946,18 +96436,18 @@ class ProjectMenu extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     const component = this;
-    getWorkflowsForProjectQuery(this.data.id, (data2) => {
+    getWorkflowsForProjectQuery(this.props.data.id, (data2) => {
       component.setState({
         workflow_data: data2.data_package
       });
     });
     this.getUserData();
-    COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
+    COURSEFLOW_APP.makeDropdown($$1(this.createDiv.current));
   }
   // @todo this is wrapped because it is called by openShareMenu
   // so do no unwrap until the renderMessageBox is sorted out
   getUserData() {
-    getUsersForObjectQuery(this.data.id, this.data.type, (data2) => {
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data2) => {
       this.setState({ users: data2 });
     });
   }
@@ -89978,8 +96468,8 @@ class ProjectMenu extends reactExports.Component {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this project?")
     )) {
-      deleteSelfQuery(this.data.id, "project", true, () => {
-        this.setState({ data: { ...this.data, deleted: true } });
+      deleteSelfQuery(this.props.data.id, "project", true, () => {
+        this.setState({ data: { ...this.props.data, deleted: true } });
       });
     }
   }
@@ -89989,14 +96479,14 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to permanently delete this project?"
       )
     )) {
-      deleteSelfQuery(this.data.id, "project", false, () => {
+      deleteSelfQuery(this.props.data.id, "project", false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
   restoreProject() {
-    restoreSelfQuery(this.data.id, "project", () => {
-      this.setState({ data: { ...this.data, deleted: false } });
+    restoreSelfQuery(this.props.data.id, "project", () => {
+      this.setState({ data: { ...this.props.data, deleted: false } });
     });
   }
   //@todo can this be removed now?
@@ -90006,7 +96496,7 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to create a live classroom for this project?"
       )
     )) {
-      makeProjectLiveQuery(this.data.id, (data2) => {
+      makeProjectLiveQuery(this.props.data.id, (data2) => {
         location.reload();
       });
     }
@@ -90089,11 +96579,11 @@ class ProjectMenu extends reactExports.Component {
           {
             disciplines: this.state.data.disciplines,
             description: this.state.data.description,
-            allDisciplines: this.allDisciplines,
+            allDisciplines: this.props.allDisciplines,
             data: this.state.data,
             users: this.state.users,
             openShareDialog: () => this.openShareDialog(),
-            readOnly: this.readOnly
+            readOnly: this.props.readOnly
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
@@ -90111,14 +96601,12 @@ class ProjectPage extends reactExports.Component {
     __publicField(this, "projectData");
     __publicField(this, "allDisciplines");
     __publicField(this, "userRole");
-    __publicField(this, "userPermission");
     __publicField(this, "userId");
     __publicField(this, "projectPaths");
     this.readOnly = true;
     this.projectData = this.props.project_data;
     this.allDisciplines = this.props.disciplines;
     this.userRole = this.props.user_role;
-    this.userPermission = this.props.user_permission;
     this.userId = this.props.user_id;
     this.projectPaths = this.props.create_path_this_project;
     if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
@@ -90143,7 +96631,6 @@ class LibraryPage extends reactExports.Component {
   constructor(props2) {
     super(props2);
     __publicField(this, "createDiv");
-    __publicField(this, "read_only");
     /***
      *
      */
@@ -90275,11 +96762,11 @@ class HomePage extends reactExports.Component {
   constructor(props2) {
     super(props2);
     __publicField(this, "isTeacher");
-    this.isTeacher = props2.is_teacher;
     this.state = {
       projects: [],
       favourites: []
     };
+    this.isTeacher = props2.is_teacher;
   }
   /*******************************************************
    * Lifecycle hooks
@@ -90408,7 +96895,7 @@ class ExploreFilter extends reactExports.Component {
             onClick: (evt) => {
               evt.stopPropagation();
               this.filterChange(filter);
-              $(this.filterDOM.current).children(".create-dropdown").addClass("active");
+              $$1(this.filterDOM.current).children(".create-dropdown").addClass("active");
             },
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -90463,7 +96950,7 @@ class ExploreFilter extends reactExports.Component {
             onClick: (evt) => {
               evt.stopPropagation();
               this.sortChange(i);
-              $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+              $$1(this.sortDOM.current).children(".create-dropdown").addClass("active");
             },
             children: [
               sort_dir,
@@ -90545,7 +97032,7 @@ class ExploreFilter extends reactExports.Component {
                 onClick: (evt) => {
                   evt.stopPropagation();
                   this.disciplineChange(discipline);
-                  $(this.disciplineDOM.current).children(".create-dropdown").addClass("active");
+                  $$1(this.disciplineDOM.current).children(".create-dropdown").addClass("active");
                 },
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -90583,7 +97070,7 @@ class ExploreFilter extends reactExports.Component {
         className: "hover-shade",
         onClick: () => {
           this.setState({
-            fromDaltise: !this.state.fromSaltise,
+            fromSaltise: !this.state.fromSaltise,
             hasSearched: false
           });
           this.doSearch();
@@ -90617,7 +97104,7 @@ class ExploreFilter extends reactExports.Component {
     this.setState({ activeDisciplines: newFilter, hasSearched: false });
   }
   toPage(number2) {
-    const inputElement = $(this.searchDOM.current).children(
+    const inputElement = $$1(this.searchDOM.current).children(
       "#workflow-search-input"
     )[0];
     this.searchWithout(
@@ -90704,7 +97191,7 @@ class ExploreFilter extends reactExports.Component {
     }
   }
   doSearch() {
-    const inputEl = $(this.searchDOM.current).children(
+    const inputEl = $$1(this.searchDOM.current).children(
       "#workflow-search-input"
     )[0];
     this.searchWithout(inputEl.value, this.searchResults.bind(this));
@@ -90768,13 +97255,6 @@ class ExploreFilter extends reactExports.Component {
 class ExplorePage extends reactExports.Component {
   constructor(props2) {
     super(props2);
-    __publicField(this, "disciplines");
-    __publicField(this, "initial_pages");
-    __publicField(this, "initial_workflows");
-    __publicField(this, "createDiv");
-    this.disciplines = this.props.disciplines;
-    this.initial_workflows = this.props.initial_workflows;
-    this.initial_pages = this.props.initial_pages;
     this.createDiv = reactExports.createRef();
   }
   componentDidMount() {
@@ -90788,9 +97268,9 @@ class ExplorePage extends reactExports.Component {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       ExploreFilter,
       {
-        disciplines: this.disciplines,
-        workflows: this.initial_workflows,
-        pages: this.initial_pages,
+        disciplines: this.props.disciplines,
+        workflows: this.props.initial_workflows,
+        pages: this.props.initial_pages,
         context: "library",
         sadfasdf: true
       }
@@ -90798,12 +97278,12 @@ class ExplorePage extends reactExports.Component {
   }
 }
 class MouseCursorLoader {
-  constructor(identifier2 = $("body")[0]) {
+  constructor(identifier2 = $$1("body")[0]) {
     this.identifier = identifier2;
     this.loadings = 0;
   }
   startLoad() {
-    $(this.identifier).addClass("waiting");
+    $$1(this.identifier).addClass("waiting");
     this.loadings++;
   }
   endLoad() {
@@ -90811,7 +97291,7 @@ class MouseCursorLoader {
       this.loadings--;
     }
     if (this.loadings <= 0) {
-      $(this.identifier).removeClass("waiting");
+      $$1(this.identifier).removeClass("waiting");
     }
   }
 }
@@ -90861,8 +97341,8 @@ const getAppComponent = () => {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowComparison, { ...thisContextData });
     }
     case "workflowDetailView": {
-      const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData);
-      workflow_renderer.init();
+      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData);
+      workflowWrapper.init();
       return null;
     }
     case "my_live_projects":
