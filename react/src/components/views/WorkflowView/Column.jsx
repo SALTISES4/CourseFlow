@@ -39,7 +39,7 @@ class Column extends EditableComponentWithActions {
    *******************************************************/
   render() {
     const data = this.props.data
-    var title = data.title
+    let title = data.title
     if (!title) title = data.column_type_display
 
     const style = {}

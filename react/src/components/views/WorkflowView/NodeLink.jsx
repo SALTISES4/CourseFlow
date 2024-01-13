@@ -84,16 +84,16 @@ class NodeLink extends EditableComponentWithActions {
     )
       style['display'] = 'none'
 
-    var source_dims = {
+    const source_dims = {
       width: this.source_node.outerWidth(),
       height: this.source_node.outerHeight()
     }
-    var target_dims = {
+    const target_dims = {
       width: this.target_node.outerWidth(),
       height: this.target_node.outerHeight()
     }
     if (!source_dims.width || !target_dims.width) return null
-    var selector = this
+    const selector = this
 
     if (!this.source_node.is(':visible') || !this.target_node.is(':visible'))
       return null

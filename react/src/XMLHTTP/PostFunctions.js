@@ -77,8 +77,6 @@ export function setLinkedWorkflow(
   })
 }
 
-
-
 //Create a nodelink from the source to the target, at the given ports
 /*******************************************************
  *
@@ -108,10 +106,6 @@ export function newNodeLink(
   }
 }
 
-
-
-
-
 //Causes the specified object to delete itself
 export function deleteSelfLive(
   objectID,
@@ -131,8 +125,6 @@ export function deleteSelfLive(
     window.fail_function()
   }
 }
-
-
 
 //Removes the specified comment from the object
 export function removeComment(
@@ -194,11 +186,6 @@ export function updateOutcomenodeDegree(
     window.fail_function()
   }
 }
-
-
-
-
-
 
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
@@ -481,7 +468,6 @@ export function getUsersForLiveProject(
   }
 }
 
-
 //add a comment to an object
 export function addComment(
   objectID,
@@ -502,8 +488,6 @@ export function addComment(
     window.fail_function()
   }
 }
-
-
 
 //add a comment to an object
 export function updateObjectSet(
@@ -807,19 +791,6 @@ export function getAssignmentsForNode(
     }).done(function (data) {
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the library projects
-export function getFavouritesQuery(
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (data) {
-      callBackFunction(data)
     })
   } catch (err) {
     window.fail_function()

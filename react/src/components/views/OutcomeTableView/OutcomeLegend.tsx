@@ -72,20 +72,13 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
     )
   }
 }
-const mapStateToProps = (
-  state: AppState
-): ConnectedProps => {
+const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     outcomes_type: state.workflow.outcomes_type
   }
 }
 
-const OutcomeLegend = connect<
-  ConnectedProps,
-  object,
-  OwnProps,
-  AppState
->(
+const OutcomeLegend = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeLegendUnconnected)

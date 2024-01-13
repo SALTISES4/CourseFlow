@@ -24,7 +24,7 @@ class WeekWorkflowUnconnected extends Component {
     let my_class = 'week-workflow'
     if (data.no_drag) my_class += ' no-drag'
     if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
-    var week
+    let week
     if (this.props.condensed)
       week = (
         <Term

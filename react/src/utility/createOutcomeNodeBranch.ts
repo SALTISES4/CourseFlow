@@ -6,7 +6,11 @@ export type CreateOutcomeNodeBranchType = {
   outcomenodes: any
   total: any
 }
-export function createOutcomeNodeBranch(props, outcomeId: number, nodeCategories): CreateOutcomeNodeBranchType {
+export function createOutcomeNodeBranch(
+  props,
+  outcomeId: number,
+  nodeCategories
+): CreateOutcomeNodeBranchType {
   console.log('createOutcomeNodeBranch props')
   console.log(props)
 

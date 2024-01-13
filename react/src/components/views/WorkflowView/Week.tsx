@@ -228,7 +228,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     if (!renderer.is_strategy)
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
-    const style  = {
+    const style = {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
 

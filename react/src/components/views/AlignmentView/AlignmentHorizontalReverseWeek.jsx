@@ -65,7 +65,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
 }
 
 const mapAlignmentHorizontalReverseWeekStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.week.length; i++) {
+  for (let i = 0; i < state.week.length; i++) {
     if (state.week[i].id == own_props.objectID) {
       const week = state.week[i]
       const nodeweeks = Utility.filterThenSortByID(

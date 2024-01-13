@@ -19,7 +19,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     const data = this.props.data
     const parent_outcomes = this.props.horizontal_links.map(
       (horizontal_link) => {
-        for (var i = 0; i < this.props.outcomenodes.length; i++) {
+        for (let i = 0; i < this.props.outcomenodes.length; i++) {
           if (
             this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome
           ) {
@@ -97,7 +97,7 @@ const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
   state,
   own_props
 ) => {
-  for (var i = 0; i < state.outcome.length; i++) {
+  for (let i = 0; i < state.outcome.length; i++) {
     if (state.outcome[i].id == own_props.objectID) {
       const outcome = state.outcome[i]
       const allowed_outcomenodes = Utility.filterThenSortByID(

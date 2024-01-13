@@ -19,14 +19,16 @@ class AutoLink extends React.Component {
   }
 
   findAutoTarget() {
-    var ns = this.source_node.closest('.node-week')
-    var next_ns = ns.nextAll('.node-week:not(.ui-sortable-placeholder)').first()
-    var target
+    const ns = this.source_node.closest('.node-week')
+    const next_ns = ns
+      .nextAll('.node-week:not(.ui-sortable-placeholder)')
+      .first()
+    let target
     if (next_ns.length > 0) {
       target = next_ns.find('.node').attr('id')
     } else {
-      var sw = ns.closest('.week-workflow')
-      var next_sw = sw.next()
+      const sw = ns.closest('.week-workflow')
+      let next_sw = sw.next()
       while (next_sw.length > 0) {
         target = next_sw
           .find('.node-week:not(ui-sortable-placeholder) .node')
@@ -88,11 +90,11 @@ class AutoLink extends React.Component {
       this.target_node = null
     this.findAutoTarget()
     if (!this.target_node) return null
-    var source_dims = {
+    const source_dims = {
       width: this.source_node.outerWidth(),
       height: this.source_node.outerHeight()
     }
-    var target_dims = {
+    const target_dims = {
       width: this.target_node.outerWidth(),
       height: this.target_node.outerHeight()
     }

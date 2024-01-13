@@ -16,7 +16,7 @@ export class Index extends React.Component {
   }
 
   componentDidMount() {
-    var thisComponent = this
+    const thisComponent = this
     if (!this.props.renderer.read_only)
       d3.selectAll(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
@@ -25,7 +25,7 @@ export class Index extends React.Component {
           .drag()
           .on('start', function (d) {
             $('.workflow-canvas').addClass('creating-node-link')
-            var canvas_offset = $('.workflow-canvas').offset()
+            const canvas_offset = $('.workflow-canvas').offset()
             d3.select('.node-link-creator').remove()
             d3.select('.workflow-canvas')
               .append('line')
@@ -38,14 +38,14 @@ export class Index extends React.Component {
               .attr('stroke-width', '2')
           })
           .on('drag', function (d) {
-            var canvas_offset = $('.workflow-canvas').offset()
+            const canvas_offset = $('.workflow-canvas').offset()
             d3.select('.node-link-creator')
               .attr('x2', event.x - canvas_offset.left)
               .attr('y2', event.y - canvas_offset.top)
           })
           .on('end', function (d) {
             $('.workflow-canvas').removeClass('creating-node-link')
-            var target = d3.select(event.target)
+            const target = d3.select(event.target)
             if (target.attr('data-port-type') == 'target') {
               thisComponent.nodeLinkAdded(
                 target.attr('data-node-id'),
@@ -66,9 +66,9 @@ export class Index extends React.Component {
 
   updatePorts() {
     if (!this.props.node_div.current) return
-    var node = $(this.props.node_div.current)
-    var node_offset = Utility.getCanvasOffset(node)
-    var node_dimensions = {
+    const node = $(this.props.node_div.current)
+    const node_offset = Utility.getCanvasOffset(node)
+    const node_dimensions = {
       width: node.outerWidth(),
       height: node.outerHeight()
     }
@@ -91,14 +91,14 @@ export class Index extends React.Component {
   }
 
   render() {
-    var ports = []
-    var node_dimensions
+    const ports = []
+    let node_dimensions
     if (this.state.node_dimensions) {
       node_dimensions = this.state.node_dimensions
       this.positioned = true
     } else node_dimensions = { width: 0, height: 0 }
-    for (var port_type in Constants.node_ports)
-      for (var port in Constants.node_ports[port_type]) {
+    for (const port_type in Constants.node_ports)
+      for (const port in Constants.node_ports[port_type]) {
         ports.push(
           <circle
             data-port-type={port_type}
@@ -115,10 +115,10 @@ export class Index extends React.Component {
           />
         )
       }
-    var style = {}
+    const style = {}
     if ($(this.props.node_div.current).css('display') == 'none')
       style['display'] = 'none'
-    var transform
+    let transform
     if (this.state.node_offset)
       transform =
         'translate(' +

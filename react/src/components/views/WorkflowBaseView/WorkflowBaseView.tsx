@@ -620,7 +620,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           websocket={this.websocket}
           // connection_update_receive={this.props.renderer.connection_update_received}
           // renderer={renderer}
-
         />
       )
     }

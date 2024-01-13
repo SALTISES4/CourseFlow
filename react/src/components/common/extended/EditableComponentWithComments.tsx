@@ -3,7 +3,8 @@ import * as Constants from '@cfConstants'
 // @components
 import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent, {
-  EditableComponentProps, EditableComponentStateType
+  EditableComponentProps,
+  EditableComponentStateType
 } from '@cfParentComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
 import CommentBox from '@cfViews/GridView/components/CommentBox'
@@ -11,7 +12,6 @@ import { getCommentsForObjectQuery } from '@cfModule/XMLHTTP/APIFunctions'
 
 type StateType = {
   show_comments: boolean
-
 } & EditableComponentStateType
 
 type OwnProps = {

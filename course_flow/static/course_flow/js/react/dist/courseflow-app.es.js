@@ -48228,15 +48228,6 @@ function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("suc
     window.fail_function();
   }
 }
-function getFavouritesQuery(callBackFunction = () => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
-      callBackFunction(data2);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 const NotificationsWrap = styled$1(Box$1)({});
 const NotificationsHeader$1 = styled$1(Box$1)(({ theme: theme2 }) => ({
   paddingTop: theme2.spacing(4),
@@ -56273,7 +56264,7 @@ function object_sets_types() {
 }
 class TitleText extends reactExports.Component {
   render() {
-    var text = this.props.text;
+    let text = this.props.text;
     if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
       text = this.props.defaultText;
     }
@@ -58118,6 +58109,15 @@ function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackF
       } else {
         window.fail_function(data2.action);
       }
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
+      callBackFunction(data2);
     });
   } catch (err) {
     window.fail_function();
@@ -62211,7 +62211,10 @@ const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => 
   const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   );
-  const outcomes = filterThenSortByID(state.outcome, outcome_ids);
+  const outcomes = filterThenSortByID(
+    state.outcome,
+    outcome_ids
+  );
   if (outcomes.length === 0) {
     return outcomes;
   }
@@ -67860,7 +67863,7 @@ class Column extends EditableComponentWithActions {
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    var title = data2.title;
+    let title = data2.title;
     if (!title)
       title = data2.column_type_display;
     const style2 = {};
@@ -82254,14 +82257,14 @@ class AutoLink extends reactExports.Component {
     }
   }
   findAutoTarget() {
-    var ns = this.source_node.closest(".node-week");
-    var next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
-    var target;
+    const ns = this.source_node.closest(".node-week");
+    const next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
+    let target;
     if (next_ns.length > 0) {
       target = next_ns.find(".node").attr("id");
     } else {
-      var sw = ns.closest(".week-workflow");
-      var next_sw = sw.next();
+      const sw = ns.closest(".week-workflow");
+      let next_sw = sw.next();
       while (next_sw.length > 0) {
         target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
         if (target)
@@ -82313,11 +82316,11 @@ class AutoLink extends reactExports.Component {
     this.findAutoTarget();
     if (!this.target_node)
       return null;
-    var source_dims = {
+    const source_dims = {
       width: this.source_node.outerWidth(),
       height: this.source_node.outerHeight()
     };
-    var target_dims = {
+    const target_dims = {
       width: this.target_node.outerWidth(),
       height: this.target_node.outerHeight()
     };
@@ -82387,17 +82390,17 @@ class NodeLink extends EditableComponentWithActions {
       style2.strokeDasharray = "5,5";
     if (this.source_node.css("display") == "none" || this.target_node.css("display") == "none")
       style2["display"] = "none";
-    var source_dims = {
+    const source_dims = {
       width: this.source_node.outerWidth(),
       height: this.source_node.outerHeight()
     };
-    var target_dims = {
+    const target_dims = {
       width: this.target_node.outerWidth(),
       height: this.target_node.outerHeight()
     };
     if (!source_dims.width || !target_dims.width)
       return null;
-    var selector = this;
+    const selector = this;
     if (!this.source_node.is(":visible") || !this.target_node.is(":visible"))
       return null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -82784,22 +82787,22 @@ let Index$1 = class Index extends reactExports.Component {
     $(this.props.node_div.current).triggerHandler("ports-rendered");
   }
   componentDidMount() {
-    var thisComponent = this;
+    const thisComponent = this;
     if (!this.props.renderer.read_only)
       d3.selectAll(
         "g.port-" + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
         d3.drag().on("start", function(d) {
           $(".workflow-canvas").addClass("creating-node-link");
-          var canvas_offset = $(".workflow-canvas").offset();
+          const canvas_offset = $(".workflow-canvas").offset();
           d3.select(".node-link-creator").remove();
           d3.select(".workflow-canvas").append("line").attr("class", "node-link-creator").attr("x1", event.x - canvas_offset.left).attr("y1", event.y - canvas_offset.top).attr("x2", event.x - canvas_offset.left).attr("y2", event.y - canvas_offset.top).attr("stroke", "red").attr("stroke-width", "2");
         }).on("drag", function(d) {
-          var canvas_offset = $(".workflow-canvas").offset();
+          const canvas_offset = $(".workflow-canvas").offset();
           d3.select(".node-link-creator").attr("x2", event.x - canvas_offset.left).attr("y2", event.y - canvas_offset.top);
         }).on("end", function(d) {
           $(".workflow-canvas").removeClass("creating-node-link");
-          var target = d3.select(event.target);
+          const target = d3.select(event.target);
           if (target.attr("data-port-type") == "target") {
             thisComponent.nodeLinkAdded(
               target.attr("data-node-id"),
@@ -82819,9 +82822,9 @@ let Index$1 = class Index extends reactExports.Component {
   updatePorts() {
     if (!this.props.node_div.current)
       return;
-    var node2 = $(this.props.node_div.current);
-    var node_offset = getCanvasOffset(node2);
-    var node_dimensions = {
+    const node2 = $(this.props.node_div.current);
+    const node_offset = getCanvasOffset(node2);
+    const node_dimensions = {
       width: node2.outerWidth(),
       height: node2.outerHeight()
     };
@@ -82842,15 +82845,15 @@ let Index$1 = class Index extends reactExports.Component {
     );
   }
   render() {
-    var ports = [];
-    var node_dimensions;
+    const ports = [];
+    let node_dimensions;
     if (this.state.node_dimensions) {
       node_dimensions = this.state.node_dimensions;
       this.positioned = true;
     } else
       node_dimensions = { width: 0, height: 0 };
-    for (var port_type in node_ports)
-      for (var port in node_ports[port_type]) {
+    for (const port_type in node_ports)
+      for (const port in node_ports[port_type]) {
         ports.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "circle",
@@ -82866,10 +82869,10 @@ let Index$1 = class Index extends reactExports.Component {
           )
         );
       }
-    var style2 = {};
+    const style2 = {};
     if ($(this.props.node_div.current).css("display") == "none")
       style2["display"] = "none";
-    var transform;
+    let transform;
     if (this.state.node_offset)
       transform = "translate(" + this.state.node_offset.left + "," + this.state.node_offset.top + ")";
     else
@@ -83703,7 +83706,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
       my_class += " no-drag";
     if ($((_a = this.mainDiv) == null ? void 0 : _a.current).hasClass("dragging"))
       my_class += " dragging";
-    var week;
+    let week;
     if (this.props.condensed)
       week = /* @__PURE__ */ jsxRuntimeExports.jsx(
         Term$1,
@@ -84281,7 +84284,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     let my_class = "week-workflow";
     if (data2.no_drag)
       my_class += " no-drag";
-    var week = /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const week = /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekComparison,
       {
         objectID: data2.week,
@@ -84678,7 +84681,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Com
     const data2 = this.props.data;
     const parent_outcomes = this.props.horizontal_links.map(
       (horizontal_link) => {
-        for (var i = 0; i < this.props.outcomenodes.length; i++) {
+        for (let i = 0; i < this.props.outcomenodes.length; i++) {
           if (this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome) {
             if (this.props.restriction_set && this.props.restriction_set.parent_outcomes && this.props.restriction_set.parent_outcomes.indexOf(
               this.props.outcomenodes[i].outcome
@@ -84735,7 +84738,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Com
   }
 }
 const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.outcome.length; i++) {
+  for (let i = 0; i < state.outcome.length; i++) {
     if (state.outcome[i].id == own_props.objectID) {
       const outcome = state.outcome[i];
       const allowed_outcomenodes = filterThenSortByID(
@@ -84795,7 +84798,9 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: capWords(
           window.gettext(data2.linked_workflow_data.type + " outcomes")
         ) + window.gettext(" From Linked Workflow") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: window.gettext("Associated ") + capWords(window.gettext(this.props.workflow.type + " outcomes")) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "half-width alignment-column", children: window.gettext("Associated ") + capWords(
+          window.gettext(this.props.workflow.type + " outcomes")
+        ) })
       ] });
     } else {
       if (data2.linked_workflow) {
@@ -84941,7 +84946,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
   }
 }
 const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.node.length; i++) {
+  for (let i = 0; i < state.node.length; i++) {
     if (state.node[i].id == own_props.objectID) {
       const node2 = state.node[i];
       const column2 = state.column.find((column22) => column22.id == node2.column);
@@ -85038,7 +85043,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
   }
 }
 const mapAlignmentHorizontalReverseWeekStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.week.length; i++) {
+  for (let i = 0; i < state.week.length; i++) {
     if (state.week[i].id == own_props.objectID) {
       const week = state.week[i];
       const nodeweeks = filterThenSortByID(
@@ -85166,7 +85171,7 @@ class AlignmentView extends reactExports.Component {
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    let view_buttons_outcomes = this.props.outcomes.map((category, i2) => {
+    let view_buttons_outcomes = this.props.outcomes.map((category, i) => {
       return [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
           category.objectset.title,
@@ -85174,14 +85179,14 @@ class AlignmentView extends reactExports.Component {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: category.outcomes.map((outcome, j) => {
           let view_class = "hover-shade";
-          if (this.state.sort == "outcome" && i2 == this.state.active && j == this.state.active2)
+          if (this.state.sort == "outcome" && i == this.state.active && j == this.state.active2)
             view_class += " active";
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
               id: "button-outcome-" + outcome.data.id,
               className: view_class,
-              onClick: this.changeView.bind(this, i2, "outcome", j),
+              onClick: this.changeView.bind(this, i, "outcome", j),
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 OutcomeTitle,
                 {
@@ -85195,17 +85200,17 @@ class AlignmentView extends reactExports.Component {
         }) })
       ];
     });
-    const view_buttons_terms = this.props.terms.map((week, i2) => {
+    const view_buttons_terms = this.props.terms.map((week, i) => {
       let view_class = "hover-shade";
-      if (this.state.sort == "week" && i2 == this.state.active)
+      if (this.state.sort == "week" && i == this.state.active)
         view_class += " active";
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           id: "button-week-" + week.id,
           className: view_class,
-          onClick: this.changeView.bind(this, i2, "week"),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WeekTitle, { data: week, rank: i2 })
+          onClick: this.changeView.bind(this, i, "week"),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(WeekTitle, { data: week, rank: i })
         }
       );
     });
@@ -85218,7 +85223,7 @@ class AlignmentView extends reactExports.Component {
       try {
         outcome_data = this.props.outcomes[this.state.active].outcomes[this.state.active2].data;
       } catch (err) {
-        for (var i = 0; i < this.props.outcomes.length; i++) {
+        for (let i = 0; i < this.props.outcomes.length; i++) {
           if (this.props.outcomes[i].outcomes.length >= 1) {
             this.changeView(i, "outcome", 0);
             return null;
@@ -96729,7 +96734,7 @@ class LibraryPage extends reactExports.Component {
     ] });
   }
 }
-class FavouritesPage extends reactExports.Component {
+class Favourites extends reactExports.Component {
   constructor(props) {
     super(props);
     __publicField(this, "createDiv");
@@ -96753,6 +96758,8 @@ class FavouritesPage extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
+    console.log("this.state.project_data");
+    console.log(this.state.project_data);
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowFilter,
       {
@@ -97323,7 +97330,7 @@ const getAppComponent = () => {
     case "home":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(HomePage, { ...COURSEFLOW_APP.contextData });
     case "favorites":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesPage, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Favourites, {});
     case "library":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(LibraryPage, {});
     case "explore":

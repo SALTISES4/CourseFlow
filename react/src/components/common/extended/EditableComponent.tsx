@@ -39,7 +39,6 @@ export type EditableComponentProps = {
   textChangeFunction?: any
   disabled?: any
   object_sets?: any
-
 }
 
 type StateType = {

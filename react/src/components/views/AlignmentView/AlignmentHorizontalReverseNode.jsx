@@ -55,7 +55,9 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           </div>
           <div className="half-width alignment-column">
             {window.gettext('Associated ') +
-              Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes'))}
+              Utility.capWords(
+                window.gettext(this.props.workflow.type + ' outcomes')
+              )}
           </div>
         </div>
       )
@@ -102,7 +104,8 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           !this.state.show_all &&
           this.props.restriction_set &&
           this.props.restriction_set.child_outcomes &&
-          this.props.restriction_set.child_outcomes.indexOf(child_outcome) === -1
+          this.props.restriction_set.child_outcomes.indexOf(child_outcome) ===
+            -1
         )
           return null
         return (
@@ -240,7 +243,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
 }
 
 const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.node.length; i++) {
+  for (let i = 0; i < state.node.length; i++) {
     if (state.node[i].id == own_props.objectID) {
       const node = state.node[i]
       const column = state.column.find((column) => column.id == node.column)

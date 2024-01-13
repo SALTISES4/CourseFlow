@@ -16,7 +16,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     const data = this.props.data
     let my_class = 'week-workflow'
     if (data.no_drag) my_class += ' no-drag'
-    var week = (
+    const week = (
       <Week
         objectID={data.week}
         rank={this.props.order.indexOf(data.id)}

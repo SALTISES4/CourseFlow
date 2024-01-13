@@ -5,6 +5,7 @@ import {
   DeleteSelfQueryResp,
   DuplicateBaseItemQueryResp,
   DuplicateSelfQueryResp,
+  FavouritesQueryResp,
   HomeQueryResp,
   InsertChildQueryResp,
   InsertSiblingQueryResp,
@@ -265,7 +266,6 @@ export function getWorkflowDataQuery(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data: WorkflowDataQueryResp) {
-
       // @todo this is mostly typed now
       // console.log('getWorkflowDataQuery data')
       // console.log(data)
@@ -736,6 +736,24 @@ export function addStrategyQuery(
       } else {
         window.fail_function(data.action)
       }
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/**
+ * Get the library projects
+ * @param callBackFunction
+ */
+export function getFavouritesQuery(
+  callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
+) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (
+      data: FavouritesQueryResp
+    ) {
+      callBackFunction(data)
     })
   } catch (err) {
     window.fail_function()

@@ -93,12 +93,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
 }
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({})
 
-const OutcomeBase = connect<
-  ConnectedProps,
-  object,
-  OwnProps,
-  AppState
->(
+const OutcomeBase = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeBaseUnconnected)
