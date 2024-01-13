@@ -1,7 +1,16 @@
 import * as React from 'react'
 import $ from 'jquery'
 
-class ExportMenu extends React.Component {
+type StateProps = {
+  type: any
+}
+type PropsType = {
+  data: any
+  actionFunction: any
+}
+
+class ExportMenu extends React.Component<PropsType, StateProps> {
+  private ctrlKey: boolean
   constructor(props) {
     super(props)
     this.state = { type: 'outcome' }
@@ -10,9 +19,48 @@ class ExportMenu extends React.Component {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
+  inputChange(type, id, evt) {
+    if (type == 'set') {
+      const new_state = {}
+      new_state[id] = !evt.target.checked
+      this.setState(new_state)
+    } else if (type == 'type' && evt.target.checked) {
+      this.setState({ type: evt.target.value })
+    }
+  }
+
+  click(evt) {
+    if (evt.ctrlKey) {
+      this.ctrlKey = true
+      // @ts-ignore @todo what is action ?
+      $('#export-form')[0].action =
+        COURSEFLOW_APP.config.post_paths.get_export_download
+    }
+  }
+
+  submit(evt) {
+    // @ts-ignore
+    $('#submit-button').attr('disabled', true)
+    setTimeout(() => {
+      if (!this.ctrlKey) {
+        this.props.actionFunction()
+      }
+      alert(
+        window.gettext(
+          'Your file is being generated and will be emailed to you shortly.'
+        )
+      )
+    }, 100)
+    return true
+  }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   getExportTypes() {
     const type = this.props.data.type
+
     const exports = []
+
     exports.push([
       <input
         name="export_type"
@@ -23,6 +71,7 @@ class ExportMenu extends React.Component {
       />,
       <label htmlFor="export_type">{window.gettext('Outcomes')}</label>
     ])
+
     exports.push([
       <input
         name="export_type"
@@ -33,6 +82,7 @@ class ExportMenu extends React.Component {
       />,
       <label htmlFor="export_type">{window.gettext('Nodes')}</label>
     ])
+
     if (type == 'project' || type == 'course')
       exports.push([
         <input
@@ -46,6 +96,7 @@ class ExportMenu extends React.Component {
           {window.gettext('Course Framework')}
         </label>
       ])
+
     if (type == 'project' || type == 'program')
       exports.push([
         <input
@@ -76,37 +127,6 @@ class ExportMenu extends React.Component {
       ])
 
     return exports
-  }
-
-  inputChange(type, id, evt) {
-    if (type == 'set') {
-      const new_state = {}
-      new_state[id] = !evt.target.checked
-      this.setState(new_state)
-    } else if (type == 'type' && evt.target.checked) {
-      this.setState({ type: evt.target.value })
-    }
-  }
-
-  click(evt) {
-    if (evt.ctrlKey) {
-      this.ctrlKey = true
-      $('#export-form')[0].action =
-        COURSEFLOW_APP.config.post_paths.get_export_download
-    }
-  }
-
-  submit(evt) {
-    $('#submit-button').attr('disabled', true)
-    setTimeout(() => {
-      if (!this.ctrlKey) this.props.actionFunction()
-      alert(
-        window.gettext(
-          'Your file is being generated and will be emailed to you shortly.'
-        )
-      )
-    }, 100)
-    return true
   }
 
   /*******************************************************

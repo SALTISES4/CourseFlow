@@ -18,11 +18,11 @@ import { AppState, OutcomeOutcome } from '@cfRedux/type'
  * Used for the parent outcome bar.
  */
 
-type ParentOutcomeOutcomeConnecetedProps = OutcomeOutcomeByIDType
+type ParentOutcomeOutcomeConnectedProps = OutcomeOutcomeByIDType
 
 type ParentOutcomeOutcomeOwnProps = OutcomeBarOutcomePropsType
 type ParentOutcomeOutcomePropsType = ParentOutcomeOutcomeOwnProps &
-  ParentOutcomeOutcomeConnecetedProps
+  ParentOutcomeOutcomeConnectedProps
 class ParentOutcomeOutcomeUnconnected extends React.Component<ParentOutcomeOutcomePropsType> {
   /*******************************************************
    * RENDER
@@ -45,13 +45,13 @@ class ParentOutcomeOutcomeUnconnected extends React.Component<ParentOutcomeOutco
 const mapParentOutcomeOutcomeStateToProps = (
   state: AppState,
   own_props: ParentOutcomeOutcomeOwnProps
-): ParentOutcomeOutcomeConnecetedProps => {
+): ParentOutcomeOutcomeConnectedProps => {
   return getOutcomeOutcomeByID(state, own_props.objectID)
 }
 
 const ParentOutcomeOutcome = connect<
-  ParentOutcomeOutcomeConnecetedProps,
-  NonNullable<any>,
+  ParentOutcomeOutcomeConnectedProps,
+  object,
   ParentOutcomeOutcomeOwnProps,
   AppState
 >(
@@ -63,14 +63,14 @@ const ParentOutcomeOutcome = connect<
  * Used for the parent outcome bar.
  */
 
-type ConnecetedProps = GetOutcomeByIDType & {
+type ConnectedProps = GetOutcomeByIDType & {
   nodes: any
   horizontaloutcomes: any
 }
 
 type OwnProps = OutcomeBarOutcomePropsType
 
-type PropsType = ConnecetedProps & OwnProps
+type PropsType = ConnectedProps & OwnProps
 class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
   /*******************************************************
    * RENDER
@@ -149,7 +149,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
 const MapStateToProps = (
   state: AppState,
   own_props: OwnProps
-): ConnecetedProps => ({
+): ConnectedProps => ({
   ...getOutcomeByID(state, own_props.objectID),
   nodes: state.outcomenode
     .filter((outcomeNode) => outcomeNode.outcome == own_props.objectID)
@@ -160,7 +160,7 @@ const MapStateToProps = (
 })
 
 const ParentOutcome = connect<
-  ConnecetedProps,
+  ConnectedProps,
   NonNullable<unknown>,
   OwnProps,
   AppState

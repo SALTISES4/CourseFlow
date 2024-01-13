@@ -1,16 +1,25 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
+import { AppState } from '@cfRedux/type'
+
+type ConnectedProps = {
+  data_package: AppState
+}
+type OwnProps = {
+  dispatch?: any // @todo
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * Mostly no longer used, only currently used by the "My Classrooms" view which is not a priority to revamp.
  */
-class WorkflowGridMenuUnconnected extends React.Component {
+class WorkflowGridMenuUnconnected extends React.Component<PropsType> {
   render() {
-    var tabs = []
-    var tab_li = []
-    var i = 0
-    for (var prop in this.props.data_package) {
+    const tabs = []
+    const tab_li = []
+    let i = 0
+    for (const prop in this.props.data_package) {
       tab_li.push(
         <li>
           <a className="hover-shade" href={'#tabs-' + i}>
@@ -38,8 +47,11 @@ class WorkflowGridMenuUnconnected extends React.Component {
     )
   }
 }
-const WorkflowGridMenu = connect(
-  (state) => ({ data_package: state }),
+
+const mapStateToProps = (state: AppState) => ({ data_package: state })
+
+const WorkflowGridMenu = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(WorkflowGridMenuUnconnected)
 

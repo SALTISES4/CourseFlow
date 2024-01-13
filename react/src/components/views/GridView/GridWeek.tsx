@@ -2,12 +2,15 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { TitleText } from '@cfUIComponents'
 import { EditableComponentWithComments } from '@cfParentComponents'
-
 import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode'
 
 import * as Utility from '@cfUtility'
 import { AppState, Nodeweek } from '@cfRedux/type'
+import {
+  EditableComponentWithCommentsStateType,
+  EditableComponentWithCommentsType
+} from '@cfParentComponents/EditableComponentWithComments'
 /**
  * A block representing a term in the grid view
  */
@@ -16,7 +19,8 @@ type OwnProps = {
   renderer: any
   rank: number
   data: any
-}
+} & EditableComponentWithCommentsType
+
 type ConnectedProps = {
   nodes: any
   general_education: any
@@ -28,7 +32,10 @@ type ConnectedProps = {
   total_required: any
 }
 type PropsType = OwnProps & ConnectedProps
-class GridWeekUnconnected extends EditableComponentWithComments<PropsType> {
+class GridWeekUnconnected extends EditableComponentWithComments<
+  PropsType,
+  EditableComponentWithCommentsStateType
+> {
   constructor(props: PropsType) {
     super(props)
 
@@ -49,8 +56,11 @@ class GridWeekUnconnected extends EditableComponentWithComments<PropsType> {
       <GridNode renderer={this.props.renderer} data={node} />
     ))
 
-    let comments
-    if (this.props.renderer.view_comments) comments = this.addCommenting()
+    const comments = this.props.renderer.view_comments
+      ? this.addCommenting()
+      : undefined
+
+    this.addEditable(data, true)
 
     return (
       <div
@@ -72,7 +82,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<PropsType> {
           </div>
         </div>
         {nodes}
-        {this.addEditable(data, true)}
+        {/*{this.addEditable(data, true)}*/}
         <div className="mouseover-actions">{comments}</div>
         <div className="side-actions">
           <div className="comment-indicator-container"></div>
@@ -168,7 +178,9 @@ const mapStateToProps = (
     total_required: total_required
   }
 }
-export default connect<ConnectedProps, NonNullable<any>, OwnProps, AppState>(
+const GridWeek = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(GridWeekUnconnected)
+
+export default GridWeek

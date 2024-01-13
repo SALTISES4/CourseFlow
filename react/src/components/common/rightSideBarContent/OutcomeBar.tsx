@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -31,9 +30,6 @@ type PropsType = SelfProps & StateProps
 class OutcomeBarUnconnected extends React.Component<PropsType, any> {
   constructor(props: PropsType) {
     super(props)
-
-    this.readOnly = this.props.readOnly
-    this.renderMethod = this.props.renderMethod
   }
 
   /*******************************************************
@@ -41,7 +37,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
    *******************************************************/
   editOutcomesClick() {
     // @todo, manage view change with state update
-    this.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
+    this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
   }
 
   /*******************************************************
@@ -83,7 +79,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">{window.gettext('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomeBlock}</div>
-        {!this.readOnly && (
+        {!this.props.readOnly && (
           <button
             className="primary-button"
             id="edit-outcomes-button"
@@ -106,8 +102,12 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
   workflow_type: state.workflow.type
 })
 
-export default connect<ConnectedProps, NonNullable<unknown>, SelfProps, AppState>(
+export default connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  SelfProps,
+  AppState
+>(
   mapStateToProps,
   null
 )(OutcomeBarUnconnected)
-

@@ -1,6 +1,5 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import ImportMenu from '../dialog/ImportMenu'
 import WorkflowsMenu from '../dialog/WorkflowsMenu'
 import { Dialog, DialogTitle } from '@mui/material'
 import $ from 'jquery'

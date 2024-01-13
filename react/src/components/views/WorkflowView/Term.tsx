@@ -1,16 +1,23 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { TitleText } from '@cfUIComponents'
-import { WeekUnconnected } from './Week'
+import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
 import NodeWeek from './NodeWeek'
-import { getTermByID } from '@cfFindState'
+import { getTermByID, TermByIDType } from '@cfFindState'
 import $ from 'jquery'
+import { AppState } from '@cfRedux/type'
+
+type OwnProps = {
+  objectID: number
+} & WeekUnconnectedPropsType
+type ConnectedProps = TermByIDType
+type PropsType = OwnProps & ConnectedProps
 
 /**
  * The term variation of a week, used in the program level or in the
  * condensed view. This displays the nodes side by side.
  */
-class Term extends WeekUnconnected {
+class Term extends WeekUnconnected<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -25,6 +32,7 @@ class Term extends WeekUnconnected {
       'nodeweek',
       '.node-week',
       false,
+      // @ts-ignore
       [200, 1],
       null,
       '.node'
@@ -36,11 +44,11 @@ class Term extends WeekUnconnected {
    *******************************************************/
   render() {
     const data = this.props.data
-    var node_blocks = []
-    for (var i = 0; i < this.props.column_order.length; i++) {
+    const node_blocks = []
+    for (let i = 0; i < this.props.column_order.length; i++) {
       const col = this.props.column_order[i]
       const nodeweeks = []
-      for (var j = 0; j < data.nodeweek_set.length; j++) {
+      for (let j = 0; j < data.nodeweek_set.length; j++) {
         const nodeweek = data.nodeweek_set[j]
         if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
@@ -77,13 +85,11 @@ class Term extends WeekUnconnected {
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
     if (data.is_dropped) css_class += ' dropped'
 
-    const style = {}
-    if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
+    const style = {
+      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
-    let dropIcon
-    if (data.is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+
+    const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
 
     const mouseover_actions = []
     if (!this.props.renderer.read_only) {
@@ -91,8 +97,12 @@ class Term extends WeekUnconnected {
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data))
+    if (this.props.renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting())
+    }
+
+    // PORTAL
+    this.addEditable(data)
 
     return (
       <div
@@ -127,12 +137,18 @@ class Term extends WeekUnconnected {
           </div>
           <div className="node-drop-side node-drop-right"></div>
         </div>
-        {this.addEditable(data)}
+        {/*{this.addEditable(data)}* // @todo this is a portal and shouldn't be returned in a render function */}
       </div>
     )
   }
 }
-const mapTermStateToProps = (state, own_props) =>
-  getTermByID(state, own_props.objectID)
-const mapTermDispatchToProps = {}
-export default connect(mapTermStateToProps, null)(Term)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  return getTermByID(state, ownProps.objectID)
+}
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(Term)

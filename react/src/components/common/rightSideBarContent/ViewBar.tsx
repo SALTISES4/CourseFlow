@@ -1,13 +1,24 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import ActionCreator from "@cfRedux/ActionCreator.ts";
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/type'
+
+type ConnectedProps = {
+  object_sets: any
+}
+type OwnProps = {
+  data: any
+  renderer: any
+  dispatch?: any
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets
  * to be toggled, and also changes the table type if this is a view of the
  * workflow that allows this.
  */
-class ViewBarUnconnected extends React.Component {
+class ViewBarUnconnected extends React.Component<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -30,6 +41,7 @@ class ViewBarUnconnected extends React.Component {
       })
     )
   }
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -140,10 +152,11 @@ class ViewBarUnconnected extends React.Component {
     )
   }
 }
+const mapStateToProps = (state: AppState): ConnectedProps => ({
+  object_sets: state.objectset
+})
 
-export default connect(
-  (state) => ({
-    object_sets: state.objectset
-  }),
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(ViewBarUnconnected)

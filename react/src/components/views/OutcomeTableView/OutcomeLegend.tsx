@@ -2,16 +2,25 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { LegendLine } from '@cfUIComponents'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView'
+import { AppState } from '@cfRedux/type.js'
+import { WorkflowLegendUnconnectedType } from '@cfViews/WorkflowView/WorkflowLegend'
 
-class OutcomeLegendUnconnected extends WorkflowLegendUnconnected {
+type ConnectedProps = {
+  outcomes_type: any
+}
+type OwnProps = WorkflowLegendUnconnectedType
+type PropsType = OwnProps & ConnectedProps
+class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    if (!this.state.show_legend) return this.getSlider()
+    this.getSlider()
+    if (!this.state.show_legend) {
+      return <></>
+    }
     return (
       <div className="workflow-legend">
-        {this.getSlider()}
         <h4>Legend</h4>
         <div className="legend-section">
           <hr />
@@ -63,11 +72,21 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected {
     )
   }
 }
-const mapWorkflowOutcomeLegendStateToProps = (state) => {
-  return { outcomes_type: state.workflow.outcomes_type }
+const mapStateToProps = (
+  state: AppState
+): ConnectedProps => {
+  return {
+    outcomes_type: state.workflow.outcomes_type
+  }
 }
-const OutcomeLegend = connect(
-  mapWorkflowOutcomeLegendStateToProps,
+
+const OutcomeLegend = connect<
+  ConnectedProps,
+  object,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
   null
 )(OutcomeLegendUnconnected)
 

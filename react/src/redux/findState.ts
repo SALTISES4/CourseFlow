@@ -6,7 +6,8 @@ import {
   Columnworkflow,
   ObjectSet,
   Outcome,
-  OutcomeOutcome
+  OutcomeOutcome,
+  Week
 } from '@cfRedux/type'
 
 /*******************************************************
@@ -39,7 +40,14 @@ export const getColumnByID = (state: AppState, id: number) => {
   }
 }
 
-export const getWeekByID = (state: AppState, id: number) => {
+export type GetWeekByIDType = {
+  data: any
+  column_order: any
+  sibling_count: any
+  nodeweeks: any
+  workflow_id?: any
+}
+export const getWeekByID = (state: AppState, id: number): GetWeekByIDType => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -60,18 +68,27 @@ export const getWeekByID = (state: AppState, id: number) => {
   }
 }
 
-export const getTermByID = (state: AppState, id: number) => {
+export type TermByIDType = {
+  data: any
+  column_order: any
+  nodes_by_column: any
+  nodeweeks: any
+}
+export const getTermByID = (state: AppState, id: number): TermByIDType => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
       if (week.is_dropped === undefined) {
         week.is_dropped = getDropped(id, 'week')
       }
+
       const nodeweeks = week.nodeweek_set
-      const column_order = Utility.filterThenSortByID(
+
+      const column_order = Utility.filterThenSortByID<Week['nodeweek_set']>(
         state.columnworkflow,
         state.workflow.columnworkflow_set
       ).map((columnworkflow) => columnworkflow.column)
+
       const nodes_by_column = {}
       for (var j = 0; j < column_order.length; j++) {
         nodes_by_column[column_order[j]] = []
@@ -584,5 +601,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
           .map((outcome) => outcome.id)
       }))
   ]
+  console.log('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
+  console.log(categories)
   return categories
 }

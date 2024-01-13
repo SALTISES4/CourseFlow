@@ -1,17 +1,16 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import {
-  deleteSelfQuery,
   makeProjectLiveQuery,
-  restoreSelfQuery
 } from '@XMLHTTP/PostFunctions'
 // @local
 import { MenuBar } from '@cfCommonComponents/components'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import {
+  deleteSelfQuery,
   duplicateBaseItemQuery,
   getUsersForObjectQuery,
-  getWorkflowsForProjectQuery
+  getWorkflowsForProjectQuery, restoreSelfQuery
 } from '@XMLHTTP/APIFunctions'
 import {
   ProjectData,

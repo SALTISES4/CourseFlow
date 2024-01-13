@@ -1,9 +1,14 @@
 import {
-  DuplicateBaseItemQueryResp,
-  HomeQueryResp,
-  LibraryQueryResp,
+  AddStrategyQueryResp,
+  AddTerminologyQueryResp,
+  CommentsForObjectQueryResp, DeleteSelfQueryResp,
+  DuplicateBaseItemQueryResp, DuplicateSelfQueryResp,
+  HomeQueryResp, InsertChildQueryResp, InsertSiblingQueryResp,
+  LibraryQueryResp, NewNodeQueryResp, RestoreSelfQueryResp,
   SearchAllObjectsQueryResp,
   SuccessPost,
+  UpdateValueInstantQueryResp,
+  UserListResp,
   UsersForObjectQueryResp,
   WorkflowDataQueryResp,
   WorkflowsForProjectQueryResp
@@ -11,8 +16,10 @@ import {
 import { DATA_ACTIONS, OBJECT_TYPE } from '@XMLHTTP/common'
 import {
   LinkedWorkflowMenuQueryResp,
-  ParentWorkflowInfoQueryResp
+  ParentWorkflowInfoQueryResp,
+  ToggleStrategyQueryResp
 } from '@XMLHTTP/types/query'
+import $ from 'jquery'
 
 /*******************************************************
  * LIBRARY PAGES
@@ -23,7 +30,7 @@ import {
  * @param callBackFunction
  */
 export function getLibraryQuery(
-  callBackFunction = (data: LibraryQueryResp) => console.log('success')
+  callBackFunction = (_data: LibraryQueryResp) => console.log('success')
 ) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (
@@ -46,14 +53,15 @@ export function getLibraryQuery(
 export function searchAllObjectsQuery(
   filter,
   data,
-  callBackFunction = (data: SearchAllObjectsQueryResp) => console.log('success')
+  callBackFunction = (_data: SearchAllObjectsQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
       filter: JSON.stringify(filter),
       additional_data: JSON.stringify(data)
-    }).done(function (data: SearchAllObjectsQueryResp) {
-      callBackFunction(data)
+    }).done(function (_data: SearchAllObjectsQueryResp) {
+      callBackFunction(_data)
     })
   } catch (err) {
     window.fail_function()
@@ -65,7 +73,7 @@ export function searchAllObjectsQuery(
  * @param callBackFunction
  */
 export function getHomeQuery(
-  callBackFunction = (data: HomeQueryResp) => console.log('success')
+  callBackFunction = (_data: HomeQueryResp) => console.log('success')
 ) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function (
@@ -91,7 +99,7 @@ export function getHomeQuery(
 export function getUsersForObjectQuery(
   objectID: number,
   objectType: string,
-  callBackFunction = (data: UsersForObjectQueryResp) => console.log('success')
+  callBackFunction = (_data: UsersForObjectQueryResp) => console.log('success')
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
@@ -127,7 +135,7 @@ export function duplicateBaseItemQuery(
   itemPk: number,
   objectType: string,
   projectID: number,
-  callBackFunction = (data: DuplicateBaseItemQueryResp) =>
+  callBackFunction = (_data: DuplicateBaseItemQueryResp) =>
     console.log('success')
 ) {
   const sendPostRequest = (url, data) => {
@@ -187,14 +195,14 @@ export function duplicateBaseItemQuery(
  */
 export function getWorkflowsForProjectQuery(
   projectPk,
-  callBackFunction = (data: WorkflowsForProjectQueryResp) =>
+  callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
     console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
       projectPk: projectPk
-    }).done(function (data: WorkflowsForProjectQueryResp) {
-      callBackFunction(data)
+    }).done(function (_data: WorkflowsForProjectQueryResp) {
+      callBackFunction(_data)
     })
   } catch (err) {
     window.fail_function()
@@ -212,7 +220,7 @@ export function getWorkflowsForProjectQuery(
  */
 export function getWorkflowDataQuery(
   workflowPk,
-  callBackFunction = (data: WorkflowDataQueryResp) => console.log('success')
+  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
@@ -240,7 +248,7 @@ export function getWorkflowDataQuery(
 export function getLinkedWorkflowMenuQuery(
   nodeData,
   updateFunction,
-  callBackFunction = (data?: LinkedWorkflowMenuQueryResp) =>
+  callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
   $.post(
@@ -248,10 +256,10 @@ export function getLinkedWorkflowMenuQuery(
     {
       nodePk: JSON.stringify(nodeData.id)
     },
-    (data: LinkedWorkflowMenuQueryResp) => {
+    (_data: LinkedWorkflowMenuQueryResp) => {
       callBackFunction()
       // @TODO call to react render
-      //  openLinkedWorkflowMenu(data, updateFunction)
+      //  openLinkedWorkflowMenu(_data, updateFunction)
     }
   )
 }
@@ -268,12 +276,12 @@ export function getLinkedWorkflowMenuQuery(
  */
 export function getParentWorkflowInfoQuery(
   workflowPk: number,
-  callBackFunction = (data: ParentWorkflowInfoQueryResp) =>
+  callBackFunction = (_data: ParentWorkflowInfoQueryResp) =>
     console.log('success')
 ) {
   try {
-     console.log('workflowPk')
-     console.log(workflowPk)
+    console.log('workflowPk')
+    console.log(workflowPk)
     $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
     })
@@ -309,7 +317,7 @@ export function getParentWorkflowInfoQuery(
 export function newOutcomeQuery(
   workflowPk: number,
   object_set_id: number,
-  callBackFunction = (data: SuccessPost) => console.log('success')
+  callBackFunction = (_data: SuccessPost) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
@@ -343,9 +351,9 @@ export default {}
  * @param callBackFunction
  */
 export function updateValueQuery(
-  objectID,
-  objectType,
-  json,
+  objectID: number,
+  objectType: any,
+  json: any,
   changeField = false,
   callBackFunction = () => console.log('success')
 ) {
@@ -390,7 +398,7 @@ export function updateValueQuery(
           // @ts-ignore
           if (data.action === DATA_ACTIONS.POSTED) {
             // @ts-ignore
-            callBackFunction(data)
+            callBackFunction(_data)
           } else window.fail_function(data.action)
         }
       )
@@ -402,21 +410,299 @@ export function updateValueQuery(
 }
 
 //As above, but not debounced
-export function updateValueInstant(
-  objectID,
-  objectType,
-  json,
-  callBackFunction = () => console.log('success')
+export function updateValueInstantQuery(
+  objectID: number,
+  objectType: any,
+  json: any,
+  callBackFunction = (_data: UpdateValueInstantQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.update_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
-    }).done(function (data) {
+    }).done(function (data: UpdateValueInstantQueryResp) {
       // @ts-ignore
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get the comments for a particular object
+export function getCommentsForObjectQuery(
+  objectID: number,
+  objectType: any,
+  callBackFunction = (_data: CommentsForObjectQueryResp) =>
+    console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function (data: CommentsForObjectQueryResp) {
+      console.log('getCommentsForObject data')
+      console.log(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/**
+ * Turn a week into a strategy or vice versa
+ *
+ * @param weekPk
+ * @param is_strategy
+ * @param callBackFunction
+ */
+export function toggleStrategyQuery(
+  weekPk: number,
+  is_strategy: boolean,
+  callBackFunction = (_data: ToggleStrategyQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
+    }).done(function (data: ToggleStrategyQueryResp) {
+      console.log('toggleStrategyQuery data')
+      console.log(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/**
+ * Add a comment to an object
+ *
+ * @param projectPk
+ * @param term
+ * @param title
+ * @param translation_plural
+ * @param callBackFunction
+ */
+export function addTerminologyQuery(
+  projectPk: number,
+  term: any,
+  title: any,
+  translation_plural: any,
+  callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+      projectPk: JSON.stringify(projectPk),
+      term: JSON.stringify(term),
+      title: JSON.stringify(title),
+      translation_plural: JSON.stringify(translation_plural)
+    }).done(function (data: AddTerminologyQueryResp) {
+      console.log('addTerminologyQuery query')
+      console.log(data)
+      if (data.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data)
+      } else {
+        window.fail_function(data.action)
+      }
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get a list of users, filtered by name
+export function getUserListQuery(
+  filter: any,
+  callBackFunction = (_data: UserListResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+      filter: JSON.stringify(filter)
+    }).done(function (data: UserListResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+/*******************************************************
+ * OBJECT SELF ACTIONS
+ *******************************************************/
+//Causes the specified object to undelete itself
+export function restoreSelfQuery(
+  objectID: number,
+  objectType: any,
+  callBackFunction = (_data: RestoreSelfQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function (data: RestoreSelfQueryResp) {
+      console.log('restoreSelfQuery data')
+      console.log(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Causes the specified object to delete itself
+export function deleteSelfQuery(
+  objectID: number,
+  objectType: any,
+  soft = false,
+  callBackFunction = (_data: DeleteSelfQueryResp) => console.log('success')
+) {
+  let path
+  if (soft) path = COURSEFLOW_APP.config.post_paths.delete_self_soft
+  else path = COURSEFLOW_APP.config.post_paths.delete_self
+
+  try {
+    $.post(path, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function (data: DeleteSelfQueryResp) {
+      console.log('deleteSelfQuery data')
+      console.log(data)
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+
+//Causes the specified object to insert a sibling after itself
+export function duplicateSelfQuery(
+  objectID: number,
+  objectType: any,
+  parentID: number,
+  parentType: any,
+  throughType: any,
+  callBackFunction = (_data: DuplicateSelfQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function (data: DuplicateSelfQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Causes the specified object to insert a sibling after itself
+export function insertSiblingQuery(
+  objectID: number,
+  objectType: any,
+  parentID: number,
+  parentType: any,
+  throughType: any,
+  callBackFunction = (_data: InsertSiblingQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function (data: InsertSiblingQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+
+//Causes the specified object to insert a child to itself
+export function insertChildQuery(
+  objectID: number,
+  objectType: any,
+  callBackFunction = (_data: InsertChildQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function (data: InsertChildQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+
+//Add a new node to a week
+export function newNodeQuery(
+  weekPk,
+  position = -1,
+  column = -1,
+  column_type = -1,
+  callBackFunction = (_data: NewNodeQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
+      weekPk: JSON.stringify(weekPk),
+      position: JSON.stringify(position),
+      columnPk: JSON.stringify(column),
+      columnType: JSON.stringify(column_type)
+    }).done(function (data: NewNodeQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data)
+      }
+      else {
+        window.fail_function(data.action)
+      }
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Add a strategy to the workflow
+export function addStrategyQuery(
+  workflowPk: number,
+  position = -1,
+  strategyPk = -1,
+  callBackFunction = (_data: AddStrategyQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+      workflowPk: JSON.stringify(workflowPk),
+      position: JSON.stringify(position),
+      objectID: JSON.stringify(strategyPk),
+      objectType: JSON.stringify('workflow')
+    }).done(function (data: AddStrategyQueryResp) {
+      if (data.action === DATA_ACTIONS.POSTED) {
+        callBackFunction(data)
+      }
+      else {
+        window.fail_function(data.action)
+      }
     })
   } catch (err) {
     window.fail_function()

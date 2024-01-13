@@ -349,14 +349,20 @@ class Outcome extends EditableComponentWithSorting {
       mouseover_actions.push(this.addDeleteSelf(data))
       if (data.depth < 2) mouseover_actions.push(this.addInsertChild(data))
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data))
+    if (this.props.renderer.view_comments) {
+      // mouseover_actions.push(this.addCommenting(data))
+      mouseover_actions.push(this.addCommenting())
+    }
 
-    if (data.is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+    if (data.is_dropped) {
+      dropIcon = 'droptriangleup'
+    } else {
+      dropIcon = 'droptriangledown'
+    }
 
-    if (data.is_dropped) droptext = window.gettext('hide')
-    else
+    if (data.is_dropped) {
+      droptext = window.gettext('hide')
+    } else {
       droptext =
         window.gettext('show ') +
         data.child_outcome_links.length +
@@ -366,6 +372,7 @@ class Outcome extends EditableComponentWithSorting {
           'descendants',
           data.child_outcome_links.length
         )
+    }
 
     if (
       !this.props.renderer.read_only &&

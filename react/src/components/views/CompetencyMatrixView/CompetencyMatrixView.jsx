@@ -2,17 +2,17 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
-import { OutcomeBase } from '../OutcomeTableView'
+import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import MatrixNode from './MatrixNode'
 import MatrixWeek from './MatrixWeek'
-import { OutcomeLegend } from '@cfViews/OutcomeTableView'
+import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
 import NodeOutcomeView from '@cfCommonComponents/workflow/Node/NodeOutcomeView'
 
 /**
  * The component for the competency matrix view of the
  * workflow.
  */
-class CompetencyMatrixView extends React.Component {
+class CompetencyMatrixViewUnconnected extends React.Component {
   constructor(props) {
     super(props)
     this.objectType = 'workflow'
@@ -353,5 +353,9 @@ const mapStateToProps = (state, own_props) => {
     outcomes: state.outcome
   }
 }
-const mapDispatchToProps = {}
-export default connect(mapStateToProps, null)(CompetencyMatrixView)
+const CompetencyMatrixView = connect(
+  mapStateToProps,
+  null
+)(CompetencyMatrixViewUnconnected)
+
+export default CompetencyMatrixView

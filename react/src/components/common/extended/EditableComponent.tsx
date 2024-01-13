@@ -1,117 +1,277 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
-import { toggleStrategy, updateObjectSet } from '@XMLHTTP/PostFunctions'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from './ComponentWithToggleDrop.tsx'
-import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/APIFunctions'
+import { updateObjectSet } from '@XMLHTTP/PostFunctions'
+import {
+  getLinkedWorkflowMenuQuery,
+  toggleStrategyQuery
+} from '@XMLHTTP/APIFunctions'
 import $ from 'jquery'
+import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
+import QuillDiv from '@cfParentComponents/components/QuillDiv'
 
-//Quill div for inputs, as a react component
-class QuillDiv extends React.Component {
-  constructor(props) {
-    super(props)
-    this.mainDiv = React.createRef()
-    if (props.text) this.state = { charlength: props.text.length }
-    else this.state = { charlength: 0 }
+//Extends the React component to add a few features that are used in a large number of components
+
+type ChildRenderer = {
+  outcome_type_choices: any
+  read_only: boolean
+  context_choices: any
+  task_choices: any
+  time_choices: any
+  strategy_classification_choices: any
+  change_field: any
+  workflowID: any
+  unread_comments: any
+  add_comments: any
+  selection_manager: any
+  lock_update: any
+  micro_update?: any
+  is_strategy?: any
+  view_comments?: any
+}
+
+export type EditableComponentProps = {
+  renderer: ChildRenderer
+  data: any
+  placeholder?: any
+  text?: any
+  textChangeFunction?: any
+  disabled?: any
+  object_sets?: any
+
+}
+
+type StateType = {
+  selected: boolean
+}
+export type EditableComponentStateType = StateType
+
+class EditableComponent<
+  P extends EditableComponentProps,
+  S extends StateType
+> extends ComponentWithToggleDrop<P, S> {
+  //Makes the item selectable
+  protected objectType: any
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  setChanged(set_id, evt) {
+    COURSEFLOW_APP.tinyLoader.startLoad()
+    updateObjectSet(
+      this.props.data.id,
+      Constants.object_dictionary[this.objectType],
+      set_id,
+      evt.target.checked,
+      () => {
+        COURSEFLOW_APP.tinyLoader.endLoad()
+      }
+    )
   }
 
-  render() {
+  checkboxChanged(field, evt) {
+    const do_change = true
+    if (do_change)
+      this.props.renderer.change_field(
+        this.props.data.id,
+        Constants.object_dictionary[this.objectType],
+        field,
+        evt.target.checked
+      )
+  }
+
+  valueChanged(field, new_value) {
+    this.props.renderer.change_field(
+      this.props.data.id,
+      Constants.object_dictionary[this.objectType],
+      field,
+      new_value
+    )
+  }
+
+  get_border_style() {
+    const data = this.props.data
+    if (!data) return
+
+    const border = data.lock ? '2px solid ' + data.lock.user_colour : undefined
+    return {
+      border
+    }
+  }
+
+  inputChanged(field, evt) {
+    let value = evt.target.value
+    if (evt.target.type == 'number') value = parseInt(value) || 0
+    else if (!value) value = ''
+    if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
+    if (evt.target.type == 'number' && value == '') value = 0
+    this.props.renderer.change_field(
+      this.props.data.id,
+      Constants.object_dictionary[this.objectType],
+      field,
+      value
+    )
+  }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+
+  BrowseOptions = ({ data, override, readOnly }) => {
     return (
       <div>
-        <div ref={this.mainDiv} className="quill-div" />
-        <div className={'character-length'}>
-          {this.state.charlength + ' ' + window.gettext('characters')}
+        <h4>{window.gettext('Custom Icon')}</h4>
+        <p>
+          Browse options{' '}
+          <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">
+            here
+          </a>
+          .
+        </p>
+        <input
+          disabled={override || readOnly}
+          autoComplete="off"
+          id="column-icon-editor"
+          type="text"
+          value={data.icon}
+          maxLength={50}
+          onChange={this.inputChanged.bind(this, 'icon')}
+        />
+      </div>
+    )
+  }
+
+  Task = ({ data, readOnly }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Task')}</h4>
+        <select
+          id="task-editor"
+          disabled={readOnly}
+          value={data.task_classification}
+          onChange={this.inputChanged.bind(this, 'task_classification')}
+        >
+          {this.props.renderer.task_choices
+            .filter(
+              (choice) =>
+                Math.floor(choice.type / 100) == data.node_type ||
+                choice.type == 0
+            )
+            .map((choice) => (
+              <option value={choice.type}>{choice.name}</option>
+            ))}
+        </select>
+      </div>
+    )
+  }
+
+  Time = ({ data, readOnly, override }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Time')}</h4>
+        <div>
+          <input
+            disabled={override || readOnly}
+            autoComplete="off"
+            id="time-editor"
+            className="half-width"
+            type="text"
+            value={data.time_required}
+            maxLength={30}
+            onChange={this.inputChanged.bind(this, 'time_required')}
+          />
+          <select
+            disabled={override || readOnly}
+            id="time-units-editor"
+            className="half-width"
+            value={data.time_units}
+            onChange={this.inputChanged.bind(this, 'time_units')}
+          >
+            {this.props.renderer.time_choices.map((choice) => (
+              <option value={choice.type}>{choice.name}</option>
+            ))}
+          </select>
         </div>
       </div>
     )
   }
 
-  componentDidMount() {
-    const renderer = this.props.renderer
-    const quill_container = this.mainDiv.current
-    const toolbarOptions = [
-      ['bold', 'italic', 'underline'],
-      [{ script: 'sub' }, { script: 'super' }],
-      [{ list: 'bullet' }, { list: 'ordered' }],
-      ['link'] /*,['formula']*/
-    ]
-    const quill = new Quill(quill_container, {
-      theme: 'snow',
-      modules: {
-        toolbar: toolbarOptions
-      },
-      placeholder: this.props.placeholder
-    })
-    this.quill = quill
-    if (this.props.text) quill.clipboard.dangerouslyPasteHTML(this.props.text)
-    quill.on('text-change', () => {
-      const text = quill_container.childNodes[0].innerHTML.replace(
-        /\<p\>\<br\>\<\/p\>\<ul\>/g,
-        '<ul>'
-      )
-      this.props.textChangeFunction(text)
-      this.setState({ charlength: text.length })
-    })
-    const toolbar = quill.getModule('toolbar')
-    toolbar.defaultLinkFunction = toolbar.handlers['link']
-    toolbar.addHandler('link', function customLinkFunction(value) {
-      const select = quill.getSelection()
-      if (value && select['length'] == 0 && !renderer.read_only) {
-        quill.insertText(select['index'], 'link')
-        quill.setSelection(select['index'], 4)
-      }
-      this.defaultLinkFunction(value)
-    })
-    this.quill.enable(!this.props.disabled)
+  Colour = ({ data, readOnly }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Colour')}</h4>
+        <div>
+          <input
+            disabled={readOnly}
+            autoComplete="off"
+            id="colour-editor"
+            className="half-width"
+            type="color"
+            value={'#' + data.colour?.toString(16)}
+            maxLength={30}
+            onChange={this.inputChanged.bind(this, 'colour')}
+          />
+        </div>
+      </div>
+    )
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.disabled != this.props.disabled) {
-      if (prevProps.text != this.props.text)
-        this.quill.clipboard.dangerouslyPasteHTML(this.props.text, 'silent')
-      this.quill.enable(!this.props.disabled)
-    }
-    $(this.mainDiv.current)
-      .find('a')
-      .click(() => {
-        $(this).attr('target', '_blank')
-      })
+  CodeOptional = ({ data, readOnly }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Code (Optional)')}</h4>
+        <input
+          autoComplete="off"
+          disabled={readOnly}
+          id="code-editor"
+          type="text"
+          value={data.code}
+          maxLength={50}
+          onChange={this.inputChanged.bind(this, 'code')}
+        />
+      </div>
+    )
   }
-}
 
-//Extends the react component to add a few features that are used in a large number of components
-type EditableComponentProps = any
-class EditableComponent<
-  P extends EditableComponentProps,
-  S = NonNullable<unknown>
-> extends ComponentWithToggleDrop<P, S> {
-  //Makes the item selectable
+  Description = ({ readOnly, override, description }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Description')}</h4>
+        <QuillDiv
+          disabled={override || readOnly}
+          text={description}
+          maxlength={500}
+          textChangeFunction={this.valueChanged.bind(this, 'description')}
+          placeholder="Insert description here"
+          readOnly={this.props.renderer.read_only}
+        />
+      </div>
+    )
+  }
 
-  BrowseOptions = ({ data, override, read_only }) => (
-    <div>
-      <h4>{window.gettext('Custom Icon')}</h4>
-      <p>
-        Browse options{' '}
-        <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">
-          here
-        </a>
-        .
-      </p>
-      <input
-        disabled={override || read_only}
-        autoComplete="off"
-        id="column-icon-editor"
-        type="text"
-        value={data.icon}
-        maxLength={50}
-        onChange={this.inputChanged.bind(this, 'icon')}
-      />
-    </div>
-  )
+  Context = ({ data, readOnly }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Context')}</h4>
+        <select
+          id="context-editor"
+          disabled={readOnly}
+          value={data.context_classification}
+          onChange={this.inputChanged.bind(this, 'context_classification')}
+        >
+          {this.props.renderer.context_choices
+            .filter(
+              (choice) =>
+                Math.floor(choice.type / 100) == data.node_type ||
+                choice.type == 0
+            )
+            .map((choice) => (
+              <option value={choice.type}>{choice.name}</option>
+            ))}
+        </select>
+      </div>
+    )
+  }
 
   Ponderation = ({ data, override, read_only }) => (
     <div>
@@ -173,101 +333,221 @@ class EditableComponent<
     </div>
   )
 
-  Workflow = ({ data, read_only }) => {
-    <div>
-      <h4>{window.gettext('Settings')}</h4>
+  Workflow = ({ data, readOnly }) => {
+    return (
       <div>
-        <label htmlFor="outcomes_type">
-          {window.gettext('Outcomes Style')}
+        <h4>{window.gettext('Settings')}</h4>
+        <div>
+          <label htmlFor="outcomes_type">
+            {window.gettext('Outcomes Style')}
+          </label>
+          <select
+            disabled={readOnly}
+            name="outcomes_type"
+            value={data.outcomes_type}
+            onChange={this.inputChanged.bind(this, 'outcomes_type')}
+          >
+            {this.props.renderer.outcome_type_choices.map((choice) => (
+              <option value={choice.type}>{choice.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="condensed">{window.gettext('Condensed View')}</label>
+          <input
+            disabled={readOnly}
+            type="checkbox"
+            name="condensed"
+            checked={data.condensed}
+            onChange={this.checkboxChanged.bind(this, 'condensed')}
+          />
+        </div>
+        {data.is_strategy && (
+          <div>
+            <label htmlFor="is_published">{window.gettext('Published')}</label>
+            <input
+              disabled={readOnly}
+              type="checkbox"
+              name="is_published"
+              checked={data.published}
+              onChange={this.checkboxChanged.bind(this, 'published')}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  Style = ({ readOnly, data }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Style')}</h4>
+        <div>
+          <input
+            disabled={readOnly}
+            type="checkbox"
+            name="dashed"
+            checked={data.dashed}
+            onChange={this.checkboxChanged.bind(this, 'dashed')}
+          />
+          <label htmlFor="dashed">{window.gettext('Dashed Line')}</label>
+        </div>
+        <div>
+          <label htmlFor="text-position-range">
+            {window.gettext('Text Position')}
+          </label>
+          <div className="slidecontainer">
+            <input
+              disabled={readOnly}
+              type="range"
+              min="1"
+              max="100"
+              value={data.text_position}
+              className="range-slider"
+              id="text-position-range"
+              onChange={this.inputChanged.bind(this, 'text_position')}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  Title = ({ readOnly, override, title, titleLength }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Title')}</h4>
+        <textarea
+          // resize="none"  @todo resize is not a valid attribute
+          style={{ resize: 'none' }}
+          disabled={override || readOnly}
+          autoComplete="off"
+          id="title-editor"
+          // type="text" @todo type is not a valid attribute
+          value={title}
+          maxLength={Number(titleLength)}
+          onChange={this.inputChanged.bind(this, 'title')}
+        />
+        <div className="character-length">
+          {title.length}/{titleLength} {window.gettext('characters')}
+        </div>
+      </div>
+    )
+  }
+
+  Other = ({ readOnly, data }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Other')}</h4>
+        <input
+          disabled={readOnly}
+          type="checkbox"
+          name="has_autolink"
+          checked={data.has_autolink}
+          onChange={this.checkboxChanged.bind(this, 'has_autolink')}
+        />
+        <label htmlFor="has_autolink">
+          {window.gettext('Draw arrow to next node')}
         </label>
-        <select
-          disabled={read_only}
-          name="outcomes_type"
-          value={data.outcomes_type}
-          onChange={this.inputChanged.bind(this, 'outcomes_type')}
+      </div>
+    )
+  }
+
+  LinkedWorkflow = ({ readOnly, data }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Linked Workflow')}</h4>
+        <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
+        <button
+          className="primary-button"
+          disabled={readOnly}
+          id="linked-workflow-editor"
+          onClick={() => {
+            COURSEFLOW_APP.tinyLoader.startLoad()
+            getLinkedWorkflowMenuQuery(
+              data,
+              (response_data) => {
+                console.log('linked a workflow')
+              },
+              () => {
+                COURSEFLOW_APP.tinyLoader.endLoad()
+              }
+            )
+          }}
         >
-          {this.props.renderer.outcome_type_choices.map((choice) => (
+          {window.gettext('Change')}
+        </button>
+        <input
+          disabled={readOnly}
+          type="checkbox"
+          name="respresents_workflow"
+          checked={data.represents_workflow}
+          onChange={this.checkboxChanged.bind(this, 'represents_workflow')}
+        />
+        <label htmlFor="repesents_workflow">
+          {window.gettext('Display linked workflow data')}
+        </label>
+      </div>
+    )
+  }
+
+  Strategy = ({ readOnly, data }) => {
+    return (
+      <div>
+        <h4>{window.gettext('Strategy')}</h4>
+        <select
+          disabled={readOnly}
+          value={data.strategy_classification}
+          onChange={this.inputChanged.bind(this, 'strategy_classification')}
+        >
+          {this.props.renderer.strategy_classification_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
+        <button
+          disabled={readOnly}
+          id="toggle-strategy-editor"
+          onClick={() => {
+            const loader = new Utility.Loader('body')
+            toggleStrategyQuery(data.id, data.is_strategy, (response_data) => {
+              loader.endLoad()
+            })
+          }}
+        >
+          {data.is_strategy && window.gettext('Remove Strategy Status')}
+          {!data.is_strategy && window.gettext('Save as Template')}
+        </button>
       </div>
-      <div>
-        <label htmlFor="condensed">{window.gettext('Condensed View')}</label>
-        <input
-          disabled={read_only}
-          type="checkbox"
-          name="condensed"
-          checked={data.condensed}
-          onChange={this.checkboxChanged.bind(this, 'condensed')}
-        />
-      </div>
-      {data.is_strategy && (
-        <div>
-          <label htmlFor="is_published">{window.gettext('Published')}</label>
-          <input
-            disabled={read_only}
-            type="checkbox"
-            name="is_published"
-            checked={data.published}
-            onChange={this.checkboxChanged.bind(this, 'published')}
-          />
-        </div>
-      )}
-    </div>
+    )
   }
 
-  LinkedWorkflow = ({read_only, data}) => {
-    <div>
-      <h4>{window.gettext('Linked Workflow')}</h4>
-      <div>
-        {data.linked_workflow && data.linked_workflow_data.title}
-      </div>
-      <button
-        className="primary-button"
-        disabled={read_only}
-        id="linked-workflow-editor"
-        onClick={() => {
-          COURSEFLOW_APP.tinyLoader.startLoad()
-          getLinkedWorkflowMenuQuery(
-            data,
-            (response_data) => {
-              console.log('linked a workflow')
-            },
-            () => {
-              COURSEFLOW_APP.tinyLoader.endLoad()
-            }
-          )
-        }}
-      >
-        {window.gettext('Change')}
-      </button>
-      <input
-        disabled={read_only}
-        type="checkbox"
-        name="respresents_workflow"
-        checked={data.represents_workflow}
-        onChange={this.checkboxChanged.bind(
-          this,
-          'represents_workflow'
-        )}
-      />
-      <label htmlFor="repesents_workflow">
-        {window.gettext('Display linked workflow data')}
-      </label>
-    </div>
+  getDeleteForSidebar(read_only, no_delete, type, data) {
+    if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
+      if (type == 'workflow') {
+        return [null]
+      } else {
+        return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
+      }
+    }
   }
 
+  //  @todo only implemented in children
+  addDeleteSelf(_data: any, _alt_icon?: string) {
+    return <></>
+  }
+
+  /*******************************************************
+   * PORTAL
+   *******************************************************/
   addEditable(data, no_delete = false) {
-    let title_length = '100'
-    let override = false
     let sets
 
     const read_only = this.props.renderer.read_only
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.object_dictionary[this.objectType]
+    const override = data.represents_workflow ? true : false
+    const title_length = type === 'outcome' ? 500 : 100
     const description = data.description || ''
-    if (data.represents_workflow) override = true
-    if (type == 'outcome') title_length = '500'
 
     if (this.state.selected) {
       if (this.props.object_sets && ['node', 'outcome'].indexOf(type) >= 0) {
@@ -279,8 +559,7 @@ class EditableComponent<
         )
 
         if (allowed_sets.length >= 0) {
-          let disable_sets = false
-          if (data.depth || read_only) disable_sets = true
+          const disable_sets = data.depth || read_only ? true : false
           const set_options = allowed_sets.map((set) => (
             <div>
               <input
@@ -314,149 +593,49 @@ class EditableComponent<
             'workflow',
             'outcome',
             'nodelink'
-          ].indexOf(type) >= 0 && (
-            <div>
-              <h4>{window.gettext('Title')}</h4>
-              <textarea
-                resize="none"
-                disabled={override || read_only}
-                autoComplete="off"
-                id="title-editor"
-                type="text"
-                value={title}
-                maxLength={title_length}
-                onChange={this.inputChanged.bind(this, 'title')}
-              />
-              <div className="character-length">
-                {title.length}/{title_length} {window.gettext('characters')}
-              </div>
-            </div>
+          ].includes(type) && (
+            <this.Title
+              readOnly={read_only}
+              override={override}
+              title={title}
+              titleLength={title_length}
+            />
           )}
 
           {['node', 'workflow', 'outcome'].indexOf(type) >= 0 && (
-            <div>
-              <h4>{window.gettext('Description')}</h4>
-              <QuillDiv
-                disabled={override || read_only}
-                text={description}
-                maxlength="500"
-                textChangeFunction={this.valueChanged.bind(this, 'description')}
-                placholder="Insert description here"
-              />
-            </div>
-          )}
-
-          {type == 'column' && <this.BrowseOptions />}
-
-          {((type == 'outcome' && data.depth == 0) ||
-            (type == 'workflow' && data.type == 'course')) && (
-            <div>
-              <h4>{window.gettext('Code (Optional)')}</h4>
-              <input
-                autoComplete="off"
-                disabled={read_only}
-                id="code-editor"
-                type="text"
-                value={data.code}
-                maxLength="50"
-                onChange={this.inputChanged.bind(this, 'code')}
-              />
-            </div>
-          )}
-
-          {type == 'node' && data.node_type < 2 && (
-            <div>
-              <h4>{window.gettext('Context')}</h4>
-              <select
-                id="context-editor"
-                disabled={read_only}
-                value={data.context_classification}
-                onChange={this.inputChanged.bind(
-                  this,
-                  'context_classification'
-                )}
-              >
-                {this.props.renderer.context_choices
-                  .filter(
-                    (choice) =>
-                      Math.floor(choice.type / 100) == data.node_type ||
-                      choice.type == 0
-                  )
-                  .map((choice) => (
-                    <option value={choice.type}>{choice.name}</option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {type == 'node' && data.node_type < 2 && (
-            <div>
-              <h4>{window.gettext('Task')}</h4>
-              <select
-                id="task-editor"
-                disabled={read_only}
-                value={data.task_classification}
-                onChange={this.inputChanged.bind(this, 'task_classification')}
-              >
-                {this.props.renderer.task_choices
-                  .filter(
-                    (choice) =>
-                      Math.floor(choice.type / 100) == data.node_type ||
-                      choice.type == 0
-                  )
-                  .map((choice) => (
-                    <option value={choice.type}>{choice.name}</option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {(type == 'node' || type == 'workflow') && (
-            <div>
-              <h4>{window.gettext('Time')}</h4>
-              <div>
-                <input
-                  disabled={override || read_only}
-                  autoComplete="off"
-                  id="time-editor"
-                  className="half-width"
-                  type="text"
-                  value={data.time_required}
-                  maxLength="30"
-                  onChange={this.inputChanged.bind(this, 'time_required')}
-                />
-                <select
-                  disabled={override || read_only}
-                  id="time-units-editor"
-                  className="half-width"
-                  value={data.time_units}
-                  onChange={this.inputChanged.bind(this, 'time_units')}
-                >
-                  {this.props.renderer.time_choices.map((choice) => (
-                    <option value={choice.type}>{choice.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <this.Description
+              readOnly={read_only}
+              override={override}
+              description={description}
+            />
           )}
 
           {type == 'column' && (
-            <div>
-              <h4>{window.gettext('Colour')}</h4>
-              <div>
-                <input
-                  disabled={read_only}
-                  autoComplete="off"
-                  id="colour-editor"
-                  className="half-width"
-                  type="color"
-                  value={'#' + data.colour?.toString(16)}
-                  maxLength="30"
-                  onChange={this.inputChanged.bind(this, 'colour')}
-                />
-              </div>
-            </div>
+            <this.BrowseOptions
+              data={data}
+              readOnly={read_only}
+              override={override}
+            />
           )}
+
+          {((type == 'outcome' && data.depth == 0) ||
+            (type == 'workflow' && data.type == 'course')) && (
+            <this.CodeOptional data={data} readOnly={read_only} />
+          )}
+
+          {type == 'node' && data.node_type < 2 && (
+            <this.Context data={data} readOnly={read_only} />
+          )}
+
+          {type == 'node' && data.node_type < 2 && (
+            <this.Task data={data} readOnly={read_only} />
+          )}
+
+          {(type == 'node' || type == 'workflow') && (
+            <this.Time data={data} readOnly={read_only} override={override} />
+          )}
+
+          {type == 'column' && <this.Colour data={data} readOnly={read_only} />}
 
           {((type == 'workflow' && data.type == 'course') ||
             (type == 'node' && data.node_type == 2)) && (
@@ -467,165 +646,32 @@ class EditableComponent<
             />
           )}
 
-          {type === 'node' && data.node_type !== 0 && <this.LinkedWorkflow data={data} read_only={read_only} />}
+          {type === 'node' && data.node_type !== 0 && (
+            <this.LinkedWorkflow data={data} readOnly={read_only} />
+          )}
 
           {type == 'node' && data.node_type != 2 && (
-            <div>
-              <h4>{window.gettext('Other')}</h4>
-              <input
-                disabled={read_only}
-                type="checkbox"
-                name="has_autolink"
-                checked={data.has_autolink}
-                onChange={this.checkboxChanged.bind(this, 'has_autolink')}
-              />
-              <label htmlFor="has_autolink">
-                {window.gettext('Draw arrow to next node')}
-              </label>
-            </div>
+            <this.Other data={data} readOnly={read_only} />
           )}
 
           {type == 'nodelink' && (
-            <div>
-              <h4>{window.gettext('Style')}</h4>
-              <div>
-                <input
-                  disabled={read_only}
-                  type="checkbox"
-                  name="dashed"
-                  checked={data.dashed}
-                  onChange={this.checkboxChanged.bind(this, 'dashed')}
-                />
-                <label htmlFor="dashed">{window.gettext('Dashed Line')}</label>
-              </div>
-              <div>
-                <label htmlFor="text-position-range">
-                  {window.gettext('Text Position')}
-                </label>
-                <div className="slidecontainer">
-                  <input
-                    disabled={read_only}
-                    type="range"
-                    min="1"
-                    max="100"
-                    value={data.text_position}
-                    className="range-slider"
-                    id="text-position-range"
-                    onChange={this.inputChanged.bind(this, 'text_position')}
-                  />
-                </div>
-              </div>
-            </div>
+            <this.Style data={data} readOnly={read_only} />
           )}
 
           {type == 'workflow' && (
-            <this.Workflow data={data} read_only={read_only} />
+            <this.Workflow data={data} readOnly={read_only} />
           )}
 
           {type == 'week' && data.week_type < 2 && (
-            <div>
-              <h4>{window.gettext('Strategy')}</h4>
-              <select
-                disabled={read_only}
-                value={data.strategy_classification}
-                onChange={this.inputChanged.bind(
-                  this,
-                  'strategy_classification'
-                )}
-              >
-                {this.props.renderer.strategy_classification_choices.map(
-                  (choice) => (
-                    <option value={choice.type}>{choice.name}</option>
-                  )
-                )}
-              </select>
-              <button
-                disabled={read_only}
-                id="toggle-strategy-editor"
-                onClick={() => {
-                  const loader = new Utility.Loader('body')
-                  toggleStrategy(data.id, data.is_strategy, (response_data) => {
-                    loader.endLoad()
-                  })
-                }}
-              >
-                {data.is_strategy && window.gettext('Remove Strategy Status')}
-                {!data.is_strategy && window.gettext('Save as Template')}
-              </button>
-            </div>
+            <this.Strategy data={data} readOnly={read_only} />
           )}
+
           {sets}
           {this.getDeleteForSidebar(read_only, no_delete, type, data)}
         </div>,
         $('#edit-menu')[0]
       )
     }
-  }
-
-  getDeleteForSidebar(read_only, no_delete, type, data) {
-    if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
-      if (type == 'workflow') return [null]
-      // @todo class calls a method which only children implement.
-      else
-        return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
-    }
-  }
-
-  inputChanged(field, evt) {
-    let value = evt.target.value
-    if (evt.target.type == 'number') value = parseInt(value) || 0
-    else if (!value) value = ''
-    if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
-    if (evt.target.type == 'number' && value == '') value = 0
-    this.props.renderer.change_field(
-      this.props.data.id,
-      Constants.object_dictionary[this.objectType],
-      field,
-      value
-    )
-  }
-
-  setChanged(set_id, evt) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
-    updateObjectSet(
-      this.props.data.id,
-      Constants.object_dictionary[this.objectType],
-      set_id,
-      evt.target.checked,
-      () => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      }
-    )
-  }
-
-  checkboxChanged(field, evt) {
-    const do_change = true
-    if (do_change)
-      this.props.renderer.change_field(
-        this.props.data.id,
-        Constants.object_dictionary[this.objectType],
-        field,
-        evt.target.checked
-      )
-  }
-
-  valueChanged(field, new_value) {
-    this.props.renderer.change_field(
-      this.props.data.id,
-      Constants.object_dictionary[this.objectType],
-      field,
-      new_value
-    )
-  }
-
-  get_border_style() {
-    const data = this.props.data
-    if (!data) return
-    const style = {}
-    if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
-    }
-    return style
   }
 }
 

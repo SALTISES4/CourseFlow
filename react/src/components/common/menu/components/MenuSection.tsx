@@ -1,9 +1,25 @@
+import * as Utility from '@cfUtility'
 import * as React from 'react'
-import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
+import { duplicateBaseItemQuery } from '@XMLHTTP/APIFunctions'
 
-class MenuSection extends React.Component {
-  constructor(props) {
+type PropsType = {
+  no_hyperlink: any
+  type: any
+  replacement_text: any
+  section_data: any
+  add: any
+  selected_id: any
+  dispatch: any
+  selectAction: any
+  parentID: any
+  duplicate: any
+}
+
+class MenuSection extends React.Component<PropsType> {
+  private dropdownDiv: React.RefObject<HTMLDivElement>
+  constructor(props: PropsType) {
     super(props)
     this.dropdownDiv = React.createRef()
   }
@@ -69,11 +85,11 @@ class MenuSection extends React.Component {
                 (response_data) => {
                   if (response_data.workflowID != null) {
                     const loader = new Utility.Loader('body')
-                    duplicateBaseItem(
+                    duplicateBaseItemQuery(
                       response_data.workflowID,
                       section_type,
                       parentID,
-                      (duplication_response_data) => {
+                      (_duplication_response_data) => {
                         loader.endLoad()
                         location.reload()
                       }
@@ -113,36 +129,4 @@ class MenuSection extends React.Component {
   }
 }
 
-/*
-A tab for the menu of workflows.
-*/
-class MenuTab extends React.Component {
-  render() {
-    let is_empty = true
-    for (let i = 0; i < this.props.data.sections.length; i++) {
-      if (this.props.data.sections[i].objects.length > 0) {
-        is_empty = false
-        break
-      }
-    }
-    let replacement_text
-    if (is_empty) replacement_text = this.props.data.emptytext
-    var sections = this.props.data.sections.map((section, i) => (
-      <MenuSection
-        no_hyperlink={this.props.no_hyperlink}
-        type={this.props.type}
-        replacement_text={i == 0 ? replacement_text : null}
-        section_data={section}
-        add={this.props.data.add}
-        selected_id={this.props.selected_id}
-        dispatch={this.props.dispatch}
-        selectAction={this.props.selectAction}
-        parentID={this.props.parentID}
-        duplicate={this.props.data.duplicate}
-      />
-    ))
-    return <div id={'tabs-' + this.props.identifier}>{sections}</div>
-  }
-}
-
-export default MenuTab
+export default MenuSection

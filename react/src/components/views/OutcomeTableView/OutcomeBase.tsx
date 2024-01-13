@@ -1,22 +1,23 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '@cfParentComponents'
-import TableOutcome from './Outcome'
-import { Outcome as MatrixOutcome } from '../CompetencyMatrixView'
+import { default as MatrixOutcome } from '@cfViews/CompetencyMatrixView/CompetencyMatrixView'
 import { AppState } from '@cfRedux/type'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import { createOutcomeNodeBranch } from '@cfModule/utility/createOutcomeNodeBranch'
+import { default as TableOutcome } from '@cfViews/OutcomeTableView/Outcome'
+import { AnyAction, Dispatch } from '@reduxjs/toolkit'
 /**
  * The base representation of an outcome line in a table,
  * regardless of the orientation of the table
  */
-
 type ConnectedProps = {
   outcomes_type: any
   outcome: any
   outcomenode: any
   outcomeoutcome: any
 }
+// type ConnectedProps = ReturnType<typeof mapStateToProps>
+
 type OwnProps = {
   type: string
   nodecategory: any
@@ -25,6 +26,7 @@ type OwnProps = {
   outcome_type: any
 }
 type PropsType = OwnProps & ConnectedProps
+
 class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
   /*******************************************************
    * FUNCTIONS
@@ -89,10 +91,11 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     outcomeoutcome: state.outcomeoutcome
   }
 }
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({})
 
 const OutcomeBase = connect<
   ConnectedProps,
-  NonNullable<any>,
+  object,
   OwnProps,
   AppState
 >(

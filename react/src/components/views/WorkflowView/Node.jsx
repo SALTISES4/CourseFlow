@@ -367,9 +367,13 @@ class Node extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) mouseover_actions.push(this.addCommenting(data))
-    if (renderer.show_assignments)
+    if (renderer.view_comments) {
+      // mouseover_actions.push(this.addCommenting(data))
+      mouseover_actions.push(this.addCommenting())
+    }
+    if (renderer.show_assignments) {
       mouseover_actions.push(this.addShowAssignment(data))
+    }
 
     return (
       <div

@@ -1,22 +1,47 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
-import { getWeekByID } from '@cfFindState'
+import { getWeekByID, GetWeekByIDType } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import { addStrategy } from '@XMLHTTP/PostFunctions'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
 import NodeWeek from './NodeWeek'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
 import $ from 'jquery'
+import {
+  EditableComponentWithSortingProps,
+  EditableComponentWithSortingState
+} from '@cfParentComponents/EditableComponentWithSorting'
+import { AppState } from '@cfRedux/type'
+import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
+
+// data: any
+// column_order: any
+// nodes_by_column: any
+// nodeweeks: any
+
+type ConnectedProps = GetWeekByIDType
+type OwnProps = {
+  column_order: any // @todo i think this is delivered by redux
+  rank: number
+  nodes_by_column: any
+} & EditableComponentWithSortingProps
+export type WeekUnconnectedPropsType = OwnProps
+
+type PropsType = OwnProps & ConnectedProps
 
 /**
  * Renders a standard 'week-style' block of nodes, wherein the
  * nodes appear one above the other, never side by side
  */
-class WeekUnconnected extends EditableComponentWithSorting {
-  constructor(props) {
+class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
+  P,
+  EditableComponentWithSortingState
+> {
+  private objectClass: string
+  protected node_block: React.RefObject<HTMLDivElement>
+  constructor(props: P) {
     super(props)
     this.objectType = 'week'
     this.objectClass = '.week'
@@ -68,6 +93,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       'nodeweek',
       '.node-week',
       false,
+      // @ts-ignore
       [200, 1],
       null,
       '.node',
@@ -84,19 +110,27 @@ class WeekUnconnected extends EditableComponentWithSorting {
     const new_column = columns[new_column_index]
 
     //A little hack to stop ourselves from sending this update a hundred times per second
+    // @todo ...
+    // @ts-ignore
     if (this.recently_sent_column_change) {
       if (
+        // @ts-ignore
         this.recently_sent_column_change.column === new_column &&
+        // @ts-ignore
         Date.now() - this.recently_sent_column_change.lastCall <= 500
       ) {
+        // @ts-ignore
         this.recently_sent_column_change.lastCall = Date.now()
         return
       }
     }
+
+    // @ts-ignore
     this.recently_sent_column_change = {
       column: new_column,
       lastCall: Date.now()
     }
+
     this.lockChild(id, true, 'nodeweek')
     this.props.renderer.micro_update(
       ActionCreator.columnChangeNode(id, new_column)
@@ -133,6 +167,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
     const props = this.props
     $(this.mainDiv?.current).droppable({
       tolerance: 'pointer',
+      // @ts-ignore
       droppable: '.strategy-ghost',
       over: (e, ui) => {
         const drop_item = $(e.target)
@@ -162,9 +197,10 @@ class WeekUnconnected extends EditableComponentWithSorting {
         const new_index = drop_item.parent().prevAll().length + 1
         if (drag_item.hasClass('new-strategy')) {
           const loader = new Utility.Loader('body')
-          addStrategy(
+          addStrategyQuery(
             this.props.parentID,
             new_index,
+            // @ts-ignore
             drag_item[0].dataDraggable.strategy,
             (response_data) => {
               loader.endLoad()
@@ -192,22 +228,25 @@ class WeekUnconnected extends EditableComponentWithSorting {
     if (!renderer.is_strategy)
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
-    const style = {}
-    if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
+    const style  = {
+      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
+
     let dropIcon
     if (data.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    const mouseover_actions = []
+    const mouseoverActions = []
     if (!this.props.renderer.read_only && !renderer.is_strategy) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
+      mouseoverActions.push(this.addInsertSibling(data))
+      mouseoverActions.push(this.addDuplicateSelf(data))
+      mouseoverActions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) mouseover_actions.push(this.addCommenting(data))
+    if (renderer.view_comments) {
+      mouseoverActions.push(this.addCommenting())
+    }
 
+    this.addEditable(data)
     return (
       <div
         style={style}
@@ -216,7 +255,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
         <div className="mouseover-container-bypass">
-          <div className="mouseover-actions">{mouseover_actions}</div>
+          <div className="mouseover-actions">{mouseoverActions}</div>
         </div>
         <TitleText text={data.title} defaultText={default_text} />
         <div
@@ -236,7 +275,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
           </div>
           <div className="node-drop-side node-drop-right" />
         </div>
-        {this.addEditable(data)}
+        {/*{this.addEditable(data)} // @todo verify this */}
         {data.strategy_classification > 0 && (
           <div className="strategy-tab">
             <div className="strategy-tab-triangle" />
@@ -262,9 +301,17 @@ class WeekUnconnected extends EditableComponentWithSorting {
     )
   }
 }
-const mapWeekStateToProps = (state, own_props) =>
-  getWeekByID(state, own_props.objectID)
-const Week = connect(mapWeekStateToProps, null)(WeekUnconnected)
+const mapWeekStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  return getWeekByID(state, ownProps.objectID)
+}
+
+const Week = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapWeekStateToProps,
+  null
+)(WeekUnconnected)
 
 export default Week
 export { WeekUnconnected }

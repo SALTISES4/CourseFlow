@@ -1,15 +1,25 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import { getOutcomeOutcomeByID } from '@cfFindState'
+import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
+import { AppState } from '@cfRedux/type'
 
 /**
  * The link between an outcome and its children
  */
-class OutcomeOutcomeUnconnected extends React.Component {
+type ConnectedProps = OutcomeOutcomeByIDType
+type OwnProps = {
+  parentID: number
+  objectID: number
+  renderer: any
+  show_horizontal: any
+  parent_depth: any
+}
+type PropsType = OwnProps & ConnectedProps
+class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
   constructor(props) {
     super(props)
-    this.objectType = 'outcomeoutcome'
+    // this.objectType = 'outcomeoutcome' // @todo verify this is not used
   }
 
   /*******************************************************
@@ -24,7 +34,7 @@ class OutcomeOutcomeUnconnected extends React.Component {
       <li
         className={my_class}
         id={data.id}
-        ref={this.mainDiv}
+        // ref={this.mainDiv} // @todo verify but this was not used
         data-child-id={data.child}
       >
         <Outcome
@@ -38,10 +48,21 @@ class OutcomeOutcomeUnconnected extends React.Component {
     )
   }
 }
-const mapOutcomeOutcomeStateToProps = (state, own_props) =>
-  getOutcomeOutcomeByID(state, own_props.objectID)
-const OutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps,
+
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): OutcomeOutcomeByIDType => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID)
+}
+
+const OutcomeOutcome = connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
   null
 )(OutcomeOutcomeUnconnected)
 

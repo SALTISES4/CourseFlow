@@ -1,17 +1,34 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ActionButton from '@cfUIComponents/ActionButton'
+import EditableComponentWithComments, {
+  EditableComponentWithCommentsStateType,
+  EditableComponentWithCommentsType
+} from './EditableComponentWithComments'
 import {
   deleteSelfQuery,
-  duplicateSelf,
-  insertChild,
-  insertSibling,
+  duplicateSelfQuery,
+  insertChildQuery,
+  insertSiblingQuery,
   restoreSelfQuery
-} from '@XMLHTTP/PostFunctions'
-import EditableComponentWithComments from './EditableComponentWithComments'
+} from '@XMLHTTP/APIFunctions'
 
-//Extends the react component to add a few features that are used in a large number of components
-class EditableComponentWithActions extends EditableComponentWithComments {
+type OwnProps = {
+  sibling_count: any
+  parentID: any
+} & EditableComponentWithCommentsType
+export type EditableComponentWithActionsProps = OwnProps
+
+type StateType = EditableComponentWithCommentsStateType
+export type EditableComponentWithCommentsState = StateType
+
+/**
+ * Extends the React component to add a few features that are used in a large number of components
+ */
+class EditableComponentWithActions<
+  P extends OwnProps,
+  S extends StateType
+> extends EditableComponentWithComments<P, S> {
   //Adds a button that restores the item.
   addRestoreSelf(data, alt_icon) {
     const icon = alt_icon || 'restore.svg'
@@ -38,7 +55,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
 
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
   // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
-  addDeleteSelf(data, alt_icon) {
+  addDeleteSelf(data: any, alt_icon?: string) {
     const icon = alt_icon || 'rubbish.svg'
     return (
       <ActionButton
@@ -52,7 +69,10 @@ class EditableComponentWithActions extends EditableComponentWithComments {
 
   deleteSelf(data) {
     //@todo Temporary confirmation; add better confirmation dialogue later
-    if (this.props.renderer) this.props.renderer.selection_manager.deleted(this)
+    if (this.props.renderer) {
+      this.props.renderer.selection_manager.deleted(this)
+    }
+
     if (
       (this.objectType === 'week' || this.objectType === 'column') &&
       this.props.sibling_count < 2
@@ -60,6 +80,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       alert(window.gettext('You cannot delete the last ') + this.objectType)
       return
     }
+
     if (
       window.confirm(
         window.gettext('Are you sure you want to delete this ') +
@@ -95,13 +116,13 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   duplicateSelf(data) {
-    var props = this.props
-    var type = this.objectType
+    const props = this.props
+    const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
-    duplicateSelf(
+    duplicateSelfQuery(
       data.id,
       Constants.object_dictionary[type],
-      props.parentID,
+      this.props.parentID,
       Constants.parent_dictionary[type],
       Constants.through_parent_dictionary[type],
       (response_data) => {
@@ -123,9 +144,9 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 
   insertSibling(data) {
-    var type = this.objectType
+    const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
-    insertSibling(
+    insertSiblingQuery(
       data.id,
       Constants.object_dictionary[type],
       this.props.parentID,
@@ -152,9 +173,13 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   insertChild(data) {
     const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
-    insertChild(data.id, Constants.object_dictionary[type], (response_data) => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    })
+    insertChildQuery(
+      data.id,
+      Constants.object_dictionary[type],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad()
+      }
+    )
   }
 }
 

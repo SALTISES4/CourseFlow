@@ -15,19 +15,39 @@ into the back-end.
 Used for selecting a workflow in a menu when linking a workflow, choosing a target project
 for duplication, etc.
 */
-class WorkflowsMenu extends React.Component {
+type StateProps = {
+  selected: any
+  selected_type: any
+}
+type PropsType = {
+  type: any
+  data: any
+  actionFunction: any
+  dispatch: any
+}
+
+class WorkflowsMenu extends React.Component<PropsType, StateProps> {
+  private current_project: any
+  private project_workflows: any
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {} as StateProps
+
+    // @todo unpack this
     if (this.props.type === 'target_project_menu') {
       try {
-        this.current_project = project_data
+        //  this.current_project = project_data // @todo this doesn't make sense
       } catch (err) {}
+
       try {
-        this.current_project = workflow_data_package.project
+        // this.current_project = workflow_data_package.project // @todo this doesn't make sense
       } catch (err) {}
-      if (this.current_project) this.state.selected = this.current_project.id
+
+      if (this.current_project) {
+        // this.state.selected = this.current_project.id @todo this doesn't make sense
+      }
     }
+
     if (
       this.props.type === 'linked_workflow_menu' ||
       this.props.type === 'added_workflow_menu'
@@ -68,9 +88,9 @@ class WorkflowsMenu extends React.Component {
   }
 
   getActions() {
-    var actions = []
+    const actions = []
     if (this.props.type === 'linked_workflow_menu') {
-      var text = window.gettext('link to node')
+      let text = window.gettext('link to node')
       if (
         this.state.selected &&
         this.project_workflows.indexOf(this.state.selected) < 0
@@ -122,7 +142,7 @@ class WorkflowsMenu extends React.Component {
       this.props.type === 'added_workflow_menu' ||
       this.props.type === 'workflow_select_menu'
     ) {
-      var text
+      let text
       if (this.props.type === 'added_workflow_menu') {
         text = window.gettext('Select')
         if (
@@ -133,6 +153,7 @@ class WorkflowsMenu extends React.Component {
       } else {
         text = window.gettext('Select')
       }
+
       actions.push(
         <button
           id="set-linked-workflow-cancel"
@@ -142,6 +163,7 @@ class WorkflowsMenu extends React.Component {
           {window.gettext('Cancel')}
         </button>
       )
+
       actions.push(
         <button
           id="set-linked-workflow"
@@ -186,7 +208,7 @@ class WorkflowsMenu extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data_package = this.props.data.data_package
+    const data_package = this.props.data.data_package
     let no_hyperlink = false
     if (
       this.props.type === 'linked_workflow_menu' ||
@@ -195,10 +217,11 @@ class WorkflowsMenu extends React.Component {
       this.props.type === 'workflow_select_menu'
     )
       no_hyperlink = true
-    var tabs = []
-    var tab_li = []
-    var i = 0
-    for (var prop in data_package) {
+    const tabs = []
+    const tab_li = []
+    let i = 0
+
+    for (const prop in data_package) {
       tab_li.push(
         <li className="tab-header">
           <a className="hover-shade" href={'#tabs-' + i}>
@@ -218,26 +241,29 @@ class WorkflowsMenu extends React.Component {
       )
       i++
     }
-    let current_project
-    if (this.current_project) {
-      current_project = [
+
+    const current_project = this.current_project ? (
+      <>
         <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
         <div className="menu-grid">
           <WorkflowCard
             workflowData={this.current_project}
             selected={this.state.selected === this.current_project.id}
             noHyperlink={no_hyperlink}
-            type={this.props.type}
-            dispatch={this.props.dispatch}
+            type={this.props.type} // @todo i don't think this is used
+            dispatch={this.props.dispatch} // @todo i don't think this is used
             selectAction={this.workflowSelected.bind(this)}
           />
-        </div>,
+        </div>
         <hr className={'big-space'} />,
         <h4 className={'big-space'}>
           {window.gettext('Or select from your projects')}
         </h4>
-      ]
-    }
+      </>
+    ) : (
+      <></>
+    )
+
     return (
       <div className="message-wrap">
         {this.getTitle()}

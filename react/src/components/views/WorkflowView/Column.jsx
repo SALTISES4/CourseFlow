@@ -55,8 +55,10 @@ class Column extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (this.props.renderer.view_comments)
-      mouseover_actions.push(this.addCommenting(data))
+    if (this.props.renderer.view_comments) {
+      // mouseover_actions.push(this.addCommenting(data))
+      mouseover_actions.push(this.addCommenting())
+    }
 
     return (
       <div

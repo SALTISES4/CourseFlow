@@ -70,7 +70,7 @@ const mapOutcomeOutcomeStateToProps = (
 
 const OutcomeBarOutcomeOutcome = connect<
   OutcomeBarOutcomeOutcomeConnectedProps,
-  NonNullable<any>,
+  object,
   OutcomeBarOutcomeOutcomeOwnProps,
   AppState
 >(
@@ -86,7 +86,7 @@ const OutcomeBarOutcomeOutcome = connect<
 
 type OwnProps = {
   objectID: number
-  parentID: number
+  parentID?: number
   readOnly: boolean
   throughParentID?: number
 }

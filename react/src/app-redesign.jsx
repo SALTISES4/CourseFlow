@@ -132,8 +132,8 @@ const getAppComponent = () => {
       return <WorkflowComparison {...thisContextData} />
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
-      const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData)
-      workflow_renderer.init()
+      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
+      workflowWrapper.init()
       return null
     }
     case 'my_live_projects':

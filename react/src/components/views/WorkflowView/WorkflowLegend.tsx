@@ -1,15 +1,34 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import * as Constants from '@cfConstants'
 import { connect } from 'react-redux'
+import * as Constants from '@cfConstants'
 import { Slider, LegendLine } from '@cfUIComponents'
 import $ from 'jquery'
+import { AppState } from '@cfRedux/type'
 
-class WorkflowLegendUnconnected extends React.Component {
-  constructor(props) {
+type StateType = {
+  show_slider: boolean
+  show_legend: boolean
+}
+type ConnectedProps = {
+  contexts?: any
+  tasks?: any
+  strategies?: any
+}
+
+type OwnProps = {
+  renderer: any
+}
+export type WorkflowLegendUnconnectedType = OwnProps
+
+type PropsType = ConnectedProps & OwnProps
+export class WorkflowLegendUnconnected<
+  P extends PropsType
+> extends React.Component<P, StateType> {
+  constructor(props: P) {
     super(props)
     this.state = {
-      show_legend: JSON.parse(localStorage.getItem('show_legend')),
+      show_legend: !!JSON.parse(localStorage.getItem('show_legend')),
       show_slider: false
     }
   }
@@ -23,14 +42,16 @@ class WorkflowLegendUnconnected extends React.Component {
 
   componentDidMount() {
     $('.workflow-legend').draggable()
-    this.setState({ show_slider: true })
+    this.setState({
+      show_slider: true
+    })
   }
 
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   toggle() {
-    localStorage.setItem('show_legend', !this.state.show_legend)
+    localStorage.setItem('show_legend', String(!this.state.show_legend))
     this.setState({ show_legend: !this.state.show_legend })
   }
 
@@ -54,7 +75,11 @@ class WorkflowLegendUnconnected extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    if (!this.state.show_legend) return this.getSlider()
+    this.getSlider()
+
+    if (!this.state.show_legend) {
+      return <></>
+    }
 
     const contexts = this.props.contexts.map((value) => (
       <LegendLine
@@ -65,6 +90,7 @@ class WorkflowLegendUnconnected extends React.Component {
         }
       />
     ))
+
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
@@ -73,6 +99,7 @@ class WorkflowLegendUnconnected extends React.Component {
         }
       />
     ))
+
     const strategies = this.props.strategies.map((value) => (
       <LegendLine
         icon={Constants.strategy_keys[value]}
@@ -86,8 +113,8 @@ class WorkflowLegendUnconnected extends React.Component {
 
     return (
       <div className="workflow-legend">
-        {this.getSlider()}
         <h4>Legend</h4>
+
         {contexts.length > 0 && (
           <div className="legend-section">
             <hr />
@@ -95,6 +122,7 @@ class WorkflowLegendUnconnected extends React.Component {
             {contexts}
           </div>
         )}
+
         {contexts.length > 0 && (
           <div className="legend-section">
             <hr />
@@ -102,6 +130,7 @@ class WorkflowLegendUnconnected extends React.Component {
             {tasks}
           </div>
         )}
+
         {contexts.length > 0 && (
           <div className="legend-section">
             <hr />
@@ -109,6 +138,7 @@ class WorkflowLegendUnconnected extends React.Component {
             {strategies}
           </div>
         )}
+
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
         </div>
@@ -116,7 +146,8 @@ class WorkflowLegendUnconnected extends React.Component {
     )
   }
 }
-const mapStateToProps = (state) => {
+
+const mapStateToProps = (state: AppState): ConnectedProps => {
   let contexts = []
   let tasks = []
   let strategies = []
@@ -124,20 +155,38 @@ const mapStateToProps = (state) => {
     return self.indexOf(value) === index
   }
   contexts = state.node
+    // @ts-ignore
     .map((node) => parseInt(node.context_classification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
+
   tasks = state.node
+    // @ts-ignore
     .map((node) => parseInt(node.task_classification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
+
   strategies = state.week
+    // @ts-ignore
     .map((week) => parseInt(week.strategy_classification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
-  return { contexts: contexts, tasks: tasks, strategies: strategies }
+
+  return {
+    contexts: contexts,
+    tasks: tasks,
+    strategies: strategies
+  }
 }
-const WorkflowLegend = connect(mapStateToProps, null)(WorkflowLegendUnconnected)
+
+const WorkflowLegend = connect<
+  ConnectedProps,
+  object,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
+  null
+)(WorkflowLegendUnconnected)
 
 export default WorkflowLegend
-export { WorkflowLegendUnconnected }

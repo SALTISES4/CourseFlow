@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import NodeBarColumnWorkflow from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
@@ -10,25 +9,24 @@ import { AppState } from '@cfRedux/type'
  * nodes and strategies can be dragged and added into the workflow
  */
 
-type OwnPropsType = {
-  renderer: any
+type OwnProps = {
+  // renderer: any
   columnChoices: number[]
   readOnly: boolean
 }
-type ReduxProps = {
+
+type ConnectedProps = {
   data: AppState['workflow']
-  columns: AppState['columns']
+  columns: AppState['column']
   available_strategies: AppState['strategy']
   // saltise_strategies: AppState['saltise_strategy']
 }
 
-type PropsType = OwnPropsType & ReduxProps
+type PropsType = OwnProps & ConnectedProps
 
 class NodeBarUnconnected extends React.Component<PropsType> {
   constructor(props: PropsType) {
     super(props)
-    this.columnChoices = this.props.columnChoices
-    this.readOnly = this.props.readOnly
   }
   /*******************************************************
    * RENDER
@@ -42,7 +40,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         <NodeBarColumnWorkflow
           key={`NodeBarColumnWorkflow-${index}`}
           objectID={columnWorkflow}
-          columnChoices={this.columnChoices}
+          columnChoices={this.props.columnChoices}
         />
       )
     )
@@ -54,7 +52,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
           <NodeBarColumnWorkflow
             // renderer={this.props.renderer}
             columnType={data.DEFAULT_COLUMNS[i]}
-            columnChoices={this.columnChoices}
+            columnChoices={this.props.columnChoices}
           />
         )
       }
@@ -67,11 +65,11 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         key={`NodeBarColumnWorkflow-last-${i}`}
         // renderer={this.props.renderer}
         columnType={data.DEFAULT_CUSTOM_COLUMN}
-        columnChoices={this.columnChoices}
+        columnChoices={this.props.columnChoices}
       />
     )
 
-    if (!this.readOnly) {
+    if (!this.props.readOnly) {
       nodebar_nodes = [
         <h4>{window.gettext('Nodes')}</h4>,
         <div className="node-bar-column-block">{nodebarColumnWorkflows}</div>
@@ -103,10 +101,16 @@ class NodeBarUnconnected extends React.Component<PropsType> {
   }
 }
 
-const mapNodeBarStateToProps = (state: AppState): ReduxProps => ({
+const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: state.workflow,
   columns: state.column,
-  available_strategies: state.strategy,
+  available_strategies: state.strategy
   // saltise_strategies: state.saltise_strategy
 })
-export default connect(mapNodeBarStateToProps, null)(NodeBarUnconnected)
+
+const NodeBar = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(NodeBarUnconnected)
+
+export default NodeBar

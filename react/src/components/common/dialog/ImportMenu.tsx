@@ -1,7 +1,12 @@
 import * as React from 'react'
 import $ from 'jquery'
 
-class ImportMenu extends React.Component {
+type PropsType = {
+  data: any
+  actionFunction: any
+}
+
+class ImportMenu extends React.Component<PropsType> {
   constructor(props) {
     super(props)
   }
@@ -10,6 +15,7 @@ class ImportMenu extends React.Component {
    * FUNCTIONS
    *******************************************************/
   submit(evt) {
+    // @ts-ignore
     $('#submit-button').attr('disabled', true)
     setTimeout(() => {
       this.props.actionFunction()

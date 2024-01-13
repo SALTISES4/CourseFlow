@@ -1,19 +1,38 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { addTerminology, deleteSelfQuery } from '@XMLHTTP/PostFunctions'
-import { updateValueInstant } from '@XMLHTTP/APIFunctions'
+import {
+  addTerminologyQuery, deleteSelfQuery,
+  updateValueInstantQuery
+} from '@XMLHTTP/APIFunctions'
 import $ from 'jquery'
 
+type Data = any
+type StateProps = Data & {
+  selected_set: any
+  object_sets: any
+  termsingular: any
+
+}
+type PropsType = {
+  data: any
+  closeAction: any
+  actionFunction: any
+  type?: any
+}
 /*
 The menu for editing a project.
 */
-class ProjectEditDialog extends React.Component {
+class ProjectEditDialog extends React.Component<PropsType, StateProps> {
+  private object_set_updates: NonNullable<unknown>
   constructor(props) {
     super(props)
-    this.state = { ...this.props.data, selected_set: 'none' }
+    this.state = {
+      ...this.props.data,
+      selected_set: 'none'
+    }
     this.object_set_updates = {}
-    this.close = this.props.closeAction
+    // this.close = this.props.closeAction
   }
   /*******************************************************
    * LIFECYCLE
@@ -42,7 +61,9 @@ class ProjectEditDialog extends React.Component {
         if (new_state_dict[i].id === id) {
           deleteSelfQuery(id, 'objectset')
           new_state_dict.splice(i, 1)
-          this.setState({ object_sets: new_state_dict })
+          this.setState({
+            object_sets: new_state_dict
+          })
           break
         }
       }
@@ -50,9 +71,12 @@ class ProjectEditDialog extends React.Component {
   }
 
   addTerm() {
+    // @ts-ignore
     const term = $('#nomenclature-select')[0].value
+    // @ts-ignore
     const title = $('#term-singular')[0].value
-    addTerminology(this.state.id, term, title, '', (response_data) => {
+
+    addTerminologyQuery(this.state.id, term, title, '', (response_data) => {
       this.setState({
         object_sets: response_data.new_dict,
         selected_set: 'none',
@@ -63,7 +87,7 @@ class ProjectEditDialog extends React.Component {
 
   termChanged(id, evt) {
     const new_sets = this.state.object_sets.slice()
-    for (var i = 0; i < new_sets.length; i++) {
+    for (let i = 0; i < new_sets.length; i++) {
       if (new_sets[i].id === id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value }
         this.object_set_updates[id] = { title: evt.target.value }
@@ -73,8 +97,9 @@ class ProjectEditDialog extends React.Component {
   }
 
   updateTerms() {
-    for (var object_set_id in this.object_set_updates) {
-      updateValueInstant(
+    for (const object_set_id in this.object_set_updates) {
+      updateValueInstantQuery(
+        // @ts-ignore @todo is this a number or string?
         object_set_id,
         'objectset',
         this.object_set_updates[object_set_id]
@@ -104,16 +129,16 @@ class ProjectEditDialog extends React.Component {
   }
 
   inputChanged(field, evt) {
-    var new_state = { changed: true }
+    const new_state = { changed: true }
     new_state[field] = evt.target.value
     if (field === 'selected_set') new_state['termsingular'] = ''
     this.setState(new_state)
   }
 
   getActions() {
-    var actions = []
+    const actions = []
     actions.push(
-      <button className="secondary-button" onClick={this.close}>
+      <button className="secondary-button" onClick={this.props.closeAction}>
         {window.gettext('Cancel')}
       </button>
     )
@@ -123,15 +148,18 @@ class ProjectEditDialog extends React.Component {
         className="primary-button"
         disabled={!this.state.changed}
         onClick={() => {
-          updateValueInstant(this.state.id, 'project', {
+          updateValueInstantQuery(this.state.id, 'project', {
             title: this.state.title,
             description: this.state.description,
             published: this.state.published,
             disciplines: this.state.disciplines
           })
           this.updateTerms()
-          this.props.actionFunction({ ...this.state, changed: false })
-          this.close()
+          this.props.actionFunction({
+            ...this.state,
+            changed: false
+          })
+          this.props.closeAction
         }}
       >
         {window.gettext('Save Changes')}
@@ -140,22 +168,9 @@ class ProjectEditDialog extends React.Component {
     return actions
   }
 
-  // getLiveProjectSettings() {
-  //   if (this.props.user_role === Constants.role_keys.teacher) {
-  //     return (
-  //       <div>
-  //         <LiveProjectSettings
-  //           // renderer={this.props.renderer}
-  //           role={'teacher'}
-  //           objectID={this.state.id}
-  //           view_type={'settings'}
-  //           updateLiveProject={this.props.actionFunction}
-  //         />
-  //       </div>
-  //     )
-  //   }
-  //   return null
-  // }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
 
   autocompleteDiscipline() {
     const choices = this.state.all_disciplines
@@ -179,6 +194,7 @@ class ProjectEditDialog extends React.Component {
       .focus(function () {
         $('#project-discipline-input').autocomplete(
           'search',
+          // @ts-ignore
           $('#project-discipline-input').val()
         )
       })
@@ -188,7 +204,7 @@ class ProjectEditDialog extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data = this.state
+    const data = this.state
 
     let disciplines
     if (data.all_disciplines) {
@@ -215,8 +231,10 @@ class ProjectEditDialog extends React.Component {
     ))
 
     let selected_set
-    if (this.state.selected_set)
+    if (this.state.selected_set) {
       selected_set = object_sets[this.state.selected_set]
+    }
+
     const sets_added = data.object_sets.map((item) => (
       <div className="nomenclature-row">
         <div>{object_sets[item.term]}</div>
@@ -239,10 +257,13 @@ class ProjectEditDialog extends React.Component {
     if (data.published && !published_enabled)
       this.setState({ published: false })
     let disabled_publish_text
-    if (!published_enabled)
+
+    if (!published_enabled) {
       disabled_publish_text = window.gettext(
         'A title and at least one discipline is required for publishing.'
       )
+    }
+
     let add_term_css = 'material-symbols-rounded filled'
     let clickEvt
     if (this.addTermDisabled(selected_set)) {
@@ -255,6 +276,7 @@ class ProjectEditDialog extends React.Component {
     return (
       <div className="message-wrap">
         <h2>{window.gettext('Edit project')}</h2>
+
         <div>
           <h4>{window.gettext('Title')}</h4>
           <textarea
@@ -264,6 +286,7 @@ class ProjectEditDialog extends React.Component {
             onChange={this.inputChanged.bind(this, 'title')}
           />
         </div>
+
         <div>
           <h4>{window.gettext('Description')}</h4>
           <textarea
@@ -273,6 +296,7 @@ class ProjectEditDialog extends React.Component {
             onChange={this.inputChanged.bind(this, 'description')}
           />
         </div>
+
         <div>
           <h4>{window.gettext('Disciplines')}</h4>
           <div className="flex-middle disciplines-div">{disciplines}</div>
@@ -302,7 +326,7 @@ class ProjectEditDialog extends React.Component {
               placeholder={window.gettext('Set name')}
               type="text"
               id="term-singular"
-              maxLength="50"
+              maxLength={50}
               value={this.state.termsingular}
               onChange={this.inputChanged.bind(this, 'termsingular')}
               disabled={selected_set == null}
@@ -316,7 +340,7 @@ class ProjectEditDialog extends React.Component {
         {/*{this.getLiveProjectSettings()}*/}
 
         <div className="action-bar">{this.getActions()}</div>
-        <div className="window-close-button" onClick={this.close}>
+        <div className="window-close-button" onClick={this.props.closeAction}>
           <span className="material-symbols-rounded green">close</span>
         </div>
       </div>

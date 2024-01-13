@@ -1,184 +1,35 @@
 import * as React from 'react'
-import { setUserPermission, getUserList } from '@XMLHTTP/PostFunctions'
+import { setUserPermission } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
-import * as Constants from '@cfConstants'
 import {
   getUsersForObjectQuery,
-  updateValueInstant
+  updateValueInstantQuery
 } from '@XMLHTTP/APIFunctions'
 import $ from 'jquery'
+import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
+import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 
-class UserLabel extends React.Component {
-  constructor(props) {
-    super(props)
-    this.select = React.createRef()
-  }
-
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  onChange(evt) {
-    switch (evt.target.value) {
-      case 'none':
-        if (window.confirm('Are you sure you want to remove this user?')) {
-          this.props.permissionChange(0, this.props.user)
-        }
-        break
-      default:
-        this.props.permissionChange(
-          Constants.permission_keys[evt.target.value],
-          this.props.user
-        )
-    }
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let permission_select
-    let disabled = false
-    if (
-      this.props.cannot_change &&
-      this.props.cannot_change.indexOf(this.props.user.id) >= 0
-    )
-      disabled = true
-    if (this.props.type !== 'owner') {
-      if (this.props.type === 'add') {
-        permission_select = (
-          <div className="flex-middle">
-            <div className="permission-select">
-              <select ref={this.select} disabled={disabled}>
-                <option value="edit">{window.gettext('Can edit')}</option>
-                <option value="comment">{window.gettext('Can comment')}</option>
-                <option value="view">{window.gettext('Can view')}</option>
-              </select>
-            </div>
-            <button
-              className="primary-button"
-              onClick={() =>
-                this.props.addFunction($(this.select.current).val())
-              }
-            >
-              {window.gettext('Share')}
-            </button>
-          </div>
-        )
-      } else {
-        permission_select = (
-          <div className="permission-select">
-            <select
-              value={this.props.type}
-              disabled={disabled}
-              onChange={this.onChange.bind(this)}
-            >
-              <option value="edit">{window.gettext('Can edit')}</option>
-              <option value="comment">{window.gettext('Can comment')}</option>
-              <option value="view">{window.gettext('Can view')}</option>
-              <option value="none">{window.gettext('Remove user')}</option>
-            </select>
-          </div>
-        )
-      }
-    }
-
-    return (
-      <li className="user-label">
-        <div>
-          <div className="user-name">
-            {this.props.user.first_name + ' ' + this.props.user.last_name}
-          </div>
-          <div className="user-username">{this.props.user.username}</div>
-        </div>
-        {permission_select}
-      </li>
-    )
-  }
+type PropsType = {
+  data: any
+  actionFunction: any
 }
-
-class UserAdd extends React.Component {
-  constructor(props) {
-    super(props)
-    this.input = React.createRef()
-    this.state = { selected: null }
-  }
-
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    const component = this
-    $(this.input.current).autocomplete({
-      source: (request, response_function) => {
-        getUserList(request.term, (response) => {
-          const user_list = response.user_list.map((user) => {
-            return {
-              label:
-                user.first_name + ' ' + user.last_name + ' - ' + user.username,
-              value: user.username,
-              user: user
-            }
-          })
-          response_function(user_list)
-        })
-        component.setState({ selected: null })
-      },
-      select: (evt, ui) => {
-        this.setState({ selected: ui.item.user })
-      },
-      minLength: 1
-    })
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  addClick(value) {
-    if (this.state.selected) {
-      this.props.permissionChange(
-        Constants.permission_keys[value],
-        this.state.selected
-      )
-      $(this.input.current).val(null)
-      this.setState({ selected: null })
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let user
-    if (this.state.selected) {
-      user = (
-        <UserLabel
-          user={this.state.selected}
-          type="add"
-          addFunction={this.addClick.bind(this)}
-        />
-      )
-    }
-
-    return (
-      <div className="user-add">
-        <p>{this.props.share_info}</p>
-        <div className="relative">
-          <input
-            className="search-input"
-            ref={this.input}
-            placeholder={window.gettext('Begin typing to search users')}
-          />
-          <span className="material-symbols-rounded">search</span>
-        </div>
-        {user}
-      </div>
-    )
-  }
+type StateType = {
+  owner: any
+  edit: any[]
+  view: any[]
+  comment: any[]
+  student: any[]
+  userlist: any[]
+  cannot_change: any[]
+  published?: any
+  public_view?: any
 }
 
 /*******************************************************
  *
  *******************************************************/
-export class ShareMenu extends React.Component {
-  constructor(props) {
+export class ShareMenu extends React.Component<PropsType, StateType> {
+  constructor(props: PropsType) {
     super(props)
     this.state = {
       owner: props.data.author,
@@ -222,22 +73,31 @@ export class ShareMenu extends React.Component {
     if (data.type === 'project' || data.is_strategy) {
       let public_class = 'big-button make-public'
       let private_class = 'big-button hover-shade make-private'
-      if (published) public_class += ' active'
-      else private_class += ' active'
+
+      if (published) {
+        public_class += ' active'
+      } else {
+        private_class += ' active'
+      }
+
       let public_disabled = !(data.title && data.title.length > 0)
-      if (data.type == 'project')
-        public_disabled |= data.disciplines.length == 0
+
+      if (data.type == 'project') {
+        // @ts-ignore
+        public_disabled |= data.disciplines.length == 0 // @todo not allowed
+      }
+
       if (!public_disabled && !published) public_class += ' hover-shade'
       if (public_disabled) public_class += ' disabled'
       const public_text = window.gettext('Any CourseFlow teacher can view')
       let disabled_indicator
+
       if (public_disabled) {
-        let disabled_text
-        if (data.type == 'project')
-          disabled_text = window.gettext(
-            'Title and disciplines are required to publish.'
-          )
-        else disabled_text = window.gettext('Title is required to publish.')
+        const disabled_text =
+          data.type == 'project'
+            ? window.gettext('Title and disciplines are required to publish.')
+            : window.gettext('Title is required to publish.')
+
         disabled_indicator = (
           <div className="warning flex-middle">
             <span className="material-symbols-rounded red">block</span>
@@ -245,10 +105,12 @@ export class ShareMenu extends React.Component {
           </div>
         )
       }
+
       return [
         <div className="big-buttons-wrapper">
           <div
             className={public_class}
+            // @ts-ignore @todo disabled is not allowed on a div
             disabled={public_disabled}
             onClick={this.setPublication.bind(this, true && !public_disabled)}
           >
@@ -453,7 +315,7 @@ export class ShareMenu extends React.Component {
           )
         )
       ) {
-        updateValueInstant(
+        updateValueInstantQuery(
           this.props.data.id,
           'workflow',
           { public_view: public_view },
@@ -463,7 +325,7 @@ export class ShareMenu extends React.Component {
         )
       }
     } else {
-      updateValueInstant(
+      updateValueInstantQuery(
         this.props.data.id,
         'workflow',
         { public_view: public_view },
@@ -485,7 +347,7 @@ export class ShareMenu extends React.Component {
         )
       )
     ) {
-      updateValueInstant(
+      updateValueInstantQuery(
         component.props.data.id,
         component.props.data.type,
         { published: published },
