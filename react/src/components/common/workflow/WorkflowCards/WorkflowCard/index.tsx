@@ -186,7 +186,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
       this.workflow.type !== WorkflowType.PROJECT &&
       this.workflow.type !== WorkflowType.LIVE_PROJECT
 
-    if (!this.props.readOnly  && isTeacher && isEligibleType) {
+    if (!this.props.readOnly && isTeacher && isEligibleType) {
       return (
         <div
           className="permission-select"

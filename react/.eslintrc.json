@@ -12,8 +12,9 @@
     "es2020": true,
     "amd": true,
     "node": true
+    // "d3": true
   },
-   "parser": "@typescript-eslint/parser",
+  "parser": "@typescript-eslint/parser",
   "settings": {
     "react": {
       "version": "detect"
@@ -44,13 +45,15 @@
   ],
   "globals": {
     "$": true,
-    "COURSEFLOW_APP": true
+    "COURSEFLOW_APP": true,
+     "JSX": true
+
   },
   "plugins": [
     "react",
     "prettier",
     "@typescript-eslint",
-     "react-hooks"
+    "react-hooks"
   ],
   "rules": {
     "no-var": "warn",
@@ -66,11 +69,11 @@
     "react/prop-types": "off",
     "no-case-declarations": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-ts-comment" : "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-this-alias": "off",
     "prefer-const": "warn",
-    "react/jsx-filename-extension":  [
+    "react/jsx-filename-extension": [
       1,
       {
         "extensions": [

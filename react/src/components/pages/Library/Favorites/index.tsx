@@ -1,16 +1,19 @@
-// @ts-nocheck
 import * as React from 'react'
-import { getFavouritesQuery } from '@XMLHTTP/PostFunctions.js'
-import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.js'
+import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
+import { getFavouritesQuery } from '@XMLHTTP/APIFunctions'
+
+type StateType = {
+  project_data: any
+}
 
 /*******************************************************
  * @FavouritesRenderer
  *******************************************************/
-class FavouritesPage extends React.Component {
+class Favourites extends React.Component<JSX.IntrinsicAttributes, StateType> {
   private createDiv: React.RefObject<HTMLDivElement>
-  constructor(props) {
+  constructor(props: JSX.IntrinsicAttributes) {
     super(props)
-    this.state = {}
+    this.state = {} as StateType
     // this.read_only = this.props.renderer.read_only
     this.createDiv = React.createRef()
   }
@@ -22,8 +25,12 @@ class FavouritesPage extends React.Component {
     getFavouritesQuery((data) => {
       console.log('data')
       console.log(data)
-      this.setState({ project_data: data.data_package })
+
+      this.setState({
+        project_data: data.data_package
+      })
     })
+
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)
   }
 
@@ -31,16 +38,22 @@ class FavouritesPage extends React.Component {
    * RENDER
    *******************************************************/
   render() {
+    console.log('this.state.project_data')
+    console.log(this.state.project_data)
     return (
       <div className="project-menu">
         <WorkflowFilter
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           workflows={this.state.project_data}
           context="library"
+          // updateWorkflow={this.props.renderer.updateWorkflow}
+          // user_role={this.props.renderer.user_role}
+          // read_only={this.props.renderer.read_only}
+          // project_data={this.props.renderer.project_data}
         />
       </div>
     )
   }
 }
 
-export default FavouritesPage
+export default Favourites

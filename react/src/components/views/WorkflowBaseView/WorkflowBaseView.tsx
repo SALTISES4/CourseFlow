@@ -10,7 +10,7 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import ConnectionBar from '@cfModule/ConnectionBar'
 
-import { WorkflowView } from '../WorkflowView/index.js'
+import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
 import { AlignmentView } from '../AlignmentView/index.js'
 import { GridView } from '../GridView/index.js'
@@ -32,7 +32,7 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 import { WorkflowTitle } from '@cfUIComponents'
 import CollapsibleText from '@cfUIComponents/CollapsibleText'
-import { AppState, Workflow } from '@cfRedux/type'
+import { AppState } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
 import { ViewType } from '@cfModule/types/enum'
@@ -620,7 +620,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           websocket={this.websocket}
           // connection_update_receive={this.props.renderer.connection_update_received}
           // renderer={renderer}
-
         />
       )
     }

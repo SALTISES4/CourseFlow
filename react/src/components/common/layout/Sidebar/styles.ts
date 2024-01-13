@@ -38,7 +38,7 @@ export const Collapse = styled(Fab)<{ collapsed: boolean }>(
       transform: 'translate(4em, -58px)',
       transition: 'color 0.3s ease, background-color 0.3s ease',
       '&:hover': {
-        color: theme.palette.common.white,
+        color: theme.palette.common.white
         // backgroundColor: theme.palette.common.light
       }
     })

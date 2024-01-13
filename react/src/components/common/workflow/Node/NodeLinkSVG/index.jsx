@@ -253,7 +253,7 @@ class NodeLinkSVG extends Component {
       const source_transform = Utility.getSVGTranslation(
         this.props.source_port_handle
           .select(function () {
-             // @todo trying to debug 'could not draw a node link error'
+            // @todo trying to debug 'could not draw a node link error'
             // console.log('this.parentNode')
             // console.log(this.parentNode)
             return this.parentNode
@@ -263,13 +263,13 @@ class NodeLinkSVG extends Component {
       const target_transform = Utility.getSVGTranslation(
         this.props.target_port_handle
           .select(function () {
-             // @todo trying to debug 'could not draw a node link error'
+            // @todo trying to debug 'could not draw a node link error'
             // console.log('this.parentNode')
             // console.log(this.parentNode)
           })
           .attr('transform')
       )
-       // @todo trying to debug 'could not draw a node link error'
+      // @todo trying to debug 'could not draw a node link error'
       // console.log('this.props.source_port_handle')
       // console.log(this.props.source_port_handle)
 

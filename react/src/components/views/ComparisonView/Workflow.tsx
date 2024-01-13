@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithSorting } from '@cfParentComponents'
@@ -5,7 +6,7 @@ import * as Utility from '@cfUtility'
 
 import WeekWorkflow from './WeekWorkflow'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
 // import $ from 'jquery'
 
 //Basic component representing the workflow

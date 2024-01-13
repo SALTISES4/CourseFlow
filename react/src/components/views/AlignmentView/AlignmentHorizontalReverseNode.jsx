@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { NodeTitle } from '@cfUIComponents'
 import { getChildWorkflowByID } from '@cfFindState'
-import { OutcomeNode } from '../WorkflowView'
 import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome'
 import OutcomeAdder from './OutcomeAdder'
 import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
+import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode"
 
 /**
  * The representation of a node in the alignment view. It will display
@@ -55,7 +55,9 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           </div>
           <div className="half-width alignment-column">
             {window.gettext('Associated ') +
-              Utility.capWords(window.gettext(this.props.workflow.type + ' outcomes'))}
+              Utility.capWords(
+                window.gettext(this.props.workflow.type + ' outcomes')
+              )}
           </div>
         </div>
       )
@@ -97,16 +99,18 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     }
     let child_outcomes
     if (this.props.child_outcomes != -1)
-      child_outcomes = this.props.child_outcomes.map((child_outcome) => {
+      child_outcomes = this.props.child_outcomes.map((child_outcome, index) => {
         if (
           !this.state.show_all &&
           this.props.restriction_set &&
           this.props.restriction_set.child_outcomes &&
-          this.props.restriction_set.child_outcomes.indexOf(child_outcome) === -1
+          this.props.restriction_set.child_outcomes.indexOf(child_outcome) ===
+            -1
         )
           return null
         return (
           <AlignmentHorizontalReverseChildOutcome
+            key={index}
             objectID={child_outcome}
             node_data={data}
             renderer={this.props.renderer}
@@ -240,7 +244,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
 }
 
 const mapAlignmentHorizontalReverseNodeStateToProps = (state, own_props) => {
-  for (var i = 0; i < state.node.length; i++) {
+  for (let i = 0; i < state.node.length; i++) {
     if (state.node[i].id == own_props.objectID) {
       const node = state.node[i]
       const column = state.column.find((column) => column.id == node.column)

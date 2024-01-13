@@ -205,5 +205,3 @@ export const debounce = (func, timeout = 300) => {
     }, timeout)
   }
 }
-
-

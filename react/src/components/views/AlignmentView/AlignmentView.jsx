@@ -96,7 +96,7 @@ class AlignmentView extends React.Component {
           this.props.outcomes[this.state.active].outcomes[this.state.active2]
             .data
       } catch (err) {
-        for (var i = 0; i < this.props.outcomes.length; i++) {
+        for (let i = 0; i < this.props.outcomes.length; i++) {
           if (this.props.outcomes[i].outcomes.length >= 1) {
             this.changeView(i, 'outcome', 0)
             return null

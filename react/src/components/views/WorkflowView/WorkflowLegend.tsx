@@ -179,12 +179,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-const WorkflowLegend = connect<
-  ConnectedProps,
-  object,
-  OwnProps,
-  AppState
->(
+const WorkflowLegend = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(WorkflowLegendUnconnected)

@@ -33,13 +33,12 @@ type ChildRenderer = {
 
 export type EditableComponentProps = {
   renderer: ChildRenderer
-  data: any
+  data?: any
   placeholder?: any
   text?: any
   textChangeFunction?: any
   disabled?: any
   object_sets?: any
-
 }
 
 type StateType = {

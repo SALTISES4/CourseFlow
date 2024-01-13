@@ -8,6 +8,7 @@ import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
 import { ViewType } from '@cfModule/types/enum.js'
+import { AppState } from '@cfRedux/type'
 // import $ from 'jquery'
 
 //Container for common elements for workflows
@@ -76,31 +77,26 @@ class WorkflowBaseUnconnected extends EditableComponent {
       style.border = '2px solid ' + data.lock.user_colour
     }
 
-    const workflow = this
-
-    return [
-      <div className="workflow-header" style={style}>
-        <WorkflowCard
-          workflowData={data}
-          selectAction={this.openEdit.bind(this, null)}
-        />
-      </div>,
-      <div className="workflow-container">
-        {this.addEditable(data, true)}
-        {workflow_content}
-      </div>
-    ]
+    this.addEditable(data, true)
+    return (
+      <>
+        <div className="workflow-header" style={style}>
+          <WorkflowCard
+            workflowData={data}
+            selectAction={this.openEdit.bind(this, null)}
+          />
+        </div>
+        <div className="workflow-container">{workflow_content}</div>
+      </>
+    )
   }
 }
 
-const mapWorkflowStateToProps = (state) => ({
+const mapStateToProps = (state: AppState) => ({
   data: state.workflow,
   object_sets: state.objectset
 })
 
-const WorkflowBase = connect(
-  mapWorkflowStateToProps,
-  null
-)(WorkflowBaseUnconnected)
+const WorkflowBase = connect(mapStateToProps, null)(WorkflowBaseUnconnected)
 
 export default WorkflowBase

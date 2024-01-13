@@ -4,7 +4,16 @@ import {
   VERB,
   Workflow
 } from '@cfModule/types/common'
-import {Nodelink, NodeType, Nodeweek, Outcome, Outcomenode, OutcomeOutcome, OutcomeWorkflow} from '@cfRedux/type'
+
+import {
+  Nodelink,
+  NodeType,
+  Nodeweek,
+  Outcome,
+  Outcomenode,
+  OutcomeOutcome,
+  OutcomeWorkflow
+} from '@cfRedux/type'
 
 export type LibraryQueryResp = {
   data_package: Workflow[]
@@ -73,6 +82,11 @@ export type NewNodeQueryResp = {
 }
 export type AddStrategyQueryResp = {
   action: VERB
+}
+
+export type FavouritesQueryResp = {
+  action: VERB
+  data_package: any
 }
 
 export type CommentsForObjectQueryResp = any

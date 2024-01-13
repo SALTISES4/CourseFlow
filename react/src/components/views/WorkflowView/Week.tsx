@@ -23,9 +23,10 @@ import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
 
 type ConnectedProps = GetWeekByIDType
 type OwnProps = {
-  column_order: any // @todo i think this is delivered by redux
   rank: number
-  nodes_by_column: any
+  column_order?: any // @todo i think this is delivered by redux
+  nodes_by_column?: any
+  throughParentID?: any
 } & EditableComponentWithSortingProps
 export type WeekUnconnectedPropsType = OwnProps
 
@@ -228,7 +229,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     if (!renderer.is_strategy)
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
-    const style  = {
+    const style = {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
 

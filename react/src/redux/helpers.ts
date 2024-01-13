@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as Constants from '../constants'
-import ActionCreator from "@cfRedux/ActionCreator"
+import ActionCreator from '@cfRedux/ActionCreator'
 // import * as $ from 'jquery';
 // import 'jquery';
 // import 'jquery-ui';

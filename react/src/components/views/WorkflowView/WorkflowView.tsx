@@ -7,16 +7,35 @@ import * as Utility from '@cfUtility'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/type'
+import {
+  EditableComponentWithSortingProps,
+  EditableComponentWithSortingState
+} from '@cfParentComponents/EditableComponentWithSorting'
 // import $ from 'jquery'
+
+type ConnectedProps = {
+  data: AppState['workflow']
+  object_sets: AppState['objectset']
+  week: AppState['week']
+  node: AppState['node']
+  outcome: AppState['outcome']
+}
+type OwnProps = EditableComponentWithSortingProps
+type StateProps = EditableComponentWithSortingState
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns
  */
-class WorkflowViewUnconnected extends EditableComponentWithSorting {
-  constructor(props) {
+class WorkflowViewUnconnected extends EditableComponentWithSorting<
+  PropsType,
+  StateProps
+> {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = 'workflow'
-    this.state = {}
+    this.state = {} as StateProps
   }
 
   /*******************************************************
@@ -39,6 +58,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
       this.props.objectID,
       'columnworkflow',
       '.column-workflow',
+      // @ts-ignore
       'x',
       false,
       null,
@@ -50,6 +70,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
       this.props.objectID,
       'weekworkflow',
       '.week-workflow',
+      // @ts-ignore
       'y',
       false,
       null,
@@ -62,7 +83,13 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     Utility.triggerHandlerEach($('.week .node'), 'component-updated')
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(
+    id: number,
+    new_position: number,
+    type: string,
+    new_parent: number,
+    child_id: number
+  ) {
     if (type === 'columnworkflow') {
       this.props.renderer.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
@@ -159,4 +186,7 @@ const mapWorkflowStateToProps = (state) => ({
   node: state.node,
   outcome: state.outcome
 })
-export default connect(mapWorkflowStateToProps, null)(WorkflowViewUnconnected)
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapWorkflowStateToProps,
+  null
+)(WorkflowViewUnconnected)

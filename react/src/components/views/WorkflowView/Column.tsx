@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
@@ -39,7 +40,7 @@ class Column extends EditableComponentWithActions {
    *******************************************************/
   render() {
     const data = this.props.data
-    var title = data.title
+    let title = data.title
     if (!title) title = data.column_type_display
 
     const style = {}

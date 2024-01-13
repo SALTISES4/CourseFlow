@@ -4,7 +4,6 @@ import { getWeekByID } from '@cfFindState'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-
 /**
  * The week represenation for the "jump to" menu
  */

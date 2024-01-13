@@ -149,7 +149,7 @@ const OutcomeHorizontalLink = connect(
 /**
  * Basic component representing an outcome
  */
-class Outcome extends EditableComponentWithSorting {
+class OutcomeUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props)
     this.objectType = 'outcome'
@@ -451,6 +451,6 @@ const mapOutcomeStateToProps = (state, own_props) =>
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const ConnectedOutcome = connect(mapOutcomeStateToProps, null)(Outcome)
+const Outcome = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected)
 
-export default ConnectedOutcome
+export default Outcome

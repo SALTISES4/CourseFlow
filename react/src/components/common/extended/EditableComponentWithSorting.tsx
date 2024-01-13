@@ -2,7 +2,7 @@
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
-  EditableComponentWithCommentsState
+  EditableComponentWithActionsState
 } from './EditableComponentWithActions'
 // import $ from 'jquery'
 import { newNodeQuery } from '@XMLHTTP/APIFunctions'
@@ -12,7 +12,7 @@ type OwnProps = {
 } & EditableComponentWithActionsProps
 export type EditableComponentWithSortingProps = OwnProps
 
-type StateType = EditableComponentWithCommentsState
+type StateType = EditableComponentWithActionsState
 export type EditableComponentWithSortingState = StateType
 
 class EditableComponentWithSorting<

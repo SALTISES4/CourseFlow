@@ -1,9 +1,16 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getNodeWeekByID } from '@cfFindState'
 // @local
 import Node from './Node'
-import { NodeWeekUnconnected } from '../WorkflowView'
+import { AppState } from '@cfRedux/type'
+import { NodeWeekUnconnected } from '@cfViews/WorkflowView/NodeWeek'
+
+type ConnectedProps = any
+type OwnProps = any
+type StateProps = any
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * NodeWeek for the comparison view
@@ -25,9 +32,10 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
     )
   }
 }
-const mapNodeWeekStateToProps = (state, own_props) =>
-  getNodeWeekByID(state, own_props.objectID)
-const NodeWeekComparison = connect(
+const mapNodeWeekStateToProps = (state: AppState, ownProps: OwnProps) => {
+  return getNodeWeekByID(state, ownProps.objectID)
+}
+const NodeWeekComparison = connect<ConnectedProps, object, OwnProps, AppState>(
   mapNodeWeekStateToProps,
   null
 )(NodeWeekComparisonUnconnected)

@@ -1,21 +1,30 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
-import { getWeekByID } from '@cfFindState'
+import { getWeekByID, GetWeekByIDType } from '@cfFindState'
 import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 // @components
 import NodeWeek from './NodeWeek'
-import { WeekUnconnected } from '../WorkflowView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/type'
+import {WeekUnconnected} from "@cfViews/WorkflowView/Week";
 // import $ from 'jquery'
+
+type ConnectedProps = GetWeekByIDType
+type OwnProps = {
+  renderer: any
+  objectID: number
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * In the comparison view, the week should be only a single column
  * wide. In addition, we have the ability to move nodes out of the
  * week and into the week of another workflow.
  */
-export class WeekComparisonUnconnected extends WeekUnconnected {
+export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -58,7 +67,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
       confirm(
-        gettext(
+        window.gettext(
           "You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"
         )
       )
@@ -137,10 +146,15 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
     this.makeDroppable()
   }
 }
-const mapWeekStateToProps = (state, own_props) =>
-  getWeekByID(state, own_props.objectID)
 
-const WeekComparison = connect(
+const mapWeekStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetWeekByIDType => {
+  return getWeekByID(state, ownProps.objectID)
+}
+
+const WeekComparison = connect<ConnectedProps, object, OwnProps, AppState>(
   mapWeekStateToProps,
   null
 )(WeekComparisonUnconnected)
