@@ -206,42 +206,4 @@ export const debounce = (func, timeout = 300) => {
   }
 }
 
-// @todo move to component
-/**
- * Based on an outcomenode's completion status, return the correct icon
- *
- * @param completion_status
- * @param outcomes_type
- * @returns {JSX.Element|*[]}
- */
-export function getCompletionImg(completion_status, outcomes_type) {
-  const contents = []
 
-  if (outcomes_type === 0 || completion_status & 1) {
-    return (
-      <img
-        className="self-completed"
-        src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
-      />
-    )
-  }
-  if (completion_status & 2) {
-    const divclass = ''
-    contents.push(
-      <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
-    )
-  }
-  if (completion_status & 4) {
-    const divclass = ''
-    contents.push(
-      <div className={'outcome-developed outcome-degree' + divclass}>D</div>
-    )
-  }
-  if (completion_status & 8) {
-    const divclass = ''
-    contents.push(
-      <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
-    )
-  }
-  return contents
-}

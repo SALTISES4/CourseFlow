@@ -1,5 +1,5 @@
 import ChildWorkflow from '@cfRedux/reducers/childWorkflow'
-import {WorkflowType} from "@cfModule/types/enum";
+import { WorkflowType } from '@cfModule/types/enum'
 
 export type AppState = {
   workflow: Workflow
@@ -9,7 +9,7 @@ export type AppState = {
   weekworkflow: Weekworkflow[]
   week: Week[]
   nodeweek: Nodeweek[]
-  node: Node[]
+  node: NodeType[]
   outcomenode: Outcomenode[]
   nodelink: Nodelink[]
   parent_workflow: ParentWorkflow[]
@@ -35,10 +35,17 @@ export type Outcomenode = {
   degree: number
 }
 
-export type Outcome = {
-  deleted: boolean
-  deleted_on: Date
+export type OutcomeOutcome = {
+  parent: number
+  child: number
+  rank: number
   id: number
+}
+
+export type Outcome = {
+  id: number
+  deleted: boolean
+  deleted_on: Date | string
   title: null
   code: null
   description: null
@@ -75,7 +82,7 @@ export type Columnworkflow = {
   no_drag?: boolean
 }
 
-export type Node = {
+export type NodeType = {
   deleted: boolean
   deleted_on: string
   id: number
@@ -108,9 +115,9 @@ export type Node = {
 }
 
 export type Nodeweek = {
+  added_on: Date
   week: number
   node: number
-  added_on: Date
   rank: number
   id: number
 }
@@ -138,6 +145,13 @@ export type Weekworkflow = {
   rank: number
   week_type: number
   no_drag?: boolean
+}
+
+export type OutcomeWorkflow = {
+  workflow: number
+  outcome: number
+  rank: number
+  id: number
 }
 
 export type Workflow = {
@@ -175,18 +189,29 @@ export type Workflow = {
   importing: boolean
   public_view: boolean
   url: string
+  lock?: boolean
 }
 
 /*******************************************************
  * NEED TYPING
  *******************************************************/
-export type Nodelink = any
+export type Nodelink = {
+  deleted: boolean
+  deleted_on: string
+  id: number
+  title: null
+  source_node: number
+  target_node: number
+  source_port: number
+  target_port: number
+  dashed: boolean
+  text_position: number
+}
 
 export type ObjectSet = {
   title: string
 }
 
-export type OutcomeOutcome = any
 export type ParentWorkflow = any
 export type Strategy = any
 export type ChildWorkflow = any

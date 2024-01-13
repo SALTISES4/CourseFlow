@@ -2,7 +2,7 @@
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import { DATA_ACTIONS } from './common'
 import { dragAction } from '@XMLHTTP/PostFunctions.js'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  *

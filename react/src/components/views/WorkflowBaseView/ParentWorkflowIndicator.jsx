@@ -4,7 +4,7 @@ import { getPublicParentWorkflowInfo } from '@XMLHTTP/PostFunctions.js'
 import { WorkflowTitle } from '@cfUIComponents'
 import { connect } from 'react-redux'
 import { getParentWorkflowInfoQuery } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Shows the parent workflows for the current workflow, as well

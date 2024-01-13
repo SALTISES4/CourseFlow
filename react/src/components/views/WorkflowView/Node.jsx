@@ -13,7 +13,7 @@ import NodeLink from './NodeLink'
 import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode'
 import NodePorts from '@cfCommonComponents/workflow/Node/NodePorts'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Represents the node in the workflow view

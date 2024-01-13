@@ -5,7 +5,7 @@ import {
   getUsersForObjectQuery,
   updateValueInstantQuery
 } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 

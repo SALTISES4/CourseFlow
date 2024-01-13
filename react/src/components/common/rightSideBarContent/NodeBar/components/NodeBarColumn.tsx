@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
 import { getColumnByID } from '@cfFindState'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Can be dragged and dropped into the workflow space to create

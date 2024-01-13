@@ -2,7 +2,7 @@ import * as React from 'react'
 import { TitleText } from '@cfUIComponents'
 import { getWeekByID } from '@cfFindState'
 import { connect } from 'react-redux'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 
 /**

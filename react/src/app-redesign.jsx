@@ -32,7 +32,7 @@ import '@cfSCSS/workflow_styles.scss'
 import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
-import Project from '@cfModule/components/pages/Library/ProjectDetail'
+import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
 import Favourites from '@cfModule/components/pages/Library/Favorites'
 import Home from '@cfModule/components/pages/Library/Home'
@@ -47,7 +47,7 @@ COURSEFLOW_APP.tinyLoader = tinyLoader
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
-  nonce: document.querySelector('#script-redesign').nonce
+  nonce: window.cf_nonce
 })
 
 // helper function that wraps each of the components we want to render
@@ -103,7 +103,7 @@ const getAppComponent = () => {
     case 'explore':
       return <Explore {...COURSEFLOW_APP.contextData} />
     case 'projectDetail':
-      return <Project {...COURSEFLOW_APP.contextData} />
+      return <ProjectDetail {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
      * USER / PROFILE

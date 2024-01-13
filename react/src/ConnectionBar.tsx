@@ -1,5 +1,31 @@
-// @ts-nocheck
 import * as React from 'react'
+
+type ConnectedUser = {
+  user_name: string
+  user_colour: string
+  user_id: string
+  timeout: string
+}
+
+const ConnectedUser = ({
+  user_colour,
+  user_name
+}: {
+  user_colour: string
+  user_name: string
+}) => {
+  return (
+    <div
+      className="user-indicator"
+      style={{
+        backgroundColor: user_colour
+      }}
+      title={user_name}
+    >
+      {user_name}
+    </div>
+  )
+}
 
 // @todo not sure where this goes
 
@@ -7,38 +33,52 @@ import * as React from 'react'
 
 type PropsType = {
   user_id: any
-  websocket: any
+  websocket: WebSocket
+  //  renderer: any
 }
 
 type StateType = {
-  connected_users: any[]
+  connected_users: ConnectedUser[]
 }
 
 export class ConnectionBar extends React.Component<PropsType, StateType> {
-  constructor(props) {
+  private user_name: any
+  private myColour: any
+  constructor(props: PropsType) {
     super(props)
+
     console.log('ConnectionBar props')
     console.log(props)
+
     this.state = {
       connected_users: []
     }
-    this.user_id = props.renderer.user_id
+    // this.user_id = props.renderer.user_id
     // this.user_name = props.renderer.user_name
+
+    // @ts-ignore
     this.user_name = COURSEFLOW_APP.contextData.user_name
     // this.myColour = props.renderer.myColour
+
+    // @ts-ignore
     this.myColour = COURSEFLOW_APP.contextData.user_name
 
-    const connection_bar = this
-
-    props.renderer.connection_update_received = (user_data) => {
-      connection_bar.connection_update_received(user_data)
-    }
+    // @todo not sure what the intention is here, but it needs to be removed
+    // watch for side effects
+    // this.props.renderer.connection_update_received = (user_data) => {
+    //   this.connection_update_received(user_data)
+    // }
   }
 
   render() {
     if (this.props.websocket.readyState === 1) {
       const users = this.state.connected_users.map((user) => {
-        return <ConnectedUser user_data={user} />
+        return (
+          <ConnectedUser
+            user_colour={user.user_colour}
+            user_name={user.user_name}
+          />
+        )
       })
 
       return (
@@ -72,7 +112,12 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
   }
 
   connection_update(connected = true) {
-    clearTimeout(this.connection_update.bind(this))
+    const cache = this.connection_update.bind(this)
+
+    // @todo can't clear a timeout which hasn't been set yet, fix
+    // @ts-ignore
+    clearTimeout(cache)
+
     if (this.props.websocket.readyState === 1) {
       this.props.websocket.send(
         JSON.stringify({
@@ -81,7 +126,7 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
             // user_id: this.user_id,
             // user_name: this.user_name, // why?
             // user_colour: this.myColour, // why?
-            user_id: this.user_id,
+            user_id: this.props.user_id,
             user_name: this.user_name, // why?
             user_colour: this.myColour, // why?
             connected: connected
@@ -89,7 +134,7 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
         })
       )
     }
-    setTimeout(this.connection_update.bind(this), 30000)
+    setTimeout(cache, 30000)
   }
 
   connection_update_received(user_data) {
@@ -137,23 +182,4 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
   }
 }
 
-export class ConnectedUser extends React.Component {
-  render() {
-    console.log('ConnectedUser props')
-    console.log(props)
-    const data = this.props.user_data
-    console.log('this.props.user_data')
-    console.log(this)
-    return (
-      <div
-        className="user-indicator"
-        style={{
-          backgroundColor: data.user_colour
-        }}
-        title={data.user_name}
-      >
-        {data.user_name}
-      </div>
-    )
-  }
-}
+export default ConnectionBar

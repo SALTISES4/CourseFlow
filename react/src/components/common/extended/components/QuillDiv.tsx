@@ -1,6 +1,6 @@
 //Quill div for inputs, as a React component
 import * as React from 'react'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 type PropsType = {
   text: string

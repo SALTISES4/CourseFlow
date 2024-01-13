@@ -3,7 +3,7 @@ import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /*
 Creates a set of sections (tabs) of workflow/project card grids.

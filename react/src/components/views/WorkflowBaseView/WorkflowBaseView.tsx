@@ -8,8 +8,7 @@ import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.j
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { ConnectionBar } from '@cfModule/ConnectedUsers.jsx'
-import { getTargetProjectMenu } from '@XMLHTTP/postTemp.jsx'
+import ConnectionBar from '@cfModule/ConnectionBar'
 
 import { WorkflowView } from '../WorkflowView/index.js'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
@@ -19,7 +18,9 @@ import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox
 import {
   deleteSelfQuery,
   duplicateBaseItemQuery,
-  getUsersForObjectQuery, restoreSelfQuery
+  getTargetProjectMenu,
+  getUsersForObjectQuery,
+  restoreSelfQuery
 } from '@XMLHTTP/APIFunctions'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
@@ -613,7 +614,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const renderer = this.props.renderer
 
     if (!this.always_static) {
-      return <ConnectionBar websocket={this.websocket} renderer={renderer} />
+      return (
+        <ConnectionBar
+          user_id={renderer.user_id}
+          websocket={this.websocket}
+          // connection_update_receive={this.props.renderer.connection_update_received}
+          // renderer={renderer}
+
+        />
+      )
     }
     return <></>
   }

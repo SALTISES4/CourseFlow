@@ -12,7 +12,7 @@ import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop
 
 import { AppState } from '@cfRedux/type'
 import { ChangeEvent } from 'react'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Used in the outcome bar
@@ -48,7 +48,7 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutc
 
     return (
       // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
-      <div className="outcome-outcome" id={this.props.data.id}>
+      <div className="outcome-outcome" id={String(this.props.data.id)}>
         <OutcomeBarOutcome
           objectID={this.props.data.child}
           parentID={this.props.parentID}

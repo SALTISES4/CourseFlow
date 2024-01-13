@@ -7,7 +7,7 @@ import {
   getLinkedWorkflowMenuQuery,
   toggleStrategyQuery
 } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
 

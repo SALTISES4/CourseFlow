@@ -29,6 +29,11 @@
     const COURSEFLOW_APP = {}
 
   </script>
+
+  <script nonce="{{ request.csp_nonce }}">
+      window.cf_nonce = "{{ request.csp_nonce }}"
+  </script>
+
   {% include 'course_flow/base/static_scripts.html' %}
   {% include 'course_flow/base/scripts.html' %}
 

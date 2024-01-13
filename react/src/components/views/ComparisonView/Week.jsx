@@ -8,7 +8,7 @@ import NodeWeek from './NodeWeek'
 import { WeekUnconnected } from '../WorkflowView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * In the comparison view, the week should be only a single column

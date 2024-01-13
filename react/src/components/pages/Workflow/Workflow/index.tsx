@@ -34,12 +34,11 @@ import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 const cache = createCache({
   key: 'emotion',
-  // @ts-ignore
-  nonce: document.querySelector('#script-redesign').nonce
+  nonce: window.cf_nonce
 })
 
 enum DATA_TYPE {
@@ -103,7 +102,9 @@ class Workflow {
   private is_static: boolean
   private store: Store<EmptyObject & AppState, AnyAction>
 
-  constructor(props: WorkflowDetailViewDTO) {
+  // NOTE: this is not yet a react component, so its misleading to use the same
+  // 'props' value in the constructor since they behave differently
+  constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
       column_choices,
       context_choices,
@@ -114,13 +115,13 @@ class Workflow {
       strategy_classification_choices,
       is_strategy,
       project
-    } = props.workflow_data_package
+    } = propsConfig.workflow_data_package
 
     this.message_queue = []
     this.messages_queued = true
 
-    this.public_view = this.props.public_view
-    this.workflowID = this.props.workflow_model_id
+    this.public_view = propsConfig.public_view
+    this.workflowID = propsConfig.workflow_model_id
 
     // Data package
     this.column_choices = column_choices
@@ -134,9 +135,9 @@ class Workflow {
     this.is_strategy = is_strategy
     this.project = project
 
-    this.user_permission = props.user_permission
-    this.user_role = props.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
-    this.user_id = props.user_id
+    this.user_permission = propsConfig.user_permission
+    this.user_role = propsConfig.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
+    this.user_id = propsConfig.user_id
     this.read_only = true
     this.workflowRender = this.render.bind(this)
 
@@ -148,7 +149,7 @@ class Workflow {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    switch (this.props.user_permission) {
+    switch (propsConfig.user_permission) {
       case Constants.permission_keys['view']:
         this.can_view = true
         break
@@ -169,7 +170,7 @@ class Workflow {
       // No default case needed here if these are the only options
     }
 
-    switch (this.props.user_role) {
+    switch (propsConfig.user_role) {
       case Constants.role_keys['none']:
         // @todo what is happening in this option?
         break
@@ -414,8 +415,11 @@ class Workflow {
    *******************************************************/
   parsemessage(e) {
     const data = JSON.parse(e.data)
-    console.log('parsemessage')
-    console.log(data)
+
+    // @todo this is not useful until we have active multiple users
+    // console.log('parsemessage')
+    // console.log(data)
+
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
         this.store.dispatch(data.action)

@@ -5,7 +5,7 @@ import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
 import { Component } from '@cfParentComponents'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 type PropsType = {
   outcomesType: number

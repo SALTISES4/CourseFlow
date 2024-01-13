@@ -28,12 +28,13 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
   render() {
     const data = this.props.data
     let my_class = 'outcome-outcome outcome-outcome-' + this.props.parent_depth
+    // @ts-ignore
     if (data.no_drag) my_class += ' no-drag'
 
     return (
       <li
         className={my_class}
-        id={data.id}
+        id={String(data.id)}
         // ref={this.mainDiv} // @todo verify but this was not used
         data-child-id={data.child}
       >

@@ -5,7 +5,7 @@ import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop
 import * as Constants from '@cfConstants'
 import { AppState } from '@cfRedux/type'
 import { getStrategyByID, StrategyByIDType } from '@cfFindState'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Represents a strategy (SALTISE) or node group (user generated)

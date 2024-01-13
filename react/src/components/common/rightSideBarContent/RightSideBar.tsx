@@ -6,7 +6,7 @@ import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 import { ViewType, WFContext } from '@cfModule/types/enum.js'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import $ from 'jquery'
+// import $ from 'jquery'
 import RestoreBarItem from '@cfCommonComponents/rightSideBarContent/NodeBar/components/RestoreBarItem'
 import { AppState } from '@cfRedux/type'
 

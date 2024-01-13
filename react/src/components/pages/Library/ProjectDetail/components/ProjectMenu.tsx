@@ -1,8 +1,6 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import {
-  makeProjectLiveQuery,
-} from '@XMLHTTP/PostFunctions'
+import { makeProjectLiveQuery } from '@XMLHTTP/PostFunctions'
 // @local
 import { MenuBar } from '@cfCommonComponents/components'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
@@ -10,20 +8,21 @@ import {
   deleteSelfQuery,
   duplicateBaseItemQuery,
   getUsersForObjectQuery,
-  getWorkflowsForProjectQuery, restoreSelfQuery
+  getWorkflowsForProjectQuery,
+  restoreSelfQuery
 } from '@XMLHTTP/APIFunctions'
 import {
   ProjectData,
   ProjectMenuProps
 } from '@cfPages/Library/ProjectDetail/types'
-import { Discipline, Workflow } from '@cfModule/types/common'
+import { Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types'
 import { Dialog, DialogTitle } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /*******************************************************
  * The project library menu
@@ -85,7 +84,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   // @todo this is wrapped because it is called by openShareMenu
-  // so do no unwrap until the renderMessageBox is sorted out
+  // so do not unwrap until the renderMessageBox is sorted out
   getUserData() {
     getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
       this.setState({ users: data })
@@ -246,7 +245,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
 
   OverflowLinks = () => {
     const data = this.state.data
-
 
     let liveproject
     const overflow_links = []

@@ -7,7 +7,7 @@ import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * The view of a workflow in which the outcomes can be added,
