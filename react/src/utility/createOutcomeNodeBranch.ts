@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getTableOutcomeNodeByID } from '@cfFindState'
 
 export type CreateOutcomeNodeBranchType = {

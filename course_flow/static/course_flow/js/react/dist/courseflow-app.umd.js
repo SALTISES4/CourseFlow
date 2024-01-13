@@ -96747,7 +96747,9 @@ ${latestSubscriptionCallbackError.current.stack}
       getFavouritesQuery((data2) => {
         console.log("data");
         console.log(data2);
-        this.setState({ project_data: data2.data_package });
+        this.setState({
+          project_data: data2.data_package
+        });
       });
       COURSEFLOW_APP.makeDropdown(this.createDiv.current);
     }
@@ -96758,7 +96760,6 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowFilter,
         {
-          renderer: this.props.renderer,
           workflows: this.state.project_data,
           context: "library"
         }
