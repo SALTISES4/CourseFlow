@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
 import { getColumnByID } from '@cfFindState'
+import $ from 'jquery'
 
 /**
  * Can be dragged and dropped into the workflow space to create
@@ -17,7 +18,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
-    $(this.maindiv.current)[0].dataDraggable = {
+    $(this.mainDiv.current)[0].dataDraggable = {
       column: this.props.data.id,
       column_type: null
     }
@@ -29,7 +30,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   makeDraggable() {
     const draggable_selector = 'node-week'
     const draggable_type = 'nodeweek'
-    $(this.maindiv?.current).draggable({
+    $(this.mainDiv?.current).draggable({
       helper: (_e, _item) => {
         const helper = $(document.createElement('div'))
         helper.addClass('node-ghost')
@@ -64,7 +65,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
           'new-node node-bar-column node-bar-sortable column-' +
           this.props.objectID
         }
-        ref={this.maindiv}
+        ref={this.mainDiv}
         style={{ backgroundColor: Constants.getColumnColour(data) }}
       />
     )
@@ -83,7 +84,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
-    $(this.maindiv.current)[0].dataDraggable = {
+    $(this.mainDiv.current)[0].dataDraggable = {
       column: null,
       column_type: this.props.columnType
     }
@@ -101,7 +102,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     return (
       <div
         className="new-node new-column node-bar-column node-bar-sortable"
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         {title}
       </div>

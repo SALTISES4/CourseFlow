@@ -30,7 +30,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
       <div
         className={my_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         data-child-id={data.week}
       >
         {week}

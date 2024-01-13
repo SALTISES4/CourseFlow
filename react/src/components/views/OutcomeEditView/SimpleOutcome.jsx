@@ -102,7 +102,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
       <div
         className={css_class}
         style={this.get_border_style()}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={onClick}
       >
         <div className="outcome-title">

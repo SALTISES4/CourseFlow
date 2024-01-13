@@ -4,6 +4,7 @@ declare global {
    *~ existing declarations in the global namespace
    */
   interface Window {
+    ngettext: (str: string, str2: string, count: number) => string
     gettext: (str: string) => string
     fail_function: (action?: string) => void
     getCsrfToken: () => string

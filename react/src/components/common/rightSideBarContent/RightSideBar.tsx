@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import ViewBar from './ViewBar'
 import RestoreBar from './RestoreBar'
@@ -7,19 +6,37 @@ import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 import { ViewType, WFContext } from '@cfModule/types/enum.js'
+import $ from 'jquery'
 
 /**
  * Creates the right-hand panel with edit, view, etc for workflows,
  * including the comparison view.
  */
 
-class RightSideBar extends React.Component {
+type ChildRenderer = {
+  view_type: any
+  is_strategy: any
+  read_only: any
+  column_choices: any
+}
+
+type PropsType = {
+  renderer: ChildRenderer
+  parentRender: any
+  context: any
+  object_sets: any
+  toggleObjectSet: any
+  data: any
+}
+
+class RightSideBar extends React.Component<PropsType> {
   /*******************************************************
-   * props
-   *  renderer.view_type
+   * props from renderer
+   *
+   *  view_type
    *  is_strategy
    *  read_only
-   *
+   *  column_choices
    *******************************************************/
 
   /*******************************************************
@@ -52,6 +69,9 @@ class RightSideBar extends React.Component {
     })
   }
 
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   getNodeBar() {
     if (this.props.context === 'workflow')
       return (
@@ -72,7 +92,7 @@ class RightSideBar extends React.Component {
       return null
     }
     if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      return <ParentOutcomeBar renderer={renderer} jjj={8} />
+      return <ParentOutcomeBar renderer={renderer} />
     }
     return (
       <OutcomeBar
@@ -84,7 +104,6 @@ class RightSideBar extends React.Component {
           ) => void
         }
         readOnly={true}
-        yes={true}
       />
     )
   }
@@ -177,9 +196,11 @@ class RightSideBar extends React.Component {
           </li>
         </ul>
         <div id="edit-menu" className="right-panel-container" />
+
         <div id="node-bar" className="right-panel-container">
           {this.getNodeBar()}
         </div>
+
         {!this.props.renderer.is_strategy && (
           <>
             <div id="outcome-bar" className="right-panel-container">
@@ -190,11 +211,13 @@ class RightSideBar extends React.Component {
             </div>
           </>
         )}
+
         {!renderer.read_only && (
           <div id="restore-bar" className="right-panel-container">
             {this.getRestoreBar()}
           </div>
         )}
+
         <div className="window-close-button" id="side-bar-close-button">
           <span className="material-symbols-rounded green">arrow_forward</span>
         </div>

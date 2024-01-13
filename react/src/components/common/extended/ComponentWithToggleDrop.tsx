@@ -1,13 +1,9 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import {toggleDropReduxAction} from "@cfRedux/helpers";
+import { toggleDropReduxAction } from '@cfRedux/helpers'
 /**
- *  Extends the react component to add a few features
+ *  Extends the React component to add a few features
  *  that are used in a large number of components
- */
-
-/**
- *
  */
 
 export type ComponentWithToggleProps = {
@@ -27,13 +23,11 @@ class ComponentWithToggleDrop<
   S = NonNullable<unknown>
 > extends React.Component<P, S> {
   mainDiv: React.RefObject<HTMLDivElement>
-  maindiv: React.RefObject<HTMLDivElement> // @todo reconcile the two var spellings
 
   constructor(props: P) {
     super(props)
 
     this.mainDiv = React.createRef()
-    this.maindiv = React.createRef() // @todo we recreated this since all the components which inherit from ComponentWithToggleDrop currently break, unify it / just spelling issue
     this.state = {} as S
   }
 

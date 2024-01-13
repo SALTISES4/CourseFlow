@@ -5,7 +5,7 @@ import { WorkflowTitle } from '@cfUIComponents'
 class WorkflowCardSimple extends React.Component {
   constructor(props) {
     super(props)
-    this.maindiv = React.createRef()
+    this.mainDiv = React.createRef()
   }
 
   /*******************************************************
@@ -39,7 +39,7 @@ class WorkflowCardSimple extends React.Component {
 
     return (
       <div
-        ref={this.maindiv}
+        ref={this.mainDiv}
         className={css_class}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {

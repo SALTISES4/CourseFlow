@@ -14,6 +14,7 @@ import {
 } from '@cfRedux/enumActions'
 import { Node } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
+import $ from 'jquery'
 
 export default function nodeReducer(
   state: Node[] = [],

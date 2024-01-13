@@ -1980,12 +1980,19 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
-"@types/jquery@^3.5.29":
+"@types/jquery@*", "@types/jquery@^3.5.29":
   version "3.5.29"
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.29.tgz#3c06a1f519cd5fc3a7a108971436c00685b5dcea"
   integrity sha512-oXQQC9X9MOPRrMhPHHOsXqeQDnWeCDT3PelUIg/Oy8FAbzSZtFHRjc7IpbfFVmpLtJ+UOoywpRsuO5Jxjybyeg==
   dependencies:
     "@types/sizzle" "*"
+
+"@types/jqueryui@^1.12.21":
+  version "1.12.21"
+  resolved "https://registry.yarnpkg.com/@types/jqueryui/-/jqueryui-1.12.21.tgz#e8c3a2955a5236da452b3dacd4d87c8d64cb5326"
+  integrity sha512-hsTOaWPg963smNdoHbEN2anu4vVWj9k2xuaZMIajWERPikaBRG49RmaDA/tb2HldX9/a0qHvQYKipXHSLhM3qA==
+  dependencies:
+    "@types/jquery" "*"
 
 "@types/json-schema@*", "@types/json-schema@^7.0.12", "@types/json-schema@^7.0.9":
   version "7.0.15"

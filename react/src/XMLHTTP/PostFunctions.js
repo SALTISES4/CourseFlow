@@ -1,4 +1,5 @@
 import { DATA_ACTIONS } from './common'
+import $ from 'jquery'
 
 /*
 All functions for API calls.
@@ -76,28 +77,7 @@ export function setLinkedWorkflow(
   })
 }
 
-//Add a new node to a week
-export function newNode(
-  weekPk,
-  position = -1,
-  column = -1,
-  column_type = -1,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-      weekPk: JSON.stringify(weekPk),
-      position: JSON.stringify(position),
-      columnPk: JSON.stringify(column),
-      columnType: JSON.stringify(column_type)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
 
 //Create a nodelink from the source to the target, at the given ports
 /*******************************************************
@@ -128,71 +108,9 @@ export function newNodeLink(
   }
 }
 
-//Add a strategy to the workflow
-export function addStrategy(
-  workflowPk,
-  position = -1,
-  strategyPk = -1,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-      workflowPk: JSON.stringify(workflowPk),
-      position: JSON.stringify(position),
-      objectID: JSON.stringify(strategyPk),
-      objectType: JSON.stringify('workflow')
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-//Turn a week into a strategy or vice versa
-export function toggleStrategy(
-  weekPk,
-  is_strategy,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 
-//Causes the specified object to delete itself
-export function deleteSelfQuery(
-  objectID,
-  objectType,
-  soft = false,
-  callBackFunction = () => console.log('success')
-) {
-  let path
-  if (soft) path = COURSEFLOW_APP.config.post_paths.delete_self_soft
-  else path = COURSEFLOW_APP.config.post_paths.delete_self
 
-  try {
-    $.post(path, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      console.log('deleteSelfQuery data')
-      console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
 
 //Causes the specified object to delete itself
 export function deleteSelfLive(
@@ -214,27 +132,7 @@ export function deleteSelfLive(
   }
 }
 
-//Causes the specified object to undelete itself
-export function restoreSelfQuery(
-  objectID,
-  objectType,
-  callBackFunction = () => console.log('success')
-) {
-  let path
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      console.log('restoreSelfQuery data')
-      console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
 
 //Removes the specified comment from the object
 export function removeComment(
@@ -297,73 +195,10 @@ export function updateOutcomenodeDegree(
   }
 }
 
-//Causes the specified object to insert a sibling after itself
-export function duplicateSelf(
-  objectID,
-  objectType,
-  parentID,
-  parentType,
-  throughType,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-//Causes the specified object to insert a sibling after itself
-export function insertSibling(
-  objectID,
-  objectType,
-  parentID,
-  parentType,
-  throughType,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 
-//Causes the specified object to insert a child to itself
-export function insertChild(
-  objectID,
-  objectType,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
+
+
 
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
@@ -646,41 +481,6 @@ export function getUsersForLiveProject(
   }
 }
 
-//Get a list of users, filtered by name
-export function getUserList(
-  filter,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the comments for a particular object
-export function getCommentsForObject(
-  objectID,
-  objectType,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 
 //add a comment to an object
 export function addComment(
@@ -703,28 +503,7 @@ export function addComment(
   }
 }
 
-//add a comment to an object
-export function addTerminology(
-  projectPk,
-  term,
-  title,
-  translation_plural,
-  callBackFunction = () => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-      projectPk: JSON.stringify(projectPk),
-      term: JSON.stringify(term),
-      title: JSON.stringify(title),
-      translation_plural: JSON.stringify(translation_plural)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+
 
 //add a comment to an object
 export function updateObjectSet(
@@ -748,8 +527,6 @@ export function updateObjectSet(
     window.fail_function()
   }
 }
-
-
 
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(

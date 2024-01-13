@@ -8,6 +8,7 @@ import {
   InitialWorkflow
 } from '@cfPages/Library/Explore/types'
 import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
+import $ from 'jquery'
 
 type Filter = {
   name: string

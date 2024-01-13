@@ -5,6 +5,7 @@ import { EditableComponentWithActions } from '@cfParentComponents'
 import { getNodeLinkByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
+import $ from 'jquery'
 
 /**
  * The arrow manually drawn between two nodes (as opposed to the

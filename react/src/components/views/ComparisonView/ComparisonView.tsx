@@ -12,6 +12,7 @@ import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { ViewType } from '@cfModule/types/enum.js'
+import $ from 'jquery'
 
 /**
  * Creates a sort of container for the workflows you want to compare,
@@ -278,7 +279,7 @@ export default ComparisonView
 class WorkflowComparisonRendererComponent extends Component {
   constructor(props) {
     super(props)
-    this.maindiv = React.createRef()
+    this.mainDiv = React.createRef()
   }
 
   /*******************************************************
@@ -365,7 +366,7 @@ class WorkflowComparisonRendererComponent extends Component {
         className="workflow-wrapper"
         id={'workflow-' + this.props.workflowID}
       >
-        <div id="workflow-inner-wrapper" ref={this.maindiv}></div>
+        <div id="workflow-inner-wrapper" ref={this.mainDiv}></div>
         <div
           className="window-close-button"
           onClick={this.props.removeFunction}

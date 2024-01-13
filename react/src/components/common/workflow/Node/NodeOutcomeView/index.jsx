@@ -44,7 +44,7 @@ class NodeOutcomeViewUnconnected extends Component {
     let comments
 
     return (
-      <div ref={this.maindiv} className="table-cell nodewrapper">
+      <div ref={this.mainDiv} className="table-cell nodewrapper">
         <div className={css_class} style={style} id={data.id}>
           <div className="node-top-row">
             <NodeTitle data={data} />

@@ -19,11 +19,11 @@ class HomePage extends React.Component<PropsType, StateType> {
 
   constructor(props: PropsType) {
     super(props)
-    this.isTeacher = props.is_teacher
     this.state = {
       projects: [],
       favourites: []
     }
+    this.isTeacher = props.is_teacher // @todo reassign props
   }
 
   /*******************************************************

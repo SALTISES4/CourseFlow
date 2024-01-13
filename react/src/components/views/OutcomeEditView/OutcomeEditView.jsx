@@ -7,6 +7,7 @@ import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
+import $ from 'jquery'
 
 /**
  * The view of a workflow in which the outcomes can be added,
@@ -54,7 +55,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
 
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.maindiv.current).find('.outcome-workflow').not('ui-draggable'),
+      $(this.mainDiv.current).find('.outcome-workflow').not('ui-draggable'),
       this.props.objectID,
       'outcomeworkflow',
       '.outcome-workflow'
@@ -133,7 +134,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
         id={'#workflow-' + this.props.workflow.id}
         className="workflow-details"
       >
-        <div className="outcome-edit" ref={this.maindiv}>
+        <div className="outcome-edit" ref={this.mainDiv}>
           {outcomes}
         </div>
       </div>

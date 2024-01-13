@@ -6,6 +6,7 @@ import { getOutcomeNodeByID } from '@cfFindState'
 import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import { SimpleOutcome } from '../OutcomeEditView'
+import $ from 'jquery'
 
 /**
  * The link between nodes and their tagged outcomes,
@@ -62,13 +63,13 @@ class OutcomeNodeUnconnected extends Component {
   }
 
   checkHidden() {
-    if ($(this.maindiv.current).children('.outcome').length === 0) {
-      $(this.maindiv.current).css('display', 'none')
+    if ($(this.mainDiv.current).children('.outcome').length === 0) {
+      $(this.mainDiv.current).css('display', 'none')
     } else {
-      $(this.maindiv.current).css('display', '')
+      $(this.mainDiv.current).css('display', '')
     }
 
-    const indicator = $(this.maindiv.current).closest('.outcome-node-indicator')
+    const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
 
     if (indicator.length >= 0) {
       const num_outcomenodes = indicator
@@ -97,7 +98,7 @@ class OutcomeNodeUnconnected extends Component {
       <div
         className={'outcome-node outcomenode-' + data.id}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         {!this.props.renderer.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>

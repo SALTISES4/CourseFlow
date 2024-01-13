@@ -53,3 +53,7 @@ export type SectionObject = {
   is_linked: boolean
   is_visible: boolean
 }
+
+export type ToggleStrategyQueryResp = {
+  action: VERB
+}
