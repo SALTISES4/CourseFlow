@@ -6,22 +6,13 @@ import {
 } from '@cfPages/Library/Explore/types'
 import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
-import { QueryPages, Workflow } from '@cfModule/types/common'
 
 /*******************************************************
  * @ExploreRenderer
  *******************************************************/
 class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
-  private readonly disciplines: Discipline[]
-  private readonly initial_pages: QueryPages
-  private readonly initial_workflows: Workflow[]
-  private createDiv: React.RefObject<HTMLDivElement>
-
   constructor(props: ExploreViewContextDataDTO) {
     super(props)
-    this.disciplines = this.props.disciplines
-    this.initial_workflows = this.props.initial_workflows
-    this.initial_pages = this.props.initial_pages
     this.createDiv = React.createRef()
   }
 
@@ -37,9 +28,9 @@ class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
     return (
       <div className="project-menu">
         <ExploreFilter
-          disciplines={this.disciplines}
-          workflows={this.initial_workflows}
-          pages={this.initial_pages}
+          disciplines={this.props.disciplines}
+          workflows={this.props.initial_workflows}
+          pages={this.props.initial_pages}
           context="library"
           sadfasdf={true}
         />

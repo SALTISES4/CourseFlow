@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Strategy } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import { StrategyActions } from '@cfRedux/enumActions'

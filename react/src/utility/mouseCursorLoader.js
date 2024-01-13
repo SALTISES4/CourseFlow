@@ -1,3 +1,4 @@
+// import $ from 'jquery'
 /**
  * note this was previously
  * TinyLoader

@@ -9,7 +9,8 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
-import ActionCreator from "@cfRedux/ActionCreator.ts";
+import ActionCreator from '@cfRedux/ActionCreator.ts'
+// import $ from 'jquery'
 
 /**
  *
@@ -212,7 +213,7 @@ class AssignmentBox extends React.Component {
         >
           <img src={COURSEFLOW_APP.config.icon_path + 'assignment.svg'} />
         </div>,
-        $(this.props.parent.maindiv.current)
+        $(this.props.parent.mainDiv.current)
           .children('.side-actions')
           .children('.assignment-indicator-container')[0]
       )
@@ -271,7 +272,7 @@ class AssignmentBox extends React.Component {
         </div>,
         assignment_indicator
       ],
-      $(this.props.parent.maindiv.current)
+      $(this.props.parent.mainDiv.current)
         .children('.side-actions')
         .children('.assignment-indicator-container')[0]
     )

@@ -43,4 +43,3 @@ export enum VERB {
   POSTED = 'posted',
   ERROR = 'error'
 }
-

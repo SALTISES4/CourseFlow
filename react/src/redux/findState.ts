@@ -1,7 +1,14 @@
 // @ts-nocheck
 import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
-import { AppState, Columnworkflow, ObjectSet, Outcome } from '@cfRedux/type'
+import {
+  AppState,
+  Columnworkflow,
+  ObjectSet,
+  Outcome,
+  OutcomeOutcome,
+  Week
+} from '@cfRedux/type'
 
 /*******************************************************
  * TYPES
@@ -33,7 +40,14 @@ export const getColumnByID = (state: AppState, id: number) => {
   }
 }
 
-export const getWeekByID = (state: AppState, id: number) => {
+export type GetWeekByIDType = {
+  data: any
+  column_order: any
+  sibling_count: any
+  nodeweeks: any
+  workflow_id?: any
+}
+export const getWeekByID = (state: AppState, id: number): GetWeekByIDType => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -54,18 +68,27 @@ export const getWeekByID = (state: AppState, id: number) => {
   }
 }
 
-export const getTermByID = (state: AppState, id: number) => {
+export type TermByIDType = {
+  data: any
+  column_order: any
+  nodes_by_column: any
+  nodeweeks: any
+}
+export const getTermByID = (state: AppState, id: number): TermByIDType => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
       if (week.is_dropped === undefined) {
         week.is_dropped = getDropped(id, 'week')
       }
+
       const nodeweeks = week.nodeweek_set
-      const column_order = Utility.filterThenSortByID(
+
+      const column_order = Utility.filterThenSortByID<Week['nodeweek_set']>(
         state.columnworkflow,
         state.workflow.columnworkflow_set
       ).map((columnworkflow) => columnworkflow.column)
+
       const nodes_by_column = {}
       for (var j = 0; j < column_order.length; j++) {
         nodes_by_column[column_order[j]] = []
@@ -235,7 +258,17 @@ function findTopRank(state: AppState, outcome) {
   }
 }
 
-export const getOutcomeByID = (state: AppState, id: number) => {
+export type GetOutcomeByIDType = {
+  data: Outcome
+  hovertext: string
+  prefix: string
+  object_sets: ObjectSet
+  workflow_id: number
+}
+export const getOutcomeByID = (
+  state: AppState,
+  id: number
+): GetOutcomeByIDType => {
   const state_section = state.outcome
   for (const i in state_section) {
     const outcome = state_section[i]
@@ -307,11 +340,21 @@ export const getChildWorkflowByID = (state: AppState, id: number) => {
   return -1
 }
 
-export const getOutcomeOutcomeByID = (state: AppState, id: number) => {
+export type OutcomeOutcomeByIDType = {
+  data?: OutcomeOutcome
+}
+export const getOutcomeOutcomeByID = (
+  state: AppState,
+  id: number
+): OutcomeOutcomeByIDType => {
   const state_section = state.outcomeoutcome
   for (const i in state_section) {
-    const outcomeoutcome = state_section[i]
-    if (outcomeoutcome.id === id) return { data: outcomeoutcome }
+    const outcomeOutcome = state_section[i]
+    if (outcomeOutcome.id === id) {
+      return {
+        data: outcomeOutcome
+      }
+    }
   }
   console.log('failed to find outcomeoutcome')
 }
@@ -322,15 +365,18 @@ export const getOutcomeNodeByID = (state: AppState, id: number) => {
     return {
       data: outcomeNode
     }
-  } else {
-    console.log('Failed to find outcomenode with ID:', id)
   }
+  console.log('Failed to find outcomenode with ID:', id)
 }
 
 export const getOutcomeHorizontalLinkByID = (state: AppState, id: number) => {
   for (const i in state.outcomehorizontallink) {
-    const outcomehorizontallink = state.outcomehorizontallink[i]
-    if (outcomehorizontallink.id == id) return { data: outcomehorizontallink }
+    const outcomeHorizontalLink = state.outcomehorizontallink[i]
+    if (outcomeHorizontalLink.id == id) {
+      return {
+        data: outcomeHorizontalLink
+      }
+    }
   }
   console.log('failed to find outcomehorizontallink')
 }
@@ -392,11 +438,8 @@ export type SortedOutcomesFromOutcomeWorkflowSetType = {
 }[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
-  outcomeworkflow_set: any
+  outcomeworkflow_set: number[]
 ): SortedOutcomesFromOutcomeWorkflowSetType => {
-  console.log('getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set')
-  console.log(outcomeworkflow_set)
-
 
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
@@ -406,8 +449,8 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     (outcomeworkflow) => outcomeworkflow.outcome
   )
 
-  // @todo this makes no sense
-  const outcomes = Utility.filterThenSortByID(state.outcome, outcome_ids)
+  // @todo clean up
+  const outcomes = Utility.filterThenSortByID<Outcome>(state.outcome, outcome_ids)
   if (outcomes.length === 0) {
     return outcomes
   }
@@ -556,5 +599,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
           .map((outcome) => outcome.id)
       }))
   ]
+  console.log('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
+  console.log(categories)
   return categories
 }

@@ -4,6 +4,7 @@ import {
   VERB,
   Workflow
 } from '@cfModule/types/common'
+import {Nodelink, NodeType, Nodeweek, Outcome, Outcomenode, OutcomeOutcome, OutcomeWorkflow} from '@cfRedux/type'
 
 export type LibraryQueryResp = {
   data_package: Workflow[]
@@ -42,6 +43,40 @@ export type DuplicateBaseItemQueryResp = {
   type: string
 }
 
+export type AddTerminologyQueryResp = {
+  action: VERB
+  new_dict: any
+}
+
+export type UserListResp = {
+  action: VERB
+  user_list: User[]
+}
+export type RestoreSelfQueryResp = {
+  action: VERB
+}
+export type DeleteSelfQueryResp = {
+  action: VERB
+}
+export type DuplicateSelfQueryResp = {
+  action: VERB
+}
+export type InsertChildQueryResp = {
+  action: VERB
+}
+export type InsertSiblingQueryResp = {
+  action: VERB
+}
+
+export type NewNodeQueryResp = {
+  action: VERB
+}
+export type AddStrategyQueryResp = {
+  action: VERB
+}
+
+export type CommentsForObjectQueryResp = any
+export type UpdateValueInstantQueryResp = any
 /*******************************************************
  *
  *******************************************************/
@@ -60,16 +95,17 @@ export type DataPackage = {
   column: Column[]
   weekworkflow: Weekworkflow[]
   week: Week[]
-  nodeweek: any[]
-  nodelink: any[]
-  node: any[]
-  outcomeworkflow: any[]
-  outcome: any[]
-  outcomeoutcome: any[]
-  outcomenode: any[]
+  nodeweek: Nodeweek[]
+  nodelink: Nodelink[]
+  node: NodeType[]
+  outcomeworkflow: OutcomeWorkflow[]
+  outcome: Outcome[]
+  outcomenode: Outcomenode[]
+  saltise_strategy: WorkflowDetailed[]
+  outcomeoutcome: OutcomeOutcome[]
+  // @todo still missing types
   objectset: any[]
   strategy: any[]
-  saltise_strategy: WorkflowDetailed[]
   unread_comments: any[]
 }
 
@@ -184,6 +220,7 @@ export type User = {
   username: string
   first_name: string
   last_name: string
+  user_colour?: string
 }
 
 type CreatedOn = string

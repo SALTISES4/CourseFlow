@@ -4,6 +4,7 @@ declare global {
    *~ existing declarations in the global namespace
    */
   interface Window {
+    ngettext: (str: string, str2: string, count: number) => string
     gettext: (str: string) => string
     fail_function: (action?: string) => void
     getCsrfToken: () => string
@@ -124,6 +125,7 @@ interface Strings {
   view_all: string
   help_support: string
   password_reset: string
+  password_reset_msg: string
   notification_settings: string
   sign_out: string
   profile: string
@@ -132,6 +134,7 @@ interface Strings {
   course: string
   activity: string
   delete: string
+  cancel: string
   show_notifications_menu: string
   notification_options: string
   mark_as_read: string

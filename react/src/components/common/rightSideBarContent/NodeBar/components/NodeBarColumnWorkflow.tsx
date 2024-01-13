@@ -31,8 +31,8 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
     if (this.props.data)
       return (
         // @todo was
-        // <div className="node-bar-column-workflow" ref={this.maindiv}>
-        // however this.maindiv is not defined in this class
+        // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+        // however this.mainDiv is not defined in this class
         <div className="node-bar-column-workflow">
           <NodeBarColumn
             objectID={this.props.data.column}
@@ -45,8 +45,8 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
     else
       return (
         // @todo was
-        // <div className="node-bar-column-workflow" ref={this.maindiv}>
-        // however this.maindiv is not defined in this class
+        // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+        // however this.mainDiv is not defined in this class
         <div className="node-bar-column-workflow">
           <NodeBarColumnCreator
             columnType={this.props.columnType}

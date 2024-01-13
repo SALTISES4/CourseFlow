@@ -8,9 +8,7 @@ import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.j
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { ConnectionBar } from '@cfModule/ConnectedUsers.jsx'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/PostFunctions.js'
-import { getTargetProjectMenu } from '@XMLHTTP/postTemp.jsx'
+import ConnectionBar from '@cfModule/ConnectionBar'
 
 import { WorkflowView } from '../WorkflowView/index.js'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
@@ -18,8 +16,11 @@ import { AlignmentView } from '../AlignmentView/index.js'
 import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import {
+  deleteSelfQuery,
   duplicateBaseItemQuery,
-  getUsersForObjectQuery
+  getTargetProjectMenu,
+  getUsersForObjectQuery,
+  restoreSelfQuery
 } from '@XMLHTTP/APIFunctions'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
@@ -36,7 +37,7 @@ import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
 import { ViewType } from '@cfModule/types/enum'
 
-type ConnectedState = {
+type ConnectedProps = {
   data: AppState['workflow']
   object_sets: AppState['objectset']
   week: AppState['week']
@@ -55,14 +56,14 @@ type ConnectedState = {
 
  */
 
-type SelfPropsType = {
+type SelfProps = {
   view_type: string
   renderer: any
   id: number
   parentRender: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
 } & ComponentWithToggleProps
 
-type PropsType = ConnectedState & SelfPropsType
+type PropsType = ConnectedProps & SelfProps
 type StateType = {
   users: any
   openShareDialog: boolean
@@ -83,25 +84,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   PropsType,
   StateType
 > {
-  private objectType: string
-  private allowed_tabs: number[]
-  private readOnly: boolean
-  private public_view: any
-  private is_student: any
-  private project: any
-  private selection_manager: any
-  private view_type: any
-  private container: any
-  private renderMethod: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
-  private can_view: any
-  private websocket: any
-  private always_static: any
-  private user_id: any
-  private project_permission: any
-  private object_sets: any[]
-  private data: Workflow & { is_dropped: boolean; depth: number }
-  private workflowId: number
-
   constructor(props: PropsType) {
     super(props)
 
@@ -632,7 +614,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const renderer = this.props.renderer
 
     if (!this.always_static) {
-      return <ConnectionBar websocket={this.websocket} renderer={renderer} />
+      return (
+        <ConnectionBar
+          user_id={renderer.user_id}
+          websocket={this.websocket}
+          // connection_update_receive={this.props.renderer.connection_update_received}
+          // renderer={renderer}
+
+        />
+      )
     }
     return <></>
   }
@@ -1003,7 +993,12 @@ const mapStateToProps = (state: AppState): ConnectedState => {
   }
 }
 
-export const WorkflowBaseView = connect(
+export const WorkflowBaseView = connect<
+  ConnectedProps,
+  NonNullable<unknown>,
+  SelfProps,
+  AppState
+>(
   mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected)

@@ -7,6 +7,7 @@ import * as Utility from '@cfUtility'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
+// import $ from 'jquery'
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns

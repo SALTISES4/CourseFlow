@@ -1,13 +1,9 @@
-// @ts-nocheck
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { debounce } from '@cfUtility'
-import {
-  Discipline,
-  InitialPages,
-  InitialWorkflow
-} from '@cfPages/Library/Explore/types'
 import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
+// import $ from 'jquery'
+import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 
 type Filter = {
   name: string
@@ -16,12 +12,24 @@ type Filter = {
 
 type PropsType = {
   disciplines: Discipline[]
-  workflows: InitialWorkflow[]
-  pages: InitialPages
+  workflows: Workflow[]
+  pages: QueryPages
   context: string
 }
 
-class ExploreFilter extends React.Component<PropsType> {
+type StateType = {
+  workflows: any
+  pages: any
+  hasSearched: any
+  activeSort: any
+  activeFilters: any
+  activeDisciplines: any
+  reversed: boolean
+  fromSaltise: boolean
+  contentRich: boolean
+}
+
+class ExploreFilter extends React.Component<PropsType, StateType> {
   private readonly filterDOM: React.RefObject<HTMLDivElement>
   private readonly searchDOM: React.RefObject<HTMLDivElement>
   private readonly sortDOM: React.RefObject<HTMLDivElement>
@@ -284,7 +292,7 @@ class ExploreFilter extends React.Component<PropsType> {
         className="hover-shade"
         onClick={() => {
           this.setState({
-            fromDaltise: !this.state.fromSaltise,
+            fromSaltise: !this.state.fromSaltise,
             hasSearched: false
           })
           this.doSearch()

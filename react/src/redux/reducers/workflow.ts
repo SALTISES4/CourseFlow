@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { AnyAction } from '@reduxjs/toolkit'
 import { Workflow } from '@cfRedux/type'
 import {
@@ -15,7 +14,10 @@ import {
   WorkFlowActions
 } from '@cfRedux/enumActions'
 
-function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction): Workflow {
+function workflowReducer(
+  state: Workflow = {} as Workflow,
+  action: AnyAction
+): Workflow {
   switch (action.type) {
     /*******************************************************
      * COMMON
@@ -49,7 +51,10 @@ function workflowReducer(state: Workflow = {} as Workflow, action: AnyAction): W
 
     case WorkFlowActions.CREATELOCK: {
       if (state.id === action.payload.id) {
-        return { ...state, lock: action.payload.lock }
+        return {
+          ...state,
+          lock: action.payload.lock
+        }
       }
       return state
     }

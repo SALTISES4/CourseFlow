@@ -42,7 +42,7 @@ class NodeWeekUnconnected extends React.Component {
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         {this.getNode()}
       </div>

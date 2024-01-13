@@ -23,7 +23,7 @@ class ColumnWorkflow extends React.Component {
     return (
       <div
         className={my_class}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         id={data.id}
         data-child-id={data.column}
       >

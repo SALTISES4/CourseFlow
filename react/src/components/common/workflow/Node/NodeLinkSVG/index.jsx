@@ -207,7 +207,7 @@ class NodeLinkSVG extends Component {
   //     this.props.selected ||
   //     this.props.node_selected
   //   ) {
-  //     // d3.select(this.maindiv.current).raise();
+  //     // d3.select(this.mainDiv.current).raise();
   //     // d3.selectAll(".node-ports").raise();
   //   }
   // }
@@ -244,17 +244,18 @@ class NodeLinkSVG extends Component {
   render() {
     // @todo this  try / catch is too broad and hiding too many potential errors
     try {
-      console.log('this.props.source_port_handle')
-      console.log(this.props.source_port_handle)
-
-      console.log('this.props.target_port_handle')
-      console.log(this.props.target_port_handle)
+      // @todo trying to debug 'could not draw a node link error'
+      // console.log('this.props.source_port_handle')
+      // console.log(this.props.source_port_handle)
+      // console.log('this.props.target_port_handle')
+      // console.log(this.props.target_port_handle)
 
       const source_transform = Utility.getSVGTranslation(
         this.props.source_port_handle
           .select(function () {
-            console.log('this.parentNode')
-            console.log(this.parentNode)
+             // @todo trying to debug 'could not draw a node link error'
+            // console.log('this.parentNode')
+            // console.log(this.parentNode)
             return this.parentNode
           })
           .attr('transform')
@@ -262,13 +263,15 @@ class NodeLinkSVG extends Component {
       const target_transform = Utility.getSVGTranslation(
         this.props.target_port_handle
           .select(function () {
-            console.log('this.parentNode')
-            console.log(this.parentNode)
+             // @todo trying to debug 'could not draw a node link error'
+            // console.log('this.parentNode')
+            // console.log(this.parentNode)
           })
           .attr('transform')
       )
-      console.log('this.props.source_port_handle')
-      console.log(this.props.source_port_handle)
+       // @todo trying to debug 'could not draw a node link error'
+      // console.log('this.props.source_port_handle')
+      // console.log(this.props.source_port_handle)
 
       // @todo what is all this doing?
       const source_point = [
@@ -337,7 +340,7 @@ class NodeLinkSVG extends Component {
       }
 
       return (
-        <g ref={this.maindiv} stroke="black" fill="none">
+        <g ref={this.mainDiv} stroke="black" fill="none">
           <path
             opacity="0"
             strokeWidth="10px"

@@ -46,7 +46,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
     return (
       <div
         className="week"
-        ref={this.maindiv}
+        ref={this.mainDiv}
         style={this.get_border_style()}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)

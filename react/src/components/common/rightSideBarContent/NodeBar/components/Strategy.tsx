@@ -5,6 +5,7 @@ import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop
 import * as Constants from '@cfConstants'
 import { AppState } from '@cfRedux/type'
 import { getStrategyByID, StrategyByIDType } from '@cfFindState'
+// import $ from 'jquery'
 
 /**
  * Represents a strategy (SALTISE) or node group (user generated)
@@ -34,7 +35,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     this.makeDraggable()
     // @todo
     // @ts-ignore
-    $(this.maindiv.current)[0].dataDraggable = { strategy: this.props.data.id }
+    $(this.mainDiv.current)[0].dataDraggable = { strategy: this.props.data.id }
   }
 
   /*******************************************************
@@ -45,7 +46,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     const draggable_type = 'weekworkflow'
 
     // @ts-ignore
-    $(this.maindiv?.current).draggable({
+    $(this.mainDiv?.current).draggable({
       helper: (_e, _item) => {
         const helper = $(document.createElement('div'))
         helper.addClass('week-ghost')
@@ -84,7 +85,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     return (
       <div
         className="strategy-bar-strategy strategy new-strategy"
-        ref={this.maindiv}
+        ref={this.mainDiv}
       >
         {strategyIcon}
         <div>{title}</div>

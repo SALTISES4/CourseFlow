@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { CompetencyMatrixView } from '@cfViews/CompetencyMatrixView/index.js'
-import { OutcomeTableView } from '@cfViews/OutcomeTableView/index.js'
+import CompetencyMatrixView from '@cfViews/CompetencyMatrixView/CompetencyMatrixView'
+import OutcomeTableView from '@cfViews/OutcomeTableView/OutcomeTableView'
 
 /**
  * Just a quick way to decide which type of table to render

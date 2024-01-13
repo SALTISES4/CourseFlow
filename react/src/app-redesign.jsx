@@ -20,7 +20,8 @@ import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsS
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
-import Sidebar, { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar'
+import Sidebar from '@cfCommonComponents/layout/Sidebar'
+import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
 import TopBar from '@cfModule/components/common/layout/TopBar'
 
 // global styles / SCSS
@@ -31,7 +32,7 @@ import '@cfSCSS/workflow_styles.scss'
 import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
-import Project from '@cfModule/components/pages/Library/ProjectDetail'
+import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
 import Favourites from '@cfModule/components/pages/Library/Favorites'
 import Home from '@cfModule/components/pages/Library/Home'
@@ -102,7 +103,7 @@ const getAppComponent = () => {
     case 'explore':
       return <Explore {...COURSEFLOW_APP.contextData} />
     case 'projectDetail':
-      return <Project {...COURSEFLOW_APP.contextData} />
+      return <ProjectDetail {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
      * USER / PROFILE
@@ -117,7 +118,7 @@ const getAppComponent = () => {
     /*******************************************************
      * REDUX
      *******************************************************/
-    case 'projectComparison':
+    case 'projectComparison': {
       /**
        * @todo for myColour, changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if not from django, define as explicit props
@@ -125,15 +126,16 @@ const getAppComponent = () => {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
         myColour:
-          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ',50%,50%)',
+          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ', 50%, 50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments
       return <WorkflowComparison {...thisContextData} />
+    }
     case 'workflowDetailView': {
       // not sure yet because the render method is taking arguments
-      const workflow_renderer = new Workflow(COURSEFLOW_APP.contextData)
-      workflow_renderer.init()
+      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
+      workflowWrapper.init()
       return null
     }
     case 'my_live_projects':

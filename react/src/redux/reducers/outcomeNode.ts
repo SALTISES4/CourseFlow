@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Utility from '@cfUtility'
 import {
   CommonActions,

@@ -126,14 +126,15 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) mouseover_actions.push(this.addCommenting(data))
+    // if (renderer.view_comments) mouseover_actions.push(this.addCommenting(data))
+    if (renderer.view_comments) mouseover_actions.push(this.addCommenting())
 
     return (
       <div
         style={style}
         className={css_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
         <div className="node-top-row">

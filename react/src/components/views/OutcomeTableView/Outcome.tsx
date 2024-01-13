@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
-import {Component} from "@cfParentComponents";
+import { Component } from '@cfParentComponents'
+// import $ from 'jquery'
 
 type PropsType = {
   outcomesType: number
@@ -14,7 +15,6 @@ type PropsType = {
   nodeID?: number
   outcomeID?: number
   grandTotal?: boolean
-
   // renderer={this.props.renderer}
 }
 
@@ -137,7 +137,7 @@ class TableCell extends React.Component<PropsType> {
     }
 
     return (
-      <div className={class_name} ref={this.maindiv}>
+      <div className={class_name} ref={this.mainDiv}>
         {this.getContents(degree, !this.props.total)}
         {input}
       </div>
@@ -203,7 +203,7 @@ export class OutcomeUnconnected extends Component {
       <div className="outcome-wrapper">
         <div
           className="outcome-head"
-          ref={this.maindiv}
+          ref={this.mainDiv}
           style={{ paddingLeft: data.depth * 12 }}
         >
           <div className="outcome-title" style={style}>

@@ -5,6 +5,8 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
 import { Workflow } from '@cfModule/types/common'
+// import $ from 'jquery'
+
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/

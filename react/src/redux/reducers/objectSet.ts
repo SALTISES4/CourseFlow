@@ -1,15 +1,15 @@
-// @ts-nocheck
 import { ObjectSetActions } from '@cfRedux/enumActions'
-import { Objectset } from '@cfRedux/type'
+import { ObjectSet } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function objectSetReducer(
-  state: Objectset[] = [],
+  state: ObjectSet[] = [],
   action: AnyAction
-): Objectset[] {
+): ObjectSet[] {
   switch (action.type) {
     case ObjectSetActions.TOGGLE_OBJECT_SET:
       return state.map((item) =>
+        // @ts-ignore
         item.id === action.payload.id
           ? { ...item, hidden: action.payload.hidden }
           : item

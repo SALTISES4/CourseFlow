@@ -1,9 +1,11 @@
-// @ts-nocheck
-// Creates a slider input
-
 import * as React from 'react'
 
-class Slider extends React.Component {
+type PropsType = {
+  checked: boolean
+  toggleAction: () => void
+}
+
+class Slider extends React.Component<PropsType> {
   render() {
     return (
       <label className="switch">

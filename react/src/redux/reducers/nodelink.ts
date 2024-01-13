@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Nodelink } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
@@ -46,6 +45,7 @@ export default function nodelinkReducer(
     case NodeLinkActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
+        //@ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
       ) {
         return state

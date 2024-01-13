@@ -4,6 +4,7 @@ import Week from './Week'
 import Term from './Term'
 import { getWeekWorkflowByID } from '@cfFindState'
 import { Component } from '@cfParentComponents'
+// import $ from 'jquery'
 
 /**
  * The week-workflow throughmodel representation
@@ -22,7 +23,7 @@ class WeekWorkflowUnconnected extends Component {
     const data = this.props.data
     let my_class = 'week-workflow'
     if (data.no_drag) my_class += ' no-drag'
-    if ($(this.maindiv?.current).hasClass('dragging')) my_class += ' dragging'
+    if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
     var week
     if (this.props.condensed)
       week = (
@@ -48,7 +49,7 @@ class WeekWorkflowUnconnected extends Component {
       <div
         className={my_class}
         id={data.id}
-        ref={this.maindiv}
+        ref={this.mainDiv}
         data-child-id={data.week}
       >
         {week}

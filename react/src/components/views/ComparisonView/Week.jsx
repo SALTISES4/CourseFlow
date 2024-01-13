@@ -7,7 +7,8 @@ import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 import NodeWeek from './NodeWeek'
 import { WeekUnconnected } from '../WorkflowView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from "@cfRedux/ActionCreator.ts";
+import ActionCreator from '@cfRedux/ActionCreator.ts'
+// import $ from 'jquery'
 
 /**
  * In the comparison view, the week should be only a single column
@@ -26,7 +27,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected {
   componentDidUpdate() {
     this.makeDragAndDrop()
     Utility.triggerHandlerEach(
-      $(this.maindiv.current).find('.node'),
+      $(this.mainDiv.current).find('.node'),
       'component-updated'
     )
     this.alignAllWeeks()
