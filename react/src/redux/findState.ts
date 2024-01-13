@@ -438,10 +438,8 @@ export type SortedOutcomesFromOutcomeWorkflowSetType = {
 }[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
-  outcomeworkflow_set: any
+  outcomeworkflow_set: number[]
 ): SortedOutcomesFromOutcomeWorkflowSetType => {
-  console.log('getSortedOutcomesFromOutcomeWorkflowSet outcomeworkflow_set')
-  console.log(outcomeworkflow_set)
 
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
@@ -451,8 +449,8 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     (outcomeworkflow) => outcomeworkflow.outcome
   )
 
-  // @todo this makes no sense
-  const outcomes = Utility.filterThenSortByID(state.outcome, outcome_ids)
+  // @todo clean up
+  const outcomes = Utility.filterThenSortByID<Outcome>(state.outcome, outcome_ids)
   if (outcomes.length === 0) {
     return outcomes
   }

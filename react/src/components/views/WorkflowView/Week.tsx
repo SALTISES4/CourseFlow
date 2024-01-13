@@ -8,7 +8,7 @@ import { TitleText } from '@cfUIComponents'
 import NodeWeek from './NodeWeek'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
-import $ from 'jquery'
+// import $ from 'jquery'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState

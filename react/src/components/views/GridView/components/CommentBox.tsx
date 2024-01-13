@@ -9,7 +9,7 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 // @components
 import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'

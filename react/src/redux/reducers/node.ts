@@ -11,14 +11,14 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/enumActions'
-import { Node } from '@cfRedux/type'
+import { NodeType } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 export default function nodeReducer(
-  state: Node[] = [],
+  state: NodeType[] = [],
   action: AnyAction
-): Node[] {
+): NodeType[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       if (action.payload.node) return action.payload.node

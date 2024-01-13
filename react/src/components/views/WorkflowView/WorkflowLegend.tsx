@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { Slider, LegendLine } from '@cfUIComponents'
-import $ from 'jquery'
+// import $ from 'jquery'
 import { AppState } from '@cfRedux/type'
 
 type StateType = {

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeTitle } from '@cfUIComponents/Titles'
 import { getOutcomeByID } from '@cfFindState'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * A small module to add missing outcomes in the alignment view to a node

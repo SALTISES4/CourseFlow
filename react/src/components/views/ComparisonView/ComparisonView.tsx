@@ -12,7 +12,7 @@ import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { ViewType } from '@cfModule/types/enum.js'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * Creates a sort of container for the workflows you want to compare,

@@ -4,7 +4,7 @@ import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
   EditableComponentWithCommentsState
 } from './EditableComponentWithActions'
-import $ from 'jquery'
+// import $ from 'jquery'
 import { newNodeQuery } from '@XMLHTTP/APIFunctions'
 
 type OwnProps = {

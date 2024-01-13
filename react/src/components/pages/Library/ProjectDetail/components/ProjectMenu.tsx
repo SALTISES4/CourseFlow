@@ -22,7 +22,7 @@ import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /*******************************************************
  * The project library menu

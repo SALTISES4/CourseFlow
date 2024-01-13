@@ -4,7 +4,7 @@ import { TitleText } from '@cfUIComponents'
 import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
 import NodeWeek from './NodeWeek'
 import { getTermByID, TermByIDType } from '@cfFindState'
-import $ from 'jquery'
+// import $ from 'jquery'
 import { AppState } from '@cfRedux/type'
 
 type OwnProps = {

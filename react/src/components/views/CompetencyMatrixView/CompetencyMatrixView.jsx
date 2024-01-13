@@ -197,18 +197,22 @@ class CompetencyMatrixViewUnconnected extends React.Component {
       ))
       const outcomes = outcomes_sorted.map((category) => (
         <div className="table-body">
-          {this.props.object_sets.length > 0 && (
-            <div className="outcome-row outcome-category">
-              <div className="outcome-wrapper">
-                <div className="outcome-head">
-                  <h4>{category.objectset.title}</h4>
+          {
+            // @todo should this be set?
+            // @ts-ignore
+            this.props?.object_sets.length > 0 && (
+              <div className="outcome-row outcome-category">
+                <div className="outcome-wrapper">
+                  <div className="outcome-head">
+                    <h4>{category.objectset.title}</h4>
+                  </div>
                 </div>
+                <div className="outcome-cells">{blank_line}</div>
+                <div className="table-cell blank-cell"></div>
+                <div className="table-cell blank-cell total-cell grand-total-cell"></div>
               </div>
-              <div className="outcome-cells">{blank_line}</div>
-              <div className="table-cell blank-cell"></div>
-              <div className="table-cell blank-cell total-cell grand-total-cell"></div>
-            </div>
-          )}
+            )
+          }
           {category.outcomes.map((outcome) => (
             <OutcomeBase
               key={outcome}

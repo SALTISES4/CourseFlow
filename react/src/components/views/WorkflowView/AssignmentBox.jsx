@@ -10,7 +10,7 @@ import * as Utility from '@cfUtility'
 
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  *

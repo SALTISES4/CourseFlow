@@ -4,7 +4,7 @@ import Week from './Week'
 import Term from './Term'
 import { getWeekWorkflowByID } from '@cfFindState'
 import { Component } from '@cfParentComponents'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * The week-workflow throughmodel representation

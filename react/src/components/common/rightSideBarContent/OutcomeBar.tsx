@@ -8,7 +8,7 @@ import {
 } from '@cfFindState'
 import { ViewType, WorkflowType } from '@cfModule/types/enum'
 import { AppState } from '@cfRedux/type'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * The outcomes tab of the right sidebar (which can be either this

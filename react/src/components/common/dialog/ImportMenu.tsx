@@ -1,5 +1,5 @@
 import * as React from 'react'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 type PropsType = {
   data: any

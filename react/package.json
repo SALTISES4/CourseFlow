@@ -52,6 +52,7 @@
     "eslint-config-react-app": "^7.0.1",
     "flatpickr": "^4.6.13",
     "jquery": "^3.7.1",
+    "jquery-ui": "^1.13.2",
     "mathjs": "^11.11.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

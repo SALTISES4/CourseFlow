@@ -1,5 +1,5 @@
 import { DATA_ACTIONS } from './common'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /*
 All functions for API calls.

@@ -5,7 +5,7 @@ import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 /**
  * The outcome edit view for the comparison

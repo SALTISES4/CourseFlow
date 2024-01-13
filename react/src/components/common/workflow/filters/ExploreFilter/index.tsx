@@ -2,7 +2,7 @@ import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { debounce } from '@cfUtility'
 import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 
 type Filter = {

@@ -1,10 +1,16 @@
 import {
   AddStrategyQueryResp,
   AddTerminologyQueryResp,
-  CommentsForObjectQueryResp, DeleteSelfQueryResp,
-  DuplicateBaseItemQueryResp, DuplicateSelfQueryResp,
-  HomeQueryResp, InsertChildQueryResp, InsertSiblingQueryResp,
-  LibraryQueryResp, NewNodeQueryResp, RestoreSelfQueryResp,
+  CommentsForObjectQueryResp,
+  DeleteSelfQueryResp,
+  DuplicateBaseItemQueryResp,
+  DuplicateSelfQueryResp,
+  HomeQueryResp,
+  InsertChildQueryResp,
+  InsertSiblingQueryResp,
+  LibraryQueryResp,
+  NewNodeQueryResp,
+  RestoreSelfQueryResp,
   SearchAllObjectsQueryResp,
   SuccessPost,
   UpdateValueInstantQueryResp,
@@ -19,8 +25,9 @@ import {
   ParentWorkflowInfoQueryResp,
   ToggleStrategyQueryResp
 } from '@XMLHTTP/types/query'
-import $ from 'jquery'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
+import { API_POST } from '@XMLHTTP/PostFunctions'
+// import jQuery from 'jquery';
 
 /*******************************************************
  * LIBRARY PAGES
@@ -245,7 +252,7 @@ export function getWorkflowsForProjectQuery(
 /**
  * @getWorkflowDataQuery
  *
- * endpoint: workflow/get-workflow-data/
+ * endpoint: /workflow/get-workflow-data/
  *
  * Get the data from the workflow
  * @param workflowPk
@@ -259,8 +266,10 @@ export function getWorkflowDataQuery(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data: WorkflowDataQueryResp) {
-      console.log('getWorkflowDataQuery data')
-      console.log(data)
+
+      // @todo this is mostly typed now
+      // console.log('getWorkflowDataQuery data')
+      // console.log(data)
       if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -313,8 +322,6 @@ export function getParentWorkflowInfoQuery(
     console.log('success')
 ) {
   try {
-    console.log('workflowPk')
-    console.log(workflowPk)
     $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
     })
@@ -330,7 +337,6 @@ export function getParentWorkflowInfoQuery(
     console.log(err)
     window.fail_function()
   }
-  console.log('MyError getParentWorkflowInfoQuery')
 }
 
 /*******************************************************
@@ -617,7 +623,6 @@ export function deleteSelfQuery(
   }
 }
 
-
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelfQuery(
   objectID: number,
@@ -668,7 +673,6 @@ export function insertSiblingQuery(
   }
 }
 
-
 //Causes the specified object to insert a child to itself
 export function insertChildQuery(
   objectID: number,
@@ -688,7 +692,6 @@ export function insertChildQuery(
   }
 }
 
-
 //Add a new node to a week
 export function newNodeQuery(
   weekPk,
@@ -706,8 +709,7 @@ export function newNodeQuery(
     }).done(function (data: NewNodeQueryResp) {
       if (data.action === DATA_ACTIONS.POSTED) {
         callBackFunction(data)
-      }
-      else {
+      } else {
         window.fail_function(data.action)
       }
     })
@@ -732,8 +734,7 @@ export function addStrategyQuery(
     }).done(function (data: AddStrategyQueryResp) {
       if (data.action === DATA_ACTIONS.POSTED) {
         callBackFunction(data)
-      }
-      else {
+      } else {
         window.fail_function(data.action)
       }
     })

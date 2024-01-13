@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 // A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
 class AutoLink extends React.Component {

@@ -7,7 +7,7 @@ import {
   AppState,
   Column,
   Columnworkflow,
-  Node,
+  NodeType,
   Nodeweek,
   Week,
   Weekworkflow
@@ -75,7 +75,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
 
-    const nodes_ordered = Utility.filterThenSortByID<Node>(
+    const nodes_ordered = Utility.filterThenSortByID<NodeType>(
       this.props.node,
       node_order
     ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
@@ -218,13 +218,17 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
       const outcomes = outcomes_sorted.map((category) => (
         <div>
-          {this.props.object_sets.length > 0 && (
-            <div className="outcome-row outcome-category">
-              <div className="outcome-head">
-                <h4>{category.objectset.title}</h4>
+          {
+            // @todo  should object_sets be set?
+            // @ts-ignore
+            this.props?.object_sets.length > 0 && (
+              <div className="outcome-row outcome-category">
+                <div className="outcome-head">
+                  <h4>{category.objectset.title}</h4>
+                </div>
               </div>
-            </div>
-          )}
+            )
+          }
           {category.outcomes.map((outcome) => (
             <OutcomeBase
               key={outcome}

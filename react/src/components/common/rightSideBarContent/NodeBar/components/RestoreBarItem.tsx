@@ -1,7 +1,7 @@
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import $ from 'jquery'
+// import $ from 'jquery'
 import * as React from 'react'
 import {deleteSelfQuery, restoreSelfQuery} from "@XMLHTTP/APIFunctions";
 

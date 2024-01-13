@@ -5,7 +5,7 @@ import {
   addTerminologyQuery, deleteSelfQuery,
   updateValueInstantQuery
 } from '@XMLHTTP/APIFunctions'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 type Data = any
 type StateProps = Data & {
