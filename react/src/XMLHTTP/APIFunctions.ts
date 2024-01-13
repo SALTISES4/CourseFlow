@@ -26,7 +26,6 @@ import {
   ToggleStrategyQueryResp
 } from '@XMLHTTP/types/query'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
-import { API_POST } from '@XMLHTTP/PostFunctions'
 // import jQuery from 'jquery';
 
 /*******************************************************

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { getFavouritesQuery } from '@XMLHTTP/PostFunctions.js'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.js'
@@ -22,7 +21,9 @@ class FavouritesPage extends React.Component {
     getFavouritesQuery((data) => {
       console.log('data')
       console.log(data)
-      this.setState({ project_data: data.data_package })
+      this.setState({
+        project_data: data.data_package
+      })
     })
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)
   }
@@ -34,9 +35,13 @@ class FavouritesPage extends React.Component {
     return (
       <div className="project-menu">
         <WorkflowFilter
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           workflows={this.state.project_data}
           context="library"
+          // updateWorkflow={this.props.renderer.updateWorkflow}
+          // user_role={this.props.renderer.user_role}
+          // read_only={this.props.renderer.read_only}
+          // project_data={this.props.renderer.project_data}
         />
       </div>
     )
