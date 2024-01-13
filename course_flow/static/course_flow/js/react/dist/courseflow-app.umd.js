@@ -96449,7 +96449,7 @@ ${latestSubscriptionCallbackError.current.stack}
       COURSEFLOW_APP.makeDropdown($$1(this.createDiv.current));
     }
     // @todo this is wrapped because it is called by openShareMenu
-    // so do no unwrap until the renderMessageBox is sorted out
+    // so do not unwrap until the renderMessageBox is sorted out
     getUserData() {
       getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data2) => {
         this.setState({ users: data2 });
@@ -97303,7 +97303,7 @@ ${latestSubscriptionCallbackError.current.stack}
   COURSEFLOW_APP.tinyLoader = tinyLoader;
   const cache = createCache({
     key: "emotion",
-    nonce: document.querySelector("#script-redesign").nonce
+    nonce: window.cf_nonce
   });
   function renderComponents(components) {
     components.forEach((c) => {
