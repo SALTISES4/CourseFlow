@@ -9,8 +9,8 @@ import { WorkflowTitle } from '@cfUIComponents'
 
 import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
-import { renderMessageBox } from '../../common/menu/MenuComponents'
-import closeMessageBox from '../../common/menu/components/closeMessageBox'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
+import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { ViewType } from '@cfModule/types/enum.js'
 import $ from 'jquery'
 

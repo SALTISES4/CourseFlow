@@ -102,7 +102,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
   workflow_type: state.workflow.type
 })
 
-export default connect<
+const OutcomeBarConnected = connect<
   ConnectedProps,
   NonNullable<unknown>,
   SelfProps,
@@ -111,3 +111,5 @@ export default connect<
   mapStateToProps,
   null
 )(OutcomeBarUnconnected)
+
+export default OutcomeBarConnected

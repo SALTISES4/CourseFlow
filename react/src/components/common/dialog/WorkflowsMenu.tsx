@@ -142,7 +142,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       this.props.type === 'added_workflow_menu' ||
       this.props.type === 'workflow_select_menu'
     ) {
-      let text
+      let text = ''
       if (this.props.type === 'added_workflow_menu') {
         text = window.gettext('Select')
         if (

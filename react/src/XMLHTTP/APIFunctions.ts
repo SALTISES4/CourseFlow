@@ -20,6 +20,7 @@ import {
   ToggleStrategyQueryResp
 } from '@XMLHTTP/types/query'
 import $ from 'jquery'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 
 /*******************************************************
  * LIBRARY PAGES
@@ -83,6 +84,38 @@ export function getHomeQuery(
     })
   } catch (err) {
     window.fail_function()
+  }
+}
+
+/**
+ * Get possible projects that can be a target for the workflow to be duplicated into
+ * @param workflowPk
+ * @param updateFunction
+ * @param callBackFunction
+ */
+export function getTargetProjectMenu<T>(
+  workflowPk: number,
+  updateFunction: (response: T) => void,
+  callBackFunction = () => console.log('success')
+) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_target_projects,
+    {
+      workflowPk: JSON.stringify(workflowPk)
+    },
+    (data) => {
+      callBackFunction()
+      // @TODO call to react render
+      openTargetProjectMenu(data, updateFunction)
+    }
+  )
+}
+
+function openTargetProjectMenu(response, updateFunction) {
+  if (response.action === DATA_ACTIONS.POSTED) {
+    renderMessageBox(response, 'target_project_menu', updateFunction)
+  } else {
+    alert('Failed to find potential projects.')
   }
 }
 

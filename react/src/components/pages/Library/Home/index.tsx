@@ -2,8 +2,6 @@ import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { Workflow } from '@cfModule/types/common'
 import { getHomeQuery } from '@XMLHTTP/APIFunctions'
-import OutcomeBar from '@cfCommonComponents/rightSideBarContent/OutcomeBar'
-import { ViewType } from '@cfModule/types/enum'
 
 /*******************************************************
  * @HomeRenderer
@@ -81,8 +79,9 @@ class HomePage extends React.Component<PropsType, StateType> {
       projectsContent,
       projectPath
     )
+
     let favouriteBox
-    if (this.isTeacher == 1.1) {
+    if (this.isTeacher) {
       favouriteBox = this.renderHomeItem(
         'Favourites',
         favouritesContent,
@@ -94,13 +93,6 @@ class HomePage extends React.Component<PropsType, StateType> {
       <div className="home-menu-container">
         {projectBox}
         {favouriteBox}
-        <OutcomeBar
-          // renderer={renderer}
-          renderMethod={
-            favouriteBox as (container: any, view_type: ViewType) => void
-          }
-          readOnly={true}
-        />
       </div>
     )
   }

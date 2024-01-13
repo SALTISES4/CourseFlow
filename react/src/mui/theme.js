@@ -14,8 +14,9 @@ export default createTheme({
       light: '#90A4AE',
       dark: '#607D8B'
     },
-    other: {
-      divider: '#CFD8DC'
+    divider: '#CFD8DC',
+    action: {
+      hover: 'rgba(4, 186, 116, 0.08)'
     }
   },
   typography: {
