@@ -2,15 +2,29 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import Week from './Week'
 import Term from './Term'
-import { getWeekWorkflowByID } from '@cfFindState'
-import { Component } from '@cfParentComponents'
+import { GetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/type'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfParentComponents/ComponentWithToggleDrop'
 // import $ from 'jquery'
+
+type ConnectedProps = GetWeekWorkflowByID
+type OwnProps = {
+  condensed: boolean
+  objectID: number
+  parentID: number
+  renderer: any
+} & ComponentWithToggleProps
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The week-workflow throughmodel representation
  */
-class WeekWorkflowUnconnected extends Component {
-  constructor(props) {
+class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
+  private objectType: string
+  private objectClass: string
+  constructor(props: PropsType) {
     super(props)
     this.objectType = 'weekworkflow'
     this.objectClass = '.week-workflow'
@@ -31,8 +45,8 @@ class WeekWorkflowUnconnected extends Component {
           objectID={data.week}
           rank={this.props.order.indexOf(data.id)}
           parentID={this.props.parentID}
-          throughParentID={data.id}
           renderer={this.props.renderer}
+          throughParentID={data.id}
         />
       )
     else
@@ -41,8 +55,8 @@ class WeekWorkflowUnconnected extends Component {
           objectID={data.week}
           rank={this.props.order.indexOf(data.id)}
           parentID={this.props.parentID}
-          throughParentID={data.id}
           renderer={this.props.renderer}
+          throughParentID={data.id}
         />
       )
     return (
@@ -57,9 +71,14 @@ class WeekWorkflowUnconnected extends Component {
     )
   }
 }
-const mapWeekWorkflowStateToProps = (state, own_props) =>
-  getWeekWorkflowByID(state, own_props.objectID)
-const WeekWorkflow = connect(
+const mapWeekWorkflowStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetWeekWorkflowByID => {
+  return getWeekWorkflowByID(state, ownProps.objectID)
+}
+
+const WeekWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
   mapWeekWorkflowStateToProps,
   null
 )(WeekWorkflowUnconnected)

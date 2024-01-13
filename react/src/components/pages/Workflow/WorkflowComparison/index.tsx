@@ -4,7 +4,8 @@ import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
-import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonView'
+import WorkflowBase from '@cfViews/ComparisonView/WorkflowBase'
+// import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonView'
 import * as Utility from '@cfUtility'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
@@ -46,7 +47,8 @@ export class WorkflowComparison extends Workflow {
         store.dispatch(ActionCreator.refreshStoreData(response.data_package))
         reactDom.render(
           <Provider store={store}>
-            <WorkflowComparisonBaseView view_type={view_type} renderer={this} />
+            {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
+            <WorkflowBase view_type={view_type} renderer={this} />
           </Provider>,
           el
         )
@@ -54,7 +56,8 @@ export class WorkflowComparison extends Workflow {
     } else if (view_type === ViewType.WORKFLOW) {
       reactDom.render(
         <Provider store={this.store}>
-          <WorkflowComparisonBaseView view_type={view_type} renderer={this} />
+          {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
+          <WorkflowBase view_type={view_type} renderer={this} />
         </Provider>,
         el
       )

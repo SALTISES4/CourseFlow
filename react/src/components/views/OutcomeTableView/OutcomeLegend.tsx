@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { LegendLine } from '@cfUIComponents'
-import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView'
 import { AppState } from '@cfRedux/type.js'
-import { WorkflowLegendUnconnectedType } from '@cfViews/WorkflowView/WorkflowLegend'
+import {
+  WorkflowLegendUnconnected,
+  WorkflowLegendUnconnectedType
+} from '@cfViews/WorkflowView/WorkflowLegend'
 
 type ConnectedProps = {
   outcomes_type: any

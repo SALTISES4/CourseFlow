@@ -12,6 +12,7 @@
     "es2020": true,
     "amd": true,
     "node": true
+    // "d3": true
   },
   "parser": "@typescript-eslint/parser",
   "settings": {
@@ -44,7 +45,9 @@
   ],
   "globals": {
     "$": true,
-    "COURSEFLOW_APP": true
+    "COURSEFLOW_APP": true,
+     "JSX": true
+
   },
   "plugins": [
     "react",

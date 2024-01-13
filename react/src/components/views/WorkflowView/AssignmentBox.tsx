@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import {
@@ -9,7 +10,7 @@ import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
 // import $ from 'jquery'
 
 /**

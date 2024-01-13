@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { NodeTitle } from '@cfUIComponents'
 import { getChildWorkflowByID } from '@cfFindState'
-import { OutcomeNode } from '../WorkflowView'
 import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome'
 import OutcomeAdder from './OutcomeAdder'
 import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
+import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode"
 
 /**
  * The representation of a node in the alignment view. It will display
@@ -99,7 +99,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     }
     let child_outcomes
     if (this.props.child_outcomes != -1)
-      child_outcomes = this.props.child_outcomes.map((child_outcome) => {
+      child_outcomes = this.props.child_outcomes.map((child_outcome, index) => {
         if (
           !this.state.show_all &&
           this.props.restriction_set &&
@@ -110,6 +110,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
           return null
         return (
           <AlignmentHorizontalReverseChildOutcome
+            key={index}
             objectID={child_outcome}
             node_data={data}
             renderer={this.props.renderer}

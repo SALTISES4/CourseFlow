@@ -9,6 +9,7 @@ import { AppState } from '@cfRedux/type'
 
 type OwnProps = {
   objectID: number
+  throughParentID?: any
 } & WeekUnconnectedPropsType
 type ConnectedProps = TermByIDType
 type PropsType = OwnProps & ConnectedProps

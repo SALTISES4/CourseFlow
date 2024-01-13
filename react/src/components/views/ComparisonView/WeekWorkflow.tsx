@@ -1,8 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getWeekWorkflowByID } from '@cfFindState'
 import Week from './Week'
-import { WeekWorkflowUnconnected } from '../WorkflowView'
+import { WeekWorkflowUnconnected } from '@cfViews/WorkflowView/WeekWorkflow'
 
 /**
  * As above, but for the comparison view specifically. This renders a

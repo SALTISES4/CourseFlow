@@ -23,9 +23,10 @@ import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
 
 type ConnectedProps = GetWeekByIDType
 type OwnProps = {
-  column_order: any // @todo i think this is delivered by redux
   rank: number
-  nodes_by_column: any
+  column_order?: any // @todo i think this is delivered by redux
+  nodes_by_column?: any
+  throughParentID?: any
 } & EditableComponentWithSortingProps
 export type WeekUnconnectedPropsType = OwnProps
 

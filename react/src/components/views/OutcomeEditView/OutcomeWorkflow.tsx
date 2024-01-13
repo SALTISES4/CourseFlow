@@ -1,12 +1,29 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeWorkflowByID } from '@cfFindState'
+import {
+  getOutcomeWorkflowByID,
+  GetOutcomeWorkflowByIDType
+} from '@cfFindState'
+import { AppState } from '@cfRedux/type'
+import Outcome from '@cfViews/OutcomeEditView/Outcome'
+
+type ConnectedProps = GetOutcomeWorkflowByIDType
+type OwnProps = {
+  objectID: any
+  show_horizontal: any
+  renderer: any
+  parentID: any
+}
+
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * OutcomeWorkflow used in the outcome edit view.
  * Not currently  used.
  */
-class OutcomeWorkflowUnconnected extends React.Component {
+class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
+  private objectType: string
+  private objectClass: string
   constructor(props) {
     super(props)
     this.objectType = 'outcomeworkflow'
@@ -22,7 +39,7 @@ class OutcomeWorkflowUnconnected extends React.Component {
     if (data.no_drag) my_class += ' no-drag'
     return (
       <div className={my_class} id={data.id}>
-        <OutcomeView
+        <Outcome
           objectID={data.outcome}
           parentID={this.props.parentID}
           throughParentID={data.id}
@@ -33,9 +50,13 @@ class OutcomeWorkflowUnconnected extends React.Component {
     )
   }
 }
-const mapOutcomeWorkflowStateToProps = (state, own_props) =>
-  getOutcomeWorkflowByID(state, own_props.objectID)
-const OutcomeWorkflow = connect(
+const mapOutcomeWorkflowStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+) => {
+  return getOutcomeWorkflowByID(state, ownProps.objectID)
+}
+const OutcomeWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
   mapOutcomeWorkflowStateToProps,
   null
 )(OutcomeWorkflowUnconnected)

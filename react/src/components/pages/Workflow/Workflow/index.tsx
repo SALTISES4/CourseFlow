@@ -88,7 +88,7 @@ class Workflow {
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
-  private getWorkflowParentData: (
+  protected getWorkflowParentData: (
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void

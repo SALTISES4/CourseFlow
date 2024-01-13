@@ -4,14 +4,14 @@ import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
-import { Component } from '@cfParentComponents'
 import { WorkflowTitle } from '@cfUIComponents'
 
 import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { ViewType } from '@cfModule/types/enum.js'
+import WorkflowComparisonRendererComponent
+  from "@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent";
 // import $ from 'jquery'
 
 /**
@@ -61,6 +61,20 @@ class ComparisonView extends React.Component {
    *******************************************************/
   getHeader() {
     const data = this.props.data
+
+    // PORTAL
+    reactDom.createPortal(
+      <a
+        className="hover-shade no-underline"
+        id="project-return"
+        href={config.update_path['project'].replace(0, data.id)}
+      >
+        <span className="green material-symbols-rounded">arrow_back_ios</span>
+        <div>{window.gettext('Return to project')}</div>
+      </a>,
+      $('.titlebar .title')[0]
+    )
+
     return (
       <div className="project-header">
         <div>{window.gettext('Comparing workflows for:')}</div>
@@ -69,19 +83,6 @@ class ComparisonView extends React.Component {
           no_hyperlink={true}
           class_name="project-title"
         />
-        {reactDom.createPortal(
-          <a
-            className="hover-shade no-underline"
-            id="project-return"
-            href={config.update_path['project'].replace(0, data.id)}
-          >
-            <span className="green material-symbols-rounded">
-              arrow_back_ios
-            </span>
-            <div>{window.gettext('Return to project')}</div>
-          </a>,
-          $('.titlebar .title')[0]
-        )}
       </div>
     )
   }
@@ -271,109 +272,3 @@ class ComparisonView extends React.Component {
   }
 }
 export default ComparisonView
-
-/**
- * Acts as a loader, fetching workflow data from the server then creating a
- * WorkflowBaseView for the comparison
- */
-class WorkflowComparisonRendererComponent extends Component {
-  constructor(props) {
-    super(props)
-    this.mainDiv = React.createRef()
-  }
-
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    const loader = new Utility.Loader('body')
-
-    const querystring = window.location.search
-    const url_params = new URLSearchParams(querystring)
-    const workflows_added = url_params
-      .getAll('workflows')
-      .map((workflow_id) => parseInt(workflow_id))
-    if (workflows_added.indexOf(this.props.workflowID) < 0) {
-      url_params.append('workflows', this.props.workflowID)
-
-      // @todo
-      if (history.pushState) {
-        const newurl =
-          window.location.protocol +
-          '//' +
-          window.location.host +
-          window.location.pathname +
-          '?' +
-          url_params.toString()
-        window.history.pushState({ path: newurl }, '', newurl)
-      }
-    }
-
-    getWorkflowContext(this.props.workflowID, (context_response_data) => {
-      const context_data = context_response_data.data_package
-
-      // @todo this will need to be unpacked, type unified with parent and called into parent
-      // is there a reason #workflow-inner-wrapper is a real dom element?
-      // this needs to be imported directly but that would cuase Circ D.
-      this.renderer = new renderers.WorkflowComparisonRenderer(
-        this.props.workflowID,
-        JSON.parse(context_data.data_package),
-        '#workflow-inner-wrapper',
-        this.props.selection_manager,
-        this.props.tiny_loader,
-        this.props.view_type,
-        this.props.object_sets
-      )
-      this.renderer.silent_connect_fail = true
-      this.renderer.connect()
-      loader.endLoad()
-    })
-  }
-
-  componentDidUpdate(prev_props) {
-    if (prev_props.view_type != this.props.view_type)
-      this.renderer.render(this.props.view_type)
-  }
-
-  componentWillUnmount() {
-    const querystring = window.location.search
-    const url_params = new URLSearchParams(querystring)
-    const workflows_added = url_params
-      .getAll('workflows')
-      .map((workflow_id) => parseInt(workflow_id))
-    if (workflows_added.indexOf(this.props.workflowID) >= 0) {
-      workflows_added.splice(workflows_added.indexOf(this.props.workflowID), 1)
-      url_params.set('workflows', workflows_added)
-      if (history.pushState) {
-        const newurl =
-          window.location.protocol +
-          '//' +
-          window.location.host +
-          window.location.pathname +
-          '?' +
-          url_params.toString()
-        window.history.pushState({ path: newurl }, '', newurl)
-      }
-    }
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return (
-      <div
-        className="workflow-wrapper"
-        id={'workflow-' + this.props.workflowID}
-      >
-        <div id="workflow-inner-wrapper" ref={this.mainDiv}></div>
-        <div
-          className="window-close-button"
-          onClick={this.props.removeFunction}
-        >
-          <img src={config.icon_path + 'close.svg'} />
-        </div>
-      </div>
-    )
-  }
-}

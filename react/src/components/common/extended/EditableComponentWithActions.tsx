@@ -14,13 +14,13 @@ import {
 } from '@XMLHTTP/APIFunctions'
 
 type OwnProps = {
-  sibling_count: any
+  sibling_count?: any
   parentID: any
 } & EditableComponentWithCommentsType
 export type EditableComponentWithActionsProps = OwnProps
 
 type StateType = EditableComponentWithCommentsStateType
-export type EditableComponentWithCommentsState = StateType
+export type EditableComponentWithActionsState = StateType
 
 /**
  * Extends the React component to add a few features that are used in a large number of components

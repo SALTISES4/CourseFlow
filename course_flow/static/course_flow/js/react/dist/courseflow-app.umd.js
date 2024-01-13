@@ -38976,7 +38976,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       primary: {
         main: "#04BA74",
         light: "#52C68C",
+        // @ts-ignore
         lightest: "#e2f5eb",
+        // lightest doesn't seen to be defined
         dark: "#009E52",
         contrastText: "#fff"
       },
@@ -47651,17 +47653,19 @@ Please use another name.` : formatMuiErrorMessage(18));
   default_1$b = MoreHoriz.default = _default$b;
   const OuterContentWrap = styled$1(Box$1, {
     shouldForwardProp: (prop) => prop !== "narrow"
-  })(({ theme: theme2, narrow }) => ({
-    padding: theme2.spacing(8),
-    paddingTop: 0,
-    ...narrow && {
-      maxWidth: "34.25rem",
-      marginLeft: "auto",
-      marginRight: "auto",
-      paddingLeft: theme2.spacing(2),
-      paddingRight: theme2.spacing(2)
-    }
-  }));
+  })(
+    ({ theme: theme2, narrow }) => ({
+      padding: theme2.spacing(8),
+      paddingTop: 0,
+      ...narrow && {
+        maxWidth: "34.25rem",
+        marginLeft: "auto",
+        marginRight: "auto",
+        paddingLeft: theme2.spacing(2),
+        paddingRight: theme2.spacing(2)
+      }
+    })
+  );
   function permission_translate() {
     return {
       author: window.gettext("Owner"),
@@ -59863,9 +59867,9 @@ ${latestSubscriptionCallbackError.current.stack}
       ] }) });
     }
   }
-  const mapStateToProps$h = (state) => ({ data_package: state });
+  const mapStateToProps$l = (state) => ({ data_package: state });
   const WorkflowGridMenu = connect(
-    mapStateToProps$h,
+    mapStateToProps$l,
     null
   )(WorkflowGridMenuUnconnected);
   var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
@@ -61485,130 +61489,6 @@ ${latestSubscriptionCallbackError.current.stack}
       payload: { id, hidden }
     };
   });
-  class ViewBarUnconnected extends reactExports.Component {
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    toggleHidden(id, hidden) {
-      this.props.dispatch(ActionCreator.toggleObjectSet(id, hidden));
-    }
-    changeSort(evt) {
-      this.props.dispatch(
-        ActionCreator.changeField(this.props.data.id, "workflow", {
-          outcomes_sort: evt.target.value
-        })
-      );
-    }
-    changeTableType(evt) {
-      this.props.dispatch(
-        ActionCreator.changeField(this.props.data.id, "workflow", {
-          table_type: evt.target.value
-        })
-      );
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      let sort_block;
-      if (this.props.renderer.view_type === "outcometable" || this.props.renderer.view_type === "horizontaloutcometable") {
-        const table_type_value = data2.table_type || 0;
-        const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.renderer.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              disabled: table_type_value === 1 || data2.type === "program" && choice.type > 1,
-              type: "radio",
-              id: "sort_type_choice" + choice.type,
-              name: "sort_type_choice" + choice.type,
-              value: choice.type,
-              checked: data2.outcomes_sort === choice.type,
-              onChange: this.changeSort.bind(this)
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
-        ] })) });
-        const table_type = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-bar-sort-block", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "radio",
-                id: "table_type_table",
-                name: "table_type_table",
-                value: 0,
-                checked: table_type_value === 0,
-                onChange: this.changeTableType.bind(this)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_table", children: window.gettext("Table Style") })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "radio",
-                id: "table_type_matrix",
-                name: "table_type_matrix",
-                value: 1,
-                checked: table_type_value === 1,
-                onChange: this.changeTableType.bind(this)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_matrix", children: window.gettext("Competency Matrix Style") })
-          ] })
-        ] });
-        sort_block = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-            window.gettext("Sort Nodes"),
-            ":"
-          ] }),
-          sort_type,
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
-            window.gettext("Table Type"),
-            ":"
-          ] }),
-          table_type
-        ] });
-      }
-      const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
-        const x = a.term;
-        const y = b.term;
-        if (x < y)
-          return -1;
-        if (x > y)
-          return 1;
-        return 0;
-      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id, !set.hidden)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
-      ] })) });
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("View options") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        sort_block,
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") }),
-        sets
-      ] });
-    }
-  }
-  const mapStateToProps$g = (state) => ({
-    object_sets: state.objectset
-  });
-  const ViewBar = connect(
-    mapStateToProps$g,
-    null
-  )(ViewBarUnconnected);
   class SelectionManager {
     constructor(readOnly) {
       __publicField(this, "mouseClicked");
@@ -61748,1527 +61628,6 @@ ${latestSubscriptionCallbackError.current.stack}
       });
       this.mainDiv = reactExports.createRef();
       this.state = {};
-    }
-  }
-  class RestoreBarItem extends ComponentWithToggleDrop {
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    getTitle() {
-      if (this.props.data.title && this.props.data.title !== "")
-        return this.props.data.title;
-      if (this.props.objectType == "node" && this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== "")
-        return this.props.data.linked_workflow_data.title;
-      return window.gettext("Untitled");
-    }
-    restore() {
-      this.setState({ disabled: true });
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    }
-    delete() {
-      if (window.confirm(
-        window.gettext(
-          "Are you sure you want to permanently delete this object?"
-        )
-      )) {
-        $(this.mainDiv.current).children("button").attr("disabled", true);
-        COURSEFLOW_APP.tinyLoader.startLoad();
-        deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
-          COURSEFLOW_APP.tinyLoader.endLoad();
-        });
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.mainDiv, className: "restore-bar-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: window.gettext("Deleted") + " " + this.props.data.deleted_on }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: window.gettext("Restore") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Permanently Delete") })
-      ] });
-    }
-  }
-  class RestoreBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.checkVisible();
-    }
-    componentDidUpdate() {
-      this.checkVisible();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    checkVisible() {
-      if (this.props.nodes.length == 0 && this.props.weeks.length == 0 && this.props.columns.length == 0 && this.props.outcomes.length == 0 && this.props.nodelinks.length == 0) {
-        $("a[href='#restore-bar']").parent().addClass("hidden");
-      } else {
-        $("a[href='#restore-bar']").parent().removeClass("hidden");
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const columns = this.props.columns.map((column2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RestoreBarItem,
-        {
-          objectType: "column",
-          data: column2,
-          renderer: this.props.renderer
-        },
-        column2.id
-      ));
-      const weeks = this.props.weeks.map((week) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RestoreBarItem,
-        {
-          objectType: "week",
-          data: week,
-          renderer: this.props.renderer
-        },
-        week.id
-      ));
-      const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RestoreBarItem,
-        {
-          objectType: "node",
-          data: node2,
-          renderer: this.props.renderer
-        },
-        node2.id
-      ));
-      const outcomes = this.props.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RestoreBarItem,
-        {
-          objectType: "outcome",
-          data: outcome,
-          renderer: this.props.renderer
-        },
-        outcome.id
-      ));
-      const nodelinks = this.props.nodelinks.map((nodelink) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        RestoreBarItem,
-        {
-          objectType: "nodelink",
-          data: nodelink,
-          renderer: this.props.renderer
-        },
-        nodelink.id
-      ));
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "restore-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Restore items") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodes }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Weeks") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: weeks }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Columns") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: columns }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Outcomes") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: outcomes }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Node Links") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodelinks })
-      ] });
-    }
-  }
-  const mapRestoreBarStateToProps = (state) => ({
-    weeks: state.week.filter((x) => x.deleted),
-    columns: state.column.filter((x) => x.deleted),
-    nodes: state.node.filter((x) => x.deleted),
-    outcomes: state.outcome.filter((x) => x.deleted),
-    nodelinks: state.nodelink.filter((x) => x.deleted)
-  });
-  const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected);
-  const getColumnByID = (state, id) => {
-    for (const i2 in state.column) {
-      const column2 = state.column[i2];
-      if (column2.id == id)
-        return {
-          data: column2,
-          sibling_count: state.workflow.columnworkflow_set.length,
-          columnworkflows: state.workflow.columnworkflow_set,
-          column_order: state.workflow.columnworkflow_set.map(
-            (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
-          )
-        };
-    }
-  };
-  const getWeekByID = (state, id) => {
-    for (const i2 in state.week) {
-      const week = state.week[i2];
-      if (week.id == id) {
-        if (week.is_dropped === void 0) {
-          week.is_dropped = getDropped(id, "week");
-        }
-        return {
-          data: week,
-          column_order: state.workflow.columnworkflow_set.map(
-            (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
-          ),
-          sibling_count: state.workflow.weekworkflow_set.length,
-          nodeweeks: state.nodeweek,
-          workflow_id: state.workflow.id
-        };
-      }
-    }
-  };
-  const getTermByID = (state, id) => {
-    for (const i2 in state.week) {
-      const week = state.week[i2];
-      if (week.id == id) {
-        if (week.is_dropped === void 0) {
-          week.is_dropped = getDropped(id, "week");
-        }
-        const nodeweeks = week.nodeweek_set;
-        const column_order = filterThenSortByID(
-          state.columnworkflow,
-          state.workflow.columnworkflow_set
-        ).map((columnworkflow) => columnworkflow.column);
-        const nodes_by_column = {};
-        for (var j = 0; j < column_order.length; j++) {
-          nodes_by_column[column_order[j]] = [];
-        }
-        for (var j = 0; j < nodeweeks.length; j++) {
-          const node_week = getNodeWeekByID(state, nodeweeks[j]).data;
-          const node2 = getNodeByID(state, node_week.node).data;
-          if (node2.column)
-            nodes_by_column[node2.column].push(nodeweeks[j]);
-          else
-            nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j]);
-        }
-        return {
-          data: week,
-          column_order,
-          nodes_by_column,
-          nodeweeks: state.nodeweek
-        };
-      }
-    }
-  };
-  const getWeekWorkflowByID = (state, id) => {
-    for (const i2 in state.weekworkflow) {
-      const weekworkflow = state.weekworkflow[i2];
-      if (weekworkflow.id == id)
-        return { data: weekworkflow, order: state.workflow.weekworkflow_set };
-    }
-  };
-  const getNodeByID = (state, id) => {
-    for (const i2 in state.node) {
-      var node2 = state.node[i2];
-      if (node2.id === id) {
-        if (node2.is_dropped === void 0) {
-          node2.is_dropped = getDropped(id, "node");
-        }
-        return {
-          data: node2,
-          column: state.column.find((column2) => column2.id === node2.column),
-          object_sets: state.objectset
-        };
-      }
-    }
-    console.log("failed to find node");
-  };
-  const getNodeWeekByID = (state, id) => {
-    for (const i2 in state.nodeweek) {
-      const nodeweek = state.nodeweek[i2];
-      if (nodeweek.id === id) {
-        const node2 = getNodeByID(state, nodeweek.node).data;
-        return {
-          data: nodeweek,
-          order: getWeekByID(state, nodeweek.week).nodeweek_set,
-          column: node2.column
-        };
-      }
-    }
-  };
-  const getNodeLinkByID = (state, id) => {
-    for (const i2 in state.nodelink) {
-      const nodelink = state.nodelink[i2];
-      if (nodelink.id === id)
-        return { data: nodelink };
-    }
-  };
-  const getColumnWorkflowByID = (state, id) => {
-    for (const i2 in state.columnworkflow) {
-      const columnWorkflow = state.columnworkflow[i2];
-      if (columnWorkflow.id === id) {
-        return {
-          data: columnWorkflow,
-          order: state.workflow.columnworkflow_set
-        };
-      }
-    }
-    return {
-      data: void 0,
-      order: void 0
-    };
-  };
-  const getStrategyByID = (state, id) => {
-    const strategies = Object.values(state.strategy);
-    const foundStrategy = strategies.find((strategy) => strategy.id === id);
-    return foundStrategy ? { data: foundStrategy } : { data: void 0 };
-  };
-  function findRootOutcome(state, id, rank) {
-    for (let i2 = 0; i2 < state.length; i2++) {
-      if (state[i2].child === id) {
-        rank.unshift({ parent: state[i2].parent, through: state[i2].id });
-        return findRootOutcome(state, state[i2].parent, rank);
-      }
-    }
-    return { id, rank };
-  }
-  function findTopRank(state, outcome) {
-    for (let j = 0; j < state.outcomeworkflow.length; j++) {
-      if (state.outcomeworkflow[j].outcome === outcome.id) {
-        if (state.outcomeworkflow[j].workflow === state.workflow.id) {
-          return state.workflow.outcomeworkflow_set.indexOf(
-            state.outcomeworkflow[j].id
-          ) + 1;
-        }
-        for (let k = 0; k < state.child_workflow.length; k++) {
-          const index = state.child_workflow[k].outcomeworkflow_set.indexOf(
-            state.outcomeworkflow[j].id
-          );
-          if (index >= 0) {
-            return index + 1;
-          }
-        }
-        for (let k = 0; k < state.parent_workflow.length; k++) {
-          const index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
-            state.outcomeworkflow[j].id
-          );
-          if (index >= 0) {
-            return index + 1;
-          }
-        }
-      }
-    }
-  }
-  const getOutcomeByID = (state, id) => {
-    const state_section = state.outcome;
-    for (const i2 in state_section) {
-      const outcome = state_section[i2];
-      if (outcome.id === id) {
-        if (outcome.is_dropped === void 0) {
-          outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
-        }
-        let root_outcome;
-        let rank = [];
-        let titles = [];
-        let top_rank;
-        if (outcome.depth > 0) {
-          const state_outcomeoutcome_section = state.outcomeoutcome;
-          const root_info = findRootOutcome(
-            state_outcomeoutcome_section,
-            outcome.id,
-            []
-          );
-          rank = root_info.rank.map((x) => null);
-          titles = rank.map((x) => null);
-          for (let j = 0; j < state_section.length; j++) {
-            if (state_section[j].id === root_info.id)
-              root_outcome = state_section[j];
-            for (let k = 0; k < root_info.rank.length; k++) {
-              if (root_info.rank[k].parent === state_section[j].id) {
-                titles[k] = state_section[j].title;
-                if (rank[k])
-                  continue;
-                if (state_section[j].code) {
-                  if (k > 0)
-                    rank[k - 1] = state_section[j].code;
-                  else
-                    top_rank = state_section[j].code;
-                }
-                rank[k] = state_section[j].child_outcome_links.indexOf(
-                  root_info.rank[k].through
-                ) + 1;
-              }
-            }
-          }
-        } else {
-          root_outcome = outcome;
-          if (outcome.code)
-            top_rank = outcome.code;
-        }
-        if (!top_rank)
-          top_rank = findTopRank(state, root_outcome);
-        titles.push(outcome.title);
-        rank.unshift(top_rank);
-        const hovertext = rank.map((rank_i, i22) => rank_i + ". " + titles[i22]).join(" -> ");
-        const prefix2 = rank.join(".");
-        return {
-          data: outcome,
-          hovertext,
-          prefix: prefix2,
-          object_sets: state.objectset,
-          workflow_id: state.workflow.id
-        };
-      }
-    }
-    console.log("failed to find outcome");
-  };
-  const getChildWorkflowByID = (state, id) => {
-    for (const i2 in state.child_workflow) {
-      const workflow = state.child_workflow[i2];
-      if (workflow.id === id)
-        return { data: workflow };
-    }
-    console.log("failed to find child workflow");
-    return -1;
-  };
-  const getOutcomeOutcomeByID = (state, id) => {
-    const state_section = state.outcomeoutcome;
-    for (const i2 in state_section) {
-      const outcomeOutcome = state_section[i2];
-      if (outcomeOutcome.id === id) {
-        return {
-          data: outcomeOutcome
-        };
-      }
-    }
-    console.log("failed to find outcomeoutcome");
-  };
-  const getOutcomeNodeByID = (state, id) => {
-    const outcomeNode = state.outcomenode.find((node2) => node2.id === id);
-    if (outcomeNode) {
-      return {
-        data: outcomeNode
-      };
-    }
-    console.log("Failed to find outcomenode with ID:", id);
-  };
-  const getOutcomeHorizontalLinkByID = (state, id) => {
-    for (const i2 in state.outcomehorizontallink) {
-      const outcomeHorizontalLink = state.outcomehorizontallink[i2];
-      if (outcomeHorizontalLink.id == id) {
-        return {
-          data: outcomeHorizontalLink
-        };
-      }
-    }
-    console.log("failed to find outcomehorizontallink");
-  };
-  const getSortedOutcomeNodesFromNodes = (state, nodes) => {
-    let outcomenode_ids = [];
-    for (let i2 = 0; i2 < nodes.length; i2++) {
-      outcomenode_ids = outcomenode_ids.concat(nodes[i2].outcomenode_unique_set);
-    }
-    const outcomenodes = filterThenSortByID(
-      state.outcomenode,
-      outcomenode_ids
-    );
-    const outcomes = filterThenSortByID(
-      state.outcome,
-      outcomenodes.map((outcomenode) => outcomenode.outcome)
-    ).map((outcome, i2) => ({ ...outcome, degree: outcomenodes[i2].degree }));
-    if (outcomes.length === 0) {
-      return outcomes;
-    }
-    const base_title = capWords(window.gettext("outcomes"));
-    const object_sets = state.objectset.filter(
-      (objectset) => objectset.term === outcomes[0].type
-    );
-    if (object_sets.length === 0)
-      return [
-        {
-          objectset: {
-            title: base_title
-          },
-          outcomes
-        }
-      ];
-    const categories = [
-      {
-        objectset: { title: window.gettext("Uncategorized") },
-        outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
-      },
-      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-        objectset,
-        outcomes: outcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-        )
-      }))
-    ];
-    console.log("returm from getSortedOutcomeNodesFromNodes");
-    console.log(categories);
-    return categories;
-  };
-  const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
-    const outcomeworkflows = filterThenSortByID(
-      state.outcomeworkflow,
-      outcomeworkflow_set
-    );
-    const outcome_ids = outcomeworkflows.map(
-      (outcomeworkflow) => outcomeworkflow.outcome
-    );
-    const outcomes = filterThenSortByID(
-      state.outcome,
-      outcome_ids
-    );
-    if (outcomes.length === 0) {
-      return outcomes;
-    }
-    for (let i2 = 0; i2 < outcomes.length; i2++) {
-      outcomes[i2].outcomeworkflow = outcomeworkflows[i2].id;
-      outcomes[i2].through_no_drag = outcomeworkflows[i2].no_drag;
-    }
-    const base_title = capWords(window.gettext("outcomes"));
-    const object_sets = state.objectset.filter(
-      (objectset) => objectset.term === outcomes[0].type
-    );
-    if (object_sets.length === 0) {
-      return [
-        {
-          objectset: {
-            title: base_title
-          },
-          outcomes
-        }
-      ];
-    }
-    const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
-    let categories = [];
-    if (uncategorized.length > 0)
-      categories = [
-        {
-          objectset: { title: window.gettext("Uncategorized") },
-          outcomes: uncategorized
-        }
-      ];
-    categories = [
-      ...categories,
-      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-        objectset,
-        outcomes: outcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-        )
-      }))
-    ];
-    console.log("categories");
-    console.log(categories);
-    return categories;
-  };
-  const getDescendantOutcomes = (state, outcome, outcomes) => {
-    if (outcome.depth >= 2)
-      return;
-    const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
-      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-    );
-    for (let i2 = 0; i2 < children.length; i2++) {
-      outcomes.push(children[i2].id);
-      getDescendantOutcomes(state, children[i2], outcomes);
-    }
-  };
-  const getDropped = (objectId, objectType, depth = 1) => {
-    const default_drop = get_default_drop_state(
-      objectId,
-      objectType,
-      depth
-    );
-    try {
-      const storedDrop = JSON.parse(
-        window.localStorage.getItem(objectType + objectId)
-      );
-      if (storedDrop === null)
-        return default_drop;
-      return storedDrop;
-    } catch (err) {
-      return default_drop;
-    }
-  };
-  const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
-    for (const i2 in outcomeNodes) {
-      const outcomeNode = outcomeNodes[i2];
-      if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
-        return { data: outcomeNode };
-    }
-    return { data: null };
-  };
-  const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomeworkflows_unsorted, outcomeworkflow_set, object_sets_unfiltered) => {
-    const outcomeworkflows = filterThenSortByID(
-      outcomeworkflows_unsorted,
-      outcomeworkflow_set
-    );
-    const outcome_ids = outcomeworkflows.map(
-      (outcomeworkflow) => outcomeworkflow.outcome
-    );
-    const outcomes = filterThenSortByID(outcomes_unsorted, outcome_ids);
-    for (let i2 = 0; i2 < outcomes.length; i2++) {
-      outcomes[i2].outcomeworkflow = outcomeworkflows[i2].id;
-      outcomes[i2].through_no_drag = outcomeworkflows[i2].no_drag;
-    }
-    if (outcomes.length === 0)
-      return outcomes.map((outcome) => outcome.id);
-    const base_title = capWords(window.gettext("outcomes"));
-    const object_sets = object_sets_unfiltered.filter(
-      (objectset) => objectset.term === outcomes[0].type
-    );
-    if (object_sets.length === 0)
-      return [
-        {
-          objectset: { title: base_title },
-          outcomes: outcomes.map((outcome) => outcome.id)
-        }
-      ];
-    const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0).map((outcome) => outcome.id);
-    let categories = [];
-    if (uncategorized.length > 0)
-      categories = [
-        {
-          objectset: { title: window.gettext("Uncategorized") },
-          outcomes: uncategorized
-        }
-      ];
-    categories = [
-      ...categories,
-      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
-        objectset,
-        outcomes: outcomes.filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0).map((outcome) => outcome.id)
-      }))
-    ];
-    console.log("getSortedOutcomeIDFromOutcomeWorkflowSet categories");
-    console.log(categories);
-    return categories;
-  };
-  class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      if (!this.props.data) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      }
-      return (
-        // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: String(this.props.data.id), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          OutcomeBarOutcome,
-          {
-            objectID: this.props.data.child,
-            parentID: this.props.parentID,
-            throughParentID: this.props.data.id,
-            readOnly: this.props.readOnly
-          }
-        ) })
-      );
-    }
-  }
-  const mapOutcomeOutcomeStateToProps$1 = (state, ownProps) => {
-    return getOutcomeOutcomeByID(state, ownProps.objectID);
-  };
-  const OutcomeBarOutcomeOutcome = connect(
-    mapOutcomeOutcomeStateToProps$1,
-    null
-  )(OutcomeBarOutcomeOutcomeUnconnected);
-  class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
-    // private objectType: string
-    constructor(props) {
-      super(props);
-      __publicField(this, "children_block");
-      /*******************************************************
-       * FUNCTIONS
-       *******************************************************/
-      __publicField(this, "toggleDrop", (evt) => {
-        evt.stopPropagation();
-        this.setState({ is_dropped: !this.state.is_dropped });
-      });
-      this.children_block = reactExports.createRef();
-      this.state = { is_dropped: props.data.depth < 1 };
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDraggable();
-      $(this.mainDiv.current)[0].dataDraggable = { outcome: this.props.data.id };
-      $(this.mainDiv.current).mouseenter((evt) => {
-        this.toggleCSS(true, "hover");
-      });
-      $(this.mainDiv.current).mouseleave((evt) => {
-        this.toggleCSS(false, "hover");
-      });
-      $(this.children_block.current).mouseleave((evt) => {
-        this.toggleCSS(true, "hover");
-      });
-      $(this.children_block.current).mouseenter((evt) => {
-        this.toggleCSS(false, "hover");
-      });
-    }
-    makeDraggable() {
-      var _a;
-      if (this.props.readOnly)
-        return;
-      const draggable_selector = "outcome";
-      const draggable_type = "outcome";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
-        helper: (_e, _item) => {
-          const helper = $(document.createElement("div"));
-          helper.addClass("outcome-ghost");
-          helper.appendTo(document.body);
-          return helper;
-        },
-        cursor: "move",
-        cursorAt: { top: 20, left: 100 },
-        distance: 10,
-        start: (_e, _ui) => {
-          $(".workflow-canvas").addClass("dragging-" + draggable_type);
-          $(draggable_selector).addClass("dragging");
-        },
-        stop: (_e, _ui) => {
-          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-          $(draggable_selector).removeClass("dragging");
-        }
-      });
-    }
-    clickFunction(evt) {
-      if (evt.target.checked) {
-        this.toggleCSS(true, "toggle");
-      } else {
-        this.toggleCSS(false, "toggle");
-      }
-    }
-    toggleCSS(is_toggled, type) {
-      if (is_toggled) {
-        $(".outcome-" + this.props.data.id).addClass("outcome-" + type);
-        if (this.props.nodes.length)
-          $(this.props.nodes.map((node2) => ".node#" + node2).join(", ")).addClass(
-            "outcome-" + type
-          );
-        if (this.props.horizontaloutcomes.length)
-          $(
-            this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
-          ).addClass("outcome-" + type);
-      } else {
-        $(".outcome-" + this.props.data.id).removeClass("outcome-" + type);
-        if (this.props.nodes.length)
-          $(
-            this.props.nodes.map((node2) => ".node#" + node2).join(", ")
-          ).removeClass("outcome-" + type);
-        if (this.props.horizontaloutcomes.length)
-          $(
-            this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
-          ).removeClass("outcome-" + type);
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      let children;
-      let dropIcon;
-      let droptext;
-      if (checkSetHidden(data2, this.props.object_sets))
-        return null;
-      if (this.state.is_dropped)
-        children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          OutcomeBarOutcomeOutcome,
-          {
-            objectID: outcomeoutcome,
-            parentID: data2.id,
-            readOnly: this.props.readOnly
-          },
-          outcomeoutcome
-        ));
-      if (this.state.is_dropped)
-        dropIcon = "droptriangleup";
-      else
-        dropIcon = "droptriangledown";
-      if (this.state.is_dropped)
-        droptext = window.gettext("hide");
-      else
-        droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.ngettext(
-          "descendant",
-          "descendants",
-          data2.child_outcome_links.length
-        );
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
-          ref: this.mainDiv,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              OutcomeTitle,
-              {
-                data: this.props.data,
-                prefix: this.props.prefix,
-                hovertext: this.props.hovertext
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                className: "outcome-toggle-checkbox",
-                type: "checkbox",
-                title: "Toggle highlighting",
-                onChange: this.clickFunction.bind(this)
-              }
-            ),
-            data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
-            ] }),
-            data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "children-block",
-                id: this.props.objectID + "-children-block",
-                ref: this.children_block,
-                children
-              }
-            )
-          ]
-        }
-      );
-    }
-  }
-  const mapOutcomeBarOutcomeStateToProps = (state, ownProps) => ({
-    ...getOutcomeByID(state, ownProps.objectID),
-    nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == ownProps.objectID).map((outcomeNode) => outcomeNode.node),
-    horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == ownProps.objectID).map((ochl) => ochl.outcome)
-  });
-  const OutcomeBarOutcome = connect(
-    mapOutcomeBarOutcomeStateToProps,
-    null
-  )(OutcomeBarOutcomeUnconnected);
-  class OutcomeBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    editOutcomesClick() {
-      this.props.renderMethod($("#container"), ViewType.OUTCOME_EDIT);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const outcomeBarOutcomes = data2.map((category) => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
-            category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              OutcomeBarOutcome,
-              {
-                objectID: outcome.id,
-                readOnly: this.props.readOnly
-              },
-              outcome.id
-            ))
-          ] })
-        ] });
-      });
-      const outcomeBlock = outcomeBarOutcomes.length ? outcomeBarOutcomes : outcomeBarOutcomes;
-      const edittext = capWords(
-        window.gettext("Edit") + " " + window.gettext(this.props.workflow_type + " outcomes")
-      );
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomeBlock }),
-        !this.props.readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            className: "primary-button",
-            id: "edit-outcomes-button",
-            onClick: this.editOutcomesClick.bind(this),
-            children: edittext
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})
-      ] });
-    }
-  }
-  const mapStateToProps$f = (state) => ({
-    data: getSortedOutcomesFromOutcomeWorkflowSet(
-      state,
-      state.workflow.outcomeworkflow_set
-    ),
-    workflow_type: state.workflow.type
-  });
-  const OutcomeBarConnected = connect(
-    mapStateToProps$f,
-    null
-  )(OutcomeBarUnconnected);
-  class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return (
-        // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> // @todo this.mainDiv is not defined or used
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: String(this.props.data.id), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ParentOutcome,
-          {
-            objectID: this.props.data.child,
-            parentID: this.props.parentID,
-            throughParentID: this.props.data.id,
-            readOnly: this.props.readOnly
-          }
-        ) })
-      );
-    }
-  }
-  const mapParentOutcomeOutcomeStateToProps = (state, own_props) => {
-    return getOutcomeOutcomeByID(state, own_props.objectID);
-  };
-  const ParentOutcomeOutcome = connect(
-    mapParentOutcomeOutcomeStateToProps,
-    null
-  )(ParentOutcomeOutcomeUnconnected);
-  class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const children = data2.child_outcome_links.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ParentOutcomeOutcome,
-        {
-          objectID: item,
-          parentID: Number(data2.id),
-          readOnly: this.props.readOnly
-        },
-        item
-      ));
-      const dropIcon = this.state.is_dropped ? "droptriangleup" : "droptriangledown";
-      let droptext;
-      if (this.state.is_dropped) {
-        droptext = window.gettext("hide");
-      } else {
-        droptext = window.gettext("show ") + children.length + " " + window.ngettext("descendant", "descendants", children.length);
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
-          ref: this.mainDiv,
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              OutcomeTitle,
-              {
-                data: this.props.data,
-                prefix: this.props.prefix,
-                hovertext: this.props.hovertext
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                className: "outcome-toggle-checkbox",
-                type: "checkbox",
-                title: "Toggle highlighting",
-                onChange: this.clickFunction.bind(this)
-              }
-            ),
-            data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "children-block",
-                id: this.props.objectID + "-children-block",
-                ref: this.children_block,
-                children
-              }
-            )
-          ]
-        }
-      );
-    }
-  }
-  const MapStateToProps = (state, own_props) => ({
-    ...getOutcomeByID(state, own_props.objectID),
-    nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == own_props.objectID).map((outcomeNode) => outcomeNode.node),
-    horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == own_props.objectID).map((ochl) => ochl.outcome)
-  });
-  const ParentOutcome = connect(
-    MapStateToProps,
-    null
-  )(ParentOutcomeUnconnected);
-  const CompletionImg = ({
-    completionStatus,
-    outcomesType
-  }) => {
-    const contents = [];
-    if (outcomesType === 0 || completionStatus & 1) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          className: "self-completed",
-          src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
-        }
-      );
-    }
-    if (completionStatus & 2) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
-      );
-    }
-    if (completionStatus & 4) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
-      );
-    }
-    if (completionStatus & 8) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
-      );
-    }
-    return contents;
-  };
-  class ParentOutcomeBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const placeholderText = window.gettext(
-        "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
-      );
-      const outcomeBarOutcomes = data2.map((categoryItem, index) => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: categoryItem.objectset.title }),
-            categoryItem.outcomes.map((outcomeItem, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "parent-outcome-node", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                CompletionImg,
-                {
-                  outcomesType: outcomeItem.degree,
-                  completionStatus: 1
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                ParentOutcome,
-                {
-                  objectID: outcomeItem.id,
-                  parentID: this.props.renderer.parentID,
-                  readOnly: this.props.renderer.readOnly,
-                  throughParentID: this.props.data.id
-                },
-                outcomeItem.id
-              )
-            ] }, index2))
-          ] })
-        ] }, index);
-      });
-      let multiple_parent_warning;
-      if (this.props.parent_nodes.length > 1) {
-        multiple_parent_warning = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled small-inline red", children: "error" }),
-          window.gettext(
-            "Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes."
-          )
-        ] });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes from Parent Workflow") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-bar-outcome-block", children: [
-          multiple_parent_warning,
-          outcomeBarOutcomes.length ? outcomeBarOutcomes : placeholderText
-        ] })
-      ] });
-    }
-  }
-  const mapStateToProps$e = (state) => {
-    return {
-      data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
-      workflow: state.workflow,
-      parent_nodes: state.parent_node
-    };
-  };
-  const ParentOutcomeBar = connect(
-    mapStateToProps$e,
-    null
-  )(ParentOutcomeBarUnconnected);
-  class ComparisonViewBar extends reactExports.Component {
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    toggleHidden(id) {
-      this.props.toggleObjectSet(id);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
-        const x = a.term;
-        const y = b.term;
-        if (x < y)
-          return -1;
-        if (x > y)
-          return 1;
-        return 0;
-      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id)
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
-      ] })) });
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") + ":" }),
-        sets
-      ] });
-    }
-  }
-  class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDraggable();
-      $(this.mainDiv.current)[0].dataDraggable = {
-        column: this.props.data.id,
-        column_type: null
-      };
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    makeDraggable() {
-      var _a;
-      const draggable_selector = "node-week";
-      const draggable_type = "nodeweek";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
-        helper: (_e, _item) => {
-          const helper = $(document.createElement("div"));
-          helper.addClass("node-ghost");
-          helper.appendTo(document.body);
-          return helper;
-        },
-        cursor: "move",
-        cursorAt: { top: 20, left: 100 },
-        distance: 10,
-        start: (_e, _ui) => {
-          $(".workflow-canvas").addClass("dragging-" + draggable_type);
-          $(draggable_selector).addClass("dragging");
-        },
-        stop: (_e, _ui) => {
-          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-          $(draggable_selector).removeClass("dragging");
-        }
-      });
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const title = data2 ? data2.title || data2.column_type_display : void 0;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          dangerouslySetInnerHTML: { __html: title },
-          className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
-          ref: this.mainDiv,
-          style: { backgroundColor: getColumnColour(data2) }
-        }
-      );
-    }
-  }
-  class NodeBarColumnCreator extends NodeBarColumnUnconnected {
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDraggable();
-      $(this.mainDiv.current)[0].dataDraggable = {
-        column: null,
-        column_type: this.props.columnType
-      };
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const choice = this.props.columnChoices.find(
-        (choice2) => choice2.type === this.props.columnType
-      );
-      const title = choice ? `New ${choice.name}` : "New";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "new-node new-column node-bar-column node-bar-sortable",
-          ref: this.mainDiv,
-          children: title
-        }
-      );
-    }
-  }
-  const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
-  const NodeBarColumn = connect(
-    mapColumnStateToProps$1,
-    null
-  )(NodeBarColumnUnconnected);
-  class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      if (this.props.data)
-        return (
-          // @todo was
-          // <div className="node-bar-column-workflow" ref={this.mainDiv}>
-          // however this.mainDiv is not defined in this class
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            NodeBarColumn,
-            {
-              objectID: this.props.data.column,
-              throughParentID: this.props.data.id,
-              parentID: this.props.parentID
-            }
-          ) })
-        );
-      else
-        return (
-          // @todo was
-          // <div className="node-bar-column-workflow" ref={this.mainDiv}>
-          // however this.mainDiv is not defined in this class
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            NodeBarColumnCreator,
-            {
-              columnType: this.props.columnType,
-              columnChoices: this.props.columnChoices
-            }
-          ) })
-        );
-    }
-  }
-  const mapStateToProps$d = (state, ownProps) => {
-    return getColumnWorkflowByID(state, ownProps.objectID);
-  };
-  const NodeBarColumnWorkflow = connect(
-    mapStateToProps$d,
-    null
-  )(NodeBarColumnWorkflowUnconnected);
-  class StrategyUnconnected extends ComponentWithToggleDrop {
-    // @todo not used?
-    // constructor(props) {
-    //   super(props)
-    //   this.objectType = 'strategy'
-    //   this.objectClass = '.strategy'
-    //   this.node_block = React.createRef()
-    // }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDraggable();
-      $(this.mainDiv.current)[0].dataDraggable = { strategy: this.props.data.id };
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    makeDraggable() {
-      var _a;
-      const draggable_selector = "week-workflow";
-      const draggable_type = "weekworkflow";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
-        helper: (_e, _item) => {
-          const helper = $(document.createElement("div"));
-          helper.addClass("week-ghost");
-          helper.appendTo(document.body);
-          return helper;
-        },
-        cursor: "move",
-        cursorAt: { top: 20, left: 100 },
-        distance: 10,
-        start: (_e, _ui) => {
-          $(".workflow-canvas").addClass("dragging-" + draggable_type);
-          $(draggable_selector).addClass("dragging");
-        },
-        stop: (_e, _ui) => {
-          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
-          $(draggable_selector).removeClass("dragging");
-        }
-      });
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const { data: data2 } = this.props;
-      const title = data2 && data2.title ? data2.title : "untitled strategy";
-      const strategyIcon = data2 && data2.strategy_icon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          src: `${COURSEFLOW_APP.config.icon_path}${strategy_keys[data2.strategy_icon]}.svg`
-        }
-      ) : null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "strategy-bar-strategy strategy new-strategy",
-          ref: this.mainDiv,
-          children: [
-            strategyIcon,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: title })
-          ]
-        }
-      );
-    }
-  }
-  const mapStrategyStateToProps = (state, ownProps) => {
-    return getStrategyByID(state, ownProps.objectID);
-  };
-  const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
-  class NodeBarUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      let nodebar_nodes = [];
-      const nodebarColumnWorkflows = data2.columnworkflow_set.map(
-        (columnWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          NodeBarColumnWorkflow,
-          {
-            objectID: columnWorkflow,
-            columnChoices: this.props.columnChoices
-          },
-          `NodeBarColumnWorkflow-${index}`
-        )
-      );
-      const columns_present = this.props.columns.map((col) => col.column_type);
-      for (let i22 = 0; i22 < data2.DEFAULT_COLUMNS.length; i22++) {
-        if (columns_present.indexOf(data2.DEFAULT_COLUMNS[i22]) < 0) {
-          nodebarColumnWorkflows.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              NodeBarColumnWorkflow,
-              {
-                columnType: data2.DEFAULT_COLUMNS[i22],
-                columnChoices: this.props.columnChoices
-              }
-            )
-          );
-        }
-      }
-      let i2;
-      nodebarColumnWorkflows.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          NodeBarColumnWorkflow,
-          {
-            columnType: data2.DEFAULT_CUSTOM_COLUMN,
-            columnChoices: this.props.columnChoices
-          },
-          `NodeBarColumnWorkflow-last-${i2}`
-        )
-      );
-      if (!this.props.readOnly) {
-        nodebar_nodes = [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarColumnWorkflows })
-        ];
-      }
-      const strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        nodebar_nodes,
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies })
-      ] });
-    }
-  }
-  const mapStateToProps$c = (state) => ({
-    data: state.workflow,
-    columns: state.column,
-    available_strategies: state.strategy
-    // saltise_strategies: state.saltise_strategy
-  });
-  const NodeBar = connect(
-    mapStateToProps$c,
-    null
-  )(NodeBarUnconnected);
-  class RightSideBar extends reactExports.Component {
-    /*******************************************************
-     * props from renderer
-     *
-     *  view_type
-     *  is_strategy
-     *  read_only
-     *  column_choices
-     *******************************************************/
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeTabs();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    makeTabs() {
-      $("#sidebar").tabs({
-        active: 1,
-        disabled: [0],
-        collapsible: true,
-        activate: (evt, ui) => {
-          if (ui.oldTab.length === 0)
-            $("#sidebar").removeClass("collapsed");
-          else if (ui.newTab.length === 0)
-            $("#sidebar").addClass("collapsed");
-        }
-      });
-      $("#sidebar").on("dblclick mousedown", (evt) => {
-        evt.stopPropagation();
-      });
-      $("#side-bar-close-button").on("click", () => {
-        $("#sidebar").addClass("collapsed");
-        $("#sidebar").tabs("option", "active", false);
-      });
-    }
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    getNodeBar() {
-      if (this.props.context === "workflow")
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          NodeBar,
-          {
-            readOnly: this.props.renderer.read_only,
-            columnChoices: this.props.renderer.column_choices
-          }
-        );
-      return null;
-    }
-    getOutcomeBar() {
-      const renderer = this.props.renderer;
-      if (this.props.context === WFContext.COMPARISON) {
-        return null;
-      }
-      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        OutcomeBarConnected,
-        {
-          renderMethod: this.props.parentRender,
-          readOnly: true
-        }
-      );
-    }
-    getViewBar() {
-      if (this.props.context === WFContext.WORKFLOW) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data, renderer: this.props.renderer });
-      }
-      if (this.props.context === WFContext.COMPARISON) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ComparisonViewBar,
-          {
-            toggleObjectSet: this.props.toggleObjectSet,
-            object_sets: this.props.object_sets,
-            renderer: this.props.renderer
-          }
-        );
-      }
-      return null;
-    }
-    getRestoreBar() {
-      if (this.props.context === WFContext.WORKFLOW)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, { renderer: this.props.renderer });
-      return null;
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const renderer = this.props.renderer;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#edit-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              className: "material-symbols-rounded filled",
-              title: window.gettext("Edit"),
-              children: "edit"
-            }
-          ) }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#node-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              className: "material-symbols-rounded filled",
-              title: window.gettext("Add"),
-              children: "add_circle"
-            }
-          ) }) }),
-          !renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#outcome-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "span",
-              {
-                className: "material-symbols-rounded filled",
-                title: window.gettext("Outcomes"),
-                children: "spoke"
-              }
-            ) }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#view-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "span",
-              {
-                className: "material-symbols-rounded filled",
-                title: window.gettext("View Options"),
-                children: "remove_red_eye"
-              }
-            ) }) })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#restore-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              className: "material-symbols-rounded filled",
-              title: window.gettext("Restore Deleted"),
-              children: "restore_from_trash"
-            }
-          ) }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "edit-menu", className: "right-panel-container" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "node-bar", className: "right-panel-container", children: this.getNodeBar() }),
-        !this.props.renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "outcome-bar", className: "right-panel-container", children: this.getOutcomeBar() }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "view-bar", className: "right-panel-container", children: this.getViewBar() })
-        ] }),
-        !renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", id: "side-bar-close-button", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_forward" }) })
-      ] });
     }
   }
   class QuillDiv extends reactExports.Component {
@@ -64608,6 +62967,457 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  const getColumnByID = (state, id) => {
+    for (const i2 in state.column) {
+      const column2 = state.column[i2];
+      if (column2.id == id)
+        return {
+          data: column2,
+          sibling_count: state.workflow.columnworkflow_set.length,
+          columnworkflows: state.workflow.columnworkflow_set,
+          column_order: state.workflow.columnworkflow_set.map(
+            (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
+          )
+        };
+    }
+  };
+  const getWeekByID = (state, id) => {
+    for (const i2 in state.week) {
+      const week = state.week[i2];
+      if (week.id == id) {
+        if (week.is_dropped === void 0) {
+          week.is_dropped = getDropped(id, "week");
+        }
+        return {
+          data: week,
+          column_order: state.workflow.columnworkflow_set.map(
+            (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
+          ),
+          sibling_count: state.workflow.weekworkflow_set.length,
+          nodeweeks: state.nodeweek,
+          workflow_id: state.workflow.id
+        };
+      }
+    }
+  };
+  const getTermByID = (state, id) => {
+    for (const i2 in state.week) {
+      const week = state.week[i2];
+      if (week.id == id) {
+        if (week.is_dropped === void 0) {
+          week.is_dropped = getDropped(id, "week");
+        }
+        const nodeweeks = week.nodeweek_set;
+        const column_order = filterThenSortByID(
+          state.columnworkflow,
+          state.workflow.columnworkflow_set
+        ).map((columnworkflow) => columnworkflow.column);
+        const nodes_by_column = {};
+        for (var j = 0; j < column_order.length; j++) {
+          nodes_by_column[column_order[j]] = [];
+        }
+        for (var j = 0; j < nodeweeks.length; j++) {
+          const node_week = getNodeWeekByID(state, nodeweeks[j]).data;
+          const node2 = getNodeByID(state, node_week.node).data;
+          if (node2.column)
+            nodes_by_column[node2.column].push(nodeweeks[j]);
+          else
+            nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j]);
+        }
+        return {
+          data: week,
+          column_order,
+          nodes_by_column,
+          nodeweeks: state.nodeweek
+        };
+      }
+    }
+  };
+  const getWeekWorkflowByID = (state, id) => {
+    for (const i2 in state.weekworkflow) {
+      const weekworkflow = state.weekworkflow[i2];
+      if (weekworkflow.id == id)
+        return { data: weekworkflow, order: state.workflow.weekworkflow_set };
+    }
+  };
+  const getNodeByID = (state, id) => {
+    for (const i2 in state.node) {
+      var node2 = state.node[i2];
+      if (node2.id === id) {
+        if (node2.is_dropped === void 0) {
+          node2.is_dropped = getDropped(id, "node");
+        }
+        return {
+          data: node2,
+          column: state.column.find((column2) => column2.id === node2.column),
+          object_sets: state.objectset
+        };
+      }
+    }
+    console.log("failed to find node");
+  };
+  const getNodeWeekByID = (state, id) => {
+    for (const i2 in state.nodeweek) {
+      const nodeweek = state.nodeweek[i2];
+      if (nodeweek.id === id) {
+        const node2 = getNodeByID(state, nodeweek.node).data;
+        return {
+          data: nodeweek,
+          order: getWeekByID(state, nodeweek.week).nodeweek_set,
+          column: node2.column
+        };
+      }
+    }
+  };
+  const getNodeLinkByID = (state, id) => {
+    for (const i2 in state.nodelink) {
+      const nodelink = state.nodelink[i2];
+      if (nodelink.id === id)
+        return { data: nodelink };
+    }
+  };
+  const getColumnWorkflowByID = (state, id) => {
+    for (const i2 in state.columnworkflow) {
+      const columnWorkflow = state.columnworkflow[i2];
+      if (columnWorkflow.id === id) {
+        return {
+          data: columnWorkflow,
+          order: state.workflow.columnworkflow_set
+        };
+      }
+    }
+    return {
+      data: void 0,
+      order: void 0
+    };
+  };
+  const getStrategyByID = (state, id) => {
+    const strategies = Object.values(state.strategy);
+    const foundStrategy = strategies.find((strategy) => strategy.id === id);
+    return foundStrategy ? { data: foundStrategy } : { data: void 0 };
+  };
+  function findRootOutcome(state, id, rank) {
+    for (let i2 = 0; i2 < state.length; i2++) {
+      if (state[i2].child === id) {
+        rank.unshift({ parent: state[i2].parent, through: state[i2].id });
+        return findRootOutcome(state, state[i2].parent, rank);
+      }
+    }
+    return { id, rank };
+  }
+  function findTopRank(state, outcome) {
+    for (let j = 0; j < state.outcomeworkflow.length; j++) {
+      if (state.outcomeworkflow[j].outcome === outcome.id) {
+        if (state.outcomeworkflow[j].workflow === state.workflow.id) {
+          return state.workflow.outcomeworkflow_set.indexOf(
+            state.outcomeworkflow[j].id
+          ) + 1;
+        }
+        for (let k = 0; k < state.child_workflow.length; k++) {
+          const index = state.child_workflow[k].outcomeworkflow_set.indexOf(
+            state.outcomeworkflow[j].id
+          );
+          if (index >= 0) {
+            return index + 1;
+          }
+        }
+        for (let k = 0; k < state.parent_workflow.length; k++) {
+          const index = state.parent_workflow[k].outcomeworkflow_set.indexOf(
+            state.outcomeworkflow[j].id
+          );
+          if (index >= 0) {
+            return index + 1;
+          }
+        }
+      }
+    }
+  }
+  const getOutcomeByID = (state, id) => {
+    const state_section = state.outcome;
+    for (const i2 in state_section) {
+      const outcome = state_section[i2];
+      if (outcome.id === id) {
+        if (outcome.is_dropped === void 0) {
+          outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
+        }
+        let root_outcome;
+        let rank = [];
+        let titles = [];
+        let top_rank;
+        if (outcome.depth > 0) {
+          const state_outcomeoutcome_section = state.outcomeoutcome;
+          const root_info = findRootOutcome(
+            state_outcomeoutcome_section,
+            outcome.id,
+            []
+          );
+          rank = root_info.rank.map((x) => null);
+          titles = rank.map((x) => null);
+          for (let j = 0; j < state_section.length; j++) {
+            if (state_section[j].id === root_info.id)
+              root_outcome = state_section[j];
+            for (let k = 0; k < root_info.rank.length; k++) {
+              if (root_info.rank[k].parent === state_section[j].id) {
+                titles[k] = state_section[j].title;
+                if (rank[k])
+                  continue;
+                if (state_section[j].code) {
+                  if (k > 0)
+                    rank[k - 1] = state_section[j].code;
+                  else
+                    top_rank = state_section[j].code;
+                }
+                rank[k] = state_section[j].child_outcome_links.indexOf(
+                  root_info.rank[k].through
+                ) + 1;
+              }
+            }
+          }
+        } else {
+          root_outcome = outcome;
+          if (outcome.code)
+            top_rank = outcome.code;
+        }
+        if (!top_rank)
+          top_rank = findTopRank(state, root_outcome);
+        titles.push(outcome.title);
+        rank.unshift(top_rank);
+        const hovertext = rank.map((rank_i, i22) => rank_i + ". " + titles[i22]).join(" -> ");
+        const prefix2 = rank.join(".");
+        return {
+          data: outcome,
+          hovertext,
+          prefix: prefix2,
+          object_sets: state.objectset,
+          workflow_id: state.workflow.id
+        };
+      }
+    }
+    console.log("failed to find outcome");
+  };
+  const getChildWorkflowByID = (state, id) => {
+    for (const i2 in state.child_workflow) {
+      const workflow = state.child_workflow[i2];
+      if (workflow.id === id)
+        return { data: workflow };
+    }
+    console.log("failed to find child workflow");
+    return -1;
+  };
+  const getOutcomeOutcomeByID = (state, id) => {
+    const state_section = state.outcomeoutcome;
+    for (const i2 in state_section) {
+      const outcomeOutcome = state_section[i2];
+      if (outcomeOutcome.id === id) {
+        return {
+          data: outcomeOutcome
+        };
+      }
+    }
+    console.log("failed to find outcomeoutcome");
+  };
+  const getOutcomeNodeByID = (state, id) => {
+    const outcomeNode = state.outcomenode.find((node2) => node2.id === id);
+    if (outcomeNode) {
+      return {
+        data: outcomeNode
+      };
+    }
+    console.log("Failed to find outcomenode with ID:", id);
+  };
+  const getOutcomeHorizontalLinkByID = (state, id) => {
+    for (const i2 in state.outcomehorizontallink) {
+      const outcomeHorizontalLink = state.outcomehorizontallink[i2];
+      if (outcomeHorizontalLink.id == id) {
+        return {
+          data: outcomeHorizontalLink
+        };
+      }
+    }
+    console.log("failed to find outcomehorizontallink");
+  };
+  const getSortedOutcomeNodesFromNodes = (state, nodes) => {
+    let outcomenode_ids = [];
+    for (let i2 = 0; i2 < nodes.length; i2++) {
+      outcomenode_ids = outcomenode_ids.concat(nodes[i2].outcomenode_unique_set);
+    }
+    const outcomenodes = filterThenSortByID(
+      state.outcomenode,
+      outcomenode_ids
+    );
+    const outcomes = filterThenSortByID(
+      state.outcome,
+      outcomenodes.map((outcomenode) => outcomenode.outcome)
+    ).map((outcome, i2) => ({ ...outcome, degree: outcomenodes[i2].degree }));
+    if (outcomes.length === 0) {
+      return outcomes;
+    }
+    const base_title = capWords(window.gettext("outcomes"));
+    const object_sets = state.objectset.filter(
+      (objectset) => objectset.term === outcomes[0].type
+    );
+    if (object_sets.length === 0)
+      return [
+        {
+          objectset: {
+            title: base_title
+          },
+          outcomes
+        }
+      ];
+    const categories = [
+      {
+        objectset: { title: window.gettext("Uncategorized") },
+        outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
+      },
+      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+        objectset,
+        outcomes: outcomes.filter(
+          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+        )
+      }))
+    ];
+    console.log("returm from getSortedOutcomeNodesFromNodes");
+    console.log(categories);
+    return categories;
+  };
+  const getSortedOutcomesFromOutcomeWorkflowSet = (state, outcomeworkflow_set) => {
+    const outcomeworkflows = filterThenSortByID(
+      state.outcomeworkflow,
+      outcomeworkflow_set
+    );
+    const outcome_ids = outcomeworkflows.map(
+      (outcomeworkflow) => outcomeworkflow.outcome
+    );
+    const outcomes = filterThenSortByID(
+      state.outcome,
+      outcome_ids
+    );
+    if (outcomes.length === 0) {
+      return outcomes;
+    }
+    for (let i2 = 0; i2 < outcomes.length; i2++) {
+      outcomes[i2].outcomeworkflow = outcomeworkflows[i2].id;
+      outcomes[i2].through_no_drag = outcomeworkflows[i2].no_drag;
+    }
+    const base_title = capWords(window.gettext("outcomes"));
+    const object_sets = state.objectset.filter(
+      (objectset) => objectset.term === outcomes[0].type
+    );
+    if (object_sets.length === 0) {
+      return [
+        {
+          objectset: {
+            title: base_title
+          },
+          outcomes
+        }
+      ];
+    }
+    const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0);
+    let categories = [];
+    if (uncategorized.length > 0)
+      categories = [
+        {
+          objectset: { title: window.gettext("Uncategorized") },
+          outcomes: uncategorized
+        }
+      ];
+    categories = [
+      ...categories,
+      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+        objectset,
+        outcomes: outcomes.filter(
+          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
+        )
+      }))
+    ];
+    console.log("categories");
+    console.log(categories);
+    return categories;
+  };
+  const getDescendantOutcomes = (state, outcome, outcomes) => {
+    if (outcome.depth >= 2)
+      return;
+    const children = outcome.child_outcome_links.map((id) => getOutcomeOutcomeByID(state, id)).map(
+      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+    );
+    for (let i2 = 0; i2 < children.length; i2++) {
+      outcomes.push(children[i2].id);
+      getDescendantOutcomes(state, children[i2], outcomes);
+    }
+  };
+  const getDropped = (objectId, objectType, depth = 1) => {
+    const default_drop = get_default_drop_state(
+      objectId,
+      objectType,
+      depth
+    );
+    try {
+      const storedDrop = JSON.parse(
+        window.localStorage.getItem(objectType + objectId)
+      );
+      if (storedDrop === null)
+        return default_drop;
+      return storedDrop;
+    } catch (err) {
+      return default_drop;
+    }
+  };
+  const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
+    for (const i2 in outcomeNodes) {
+      const outcomeNode = outcomeNodes[i2];
+      if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
+        return { data: outcomeNode };
+    }
+    return { data: null };
+  };
+  const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted, outcomeworkflows_unsorted, outcomeworkflow_set, object_sets_unfiltered) => {
+    const outcomeworkflows = filterThenSortByID(
+      outcomeworkflows_unsorted,
+      outcomeworkflow_set
+    );
+    const outcome_ids = outcomeworkflows.map(
+      (outcomeworkflow) => outcomeworkflow.outcome
+    );
+    const outcomes = filterThenSortByID(outcomes_unsorted, outcome_ids);
+    for (let i2 = 0; i2 < outcomes.length; i2++) {
+      outcomes[i2].outcomeworkflow = outcomeworkflows[i2].id;
+      outcomes[i2].through_no_drag = outcomeworkflows[i2].no_drag;
+    }
+    if (outcomes.length === 0)
+      return outcomes.map((outcome) => outcome.id);
+    const base_title = capWords(window.gettext("outcomes"));
+    const object_sets = object_sets_unfiltered.filter(
+      (objectset) => objectset.term === outcomes[0].type
+    );
+    if (object_sets.length === 0)
+      return [
+        {
+          objectset: { title: base_title },
+          outcomes: outcomes.map((outcome) => outcome.id)
+        }
+      ];
+    const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0).map((outcome) => outcome.id);
+    let categories = [];
+    if (uncategorized.length > 0)
+      categories = [
+        {
+          objectset: { title: window.gettext("Uncategorized") },
+          outcomes: uncategorized
+        }
+      ];
+    categories = [
+      ...categories,
+      ...object_sets.filter((objectset) => !objectset.hidden).map((objectset) => ({
+        objectset,
+        outcomes: outcomes.filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0).map((outcome) => outcome.id)
+      }))
+    ];
+    console.log("getSortedOutcomeIDFromOutcomeWorkflowSet categories");
+    console.log(categories);
+    return categories;
+  };
   class Slider extends reactExports.Component {
     render() {
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "switch", children: [
@@ -67105,11 +65915,11 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$b = (state, ownProps) => {
+  const mapStateToProps$k = (state, ownProps) => {
     return getOutcomeOutcomeByID(state, ownProps.objectID);
   };
   const OutcomeOutcome = connect(
-    mapStateToProps$b,
+    mapStateToProps$k,
     null
   )(OutcomeOutcomeUnconnected);
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
@@ -67142,9 +65952,9 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.mainDiv, children: this.getChildType() });
     }
   }
-  const mapOutcomeOutcomeStateToProps = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
+  const mapOutcomeOutcomeStateToProps$1 = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
   const SimpleOutcomeOutcome = connect(
-    mapOutcomeOutcomeStateToProps,
+    mapOutcomeOutcomeStateToProps$1,
     null
   )(SimpleOutcomeOutcomeUnconnected);
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
@@ -67377,7 +66187,7 @@ ${latestSubscriptionCallbackError.current.stack}
     mapOutcomeHorizontalLinkStateToProps,
     null
   )(OutcomeHorizontalLinkUnconnected);
-  let Outcome$1 = class Outcome extends EditableComponentWithSorting {
+  let OutcomeUnconnected$1 = class OutcomeUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
       this.objectType = "outcome";
@@ -67646,8 +66456,8 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   };
   const mapOutcomeStateToProps$2 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-  const ConnectedOutcome = connect(mapOutcomeStateToProps$2, null)(Outcome$1);
-  const Outcome$2 = ConnectedOutcome;
+  const Outcome$1 = connect(mapOutcomeStateToProps$2, null)(OutcomeUnconnected$1);
+  const Outcome$2 = Outcome$1;
   class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
@@ -67842,39 +66652,202 @@ ${latestSubscriptionCallbackError.current.stack}
     mapOutcomeComparisonStateToProps,
     null
   )(OutcomeEditUnconnected);
-  class Column extends EditableComponentWithActions {
+  class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "column";
-      this.objectClass = ".column";
+      console.log("props");
+      console.log(props);
+      this.objectType = "outcomenode";
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.checkHidden();
+    }
+    componentDidUpdate() {
+      this.checkHidden();
+    }
+    componentWillUnmount() {
+      this.checkHidden();
     }
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
-    getIcon() {
-      if (this.props.data.icon && this.props.data.icon != "") {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: this.props.data.icon });
-      }
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    addDeleteSelf(data2) {
+      const icon = "close.svg";
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
+        ActionButton,
         {
-          src: COURSEFLOW_APP.config.icon_path + default_column_settings[this.props.data.column_type].icon + ".svg"
+          buttonIcon: icon,
+          buttonClass: "delete-self-button",
+          titleText: window.gettext("Delete"),
+          handleClick: this.deleteSelf.bind(this, data2)
         }
       );
+    }
+    deleteSelf(data2) {
+      if (this.props.deleteSelfOverride)
+        this.props.deleteSelfOverride();
+      else {
+        COURSEFLOW_APP.tinyLoader.startLoad();
+        updateOutcomenodeDegree(data2.node, data2.outcome, 0, (response_data) => {
+          COURSEFLOW_APP.tinyLoader.endLoad();
+        });
+      }
+    }
+    checkHidden() {
+      if ($(this.mainDiv.current).children(".outcome").length === 0) {
+        $(this.mainDiv.current).css("display", "none");
+      } else {
+        $(this.mainDiv.current).css("display", "");
+      }
+      const indicator = $(this.mainDiv.current).closest(".outcome-node-indicator");
+      if (indicator.length >= 0) {
+        const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
+        indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
+        if (num_outcomenodes === 0)
+          indicator.css("display", "none");
+        else
+          indicator.css("display", "");
+      }
     }
     /*******************************************************
      * RENDER
      *******************************************************/
     render() {
       const data2 = this.props.data;
-      let title = data2.title;
-      if (!title)
-        title = data2.column_type_display;
-      const style2 = {};
-      if (data2.lock) {
-        style2.border = "2px solid " + data2.lock.user_colour;
+      if ((data2 == null ? void 0 : data2.outcome) === -1 || !(data2 == null ? void 0 : data2.outcome))
+        return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "outcome-node outcomenode-" + data2.id,
+          id: data2.id,
+          ref: this.mainDiv,
+          children: [
+            !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
+            (void 0)(data2.degree, this.props.outcomes_type),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              SimpleOutcome$1,
+              {
+                checkHidden: this.checkHidden.bind(this),
+                comments: true,
+                edit: true,
+                objectID: data2.outcome,
+                parentID: this.props.parentID,
+                throughParentID: data2.id,
+                renderer: this.props.renderer
+              }
+            )
+          ]
+        }
+      );
+    }
+  }
+  const mapStateToProps$j = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+  const OutcomeNode = connect(mapStateToProps$j, null)(OutcomeNodeUnconnected);
+  class NodeComparisonUnconnected extends EditableComponentWithActions {
+    constructor(props) {
+      super(props);
+      this.objectType = "node";
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const side_actions = [];
+      let data_override;
+      let lefticon;
+      let righticon;
+      const data2 = this.props.data;
+      if (data2.represents_workflow) {
+        data_override = {
+          ...data2,
+          ...data2.linked_workflow_data,
+          id: data2.id
+        };
+      } else {
+        data_override = { ...data2 };
       }
-      let css_class = "column";
+      const renderer = this.props.renderer;
+      const selection_manager = renderer.selection_manager;
+      const style2 = {
+        backgroundColor: getColumnColour(this.props.column)
+      };
+      if (data2.lock) {
+        style2.outline = "2px solid " + data2.lock.user_colour;
+      }
+      if (checkSetHidden(data2, this.props.object_sets)) {
+        style2.display = "none";
+      }
+      let outcomenodes;
+      if (this.state.show_outcomes)
+        outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "outcome-node-container column-111111-" + data2.column,
+            onMouseLeave: () => {
+              this.setState({
+                show_outcomes: false
+              });
+            },
+            style: { borderColor: getColumnColour(this.props.column) },
+            children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeNode,
+              {
+                objectID: outcomenode,
+                renderer
+              },
+              outcomenode
+            ))
+          }
+        );
+      if (data2.outcomenode_unique_set.length > 0) {
+        side_actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "outcome-node-indicator-number column-" + data2.column,
+                onMouseEnter: () => {
+                  this.setState({ show_outcomes: true });
+                },
+                style: {
+                  borderColor: getColumnColour(this.props.column)
+                },
+                children: data2.outcomenode_unique_set.length
+              }
+            ),
+            outcomenodes
+          ] })
+        );
+      }
+      if (data2.context_classification > 0) {
+        lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            title: renderer.context_choices.find(
+              (obj) => obj.type == data2.context_classification
+            ).name,
+            src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
+          }
+        );
+      }
+      if (data2.task_classification > 0) {
+        righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            title: renderer.task_choices.find(
+              (obj) => obj.type == data2.task_classification
+            ).name,
+            src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
+          }
+        );
+      }
+      const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
+      let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
       if (data2.lock)
         css_class += " locked locked-" + data2.lock.user_id;
       const mouseover_actions = [];
@@ -67883,66 +66856,45 @@ ${latestSubscriptionCallbackError.current.stack}
         mouseover_actions.push(this.addDuplicateSelf(data2));
         mouseover_actions.push(this.addDeleteSelf(data2));
       }
-      if (this.props.renderer.view_comments) {
+      if (renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
+      this.addEditable(data_override);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          ref: this.mainDiv,
           style: style2,
           className: css_class,
-          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+          id: data2.id,
+          ref: this.mainDiv,
+          onClick: (evt) => selection_manager.changeSelection(evt, this),
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "column-line", children: [
-              this.getIcon(),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: title } })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+              titleText,
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
             ] }),
-            this.addEditable(data2),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              TitleText,
+              {
+                text: data_override.description,
+                defaultText: "Click to edit"
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
           ]
         }
       );
     }
   }
-  const mapColumnStateToProps = (state, own_props) => getColumnByID(state, own_props.objectID);
-  const Column$1 = connect(mapColumnStateToProps, null)(Column);
-  class ColumnWorkflow extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.objectType = "columnworkflow";
-      this.objectClass = ".column-workflow";
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      let my_class = "column-workflow column-" + data2.id;
-      if (data2.no_drag)
-        my_class += " no-drag";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: my_class,
-          ref: this.mainDiv,
-          id: data2.id,
-          "data-child-id": data2.column,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Column$1,
-            {
-              objectID: data2.column,
-              parentID: this.props.parentID,
-              throughParentID: data2.id,
-              renderer: this.props.renderer
-            }
-          )
-        }
-      );
-    }
-  }
-  const mapColumnWorkflowStateToProps = (state, own_props) => getColumnWorkflowByID(state, own_props.objectID);
-  const ColumnWorkflow$1 = connect(mapColumnWorkflowStateToProps, null)(ColumnWorkflow);
+  const mapStateToProps$i = (state, ownProps) => {
+    return getNodeByID(state, ownProps.objectID);
+  };
+  const NodeComparison = connect(
+    mapStateToProps$i,
+    null
+  )(NodeComparisonUnconnected);
   class MenuBar extends reactExports.Component {
     /*******************************************************
      * LIFECYCLE
@@ -82351,6 +81303,12 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeLink extends EditableComponentWithActions {
     constructor(props) {
       super(props);
+      __publicField(this, "objectClass");
+      __publicField(this, "source_node");
+      __publicField(this, "target_node");
+      __publicField(this, "target_port_handle");
+      __publicField(this, "source_port_handle");
+      __publicField(this, "rerenderEvents");
       this.objectType = "nodelink";
       this.objectClass = ".node-link";
       this.rerenderEvents = "ports-rendered." + this.props.data.id;
@@ -82375,6 +81333,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data2 = this.props.data;
+      const style2 = {};
       if (!this.source_node || !this.source_node.outerWidth() || !this.target_node || !this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()) {
         this.source_node = $(this.props.node_div.current);
         this.target_node = $("#" + data2.target_node + ".node");
@@ -82389,11 +81348,11 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       const node_selected = this.source_node.attr("data-selected") === "true" || this.target_node.attr("data-selected") === "true";
       const node_hovered = this.source_node.attr("data-hovered") === "true" || this.target_node.attr("data-hovered") === "true";
-      const style2 = {};
       if (data2.dashed)
         style2.strokeDasharray = "5,5";
-      if (this.source_node.css("display") == "none" || this.target_node.css("display") == "none")
-        style2["display"] = "none";
+      if (this.source_node.css("display") == "none" || this.target_node.css("display") == "none") {
+        style2.display = "none";
+      }
       const source_dims = {
         width: this.source_node.outerWidth(),
         height: this.source_node.outerHeight()
@@ -82402,43 +81361,45 @@ ${latestSubscriptionCallbackError.current.stack}
         width: this.target_node.outerWidth(),
         height: this.target_node.outerHeight()
       };
-      if (!source_dims.width || !target_dims.width)
+      if (!source_dims.width || !target_dims.width) {
         return null;
-      const selector = this;
-      if (!this.source_node.is(":visible") || !this.target_node.is(":visible"))
+      }
+      if (!this.source_node.is(":visible") || !this.target_node.is(":visible")) {
         return null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            NodeLinkSVG,
-            {
-              style: style2,
-              hovered: node_hovered,
-              node_selected,
-              lock: data2.lock,
-              title: data2.title,
-              text_position: data2.text_position,
-              source_port_handle: this.source_port_handle,
-              source_port: data2.source_port,
-              target_port_handle: this.target_port_handle,
-              target_port: data2.target_port,
-              clickFunction: (evt) => this.props.renderer.selection_manager.changeSelection(
-                evt,
-                selector
-              ),
-              selected: this.state.selected,
-              source_dimensions: source_dims,
-              target_dimensions: target_dims
-            }
-          ),
-          $(".workflow-canvas")[0]
+      }
+      reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeLinkSVG,
+          {
+            style: style2,
+            hovered: node_hovered,
+            node_selected,
+            lock: data2.lock,
+            title: data2.title,
+            text_position: data2.text_position,
+            source_port_handle: this.source_port_handle,
+            source_port: data2.source_port,
+            target_port_handle: this.target_port_handle,
+            target_port: data2.target_port,
+            clickFunction: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+            selected: this.state.selected,
+            source_dimensions: source_dims,
+            target_dimensions: target_dims
+          }
         ),
-        this.addEditable(data2)
-      ] });
+        $(".workflow-canvas")[0]
+      );
+      this.addEditable(data2);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     }
   }
-  const mapNodeLinkStateToProps = (state, own_props) => getNodeLinkByID(state, own_props.objectID);
-  const NodeLink$1 = connect(mapNodeLinkStateToProps, null)(NodeLink);
+  const mapStateToProps$h = (state, ownProps) => {
+    return getNodeLinkByID(state, ownProps.objectID) || { data: void 0 };
+  };
+  const NodeLink$1 = connect(
+    mapStateToProps$h,
+    null
+  )(NodeLink);
   class AssignmentForNode extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -82686,102 +81647,6 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
-    constructor(props) {
-      super(props);
-      console.log("props");
-      console.log(props);
-      this.objectType = "outcomenode";
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.checkHidden();
-    }
-    componentDidUpdate() {
-      this.checkHidden();
-    }
-    componentWillUnmount() {
-      this.checkHidden();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(data2) {
-      const icon = "close.svg";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ActionButton,
-        {
-          buttonIcon: icon,
-          buttonClass: "delete-self-button",
-          titleText: window.gettext("Delete"),
-          handleClick: this.deleteSelf.bind(this, data2)
-        }
-      );
-    }
-    deleteSelf(data2) {
-      if (this.props.deleteSelfOverride)
-        this.props.deleteSelfOverride();
-      else {
-        COURSEFLOW_APP.tinyLoader.startLoad();
-        updateOutcomenodeDegree(data2.node, data2.outcome, 0, (response_data) => {
-          COURSEFLOW_APP.tinyLoader.endLoad();
-        });
-      }
-    }
-    checkHidden() {
-      if ($(this.mainDiv.current).children(".outcome").length === 0) {
-        $(this.mainDiv.current).css("display", "none");
-      } else {
-        $(this.mainDiv.current).css("display", "");
-      }
-      const indicator = $(this.mainDiv.current).closest(".outcome-node-indicator");
-      if (indicator.length >= 0) {
-        const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
-        indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
-        if (num_outcomenodes === 0)
-          indicator.css("display", "none");
-        else
-          indicator.css("display", "");
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      if ((data2 == null ? void 0 : data2.outcome) === -1 || !(data2 == null ? void 0 : data2.outcome))
-        return null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "outcome-node outcomenode-" + data2.id,
-          id: data2.id,
-          ref: this.mainDiv,
-          children: [
-            !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
-            (void 0)(data2.degree, this.props.outcomes_type),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              SimpleOutcome$1,
-              {
-                checkHidden: this.checkHidden.bind(this),
-                comments: true,
-                edit: true,
-                objectID: data2.outcome,
-                parentID: this.props.parentID,
-                throughParentID: data2.id,
-                renderer: this.props.renderer
-              }
-            )
-          ]
-        }
-      );
-    }
-  }
-  const mapStateToProps$a = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
-  const OutcomeNode = connect(mapStateToProps$a, null)(OutcomeNodeUnconnected);
   let Index$1 = class Index extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -83267,29 +82132,31 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   };
-  const mapNodeStateToProps$3 = (state, own_props) => getNodeByID(state, own_props.objectID);
-  const Node$2 = connect(mapNodeStateToProps$3, null)(Node$1);
+  const mapNodeStateToProps$2 = (state, own_props) => getNodeByID(state, own_props.objectID);
+  const Node$2 = connect(mapNodeStateToProps$2, null)(Node$1);
   class NodeWeekUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      __publicField(this, "objectType");
+      __publicField(this, "objectClass");
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "Node", () => {
+        const data2 = this.props.data;
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Node$2,
+          {
+            objectID: data2.node,
+            parentID: this.props.parentID,
+            throughParentID: data2.id,
+            renderer: this.props.renderer,
+            column_order: this.props.column_order
+          }
+        );
+      });
       this.objectType = "nodeweek";
       this.objectClass = ".node-week";
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    getNode() {
-      const data2 = this.props.data;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Node$2,
-        {
-          objectID: data2.node,
-          parentID: this.props.parentID,
-          throughParentID: data2.id,
-          renderer: this.props.renderer,
-          column_order: this.props.column_order
-        }
-      );
     }
     /*******************************************************
      * RENDER
@@ -83306,14 +82173,43 @@ ${latestSubscriptionCallbackError.current.stack}
           id: data2.id,
           "data-child-id": data2.node,
           "data-column-id": this.props.column,
-          ref: this.mainDiv,
-          children: this.getNode()
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Node, {})
         }
       );
     }
   }
-  const mapNodeWeekStateToProps$1 = (state, own_props) => getNodeWeekByID(state, own_props.objectID);
-  const NodeWeek = connect(mapNodeWeekStateToProps$1, null)(NodeWeekUnconnected);
+  const mapStateToProps$g = (state, ownProps) => {
+    return getNodeWeekByID(state, ownProps.objectID);
+  };
+  const NodeWeek = connect(
+    mapStateToProps$g,
+    null
+  )(NodeWeekUnconnected);
+  class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    getNode() {
+      const data2 = this.props.data;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NodeComparison,
+        {
+          objectID: data2.node,
+          parentID: this.props.parentID,
+          throughParentID: data2.id,
+          renderer: this.props.renderer,
+          column_order: this.props.column_order
+        }
+      );
+    }
+  }
+  const mapNodeWeekStateToProps = (state, ownProps) => {
+    return getNodeWeekByID(state, ownProps.objectID);
+  };
+  const NodeWeekComparison = connect(
+    mapNodeWeekStateToProps,
+    null
+  )(NodeWeekComparisonUnconnected);
   class WeekUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
@@ -83558,6 +82454,125 @@ ${latestSubscriptionCallbackError.current.stack}
     mapWeekStateToProps$3,
     null
   )(WeekUnconnected);
+  class WeekComparisonUnconnected extends WeekUnconnected {
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDragAndDrop();
+      this.alignAllWeeks();
+    }
+    componentDidUpdate() {
+      this.makeDragAndDrop();
+      triggerHandlerEach(
+        $(this.mainDiv.current).find(".node"),
+        "component-updated"
+      );
+      this.alignAllWeeks();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    sortableColumnChangedFunction(id, delta_x, old_column) {
+      console.log("column change not sent");
+    }
+    sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+      this.props.renderer.micro_update(
+        ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
+      );
+      insertedAt(
+        this.props.renderer,
+        child_id,
+        "node",
+        new_parent,
+        "week",
+        new_position,
+        "nodeweek"
+      );
+    }
+    sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
+      if (confirm(
+        window.gettext(
+          "You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"
+        )
+      )) {
+        insertedAt(
+          this.props.renderer,
+          null,
+          "node",
+          new_parent,
+          "week",
+          new_position,
+          "nodeweek"
+        );
+        insertedAtInstant(
+          child_id,
+          "node",
+          new_parent,
+          "week",
+          new_position,
+          "nodeweek"
+        );
+      }
+    }
+    makeDroppable() {
+    }
+    getNodes() {
+      const nodes = this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NodeWeekComparison,
+        {
+          objectID: nodeweek,
+          parentID: this.props.data.id,
+          renderer: this.props.renderer,
+          column_order: this.props.column_order
+        },
+        nodeweek
+      ));
+      if (nodes.length == 0)
+        nodes.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." })
+        );
+      return nodes;
+    }
+    alignAllWeeks() {
+      const rank = this.props.rank + 1;
+      $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
+        height: ""
+      });
+      let max_height = 0;
+      $(".week-block .week-workflow:nth-child(" + rank + ") .week").each(
+        function() {
+          const this_height = $(this).height();
+          if (this_height > max_height)
+            max_height = this_height;
+        }
+      );
+      $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
+        height: max_height + "px"
+      });
+    }
+    makeDragAndDrop() {
+      this.makeSortableNode(
+        $(this.node_block.current).children(".node-week").not(".ui-draggable"),
+        this.props.objectID,
+        "nodeweek",
+        ".node-week",
+        false,
+        [200, 1],
+        "#workflow-" + this.props.workflow_id,
+        ".node",
+        ".workflow-array"
+      );
+      this.makeDroppable();
+    }
+  }
+  const mapWeekStateToProps$2 = (state, ownProps) => {
+    return getWeekByID(state, ownProps.objectID);
+  };
+  const WeekComparison = connect(
+    mapWeekStateToProps$2,
+    null
+  )(WeekComparisonUnconnected);
   class Term extends WeekUnconnected {
     /*******************************************************
      * FUNCTIONS
@@ -83686,16 +82701,18 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$9 = (state, ownProps) => {
+  const mapStateToProps$f = (state, ownProps) => {
     return getTermByID(state, ownProps.objectID);
   };
   const Term$1 = connect(
-    mapStateToProps$9,
+    mapStateToProps$f,
     null
   )(Term);
   class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
+      __publicField(this, "objectType");
+      __publicField(this, "objectClass");
       this.objectType = "weekworkflow";
       this.objectClass = ".week-workflow";
     }
@@ -83718,8 +82735,8 @@ ${latestSubscriptionCallbackError.current.stack}
             objectID: data2.week,
             rank: this.props.order.indexOf(data2.id),
             parentID: this.props.parentID,
-            throughParentID: data2.id,
-            renderer: this.props.renderer
+            renderer: this.props.renderer,
+            throughParentID: data2.id
           }
         );
       else
@@ -83729,8 +82746,8 @@ ${latestSubscriptionCallbackError.current.stack}
             objectID: data2.week,
             rank: this.props.order.indexOf(data2.id),
             parentID: this.props.parentID,
-            throughParentID: data2.id,
-            renderer: this.props.renderer
+            renderer: this.props.renderer,
+            throughParentID: data2.id
           }
         );
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83745,540 +82762,13 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapWeekWorkflowStateToProps$2 = (state, own_props) => getWeekWorkflowByID(state, own_props.objectID);
+  const mapWeekWorkflowStateToProps$2 = (state, ownProps) => {
+    return getWeekWorkflowByID(state, ownProps.objectID);
+  };
   const WeekWorkflow = connect(
     mapWeekWorkflowStateToProps$2,
     null
   )(WeekWorkflowUnconnected);
-  class WorkflowLegendUnconnected extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        show_legend: !!JSON.parse(localStorage.getItem("show_legend")),
-        show_slider: false
-      };
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidUpdate() {
-      $(".workflow-legend").draggable();
-    }
-    componentDidMount() {
-      $(".workflow-legend").draggable();
-      this.setState({
-        show_slider: true
-      });
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    toggle() {
-      localStorage.setItem("show_legend", String(!this.state.show_legend));
-      this.setState({ show_legend: !this.state.show_legend });
-    }
-    getSlider() {
-      if (this.state.show_slider) {
-        return reactDomExports.createPortal(
-          [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Legend") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Slider,
-              {
-                checked: this.state.show_legend,
-                toggleAction: this.toggle.bind(this)
-              }
-            )
-          ],
-          $("#viewbar")[0]
-        );
-      }
-      return null;
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      this.getSlider();
-      if (!this.state.show_legend) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      }
-      const contexts = this.props.contexts.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        LegendLine,
-        {
-          icon: context_keys[value],
-          text: this.props.renderer.context_choices.find((obj) => obj.type == value).name
-        }
-      ));
-      const tasks = this.props.tasks.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        LegendLine,
-        {
-          icon: task_keys[value],
-          text: this.props.renderer.task_choices.find((obj) => obj.type == value).name
-        }
-      ));
-      const strategies = this.props.strategies.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        LegendLine,
-        {
-          icon: strategy_keys[value],
-          text: this.props.renderer.strategy_classification_choices.find(
-            (obj) => obj.type == value
-          ).name
-        }
-      ));
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-legend", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Legend" }),
-        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Contexts:" }),
-          contexts
-        ] }),
-        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Tasks:" }),
-          tasks
-        ] }),
-        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Strategies:" }),
-          strategies
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.toggle.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" }) })
-      ] });
-    }
-  }
-  const mapStateToProps$8 = (state) => {
-    let contexts = [];
-    let tasks = [];
-    let strategies = [];
-    const uniqueTest = function(value, index, self2) {
-      return self2.indexOf(value) === index;
-    };
-    contexts = state.node.map((node2) => parseInt(node2.context_classification)).filter(uniqueTest).filter((value) => value > 0);
-    tasks = state.node.map((node2) => parseInt(node2.task_classification)).filter(uniqueTest).filter((value) => value > 0);
-    strategies = state.week.map((week) => parseInt(week.strategy_classification)).filter(uniqueTest).filter((value) => value > 0);
-    return {
-      contexts,
-      tasks,
-      strategies
-    };
-  };
-  const WorkflowLegend = connect(
-    mapStateToProps$8,
-    null
-  )(WorkflowLegendUnconnected);
-  class WorkflowViewUnconnected extends EditableComponentWithSorting {
-    constructor(props) {
-      super(props);
-      this.objectType = "workflow";
-      this.state = {};
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDragAndDrop();
-    }
-    componentDidUpdate() {
-      this.makeDragAndDrop();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    makeDragAndDrop() {
-      this.makeSortableNode(
-        $(".column-row").children(".column-workflow").not(".ui-draggable"),
-        this.props.objectID,
-        "columnworkflow",
-        ".column-workflow",
-        "x",
-        false,
-        null,
-        ".column",
-        ".column-row"
-      );
-      this.makeSortableNode(
-        $(".week-block").children(".week-workflow").not(".ui-draggable"),
-        this.props.objectID,
-        "weekworkflow",
-        ".week-workflow",
-        "y",
-        false,
-        null,
-        ".week",
-        ".week-block"
-      );
-    }
-    stopSortFunction() {
-      triggerHandlerEach($(".week .node"), "component-updated");
-    }
-    sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-      if (type === "columnworkflow") {
-        this.props.renderer.micro_update(
-          ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
-        );
-        insertedAt(
-          this.props.renderer,
-          child_id,
-          "column",
-          new_parent,
-          "workflow",
-          new_position,
-          "columnworkflow"
-        );
-      }
-      if (type === "weekworkflow") {
-        this.props.renderer.micro_update(
-          ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
-        );
-        insertedAt(
-          this.props.renderer,
-          child_id,
-          "week",
-          new_parent,
-          "workflow",
-          new_position,
-          "weekworkflow"
-        );
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const renderer = this.props.renderer;
-      const columnworkflows = data2.columnworkflow_set.map(
-        (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ColumnWorkflow$1,
-          {
-            objectID: columnworkflow,
-            parentID: data2.id,
-            renderer
-          },
-          `columnworkflow-${index}`
-        )
-      );
-      const weekworkflows = data2.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WeekWorkflow,
-        {
-          condensed: data2.condensed,
-          objectID: weekworkflow,
-          parentID: data2.id,
-          renderer
-        },
-        `weekworkflow-${index}`
-      ));
-      let css_class = "workflow-details";
-      if (data2.condensed)
-        css_class += " condensed";
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data2.id + "-column-block", children: columnworkflows }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data2.id + "-week-block", children: weekworkflows }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "workflow-canvas", width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "marker",
-          {
-            id: "arrow",
-            viewBox: "0 0 10 10",
-            refX: "10",
-            refY: "5",
-            markerWidth: "4",
-            markerHeight: "4",
-            orient: "auto-start-reverse",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M 0 0 L 10 5 L 0 10 z" })
-          }
-        ) }) })
-      ] });
-    }
-  }
-  const mapWorkflowStateToProps$2 = (state) => ({
-    data: state.workflow,
-    object_sets: state.objectset,
-    week: state.week,
-    node: state.node,
-    outcome: state.outcome
-  });
-  const WorkflowView = connect(mapWorkflowStateToProps$2, null)(WorkflowViewUnconnected);
-  class NodeComparisonUnconnected extends EditableComponentWithActions {
-    constructor(props) {
-      super(props);
-      this.objectType = "node";
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      let data_override;
-      if (data2.represents_workflow) {
-        data_override = {
-          ...data2,
-          ...data2.linked_workflow_data,
-          id: data2.id
-        };
-      } else {
-        data_override = { ...data2 };
-      }
-      const renderer = this.props.renderer;
-      const selection_manager = renderer.selection_manager;
-      let outcomenodes;
-      if (this.state.show_outcomes)
-        outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "outcome-node-container column-111111-" + data2.column,
-            onMouseLeave: () => {
-              this.setState({ show_outcomes: false });
-            },
-            style: { borderColor: getColumnColour(this.props.column) },
-            children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-              OutcomeNode,
-              {
-                objectID: outcomenode,
-                renderer
-              },
-              outcomenode
-            ))
-          }
-        );
-      const side_actions = [];
-      if (data2.outcomenode_unique_set.length > 0) {
-        side_actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "outcome-node-indicator-number column-" + data2.column,
-                onMouseEnter: () => {
-                  this.setState({ show_outcomes: true });
-                },
-                style: {
-                  borderColor: getColumnColour(this.props.column)
-                },
-                children: data2.outcomenode_unique_set.length
-              }
-            ),
-            outcomenodes
-          ] })
-        );
-      }
-      let lefticon;
-      let righticon;
-      if (data2.context_classification > 0)
-        lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            title: renderer.context_choices.find(
-              (obj) => obj.type == data2.context_classification
-            ).name,
-            src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
-          }
-        );
-      if (data2.task_classification > 0)
-        righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            title: renderer.task_choices.find(
-              (obj) => obj.type == data2.task_classification
-            ).name,
-            src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
-          }
-        );
-      const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
-      const style2 = {
-        backgroundColor: getColumnColour(this.props.column)
-      };
-      if (data2.lock) {
-        style2.outline = "2px solid " + data2.lock.user_colour;
-      }
-      if (checkSetHidden(data2, this.props.object_sets))
-        style2.display = "none";
-      let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
-      if (data2.lock)
-        css_class += " locked locked-" + data2.lock.user_id;
-      const mouseover_actions = [];
-      if (!this.props.renderer.read_only) {
-        mouseover_actions.push(this.addInsertSibling(data2));
-        mouseover_actions.push(this.addDuplicateSelf(data2));
-        mouseover_actions.push(this.addDeleteSelf(data2));
-      }
-      if (renderer.view_comments)
-        mouseover_actions.push(this.addCommenting());
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          id: data2.id,
-          ref: this.mainDiv,
-          onClick: (evt) => selection_manager.changeSelection(evt, this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-              titleText,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data_override.description,
-                defaultText: "Click to edit"
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-            this.addEditable(data_override),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
-          ]
-        }
-      );
-    }
-  }
-  const mapNodeStateToProps$2 = (state, own_props) => getNodeByID(state, own_props.objectID);
-  const NodeComparison = connect(
-    mapNodeStateToProps$2,
-    null
-  )(NodeComparisonUnconnected);
-  class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    getNode() {
-      const data2 = this.props.data;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeComparison,
-        {
-          objectID: data2.node,
-          parentID: this.props.parentID,
-          throughParentID: data2.id,
-          renderer: this.props.renderer,
-          column_order: this.props.column_order
-        }
-      );
-    }
-  }
-  const mapNodeWeekStateToProps = (state, own_props) => getNodeWeekByID(state, own_props.objectID);
-  const NodeWeekComparison = connect(
-    mapNodeWeekStateToProps,
-    null
-  )(NodeWeekComparisonUnconnected);
-  class WeekComparisonUnconnected extends WeekUnconnected {
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.makeDragAndDrop();
-      this.alignAllWeeks();
-    }
-    componentDidUpdate() {
-      this.makeDragAndDrop();
-      triggerHandlerEach(
-        $(this.mainDiv.current).find(".node"),
-        "component-updated"
-      );
-      this.alignAllWeeks();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    sortableColumnChangedFunction(id, delta_x, old_column) {
-      console.log("column change not sent");
-    }
-    sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-      this.props.renderer.micro_update(
-        ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
-      );
-      insertedAt(
-        this.props.renderer,
-        child_id,
-        "node",
-        new_parent,
-        "week",
-        new_position,
-        "nodeweek"
-      );
-    }
-    sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
-      if (confirm(
-        gettext(
-          "You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"
-        )
-      )) {
-        insertedAt(
-          this.props.renderer,
-          null,
-          "node",
-          new_parent,
-          "week",
-          new_position,
-          "nodeweek"
-        );
-        insertedAtInstant(
-          child_id,
-          "node",
-          new_parent,
-          "week",
-          new_position,
-          "nodeweek"
-        );
-      }
-    }
-    makeDroppable() {
-    }
-    getNodes() {
-      const nodes = this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeWeekComparison,
-        {
-          objectID: nodeweek,
-          parentID: this.props.data.id,
-          renderer: this.props.renderer,
-          column_order: this.props.column_order
-        },
-        nodeweek
-      ));
-      if (nodes.length == 0)
-        nodes.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." })
-        );
-      return nodes;
-    }
-    alignAllWeeks() {
-      const rank = this.props.rank + 1;
-      $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
-        height: ""
-      });
-      let max_height = 0;
-      $(".week-block .week-workflow:nth-child(" + rank + ") .week").each(
-        function() {
-          const this_height = $(this).height();
-          if (this_height > max_height)
-            max_height = this_height;
-        }
-      );
-      $(".week-block .week-workflow:nth-child(" + rank + ") .week").css({
-        height: max_height + "px"
-      });
-    }
-    makeDragAndDrop() {
-      this.makeSortableNode(
-        $(this.node_block.current).children(".node-week").not(".ui-draggable"),
-        this.props.objectID,
-        "nodeweek",
-        ".node-week",
-        false,
-        [200, 1],
-        "#workflow-" + this.props.workflow_id,
-        ".node",
-        ".workflow-array"
-      );
-      this.makeDroppable();
-    }
-  }
-  const mapWeekStateToProps$2 = (state, own_props) => getWeekByID(state, own_props.objectID);
-  const WeekComparison = connect(
-    mapWeekStateToProps$2,
-    null
-  )(WeekComparisonUnconnected);
   class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     /*******************************************************
      * FUNCTIONS
@@ -84446,7 +82936,8 @@ ${latestSubscriptionCallbackError.current.stack}
       if (data2.lock) {
         style2.border = "2px solid " + data2.lock.user_colour;
       }
-      return [
+      this.addEditable(data2, true);
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-header", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
           {
@@ -84454,21 +82945,1209 @@ ${latestSubscriptionCallbackError.current.stack}
             selectAction: this.openEdit.bind(this, null)
           }
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-container", children: [
-          this.addEditable(data2, true),
-          workflow_content
-        ] })
-      ];
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: workflow_content })
+      ] });
     }
   }
-  const mapWorkflowStateToProps = (state) => ({
+  const mapStateToProps$e = (state) => ({
     data: state.workflow,
     object_sets: state.objectset
   });
-  const WorkflowBase = connect(
-    mapWorkflowStateToProps,
+  const WorkflowBase = connect(mapStateToProps$e, null)(WorkflowBaseUnconnected);
+  class ViewBarUnconnected extends reactExports.Component {
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    toggleHidden(id, hidden) {
+      this.props.dispatch(ActionCreator.toggleObjectSet(id, hidden));
+    }
+    changeSort(evt) {
+      this.props.dispatch(
+        ActionCreator.changeField(this.props.data.id, "workflow", {
+          outcomes_sort: evt.target.value
+        })
+      );
+    }
+    changeTableType(evt) {
+      this.props.dispatch(
+        ActionCreator.changeField(this.props.data.id, "workflow", {
+          table_type: evt.target.value
+        })
+      );
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      let sort_block;
+      if (this.props.renderer.view_type === "outcometable" || this.props.renderer.view_type === "horizontaloutcometable") {
+        const table_type_value = data2.table_type || 0;
+        const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.renderer.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: table_type_value === 1 || data2.type === "program" && choice.type > 1,
+              type: "radio",
+              id: "sort_type_choice" + choice.type,
+              name: "sort_type_choice" + choice.type,
+              value: choice.type,
+              checked: data2.outcomes_sort === choice.type,
+              onChange: this.changeSort.bind(this)
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
+        ] })) });
+        const table_type = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-bar-sort-block", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "radio",
+                id: "table_type_table",
+                name: "table_type_table",
+                value: 0,
+                checked: table_type_value === 0,
+                onChange: this.changeTableType.bind(this)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_table", children: window.gettext("Table Style") })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "radio",
+                id: "table_type_matrix",
+                name: "table_type_matrix",
+                value: 1,
+                checked: table_type_value === 1,
+                onChange: this.changeTableType.bind(this)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "table_type_matrix", children: window.gettext("Competency Matrix Style") })
+          ] })
+        ] });
+        sort_block = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+            window.gettext("Sort Nodes"),
+            ":"
+          ] }),
+          sort_type,
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { children: [
+            window.gettext("Table Type"),
+            ":"
+          ] }),
+          table_type
+        ] });
+      }
+      const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
+        const x = a.term;
+        const y = b.term;
+        if (x < y)
+          return -1;
+        if (x > y)
+          return 1;
+        return 0;
+      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            id: "set" + set.id,
+            value: set.id,
+            checked: !set.hidden,
+            onChange: this.toggleHidden.bind(this, set.id, !set.hidden)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+      ] })) });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("View options") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        sort_block,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") }),
+        sets
+      ] });
+    }
+  }
+  const mapStateToProps$d = (state) => ({
+    object_sets: state.objectset
+  });
+  const ViewBar = connect(
+    mapStateToProps$d,
     null
-  )(WorkflowBaseUnconnected);
+  )(ViewBarUnconnected);
+  class RestoreBarItem extends ComponentWithToggleDrop {
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    getTitle() {
+      if (this.props.data.title && this.props.data.title !== "")
+        return this.props.data.title;
+      if (this.props.objectType == "node" && this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== "")
+        return this.props.data.linked_workflow_data.title;
+      return window.gettext("Untitled");
+    }
+    restore() {
+      this.setState({ disabled: true });
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    }
+    delete() {
+      if (window.confirm(
+        window.gettext(
+          "Are you sure you want to permanently delete this object?"
+        )
+      )) {
+        $(this.mainDiv.current).children("button").attr("disabled", true);
+        COURSEFLOW_APP.tinyLoader.startLoad();
+        deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
+          COURSEFLOW_APP.tinyLoader.endLoad();
+        });
+      }
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.mainDiv, className: "restore-bar-item", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.getTitle() }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: window.gettext("Deleted") + " " + this.props.data.deleted_on }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.restore.bind(this), children: window.gettext("Restore") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: this.delete.bind(this), children: window.gettext("Permanently Delete") })
+      ] });
+    }
+  }
+  class RestoreBarUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.checkVisible();
+    }
+    componentDidUpdate() {
+      this.checkVisible();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    checkVisible() {
+      if (this.props.nodes.length == 0 && this.props.weeks.length == 0 && this.props.columns.length == 0 && this.props.outcomes.length == 0 && this.props.nodelinks.length == 0) {
+        $("a[href='#restore-bar']").parent().addClass("hidden");
+      } else {
+        $("a[href='#restore-bar']").parent().removeClass("hidden");
+      }
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const columns = this.props.columns.map((column2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RestoreBarItem,
+        {
+          objectType: "column",
+          data: column2,
+          renderer: this.props.renderer
+        },
+        column2.id
+      ));
+      const weeks = this.props.weeks.map((week) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RestoreBarItem,
+        {
+          objectType: "week",
+          data: week,
+          renderer: this.props.renderer
+        },
+        week.id
+      ));
+      const nodes = this.props.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RestoreBarItem,
+        {
+          objectType: "node",
+          data: node2,
+          renderer: this.props.renderer
+        },
+        node2.id
+      ));
+      const outcomes = this.props.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RestoreBarItem,
+        {
+          objectType: "outcome",
+          data: outcome,
+          renderer: this.props.renderer
+        },
+        outcome.id
+      ));
+      const nodelinks = this.props.nodelinks.map((nodelink) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RestoreBarItem,
+        {
+          objectType: "nodelink",
+          data: nodelink,
+          renderer: this.props.renderer
+        },
+        nodelink.id
+      ));
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "restore-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Restore items") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodes }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Weeks") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: weeks }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Columns") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: columns }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Outcomes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: outcomes }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Node Links") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodelinks })
+      ] });
+    }
+  }
+  const mapRestoreBarStateToProps = (state) => ({
+    weeks: state.week.filter((x) => x.deleted),
+    columns: state.column.filter((x) => x.deleted),
+    nodes: state.node.filter((x) => x.deleted),
+    outcomes: state.outcome.filter((x) => x.deleted),
+    nodelinks: state.nodelink.filter((x) => x.deleted)
+  });
+  const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnected);
+  class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      if (!this.props.data) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      }
+      return (
+        // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: String(this.props.data.id), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OutcomeBarOutcome,
+          {
+            objectID: this.props.data.child,
+            parentID: this.props.parentID,
+            throughParentID: this.props.data.id,
+            readOnly: this.props.readOnly
+          }
+        ) })
+      );
+    }
+  }
+  const mapOutcomeOutcomeStateToProps = (state, ownProps) => {
+    return getOutcomeOutcomeByID(state, ownProps.objectID);
+  };
+  const OutcomeBarOutcomeOutcome = connect(
+    mapOutcomeOutcomeStateToProps,
+    null
+  )(OutcomeBarOutcomeOutcomeUnconnected);
+  class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
+    // private objectType: string
+    constructor(props) {
+      super(props);
+      __publicField(this, "children_block");
+      /*******************************************************
+       * FUNCTIONS
+       *******************************************************/
+      __publicField(this, "toggleDrop", (evt) => {
+        evt.stopPropagation();
+        this.setState({ is_dropped: !this.state.is_dropped });
+      });
+      this.children_block = reactExports.createRef();
+      this.state = { is_dropped: props.data.depth < 1 };
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDraggable();
+      $(this.mainDiv.current)[0].dataDraggable = { outcome: this.props.data.id };
+      $(this.mainDiv.current).mouseenter((evt) => {
+        this.toggleCSS(true, "hover");
+      });
+      $(this.mainDiv.current).mouseleave((evt) => {
+        this.toggleCSS(false, "hover");
+      });
+      $(this.children_block.current).mouseleave((evt) => {
+        this.toggleCSS(true, "hover");
+      });
+      $(this.children_block.current).mouseenter((evt) => {
+        this.toggleCSS(false, "hover");
+      });
+    }
+    makeDraggable() {
+      var _a;
+      if (this.props.readOnly)
+        return;
+      const draggable_selector = "outcome";
+      const draggable_type = "outcome";
+      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+        helper: (_e, _item) => {
+          const helper = $(document.createElement("div"));
+          helper.addClass("outcome-ghost");
+          helper.appendTo(document.body);
+          return helper;
+        },
+        cursor: "move",
+        cursorAt: { top: 20, left: 100 },
+        distance: 10,
+        start: (_e, _ui) => {
+          $(".workflow-canvas").addClass("dragging-" + draggable_type);
+          $(draggable_selector).addClass("dragging");
+        },
+        stop: (_e, _ui) => {
+          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
+          $(draggable_selector).removeClass("dragging");
+        }
+      });
+    }
+    clickFunction(evt) {
+      if (evt.target.checked) {
+        this.toggleCSS(true, "toggle");
+      } else {
+        this.toggleCSS(false, "toggle");
+      }
+    }
+    toggleCSS(is_toggled, type) {
+      if (is_toggled) {
+        $(".outcome-" + this.props.data.id).addClass("outcome-" + type);
+        if (this.props.nodes.length)
+          $(this.props.nodes.map((node2) => ".node#" + node2).join(", ")).addClass(
+            "outcome-" + type
+          );
+        if (this.props.horizontaloutcomes.length)
+          $(
+            this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
+          ).addClass("outcome-" + type);
+      } else {
+        $(".outcome-" + this.props.data.id).removeClass("outcome-" + type);
+        if (this.props.nodes.length)
+          $(
+            this.props.nodes.map((node2) => ".node#" + node2).join(", ")
+          ).removeClass("outcome-" + type);
+        if (this.props.horizontaloutcomes.length)
+          $(
+            this.props.horizontaloutcomes.map((oc) => ".outcome-" + oc).join(", ")
+          ).removeClass("outcome-" + type);
+      }
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      let children;
+      let dropIcon;
+      let droptext;
+      if (checkSetHidden(data2, this.props.object_sets))
+        return null;
+      if (this.state.is_dropped)
+        children = data2.child_outcome_links.map((outcomeoutcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OutcomeBarOutcomeOutcome,
+          {
+            objectID: outcomeoutcome,
+            parentID: data2.id,
+            readOnly: this.props.readOnly
+          },
+          outcomeoutcome
+        ));
+      if (this.state.is_dropped)
+        dropIcon = "droptriangleup";
+      else
+        dropIcon = "droptriangledown";
+      if (this.state.is_dropped)
+        droptext = window.gettext("hide");
+      else
+        droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.ngettext(
+          "descendant",
+          "descendants",
+          data2.child_outcome_links.length
+        );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
+          ref: this.mainDiv,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeTitle,
+              {
+                data: this.props.data,
+                prefix: this.props.prefix,
+                hovertext: this.props.hovertext
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                className: "outcome-toggle-checkbox",
+                type: "checkbox",
+                title: "Toggle highlighting",
+                onChange: this.clickFunction.bind(this)
+              }
+            ),
+            data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
+            ] }),
+            data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "children-block",
+                id: this.props.objectID + "-children-block",
+                ref: this.children_block,
+                children
+              }
+            )
+          ]
+        }
+      );
+    }
+  }
+  const mapOutcomeBarOutcomeStateToProps = (state, ownProps) => ({
+    ...getOutcomeByID(state, ownProps.objectID),
+    nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == ownProps.objectID).map((outcomeNode) => outcomeNode.node),
+    horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == ownProps.objectID).map((ochl) => ochl.outcome)
+  });
+  const OutcomeBarOutcome = connect(
+    mapOutcomeBarOutcomeStateToProps,
+    null
+  )(OutcomeBarOutcomeUnconnected);
+  class OutcomeBarUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    editOutcomesClick() {
+      this.props.renderMethod($("#container"), ViewType.OUTCOME_EDIT);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      const outcomeBarOutcomes = data2.map((category) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }),
+            category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeBarOutcome,
+              {
+                objectID: outcome.id,
+                readOnly: this.props.readOnly
+              },
+              outcome.id
+            ))
+          ] })
+        ] });
+      });
+      const outcomeBlock = outcomeBarOutcomes.length ? outcomeBarOutcomes : outcomeBarOutcomes;
+      const edittext = capWords(
+        window.gettext("Edit") + " " + window.gettext(this.props.workflow_type + " outcomes")
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-bar-outcome-block", children: outcomeBlock }),
+        !this.props.readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "primary-button",
+            id: "edit-outcomes-button",
+            onClick: this.editOutcomesClick.bind(this),
+            children: edittext
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {})
+      ] });
+    }
+  }
+  const mapStateToProps$c = (state) => ({
+    data: getSortedOutcomesFromOutcomeWorkflowSet(
+      state,
+      state.workflow.outcomeworkflow_set
+    ),
+    workflow_type: state.workflow.type
+  });
+  const OutcomeBarConnected = connect(
+    mapStateToProps$c,
+    null
+  )(OutcomeBarUnconnected);
+  class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      return (
+        // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> // @todo this.mainDiv is not defined or used
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: String(this.props.data.id), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ParentOutcome,
+          {
+            objectID: this.props.data.child,
+            parentID: this.props.parentID,
+            throughParentID: this.props.data.id,
+            readOnly: this.props.readOnly
+          }
+        ) })
+      );
+    }
+  }
+  const mapParentOutcomeOutcomeStateToProps = (state, own_props) => {
+    return getOutcomeOutcomeByID(state, own_props.objectID);
+  };
+  const ParentOutcomeOutcome = connect(
+    mapParentOutcomeOutcomeStateToProps,
+    null
+  )(ParentOutcomeOutcomeUnconnected);
+  class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected {
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      const children = data2.child_outcome_links.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ParentOutcomeOutcome,
+        {
+          objectID: item,
+          parentID: Number(data2.id),
+          readOnly: this.props.readOnly
+        },
+        item
+      ));
+      const dropIcon = this.state.is_dropped ? "droptriangleup" : "droptriangledown";
+      let droptext;
+      if (this.state.is_dropped) {
+        droptext = window.gettext("hide");
+      } else {
+        droptext = window.gettext("show ") + children.length + " " + window.ngettext("descendant", "descendants", children.length);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "outcome" + (this.state.is_dropped && " dropped" || "") + " outcome-" + data2.id,
+          ref: this.mainDiv,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeTitle,
+              {
+                data: this.props.data,
+                prefix: this.props.prefix,
+                hovertext: this.props.hovertext
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                className: "outcome-toggle-checkbox",
+                type: "checkbox",
+                title: "Toggle highlighting",
+                onChange: this.clickFunction.bind(this)
+              }
+            ),
+            data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "children-block",
+                id: this.props.objectID + "-children-block",
+                ref: this.children_block,
+                children
+              }
+            )
+          ]
+        }
+      );
+    }
+  }
+  const MapStateToProps = (state, own_props) => ({
+    ...getOutcomeByID(state, own_props.objectID),
+    nodes: state.outcomenode.filter((outcomeNode) => outcomeNode.outcome == own_props.objectID).map((outcomeNode) => outcomeNode.node),
+    horizontaloutcomes: state.outcomehorizontallink.filter((ochl) => ochl.parent_outcome == own_props.objectID).map((ochl) => ochl.outcome)
+  });
+  const ParentOutcome = connect(
+    MapStateToProps,
+    null
+  )(ParentOutcomeUnconnected);
+  const CompletionImg = ({
+    completionStatus,
+    outcomesType
+  }) => {
+    const contents = [];
+    if (outcomesType === 0 || completionStatus & 1) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          className: "self-completed",
+          src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
+        }
+      );
+    }
+    if (completionStatus & 2) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
+      );
+    }
+    if (completionStatus & 4) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
+      );
+    }
+    if (completionStatus & 8) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
+      );
+    }
+    return contents;
+  };
+  class ParentOutcomeBarUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      const placeholderText = window.gettext(
+        "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
+      );
+      const outcomeBarOutcomes = data2.map((categoryItem, index) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: categoryItem.objectset.title }),
+            categoryItem.outcomes.map((outcomeItem, index2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "parent-outcome-node", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                CompletionImg,
+                {
+                  outcomesType: outcomeItem.degree,
+                  completionStatus: 1
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ParentOutcome,
+                {
+                  objectID: outcomeItem.id,
+                  parentID: this.props.renderer.parentID,
+                  readOnly: this.props.renderer.readOnly,
+                  throughParentID: this.props.data.id
+                },
+                outcomeItem.id
+              )
+            ] }, index2))
+          ] })
+        ] }, index);
+      });
+      let multiple_parent_warning;
+      if (this.props.parent_nodes.length > 1) {
+        multiple_parent_warning = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled small-inline red", children: "error" }),
+          window.gettext(
+            "Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes."
+          )
+        ] });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "outcome-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Outcomes from Parent Workflow") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-bar-outcome-block", children: [
+          multiple_parent_warning,
+          outcomeBarOutcomes.length ? outcomeBarOutcomes : placeholderText
+        ] })
+      ] });
+    }
+  }
+  const mapStateToProps$b = (state) => {
+    return {
+      data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
+      workflow: state.workflow,
+      parent_nodes: state.parent_node
+    };
+  };
+  const ParentOutcomeBar = connect(
+    mapStateToProps$b,
+    null
+  )(ParentOutcomeBarUnconnected);
+  class ComparisonViewBar extends reactExports.Component {
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    toggleHidden(id) {
+      this.props.toggleObjectSet(id);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
+        const x = a.term;
+        const y = b.term;
+        if (x < y)
+          return -1;
+        if (x > y)
+          return 1;
+        return 0;
+      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            id: "set" + set.id,
+            value: set.id,
+            checked: !set.hidden,
+            onChange: this.toggleHidden.bind(this, set.id)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+      ] })) });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") + ":" }),
+        sets
+      ] });
+    }
+  }
+  class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDraggable();
+      $(this.mainDiv.current)[0].dataDraggable = {
+        column: this.props.data.id,
+        column_type: null
+      };
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    makeDraggable() {
+      var _a;
+      const draggable_selector = "node-week";
+      const draggable_type = "nodeweek";
+      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+        helper: (_e, _item) => {
+          const helper = $(document.createElement("div"));
+          helper.addClass("node-ghost");
+          helper.appendTo(document.body);
+          return helper;
+        },
+        cursor: "move",
+        cursorAt: { top: 20, left: 100 },
+        distance: 10,
+        start: (_e, _ui) => {
+          $(".workflow-canvas").addClass("dragging-" + draggable_type);
+          $(draggable_selector).addClass("dragging");
+        },
+        stop: (_e, _ui) => {
+          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
+          $(draggable_selector).removeClass("dragging");
+        }
+      });
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      const title = data2 ? data2.title || data2.column_type_display : void 0;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          dangerouslySetInnerHTML: { __html: title },
+          className: "new-node node-bar-column node-bar-sortable column-" + this.props.objectID,
+          ref: this.mainDiv,
+          style: { backgroundColor: getColumnColour(data2) }
+        }
+      );
+    }
+  }
+  class NodeBarColumnCreator extends NodeBarColumnUnconnected {
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDraggable();
+      $(this.mainDiv.current)[0].dataDraggable = {
+        column: null,
+        column_type: this.props.columnType
+      };
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const choice = this.props.columnChoices.find(
+        (choice2) => choice2.type === this.props.columnType
+      );
+      const title = choice ? `New ${choice.name}` : "New";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "new-node new-column node-bar-column node-bar-sortable",
+          ref: this.mainDiv,
+          children: title
+        }
+      );
+    }
+  }
+  const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
+  const NodeBarColumn = connect(
+    mapColumnStateToProps$1,
+    null
+  )(NodeBarColumnUnconnected);
+  class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      if (this.props.data)
+        return (
+          // @todo was
+          // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+          // however this.mainDiv is not defined in this class
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            NodeBarColumn,
+            {
+              objectID: this.props.data.column,
+              throughParentID: this.props.data.id,
+              parentID: this.props.parentID
+            }
+          ) })
+        );
+      else
+        return (
+          // @todo was
+          // <div className="node-bar-column-workflow" ref={this.mainDiv}>
+          // however this.mainDiv is not defined in this class
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            NodeBarColumnCreator,
+            {
+              columnType: this.props.columnType,
+              columnChoices: this.props.columnChoices
+            }
+          ) })
+        );
+    }
+  }
+  const mapStateToProps$a = (state, ownProps) => {
+    return getColumnWorkflowByID(state, ownProps.objectID);
+  };
+  const NodeBarColumnWorkflow = connect(
+    mapStateToProps$a,
+    null
+  )(NodeBarColumnWorkflowUnconnected);
+  class StrategyUnconnected extends ComponentWithToggleDrop {
+    // @todo not used?
+    // constructor(props) {
+    //   super(props)
+    //   this.objectType = 'strategy'
+    //   this.objectClass = '.strategy'
+    //   this.node_block = React.createRef()
+    // }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDraggable();
+      $(this.mainDiv.current)[0].dataDraggable = { strategy: this.props.data.id };
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    makeDraggable() {
+      var _a;
+      const draggable_selector = "week-workflow";
+      const draggable_type = "weekworkflow";
+      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+        helper: (_e, _item) => {
+          const helper = $(document.createElement("div"));
+          helper.addClass("week-ghost");
+          helper.appendTo(document.body);
+          return helper;
+        },
+        cursor: "move",
+        cursorAt: { top: 20, left: 100 },
+        distance: 10,
+        start: (_e, _ui) => {
+          $(".workflow-canvas").addClass("dragging-" + draggable_type);
+          $(draggable_selector).addClass("dragging");
+        },
+        stop: (_e, _ui) => {
+          $(".workflow-canvas").removeClass("dragging-" + draggable_type);
+          $(draggable_selector).removeClass("dragging");
+        }
+      });
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const { data: data2 } = this.props;
+      const title = data2 && data2.title ? data2.title : "untitled strategy";
+      const strategyIcon = data2 && data2.strategy_icon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: `${COURSEFLOW_APP.config.icon_path}${strategy_keys[data2.strategy_icon]}.svg`
+        }
+      ) : null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "strategy-bar-strategy strategy new-strategy",
+          ref: this.mainDiv,
+          children: [
+            strategyIcon,
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: title })
+          ]
+        }
+      );
+    }
+  }
+  const mapStrategyStateToProps = (state, ownProps) => {
+    return getStrategyByID(state, ownProps.objectID);
+  };
+  const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
+  class NodeBarUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      let nodebar_nodes = [];
+      const nodebarColumnWorkflows = data2.columnworkflow_set.map(
+        (columnWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeBarColumnWorkflow,
+          {
+            objectID: columnWorkflow,
+            columnChoices: this.props.columnChoices
+          },
+          `NodeBarColumnWorkflow-${index}`
+        )
+      );
+      const columns_present = this.props.columns.map((col) => col.column_type);
+      for (let i22 = 0; i22 < data2.DEFAULT_COLUMNS.length; i22++) {
+        if (columns_present.indexOf(data2.DEFAULT_COLUMNS[i22]) < 0) {
+          nodebarColumnWorkflows.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NodeBarColumnWorkflow,
+              {
+                columnType: data2.DEFAULT_COLUMNS[i22],
+                columnChoices: this.props.columnChoices
+              }
+            )
+          );
+        }
+      }
+      let i2;
+      nodebarColumnWorkflows.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeBarColumnWorkflow,
+          {
+            columnType: data2.DEFAULT_CUSTOM_COLUMN,
+            columnChoices: this.props.columnChoices
+          },
+          `NodeBarColumnWorkflow-last-${i2}`
+        )
+      );
+      if (!this.props.readOnly) {
+        nodebar_nodes = [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Nodes") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-block", children: nodebarColumnWorkflows })
+        ];
+      }
+      const strategies = this.props.available_strategies.map((strategy) => /* @__PURE__ */ jsxRuntimeExports.jsx(Strategy, { objectID: strategy.id, data: strategy }, strategy.id));
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "drag-and-drop", children: window.gettext("Add to workflow") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        nodebar_nodes,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My strategies") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "strategy-bar-strategy-block", children: strategies })
+      ] });
+    }
+  }
+  const mapStateToProps$9 = (state) => ({
+    data: state.workflow,
+    columns: state.column,
+    available_strategies: state.strategy
+    // saltise_strategies: state.saltise_strategy
+  });
+  const NodeBar = connect(
+    mapStateToProps$9,
+    null
+  )(NodeBarUnconnected);
+  class RightSideBar extends reactExports.Component {
+    /*******************************************************
+     * props from renderer
+     *
+     *  view_type
+     *  is_strategy
+     *  read_only
+     *  column_choices
+     *******************************************************/
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeTabs();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    makeTabs() {
+      $("#sidebar").tabs({
+        active: 1,
+        disabled: [0],
+        collapsible: true,
+        activate: (evt, ui) => {
+          if (ui.oldTab.length === 0)
+            $("#sidebar").removeClass("collapsed");
+          else if (ui.newTab.length === 0)
+            $("#sidebar").addClass("collapsed");
+        }
+      });
+      $("#sidebar").on("dblclick mousedown", (evt) => {
+        evt.stopPropagation();
+      });
+      $("#side-bar-close-button").on("click", () => {
+        $("#sidebar").addClass("collapsed");
+        $("#sidebar").tabs("option", "active", false);
+      });
+    }
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    getNodeBar() {
+      if (this.props.context === "workflow")
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeBar,
+          {
+            readOnly: this.props.renderer.read_only,
+            columnChoices: this.props.renderer.column_choices
+          }
+        );
+      return null;
+    }
+    getOutcomeBar() {
+      const renderer = this.props.renderer;
+      if (this.props.context === WFContext.COMPARISON) {
+        return null;
+      }
+      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        OutcomeBarConnected,
+        {
+          renderMethod: this.props.parentRender,
+          readOnly: true
+        }
+      );
+    }
+    getViewBar() {
+      if (this.props.context === WFContext.WORKFLOW) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data, renderer: this.props.renderer });
+      }
+      if (this.props.context === WFContext.COMPARISON) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ComparisonViewBar,
+          {
+            toggleObjectSet: this.props.toggleObjectSet,
+            object_sets: this.props.object_sets,
+            renderer: this.props.renderer
+          }
+        );
+      }
+      return null;
+    }
+    getRestoreBar() {
+      if (this.props.context === WFContext.WORKFLOW)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, { renderer: this.props.renderer });
+      return null;
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const renderer = this.props.renderer;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#edit-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: "material-symbols-rounded filled",
+              title: window.gettext("Edit"),
+              children: "edit"
+            }
+          ) }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#node-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: "material-symbols-rounded filled",
+              title: window.gettext("Add"),
+              children: "add_circle"
+            }
+          ) }) }),
+          !renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#outcome-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "material-symbols-rounded filled",
+                title: window.gettext("Outcomes"),
+                children: "spoke"
+              }
+            ) }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#view-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "material-symbols-rounded filled",
+                title: window.gettext("View Options"),
+                children: "remove_red_eye"
+              }
+            ) }) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#restore-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: "material-symbols-rounded filled",
+              title: window.gettext("Restore Deleted"),
+              children: "restore_from_trash"
+            }
+          ) }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "edit-menu", className: "right-panel-container" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "node-bar", className: "right-panel-container", children: this.getNodeBar() }),
+        !this.props.renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "outcome-bar", className: "right-panel-container", children: this.getOutcomeBar() }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "view-bar", className: "right-panel-container", children: this.getViewBar() })
+        ] }),
+        !renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", id: "side-bar-close-button", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_forward" }) })
+      ] });
+    }
+  }
   const ConnectedUser = ({
     user_colour,
     user_name
@@ -84595,6 +84274,362 @@ ${latestSubscriptionCallbackError.current.stack}
       this.setState({ connected_users });
     }
   }
+  class Column extends EditableComponentWithActions {
+    constructor(props) {
+      super(props);
+      this.objectType = "column";
+      this.objectClass = ".column";
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    getIcon() {
+      if (this.props.data.icon && this.props.data.icon != "") {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: this.props.data.icon });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: COURSEFLOW_APP.config.icon_path + default_column_settings[this.props.data.column_type].icon + ".svg"
+        }
+      );
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      let title = data2.title;
+      if (!title)
+        title = data2.column_type_display;
+      const style2 = {};
+      if (data2.lock) {
+        style2.border = "2px solid " + data2.lock.user_colour;
+      }
+      let css_class = "column";
+      if (data2.lock)
+        css_class += " locked locked-" + data2.lock.user_id;
+      const mouseover_actions = [];
+      if (!this.props.renderer.read_only) {
+        mouseover_actions.push(this.addInsertSibling(data2));
+        mouseover_actions.push(this.addDuplicateSelf(data2));
+        mouseover_actions.push(this.addDeleteSelf(data2));
+      }
+      if (this.props.renderer.view_comments) {
+        mouseover_actions.push(this.addCommenting());
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          ref: this.mainDiv,
+          style: style2,
+          className: css_class,
+          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "column-line", children: [
+              this.getIcon(),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { dangerouslySetInnerHTML: { __html: title } })
+            ] }),
+            this.addEditable(data2),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions })
+          ]
+        }
+      );
+    }
+  }
+  const mapColumnStateToProps = (state, own_props) => getColumnByID(state, own_props.objectID);
+  const Column$1 = connect(mapColumnStateToProps, null)(Column);
+  class ColumnWorkflow extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      this.objectType = "columnworkflow";
+      this.objectClass = ".column-workflow";
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      let my_class = "column-workflow column-" + data2.id;
+      if (data2.no_drag)
+        my_class += " no-drag";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: my_class,
+          ref: this.mainDiv,
+          id: data2.id,
+          "data-child-id": data2.column,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Column$1,
+            {
+              objectID: data2.column,
+              parentID: this.props.parentID,
+              throughParentID: data2.id,
+              renderer: this.props.renderer
+            }
+          )
+        }
+      );
+    }
+  }
+  const mapColumnWorkflowStateToProps = (state, own_props) => getColumnWorkflowByID(state, own_props.objectID);
+  const ColumnWorkflow$1 = connect(mapColumnWorkflowStateToProps, null)(ColumnWorkflow);
+  class WorkflowLegendUnconnected extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        show_legend: !!JSON.parse(localStorage.getItem("show_legend")),
+        show_slider: false
+      };
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidUpdate() {
+      $(".workflow-legend").draggable();
+    }
+    componentDidMount() {
+      $(".workflow-legend").draggable();
+      this.setState({
+        show_slider: true
+      });
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    toggle() {
+      localStorage.setItem("show_legend", String(!this.state.show_legend));
+      this.setState({ show_legend: !this.state.show_legend });
+    }
+    getSlider() {
+      if (this.state.show_slider) {
+        return reactDomExports.createPortal(
+          [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Legend") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Slider,
+              {
+                checked: this.state.show_legend,
+                toggleAction: this.toggle.bind(this)
+              }
+            )
+          ],
+          $("#viewbar")[0]
+        );
+      }
+      return null;
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      this.getSlider();
+      if (!this.state.show_legend) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      }
+      const contexts = this.props.contexts.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        LegendLine,
+        {
+          icon: context_keys[value],
+          text: this.props.renderer.context_choices.find((obj) => obj.type == value).name
+        }
+      ));
+      const tasks = this.props.tasks.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        LegendLine,
+        {
+          icon: task_keys[value],
+          text: this.props.renderer.task_choices.find((obj) => obj.type == value).name
+        }
+      ));
+      const strategies = this.props.strategies.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        LegendLine,
+        {
+          icon: strategy_keys[value],
+          text: this.props.renderer.strategy_classification_choices.find(
+            (obj) => obj.type == value
+          ).name
+        }
+      ));
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-legend", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Legend" }),
+        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Contexts:" }),
+          contexts
+        ] }),
+        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Tasks:" }),
+          tasks
+        ] }),
+        contexts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "legend-section", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: "Strategies:" }),
+          strategies
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", onClick: this.toggle.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" }) })
+      ] });
+    }
+  }
+  const mapStateToProps$8 = (state) => {
+    let contexts = [];
+    let tasks = [];
+    let strategies = [];
+    const uniqueTest = function(value, index, self2) {
+      return self2.indexOf(value) === index;
+    };
+    contexts = state.node.map((node2) => parseInt(node2.context_classification)).filter(uniqueTest).filter((value) => value > 0);
+    tasks = state.node.map((node2) => parseInt(node2.task_classification)).filter(uniqueTest).filter((value) => value > 0);
+    strategies = state.week.map((week) => parseInt(week.strategy_classification)).filter(uniqueTest).filter((value) => value > 0);
+    return {
+      contexts,
+      tasks,
+      strategies
+    };
+  };
+  const WorkflowLegend = connect(
+    mapStateToProps$8,
+    null
+  )(WorkflowLegendUnconnected);
+  class WorkflowViewUnconnected extends EditableComponentWithSorting {
+    constructor(props) {
+      super(props);
+      this.objectType = "workflow";
+      this.state = {};
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.makeDragAndDrop();
+    }
+    componentDidUpdate() {
+      this.makeDragAndDrop();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    makeDragAndDrop() {
+      this.makeSortableNode(
+        $(".column-row").children(".column-workflow").not(".ui-draggable"),
+        this.props.objectID,
+        "columnworkflow",
+        ".column-workflow",
+        // @ts-ignore
+        "x",
+        false,
+        null,
+        ".column",
+        ".column-row"
+      );
+      this.makeSortableNode(
+        $(".week-block").children(".week-workflow").not(".ui-draggable"),
+        this.props.objectID,
+        "weekworkflow",
+        ".week-workflow",
+        // @ts-ignore
+        "y",
+        false,
+        null,
+        ".week",
+        ".week-block"
+      );
+    }
+    stopSortFunction() {
+      triggerHandlerEach($(".week .node"), "component-updated");
+    }
+    sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+      if (type === "columnworkflow") {
+        this.props.renderer.micro_update(
+          ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
+        );
+        insertedAt(
+          this.props.renderer,
+          child_id,
+          "column",
+          new_parent,
+          "workflow",
+          new_position,
+          "columnworkflow"
+        );
+      }
+      if (type === "weekworkflow") {
+        this.props.renderer.micro_update(
+          ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
+        );
+        insertedAt(
+          this.props.renderer,
+          child_id,
+          "week",
+          new_parent,
+          "workflow",
+          new_position,
+          "weekworkflow"
+        );
+      }
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data2 = this.props.data;
+      const renderer = this.props.renderer;
+      const columnworkflows = data2.columnworkflow_set.map(
+        (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ColumnWorkflow$1,
+          {
+            objectID: columnworkflow,
+            parentID: data2.id,
+            renderer
+          },
+          `columnworkflow-${index}`
+        )
+      );
+      const weekworkflows = data2.weekworkflow_set.map((weekworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WeekWorkflow,
+        {
+          condensed: data2.condensed,
+          objectID: weekworkflow,
+          parentID: data2.id,
+          renderer
+        },
+        `weekworkflow-${index}`
+      ));
+      let css_class = "workflow-details";
+      if (data2.condensed)
+        css_class += " condensed";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data2.id + "-column-block", children: columnworkflows }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data2.id + "-week-block", children: weekworkflows }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "workflow-canvas", width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "marker",
+          {
+            id: "arrow",
+            viewBox: "0 0 10 10",
+            refX: "10",
+            refY: "5",
+            markerWidth: "4",
+            markerHeight: "4",
+            orient: "auto-start-reverse",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M 0 0 L 10 5 L 0 10 z" })
+          }
+        ) }) })
+      ] });
+    }
+  }
+  const mapWorkflowStateToProps = (state) => ({
+    data: state.workflow,
+    object_sets: state.objectset,
+    week: state.week,
+    node: state.node,
+    outcome: state.outcome
+  });
+  const WorkflowView = connect(
+    mapWorkflowStateToProps,
+    null
+  )(WorkflowViewUnconnected);
   class AlignmentOutcomesBlock extends reactExports.Component {
     /*******************************************************
      * RENDER
@@ -84640,6 +84675,21 @@ ${latestSubscriptionCallbackError.current.stack}
       ) });
     }
   }
+  class OutcomeAdderOptionUnconnected extends reactExports.Component {
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: this.props.objectID, children: "  ".repeat(this.props.data.depth) + getOutcomeTitle(this.props.data, this.props.prefix) });
+    }
+  }
+  const mapOutcomeStateToProps$1 = (state, ownProps) => {
+    return getOutcomeByID(state, ownProps.objectID);
+  };
+  const OutcomeAdderOption = connect(
+    mapOutcomeStateToProps$1,
+    null
+  )(OutcomeAdderOptionUnconnected);
   class OutcomeAdder extends reactExports.Component {
     /*******************************************************
      * FUNCTIONS
@@ -84664,19 +84714,6 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  class OutcomeAdderOptionUnconnected extends reactExports.Component {
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: this.props.objectID, children: "  ".repeat(this.props.data.depth) + getOutcomeTitle(this.props.data, this.props.prefix) });
-    }
-  }
-  const mapOutcomeStateToProps$1 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-  const OutcomeAdderOption = connect(
-    mapOutcomeStateToProps$1,
-    null
-  )(OutcomeAdderOptionUnconnected);
   class AlignmentHorizontalReverseChildOutcomeUnconnected extends reactExports.Component {
     /*******************************************************
      * RENDER
@@ -84828,7 +84865,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       let child_outcomes;
       if (this.props.child_outcomes != -1)
-        child_outcomes = this.props.child_outcomes.map((child_outcome) => {
+        child_outcomes = this.props.child_outcomes.map((child_outcome, index) => {
           if (!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome) === -1)
             return null;
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84838,7 +84875,8 @@ ${latestSubscriptionCallbackError.current.stack}
               node_data: data2,
               renderer: this.props.renderer,
               restriction_set: this.props.restriction_set
-            }
+            },
+            index
           );
         });
       let show_all;
