@@ -18,7 +18,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import useApi from '@cfModule/hooks/useApi'
-import { getTargetProjectMenu } from '@XMLHTTP/APIFunctions'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -29,6 +28,7 @@ import {
   NotificationsHeader,
   NotificationsList
 } from './styles'
+import { getTargetProjectMenu } from '@XMLHTTP/API/project'
 
 type TopBarAPIResponse = {
   is_teacher: boolean

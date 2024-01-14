@@ -1,7 +1,7 @@
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { Workflow } from '@cfModule/types/common'
-import { getHomeQuery } from '@XMLHTTP/APIFunctions'
+import { getHomeQuery } from '@XMLHTTP/API/pages'
 
 /*******************************************************
  * @HomeRenderer

@@ -8,7 +8,7 @@ import EditableComponent, {
 } from '@cfParentComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
 import CommentBox from '@cfViews/GridView/components/CommentBox'
-import { getCommentsForObjectQuery } from '@cfModule/XMLHTTP/APIFunctions'
+import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
 
 type StateType = {
   show_comments: boolean

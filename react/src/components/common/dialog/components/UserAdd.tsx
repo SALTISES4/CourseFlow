@@ -1,8 +1,8 @@
 import * as React from 'react'
 // import $ from 'jquery'
-import { getUserListQuery } from '@XMLHTTP/APIFunctions'
 import * as Constants from '@cfConstants'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
+import { getUserListQuery } from '@XMLHTTP/API/user'
 
 type StateProps = {
   selected: boolean

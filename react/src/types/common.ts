@@ -1,5 +1,7 @@
 import { WorkflowType } from '@cfModule/types/enum'
 
+export type ToDefine = any
+
 export interface Workflow {
   id: number
   author: string

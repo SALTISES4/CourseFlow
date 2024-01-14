@@ -2,14 +2,12 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import * as reactDom from 'react-dom'
-import { updateObjectSet } from '@XMLHTTP/PostFunctions'
-import {
-  getLinkedWorkflowMenuQuery,
-  toggleStrategyQuery
-} from '@XMLHTTP/APIFunctions'
 // import $ from 'jquery'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
+import { toggleStrategyQuery } from '@XMLHTTP/API/strategy'
+import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
+import { updateObjectSet } from '@XMLHTTP/API/global'
 
 //Extends the React component to add a few features that are used in a large number of components
 

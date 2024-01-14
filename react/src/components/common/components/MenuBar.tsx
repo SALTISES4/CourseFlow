@@ -4,10 +4,16 @@ import * as React from 'react'
  * various links, buttons, etc
  */
 
+type PropsType = {
+  viewbar?: () => React.ReactElement
+  userbar?: () => React.ReactElement
+  overflowLinks?: () => React.ReactElement
+  visibleButtons: () => React.ReactElement
+}
 /**
  *
  */
-class MenuBar extends React.Component {
+class MenuBar extends React.Component<PropsType> {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/

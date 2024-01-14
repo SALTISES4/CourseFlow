@@ -3,7 +3,7 @@ import ComponentWithToggleDrop, {
 } from '@cfParentComponents/ComponentWithToggleDrop'
 // import $ from 'jquery'
 import * as React from 'react'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/APIFunctions'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 
 type OwnProps = {
   data: any

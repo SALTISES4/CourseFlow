@@ -14,7 +14,7 @@ import {
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
 import { AppState } from '@cfRedux/type'
-import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
+import { addStrategyQuery } from '@XMLHTTP/API/strategy'
 
 // data: any
 // column_order: any

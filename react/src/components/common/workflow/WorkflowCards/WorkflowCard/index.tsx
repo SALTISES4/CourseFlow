@@ -2,13 +2,11 @@ import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { WorkflowTitle } from '@cfUIComponents/Titles'
-import {
-  setWorkflowVisibilityQuery,
-  toggleFavourite
-} from '@XMLHTTP/PostFunctions'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
+import { toggleFavourite } from '@XMLHTTP/API/pages'
+import { setWorkflowVisibilityQuery } from '@XMLHTTP/API/workflow'
 
 /*******************************************************
  * A workflow card for a menu

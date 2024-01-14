@@ -1,16 +1,16 @@
 // @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import {
-  createAssignmentQuery,
-  getAssignmentsForNode,
-  setAssignmentCompletionQuery
-} from '@XMLHTTP/PostFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 
 import { AssignmentTitle, DatePicker } from '@cfUIComponents'
 import ActionCreator from '@cfRedux/ActionCreator'
+import {
+  createAssignmentQuery,
+  getAssignmentsForNode,
+  setAssignmentCompletionQuery
+} from '@XMLHTTP/API/assignments'
 // import $ from 'jquery'
 
 /**
@@ -134,21 +134,34 @@ class AssignmentForNode extends React.Component {
   }
 }
 
+type AssignmentBoxStateType = {
+  my_assignments: any
+  all_assignments: any
+}
+type AssignmentBoxPropsType = any
 /**
  *
  */
-class AssignmentBox extends React.Component {
-  constructor(props) {
+class AssignmentBox extends React.Component<
+  AssignmentBoxPropsType,
+  AssignmentBoxStateType
+> {
+  constructor(props: AssignmentBoxPropsType) {
     super(props)
     this.input = React.createRef()
-    this.state = { my_assignments: [], all_assignments: [] }
+    this.state = {
+      my_assignments: [],
+      all_assignments: []
+    }
   }
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    this.setState({ has_rendered: true })
+    this.setState({
+      has_rendered: true
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -204,9 +217,13 @@ class AssignmentBox extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    if (!this.state.has_rendered) return null
+    let all_assignments
     let assignment_indicator = null
-    if (this.props.has_assignment)
+
+    if (!this.state.has_rendered) {
+      return null
+    }
+    if (this.props.has_assignment) {
       assignment_indicator = reactDom.createPortal(
         <div
           className="comment-indicator hover-shade"
@@ -218,6 +235,7 @@ class AssignmentBox extends React.Component {
           .children('.side-actions')
           .children('.assignment-indicator-container')[0]
       )
+    }
 
     if (!this.props.show) {
       return assignment_indicator
@@ -251,9 +269,10 @@ class AssignmentBox extends React.Component {
     const my_assignments = this.state.my_assignments.map((assignment) => (
       <AssignmentForNode data={assignment} renderer={this.props.renderer} />
     ))
+
     if (my_assignments.length > 0)
       my_assignments.unshift(<h4>{window.gettext('My Assignments')}</h4>)
-    let all_assignments
+
     if (this.props.renderer.is_teacher) {
       all_assignments = this.state.all_assignments.map((assignment) => (
         <AssignmentForNode data={assignment} renderer={this.props.renderer} />

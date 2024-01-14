@@ -10,7 +10,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
-import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode";
+import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 
 type ConnectedProps = GetNodeByIDType
 type OwnProps = {

@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { Outcome } from '../OutcomeEditView'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 
 /**
  * Shows the outcome from the child workflow in the alignment view, and the outcomes

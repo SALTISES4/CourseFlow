@@ -4,8 +4,8 @@ import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from './EditableComponentWithActions'
+import { newNodeQuery } from '@XMLHTTP/API/node'
 // import $ from 'jquery'
-import { newNodeQuery } from '@XMLHTTP/APIFunctions'
 
 type OwnProps = {
   objectID: number

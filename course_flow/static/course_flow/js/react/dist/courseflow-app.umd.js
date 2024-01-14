@@ -47845,397 +47845,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       });
     });
   }
-  function setLinkedWorkflow(node_id, workflow_id, callBackFunction = () => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
-      nodePk: node_id,
-      workflowPk: workflow_id
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  }
-  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-        nodePk: JSON.stringify(source_node),
-        objectID: JSON.stringify(target_node),
-        objectType: JSON.stringify("node"),
-        sourcePort: JSON.stringify(source_port),
-        targetPort: JSON.stringify(target_port)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function removeComment(objectID, objectType, commentPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
-        objectID: JSON.stringify(objectID),
-        commentPk: JSON.stringify(commentPk),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function removeAllComments(objectID, objectType, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-        nodePk: JSON.stringify(nodeID),
-        outcomePk: JSON.stringify(outcomeID),
-        degree: JSON.stringify(value)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function dragAction(action_data, callBackFunction = () => console.log("success")) {
-    try {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      $(".ui-draggable").draggable("disable");
-      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-        function(data2) {
-          if (data2.action === DATA_ACTIONS.POSTED)
-            callBackFunction(data2);
-          else
-            window.fail_function(data2.action);
-          $(".ui-draggable").draggable("enable");
-          COURSEFLOW_APP.tinyLoader.endLoad();
-        }
-      );
-    } catch (err) {
-      window.fail_function("The item failed to be inserted.");
-      console.log(err);
-    }
-  }
-  function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = () => console.log("success")) {
-    try {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      $(".ui-draggable").draggable("disable");
-      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        newPosition: JSON.stringify(newPosition),
-        throughType: JSON.stringify(throughType),
-        inserted: JSON.stringify(true),
-        allowDifferent: JSON.stringify(true)
-      }).done(function(data2) {
-        if (data2.action === "posted")
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    } catch (err) {
-      window.fail_function("The item failed to be inserted.");
-      console.log(err);
-    }
-  }
-  function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(
-        COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-        {
-          outcomePk: JSON.stringify(outcomePk),
-          objectID: JSON.stringify(outcome2Pk),
-          objectType: JSON.stringify("outcome"),
-          degree: JSON.stringify(degree)
-        }
-      ).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function toggleFavourite(objectID, objectType, favourite, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        favourite: JSON.stringify(favourite)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        console.log("getWorkflowParentData");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
-        nodePk: JSON.stringify(nodePk)
-      }).done(function(data2) {
-        console.log("getWorkflowChildData");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.get(
-        COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
-          "0",
-          workflowPk
-        )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowData");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.get(
-        COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
-          "0",
-          workflowPk
-        )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowParentData");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = () => console.log("success")) {
-    try {
-      $.get(
-        COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
-          "0",
-          nodePk
-        )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowChildData data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function setUserPermission(user_id2, objectID, objectType, permission_type, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        permission_user: JSON.stringify(user_id2),
-        permission_type: JSON.stringify(permission_type)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.error);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function addComment(objectID, objectType, text, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        text: JSON.stringify(text)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        objectsetPk: JSON.stringify(objectsetPk),
-        add: JSON.stringify(add2)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.get(
-        COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
-          "0",
-          workflowPk
-        )
-      ).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function makeProjectLiveQuery(projectPk, callBackFunction = (data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
-        projectPk: JSON.stringify(projectPk)
-      }).done(function(data2) {
-        console.log("makeProjectLiveQuery data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
-        liveprojectPk: JSON.stringify(liveprojectPk),
-        workflowPk: JSON.stringify(workflowPk),
-        visible: JSON.stringify(visible)
-      }).done(function(data2) {
-        console.log("setWorkflowVisibilityQuery data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
-        nodePk: JSON.stringify(nodePk),
-        liveprojectPk: JSON.stringify(liveprojectPk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
-        userassignmentPk: JSON.stringify(userassignmentPk),
-        completed: JSON.stringify(completed)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getAssignmentsForNode(nodePk, callBackFunction = () => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
-        nodePk: JSON.stringify(nodePk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
   const NotificationsWrap = styled$1(Box$1)({});
   const NotificationsHeader$1 = styled$1(Box$1)(({ theme: theme2 }) => ({
     paddingTop: theme2.spacing(4),
@@ -56075,6 +55684,709 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
   default_1 = AddCircle.default = _default;
+  function getDialogUtilityClass(slot) {
+    return generateUtilityClass("MuiDialog", slot);
+  }
+  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
+  const dialogClasses$1 = dialogClasses;
+  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    DialogContext.displayName = "DialogContext";
+  }
+  const DialogContext$1 = DialogContext;
+  const _excluded$5 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+  const DialogBackdrop = styled$1(Backdrop$1, {
+    name: "MuiDialog",
+    slot: "Backdrop",
+    overrides: (props, styles2) => styles2.backdrop
+  })({
+    // Improve scrollable dialog support.
+    zIndex: -1
+  });
+  const useUtilityClasses$3 = (ownerState) => {
+    const {
+      classes,
+      scroll,
+      maxWidth: maxWidth2,
+      fullWidth,
+      fullScreen
+    } = ownerState;
+    const slots = {
+      root: ["root"],
+      container: ["container", `scroll${capitalize(scroll)}`],
+      paper: ["paper", `paperScroll${capitalize(scroll)}`, `paperWidth${capitalize(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
+    };
+    return composeClasses(slots, getDialogUtilityClass, classes);
+  };
+  const DialogRoot = styled$1(Modal$1, {
+    name: "MuiDialog",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    "@media print": {
+      // Use !important to override the Modal inline-style.
+      position: "absolute !important"
+    }
+  });
+  const DialogContainer = styled$1("div", {
+    name: "MuiDialog",
+    slot: "Container",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.container, styles2[`scroll${capitalize(ownerState.scroll)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$2({
+    height: "100%",
+    "@media print": {
+      height: "auto"
+    },
+    // We disable the focus ring for mouse, touch and keyboard users.
+    outline: 0
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }, ownerState.scroll === "body" && {
+    overflowY: "auto",
+    overflowX: "hidden",
+    textAlign: "center",
+    "&:after": {
+      content: '""',
+      display: "inline-block",
+      verticalAlign: "middle",
+      height: "100%",
+      width: "0"
+    }
+  }));
+  const DialogPaper = styled$1(Paper$1, {
+    name: "MuiDialog",
+    slot: "Paper",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.paper, styles2[`scrollPaper${capitalize(ownerState.scroll)}`], styles2[`paperWidth${capitalize(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$2({
+    margin: 32,
+    position: "relative",
+    overflowY: "auto",
+    // Fix IE11 issue, to remove at some point.
+    "@media print": {
+      overflowY: "visible",
+      boxShadow: "none"
+    }
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "calc(100% - 64px)"
+  }, ownerState.scroll === "body" && {
+    display: "inline-block",
+    verticalAlign: "middle",
+    textAlign: "left"
+    // 'initial' doesn't work on IE11
+  }, !ownerState.maxWidth && {
+    maxWidth: "calc(100% - 64px)"
+  }, ownerState.maxWidth === "xs" && {
+    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
+    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.fullWidth && {
+    width: "calc(100% - 64px)"
+  }, ownerState.fullScreen && {
+    margin: 0,
+    width: "100%",
+    maxWidth: "100%",
+    height: "100%",
+    maxHeight: "none",
+    borderRadius: 0,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      margin: 0,
+      maxWidth: "100%"
+    }
+  }));
+  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialog"
+    });
+    const theme2 = useTheme();
+    const defaultTransitionDuration = {
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
+    };
+    const {
+      "aria-describedby": ariaDescribedby,
+      "aria-labelledby": ariaLabelledbyProp,
+      BackdropComponent,
+      BackdropProps,
+      children,
+      className,
+      disableEscapeKeyDown = false,
+      fullScreen = false,
+      fullWidth = false,
+      maxWidth: maxWidth2 = "sm",
+      onBackdropClick,
+      onClose,
+      open,
+      PaperComponent = Paper$1,
+      PaperProps = {},
+      scroll = "paper",
+      TransitionComponent = Fade$1,
+      transitionDuration = defaultTransitionDuration,
+      TransitionProps
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
+    const ownerState = _extends$2({}, props, {
+      disableEscapeKeyDown,
+      fullScreen,
+      fullWidth,
+      maxWidth: maxWidth2,
+      scroll
+    });
+    const classes = useUtilityClasses$3(ownerState);
+    const backdropClick = reactExports.useRef();
+    const handleMouseDown = (event2) => {
+      backdropClick.current = event2.target === event2.currentTarget;
+    };
+    const handleBackdropClick = (event2) => {
+      if (!backdropClick.current) {
+        return;
+      }
+      backdropClick.current = null;
+      if (onBackdropClick) {
+        onBackdropClick(event2);
+      }
+      if (onClose) {
+        onClose(event2, "backdropClick");
+      }
+    };
+    const ariaLabelledby = useId(ariaLabelledbyProp);
+    const dialogContextValue = reactExports.useMemo(() => {
+      return {
+        titleId: ariaLabelledby
+      };
+    }, [ariaLabelledby]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$2({
+      className: clsx(classes.root, className),
+      closeAfterTransition: true,
+      components: {
+        Backdrop: DialogBackdrop
+      },
+      componentsProps: {
+        backdrop: _extends$2({
+          transitionDuration,
+          as: BackdropComponent
+        }, BackdropProps)
+      },
+      disableEscapeKeyDown,
+      onClose,
+      open,
+      ref,
+      onClick: handleBackdropClick,
+      ownerState
+    }, other, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$2({
+        appear: true,
+        in: open,
+        timeout: transitionDuration,
+        role: "presentation"
+      }, TransitionProps, {
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
+          className: clsx(classes.container),
+          onMouseDown: handleMouseDown,
+          ownerState,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$2({
+            as: PaperComponent,
+            elevation: 24,
+            role: "dialog",
+            "aria-describedby": ariaDescribedby,
+            "aria-labelledby": ariaLabelledby
+          }, PaperProps, {
+            className: clsx(classes.paper, PaperProps.className),
+            ownerState,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+              value: dialogContextValue,
+              children
+            })
+          }))
+        })
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The id(s) of the element(s) that describe the dialog.
+     */
+    "aria-describedby": PropTypes.string,
+    /**
+     * The id(s) of the element(s) that label the dialog.
+     */
+    "aria-labelledby": PropTypes.string,
+    /**
+     * A backdrop component. This prop enables custom backdrop rendering.
+     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+     * @default styled(Backdrop, {
+     *   name: 'MuiModal',
+     *   slot: 'Backdrop',
+     *   overridesResolver: (props, styles) => {
+     *     return styles.backdrop;
+     *   },
+     * })({
+     *   zIndex: -1,
+     * })
+     */
+    BackdropComponent: PropTypes.elementType,
+    /**
+     * @ignore
+     */
+    BackdropProps: PropTypes.object,
+    /**
+     * Dialog children, usually the included sub-components.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown: PropTypes.bool,
+    /**
+     * If `true`, the dialog is full-screen.
+     * @default false
+     */
+    fullScreen: PropTypes.bool,
+    /**
+     * If `true`, the dialog stretches to `maxWidth`.
+     *
+     * Notice that the dialog width grow is limited by the default margin.
+     * @default false
+     */
+    fullWidth: PropTypes.bool,
+    /**
+     * Determine the max-width of the dialog.
+     * The dialog width grows with the size of the screen.
+     * Set to `false` to disable `maxWidth`.
+     * @default 'sm'
+     */
+    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
+    /**
+     * Callback fired when the backdrop is clicked.
+     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+     */
+    onBackdropClick: PropTypes.func,
+    /**
+     * Callback fired when the component requests to be closed.
+     *
+     * @param {object} event The event source of the callback.
+     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+     */
+    onClose: PropTypes.func,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The component used to render the body of the dialog.
+     * @default Paper
+     */
+    PaperComponent: PropTypes.elementType,
+    /**
+     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
+     * @default {}
+     */
+    PaperProps: PropTypes.object,
+    /**
+     * Determine the container for scrolling the dialog.
+     * @default 'paper'
+     */
+    scroll: PropTypes.oneOf(["body", "paper"]),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Fade
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     * @default {
+     *   enter: theme.transitions.duration.enteringScreen,
+     *   exit: theme.transitions.duration.leavingScreen,
+     * }
+     */
+    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })]),
+    /**
+     * Props applied to the transition element.
+     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+     */
+    TransitionProps: PropTypes.object
+  } : void 0;
+  const Dialog$1 = Dialog;
+  function getDialogTitleUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogTitle", slot);
+  }
+  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
+  const dialogTitleClasses$1 = dialogTitleClasses;
+  const _excluded$4 = ["className", "id"];
+  const useUtilityClasses$2 = (ownerState) => {
+    const {
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root"]
+    };
+    return composeClasses(slots, getDialogTitleUtilityClass, classes);
+  };
+  const DialogTitleRoot = styled$1(Typography$1, {
+    name: "MuiDialogTitle",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    padding: "16px 24px",
+    flex: "0 0 auto"
+  });
+  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogTitle"
+    });
+    const {
+      className,
+      id: idProp
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
+    const ownerState = props;
+    const classes = useUtilityClasses$2(ownerState);
+    const {
+      titleId = idProp
+    } = reactExports.useContext(DialogContext$1);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$2({
+      component: "h2",
+      className: clsx(classes.root, className),
+      ownerState,
+      ref,
+      variant: "h6",
+      id: idProp != null ? idProp : titleId
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * @ignore
+     */
+    id: PropTypes.string,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogTitle$1 = DialogTitle;
+  function getDialogContentUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogContent", slot);
+  }
+  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
+  const _excluded$3 = ["className", "dividers"];
+  const useUtilityClasses$1 = (ownerState) => {
+    const {
+      classes,
+      dividers
+    } = ownerState;
+    const slots = {
+      root: ["root", dividers && "dividers"]
+    };
+    return composeClasses(slots, getDialogContentUtilityClass, classes);
+  };
+  const DialogContentRoot = styled$1("div", {
+    name: "MuiDialogContent",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.dividers && styles2.dividers];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$2({
+    flex: "1 1 auto",
+    // Add iOS momentum scrolling for iOS < 13.0
+    WebkitOverflowScrolling: "touch",
+    overflowY: "auto",
+    padding: "20px 24px"
+  }, ownerState.dividers ? {
+    padding: "16px 24px",
+    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
+  } : {
+    [`.${dialogTitleClasses$1.root} + &`]: {
+      paddingTop: 0
+    }
+  }));
+  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogContent"
+    });
+    const {
+      className,
+      dividers = false
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$3);
+    const ownerState = _extends$2({}, props, {
+      dividers
+    });
+    const classes = useUtilityClasses$1(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$2({
+      className: clsx(classes.root, className),
+      ownerState,
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * Display the top and bottom dividers.
+     * @default false
+     */
+    dividers: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogContent$1 = DialogContent;
+  function getDialogActionsUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogActions", slot);
+  }
+  generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
+  const _excluded$2 = ["className", "disableSpacing"];
+  const useUtilityClasses = (ownerState) => {
+    const {
+      classes,
+      disableSpacing
+    } = ownerState;
+    const slots = {
+      root: ["root", !disableSpacing && "spacing"]
+    };
+    return composeClasses(slots, getDialogActionsUtilityClass, classes);
+  };
+  const DialogActionsRoot = styled$1("div", {
+    name: "MuiDialogActions",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, !ownerState.disableSpacing && styles2.spacing];
+    }
+  })(({
+    ownerState
+  }) => _extends$2({
+    display: "flex",
+    alignItems: "center",
+    padding: 8,
+    justifyContent: "flex-end",
+    flex: "0 0 auto"
+  }, !ownerState.disableSpacing && {
+    "& > :not(style) ~ :not(style)": {
+      marginLeft: 8
+    }
+  }));
+  const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogActions"
+    });
+    const {
+      className,
+      disableSpacing = false
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$2);
+    const ownerState = _extends$2({}, props, {
+      disableSpacing
+    });
+    const classes = useUtilityClasses(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$2({
+      className: clsx(classes.root, className),
+      ownerState,
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * If `true`, the actions do not have additional margin.
+     * @default false
+     */
+    disableSpacing: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogActions$1 = DialogActions;
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(2)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const ResetPasswordModal = ({
+    show,
+    handleClose,
+    handleContinue
+  }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    StyledDialog,
+    {
+      open: show,
+      onClose: handleClose,
+      maxWidth: "xs",
+      "aria-labelledby": "reset-password-modal",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
+        ] })
+      ]
+    }
+  );
+  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      backgroundColor: theme2.palette.common.white
+    }
+  }));
+  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      minWidth: 220,
+      "& .MuiMenuItem-root": {
+        "& .MuiSvgIcon-root": {
+          marginRight: theme2.spacing(1.5)
+        }
+      }
+    }
+  }));
+  const NotificationsMenu = styled$1(Popover$1)({
+    "& .MuiPaper-root": {
+      marginLeft: "3em",
+      width: 500
+    }
+  });
+  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: theme2.spacing(2),
+    paddingBottom: theme2.spacing(2),
+    paddingLeft: theme2.spacing(3),
+    paddingRight: theme2.spacing(1),
+    borderBottom: `1px solid ${theme2.palette.divider}`,
+    "& .MuiTypography-root:not(a)": {
+      color: "currentColor"
+    }
+  }));
+  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBottom: theme2.spacing(1),
+    "& .MuiListItem-root": {
+      padding: 0
+    },
+    "& .MuiListItemButton-root": {
+      paddingTop: theme2.spacing(1.5),
+      paddingBottom: theme2.spacing(1.5),
+      paddingLeft: theme2.spacing(4),
+      borderBottom: `1px solid ${theme2.palette.divider}`
+    },
+    "& .MuiBadge-root": {
+      position: "absolute",
+      left: theme2.spacing(1.7),
+      top: "50%"
+    }
+  }));
   const lock_times = {
     move: 5e3,
     update: 5e3,
@@ -56437,6 +56749,250 @@ Please use another name.` : formatMuiErrorMessage(18));
     WorkflowType2["LIVE_PROJECT"] = "liveproject";
     return WorkflowType2;
   })(WorkflowType || {});
+  function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        favourite: JSON.stringify(favourite)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function searchAllObjectsQuery(filter, data2, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+        filter: JSON.stringify(filter),
+        additional_data: JSON.stringify(data2)
+      }).done(function(_data2) {
+        callBackFunction(_data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
+        callBackFunction(data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
+        callBackFunction(data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
+        callBackFunction(data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+        projectPk
+      }).done(function(_data2) {
+        callBackFunction(_data2);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+      nodePk: node_id,
+      workflowPk: workflow_id
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  }
+  function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+        nodePk: JSON.stringify(nodePk)
+      }).done(function(data2) {
+        console.log("getWorkflowChildData");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+        workflowPk: JSON.stringify(workflowPk)
+      }).done(function(data2) {
+        console.log("getWorkflowParentData");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(
+        COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
+          "0",
+          workflowPk
+        )
+      ).done(function(data2) {
+        console.log("getPublicWorkflowData");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(
+        COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
+          "0",
+          workflowPk
+        )
+      ).done(function(data2) {
+        console.log("getPublicWorkflowParentData");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(
+        COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
+          "0",
+          nodePk
+        )
+      ).done(function(data2) {
+        console.log("getPublicWorkflowChildData data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+    $.post(
+      COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+      {
+        nodePk: JSON.stringify(nodeData.id)
+      },
+      (_data2) => {
+        callBackFunction();
+      }
+    );
+  }
+  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+        workflowPk: JSON.stringify(workflowPk)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+        workflowPk: JSON.stringify(workflowPk)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      }).catch((err) => {
+        console.log(err);
+      });
+    } catch (err) {
+      console.log("getParentWorkflowInfoQuery error in try/catc");
+      console.log(err);
+      window.fail_function();
+    }
+  }
+  function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
+        liveprojectPk: JSON.stringify(liveprojectPk),
+        workflowPk: JSON.stringify(workflowPk),
+        visible: JSON.stringify(visible)
+      }).done(function(data2) {
+        console.log("setWorkflowVisibilityQuery data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.get(
+        COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
+          "0",
+          workflowPk
+        )
+      ).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class WorkflowCard extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -56637,6 +57193,217 @@ Please use another name.` : formatMuiErrorMessage(18));
           ]
         }
       );
+    }
+  }
+  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+    const sendPostRequest = (url, data2) => {
+      $.post(url, data2).done(function(response) {
+        console.log("duplicateBaseItemQuery response");
+        console.log(response);
+        if (response.action === DATA_ACTIONS.POSTED) {
+          callBackFunction(response);
+        } else {
+          window.fail_function(response.action);
+        }
+      });
+    };
+    try {
+      const itemPkString = JSON.stringify(itemPk);
+      const projectPkString = JSON.stringify(projectID);
+      if (objectType === OBJECT_TYPE.PROJECT) {
+        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+          projectPk: itemPkString
+        });
+      } else if (objectType === OBJECT_TYPE.OUTCOME) {
+        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
+          outcomePk: itemPkString,
+          projectPk: projectPkString
+        });
+      } else if (objectType === OBJECT_TYPE.STRATEGY) {
+        sendPostRequest(
+          COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+          { workflowPk: itemPkString }
+        );
+      } else {
+        sendPostRequest(
+          COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+          { workflowPk: itemPkString, projectPk: projectPkString }
+        );
+      }
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
+    const t = 1e3;
+    const previousCall = document.lastUpdateCall;
+    document.lastUpdateCall = {
+      time: Date.now(),
+      id: objectID,
+      type: objectType,
+      field: Object.keys(json)[0]
+    };
+    if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+      clearTimeout(document.lastUpdateCallTimer);
+    }
+    if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+      document.lastUpdateCallFunction();
+    }
+    const post_object = {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json),
+      changeFieldID: 0
+    };
+    if (changeField) {
+      post_object.changeFieldID = // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldID;
+    }
+    document.lastUpdateCallFunction = () => {
+      try {
+        $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+          function(data2) {
+            if (data2.action === DATA_ACTIONS.POSTED) {
+              callBackFunction(_data);
+            } else
+              window.fail_function(data2.action);
+          }
+        );
+      } catch (err) {
+        window.fail_function();
+      }
+    };
+    document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+  }
+  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        data: JSON.stringify(json)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+        projectPk: JSON.stringify(projectPk),
+        term: JSON.stringify(term),
+        title: JSON.stringify(title),
+        translation_plural: JSON.stringify(translation_plural)
+      }).done(function(data2) {
+        console.log("addTerminologyQuery query");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED) {
+          callBackFunction(data2);
+        } else {
+          window.fail_function(data2.action);
+        }
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+        parentID: JSON.stringify(parentID),
+        parentType: JSON.stringify(parentType),
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        throughType: JSON.stringify(throughType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      $(".ui-draggable").draggable("disable");
+      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
+        function(data2) {
+          if (data2.action === DATA_ACTIONS.POSTED)
+            callBackFunction(data2);
+          else
+            window.fail_function(data2.action);
+          $(".ui-draggable").draggable("enable");
+          COURSEFLOW_APP.tinyLoader.endLoad();
+        }
+      );
+    } catch (err) {
+      window.fail_function("The item failed to be inserted.");
+      console.log(err);
+    }
+  }
+  function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      $(".ui-draggable").draggable("disable");
+      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        parentID: JSON.stringify(parentID),
+        parentType: JSON.stringify(parentType),
+        newPosition: JSON.stringify(newPosition),
+        throughType: JSON.stringify(throughType),
+        inserted: JSON.stringify(true),
+        allowDifferent: JSON.stringify(true)
+      }).done(function(data2) {
+        if (data2.action === "posted")
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+        $(".ui-draggable").draggable("enable");
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    } catch (err) {
+      window.fail_function("The item failed to be inserted.");
+      console.log(err);
+    }
+  }
+  function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        objectsetPk: JSON.stringify(objectsetPk),
+        add: JSON.stringify(add2)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
     }
   }
   function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
@@ -57035,627 +57802,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] });
     }
   }
-  function getDialogUtilityClass(slot) {
-    return generateUtilityClass("MuiDialog", slot);
-  }
-  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
-  const dialogClasses$1 = dialogClasses;
-  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
-  if (process.env.NODE_ENV !== "production") {
-    DialogContext.displayName = "DialogContext";
-  }
-  const DialogContext$1 = DialogContext;
-  const _excluded$5 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
-  const DialogBackdrop = styled$1(Backdrop$1, {
-    name: "MuiDialog",
-    slot: "Backdrop",
-    overrides: (props, styles2) => styles2.backdrop
-  })({
-    // Improve scrollable dialog support.
-    zIndex: -1
-  });
-  const useUtilityClasses$3 = (ownerState) => {
-    const {
-      classes,
-      scroll,
-      maxWidth: maxWidth2,
-      fullWidth,
-      fullScreen
-    } = ownerState;
-    const slots = {
-      root: ["root"],
-      container: ["container", `scroll${capitalize(scroll)}`],
-      paper: ["paper", `paperScroll${capitalize(scroll)}`, `paperWidth${capitalize(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
-    };
-    return composeClasses(slots, getDialogUtilityClass, classes);
-  };
-  const DialogRoot = styled$1(Modal$1, {
-    name: "MuiDialog",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    "@media print": {
-      // Use !important to override the Modal inline-style.
-      position: "absolute !important"
-    }
-  });
-  const DialogContainer = styled$1("div", {
-    name: "MuiDialog",
-    slot: "Container",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.container, styles2[`scroll${capitalize(ownerState.scroll)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$2({
-    height: "100%",
-    "@media print": {
-      height: "auto"
-    },
-    // We disable the focus ring for mouse, touch and keyboard users.
-    outline: 0
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  }, ownerState.scroll === "body" && {
-    overflowY: "auto",
-    overflowX: "hidden",
-    textAlign: "center",
-    "&:after": {
-      content: '""',
-      display: "inline-block",
-      verticalAlign: "middle",
-      height: "100%",
-      width: "0"
-    }
-  }));
-  const DialogPaper = styled$1(Paper$1, {
-    name: "MuiDialog",
-    slot: "Paper",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.paper, styles2[`scrollPaper${capitalize(ownerState.scroll)}`], styles2[`paperWidth${capitalize(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$2({
-    margin: 32,
-    position: "relative",
-    overflowY: "auto",
-    // Fix IE11 issue, to remove at some point.
-    "@media print": {
-      overflowY: "visible",
-      boxShadow: "none"
-    }
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    flexDirection: "column",
-    maxHeight: "calc(100% - 64px)"
-  }, ownerState.scroll === "body" && {
-    display: "inline-block",
-    verticalAlign: "middle",
-    textAlign: "left"
-    // 'initial' doesn't work on IE11
-  }, !ownerState.maxWidth && {
-    maxWidth: "calc(100% - 64px)"
-  }, ownerState.maxWidth === "xs" && {
-    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
-    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.fullWidth && {
-    width: "calc(100% - 64px)"
-  }, ownerState.fullScreen && {
-    margin: 0,
-    width: "100%",
-    maxWidth: "100%",
-    height: "100%",
-    maxHeight: "none",
-    borderRadius: 0,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      margin: 0,
-      maxWidth: "100%"
-    }
-  }));
-  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialog"
-    });
-    const theme2 = useTheme();
-    const defaultTransitionDuration = {
-      enter: theme2.transitions.duration.enteringScreen,
-      exit: theme2.transitions.duration.leavingScreen
-    };
-    const {
-      "aria-describedby": ariaDescribedby,
-      "aria-labelledby": ariaLabelledbyProp,
-      BackdropComponent,
-      BackdropProps,
-      children,
-      className,
-      disableEscapeKeyDown = false,
-      fullScreen = false,
-      fullWidth = false,
-      maxWidth: maxWidth2 = "sm",
-      onBackdropClick,
-      onClose,
-      open,
-      PaperComponent = Paper$1,
-      PaperProps = {},
-      scroll = "paper",
-      TransitionComponent = Fade$1,
-      transitionDuration = defaultTransitionDuration,
-      TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
-    const ownerState = _extends$2({}, props, {
-      disableEscapeKeyDown,
-      fullScreen,
-      fullWidth,
-      maxWidth: maxWidth2,
-      scroll
-    });
-    const classes = useUtilityClasses$3(ownerState);
-    const backdropClick = reactExports.useRef();
-    const handleMouseDown = (event2) => {
-      backdropClick.current = event2.target === event2.currentTarget;
-    };
-    const handleBackdropClick = (event2) => {
-      if (!backdropClick.current) {
-        return;
-      }
-      backdropClick.current = null;
-      if (onBackdropClick) {
-        onBackdropClick(event2);
-      }
-      if (onClose) {
-        onClose(event2, "backdropClick");
-      }
-    };
-    const ariaLabelledby = useId(ariaLabelledbyProp);
-    const dialogContextValue = reactExports.useMemo(() => {
-      return {
-        titleId: ariaLabelledby
-      };
-    }, [ariaLabelledby]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$2({
-      className: clsx(classes.root, className),
-      closeAfterTransition: true,
-      components: {
-        Backdrop: DialogBackdrop
-      },
-      componentsProps: {
-        backdrop: _extends$2({
-          transitionDuration,
-          as: BackdropComponent
-        }, BackdropProps)
-      },
-      disableEscapeKeyDown,
-      onClose,
-      open,
-      ref,
-      onClick: handleBackdropClick,
-      ownerState
-    }, other, {
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$2({
-        appear: true,
-        in: open,
-        timeout: transitionDuration,
-        role: "presentation"
-      }, TransitionProps, {
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
-          className: clsx(classes.container),
-          onMouseDown: handleMouseDown,
-          ownerState,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$2({
-            as: PaperComponent,
-            elevation: 24,
-            role: "dialog",
-            "aria-describedby": ariaDescribedby,
-            "aria-labelledby": ariaLabelledby
-          }, PaperProps, {
-            className: clsx(classes.paper, PaperProps.className),
-            ownerState,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
-              value: dialogContextValue,
-              children
-            })
-          }))
-        })
-      }))
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The id(s) of the element(s) that describe the dialog.
-     */
-    "aria-describedby": PropTypes.string,
-    /**
-     * The id(s) of the element(s) that label the dialog.
-     */
-    "aria-labelledby": PropTypes.string,
-    /**
-     * A backdrop component. This prop enables custom backdrop rendering.
-     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
-     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
-     * @default styled(Backdrop, {
-     *   name: 'MuiModal',
-     *   slot: 'Backdrop',
-     *   overridesResolver: (props, styles) => {
-     *     return styles.backdrop;
-     *   },
-     * })({
-     *   zIndex: -1,
-     * })
-     */
-    BackdropComponent: PropTypes.elementType,
-    /**
-     * @ignore
-     */
-    BackdropProps: PropTypes.object,
-    /**
-     * Dialog children, usually the included sub-components.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * If `true`, hitting escape will not fire the `onClose` callback.
-     * @default false
-     */
-    disableEscapeKeyDown: PropTypes.bool,
-    /**
-     * If `true`, the dialog is full-screen.
-     * @default false
-     */
-    fullScreen: PropTypes.bool,
-    /**
-     * If `true`, the dialog stretches to `maxWidth`.
-     *
-     * Notice that the dialog width grow is limited by the default margin.
-     * @default false
-     */
-    fullWidth: PropTypes.bool,
-    /**
-     * Determine the max-width of the dialog.
-     * The dialog width grows with the size of the screen.
-     * Set to `false` to disable `maxWidth`.
-     * @default 'sm'
-     */
-    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
-    /**
-     * Callback fired when the backdrop is clicked.
-     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
-     */
-    onBackdropClick: PropTypes.func,
-    /**
-     * Callback fired when the component requests to be closed.
-     *
-     * @param {object} event The event source of the callback.
-     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
-     */
-    onClose: PropTypes.func,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The component used to render the body of the dialog.
-     * @default Paper
-     */
-    PaperComponent: PropTypes.elementType,
-    /**
-     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
-     * @default {}
-     */
-    PaperProps: PropTypes.object,
-    /**
-     * Determine the container for scrolling the dialog.
-     * @default 'paper'
-     */
-    scroll: PropTypes.oneOf(["body", "paper"]),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The component used for the transition.
-     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Fade
-     */
-    TransitionComponent: PropTypes.elementType,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     * @default {
-     *   enter: theme.transitions.duration.enteringScreen,
-     *   exit: theme.transitions.duration.leavingScreen,
-     * }
-     */
-    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })]),
-    /**
-     * Props applied to the transition element.
-     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
-     */
-    TransitionProps: PropTypes.object
-  } : void 0;
-  const Dialog$1 = Dialog;
-  function getDialogActionsUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogActions", slot);
-  }
-  generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-  const _excluded$4 = ["className", "disableSpacing"];
-  const useUtilityClasses$2 = (ownerState) => {
-    const {
-      classes,
-      disableSpacing
-    } = ownerState;
-    const slots = {
-      root: ["root", !disableSpacing && "spacing"]
-    };
-    return composeClasses(slots, getDialogActionsUtilityClass, classes);
-  };
-  const DialogActionsRoot = styled$1("div", {
-    name: "MuiDialogActions",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, !ownerState.disableSpacing && styles2.spacing];
-    }
-  })(({
-    ownerState
-  }) => _extends$2({
-    display: "flex",
-    alignItems: "center",
-    padding: 8,
-    justifyContent: "flex-end",
-    flex: "0 0 auto"
-  }, !ownerState.disableSpacing && {
-    "& > :not(style) ~ :not(style)": {
-      marginLeft: 8
-    }
-  }));
-  const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogActions"
-    });
-    const {
-      className,
-      disableSpacing = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
-    const ownerState = _extends$2({}, props, {
-      disableSpacing
-    });
-    const classes = useUtilityClasses$2(ownerState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$2({
-      className: clsx(classes.root, className),
-      ownerState,
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * If `true`, the actions do not have additional margin.
-     * @default false
-     */
-    disableSpacing: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogActions$1 = DialogActions;
-  function getDialogContentUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogContent", slot);
-  }
-  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
-  function getDialogTitleUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogTitle", slot);
-  }
-  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-  const dialogTitleClasses$1 = dialogTitleClasses;
-  const _excluded$3 = ["className", "dividers"];
-  const useUtilityClasses$1 = (ownerState) => {
-    const {
-      classes,
-      dividers
-    } = ownerState;
-    const slots = {
-      root: ["root", dividers && "dividers"]
-    };
-    return composeClasses(slots, getDialogContentUtilityClass, classes);
-  };
-  const DialogContentRoot = styled$1("div", {
-    name: "MuiDialogContent",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.dividers && styles2.dividers];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$2({
-    flex: "1 1 auto",
-    // Add iOS momentum scrolling for iOS < 13.0
-    WebkitOverflowScrolling: "touch",
-    overflowY: "auto",
-    padding: "20px 24px"
-  }, ownerState.dividers ? {
-    padding: "16px 24px",
-    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
-    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
-  } : {
-    [`.${dialogTitleClasses$1.root} + &`]: {
-      paddingTop: 0
-    }
-  }));
-  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogContent"
-    });
-    const {
-      className,
-      dividers = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$3);
-    const ownerState = _extends$2({}, props, {
-      dividers
-    });
-    const classes = useUtilityClasses$1(ownerState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$2({
-      className: clsx(classes.root, className),
-      ownerState,
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * Display the top and bottom dividers.
-     * @default false
-     */
-    dividers: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogContent$1 = DialogContent;
-  const _excluded$2 = ["className", "id"];
-  const useUtilityClasses = (ownerState) => {
-    const {
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root"]
-    };
-    return composeClasses(slots, getDialogTitleUtilityClass, classes);
-  };
-  const DialogTitleRoot = styled$1(Typography$1, {
-    name: "MuiDialogTitle",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    padding: "16px 24px",
-    flex: "0 0 auto"
-  });
-  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogTitle"
-    });
-    const {
-      className,
-      id: idProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$2);
-    const ownerState = props;
-    const classes = useUtilityClasses(ownerState);
-    const {
-      titleId = idProp
-    } = reactExports.useContext(DialogContext$1);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$2({
-      component: "h2",
-      className: clsx(classes.root, className),
-      ownerState,
-      ref,
-      variant: "h6",
-      id: idProp != null ? idProp : titleId
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * @ignore
-     */
-    id: PropTypes.string,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogTitle$1 = DialogTitle;
   class MessageBox extends reactExports.Component {
     constructor() {
       super(...arguments);
@@ -57695,37 +57841,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       $("#popup-container")[0]
     );
   }
-  function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
-        callBackFunction(data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function searchAllObjectsQuery(filter, data2, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-        filter: JSON.stringify(filter),
-        additional_data: JSON.stringify(data2)
-      }).done(function(_data2) {
-        callBackFunction(_data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data2) {
-        callBackFunction(data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = () => console.log("success")) {
+  function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data2) => console.log("success")) {
     $.post(
       COURSEFLOW_APP.config.post_paths.get_target_projects,
       {
@@ -57744,197 +57860,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       alert("Failed to find potential projects.");
     }
   }
-  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    if (["program", "course", "activity"].indexOf(objectType) >= 0)
-      objectType = "workflow";
+  function makeProjectLiveQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
+      $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
+        projectPk: JSON.stringify(projectPk)
       }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      console.log("err");
-      console.log(err);
-      window.fail_function();
-    }
-  }
-  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-    const sendPostRequest = (url, data2) => {
-      $.post(url, data2).done(function(response) {
-        console.log("duplicateBaseItemQuery response");
-        console.log(response);
-        if (response.action === DATA_ACTIONS.POSTED) {
-          callBackFunction(response);
-        } else {
-          window.fail_function(response.action);
-        }
-      });
-    };
-    try {
-      const itemPkString = JSON.stringify(itemPk);
-      const projectPkString = JSON.stringify(projectID);
-      if (objectType === OBJECT_TYPE.PROJECT) {
-        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-          projectPk: itemPkString
-        });
-      } else if (objectType === OBJECT_TYPE.OUTCOME) {
-        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-          outcomePk: itemPkString,
-          projectPk: projectPkString
-        });
-      } else if (objectType === OBJECT_TYPE.STRATEGY) {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-          { workflowPk: itemPkString }
-        );
-      } else {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-          { workflowPk: itemPkString, projectPk: projectPkString }
-        );
-      }
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-        projectPk
-      }).done(function(_data2) {
-        callBackFunction(_data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-      {
-        nodePk: JSON.stringify(nodeData.id)
-      },
-      (_data2) => {
-        callBackFunction();
-      }
-    );
-  }
-  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      }).catch((err) => {
-        console.log(err);
-      });
-    } catch (err) {
-      console.log("getParentWorkflowInfoQuery error in try/catc");
-      console.log(err);
-      window.fail_function();
-    }
-  }
-  function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-        workflowPk: JSON.stringify(workflowPk),
-        objectsetPk: JSON.stringify(object_set_id)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
-    const t = 1e3;
-    const previousCall = document.lastUpdateCall;
-    document.lastUpdateCall = {
-      time: Date.now(),
-      id: objectID,
-      type: objectType,
-      field: Object.keys(json)[0]
-    };
-    if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-      clearTimeout(document.lastUpdateCallTimer);
-    }
-    if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-      document.lastUpdateCallFunction();
-    }
-    const post_object = {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json),
-      changeFieldID: 0
-    };
-    if (changeField) {
-      post_object.changeFieldID = // @ts-ignore
-      COURSEFLOW_APP.contextData.changeFieldID;
-    }
-    document.lastUpdateCallFunction = () => {
-      try {
-        $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-          function(data2) {
-            if (data2.action === DATA_ACTIONS.POSTED) {
-              callBackFunction(_data);
-            } else
-              window.fail_function(data2.action);
-          }
-        );
-      } catch (err) {
-        window.fail_function();
-      }
-    };
-    document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-  }
-  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        data: JSON.stringify(json)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        console.log("getCommentsForObject data");
+        console.log("makeProjectLiveQuery data");
         console.log(data2);
         if (data2.action === DATA_ACTIONS.POSTED)
           callBackFunction(data2);
@@ -57945,274 +57876,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-        weekPk: JSON.stringify(weekPk),
-        is_strategy: JSON.stringify(is_strategy)
-      }).done(function(data2) {
-        console.log("toggleStrategyQuery data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-        projectPk: JSON.stringify(projectPk),
-        term: JSON.stringify(term),
-        title: JSON.stringify(title),
-        translation_plural: JSON.stringify(translation_plural)
-      }).done(function(data2) {
-        console.log("addTerminologyQuery query");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED) {
-          callBackFunction(data2);
-        } else {
-          window.fail_function(data2.action);
-        }
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-        filter: JSON.stringify(filter)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        console.log("restoreSelfQuery data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
-    let path;
-    if (soft)
-      path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
-    else
-      path = COURSEFLOW_APP.config.post_paths.delete_self;
-    try {
-      $.post(path, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        console.log("deleteSelfQuery data");
-        console.log(data2);
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        throughType: JSON.stringify(throughType)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        throughType: JSON.stringify(throughType)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-        weekPk: JSON.stringify(weekPk),
-        position: JSON.stringify(position2),
-        columnPk: JSON.stringify(column2),
-        columnType: JSON.stringify(column_type)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED) {
-          callBackFunction(data2);
-        } else {
-          window.fail_function(data2.action);
-        }
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-        workflowPk: JSON.stringify(workflowPk),
-        position: JSON.stringify(position2),
-        objectID: JSON.stringify(strategyPk),
-        objectType: JSON.stringify("workflow")
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED) {
-          callBackFunction(data2);
-        } else {
-          window.fail_function(data2.action);
-        }
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
-        callBackFunction(data2);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(2)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const ResetPasswordModal = ({
-    show,
-    handleClose,
-    handleContinue
-  }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    StyledDialog,
-    {
-      open: show,
-      onClose: handleClose,
-      maxWidth: "xs",
-      "aria-labelledby": "reset-password-modal",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
-        ] })
-      ]
-    }
-  );
-  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      backgroundColor: theme2.palette.common.white
-    }
-  }));
-  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      minWidth: 220,
-      "& .MuiMenuItem-root": {
-        "& .MuiSvgIcon-root": {
-          marginRight: theme2.spacing(1.5)
-        }
-      }
-    }
-  }));
-  const NotificationsMenu = styled$1(Popover$1)({
-    "& .MuiPaper-root": {
-      marginLeft: "3em",
-      width: 500
-    }
-  });
-  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: theme2.spacing(2),
-    paddingBottom: theme2.spacing(2),
-    paddingLeft: theme2.spacing(3),
-    paddingRight: theme2.spacing(1),
-    borderBottom: `1px solid ${theme2.palette.divider}`,
-    "& .MuiTypography-root:not(a)": {
-      color: "currentColor"
-    }
-  }));
-  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
-    paddingTop: 0,
-    paddingBottom: 0,
-    marginBottom: theme2.spacing(1),
-    "& .MuiListItem-root": {
-      padding: 0
-    },
-    "& .MuiListItemButton-root": {
-      paddingTop: theme2.spacing(1.5),
-      paddingBottom: theme2.spacing(1.5),
-      paddingLeft: theme2.spacing(4),
-      borderBottom: `1px solid ${theme2.palette.divider}`
-    },
-    "& .MuiBadge-root": {
-      position: "absolute",
-      left: theme2.spacing(1.7),
-      top: "50%"
-    }
-  }));
   function openCreateActionModal(type) {
     const createUrl = COURSEFLOW_APP.config.create_path[type];
     COURSEFLOW_APP.tinyLoader.startLoad();
@@ -59867,9 +59530,9 @@ ${latestSubscriptionCallbackError.current.stack}
       ] }) });
     }
   }
-  const mapStateToProps$l = (state) => ({ data_package: state });
+  const mapStateToProps$m = (state) => ({ data_package: state });
   const WorkflowGridMenu = connect(
-    mapStateToProps$l,
+    mapStateToProps$m,
     null
   )(WorkflowGridMenuUnconnected);
   var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
@@ -61701,6 +61364,41 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
   }
+  function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+        weekPk: JSON.stringify(weekPk),
+        is_strategy: JSON.stringify(is_strategy)
+      }).done(function(data2) {
+        console.log("toggleStrategyQuery data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+        workflowPk: JSON.stringify(workflowPk),
+        position: JSON.stringify(position2),
+        objectID: JSON.stringify(strategyPk),
+        objectType: JSON.stringify("workflow")
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED) {
+          callBackFunction(data2);
+        } else {
+          window.fail_function(data2.action);
+        }
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
@@ -62301,6 +61999,120 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  function removeComment(objectID, objectType, commentPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
+        objectID: JSON.stringify(objectID),
+        commentPk: JSON.stringify(commentPk),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function removeAllComments(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function addComment(objectID, objectType, text, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        text: JSON.stringify(text)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        console.log("getCommentsForObject data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function setUserPermission(user_id2, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        permission_user: JSON.stringify(user_id2),
+        permission_type: JSON.stringify(permission_type)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.error);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+        filter: JSON.stringify(filter)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getUsersForObjectQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+    if (["program", "course", "activity"].indexOf(objectType) >= 0)
+      objectType = "workflow";
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      console.log("err");
+      console.log(err);
+      window.fail_function();
+    }
+  }
   class CommentBox extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -62360,7 +62172,7 @@ ${latestSubscriptionCallbackError.current.stack}
         this.tagPosition = this.input.current.selectionStart - 1;
         const loader = COURSEFLOW_APP.tinyLoader;
         loader.startLoad();
-        getUsersForObjectQuery(this.props.workflowID, "workflow", (response) => {
+        getUsersForObjectQuery$1(this.props.workflowID, "workflow", (response) => {
           loader.endLoad();
           this.setState({
             tagging: true,
@@ -62639,6 +62451,63 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  function deleteSelfQuery$1(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+    let path;
+    if (soft)
+      path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
+    else
+      path = COURSEFLOW_APP.config.post_paths.delete_self;
+    try {
+      $.post(path, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        console.log("deleteSelfQuery data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+        parentID: JSON.stringify(parentID),
+        parentType: JSON.stringify(parentType),
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        throughType: JSON.stringify(throughType)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function restoreSelfQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType)
+      }).done(function(data2) {
+        console.log("restoreSelfQuery data");
+        console.log(data2);
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class EditableComponentWithActions extends EditableComponentWithComments {
     //Adds a button that restores the item.
     addRestoreSelf(data2, alt_icon) {
@@ -62655,7 +62524,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     restoreSelf(data2) {
       COURSEFLOW_APP.tinyLoader.startLoad();
-      restoreSelfQuery(
+      restoreSelfQuery$1(
         data2.id,
         object_dictionary[this.objectType],
         (response_data) => {
@@ -62692,7 +62561,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ).toLowerCase() + "?"
       )) {
         COURSEFLOW_APP.tinyLoader.startLoad();
-        deleteSelfQuery(
+        deleteSelfQuery$1(
           data2.id,
           object_dictionary[this.objectType],
           true,
@@ -62777,6 +62646,40 @@ ${latestSubscriptionCallbackError.current.stack}
           COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
+    }
+  }
+  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.new_node, {
+        weekPk: JSON.stringify(weekPk),
+        position: JSON.stringify(position2),
+        columnPk: JSON.stringify(column2),
+        columnType: JSON.stringify(column_type)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED) {
+          callBackFunction(data2);
+        } else {
+          window.fail_function(data2.action);
+        }
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+        nodePk: JSON.stringify(nodeID),
+        outcomePk: JSON.stringify(outcomeID),
+        degree: JSON.stringify(value)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
     }
   }
   class EditableComponentWithSorting extends EditableComponentWithActions {
@@ -65915,11 +65818,11 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$k = (state, ownProps) => {
+  const mapStateToProps$l = (state, ownProps) => {
     return getOutcomeOutcomeByID(state, ownProps.objectID);
   };
   const OutcomeOutcome = connect(
-    mapStateToProps$k,
+    mapStateToProps$l,
     null
   )(OutcomeOutcomeUnconnected);
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
@@ -66078,6 +65981,41 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(SimpleOutcomeUnconnected);
   const SimpleOutcome$1 = SimpleOutcome;
+  function newOutcomeQuery$1(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+        workflowPk: JSON.stringify(workflowPk),
+        objectsetPk: JSON.stringify(object_set_id)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(
+        COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
+        {
+          outcomePk: JSON.stringify(outcomePk),
+          objectID: JSON.stringify(outcome2Pk),
+          objectType: JSON.stringify("outcome"),
+          degree: JSON.stringify(degree)
+        }
+      ).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -66530,7 +66468,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     addNew(objectset) {
-      newOutcomeQuery(this.props.workflow.id, objectset.id);
+      newOutcomeQuery$1(this.props.workflow.id, objectset.id);
     }
     /*******************************************************
      * RENDER
@@ -66746,8 +66684,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$j = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
-  const OutcomeNode = connect(mapStateToProps$j, null)(OutcomeNodeUnconnected);
+  const mapStateToProps$k = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+  const OutcomeNode = connect(mapStateToProps$k, null)(OutcomeNodeUnconnected);
   class NodeComparisonUnconnected extends EditableComponentWithActions {
     constructor(props) {
       super(props);
@@ -66888,51 +66826,13 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$i = (state, ownProps) => {
+  const mapStateToProps$j = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
   const NodeComparison = connect(
-    mapStateToProps$i,
+    mapStateToProps$j,
     null
   )(NodeComparisonUnconnected);
-  class MenuBar extends reactExports.Component {
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.dropdownOverflow();
-    }
-    componentDidUpdate() {
-      this.dropdownOverflow();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    dropdownOverflow() {
-      COURSEFLOW_APP.makeDropdown("#overflow-options", "#overflow-links");
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      var _a, _b, _c, _d, _e, _f, _g, _h;
-      const viewBar = ((_a = this.props) == null ? void 0 : _a.viewbar) ? (_b = this.props) == null ? void 0 : _b.viewbar() : null;
-      const userBar = ((_c = this.props) == null ? void 0 : _c.userbar) ? (_d = this.props) == null ? void 0 : _d.userbar() : null;
-      const visibleButtons = ((_e = this.props) == null ? void 0 : _e.visibleButtons) ? (_f = this.props) == null ? void 0 : _f.visibleButtons() : null;
-      const overflowLinks = ((_g = this.props) == null ? void 0 : _g.overflowLinks) ? (_h = this.props) == null ? void 0 : _h.overflowLinks() : null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menubar", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "floatbar", className: "floatbar", children: [
-          visibleButtons && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "visible-icons", children: visibleButtons }),
-          overflowLinks && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "overflow-options", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hover-shade green material-symbols-rounded", children: "more_horiz" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "overflow-links", className: "create-dropdown", children: overflowLinks })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "userbar", className: "floatbar", children: userBar }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "viewbar", className: "floatbar", children: viewBar })
-      ] });
-    }
-  }
   function _extends() {
     _extends = Object.assign ? Object.assign.bind() : function(target) {
       for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -81200,106 +81100,6 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
   }
-  class AutoLink extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.eventNameSpace = "autolink" + props.nodeID;
-      this.rerenderEvents = "ports-rendered." + this.eventNameSpace;
-    }
-    componentWillUnmount() {
-      if (this.target_node && this.target_node.length > 0) {
-        this.source_node.off(this.rerenderEvents);
-        this.target_node.off(this.rerenderEvents);
-      }
-    }
-    findAutoTarget() {
-      const ns = this.source_node.closest(".node-week");
-      const next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
-      let target;
-      if (next_ns.length > 0) {
-        target = next_ns.find(".node").attr("id");
-      } else {
-        const sw = ns.closest(".week-workflow");
-        let next_sw = sw.next();
-        while (next_sw.length > 0) {
-          target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
-          if (target)
-            break;
-          next_sw = next_sw.next();
-        }
-      }
-      this.setTarget(target);
-    }
-    rerender(evt) {
-      this.setState({});
-    }
-    setTarget(target) {
-      if (target) {
-        if (this.target_node && target == this.target_node.attr("id")) {
-          if (!this.target_port_handle || this.target_port_handle.empty()) {
-            this.target_port_handle = d3.select(
-              "g.port-" + target + " circle[data-port-type='target'][data-port='n']"
-            );
-          }
-          return;
-        }
-        if (this.target_node)
-          this.target_node.off(this.rerenderEvents);
-        this.target_node = $(".week #" + target + ".node");
-        this.target_port_handle = d3.select(
-          "g.port-" + target + " circle[data-port-type='target'][data-port='n']"
-        );
-        this.target_node.on(this.rerenderEvents, this.rerender.bind(this));
-        this.target = target;
-      } else {
-        if (this.target_node)
-          this.target_node.off(this.rerenderEvents);
-        this.target_node = null;
-        this.target_port_handle = null;
-        this.target = null;
-      }
-    }
-    render() {
-      if (!this.source_node || this.source_node.length == 0 || !this.source_port_handle || this.source_port_handle.empty()) {
-        this.source_node = $(this.props.node_div.current);
-        this.source_port_handle = d3.select(
-          "g.port-" + this.props.nodeID + " circle[data-port-type='source'][data-port='s']"
-        );
-        this.source_node.on(this.rerenderEvents, this.rerender.bind(this));
-      }
-      if (this.target_node && this.target_node.parent().parent().length == 0)
-        this.target_node = null;
-      this.findAutoTarget();
-      if (!this.target_node)
-        return null;
-      const source_dims = {
-        width: this.source_node.outerWidth(),
-        height: this.source_node.outerHeight()
-      };
-      const target_dims = {
-        width: this.target_node.outerWidth(),
-        height: this.target_node.outerHeight()
-      };
-      const node_selected = this.source_node.attr("data-selected") === "true" || this.target_node.attr("data-selected") === "true";
-      const node_hovered = this.source_node.attr("data-hovered") === "true" || this.target_node.attr("data-hovered") === "true";
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          NodeLinkSVG,
-          {
-            hovered: node_hovered,
-            node_selected,
-            source_port_handle: this.source_port_handle,
-            source_port: "2",
-            target_port_handle: this.target_port_handle,
-            target_port: "0",
-            source_dimensions: source_dims,
-            target_dimensions: target_dims
-          }
-        ),
-        $(".workflow-canvas")[0]
-      ) });
-    }
-  }
   class NodeLink extends EditableComponentWithActions {
     constructor(props) {
       super(props);
@@ -81393,13 +81193,57 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     }
   }
-  const mapStateToProps$h = (state, ownProps) => {
+  const mapStateToProps$i = (state, ownProps) => {
     return getNodeLinkByID(state, ownProps.objectID) || { data: void 0 };
   };
   const NodeLink$1 = connect(
-    mapStateToProps$h,
+    mapStateToProps$i,
     null
   )(NodeLink);
+  function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
+        nodePk: JSON.stringify(nodePk),
+        liveprojectPk: JSON.stringify(liveprojectPk)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
+        userassignmentPk: JSON.stringify(userassignmentPk),
+        completed: JSON.stringify(completed)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function getAssignmentsForNode(nodePk, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
+        nodePk: JSON.stringify(nodePk)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
   class AssignmentForNode extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -81526,13 +81370,18 @@ ${latestSubscriptionCallbackError.current.stack}
     constructor(props) {
       super(props);
       this.input = reactExports.createRef();
-      this.state = { my_assignments: [], all_assignments: [] };
+      this.state = {
+        my_assignments: [],
+        all_assignments: []
+      };
     }
     /*******************************************************
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      this.setState({ has_rendered: true });
+      this.setState({
+        has_rendered: true
+      });
     }
     componentDidUpdate(prevProps) {
       if (this.props.show && !prevProps.show)
@@ -81577,10 +81426,12 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      if (!this.state.has_rendered)
-        return null;
+      let all_assignments;
       let assignment_indicator = null;
-      if (this.props.has_assignment)
+      if (!this.state.has_rendered) {
+        return null;
+      }
+      if (this.props.has_assignment) {
         assignment_indicator = reactDomExports.createPortal(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
@@ -81592,6 +81443,7 @@ ${latestSubscriptionCallbackError.current.stack}
           ),
           $(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
         );
+      }
       if (!this.props.show) {
         return assignment_indicator;
       }
@@ -81626,7 +81478,6 @@ ${latestSubscriptionCallbackError.current.stack}
       const my_assignments = this.state.my_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
       if (my_assignments.length > 0)
         my_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My Assignments") }));
-      let all_assignments;
       if (this.props.renderer.is_teacher) {
         all_assignments = this.state.all_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
         if (all_assignments.length > 0)
@@ -81760,6 +81611,117 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   };
+  class AutoLink extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      __publicField(this, "eventNameSpace");
+      __publicField(this, "rerenderEvents");
+      __publicField(this, "target");
+      __publicField(this, "source_port_handle");
+      __publicField(this, "target_port_handle");
+      __publicField(this, "target_node");
+      __publicField(this, "source_node");
+      this.eventNameSpace = "autolink" + this.props.nodeID;
+      this.rerenderEvents = "ports-rendered." + this.eventNameSpace;
+    }
+    componentWillUnmount() {
+      if (this.target_node && this.target_node.length > 0) {
+        this.source_node.off(this.rerenderEvents);
+        this.target_node.off(this.rerenderEvents);
+      }
+    }
+    findAutoTarget() {
+      const ns = this.source_node.closest(".node-week");
+      const next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
+      let target;
+      if (next_ns.length > 0) {
+        target = next_ns.find(".node").attr("id");
+      } else {
+        const sw = ns.closest(".week-workflow");
+        let next_sw = sw.next();
+        while (next_sw.length > 0) {
+          target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
+          if (target)
+            break;
+          next_sw = next_sw.next();
+        }
+      }
+      this.setTarget(target);
+    }
+    rerender(evt) {
+    }
+    setTarget(target) {
+      if (target) {
+        if (this.target_node && target == this.target_node.attr("id")) {
+          if (!this.target_port_handle || this.target_port_handle.empty()) {
+            this.target_port_handle = d3.select(
+              "g.port-" + target + " circle[data-port-type='target'][data-port='n']"
+            );
+          }
+          return;
+        }
+        if (this.target_node) {
+          this.target_node.off(this.rerenderEvents);
+        }
+        this.target_node = $(".week #" + target + ".node");
+        this.target_port_handle = d3.select(
+          "g.port-" + target + " circle[data-port-type='target'][data-port='n']"
+        );
+        this.target_node.on(this.rerenderEvents, this.rerender.bind(this));
+        this.target = target;
+      } else {
+        if (this.target_node) {
+          this.target_node.off(this.rerenderEvents);
+        }
+        this.target_node = null;
+        this.target_port_handle = null;
+        this.target = null;
+      }
+    }
+    render() {
+      if (!this.source_node || this.source_node.length == 0 || !this.source_port_handle || this.source_port_handle.empty()) {
+        this.source_node = $(this.props.node_div.current);
+        this.source_port_handle = d3.select(
+          "g.port-" + this.props.nodeID + " circle[data-port-type='source'][data-port='s']"
+        );
+        this.source_node.on(this.rerenderEvents, this.rerender.bind(this));
+      }
+      if (this.target_node && this.target_node.parent().parent().length == 0) {
+        this.target_node = null;
+      }
+      this.findAutoTarget();
+      if (!this.target_node) {
+        return null;
+      }
+      const source_dims = {
+        width: this.source_node.outerWidth(),
+        height: this.source_node.outerHeight()
+      };
+      const target_dims = {
+        width: this.target_node.outerWidth(),
+        height: this.target_node.outerHeight()
+      };
+      const node_selected = this.source_node.attr("data-selected") === "true" || this.target_node.attr("data-selected") === "true";
+      const node_hovered = this.source_node.attr("data-hovered") === "true" || this.target_node.attr("data-hovered") === "true";
+      reactDomExports.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeLinkSVG,
+          {
+            hovered: node_hovered,
+            node_selected,
+            source_port_handle: this.source_port_handle,
+            source_port: "2",
+            target_port_handle: this.target_port_handle,
+            target_port: "0",
+            source_dimensions: source_dims,
+            target_dimensions: target_dims
+          }
+        ),
+        $(".workflow-canvas")[0]
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    }
+  }
   let Node$1 = class Node extends EditableComponentWithActions {
     constructor(props) {
       super(props);
@@ -81770,8 +81732,11 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      if (this.state.initial_render)
-        this.setState({ initial_render: false });
+      if (this.state.initial_render) {
+        this.setState({
+          initial_render: false
+        });
+      }
       this.makeDroppable();
       this.updateHidden();
       this.mainDiv.current.addEventListener("mouseenter", this.mouseIn.bind(this));
@@ -81820,7 +81785,6 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     makeDroppable() {
-      this.props;
       $(this.mainDiv.current).droppable({
         tolerance: "pointer",
         droppable: ".outcome-ghost",
@@ -81872,15 +81836,18 @@ ${latestSubscriptionCallbackError.current.stack}
           "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
         ).addClass("mouseover");
       d3.selectAll(".node-ports").raise();
-      const mycomponent = this;
-      this.setState({ hovered: true });
+      this.setState({
+        hovered: true
+      });
       $(document).on("mousemove", function(evt2) {
-        if (!mycomponent || !mycomponent.mainDiv || mouseOutsidePadding(evt2, $(mycomponent.mainDiv.current), 20)) {
+        if (!this || !this.mainDiv || mouseOutsidePadding(evt2, $(this.mainDiv.current), 20)) {
           $(
-            "circle[data-node-id='" + mycomponent.props.objectID + "'][data-port-type='source']"
+            "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
           ).removeClass("mouseover");
           $(document).off(evt2);
-          mycomponent.setState({ hovered: false });
+          this.setState({
+            hovered: false
+          });
         }
       });
     }
@@ -81899,12 +81866,12 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           AssignmentBox,
           {
-            dispatch: this.props.dispatch.bind(this),
-            node_id: data2.id,
             show: this.state.show_assignments,
             has_assignment: this.props.data.has_assignment,
             parent: this,
-            renderer: this.props.renderer
+            renderer: this.props.renderer,
+            node_id: data2.id,
+            dispatch: this.props.dispatch.bind(this)
           },
           1
         )
@@ -81922,17 +81889,24 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      const data2 = this.props.data;
       let data_override;
-      if (data2.represents_workflow)
-        data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
-      else
-        data_override = { ...data2 };
-      const renderer = this.props.renderer;
-      const selection_manager = renderer.selection_manager;
       let nodePorts;
       let node_links;
       let auto_link;
+      let outcomenodes;
+      let lefticon;
+      let righticon;
+      let dropIcon;
+      let linkIcon;
+      const mouseover_actions = [];
+      const data2 = this.props.data;
+      const renderer = this.props.renderer;
+      const selection_manager = renderer.selection_manager;
+      if (data2.represents_workflow) {
+        data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
+      } else {
+        data_override = { ...data2 };
+      }
       if (!this.state.initial_render) {
         nodePorts = reactDomExports.createPortal(
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -81958,7 +81932,6 @@ ${latestSubscriptionCallbackError.current.stack}
         if (data2.has_autolink)
           auto_link = /* @__PURE__ */ jsxRuntimeExports.jsx(AutoLink, { nodeID: this.props.objectID, node_div: this.mainDiv });
       }
-      let outcomenodes;
       if (this.state.show_outcomes)
         outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -81999,8 +81972,6 @@ ${latestSubscriptionCallbackError.current.stack}
           ] })
         );
       }
-      let lefticon;
-      let righticon;
       if (data2.context_classification > 0)
         lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
@@ -82011,7 +81982,7 @@ ${latestSubscriptionCallbackError.current.stack}
             src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
           }
         ) });
-      if (data2.task_classification > 0)
+      if (data2.task_classification > 0) {
         righticon = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
@@ -82021,15 +81992,14 @@ ${latestSubscriptionCallbackError.current.stack}
             src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
           }
         ) });
-      let dropIcon;
+      }
       if (data2.is_dropped)
         dropIcon = "droptriangleup";
       else
         dropIcon = "droptriangledown";
-      let linkIcon;
       let linktext = window.gettext("Visit workflow");
-      let clickfunc = this.doubleClick.bind(this);
       let link_class = "linked-workflow";
+      let clickfunc = this.doubleClick.bind(this);
       if (data2.linked_workflow_data) {
         if (data2.linked_workflow_data.url == "noaccess" || data2.linked_workflow_data.url == "nouser") {
           linktext = window.gettext("<Inaccessible>");
@@ -82062,14 +82032,14 @@ ${latestSubscriptionCallbackError.current.stack}
       if (data2.lock) {
         style2.outline = "2px solid " + data2.lock.user_colour;
       }
-      if (checkSetHidden(data2, this.props.object_sets))
+      if (checkSetHidden(data2, this.props.object_sets)) {
         style2.display = "none";
+      }
       let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
       if (data2.is_dropped)
         css_class += " dropped";
       if (data2.lock)
         css_class += " locked locked-" + data2.lock.user_id;
-      const mouseover_actions = [];
       if (!this.props.renderer.read_only) {
         mouseover_actions.push(this.addInsertSibling(data2));
         mouseover_actions.push(this.addDuplicateSelf(data2));
@@ -82118,7 +82088,6 @@ ${latestSubscriptionCallbackError.current.stack}
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-            this.addEditable(data_override),
             nodePorts,
             node_links,
             auto_link,
@@ -82132,8 +82101,13 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   };
-  const mapNodeStateToProps$2 = (state, own_props) => getNodeByID(state, own_props.objectID);
-  const Node$2 = connect(mapNodeStateToProps$2, null)(Node$1);
+  const mapStateToProps$h = (state, ownProps) => {
+    return getNodeByID(state, ownProps.objectID);
+  };
+  const Node$2 = connect(
+    mapStateToProps$h,
+    null
+  )(Node$1);
   class NodeWeekUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -83092,7 +83066,7 @@ ${latestSubscriptionCallbackError.current.stack}
     restore() {
       this.setState({ disabled: true });
       COURSEFLOW_APP.tinyLoader.startLoad();
-      restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
+      restoreSelfQuery$1(this.props.data.id, this.props.objectType, () => {
         COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
@@ -83104,7 +83078,7 @@ ${latestSubscriptionCallbackError.current.stack}
       )) {
         $(this.mainDiv.current).children("button").attr("disabled", true);
         COURSEFLOW_APP.tinyLoader.startLoad();
-        deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
+        deleteSelfQuery$1(this.props.data.id, this.props.objectType, false, () => {
           COURSEFLOW_APP.tinyLoader.endLoad();
         });
       }
@@ -84936,7 +84910,7 @@ ${latestSubscriptionCallbackError.current.stack}
               {
                 className: "alignment-show-all",
                 onClick: () => this.setState({ show_all: false }),
-                children: "-" + gettext("Hide Unused")
+                children: "-" + window.gettext("Hide Unused")
               }
             )
           ] });
@@ -84946,7 +84920,7 @@ ${latestSubscriptionCallbackError.current.stack}
             {
               className: "alignment-show-all",
               onClick: () => this.setState({ show_all: true }),
-              children: "+" + gettext("Show All")
+              children: "+" + window.gettext("Show All")
             }
           ) });
         }
@@ -85645,9 +85619,9 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     getTypeIndicator(data2) {
       const type = data2.type;
-      let type_text = gettext(type);
+      let type_text = window.gettext(type);
       if (data2.is_strategy)
-        type_text += gettext(" strategy");
+        type_text += window.gettext(" strategy");
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
     }
     /*******************************************************
@@ -93374,7 +93348,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      getUsersForObjectQuery(
+      getUsersForObjectQuery$1(
         this.props.data.id,
         this.props.data.type,
         (response) => {
@@ -93638,7 +93612,7 @@ ${latestSubscriptionCallbackError.current.stack}
         this.props.data.type,
         permission_type,
         () => {
-          getUsersForObjectQuery(
+          getUsersForObjectQuery$1(
             this.props.data.id,
             this.props.data.type,
             (response) => {
@@ -94087,6 +94061,44 @@ ${latestSubscriptionCallbackError.current.stack}
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
           }
         )
+      ] });
+    }
+  }
+  class MenuBar extends reactExports.Component {
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      this.dropdownOverflow();
+    }
+    componentDidUpdate() {
+      this.dropdownOverflow();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    dropdownOverflow() {
+      COURSEFLOW_APP.makeDropdown("#overflow-options", "#overflow-links");
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      var _a, _b, _c, _d, _e, _f, _g, _h;
+      const viewBar = ((_a = this.props) == null ? void 0 : _a.viewbar) ? (_b = this.props) == null ? void 0 : _b.viewbar() : null;
+      const userBar = ((_c = this.props) == null ? void 0 : _c.userbar) ? (_d = this.props) == null ? void 0 : _d.userbar() : null;
+      const visibleButtons = ((_e = this.props) == null ? void 0 : _e.visibleButtons) ? (_f = this.props) == null ? void 0 : _f.visibleButtons() : null;
+      const overflowLinks = ((_g = this.props) == null ? void 0 : _g.overflowLinks) ? (_h = this.props) == null ? void 0 : _h.overflowLinks() : null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menubar", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "floatbar", className: "floatbar", children: [
+          visibleButtons && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "visible-icons", children: visibleButtons }),
+          overflowLinks && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "overflow-options", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hover-shade green material-symbols-rounded", children: "more_horiz" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "overflow-links", className: "create-dropdown", children: overflowLinks })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "userbar", className: "floatbar", children: userBar }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "viewbar", className: "floatbar", children: viewBar })
       ] });
     }
   }
@@ -95936,7 +95948,7 @@ ${latestSubscriptionCallbackError.current.stack}
         const new_state_dict = this.state.object_sets.slice();
         for (let i2 = 0; i2 < new_state_dict.length; i2++) {
           if (new_state_dict[i2].id === id) {
-            deleteSelfQuery(id, "objectset");
+            deleteSelfQuery$1(id, "objectset");
             new_state_dict.splice(i2, 1);
             this.setState({
               object_sets: new_state_dict
@@ -96497,7 +96509,7 @@ ${latestSubscriptionCallbackError.current.stack}
     // @todo this is wrapped because it is called by openShareMenu
     // so do not unwrap until the renderMessageBox is sorted out
     getUserData() {
-      getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data2) => {
+      getUsersForObjectQuery$1(this.props.data.id, this.props.data.type, (data2) => {
         this.setState({ users: data2 });
       });
     }
@@ -96518,7 +96530,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (window.confirm(
         window.gettext("Are you sure you want to delete this project?")
       )) {
-        deleteSelfQuery(this.props.data.id, "project", true, () => {
+        deleteSelfQuery$1(this.props.data.id, "project", true, () => {
           this.setState({ data: { ...this.props.data, deleted: true } });
         });
       }
@@ -96529,13 +96541,13 @@ ${latestSubscriptionCallbackError.current.stack}
           "Are you sure you want to permanently delete this project?"
         )
       )) {
-        deleteSelfQuery(this.props.data.id, "project", false, () => {
+        deleteSelfQuery$1(this.props.data.id, "project", false, () => {
           window.location.href = COURSEFLOW_APP.config.home_path;
         });
       }
     }
     restoreProject() {
-      restoreSelfQuery(this.props.data.id, "project", () => {
+      restoreSelfQuery$1(this.props.data.id, "project", () => {
         this.setState({ data: { ...this.props.data, deleted: false } });
       });
     }

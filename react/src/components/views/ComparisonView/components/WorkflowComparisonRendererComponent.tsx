@@ -1,10 +1,10 @@
 // @ts-nocheck
 import * as React from 'react'
 import * as Utility from '@cfModule/utility/utilityFunctions'
-import { getWorkflowContext } from '@XMLHTTP/PostFunctions'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
+import { getWorkflowContext } from '@XMLHTTP/API/workflow'
 
 type OwnProps = {
   workflowID: any

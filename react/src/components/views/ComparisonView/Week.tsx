@@ -3,13 +3,13 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getWeekByID, GetWeekByIDType } from '@cfFindState'
-import { insertedAtInstant } from '@XMLHTTP/PostFunctions'
 // @components
 import NodeWeek from './NodeWeek'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/type'
-import {WeekUnconnected} from "@cfViews/WorkflowView/Week";
+import { WeekUnconnected } from '@cfViews/WorkflowView/Week'
+import { insertedAtInstant } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
 type ConnectedProps = GetWeekByIDType

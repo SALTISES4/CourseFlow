@@ -3,13 +3,12 @@ import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { NodeTitle } from '@cfUIComponents'
 import { getChildWorkflowByID } from '@cfFindState'
-import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome'
 import OutcomeAdder from './OutcomeAdder'
-import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
-import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode"
+import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 
 /**
  * The representation of a node in the alignment view. It will display
@@ -181,7 +180,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: false })}
             >
-              {'-' + gettext('Hide Unused')}
+              {'-' + window.gettext('Hide Unused')}
             </div>
           </div>
         )
@@ -192,7 +191,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: true })}
             >
-              {'+' + gettext('Show All')}
+              {'+' + window.gettext('Show All')}
             </div>
           </div>
         )

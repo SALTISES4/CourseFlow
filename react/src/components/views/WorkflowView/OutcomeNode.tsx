@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import { Component } from '@cfParentComponents'
 import ActionButton from '@cfUIComponents/ActionButton'
 import { getOutcomeNodeByID } from '@cfFindState'
-import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import { SimpleOutcome } from '../OutcomeEditView'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 // import $ from 'jquery'
 
 /**
