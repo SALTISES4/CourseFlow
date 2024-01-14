@@ -16,7 +16,7 @@ import {
 } from '@cfParentComponents/EditableComponentWithSorting'
 import { AppState } from '@cfRedux/type'
 import { addStrategyQuery } from '@XMLHTTP/API/strategy'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 // data: any
 // column_order: any

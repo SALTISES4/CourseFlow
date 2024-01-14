@@ -7,7 +7,7 @@ import { getOutcomeNodeByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
 import { SimpleOutcome } from '../OutcomeEditView'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 /**
@@ -19,7 +19,7 @@ class OutcomeNodeUnconnected extends Component {
     super(props)
     console.log('props')
     console.log(props)
-     this.objectType = CfObjectType.OUTCOMENODE
+    this.objectType = CfObjectType.OUTCOMENODE
   }
 
   /*******************************************************

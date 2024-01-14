@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import Column from './Column'
 import { getColumnWorkflowByID } from '@cfFindState'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * Represents the column-workflow throughmodel

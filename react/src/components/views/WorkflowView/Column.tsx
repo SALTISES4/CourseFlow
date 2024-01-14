@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
 import { getColumnByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The column in a workflow.
@@ -12,7 +12,7 @@ import {CfObjectType} from "@cfModule/types/enum";
 class Column extends EditableComponentWithActions {
   constructor(props) {
     super(props)
-     this.objectType = CfObjectType.COLUMN
+    this.objectType = CfObjectType.COLUMN
     this.objectClass = '.column'
   }
 

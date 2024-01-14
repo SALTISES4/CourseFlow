@@ -5,7 +5,7 @@ import { getOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
 import { Component } from '@cfParentComponents'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type PropsType = {
@@ -152,7 +152,7 @@ class TableCell extends React.Component<PropsType> {
 export class OutcomeUnconnected extends Component {
   constructor(props) {
     super(props)
-     this.objectType = CfObjectType.OUTCOME
+    this.objectType = CfObjectType.OUTCOME
   }
 
   /*******************************************************

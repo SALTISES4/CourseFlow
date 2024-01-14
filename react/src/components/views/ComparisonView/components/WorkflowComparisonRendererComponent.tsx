@@ -19,7 +19,7 @@ type OwnProps = {
  * WorkflowBaseView for the comparison
  */
 class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnProps> {
-  private renderer: any;
+  private renderer: any
   constructor(props: OwnProps) {
     super(props)
     this.mainDiv = React.createRef()

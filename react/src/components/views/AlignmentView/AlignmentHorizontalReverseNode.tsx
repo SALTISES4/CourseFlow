@@ -10,7 +10,7 @@ import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverse
 import OutcomeAdder from './OutcomeAdder'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The representation of a node in the alignment view. It will display
@@ -20,7 +20,7 @@ import {CfObjectType} from "@cfModule/types/enum";
 class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
   constructor(props) {
     super(props)
-     this.objectType = CfObjectType.NODE
+    this.objectType = CfObjectType.NODE
     this.state = {}
   }
 

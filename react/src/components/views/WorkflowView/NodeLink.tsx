@@ -136,7 +136,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     }
 
     // PORTAL
-    reactDom.createPortal(
+    const portal = reactDom.createPortal(
       <NodeLinkSVG
         style={style}
         hovered={node_hovered}
@@ -159,9 +159,13 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     )
 
     // PORTAL
-    this.addEditable(data)
 
-    return <></>
+    return (
+      <>
+        {portal}
+        {this.addEditable(data)}
+      </>
+    )
   }
 }
 const mapStateToProps = (

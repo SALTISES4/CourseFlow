@@ -61219,6 +61219,8 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.currentSelection) {
         this.deselectCurrentSelection();
       }
+      console.log("newSelection");
+      console.log(newSelection);
       this.currentSelection = newSelection;
       if (this.currentSelection) {
         this.selectCurrentSelection();
@@ -61814,6 +61816,104 @@ ${latestSubscriptionCallbackError.current.stack}
           )
         ] });
       });
+      __publicField(this, "EditForm", ({ data: data2, noDelete }) => {
+        let sets;
+        const read_only = this.props.renderer.read_only;
+        const title = unescapeCharacters(data2.title || "");
+        const type = object_dictionary[this.objectType];
+        const override = data2.represents_workflow ? true : false;
+        const title_length = type === "outcome" ? 500 : 100;
+        const description = data2.description || "";
+        if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
+          const term_type = type == "node" ? node_type_keys[data2.node_type] : data2.type;
+          const allowed_sets = this.props.object_sets.filter(
+            (set) => set.term == term_type
+          );
+          if (allowed_sets.length >= 0) {
+            const disable_sets = data2.depth || read_only ? true : false;
+            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  disabled: disable_sets,
+                  type: "checkbox",
+                  name: set.id,
+                  checked: data2.sets.indexOf(set.id) >= 0,
+                  onChange: this.setChanged.bind(this, set.id)
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
+            ] }));
+            sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
+          }
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "right-panel-inner",
+            onClick: (evt) => evt.stopPropagation(),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
+              [
+                CfObjectType.NODE,
+                CfObjectType.WEEK,
+                CfObjectType.COLUMN,
+                CfObjectType.WORKFLOW,
+                CfObjectType.OUTCOME,
+                CfObjectType.NODELINK
+              ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Title,
+                {
+                  readOnly: read_only,
+                  override,
+                  title,
+                  titleLength: title_length
+                }
+              ),
+              [
+                CfObjectType.NODE,
+                CfObjectType.WORKFLOW,
+                CfObjectType.OUTCOME
+              ].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Description,
+                {
+                  readOnly: read_only,
+                  override,
+                  description
+                }
+              ),
+              type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.BrowseOptions,
+                {
+                  data: data2,
+                  readOnly: read_only,
+                  override
+                }
+              ),
+              (type === CfObjectType.OUTCOME && data2.depth === 0 || type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
+              type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
+              type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
+              (type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
+              type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
+              (type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE || type == CfObjectType.NODE && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Ponderation,
+                {
+                  data: data2,
+                  override,
+                  read_only
+                }
+              ),
+              type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
+              type == CfObjectType.NODE && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
+              type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
+              type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
+              type === CfObjectType.WEEK && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
+              sets,
+              this.getDeleteForSidebar(read_only, noDelete, type, data2)
+            ]
+          }
+        );
+      });
     }
     //Makes the item selectable
     /*******************************************************
@@ -61893,107 +61993,13 @@ ${latestSubscriptionCallbackError.current.stack}
      * PORTAL
      *******************************************************/
     addEditable(data2, noDelete = false) {
-      let sets;
-      const read_only = this.props.renderer.read_only;
-      const title = unescapeCharacters(data2.title || "");
-      const type = object_dictionary[this.objectType];
-      const override = data2.represents_workflow ? true : false;
-      const title_length = type === "outcome" ? 500 : 100;
-      const description = data2.description || "";
-      if (this.state.selected) {
-        if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
-          const term_type = type == "node" ? node_type_keys[data2.node_type] : data2.type;
-          const allowed_sets = this.props.object_sets.filter(
-            (set) => set.term == term_type
-          );
-          if (allowed_sets.length >= 0) {
-            const disable_sets = data2.depth || read_only ? true : false;
-            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  disabled: disable_sets,
-                  type: "checkbox",
-                  name: set.id,
-                  checked: data2.sets.indexOf(set.id) >= 0,
-                  onChange: this.setChanged.bind(this, set.id)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
-            ] }));
-            sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
-          }
-        }
-        return reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "right-panel-inner",
-              onClick: (evt) => evt.stopPropagation(),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
-                [
-                  CfObjectType.NODE,
-                  CfObjectType.WEEK,
-                  CfObjectType.COLUMN,
-                  CfObjectType.WORKFLOW,
-                  CfObjectType.OUTCOME,
-                  CfObjectType.NODELINK
-                ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Title,
-                  {
-                    readOnly: read_only,
-                    override,
-                    title,
-                    titleLength: title_length
-                  }
-                ),
-                [
-                  CfObjectType.NODE,
-                  CfObjectType.WORKFLOW,
-                  CfObjectType.OUTCOME
-                ].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Description,
-                  {
-                    readOnly: read_only,
-                    override,
-                    description
-                  }
-                ),
-                type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.BrowseOptions,
-                  {
-                    data: data2,
-                    readOnly: read_only,
-                    override
-                  }
-                ),
-                (type === CfObjectType.OUTCOME && data2.depth === 0 || type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
-                type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
-                type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
-                (type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
-                type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
-                (type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE || type == CfObjectType.NODE && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Ponderation,
-                  {
-                    data: data2,
-                    override,
-                    read_only
-                  }
-                ),
-                type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
-                type == CfObjectType.NODE && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
-                type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
-                type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
-                type === CfObjectType.WEEK && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
-                sets,
-                this.getDeleteForSidebar(read_only, noDelete, type, data2)
-              ]
-            }
-          ),
-          $("#edit-menu")[0]
-        );
+      if (!this.state.selected) {
+        return null;
       }
+      return ReactDOM.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditForm, { data: data2, noDelete }),
+        document.getElementById("edit-menu")
+      );
     }
   }
   class ActionButton extends reactExports.Component {
@@ -66834,38 +66840,39 @@ ${latestSubscriptionCallbackError.current.stack}
       if (renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          id: data2.id,
-          ref: this.mainDiv,
-          onClick: (evt) => {
-            console.log("clicked");
-            console.log("clicked");
-            return () => selection_manager.changeSelection(evt, this);
-          },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-              titleText,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data_override.description,
-                defaultText: window.gettext("Click to edit")
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-            // @ts-ignore
-            this.addEditable(data_override),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(data_override),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: style2,
+            className: css_class,
+            id: data2.id,
+            ref: this.mainDiv,
+            onClick: (evt) => {
+              console.log("clicked");
+              console.log("clicked");
+              return () => selection_manager.changeSelection(evt, this);
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+                titleText,
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TitleText,
+                {
+                  text: data_override.description,
+                  defaultText: window.gettext("Click to edit")
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
+            ]
+          }
+        )
+      ] });
     }
   }
   const mapStateToProps$j = (state, ownProps) => {
@@ -81208,7 +81215,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (!this.source_node.is(":visible") || !this.target_node.is(":visible")) {
         return null;
       }
-      reactDomExports.createPortal(
+      const portal = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeLinkSVG,
           {
@@ -81230,8 +81237,10 @@ ${latestSubscriptionCallbackError.current.stack}
         ),
         $(".workflow-canvas")[0]
       );
-      this.addEditable(data2);
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        portal,
+        this.addEditable(data2)
+      ] });
     }
   }
   const mapStateToProps$i = (state, ownProps) => {
@@ -82098,8 +82107,11 @@ ${latestSubscriptionCallbackError.current.stack}
       if (renderer.show_assignments) {
         mouseover_actions.push(this.addShowAssignment(data2));
       }
-      this.addEditable(data_override);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      document.getElementById("edit-menu") && ReactDOM.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: "hello" }),
+        document.getElementById("edit-menu")
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           style: style2,
@@ -82149,7 +82161,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ] })
           ]
         }
-      );
+      ) });
     }
   };
   const mapStateToProps$h = (state, ownProps) => {
@@ -82679,47 +82691,49 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
-      this.addEditable(data2);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          ref: this.mainDiv,
-          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data2.title,
-                defaultText: data2.week_type_display + " " + (this.props.rank + 1)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "node-block",
-                id: this.props.objectID + "-node-block",
-                ref: this.node_block,
-                children: node_blocks
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "week-drop-row hover-shade",
-                onClick: this.toggleDrop.bind(this),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
-                ]
-              }
-            )
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(data2),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: style2,
+            className: css_class,
+            ref: this.mainDiv,
+            onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TitleText,
+                {
+                  text: data2.title,
+                  defaultText: data2.week_type_display + " " + (this.props.rank + 1)
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "node-block",
+                  id: this.props.objectID + "-node-block",
+                  ref: this.node_block,
+                  children: node_blocks
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "week-drop-row hover-shade",
+                  onClick: this.toggleDrop.bind(this),
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
+                  ]
+                }
+              )
+            ]
+          }
+        )
+      ] });
     }
   }
   const mapStateToProps$f = (state, ownProps) => {
@@ -94962,43 +94976,45 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuBar,
-          {
-            overflowLinks: this.OverflowLinks,
-            visibleButtons: this.VisibleButtons,
-            viewbar: this.ViewBar,
-            userbar: this.UserBar
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
-            this.addEditable(this.props.data),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
-            this.getReturnLinks(),
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(this.props.data),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            MenuBar,
+            {
+              overflowLinks: this.OverflowLinks,
+              visibleButtons: this.VisibleButtons,
+              viewbar: this.ViewBar,
+              userbar: this.UserBar
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
+              this.getReturnLinks(),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ParentWorkflowIndicator,
+                {
+                  renderer: this.props.renderer,
+                  workflow_id: this.workflowId
+                }
+              )
+            ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              ParentWorkflowIndicator,
+              RightSideBar,
               {
+                context: "workflow",
                 renderer: this.props.renderer,
-                workflow_id: this.workflowId
+                data: this.props.data,
+                parentRender: this.renderMethod
               }
             )
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            RightSideBar,
-            {
-              context: "workflow",
-              renderer: this.props.renderer,
-              data: this.props.data,
-              parentRender: this.renderMethod
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+        ] })
       ] });
     }
   }

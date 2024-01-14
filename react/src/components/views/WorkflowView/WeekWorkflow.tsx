@@ -7,7 +7,7 @@ import { AppState } from '@cfRedux/type'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type ConnectedProps = GetWeekWorkflowByID

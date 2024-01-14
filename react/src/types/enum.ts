@@ -34,5 +34,5 @@ export enum CfObjectType {
   OUTCOMEWORKFLOW = 'outcomeworkflow',
   NODEWEEK = 'nodeweek',
   WEEKWORKFLOW = 'weekworkflow',
-  COURSE  = 'course'
+  COURSE = 'course'
 }

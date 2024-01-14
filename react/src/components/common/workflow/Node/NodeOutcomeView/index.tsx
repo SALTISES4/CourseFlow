@@ -17,7 +17,7 @@ import { NodeTitle } from '@cfUIComponents'
 class NodeOutcomeViewUnconnected extends Component {
   constructor(props) {
     super(props)
-     this.objectType = ObjectType.NODE
+    this.objectType = ObjectType.NODE
     this.state = {
       initial_render: true
     }

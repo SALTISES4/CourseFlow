@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import Node from './Node'
 import { getNodeWeekByID, GetNodeWeekByIDType } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetNodeWeekByIDType
 type OwnProps = {
@@ -65,7 +65,6 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
 
         // ref={this.mainDiv} // @todo this is not defined
       >
-
         <this.Node />
       </div>
     )

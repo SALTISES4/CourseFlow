@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Outcome from './Outcome'
 import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The link between an outcome and its children

@@ -6,7 +6,7 @@ import {
 } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
 import Outcome from '@cfViews/OutcomeEditView/Outcome'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetOutcomeWorkflowByIDType
 type OwnProps = {

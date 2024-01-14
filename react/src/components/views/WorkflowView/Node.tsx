@@ -19,6 +19,7 @@ import {
 } from '@cfParentComponents/EditableComponentWithActions'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
+import ReactDOM from 'react-dom'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
@@ -423,61 +424,67 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addShowAssignment(data))
     }
 
-    this.addEditable(data_override)
+    document.getElementById('edit-menu') &&
+      ReactDOM.createPortal(
+        <div>hello</div>,
+        document.getElementById('edit-menu')
+      )
+
     return (
-      <div
-        style={style}
-        className={css_class}
-        id={data.id}
-        ref={this.mainDiv}
-        data-selected={this.state.selected}
-        data-hovered={this.state.hovered}
-        onClick={(evt) => {
-          console.log('clicked')
-          selection_manager.changeSelection(evt, this)
-        }}
-      >
-        <div className="node-top-row">
-          {lefticon}
-          {titleText}
-          {righticon}
-        </div>
-        {linkIcon}
-        <div className="node-details">
-          <TitleText
-            text={data_override.description}
-            defaultText={window.gettext('Click to edit')}
-          />
-        </div>
+      <>
         <div
-          className="node-drop-row hover-shade"
-          onClick={this.toggleDrop.bind(this)}
+          style={style}
+          className={css_class}
+          id={data.id}
+          ref={this.mainDiv}
+          data-selected={this.state.selected}
+          data-hovered={this.state.hovered}
+          onClick={(evt) => {
+            console.log('clicked')
+            selection_manager.changeSelection(evt, this)
+          }}
         >
-          <div className="node-drop-side node-drop-left">{dropText}</div>
-          <div className="node-drop-middle">
-            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+          <div className="node-top-row">
+            {lefticon}
+            {titleText}
+            {righticon}
           </div>
-          <div className="node-drop-side node-drop-right">
-            <div className="node-drop-time">
-              {data_override.time_required &&
-                data_override.time_required +
-                  ' ' +
-                  this.props.renderer.time_choices[data_override.time_units]
-                    .name}
+          {linkIcon}
+          <div className="node-details">
+            <TitleText
+              text={data_override.description}
+              defaultText={window.gettext('Click to edit')}
+            />
+          </div>
+          <div
+            className="node-drop-row hover-shade"
+            onClick={this.toggleDrop.bind(this)}
+          >
+            <div className="node-drop-side node-drop-left">{dropText}</div>
+            <div className="node-drop-middle">
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+            </div>
+            <div className="node-drop-side node-drop-right">
+              <div className="node-drop-time">
+                {data_override.time_required &&
+                  data_override.time_required +
+                    ' ' +
+                    this.props.renderer.time_choices[data_override.time_units]
+                      .name}
+              </div>
             </div>
           </div>
+          <div className="mouseover-actions">{mouseover_actions}</div>
+          {nodePorts}
+          {node_links}
+          {auto_link}
+          <div className="side-actions">
+            {side_actions}
+            <div className="comment-indicator-container"></div>
+            <div className="assignment-indicator-container"></div>
+          </div>
         </div>
-        <div className="mouseover-actions">{mouseover_actions}</div>
-        {/*{this.addEditable(data_override)} // moved out of return */}
-        {nodePorts}
-        {node_links}
-        {auto_link}
-        <div className="side-actions">
-          {side_actions}
-          <div className="comment-indicator-container"></div>
-          <div className="assignment-indicator-container"></div>
-        </div>
-      </div>
+      </>
     )
   }
 }

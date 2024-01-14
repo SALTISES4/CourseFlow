@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Outcome from './Outcome'
 import { getOutcomeOutcomeByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum.js'
-import {AppState} from "@cfRedux/type";
+import { AppState } from '@cfRedux/type'
 
 /**
  * Outcome to child outcome link in the table view.
