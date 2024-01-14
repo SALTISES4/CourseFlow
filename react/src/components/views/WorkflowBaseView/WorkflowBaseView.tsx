@@ -31,6 +31,8 @@ import { ViewType } from '@cfModule/types/enum'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
 import { getTargetProjectMenu } from '@XMLHTTP/API/project'
+import {getUsersForObjectQuery} from "@XMLHTTP/API/user";
+import {deleteSelfQuery, restoreSelfQuery} from "@XMLHTTP/API/self";
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -949,6 +951,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               {<this.Header />}
+              {/*
+              @todo raise up this portal call
+              */}
               {this.addEditable(this.props.data)}
 
               <div className="workflow-container">

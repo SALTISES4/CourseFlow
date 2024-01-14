@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
@@ -22,7 +21,10 @@ import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
-type OwnProps = { objectID: number } & EditableComponentWithActionsProps
+type OwnProps = {
+  objectID: number
+  column_order: any
+} & EditableComponentWithActionsProps
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
@@ -38,7 +40,10 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   constructor(props: PropsType) {
     super(props)
     this.objectType = 'node'
-    this.state = { initial_render: true, show_outcomes: false } as StateProps
+    this.state = {
+      initial_render: true,
+      show_outcomes: false
+    } as StateProps
   }
 
   /*******************************************************
@@ -109,6 +114,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   makeDroppable() {
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
+      // @ts-ignore // droppable does not exist in type DroppableOptions
       droppable: '.outcome-ghost',
       over: (e, ui) => {
         const drop_item = $(e.target)
@@ -141,6 +147,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomenodeDegree(
             this.props.objectID,
+            // @ts-ignore // data draggable is custom
             drag_item[0].dataDraggable.outcome,
             1,
             (response_data) => {
@@ -153,6 +160,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 
   mouseIn(evt) {
+    const myComponent = this
+
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
     if (!this.props.renderer.read_only)
       $(
@@ -160,6 +169,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           this.props.objectID +
           "'][data-port-type='source']"
       ).addClass('mouseover')
+    // @ts-ignore // not sure whether to import d3 directly yet
     d3.selectAll('.node-ports').raise()
     this.setState({
       hovered: true
@@ -167,17 +177,17 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
 
     $(document).on('mousemove', function (evt) {
       if (
-        !this ||
-        !this.mainDiv ||
-        Utility.mouseOutsidePadding(evt, $(this.mainDiv.current), 20)
+        !myComponent ||
+        !myComponent.mainDiv ||
+        Utility.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
-            this.props.objectID +
+            myComponent.props.objectID +
             "'][data-port-type='source']"
         ).removeClass('mouseover')
         $(document).off(evt)
-        this.setState({
+        myComponent.setState({
           hovered: false
         })
       }
@@ -412,9 +422,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addShowAssignment(data))
     }
 
-    {
-      /*{this.addEditable(data_override)}*/
-    }
+    this.addEditable(data_override)
     return (
       <div
         style={style}

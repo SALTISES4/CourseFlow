@@ -47699,17 +47699,10 @@ class Loader {
   }
 }
 function checkSetHidden(data2, objectsets) {
-  let hidden = false;
-  if (data2.sets.length > 0 && objectsets) {
-    hidden = true;
-    for (let i = 0; i < objectsets.length; i++) {
-      if (!objectsets[i].hidden && data2.sets.indexOf(objectsets[i].id) >= 0) {
-        hidden = false;
-        break;
-      }
-    }
+  if (data2.sets.length === 0 || !objectsets) {
+    return false;
   }
-  return hidden;
+  return !objectsets.some((set) => !set.hidden && data2.sets.includes(set.id));
 }
 function unescapeCharacters(string) {
   return string.replace(/\&amp;/g, "&").replace(/\&gt;/g, ">").replace(/\&lt;/g, "<");
@@ -61258,11 +61251,12 @@ function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth
       depth
     );
     if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, is_dropped);
+      window.localStorage.setItem(objectType + objectID, String(is_dropped));
     else
       window.localStorage.removeItem(objectType + objectID);
   } catch (err) {
-    if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
+    const error = err;
+    if (error.name === "QuotaExceededError" || error.name === "NS_ERROR_DOM_QUOTA_REACHED") {
       window.localStorage.clear();
     }
   }
@@ -62090,7 +62084,7 @@ function getUserListQuery(filter, callBackFunction = (_data2) => console.log("su
     window.fail_function();
   }
 }
-function getUsersForObjectQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
   try {
@@ -62168,7 +62162,7 @@ class CommentBox extends ComponentWithToggleDrop {
       this.tagPosition = this.input.current.selectionStart - 1;
       const loader = COURSEFLOW_APP.tinyLoader;
       loader.startLoad();
-      getUsersForObjectQuery$1(this.props.workflowID, "workflow", (response) => {
+      getUsersForObjectQuery(this.props.workflowID, "workflow", (response) => {
         loader.endLoad();
         this.setState({
           tagging: true,
@@ -62447,7 +62441,7 @@ class EditableComponentWithComments extends EditableComponent {
     );
   }
 }
-function deleteSelfQuery$1(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
   let path;
   if (soft)
     path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
@@ -62487,7 +62481,7 @@ function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughT
     window.fail_function();
   }
 }
-function restoreSelfQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
@@ -62520,7 +62514,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
   restoreSelf(data2) {
     COURSEFLOW_APP.tinyLoader.startLoad();
-    restoreSelfQuery$1(
+    restoreSelfQuery(
       data2.id,
       object_dictionary[this.objectType],
       (response_data) => {
@@ -62557,7 +62551,7 @@ class EditableComponentWithActions extends EditableComponentWithComments {
       ).toLowerCase() + "?"
     )) {
       COURSEFLOW_APP.tinyLoader.startLoad();
-      deleteSelfQuery$1(
+      deleteSelfQuery(
         data2.id,
         object_dictionary[this.objectType],
         true,
@@ -62642,6 +62636,24 @@ class EditableComponentWithActions extends EditableComponentWithComments {
         COURSEFLOW_APP.tinyLoader.endLoad();
       }
     );
+  }
+}
+function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+      nodePk: JSON.stringify(source_node),
+      objectID: JSON.stringify(target_node),
+      objectType: JSON.stringify("node"),
+      sourcePort: JSON.stringify(source_port),
+      targetPort: JSON.stringify(target_port)
+    }).done(function(data2) {
+      if (data2.action === DATA_ACTIONS.POSTED)
+        callBackFunction(data2);
+      else
+        window.fail_function(data2.action);
+    });
+  } catch (err) {
+    window.fail_function();
   }
 }
 function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
@@ -81722,7 +81734,10 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
   constructor(props) {
     super(props);
     this.objectType = "node";
-    this.state = { initial_render: true, show_outcomes: false };
+    this.state = {
+      initial_render: true,
+      show_outcomes: false
+    };
   }
   /*******************************************************
    * LIFECYCLE
@@ -81783,6 +81798,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
   makeDroppable() {
     $(this.mainDiv.current).droppable({
       tolerance: "pointer",
+      // @ts-ignore // droppable does not exist in type DroppableOptions
       droppable: ".outcome-ghost",
       over: (e, ui) => {
         const drop_item = $(e.target);
@@ -81814,6 +81830,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
           COURSEFLOW_APP.tinyLoader.startLoad();
           updateOutcomenodeDegree(
             this.props.objectID,
+            // @ts-ignore // data draggable is custom
             drag_item[0].dataDraggable.outcome,
             1,
             (response_data) => {
@@ -81825,6 +81842,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     });
   }
   mouseIn(evt) {
+    const myComponent = this;
     if ($(".workflow-canvas").hasClass("creating-node-link"))
       return;
     if (!this.props.renderer.read_only)
@@ -81836,12 +81854,12 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       hovered: true
     });
     $(document).on("mousemove", function(evt2) {
-      if (!this || !this.mainDiv || mouseOutsidePadding(evt2, $(this.mainDiv.current), 20)) {
+      if (!myComponent || !myComponent.mainDiv || mouseOutsidePadding(evt2, $(myComponent.mainDiv.current), 20)) {
         $(
-          "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
+          "circle[data-node-id='" + myComponent.props.objectID + "'][data-port-type='source']"
         ).removeClass("mouseover");
         $(document).off(evt2);
-        this.setState({
+        myComponent.setState({
           hovered: false
         });
       }
@@ -82047,6 +82065,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     if (renderer.show_assignments) {
       mouseover_actions.push(this.addShowAssignment(data2));
     }
+    this.addEditable(data_override);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -83062,7 +83081,7 @@ class RestoreBarItem extends ComponentWithToggleDrop {
   restore() {
     this.setState({ disabled: true });
     COURSEFLOW_APP.tinyLoader.startLoad();
-    restoreSelfQuery$1(this.props.data.id, this.props.objectType, () => {
+    restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
       COURSEFLOW_APP.tinyLoader.endLoad();
     });
   }
@@ -83074,7 +83093,7 @@ class RestoreBarItem extends ComponentWithToggleDrop {
     )) {
       $(this.mainDiv.current).children("button").attr("disabled", true);
       COURSEFLOW_APP.tinyLoader.startLoad();
-      deleteSelfQuery$1(this.props.data.id, this.props.objectType, false, () => {
+      deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
         COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
@@ -93344,7 +93363,7 @@ class ShareMenu extends reactExports.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    getUsersForObjectQuery$1(
+    getUsersForObjectQuery(
       this.props.data.id,
       this.props.data.type,
       (response) => {
@@ -93608,7 +93627,7 @@ class ShareMenu extends reactExports.Component {
       this.props.data.type,
       permission_type,
       () => {
-        getUsersForObjectQuery$1(
+        getUsersForObjectQuery(
           this.props.data.id,
           this.props.data.type,
           (response) => {
@@ -95410,18 +95429,18 @@ class WorkflowComparison extends Workflow {
   }
 }
 class WorkflowCardCondensed extends WorkflowCard {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getButtons() {
-    return null;
-  }
-  getProjectTitle() {
-    if (this.props.workflowData.project_title) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
-    } else {
-      return "-";
-    }
+  constructor() {
+    super(...arguments);
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    __publicField(this, "ProjectTitle", () => {
+      if (this.props.workflowData.project_title) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
+      } else {
+        return "-";
+      }
+    });
   }
   /*******************************************************
    * RENDER
@@ -95439,7 +95458,7 @@ class WorkflowCardCondensed extends WorkflowCard {
           evt.preventDefault();
         },
         children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-          this.getTypeIndicator(),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             WorkflowTitle,
             {
@@ -95448,8 +95467,7 @@ class WorkflowCardCondensed extends WorkflowCard {
               data: data2
             }
           ),
-          this.getButtons(),
-          this.getProjectTitle()
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ProjectTitle, {})
         ] })
       }
     );
@@ -95944,7 +95962,7 @@ class ProjectEditDialog extends reactExports.Component {
       const new_state_dict = this.state.object_sets.slice();
       for (let i = 0; i < new_state_dict.length; i++) {
         if (new_state_dict[i].id === id) {
-          deleteSelfQuery$1(id, "objectset");
+          deleteSelfQuery(id, "objectset");
           new_state_dict.splice(i, 1);
           this.setState({
             object_sets: new_state_dict
@@ -96505,7 +96523,7 @@ class ProjectMenu extends reactExports.Component {
   // @todo this is wrapped because it is called by openShareMenu
   // so do not unwrap until the renderMessageBox is sorted out
   getUserData() {
-    getUsersForObjectQuery$1(this.props.data.id, this.props.data.type, (data2) => {
+    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data2) => {
       this.setState({ users: data2 });
     });
   }
@@ -96526,7 +96544,7 @@ class ProjectMenu extends reactExports.Component {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this project?")
     )) {
-      deleteSelfQuery$1(this.props.data.id, "project", true, () => {
+      deleteSelfQuery(this.props.data.id, "project", true, () => {
         this.setState({ data: { ...this.props.data, deleted: true } });
       });
     }
@@ -96537,13 +96555,13 @@ class ProjectMenu extends reactExports.Component {
         "Are you sure you want to permanently delete this project?"
       )
     )) {
-      deleteSelfQuery$1(this.props.data.id, "project", false, () => {
+      deleteSelfQuery(this.props.data.id, "project", false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
   restoreProject() {
-    restoreSelfQuery$1(this.props.data.id, "project", () => {
+    restoreSelfQuery(this.props.data.id, "project", () => {
       this.setState({ data: { ...this.props.data, deleted: false } });
     });
   }

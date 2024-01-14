@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import * as React from 'react'
 import { AppState } from '@cfRedux/type'
 import { connect } from 'react-redux'

@@ -6,11 +6,11 @@ import * as Utility from '@cfUtility'
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
 import { WorkflowTitle } from '@cfUIComponents'
 
-import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
+import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
 
 /**

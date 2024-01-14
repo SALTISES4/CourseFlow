@@ -27,6 +27,7 @@ type ChildRenderer = {
   micro_update?: any
   is_strategy?: any
   view_comments?: any
+  show_assignments?: any
 }
 
 export type EditableComponentProps = {

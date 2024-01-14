@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
+import { Dispatch } from '@reduxjs/toolkit'
+import { Action } from 'redux'
 /**
  *  Extends the React component to add a few features
  *  that are used in a large number of components
@@ -8,7 +10,7 @@ import { toggleDropReduxAction } from '@cfRedux/helpers'
 
 export type ComponentWithToggleProps = {
   objectID?: number
-  dispatch?: () => void
+  dispatch?: Dispatch<Action>
   data?: {
     is_dropped: boolean
     depth: number

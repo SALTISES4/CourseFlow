@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Node from './Node'
@@ -39,6 +38,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
       <Node
         objectID={data.node}
         parentID={this.props.parentID}
+        // @ts-ignore
         throughParentID={data.id}
         renderer={this.props.renderer}
         column_order={this.props.column_order}

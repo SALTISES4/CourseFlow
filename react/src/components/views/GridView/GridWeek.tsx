@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { TitleText } from '@cfUIComponents'
@@ -108,7 +107,12 @@ const mapStateToProps = (
     .filter((node) => !Utility.checkSetHidden(node, state.objectset))
   // let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
 
+  // @todo getNodeByID returns GetNodeByIDType
+  // which does not contain represents_workflow property
+  // so this will always be false, verify and remove check
   const override_data = nodes_data.map((node) => {
+
+    // @ts-ignore
     if (node.represents_workflow)
       return {
         ...node,

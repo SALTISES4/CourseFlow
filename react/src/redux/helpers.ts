@@ -1,6 +1,8 @@
-// @ts-nocheck
+import { ViewType } from '@cfModule/types/enum'
 import * as Constants from '../constants'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { Action } from 'redux'
+import { Dispatch } from '@reduxjs/toolkit'
 // import * as $ from 'jquery';
 // import 'jquery';
 // import 'jquery-ui';
@@ -148,10 +150,10 @@ export class SelectionManager {
  * @param depth
  */
 export function toggleDropReduxAction(
-  objectID,
-  objectType,
-  is_dropped,
-  dispatch,
+  objectID: number,
+  objectType: ViewType,
+  is_dropped: string | boolean,
+  dispatch: Dispatch<Action>,
   depth = 1
 ) {
   try {
@@ -161,12 +163,13 @@ export function toggleDropReduxAction(
       depth
     )
     if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, is_dropped)
+      window.localStorage.setItem(objectType + objectID, String(is_dropped))
     else window.localStorage.removeItem(objectType + objectID)
   } catch (err) {
+    const error = err as Error
     if (
-      err.name === 'QuotaExceededError' ||
-      err.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+      error.name === 'QuotaExceededError' ||
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED'
     ) {
       window.localStorage.clear()
     }
