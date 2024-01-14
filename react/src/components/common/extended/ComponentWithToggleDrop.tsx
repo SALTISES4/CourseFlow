@@ -3,6 +3,8 @@ import * as Constants from '@cfConstants'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import { Dispatch } from '@reduxjs/toolkit'
 import { Action } from 'redux'
+import { CfObjectType } from '@cfModule/types/enum'
+
 /**
  *  Extends the React component to add a few features
  *  that are used in a large number of components
@@ -25,6 +27,8 @@ class ComponentWithToggleDrop<
   S = NonNullable<unknown>
 > extends React.Component<P, S> {
   mainDiv: React.RefObject<HTMLDivElement>
+  protected objectType: CfObjectType
+  protected objectClass: string
 
   constructor(props: P) {
     super(props)

@@ -1,7 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getNodeByID } from '@cfFindState'
 import { Component } from '@cfParentComponents'
+import { CfObjectType } from '@cfModule/types/enum.js'
 
 /**
  * The nodes (specifically the time data) in the matrix view
@@ -9,7 +11,7 @@ import { Component } from '@cfParentComponents'
 class MatrixNodeUnconnected extends Component {
   constructor(props) {
     super(props)
-    this.objectType = 'node'
+    this.objectType = CfObjectType.NODE
   }
 
   /*******************************************************

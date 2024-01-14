@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeByID } from '@cfFindState'
@@ -5,6 +6,7 @@ import * as Utility from '@cfUtility'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { OutcomeTitle } from '@cfUIComponents'
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
@@ -17,7 +19,7 @@ import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
 export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
   constructor(props) {
     super(props)
-    this.objectType = 'outcome'
+    this.objectType = CfObjectType.OUTCOME
     this.children_block = React.createRef()
     this.state = { is_dropped: false }
   }

@@ -11,6 +11,7 @@ import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
 } from '@cfParentComponents/EditableComponentWithComments'
+import { CfObjectType } from '@cfModule/types/enum'
 /**
  * A block representing a term in the grid view
  */
@@ -42,7 +43,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     // from this.renderer
     // view_comments
     // selection_manager
-    // this.objectType = 'week' // @todo i don't think this is used in this child
+    this.objectType = CfObjectType.WEEK // @todo check addEditable
   }
 
   /*******************************************************
@@ -111,7 +112,6 @@ const mapStateToProps = (
   // which does not contain represents_workflow property
   // so this will always be false, verify and remove check
   const override_data = nodes_data.map((node) => {
-
     // @ts-ignore
     if (node.represents_workflow)
       return {

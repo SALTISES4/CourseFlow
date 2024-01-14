@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -7,6 +8,7 @@ import MatrixNode from './MatrixNode'
 import MatrixWeek from './MatrixWeek'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
 import NodeOutcomeView from '@cfCommonComponents/workflow/Node/NodeOutcomeView'
+import { CfObjectType } from '@cfModule/types/enum.js'
 
 /**
  * The component for the competency matrix view of the
@@ -15,7 +17,7 @@ import NodeOutcomeView from '@cfCommonComponents/workflow/Node/NodeOutcomeView'
 class CompetencyMatrixViewUnconnected extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************

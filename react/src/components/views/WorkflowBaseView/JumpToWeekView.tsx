@@ -1,7 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
 import { TitleText } from '@cfUIComponents'
 import { getWeekByID } from '@cfFindState'
 import { connect } from 'react-redux'
+import {CfObjectType} from "@cfModule/types/enum";
 // import $ from 'jquery'
 
 /**
@@ -10,7 +12,7 @@ import { connect } from 'react-redux'
 export class JumpToWeekViewUnconnected extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'week'
+    this.objectType = CfObjectType.WEEK
     this.objectClass = '.week'
   }
 

@@ -18,7 +18,20 @@ export enum WorkflowType {
   LIVE_PROJECT = 'liveproject'
 }
 
-// @todo is this the same as WorkflowType
-export enum ObjectType {
-  WORKFLOW = 'workflow'
+export enum CfObjectType {
+  NODELINK = 'nodelink',
+  NODE = 'node',
+  WEEK = 'week',
+  COLUMN = 'column',
+  OUTCOME = 'outcome',
+  // OUTCOME_BASE = 'outcome',
+  WORKFLOW = 'workflow',
+  COLUMNWORKFLOW = 'columnworkflow',
+  OUTCOMENODE = 'outcomenode',
+  OUTCOMEOUTCOME = 'outcomeoutcome',
+  STRATEGY = 'strategy',
+  OUTCOMEHORIZONTALLINK = 'outcomehorizontallink',
+  OUTCOMEWORKFLOW = 'outcomeworkflow',
+  NODEWEEK = 'nodeweek',
+  WEEKWORKFLOW = 'weekworkflow'
 }

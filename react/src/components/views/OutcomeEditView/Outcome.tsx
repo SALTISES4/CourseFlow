@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
@@ -14,6 +15,7 @@ import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 import { insertedAtInstant } from '@XMLHTTP/API/global'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 /**
@@ -23,7 +25,7 @@ import { insertedAtInstant } from '@XMLHTTP/API/global'
 class OutcomeHorizontalLinkUnconnected extends Component {
   constructor(props) {
     super(props)
-    this.objectType = 'outcomehorizontallink'
+    this.objectType = CfObjectType.OUTCOMEHORIZONTALLINK
   }
 
   /*******************************************************
@@ -151,8 +153,13 @@ const OutcomeHorizontalLink = connect(
 class OutcomeUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props)
-    this.objectType = 'outcome'
-    if (props.data.depth === 0) this.objectType = 'outcome_base'
+    this.objectType = CfObjectType.OUTCOME
+
+    // @todo i'm sure this check does something, but it's obscure, to verify
+    // if (props.data.depth === 0)
+    // {
+    //   this.objectType = this.objectType.OUTCOME
+    // }
     this.children_block = React.createRef()
   }
 

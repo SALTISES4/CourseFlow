@@ -27,7 +27,7 @@ import CollapsibleText from '@cfUIComponents/CollapsibleText'
 import { AppState } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
-import { ViewType } from '@cfModule/types/enum'
+import {CfObjectType, ViewType} from '@cfModule/types/enum'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
 import { getTargetProjectMenu } from '@XMLHTTP/API/project'
@@ -84,7 +84,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   constructor(props: PropsType) {
     super(props)
 
-    this.objectType = 'workflow'
+     this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 1, 2, 3, 4]
 
     this.readOnly = this.props.renderer.read_only

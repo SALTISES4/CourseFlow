@@ -8,7 +8,7 @@ import { WorkflowTitle } from '@cfUIComponents'
 
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import { ViewType } from '@cfModule/types/enum.js'
+import {CfObjectType, ViewType} from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
 import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
@@ -22,7 +22,7 @@ import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
 class ComparisonView extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+     this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 3]
 
     const querystring = window.location.search

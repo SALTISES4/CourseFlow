@@ -1,8 +1,10 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 import RestoreBarItem from '@cfCommonComponents/rightSideBarContent/NodeBar/components/RestoreBarItem'
 import { AppState } from '@cfRedux/type'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The delete/restore tab of the right sidebar in the workflow view.
@@ -23,7 +25,7 @@ type PropsType = ConnectedProps & OwnProps
 class RestoreBarUnconnected extends React.Component<PropsType> {
   constructor(props) {
     super(props)
-    // this.objectType = 'workflow' // @todo not used
+    this.objectType = CfObjectType.WORKFLOW // @todo check addEditable
   }
 
   /*******************************************************

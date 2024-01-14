@@ -10,6 +10,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
+import {CfObjectType} from "@cfModule/types/enum";
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeLinkByIDType
@@ -44,7 +45,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
   private rerenderEvents: string
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'nodelink'
+     this.objectType = CfObjectType.NODELINK
     this.objectClass = '.node-link'
     this.rerenderEvents = 'ports-rendered.' + this.props.data.id
   }

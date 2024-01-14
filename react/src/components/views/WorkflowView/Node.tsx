@@ -18,6 +18,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
+import {CfObjectType} from "@cfModule/types/enum";
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
@@ -39,7 +40,7 @@ type PropsType = ConnectedProps & OwnProps
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'node'
+     this.objectType = CfObjectType.NODE
     this.state = {
       initial_render: true,
       show_outcomes: false

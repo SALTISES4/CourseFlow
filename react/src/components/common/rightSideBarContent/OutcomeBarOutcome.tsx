@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import {
   getOutcomeByID,
@@ -12,6 +13,7 @@ import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop
 
 import { AppState } from '@cfRedux/type'
 import { ChangeEvent } from 'react'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 /**
@@ -34,7 +36,7 @@ type OutcomeBarOutcomeOutcomePropsType = OutcomeBarOutcomeOutcomeOwnProps &
 class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutcomeOutcomePropsType> {
   constructor(props: OutcomeBarOutcomeOutcomePropsType) {
     super(props)
-    // this.objectType = 'outcomeoutcome' @todo this.objectType is not used
+    this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
   }
 
   /*******************************************************
@@ -110,7 +112,7 @@ export class OutcomeBarOutcomeUnconnected<
 
   constructor(props: P) {
     super(props)
-    // this.objectType = 'outcome'
+    this.objectType = CfObjectType.OUTCOME // @todo check addEditable
     this.children_block = React.createRef()
     this.state = { is_dropped: props.data.depth < 1 }
   }

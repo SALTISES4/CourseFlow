@@ -7,7 +7,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
-import { ViewType } from '@cfModule/types/enum.js'
+import {CfObjectType, ViewType} from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/type'
 // import $ from 'jquery'
 
@@ -15,7 +15,7 @@ import { AppState } from '@cfRedux/type'
 class WorkflowBaseUnconnected extends EditableComponent {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+     this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************

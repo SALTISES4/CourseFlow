@@ -11,6 +11,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
+import {CfObjectType} from "@cfModule/types/enum";
 
 type ConnectedProps = GetNodeByIDType
 type OwnProps = {
@@ -30,7 +31,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
 > {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'node'
+     this.objectType = CfObjectType.NODE
   }
 
   /*******************************************************

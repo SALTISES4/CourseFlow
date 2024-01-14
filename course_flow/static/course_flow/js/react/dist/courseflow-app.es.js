@@ -56738,6 +56738,23 @@ var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
   WorkflowType2["LIVE_PROJECT"] = "liveproject";
   return WorkflowType2;
 })(WorkflowType || {});
+var ObjectType$1 = /* @__PURE__ */ ((ObjectType2) => {
+  ObjectType2["NODELINK"] = "nodelink";
+  ObjectType2["NODE"] = "node";
+  ObjectType2["WEEK"] = "week";
+  ObjectType2["COLUMN"] = "column";
+  ObjectType2["OUTCOME"] = "outcome";
+  ObjectType2["WORKFLOW"] = "workflow";
+  ObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
+  ObjectType2["OUTCOMENODE"] = "outcomenode";
+  ObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
+  ObjectType2["STRATEGY"] = "strategy";
+  ObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
+  ObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
+  ObjectType2["NODEWEEK"] = "nodeweek";
+  ObjectType2["WEEKWORKFLOW"] = "weekworkflow";
+  return ObjectType2;
+})(ObjectType$1 || {});
 function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
@@ -65797,6 +65814,7 @@ class LegendLine extends reactExports.Component {
 class OutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType$1.OUTCOMEOUTCOME;
   }
   /*******************************************************
    * RENDER
@@ -65836,7 +65854,7 @@ const OutcomeOutcome = connect(
 class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.objectType = "outcomeoutcome";
+    this.objectType = ObjectType$1.OUTCOMEOUTCOME;
   }
   /*******************************************************
    * FUNCTIONS
@@ -65871,7 +65889,7 @@ const SimpleOutcomeOutcome = connect(
 class SimpleOutcomeUnconnected extends EditableComponentWithComments {
   constructor(props) {
     super(props);
-    this.objectType = "outcome";
+    this.objectType = ObjectType.OUTCOME;
     this.children_block = reactExports.createRef();
     this.state = { is_dropped: false };
   }
@@ -66027,7 +66045,7 @@ function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBa
 class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    this.objectType = "outcomehorizontallink";
+    this.objectType = ObjectType$1.OUTCOMEHORIZONTALLINK;
   }
   /*******************************************************
    * LIFECYCLE
@@ -66136,9 +66154,10 @@ const OutcomeHorizontalLink = connect(
 let OutcomeUnconnected$1 = class OutcomeUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props);
-    this.objectType = "outcome";
-    if (props.data.depth === 0)
-      this.objectType = "outcome_base";
+    this.objectType = ObjectType$1.OUTCOME;
+    if (props.data.depth === 0) {
+      this.objectType = this.objectType.OUTCOME;
+    }
     this.children_block = reactExports.createRef();
   }
   /*******************************************************
@@ -66407,7 +66426,7 @@ const Outcome$2 = Outcome$1;
 class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
   }
   /*******************************************************
    * LIFECYCLE
@@ -66603,7 +66622,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     super(props);
     console.log("props");
     console.log(props);
-    this.objectType = "outcomenode";
+    this.objectType = ObjectType.OUTCOMENODE;
   }
   /*******************************************************
    * LIFECYCLE
@@ -66697,7 +66716,7 @@ const OutcomeNode = connect(mapStateToProps$k, null)(OutcomeNodeUnconnected);
 class NodeComparisonUnconnected extends EditableComponentWithActions {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
   }
   /*******************************************************
    * RENDER
@@ -81117,7 +81136,7 @@ class NodeLink extends EditableComponentWithActions {
     __publicField(this, "target_port_handle");
     __publicField(this, "source_port_handle");
     __publicField(this, "rerenderEvents");
-    this.objectType = "nodelink";
+    this.objectType = ObjectType.NODELINK;
     this.objectClass = ".node-link";
     this.rerenderEvents = "ports-rendered." + this.props.data.id;
   }
@@ -81733,7 +81752,7 @@ class AutoLink extends reactExports.Component {
 let Node$1 = class Node2 extends EditableComponentWithActions {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
     this.state = {
       initial_render: true,
       show_outcomes: false
@@ -82124,6 +82143,7 @@ const Node$2 = connect(
   null
 )(Node$1);
 class NodeWeekUnconnected extends reactExports.Component {
+  // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
   constructor(props) {
     super(props);
     __publicField(this, "objectType");
@@ -82144,7 +82164,7 @@ class NodeWeekUnconnected extends reactExports.Component {
         }
       );
     });
-    this.objectType = "nodeweek";
+    this.objectType = ObjectType$1.NODEWEEK;
     this.objectClass = ".node-week";
   }
   /*******************************************************
@@ -82204,7 +82224,25 @@ class WeekUnconnected extends EditableComponentWithSorting {
     super(props);
     __publicField(this, "objectClass");
     __publicField(this, "node_block");
-    this.objectType = "week";
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Nodes", () => {
+      if (!this.props.data.nodeweek_set.length) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." });
+      }
+      return this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        NodeWeek,
+        {
+          objectID: nodeweek,
+          parentID: this.props.data.id,
+          renderer: this.props.renderer,
+          column_order: this.props.column_order
+        },
+        nodeweek
+      ));
+    });
+    this.objectType = ObjectType.WEEK;
     this.objectClass = ".week";
     this.node_block = reactExports.createRef();
   }
@@ -82224,23 +82262,6 @@ class WeekUnconnected extends EditableComponentWithSorting {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getNodes() {
-    const nodes = this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NodeWeek,
-      {
-        objectID: nodeweek,
-        parentID: this.props.data.id,
-        renderer: this.props.renderer,
-        column_order: this.props.column_order
-      },
-      nodeweek
-    ));
-    if (nodes.length === 0)
-      nodes.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." })
-      );
-    return nodes;
-  }
   makeDragAndDrop() {
     this.makeSortableNode(
       $(this.node_block.current).children(".node-week").not(".ui-draggable"),
@@ -82359,7 +82380,6 @@ class WeekUnconnected extends EditableComponentWithSorting {
     const data2 = this.props.data;
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
-    const nodes = this.getNodes();
     let css_class = "week";
     if (data2.is_strategy)
       css_class += " strategy";
@@ -82367,17 +82387,11 @@ class WeekUnconnected extends EditableComponentWithSorting {
       css_class += " locked locked-" + data2.lock.user_id;
     if (data2.is_dropped)
       css_class += " dropped";
-    let default_text;
-    if (!renderer.is_strategy)
-      default_text = data2.week_type_display + " " + (this.props.rank + 1);
+    const default_text = !renderer.is_strategy ? data2.week_type_display + " " + (this.props.rank + 1) : void 0;
+    const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
     const style2 = {
       border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
     };
-    let dropIcon;
-    if (data2.is_dropped)
-      dropIcon = "droptriangleup";
-    else
-      dropIcon = "droptriangledown";
     const mouseoverActions = [];
     if (!this.props.renderer.read_only && !renderer.is_strategy) {
       mouseoverActions.push(this.addInsertSibling(data2));
@@ -82388,6 +82402,8 @@ class WeekUnconnected extends EditableComponentWithSorting {
       mouseoverActions.push(this.addCommenting());
     }
     this.addEditable(data2);
+    console.log("this.addEditable(data)");
+    console.log(data2);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -82404,7 +82420,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
               className: "node-block",
               id: this.props.objectID + "-node-block",
               ref: this.node_block,
-              children: nodes
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Nodes, {})
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -82702,7 +82718,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
     super(props);
     __publicField(this, "objectType");
     __publicField(this, "objectClass");
-    this.objectType = "weekworkflow";
+    this.objectType = ObjectType$1.WEEKWORKFLOW;
     this.objectClass = ".week-workflow";
   }
   /*******************************************************
@@ -82797,7 +82813,7 @@ const WeekWorkflowComparison = connect(
 class WorkflowUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
     this.state = {};
   }
   /*******************************************************
@@ -82871,7 +82887,7 @@ const Workflow$1 = connect(mapWorkflowStateToProps$1, null)(WorkflowUnconnected)
 class WorkflowBaseUnconnected extends EditableComponent {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
   }
   /*******************************************************
    * LIFECYCLE
@@ -83113,6 +83129,7 @@ class RestoreBarItem extends ComponentWithToggleDrop {
 class RestoreBarUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType.WORKFLOW;
   }
   /*******************************************************
    * LIFECYCLE
@@ -83213,6 +83230,7 @@ const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnecte
 class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType.OUTCOMEOUTCOME;
   }
   /*******************************************************
    * RENDER
@@ -83254,6 +83272,7 @@ class OutcomeBarOutcomeUnconnected extends ComponentWithToggleDrop {
       evt.stopPropagation();
       this.setState({ is_dropped: !this.state.is_dropped });
     });
+    this.objectType = ObjectType.OUTCOME;
     this.children_block = reactExports.createRef();
     this.state = { is_dropped: props.data.depth < 1 };
   }
@@ -83846,12 +83865,12 @@ const NodeBarColumnWorkflow = connect(
 )(NodeBarColumnWorkflowUnconnected);
 class StrategyUnconnected extends ComponentWithToggleDrop {
   // @todo not used?
-  // constructor(props) {
-  //   super(props)
-  //   this.objectType = 'strategy'
-  //   this.objectClass = '.strategy'
-  //   this.node_block = React.createRef()
-  // }
+  constructor(props) {
+    super(props);
+    this.objectType = ObjectType.STRATEGY;
+    this.objectClass = ".strategy";
+    this.node_block = reactExports.createRef();
+  }
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -84266,7 +84285,7 @@ class ConnectionBar extends reactExports.Component {
 class Column extends EditableComponentWithActions {
   constructor(props) {
     super(props);
-    this.objectType = "column";
+    this.objectType = ObjectType.COLUMN;
     this.objectClass = ".column";
   }
   /*******************************************************
@@ -84331,7 +84350,7 @@ const Column$1 = connect(mapColumnStateToProps, null)(Column);
 class ColumnWorkflow extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.objectType = "columnworkflow";
+    this.objectType = ObjectType.COLUMNWORKFLOW;
     this.objectClass = ".column-workflow";
   }
   /*******************************************************
@@ -84484,7 +84503,7 @@ const WorkflowLegend = connect(
 class WorkflowViewUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
     this.state = {};
   }
   /*******************************************************
@@ -84799,7 +84818,7 @@ const AlignmentHorizontalReverseChildOutcome = connect(
 class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
     this.state = {};
   }
   /*******************************************************
@@ -85031,7 +85050,7 @@ const AlignmentHorizontalReverseNode$1 = connect(
 class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
   constructor(props) {
     super(props);
-    this.objectType = "week";
+    this.objectType = ObjectType.WEEK;
     this.state = {};
   }
   /*******************************************************
@@ -85185,7 +85204,7 @@ const AlignmentHorizontalReverseBlock = connect(
 class AlignmentView extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
     this.state = { active: 0, active2: 0, sort: "outcome" };
   }
   /*******************************************************
@@ -85343,7 +85362,7 @@ const AlignmentView$1 = connect(mapAlignmentStateToProps, null)(AlignmentView);
 class GridNodeUnconnected extends EditableComponentWithComments {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
   }
   /*******************************************************
    * RENDER
@@ -85397,6 +85416,7 @@ const GridNode = connect(
 class GridWeekUnconnected extends EditableComponentWithComments {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType$1.WEEK;
   }
   /*******************************************************
    * RENDER
@@ -85505,6 +85525,7 @@ const GridWeek = connect(
 class GridViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType.WORKFLOW;
     this.state = { dropped_list: [] };
   }
   /*******************************************************
@@ -85540,7 +85561,7 @@ const GridView = connect(
 class JumpToWeekViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.objectType = "week";
+    this.objectType = ObjectType.WEEK;
     this.objectClass = ".week";
   }
   /*******************************************************
@@ -85904,7 +85925,7 @@ class TableCell extends reactExports.Component {
 class OutcomeUnconnected2 extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    this.objectType = "outcome";
+    this.objectType = ObjectType.OUTCOME;
   }
   /*******************************************************
    * FUNCTIONS
@@ -86086,7 +86107,7 @@ const OutcomeBase = connect(
 class MatrixNodeUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
   }
   /*******************************************************
    * FUNCTIONS
@@ -86127,7 +86148,7 @@ const MatrixNode = connect(mapNodeStateToProps$1, null)(MatrixNodeUnconnected);
 class MatrixWeekUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    this.objectType = "week";
+    this.objectType = ObjectType.WEEK;
   }
   /*******************************************************
    * RENDER
@@ -86310,7 +86331,7 @@ const OutcomeLegend = connect(
 class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    this.objectType = "node";
+    this.objectType = ObjectType.NODE;
     this.state = {
       initial_render: true
     };
@@ -86346,7 +86367,7 @@ const Index2 = connect(mapNodeStateToProps, null)(NodeOutcomeViewUnconnected);
 class CompetencyMatrixViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
   }
   /*******************************************************
    * FUNCTIONS
@@ -86616,6 +86637,7 @@ const CompetencyMatrixView$1 = CompetencyMatrixView;
 class OutcomeTableViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    this.objectType = ObjectType.WORKFLOW;
   }
   /*******************************************************
    * FUNCTIONS
@@ -94630,7 +94652,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         )
       ] }) });
     });
-    this.objectType = "workflow";
+    this.objectType = ObjectType.WORKFLOW;
     this.allowed_tabs = [0, 1, 2, 3, 4];
     this.readOnly = this.props.renderer.read_only;
     this.public_view = this.props.renderer.public_view;
@@ -97374,6 +97396,13 @@ class MouseCursorLoader {
     }
   }
 }
+const originalConsoleWarn = console.error;
+console.error = (message, ...args) => {
+  if (/unique "key" prop/.test(message)) {
+    return;
+  }
+  originalConsoleWarn(message, ...args);
+};
 const tinyLoader = new MouseCursorLoader($("body")[0]);
 COURSEFLOW_APP.tinyLoader = tinyLoader;
 const cache = createCache({

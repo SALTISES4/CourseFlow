@@ -540,6 +540,7 @@ class EditableComponent<
   addEditable(data, no_delete = false) {
     let sets
 
+
     const read_only = this.props.renderer.read_only
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.object_dictionary[this.objectType]
