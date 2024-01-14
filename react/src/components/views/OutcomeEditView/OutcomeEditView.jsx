@@ -5,8 +5,8 @@ import { EditableComponentWithSorting } from '@cfParentComponents'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import { newOutcomeQuery } from '@XMLHTTP/APIFunctions'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
 // import $ from 'jquery'
 
 /**

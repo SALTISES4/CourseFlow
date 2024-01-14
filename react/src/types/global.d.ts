@@ -34,7 +34,8 @@ interface CourseflowAppGlobals {
   contextData: ContextData
   tinyLoader: TinyLoader
   makeDropdown: (
-    item: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> // @todo ...
+    item: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> | string, // @todo ...
+    item2?: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> | string // @todo ...
   ) => void
 }
 

@@ -1,10 +1,10 @@
 // @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { updateOutcomenodeDegree } from '@XMLHTTP/PostFunctions'
 import { getOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
 import { Component } from '@cfParentComponents'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 // import $ from 'jquery'
 
 type PropsType = {

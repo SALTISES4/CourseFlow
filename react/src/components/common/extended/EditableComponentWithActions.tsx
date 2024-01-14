@@ -8,10 +8,9 @@ import EditableComponentWithComments, {
 import {
   deleteSelfQuery,
   duplicateSelfQuery,
-  insertChildQuery,
-  insertSiblingQuery,
   restoreSelfQuery
-} from '@XMLHTTP/APIFunctions'
+} from '@XMLHTTP/API/self'
+import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/global'
 
 type OwnProps = {
   sibling_count?: any

@@ -3,8 +3,8 @@ import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/Wo
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { debounce } from '@cfUtility'
-import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
 import { Workflow } from '@cfModule/types/common'
+import { searchAllObjectsQuery } from '@XMLHTTP/API/pages'
 // import $ from 'jquery'
 
 /*******************************************************

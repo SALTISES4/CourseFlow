@@ -89,6 +89,11 @@ export type FavouritesQueryResp = {
   data_package: any
 }
 
+export type UpdateOutcomenodeDegreeResp = {
+  action: VERB
+  data_package: any
+}
+
 export type CommentsForObjectQueryResp = any
 export type UpdateValueInstantQueryResp = any
 /*******************************************************

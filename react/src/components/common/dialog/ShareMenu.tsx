@@ -1,13 +1,11 @@
 import * as React from 'react'
-import { setUserPermission } from '@XMLHTTP/PostFunctions'
 import { WorkflowTitle } from '@cfUIComponents'
-import {
-  getUsersForObjectQuery,
-  updateValueInstantQuery
-} from '@XMLHTTP/APIFunctions'
+
 // import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
+import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/user'
+import { updateValueInstantQuery } from '@XMLHTTP/API/global'
 
 type PropsType = {
   data: any

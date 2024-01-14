@@ -1,19 +1,20 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import {
-  addComment,
-  removeAllComments,
-  removeComment
-} from '@XMLHTTP/PostFunctions'
+
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 // @components
-import { getUsersForObjectQuery } from '@XMLHTTP/APIFunctions'
 // import $ from 'jquery'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { User } from '@XMLHTTP/types'
+import {
+  addComment,
+  removeAllComments,
+  removeComment
+} from '@cfModule/XMLHTTP/API/comment'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
 
 /*******************************************************
  * @CommentBox

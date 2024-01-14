@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { setLinkedWorkflow } from '@XMLHTTP/PostFunctions'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
+import { setLinkedWorkflow } from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
 
 /*

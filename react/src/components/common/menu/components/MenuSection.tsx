@@ -2,7 +2,7 @@ import * as Utility from '@cfUtility'
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
-import { duplicateBaseItemQuery } from '@XMLHTTP/APIFunctions'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
 
 type PropsType = {
   no_hyperlink: any

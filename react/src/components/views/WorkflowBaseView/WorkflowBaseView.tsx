@@ -3,7 +3,6 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 
-import { MenuBar } from '@cfCommonComponents/components/index.jsx'
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.jsx'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
@@ -15,13 +14,6 @@ import { OutcomeEditView } from '../OutcomeEditView/index.js'
 import { AlignmentView } from '../AlignmentView/index.js'
 import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import {
-  deleteSelfQuery,
-  duplicateBaseItemQuery,
-  getTargetProjectMenu,
-  getUsersForObjectQuery,
-  restoreSelfQuery
-} from '@XMLHTTP/APIFunctions'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/WorkflowBaseView/ParentWorkflowIndicator'
@@ -36,6 +28,9 @@ import { AppState } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
 import { ViewType } from '@cfModule/types/enum'
+import MenuBar from '@cfCommonComponents/components/MenuBar'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
+import { getTargetProjectMenu } from '@XMLHTTP/API/project'
 
 type ConnectedProps = {
   data: AppState['workflow']

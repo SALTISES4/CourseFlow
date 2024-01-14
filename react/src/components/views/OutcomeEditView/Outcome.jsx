@@ -6,15 +6,14 @@ import { Component } from '@cfParentComponents'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import OutcomeOutcome from './OutcomeOutcome'
 import { getOutcomeByID, getOutcomeHorizontalLinkByID } from '@cfFindState'
-import {
-  updateOutcomehorizontallinkDegree,
-  insertedAtInstant
-} from '@XMLHTTP/PostFunctions'
+
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import SimpleOutcome from './SimpleOutcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator.ts'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
+import { insertedAtInstant } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
 /**
