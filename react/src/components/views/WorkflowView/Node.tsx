@@ -18,7 +18,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
@@ -40,7 +40,7 @@ type PropsType = ConnectedProps & OwnProps
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
   constructor(props: PropsType) {
     super(props)
-     this.objectType = CfObjectType.NODE
+    this.objectType = CfObjectType.NODE
     this.state = {
       initial_render: true,
       show_outcomes: false
@@ -432,7 +432,10 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         ref={this.mainDiv}
         data-selected={this.state.selected}
         data-hovered={this.state.hovered}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
+        onClick={(evt) => {
+          console.log('clicked')
+          selection_manager.changeSelection(evt, this)
+        }}
       >
         <div className="node-top-row">
           {lefticon}

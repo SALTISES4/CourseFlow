@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
@@ -11,7 +12,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetNodeByIDType
 type OwnProps = {
@@ -31,7 +32,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
 > {
   constructor(props: PropsType) {
     super(props)
-     this.objectType = CfObjectType.NODE
+    this.objectType = CfObjectType.NODE
   }
 
   /*******************************************************
@@ -159,7 +160,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     }
 
     // PORTAL
-    this.addEditable(data_override)
+    // this.addEditable(data_override)
 
     return (
       <div
@@ -167,7 +168,11 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
         className={css_class}
         id={data.id}
         ref={this.mainDiv}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
+        onClick={(evt) => {
+          console.log('clicked')
+          console.log('clicked')
+          return () => selection_manager.changeSelection(evt, this)
+        }}
       >
         <div className="node-top-row">
           <div className="node-icon">{lefticon}</div>
@@ -177,11 +182,14 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
         <div className="node-details">
           <TitleText
             text={data_override.description}
-            defaultText="Click to edit"
+            defaultText={window.gettext('Click to edit')}
           />
         </div>
         <div className="mouseover-actions">{mouseover_actions}</div>
-        {/*{this.addEditable(data_override)} // @todo portal should not be returned by a render function */}
+        {
+          // @ts-ignore
+          this.addEditable(data_override)
+        }
         <div className="side-actions">{side_actions}</div>
       </div>
     )

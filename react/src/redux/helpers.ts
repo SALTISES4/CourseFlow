@@ -3,6 +3,7 @@ import * as Constants from '../constants'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { Action } from 'redux'
 import { Dispatch } from '@reduxjs/toolkit'
+import React from "react";
 // import * as $ from 'jquery';
 // import 'jquery';
 // import 'jquery-ui';
@@ -64,7 +65,7 @@ export class SelectionManager {
    * @param evt - The event that triggered the selection change.
    * @param newSelection - The new selection object.
    */
-  changeSelection(evt?: JQuery.Event, newSelection?: any): void {
+  changeSelection(evt?: JQuery.Event, newSelection?: React.ReactElement): void {
     if (evt) {
       evt.stopPropagation()
     }

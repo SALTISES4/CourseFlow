@@ -133,6 +133,8 @@ class RightSideBar extends React.Component<PropsType> {
   /*******************************************************
    * RENDER
    *******************************************************/
+
+  // @todo why are these anchor links?
   render() {
     const renderer = this.props.renderer
     return (

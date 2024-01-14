@@ -23,8 +23,6 @@ type PropsType = ConnectedProps & OwnProps
  * The week-workflow throughmodel representation
  */
 class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
-  private objectType: string
-  private objectClass: string
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEKWORKFLOW

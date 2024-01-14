@@ -56742,23 +56742,24 @@ Please use another name.` : formatMuiErrorMessage(18));
     WorkflowType2["LIVE_PROJECT"] = "liveproject";
     return WorkflowType2;
   })(WorkflowType || {});
-  var ObjectType$1 = /* @__PURE__ */ ((ObjectType2) => {
-    ObjectType2["NODELINK"] = "nodelink";
-    ObjectType2["NODE"] = "node";
-    ObjectType2["WEEK"] = "week";
-    ObjectType2["COLUMN"] = "column";
-    ObjectType2["OUTCOME"] = "outcome";
-    ObjectType2["WORKFLOW"] = "workflow";
-    ObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
-    ObjectType2["OUTCOMENODE"] = "outcomenode";
-    ObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
-    ObjectType2["STRATEGY"] = "strategy";
-    ObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
-    ObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
-    ObjectType2["NODEWEEK"] = "nodeweek";
-    ObjectType2["WEEKWORKFLOW"] = "weekworkflow";
-    return ObjectType2;
-  })(ObjectType$1 || {});
+  var CfObjectType = /* @__PURE__ */ ((CfObjectType2) => {
+    CfObjectType2["NODELINK"] = "nodelink";
+    CfObjectType2["NODE"] = "node";
+    CfObjectType2["WEEK"] = "week";
+    CfObjectType2["COLUMN"] = "column";
+    CfObjectType2["OUTCOME"] = "outcome";
+    CfObjectType2["WORKFLOW"] = "workflow";
+    CfObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
+    CfObjectType2["OUTCOMENODE"] = "outcomenode";
+    CfObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
+    CfObjectType2["STRATEGY"] = "strategy";
+    CfObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
+    CfObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
+    CfObjectType2["NODEWEEK"] = "nodeweek";
+    CfObjectType2["WEEKWORKFLOW"] = "weekworkflow";
+    CfObjectType2["COURSE"] = "course";
+    return CfObjectType2;
+  })(CfObjectType || {});
   function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
@@ -61289,6 +61290,8 @@ ${latestSubscriptionCallbackError.current.stack}
     constructor(props) {
       super(props);
       __publicField(this, "mainDiv");
+      __publicField(this, "objectType");
+      __publicField(this, "objectClass");
       __publicField(this, "toggleDrop", (evt) => {
         evt.stopPropagation();
         toggleDropReduxAction(
@@ -61413,8 +61416,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
-      //Makes the item selectable
-      __publicField(this, "objectType");
       /*******************************************************
        * COMPONENTS
        *******************************************************/
@@ -61814,6 +61815,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ] });
       });
     }
+    //Makes the item selectable
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
@@ -61874,9 +61876,12 @@ ${latestSubscriptionCallbackError.current.stack}
     getDeleteForSidebar(read_only, no_delete, type, data2) {
       if (!read_only && !no_delete && (type != "outcome" || data2.depth > 0)) {
         if (type == "workflow") {
-          return [null];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
         } else {
-          return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data2)];
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }),
+            this.addDeleteSelf(data2)
+          ] });
         }
       }
     }
@@ -61887,7 +61892,7 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * PORTAL
      *******************************************************/
-    addEditable(data2, no_delete = false) {
+    addEditable(data2, noDelete = false) {
       let sets;
       const read_only = this.props.renderer.read_only;
       const title = unescapeCharacters(data2.title || "");
@@ -61928,12 +61933,12 @@ ${latestSubscriptionCallbackError.current.stack}
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
                 [
-                  "node",
-                  "week",
-                  "column",
-                  "workflow",
-                  "outcome",
-                  "nodelink"
+                  CfObjectType.NODE,
+                  CfObjectType.WEEK,
+                  CfObjectType.COLUMN,
+                  CfObjectType.WORKFLOW,
+                  CfObjectType.OUTCOME,
+                  CfObjectType.NODELINK
                 ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   this.Title,
                   {
@@ -61943,7 +61948,11 @@ ${latestSubscriptionCallbackError.current.stack}
                     titleLength: title_length
                   }
                 ),
-                ["node", "workflow", "outcome"].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                [
+                  CfObjectType.NODE,
+                  CfObjectType.WORKFLOW,
+                  CfObjectType.OUTCOME
+                ].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   this.Description,
                   {
                     readOnly: read_only,
@@ -61951,7 +61960,7 @@ ${latestSubscriptionCallbackError.current.stack}
                     description
                   }
                 ),
-                type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   this.BrowseOptions,
                   {
                     data: data2,
@@ -61959,12 +61968,12 @@ ${latestSubscriptionCallbackError.current.stack}
                     override
                   }
                 ),
-                (type == "outcome" && data2.depth == 0 || type == "workflow" && data2.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
-                (type == "node" || type == "workflow") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
-                type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
-                (type == "workflow" && data2.type == "course" || type == "node" && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                (type === CfObjectType.OUTCOME && data2.depth === 0 || type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
+                type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
+                type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
+                (type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
+                type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
+                (type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE || type == CfObjectType.NODE && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   this.Ponderation,
                   {
                     data: data2,
@@ -61972,13 +61981,13 @@ ${latestSubscriptionCallbackError.current.stack}
                     read_only
                   }
                 ),
-                type === "node" && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
-                type == "nodelink" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
-                type == "workflow" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
-                type == "week" && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
+                type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
+                type == CfObjectType.NODE && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
+                type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
+                type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
+                type === CfObjectType.WEEK && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
                 sets,
-                this.getDeleteForSidebar(read_only, no_delete, type, data2)
+                this.getDeleteForSidebar(read_only, noDelete, type, data2)
               ]
             }
           ),
@@ -65818,7 +65827,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType$1.OUTCOMEOUTCOME;
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * RENDER
@@ -65858,7 +65867,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType$1.OUTCOMEOUTCOME;
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * FUNCTIONS
@@ -65893,7 +65902,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.OUTCOME;
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: false };
     }
@@ -66049,7 +66058,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType$1.OUTCOMEHORIZONTALLINK;
+      this.objectType = CfObjectType.OUTCOMEHORIZONTALLINK;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66158,10 +66167,7 @@ ${latestSubscriptionCallbackError.current.stack}
   let OutcomeUnconnected$1 = class OutcomeUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType$1.OUTCOME;
-      if (props.data.depth === 0) {
-        this.objectType = this.objectType.OUTCOME;
-      }
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
     }
     /*******************************************************
@@ -66430,7 +66436,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66626,7 +66632,7 @@ ${latestSubscriptionCallbackError.current.stack}
       super(props);
       console.log("props");
       console.log(props);
-      this.objectType = ObjectType.OUTCOMENODE;
+      this.objectType = CfObjectType.OUTCOMENODE;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66720,7 +66726,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeComparisonUnconnected extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.NODE;
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * RENDER
@@ -66828,7 +66834,6 @@ ${latestSubscriptionCallbackError.current.stack}
       if (renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
-      this.addEditable(data_override);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -66836,7 +66841,11 @@ ${latestSubscriptionCallbackError.current.stack}
           className: css_class,
           id: data2.id,
           ref: this.mainDiv,
-          onClick: (evt) => selection_manager.changeSelection(evt, this),
+          onClick: (evt) => {
+            console.log("clicked");
+            console.log("clicked");
+            return () => selection_manager.changeSelection(evt, this);
+          },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
@@ -66847,10 +66856,12 @@ ${latestSubscriptionCallbackError.current.stack}
               TitleText,
               {
                 text: data_override.description,
-                defaultText: "Click to edit"
+                defaultText: window.gettext("Click to edit")
               }
             ) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+            // @ts-ignore
+            this.addEditable(data_override),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
           ]
         }
@@ -81134,13 +81145,12 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeLink extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      __publicField(this, "objectClass");
       __publicField(this, "source_node");
       __publicField(this, "target_node");
       __publicField(this, "target_port_handle");
       __publicField(this, "source_port_handle");
       __publicField(this, "rerenderEvents");
-      this.objectType = ObjectType.NODELINK;
+      this.objectType = CfObjectType.NODELINK;
       this.objectClass = ".node-link";
       this.rerenderEvents = "ports-rendered." + this.props.data.id;
     }
@@ -81756,7 +81766,7 @@ ${latestSubscriptionCallbackError.current.stack}
   let Node$1 = class Node extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.NODE;
+      this.objectType = CfObjectType.NODE;
       this.state = {
         initial_render: true,
         show_outcomes: false
@@ -82098,7 +82108,10 @@ ${latestSubscriptionCallbackError.current.stack}
           ref: this.mainDiv,
           "data-selected": this.state.selected,
           "data-hovered": this.state.hovered,
-          onClick: (evt) => selection_manager.changeSelection(evt, this),
+          onClick: (evt) => {
+            console.log("clicked");
+            selection_manager.changeSelection(evt, this);
+          },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               lefticon,
@@ -82168,7 +82181,7 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         );
       });
-      this.objectType = ObjectType$1.NODEWEEK;
+      this.objectType = CfObjectType.NODEWEEK;
       this.objectClass = ".node-week";
     }
     /*******************************************************
@@ -82226,7 +82239,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class WeekUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      __publicField(this, "objectClass");
       __publicField(this, "node_block");
       /*******************************************************
        * COMPONENTS
@@ -82246,7 +82258,7 @@ ${latestSubscriptionCallbackError.current.stack}
           nodeweek
         ));
       });
-      this.objectType = ObjectType.WEEK;
+      this.objectType = CfObjectType.WEEK;
       this.objectClass = ".week";
       this.node_block = reactExports.createRef();
     }
@@ -82720,9 +82732,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      __publicField(this, "objectType");
-      __publicField(this, "objectClass");
-      this.objectType = ObjectType$1.WEEKWORKFLOW;
+      this.objectType = CfObjectType.WEEKWORKFLOW;
       this.objectClass = ".week-workflow";
     }
     /*******************************************************
@@ -82817,7 +82827,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = {};
     }
     /*******************************************************
@@ -82891,7 +82901,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowBaseUnconnected extends EditableComponent {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -83133,7 +83143,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class RestoreBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -83234,7 +83244,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.OUTCOMEOUTCOME;
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * RENDER
@@ -83276,7 +83286,7 @@ ${latestSubscriptionCallbackError.current.stack}
         evt.stopPropagation();
         this.setState({ is_dropped: !this.state.is_dropped });
       });
-      this.objectType = ObjectType.OUTCOME;
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: props.data.depth < 1 };
     }
@@ -83871,7 +83881,7 @@ ${latestSubscriptionCallbackError.current.stack}
     // @todo not used?
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.STRATEGY;
+      this.objectType = CfObjectType.STRATEGY;
       this.objectClass = ".strategy";
       this.node_block = reactExports.createRef();
     }
@@ -84102,6 +84112,7 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * RENDER
      *******************************************************/
+    // @todo why are these anchor links?
     render() {
       const renderer = this.props.renderer;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
@@ -84289,7 +84300,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class Column extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.COLUMN;
+      this.objectType = CfObjectType.COLUMN;
       this.objectClass = ".column";
     }
     /*******************************************************
@@ -84354,7 +84365,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class ColumnWorkflow extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.COLUMNWORKFLOW;
+      this.objectType = CfObjectType.COLUMNWORKFLOW;
       this.objectClass = ".column-workflow";
     }
     /*******************************************************
@@ -84507,7 +84518,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowViewUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = {};
     }
     /*******************************************************
@@ -84822,7 +84833,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.NODE;
+      this.objectType = CfObjectType.NODE;
       this.state = {};
     }
     /*******************************************************
@@ -85054,7 +85065,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WEEK;
+      this.objectType = CfObjectType.WEEK;
       this.state = {};
     }
     /*******************************************************
@@ -85208,7 +85219,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentView extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = { active: 0, active2: 0, sort: "outcome" };
     }
     /*******************************************************
@@ -85366,7 +85377,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridNodeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.NODE;
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * RENDER
@@ -85420,7 +85431,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridWeekUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType$1.WEEK;
+      this.objectType = CfObjectType.WEEK;
     }
     /*******************************************************
      * RENDER
@@ -85529,7 +85540,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = { dropped_list: [] };
     }
     /*******************************************************
@@ -85565,7 +85576,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class JumpToWeekViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WEEK;
+      this.objectType = CfObjectType.WEEK;
       this.objectClass = ".week";
     }
     /*******************************************************
@@ -85929,7 +85940,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.OUTCOME;
+      this.objectType = CfObjectType.OUTCOME;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86111,7 +86122,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class MatrixNodeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.NODE;
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86152,7 +86163,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class MatrixWeekUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WEEK;
+      this.objectType = CfObjectType.WEEK;
     }
     /*******************************************************
      * RENDER
@@ -86371,7 +86382,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class CompetencyMatrixViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86641,7 +86652,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeTableViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * FUNCTIONS
@@ -94656,7 +94667,7 @@ ${latestSubscriptionCallbackError.current.stack}
           )
         ] }) });
       });
-      this.objectType = ObjectType.WORKFLOW;
+      this.objectType = CfObjectType.WORKFLOW;
       this.allowed_tabs = [0, 1, 2, 3, 4];
       this.readOnly = this.props.renderer.read_only;
       this.public_view = this.props.renderer.public_view;

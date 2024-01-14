@@ -33,5 +33,6 @@ export enum CfObjectType {
   OUTCOMEHORIZONTALLINK = 'outcomehorizontallink',
   OUTCOMEWORKFLOW = 'outcomeworkflow',
   NODEWEEK = 'nodeweek',
-  WEEKWORKFLOW = 'weekworkflow'
+  WEEKWORKFLOW = 'weekworkflow',
+  COURSE  = 'course'
 }

@@ -8,6 +8,7 @@ import QuillDiv from '@cfParentComponents/components/QuillDiv'
 import { toggleStrategyQuery } from '@XMLHTTP/API/strategy'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/global'
+import { CfObjectType } from '@cfModule/types/enum'
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -50,7 +51,6 @@ class EditableComponent<
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
   //Makes the item selectable
-  protected objectType: any
 
   /*******************************************************
    * FUNCTIONS
@@ -522,9 +522,14 @@ class EditableComponent<
   getDeleteForSidebar(read_only, no_delete, type, data) {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') {
-        return [null]
+        return <></>
       } else {
-        return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
+        return (
+          <>
+            <h4>{window.gettext('Delete')}</h4>
+            {this.addDeleteSelf(data)}
+          </>
+        )
       }
     }
   }
@@ -537,9 +542,8 @@ class EditableComponent<
   /*******************************************************
    * PORTAL
    *******************************************************/
-  addEditable(data, no_delete = false) {
+  addEditable(data, noDelete = false) {
     let sets
-
 
     const read_only = this.props.renderer.read_only
     const title = Utility.unescapeCharacters(data.title || '')
@@ -586,12 +590,12 @@ class EditableComponent<
           </h3>
 
           {[
-            'node',
-            'week',
-            'column',
-            'workflow',
-            'outcome',
-            'nodelink'
+            CfObjectType.NODE,
+            CfObjectType.WEEK,
+            CfObjectType.COLUMN,
+            CfObjectType.WORKFLOW,
+            CfObjectType.OUTCOME,
+            CfObjectType.NODELINK
           ].includes(type) && (
             <this.Title
               readOnly={read_only}
@@ -601,7 +605,14 @@ class EditableComponent<
             />
           )}
 
-          {['node', 'workflow', 'outcome'].indexOf(type) >= 0 && (
+          {/*
+            @todo this needs to be done with composition
+          */}
+          {[
+            CfObjectType.NODE,
+            CfObjectType.WORKFLOW,
+            CfObjectType.OUTCOME
+          ].indexOf(type) >= 0 && (
             <this.Description
               readOnly={read_only}
               override={override}
@@ -609,7 +620,7 @@ class EditableComponent<
             />
           )}
 
-          {type == 'column' && (
+          {type === CfObjectType.COLUMN && (
             <this.BrowseOptions
               data={data}
               readOnly={read_only}
@@ -617,27 +628,31 @@ class EditableComponent<
             />
           )}
 
-          {((type == 'outcome' && data.depth == 0) ||
-            (type == 'workflow' && data.type == 'course')) && (
+          {((type === CfObjectType.OUTCOME && data.depth === 0) ||
+            (type === CfObjectType.WORKFLOW &&
+              data.type == CfObjectType.COURSE)) && (
             <this.CodeOptional data={data} readOnly={read_only} />
           )}
 
-          {type == 'node' && data.node_type < 2 && (
+          {type === CfObjectType.NODE && data.node_type < 2 && (
             <this.Context data={data} readOnly={read_only} />
           )}
 
-          {type == 'node' && data.node_type < 2 && (
+          {type === CfObjectType.NODE && data.node_type < 2 && (
             <this.Task data={data} readOnly={read_only} />
           )}
 
-          {(type == 'node' || type == 'workflow') && (
+          {(type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && (
             <this.Time data={data} readOnly={read_only} override={override} />
           )}
 
-          {type == 'column' && <this.Colour data={data} readOnly={read_only} />}
+          {type === CfObjectType.COLUMN && (
+            <this.Colour data={data} readOnly={read_only} />
+          )}
 
-          {((type == 'workflow' && data.type == 'course') ||
-            (type == 'node' && data.node_type == 2)) && (
+          {((type === CfObjectType.WORKFLOW &&
+            data.type == CfObjectType.COURSE) ||
+            (type == CfObjectType.NODE && data.node_type == 2)) && (
             <this.Ponderation
               data={data}
               override={override}
@@ -645,28 +660,28 @@ class EditableComponent<
             />
           )}
 
-          {type === 'node' && data.node_type !== 0 && (
+          {type === CfObjectType.NODE && data.node_type !== 0 && (
             <this.LinkedWorkflow data={data} readOnly={read_only} />
           )}
 
-          {type == 'node' && data.node_type != 2 && (
+          {type == CfObjectType.NODE && data.node_type != 2 && (
             <this.Other data={data} readOnly={read_only} />
           )}
 
-          {type == 'nodelink' && (
+          {type == CfObjectType.NODELINK && (
             <this.Style data={data} readOnly={read_only} />
           )}
 
-          {type == 'workflow' && (
+          {type === CfObjectType.WORKFLOW && (
             <this.Workflow data={data} readOnly={read_only} />
           )}
 
-          {type == 'week' && data.week_type < 2 && (
+          {type === CfObjectType.WEEK && data.week_type < 2 && (
             <this.Strategy data={data} readOnly={read_only} />
           )}
 
           {sets}
-          {this.getDeleteForSidebar(read_only, no_delete, type, data)}
+          {this.getDeleteForSidebar(read_only, noDelete, type, data)}
         </div>,
         $('#edit-menu')[0]
       )
