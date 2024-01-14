@@ -1,13 +1,15 @@
 import * as React from 'react'
+import ReactDOM from 'react-dom'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import * as reactDom from 'react-dom'
 // import $ from 'jquery'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
 import { toggleStrategyQuery } from '@XMLHTTP/API/strategy'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/global'
+import { CfObjectType } from '@cfModule/types/enum'
+import { ReactPortal } from 'react'
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -27,6 +29,7 @@ type ChildRenderer = {
   micro_update?: any
   is_strategy?: any
   view_comments?: any
+  show_assignments?: any
 }
 
 export type EditableComponentProps = {
@@ -49,7 +52,6 @@ class EditableComponent<
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
   //Makes the item selectable
-  protected objectType: any
 
   /*******************************************************
    * FUNCTIONS
@@ -521,9 +523,14 @@ class EditableComponent<
   getDeleteForSidebar(read_only, no_delete, type, data) {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') {
-        return [null]
+        return <></>
       } else {
-        return [<h4>{window.gettext('Delete')}</h4>, this.addDeleteSelf(data)]
+        return (
+          <>
+            <h4>{window.gettext('Delete')}</h4>
+            {this.addDeleteSelf(data)}
+          </>
+        )
       }
     }
   }
@@ -533,10 +540,7 @@ class EditableComponent<
     return <></>
   }
 
-  /*******************************************************
-   * PORTAL
-   *******************************************************/
-  addEditable(data, no_delete = false) {
+  EditForm = ({ data, noDelete }) => {
     let sets
 
     const read_only = this.props.renderer.read_only
@@ -546,129 +550,151 @@ class EditableComponent<
     const title_length = type === 'outcome' ? 500 : 100
     const description = data.description || ''
 
-    if (this.state.selected) {
-      if (this.props.object_sets && ['node', 'outcome'].indexOf(type) >= 0) {
-        const term_type =
-          type == 'node' ? Constants.node_type_keys[data.node_type] : data.type
+    if (this.props.object_sets && ['node', 'outcome'].indexOf(type) >= 0) {
+      const term_type =
+        type == 'node' ? Constants.node_type_keys[data.node_type] : data.type
 
-        const allowed_sets = this.props.object_sets.filter(
-          (set) => set.term == term_type
-        )
-
-        if (allowed_sets.length >= 0) {
-          const disable_sets = data.depth || read_only ? true : false
-          const set_options = allowed_sets.map((set) => (
-            <div>
-              <input
-                disabled={disable_sets}
-                type="checkbox"
-                name={set.id}
-                checked={data.sets.indexOf(set.id) >= 0}
-                onChange={this.setChanged.bind(this, set.id)}
-              />
-              <label htmlFor={set.id}>{set.title}</label>
-            </div>
-          ))
-          sets = [<h4>{window.gettext('Sets')}</h4>, set_options]
-        }
-      }
-
-      return reactDom.createPortal(
-        <div
-          className="right-panel-inner"
-          onClick={(evt) => evt.stopPropagation()}
-        >
-          <h3>
-            {window.gettext('Edit ') +
-              Constants.get_verbose(data, this.objectType)}
-          </h3>
-
-          {[
-            'node',
-            'week',
-            'column',
-            'workflow',
-            'outcome',
-            'nodelink'
-          ].includes(type) && (
-            <this.Title
-              readOnly={read_only}
-              override={override}
-              title={title}
-              titleLength={title_length}
-            />
-          )}
-
-          {['node', 'workflow', 'outcome'].indexOf(type) >= 0 && (
-            <this.Description
-              readOnly={read_only}
-              override={override}
-              description={description}
-            />
-          )}
-
-          {type == 'column' && (
-            <this.BrowseOptions
-              data={data}
-              readOnly={read_only}
-              override={override}
-            />
-          )}
-
-          {((type == 'outcome' && data.depth == 0) ||
-            (type == 'workflow' && data.type == 'course')) && (
-            <this.CodeOptional data={data} readOnly={read_only} />
-          )}
-
-          {type == 'node' && data.node_type < 2 && (
-            <this.Context data={data} readOnly={read_only} />
-          )}
-
-          {type == 'node' && data.node_type < 2 && (
-            <this.Task data={data} readOnly={read_only} />
-          )}
-
-          {(type == 'node' || type == 'workflow') && (
-            <this.Time data={data} readOnly={read_only} override={override} />
-          )}
-
-          {type == 'column' && <this.Colour data={data} readOnly={read_only} />}
-
-          {((type == 'workflow' && data.type == 'course') ||
-            (type == 'node' && data.node_type == 2)) && (
-            <this.Ponderation
-              data={data}
-              override={override}
-              read_only={read_only}
-            />
-          )}
-
-          {type === 'node' && data.node_type !== 0 && (
-            <this.LinkedWorkflow data={data} readOnly={read_only} />
-          )}
-
-          {type == 'node' && data.node_type != 2 && (
-            <this.Other data={data} readOnly={read_only} />
-          )}
-
-          {type == 'nodelink' && (
-            <this.Style data={data} readOnly={read_only} />
-          )}
-
-          {type == 'workflow' && (
-            <this.Workflow data={data} readOnly={read_only} />
-          )}
-
-          {type == 'week' && data.week_type < 2 && (
-            <this.Strategy data={data} readOnly={read_only} />
-          )}
-
-          {sets}
-          {this.getDeleteForSidebar(read_only, no_delete, type, data)}
-        </div>,
-        $('#edit-menu')[0]
+      const allowed_sets = this.props.object_sets.filter(
+        (set) => set.term == term_type
       )
+
+      if (allowed_sets.length >= 0) {
+        const disable_sets = data.depth || read_only ? true : false
+        const set_options = allowed_sets.map((set) => (
+          <div>
+            <input
+              disabled={disable_sets}
+              type="checkbox"
+              name={set.id}
+              checked={data.sets.indexOf(set.id) >= 0}
+              onChange={this.setChanged.bind(this, set.id)}
+            />
+            <label htmlFor={set.id}>{set.title}</label>
+          </div>
+        ))
+        sets = [<h4>{window.gettext('Sets')}</h4>, set_options]
+      }
     }
+
+    return (
+      <div
+        className="right-panel-inner"
+        onClick={(evt) => evt.stopPropagation()}
+      >
+        <h3>
+          {window.gettext('Edit ') +
+            Constants.get_verbose(data, this.objectType)}
+        </h3>
+
+        {[
+          CfObjectType.NODE,
+          CfObjectType.WEEK,
+          CfObjectType.COLUMN,
+          CfObjectType.WORKFLOW,
+          CfObjectType.OUTCOME,
+          CfObjectType.NODELINK
+        ].includes(type) && (
+          <this.Title
+            readOnly={read_only}
+            override={override}
+            title={title}
+            titleLength={title_length}
+          />
+        )}
+
+        {/*
+            @todo this needs to be done with composition
+          */}
+        {[
+          CfObjectType.NODE,
+          CfObjectType.WORKFLOW,
+          CfObjectType.OUTCOME
+        ].indexOf(type) >= 0 && (
+          <this.Description
+            readOnly={read_only}
+            override={override}
+            description={description}
+          />
+        )}
+
+        {type === CfObjectType.COLUMN && (
+          <this.BrowseOptions
+            data={data}
+            readOnly={read_only}
+            override={override}
+          />
+        )}
+
+        {((type === CfObjectType.OUTCOME && data.depth === 0) ||
+          (type === CfObjectType.WORKFLOW &&
+            data.type == CfObjectType.COURSE)) && (
+          <this.CodeOptional data={data} readOnly={read_only} />
+        )}
+
+        {type === CfObjectType.NODE && data.node_type < 2 && (
+          <this.Context data={data} readOnly={read_only} />
+        )}
+
+        {type === CfObjectType.NODE && data.node_type < 2 && (
+          <this.Task data={data} readOnly={read_only} />
+        )}
+
+        {(type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && (
+          <this.Time data={data} readOnly={read_only} override={override} />
+        )}
+
+        {type === CfObjectType.COLUMN && (
+          <this.Colour data={data} readOnly={read_only} />
+        )}
+
+        {((type === CfObjectType.WORKFLOW &&
+          data.type == CfObjectType.COURSE) ||
+          (type == CfObjectType.NODE && data.node_type == 2)) && (
+          <this.Ponderation
+            data={data}
+            override={override}
+            read_only={read_only}
+          />
+        )}
+
+        {type === CfObjectType.NODE && data.node_type !== 0 && (
+          <this.LinkedWorkflow data={data} readOnly={read_only} />
+        )}
+
+        {type == CfObjectType.NODE && data.node_type != 2 && (
+          <this.Other data={data} readOnly={read_only} />
+        )}
+
+        {type == CfObjectType.NODELINK && (
+          <this.Style data={data} readOnly={read_only} />
+        )}
+
+        {type === CfObjectType.WORKFLOW && (
+          <this.Workflow data={data} readOnly={read_only} />
+        )}
+
+        {type === CfObjectType.WEEK && data.week_type < 2 && (
+          <this.Strategy data={data} readOnly={read_only} />
+        )}
+
+        {sets}
+        {this.getDeleteForSidebar(read_only, noDelete, type, data)}
+      </div>
+    )
+  }
+
+  /*******************************************************
+   * PORTAL
+   *******************************************************/
+  addEditable(data, noDelete = false): React.ReactPortal {
+    if (!this.state.selected) {
+      return null
+    }
+
+    return ReactDOM.createPortal(
+      <this.EditForm data={data} noDelete={noDelete} />,
+      document.getElementById('edit-menu')
+    ) as unknown as React.ReactPortal
   }
 }
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
@@ -16,7 +17,7 @@ import { NodeTitle } from '@cfUIComponents'
 class NodeOutcomeViewUnconnected extends Component {
   constructor(props) {
     super(props)
-    this.objectType = 'node'
+    this.objectType = ObjectType.NODE
     this.state = {
       initial_render: true
     }

@@ -10,6 +10,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeLinkByIDType
@@ -26,7 +27,6 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
-  private objectClass: string
   private source_node: any
   private target_node: JQuery
   private target_port_handle: d3.Selection<
@@ -44,7 +44,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
   private rerenderEvents: string
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'nodelink'
+    this.objectType = CfObjectType.NODELINK
     this.objectClass = '.node-link'
     this.rerenderEvents = 'ports-rendered.' + this.props.data.id
   }
@@ -136,7 +136,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     }
 
     // PORTAL
-    reactDom.createPortal(
+    const portal = reactDom.createPortal(
       <NodeLinkSVG
         style={style}
         hovered={node_hovered}
@@ -159,9 +159,13 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     )
 
     // PORTAL
-    this.addEditable(data)
 
-    return <></>
+    return (
+      <>
+        {portal}
+        {this.addEditable(data)}
+      </>
+    )
   }
 }
 const mapStateToProps = (

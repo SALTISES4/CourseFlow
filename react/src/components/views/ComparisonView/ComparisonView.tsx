@@ -6,11 +6,11 @@ import * as Utility from '@cfUtility'
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
 import { WorkflowTitle } from '@cfUIComponents'
 
-import { getWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import { ViewType } from '@cfModule/types/enum.js'
+import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
+import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
 
 /**
@@ -22,7 +22,7 @@ import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/compone
 class ComparisonView extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 3]
 
     const querystring = window.location.search
@@ -62,11 +62,11 @@ class ComparisonView extends React.Component {
     const data = this.props.data
 
     // PORTAL
-    reactDom.createPortal(
+    const portal = reactDom.createPortal(
       <a
         className="hover-shade no-underline"
         id="project-return"
-        href={config.update_path['project'].replace(0, data.id)}
+        href={COURSEFLOW_APP.config.update_path['project'].replace(0, data.id)}
       >
         <span className="green material-symbols-rounded">arrow_back_ios</span>
         <div>{window.gettext('Return to project')}</div>
@@ -75,14 +75,17 @@ class ComparisonView extends React.Component {
     )
 
     return (
-      <div className="project-header">
-        <div>{window.gettext('Comparing workflows for:')}</div>
-        <WorkflowTitle
-          data={data}
-          no_hyperlink={true}
-          class_name="project-title"
-        />
-      </div>
+      <>
+        {portal}
+        <div className="project-header">
+          <div>{window.gettext('Comparing workflows for:')}</div>
+          <WorkflowTitle
+            data={data}
+            no_hyperlink={true}
+            class_name="project-title"
+          />
+        </div>
+      </>
     )
   }
 
@@ -238,9 +241,8 @@ class ComparisonView extends React.Component {
       </div>
     )
 
-    const style = {}
-    if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
+    const style: React.CSSProperties = {
+      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
 
     return (

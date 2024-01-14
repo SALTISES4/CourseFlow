@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as Utility from '@cfModule/utility/utilityFunctions'
 import ComponentWithToggleDrop, {
@@ -20,6 +19,7 @@ type OwnProps = {
  * WorkflowBaseView for the comparison
  */
 class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnProps> {
+  private renderer: any
   constructor(props: OwnProps) {
     super(props)
     this.mainDiv = React.createRef()
@@ -58,6 +58,8 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
       // this needs to be imported directly but that would cuase Circ D.
+      // @todo lost global'renderers'
+      // @ts-ignore
       this.renderer = new renderers.WorkflowComparisonRenderer(
         this.props.workflowID,
         JSON.parse(context_data.data_package),

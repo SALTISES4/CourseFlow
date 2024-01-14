@@ -7,6 +7,7 @@ import { AppState } from '@cfRedux/type'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type ConnectedProps = GetWeekWorkflowByID
@@ -22,11 +23,9 @@ type PropsType = ConnectedProps & OwnProps
  * The week-workflow throughmodel representation
  */
 class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
-  private objectType: string
-  private objectClass: string
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'weekworkflow'
+    this.objectType = CfObjectType.WEEKWORKFLOW
     this.objectClass = '.week-workflow'
   }
 

@@ -1,9 +1,11 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
+import { CfObjectType } from '@cfModule/types/enum.js'
 
 /**
  * The representation of a week in the alignment view.
@@ -11,7 +13,7 @@ import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
   constructor(props) {
     super(props)
-    this.objectType = 'week'
+    this.objectType = CfObjectType.WEEK
     this.state = {}
   }
 

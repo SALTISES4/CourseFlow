@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { OutcomeTitle, WeekTitle } from '@cfUIComponents'
@@ -9,6 +10,7 @@ import {
 import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
+import { CfObjectType } from '@cfModule/types/enum.js'
 
 /**
  *Alignment View, also called analytics view.
@@ -17,7 +19,7 @@ import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 class AlignmentView extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
     this.state = { active: 0, active2: 0, sort: 'outcome' }
   }
 

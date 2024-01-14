@@ -1,7 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import SimpleOutcome from './SimpleOutcome'
 import { getOutcomeOutcomeByID } from '@cfFindState'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * Basic component representing an outcome to outcome
@@ -10,7 +12,7 @@ import { getOutcomeOutcomeByID } from '@cfFindState'
 export class SimpleOutcomeOutcomeUnconnected extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'outcomeoutcome'
+    this.objectType = CfObjectType.OUTCOMEOUTCOME
   }
 
   /*******************************************************

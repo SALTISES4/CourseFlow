@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
@@ -19,10 +18,15 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
+import { CfObjectType } from '@cfModule/types/enum'
+import ReactDOM from 'react-dom'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
-type OwnProps = { objectID: number } & EditableComponentWithActionsProps
+type OwnProps = {
+  objectID: number
+  column_order: any
+} & EditableComponentWithActionsProps
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
@@ -37,8 +41,11 @@ type PropsType = ConnectedProps & OwnProps
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'node'
-    this.state = { initial_render: true, show_outcomes: false } as StateProps
+    this.objectType = CfObjectType.NODE
+    this.state = {
+      initial_render: true,
+      show_outcomes: false
+    } as StateProps
   }
 
   /*******************************************************
@@ -109,6 +116,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   makeDroppable() {
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
+      // @ts-ignore // droppable does not exist in type DroppableOptions
       droppable: '.outcome-ghost',
       over: (e, ui) => {
         const drop_item = $(e.target)
@@ -141,6 +149,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomenodeDegree(
             this.props.objectID,
+            // @ts-ignore // data draggable is custom
             drag_item[0].dataDraggable.outcome,
             1,
             (response_data) => {
@@ -153,6 +162,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 
   mouseIn(evt) {
+    const myComponent = this
+
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
     if (!this.props.renderer.read_only)
       $(
@@ -160,6 +171,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           this.props.objectID +
           "'][data-port-type='source']"
       ).addClass('mouseover')
+    // @ts-ignore // not sure whether to import d3 directly yet
     d3.selectAll('.node-ports').raise()
     this.setState({
       hovered: true
@@ -167,17 +179,17 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
 
     $(document).on('mousemove', function (evt) {
       if (
-        !this ||
-        !this.mainDiv ||
-        Utility.mouseOutsidePadding(evt, $(this.mainDiv.current), 20)
+        !myComponent ||
+        !myComponent.mainDiv ||
+        Utility.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
-            this.props.objectID +
+            myComponent.props.objectID +
             "'][data-port-type='source']"
         ).removeClass('mouseover')
         $(document).off(evt)
-        this.setState({
+        myComponent.setState({
           hovered: false
         })
       }
@@ -412,60 +424,67 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addShowAssignment(data))
     }
 
-    {
-      /*{this.addEditable(data_override)}*/
-    }
+    document.getElementById('edit-menu') &&
+      ReactDOM.createPortal(
+        <div>hello</div>,
+        document.getElementById('edit-menu')
+      )
+
     return (
-      <div
-        style={style}
-        className={css_class}
-        id={data.id}
-        ref={this.mainDiv}
-        data-selected={this.state.selected}
-        data-hovered={this.state.hovered}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
-      >
-        <div className="node-top-row">
-          {lefticon}
-          {titleText}
-          {righticon}
-        </div>
-        {linkIcon}
-        <div className="node-details">
-          <TitleText
-            text={data_override.description}
-            defaultText={window.gettext('Click to edit')}
-          />
-        </div>
+      <>
         <div
-          className="node-drop-row hover-shade"
-          onClick={this.toggleDrop.bind(this)}
+          style={style}
+          className={css_class}
+          id={data.id}
+          ref={this.mainDiv}
+          data-selected={this.state.selected}
+          data-hovered={this.state.hovered}
+          onClick={(evt) => {
+            console.log('clicked')
+            selection_manager.changeSelection(evt, this)
+          }}
         >
-          <div className="node-drop-side node-drop-left">{dropText}</div>
-          <div className="node-drop-middle">
-            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+          <div className="node-top-row">
+            {lefticon}
+            {titleText}
+            {righticon}
           </div>
-          <div className="node-drop-side node-drop-right">
-            <div className="node-drop-time">
-              {data_override.time_required &&
-                data_override.time_required +
-                  ' ' +
-                  this.props.renderer.time_choices[data_override.time_units]
-                    .name}
+          {linkIcon}
+          <div className="node-details">
+            <TitleText
+              text={data_override.description}
+              defaultText={window.gettext('Click to edit')}
+            />
+          </div>
+          <div
+            className="node-drop-row hover-shade"
+            onClick={this.toggleDrop.bind(this)}
+          >
+            <div className="node-drop-side node-drop-left">{dropText}</div>
+            <div className="node-drop-middle">
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+            </div>
+            <div className="node-drop-side node-drop-right">
+              <div className="node-drop-time">
+                {data_override.time_required &&
+                  data_override.time_required +
+                    ' ' +
+                    this.props.renderer.time_choices[data_override.time_units]
+                      .name}
+              </div>
             </div>
           </div>
+          <div className="mouseover-actions">{mouseover_actions}</div>
+          {nodePorts}
+          {node_links}
+          {auto_link}
+          <div className="side-actions">
+            {side_actions}
+            <div className="comment-indicator-container"></div>
+            <div className="assignment-indicator-container"></div>
+          </div>
         </div>
-        <div className="mouseover-actions">{mouseover_actions}</div>
-        {/*{this.addEditable(data_override)} // moved out of return */}
-        {nodePorts}
-        {node_links}
-        {auto_link}
-        <div className="side-actions">
-          {side_actions}
-          <div className="comment-indicator-container"></div>
-          <div className="assignment-indicator-container"></div>
-        </div>
-      </div>
+      </>
     )
   }
 }

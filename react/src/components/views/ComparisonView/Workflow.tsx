@@ -7,13 +7,14 @@ import * as Utility from '@cfUtility'
 import WeekWorkflow from './WeekWorkflow'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 //Basic component representing the workflow
 class WorkflowUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
     this.state = {}
   }
 

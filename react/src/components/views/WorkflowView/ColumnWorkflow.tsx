@@ -3,6 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import Column from './Column'
 import { getColumnWorkflowByID } from '@cfFindState'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * Represents the column-workflow throughmodel
@@ -10,7 +11,7 @@ import { getColumnWorkflowByID } from '@cfFindState'
 class ColumnWorkflow extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'columnworkflow'
+    this.objectType = CfObjectType.COLUMNWORKFLOW
     this.objectClass = '.column-workflow'
   }
 

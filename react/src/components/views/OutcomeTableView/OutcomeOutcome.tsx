@@ -1,7 +1,10 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
 import { getOutcomeOutcomeByID } from '@cfFindState'
+import { CfObjectType } from '@cfModule/types/enum.js'
+import { AppState } from '@cfRedux/type'
 
 /**
  * Outcome to child outcome link in the table view.
@@ -10,7 +13,7 @@ import { getOutcomeOutcomeByID } from '@cfFindState'
 class TableOutcomeOutcomeUnconnected extends React.Component {
   constructor(props) {
     super(props)
-    this.objectType = 'outcomeoutcome'
+    this.objectType = CfObjectType.OUTCOMEOUTCOME
   }
 
   /*******************************************************
@@ -37,8 +40,8 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
     )
   }
 }
-const mapStateToProps = (state, own_props) => {
-  return getOutcomeOutcomeByID(state, own_props.objectID)
+const mapStateToProps = (state: AppState, ownProps) => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 
 const TableOutcomeOutcome = connect(

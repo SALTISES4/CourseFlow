@@ -5,6 +5,7 @@ import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop
 import * as Constants from '@cfConstants'
 import { AppState } from '@cfRedux/type'
 import { getStrategyByID, StrategyByIDType } from '@cfFindState'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 /**
@@ -21,12 +22,14 @@ type ReduxProps = StrategyByIDType
 type PropsType = OwnPropsType & ReduxProps
 class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
   // @todo not used?
-  // constructor(props) {
-  //   super(props)
-  //   this.objectType = 'strategy'
-  //   this.objectClass = '.strategy'
-  //   this.node_block = React.createRef()
-  // }
+  constructor(props: PropsType) {
+    super(props)
+    this.objectType = CfObjectType.STRATEGY // @todo check addEditable
+    this.objectClass = '.strategy' // @todo check addEditable
+
+    // @ts-ignore
+    this.node_block = React.createRef() // @todo check addEditable
+  }
 
   /*******************************************************
    * LIFECYCLE

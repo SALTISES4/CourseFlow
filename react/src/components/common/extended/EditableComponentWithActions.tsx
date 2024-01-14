@@ -14,7 +14,7 @@ import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/global'
 
 type OwnProps = {
   sibling_count?: any
-  parentID: any
+  parentID?: any
 } & EditableComponentWithCommentsType
 export type EditableComponentWithActionsProps = OwnProps
 

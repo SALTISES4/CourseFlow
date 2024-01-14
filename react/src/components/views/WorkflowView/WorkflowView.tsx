@@ -12,6 +12,7 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -34,7 +35,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
 > {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
     this.state = {} as StateProps
   }
 

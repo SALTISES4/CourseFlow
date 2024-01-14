@@ -22,16 +22,20 @@ import { setWorkflowVisibilityQuery } from '@XMLHTTP/API/workflow'
 type StateType = {
   favourite: any
 }
+export type WorkflowCardState = StateType
 
-class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
-  private readonly mainDiv: React.RefObject<HTMLDivElement>
+class WorkflowCard<
+  P extends WorkflowCardProps,
+  S extends StateType
+> extends React.Component<P, S> {
+  protected readonly mainDiv: React.RefObject<HTMLDivElement>
   private readonly workflow: Workflow
 
-  constructor(props: WorkflowCardProps) {
+  constructor(props: P) {
     super(props)
     this.state = {
       favourite: props.workflowData.favourite
-    }
+    } as S
     this.workflow = this.props.workflowData
     this.mainDiv = React.createRef()
   }
@@ -254,7 +258,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
             data={this.workflow}
           />
           <this.Visible />
-          {<this.TypeIndicator />}
+          <this.TypeIndicator />
         </div>
         <div className="workflow-created">{creationText}</div>
         {description}

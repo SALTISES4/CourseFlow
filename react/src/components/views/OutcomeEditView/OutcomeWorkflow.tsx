@@ -6,6 +6,7 @@ import {
 } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
 import Outcome from '@cfViews/OutcomeEditView/Outcome'
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetOutcomeWorkflowByIDType
 type OwnProps = {
@@ -26,7 +27,7 @@ class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
   private objectClass: string
   constructor(props) {
     super(props)
-    this.objectType = 'outcomeworkflow'
+    this.objectType = CfObjectType.OUTCOMEWORKFLOW
     this.objectClass = '.outcome-workflow'
   }
 

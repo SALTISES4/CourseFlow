@@ -1,9 +1,11 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 import { getWeekByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
 import { Component } from '@cfParentComponents'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * A block for a term in the competency matrix view. This shows
@@ -12,7 +14,7 @@ import { Component } from '@cfParentComponents'
 class MatrixWeekUnconnected extends Component {
   constructor(props) {
     super(props)
-    this.objectType = 'week'
+    this.objectType = CfObjectType.WEEK
   }
 
   /*******************************************************

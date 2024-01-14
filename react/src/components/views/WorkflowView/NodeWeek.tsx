@@ -1,9 +1,9 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Node from './Node'
 import { getNodeWeekByID, GetNodeWeekByIDType } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetNodeWeekByIDType
 type OwnProps = {
@@ -23,10 +23,11 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
 > {
   private objectType: string
   private objectClass: string
+  // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
 
   constructor(props) {
     super(props)
-    this.objectType = 'nodeweek'
+    this.objectType = CfObjectType.NODEWEEK
     this.objectClass = '.node-week'
   }
 
@@ -39,6 +40,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
       <Node
         objectID={data.node}
         parentID={this.props.parentID}
+        // @ts-ignore
         throughParentID={data.id}
         renderer={this.props.renderer}
         column_order={this.props.column_order}
@@ -60,7 +62,8 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}
-        // ref={this.mainDiv} @todo this ref is not defined
+
+        // ref={this.mainDiv} // @todo this is not defined
       >
         <this.Node />
       </div>

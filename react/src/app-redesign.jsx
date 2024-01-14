@@ -1,6 +1,21 @@
 // This file is meant to be a separate entry point for the "redesigned"
 // app and a place where all the code will be refactored/consolidated into
-// so that we end up with a single entry point into the frontend
+// so that we end up with a single entry point into the frontend\
+/*******************************************************
+ * HACK: react's missing key error is adding too much noise to our
+ * console, disable TEMPORARILY
+ *******************************************************/
+const originalConsoleWarn = console.error
+console.error = (message, ...args) => {
+  if (/unique "key" prop/.test(message)) {
+    return
+  }
+  originalConsoleWarn(message, ...args)
+}
+/*******************************************************
+ * // HACK
+ *******************************************************/
+
 import React from 'react'
 
 // https://mui.com/material-ui/react-css-baseline/#scoping-on-children

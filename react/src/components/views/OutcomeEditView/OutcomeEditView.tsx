@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
@@ -7,6 +8,7 @@ import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
+import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
 /**
@@ -16,7 +18,7 @@ import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props)
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************

@@ -5,6 +5,7 @@ import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
 import { AppState, Column } from '@cfModule/redux/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
+import { CfObjectType } from '@cfModule/types/enum'
 
 type OwnProps = {
   renderer: any
@@ -24,7 +25,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
 > {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'node'
+    this.objectType = CfObjectType.NODE
   }
 
   /*******************************************************

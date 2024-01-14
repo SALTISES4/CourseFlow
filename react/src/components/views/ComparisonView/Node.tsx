@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
@@ -11,6 +12,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
+import { CfObjectType } from '@cfModule/types/enum'
 
 type ConnectedProps = GetNodeByIDType
 type OwnProps = {
@@ -30,7 +32,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
 > {
   constructor(props: PropsType) {
     super(props)
-    this.objectType = 'node'
+    this.objectType = CfObjectType.NODE
   }
 
   /*******************************************************
@@ -157,32 +159,35 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
       mouseover_actions.push(this.addCommenting())
     }
 
-    // PORTAL
-    this.addEditable(data_override)
-
     return (
-      <div
-        style={style}
-        className={css_class}
-        id={data.id}
-        ref={this.mainDiv}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
-      >
-        <div className="node-top-row">
-          <div className="node-icon">{lefticon}</div>
-          {titleText}
-          <div className="node-icon">{righticon}</div>
+      <>
+        {this.addEditable(data_override)}
+        <div
+          style={style}
+          className={css_class}
+          id={data.id}
+          ref={this.mainDiv}
+          onClick={(evt) => {
+            console.log('clicked')
+            console.log('clicked')
+            return () => selection_manager.changeSelection(evt, this)
+          }}
+        >
+          <div className="node-top-row">
+            <div className="node-icon">{lefticon}</div>
+            {titleText}
+            <div className="node-icon">{righticon}</div>
+          </div>
+          <div className="node-details">
+            <TitleText
+              text={data_override.description}
+              defaultText={window.gettext('Click to edit')}
+            />
+          </div>
+          <div className="mouseover-actions">{mouseover_actions}</div>
+          <div className="side-actions">{side_actions}</div>
         </div>
-        <div className="node-details">
-          <TitleText
-            text={data_override.description}
-            defaultText="Click to edit"
-          />
-        </div>
-        <div className="mouseover-actions">{mouseover_actions}</div>
-        {/*{this.addEditable(data_override)} // @todo portal should not be returned by a render function */}
-        <div className="side-actions">{side_actions}</div>
-      </div>
+      </>
     )
   }
 }

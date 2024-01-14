@@ -47703,17 +47703,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   function checkSetHidden(data2, objectsets) {
-    let hidden = false;
-    if (data2.sets.length > 0 && objectsets) {
-      hidden = true;
-      for (let i2 = 0; i2 < objectsets.length; i2++) {
-        if (!objectsets[i2].hidden && data2.sets.indexOf(objectsets[i2].id) >= 0) {
-          hidden = false;
-          break;
-        }
-      }
+    if (data2.sets.length === 0 || !objectsets) {
+      return false;
     }
-    return hidden;
+    return !objectsets.some((set) => !set.hidden && data2.sets.includes(set.id));
   }
   function unescapeCharacters(string) {
     return string.replace(/\&amp;/g, "&").replace(/\&gt;/g, ">").replace(/\&lt;/g, "<");
@@ -56749,6 +56742,24 @@ Please use another name.` : formatMuiErrorMessage(18));
     WorkflowType2["LIVE_PROJECT"] = "liveproject";
     return WorkflowType2;
   })(WorkflowType || {});
+  var CfObjectType = /* @__PURE__ */ ((CfObjectType2) => {
+    CfObjectType2["NODELINK"] = "nodelink";
+    CfObjectType2["NODE"] = "node";
+    CfObjectType2["WEEK"] = "week";
+    CfObjectType2["COLUMN"] = "column";
+    CfObjectType2["OUTCOME"] = "outcome";
+    CfObjectType2["WORKFLOW"] = "workflow";
+    CfObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
+    CfObjectType2["OUTCOMENODE"] = "outcomenode";
+    CfObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
+    CfObjectType2["STRATEGY"] = "strategy";
+    CfObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
+    CfObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
+    CfObjectType2["NODEWEEK"] = "nodeweek";
+    CfObjectType2["WEEKWORKFLOW"] = "weekworkflow";
+    CfObjectType2["COURSE"] = "course";
+    return CfObjectType2;
+  })(CfObjectType || {});
   function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
@@ -61208,6 +61219,8 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.currentSelection) {
         this.deselectCurrentSelection();
       }
+      console.log("newSelection");
+      console.log(newSelection);
       this.currentSelection = newSelection;
       if (this.currentSelection) {
         this.selectCurrentSelection();
@@ -61262,11 +61275,12 @@ ${latestSubscriptionCallbackError.current.stack}
         depth
       );
       if (is_dropped !== default_drop)
-        window.localStorage.setItem(objectType + objectID, is_dropped);
+        window.localStorage.setItem(objectType + objectID, String(is_dropped));
       else
         window.localStorage.removeItem(objectType + objectID);
     } catch (err) {
-      if (err.name === "QuotaExceededError" || err.name === "NS_ERROR_DOM_QUOTA_REACHED") {
+      const error = err;
+      if (error.name === "QuotaExceededError" || error.name === "NS_ERROR_DOM_QUOTA_REACHED") {
         window.localStorage.clear();
       }
     }
@@ -61278,6 +61292,8 @@ ${latestSubscriptionCallbackError.current.stack}
     constructor(props) {
       super(props);
       __publicField(this, "mainDiv");
+      __publicField(this, "objectType");
+      __publicField(this, "objectClass");
       __publicField(this, "toggleDrop", (evt) => {
         evt.stopPropagation();
         toggleDropReduxAction(
@@ -61402,8 +61418,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
-      //Makes the item selectable
-      __publicField(this, "objectType");
       /*******************************************************
        * COMPONENTS
        *******************************************************/
@@ -61802,7 +61816,106 @@ ${latestSubscriptionCallbackError.current.stack}
           )
         ] });
       });
+      __publicField(this, "EditForm", ({ data: data2, noDelete }) => {
+        let sets;
+        const read_only = this.props.renderer.read_only;
+        const title = unescapeCharacters(data2.title || "");
+        const type = object_dictionary[this.objectType];
+        const override = data2.represents_workflow ? true : false;
+        const title_length = type === "outcome" ? 500 : 100;
+        const description = data2.description || "";
+        if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
+          const term_type = type == "node" ? node_type_keys[data2.node_type] : data2.type;
+          const allowed_sets = this.props.object_sets.filter(
+            (set) => set.term == term_type
+          );
+          if (allowed_sets.length >= 0) {
+            const disable_sets = data2.depth || read_only ? true : false;
+            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  disabled: disable_sets,
+                  type: "checkbox",
+                  name: set.id,
+                  checked: data2.sets.indexOf(set.id) >= 0,
+                  onChange: this.setChanged.bind(this, set.id)
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
+            ] }));
+            sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
+          }
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "right-panel-inner",
+            onClick: (evt) => evt.stopPropagation(),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
+              [
+                CfObjectType.NODE,
+                CfObjectType.WEEK,
+                CfObjectType.COLUMN,
+                CfObjectType.WORKFLOW,
+                CfObjectType.OUTCOME,
+                CfObjectType.NODELINK
+              ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Title,
+                {
+                  readOnly: read_only,
+                  override,
+                  title,
+                  titleLength: title_length
+                }
+              ),
+              [
+                CfObjectType.NODE,
+                CfObjectType.WORKFLOW,
+                CfObjectType.OUTCOME
+              ].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Description,
+                {
+                  readOnly: read_only,
+                  override,
+                  description
+                }
+              ),
+              type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.BrowseOptions,
+                {
+                  data: data2,
+                  readOnly: read_only,
+                  override
+                }
+              ),
+              (type === CfObjectType.OUTCOME && data2.depth === 0 || type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
+              type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
+              type === CfObjectType.NODE && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
+              (type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
+              type === CfObjectType.COLUMN && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
+              (type === CfObjectType.WORKFLOW && data2.type == CfObjectType.COURSE || type == CfObjectType.NODE && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                this.Ponderation,
+                {
+                  data: data2,
+                  override,
+                  read_only
+                }
+              ),
+              type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
+              type == CfObjectType.NODE && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
+              type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
+              type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
+              type === CfObjectType.WEEK && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
+              sets,
+              this.getDeleteForSidebar(read_only, noDelete, type, data2)
+            ]
+          }
+        );
+      });
     }
+    //Makes the item selectable
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
@@ -61863,9 +61976,12 @@ ${latestSubscriptionCallbackError.current.stack}
     getDeleteForSidebar(read_only, no_delete, type, data2) {
       if (!read_only && !no_delete && (type != "outcome" || data2.depth > 0)) {
         if (type == "workflow") {
-          return [null];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
         } else {
-          return [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }), this.addDeleteSelf(data2)];
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Delete") }),
+            this.addDeleteSelf(data2)
+          ] });
         }
       }
     }
@@ -61876,104 +61992,14 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * PORTAL
      *******************************************************/
-    addEditable(data2, no_delete = false) {
-      let sets;
-      const read_only = this.props.renderer.read_only;
-      const title = unescapeCharacters(data2.title || "");
-      const type = object_dictionary[this.objectType];
-      const override = data2.represents_workflow ? true : false;
-      const title_length = type === "outcome" ? 500 : 100;
-      const description = data2.description || "";
-      if (this.state.selected) {
-        if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
-          const term_type = type == "node" ? node_type_keys[data2.node_type] : data2.type;
-          const allowed_sets = this.props.object_sets.filter(
-            (set) => set.term == term_type
-          );
-          if (allowed_sets.length >= 0) {
-            const disable_sets = data2.depth || read_only ? true : false;
-            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  disabled: disable_sets,
-                  type: "checkbox",
-                  name: set.id,
-                  checked: data2.sets.indexOf(set.id) >= 0,
-                  onChange: this.setChanged.bind(this, set.id)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
-            ] }));
-            sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
-          }
-        }
-        return reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "right-panel-inner",
-              onClick: (evt) => evt.stopPropagation(),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("Edit ") + get_verbose(data2, this.objectType) }),
-                [
-                  "node",
-                  "week",
-                  "column",
-                  "workflow",
-                  "outcome",
-                  "nodelink"
-                ].includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Title,
-                  {
-                    readOnly: read_only,
-                    override,
-                    title,
-                    titleLength: title_length
-                  }
-                ),
-                ["node", "workflow", "outcome"].indexOf(type) >= 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Description,
-                  {
-                    readOnly: read_only,
-                    override,
-                    description
-                  }
-                ),
-                type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.BrowseOptions,
-                  {
-                    data: data2,
-                    readOnly: read_only,
-                    override
-                  }
-                ),
-                (type == "outcome" && data2.depth == 0 || type == "workflow" && data2.type == "course") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.CodeOptional, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Context, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Task, { data: data2, readOnly: read_only }),
-                (type == "node" || type == "workflow") && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Time, { data: data2, readOnly: read_only, override }),
-                type == "column" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Colour, { data: data2, readOnly: read_only }),
-                (type == "workflow" && data2.type == "course" || type == "node" && data2.node_type == 2) && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  this.Ponderation,
-                  {
-                    data: data2,
-                    override,
-                    read_only
-                  }
-                ),
-                type === "node" && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
-                type == "node" && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
-                type == "nodelink" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
-                type == "workflow" && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
-                type == "week" && data2.week_type < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Strategy, { data: data2, readOnly: read_only }),
-                sets,
-                this.getDeleteForSidebar(read_only, no_delete, type, data2)
-              ]
-            }
-          ),
-          $("#edit-menu")[0]
-        );
+    addEditable(data2, noDelete = false) {
+      if (!this.state.selected) {
+        return null;
       }
+      return ReactDOM.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditForm, { data: data2, noDelete }),
+        document.getElementById("edit-menu")
+      );
     }
   }
   class ActionButton extends reactExports.Component {
@@ -62094,7 +62120,7 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
-  function getUsersForObjectQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
     if (["program", "course", "activity"].indexOf(objectType) >= 0)
       objectType = "workflow";
     try {
@@ -62172,7 +62198,7 @@ ${latestSubscriptionCallbackError.current.stack}
         this.tagPosition = this.input.current.selectionStart - 1;
         const loader = COURSEFLOW_APP.tinyLoader;
         loader.startLoad();
-        getUsersForObjectQuery$1(this.props.workflowID, "workflow", (response) => {
+        getUsersForObjectQuery(this.props.workflowID, "workflow", (response) => {
           loader.endLoad();
           this.setState({
             tagging: true,
@@ -62451,7 +62477,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  function deleteSelfQuery$1(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
     let path;
     if (soft)
       path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
@@ -62491,7 +62517,7 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
-  function restoreSelfQuery$1(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
         objectID: JSON.stringify(objectID),
@@ -62524,7 +62550,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     restoreSelf(data2) {
       COURSEFLOW_APP.tinyLoader.startLoad();
-      restoreSelfQuery$1(
+      restoreSelfQuery(
         data2.id,
         object_dictionary[this.objectType],
         (response_data) => {
@@ -62561,7 +62587,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ).toLowerCase() + "?"
       )) {
         COURSEFLOW_APP.tinyLoader.startLoad();
-        deleteSelfQuery$1(
+        deleteSelfQuery(
           data2.id,
           object_dictionary[this.objectType],
           true,
@@ -62646,6 +62672,24 @@ ${latestSubscriptionCallbackError.current.stack}
           COURSEFLOW_APP.tinyLoader.endLoad();
         }
       );
+    }
+  }
+  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+        nodePk: JSON.stringify(source_node),
+        objectID: JSON.stringify(target_node),
+        objectType: JSON.stringify("node"),
+        sourcePort: JSON.stringify(source_port),
+        targetPort: JSON.stringify(target_port)
+      }).done(function(data2) {
+        if (data2.action === DATA_ACTIONS.POSTED)
+          callBackFunction(data2);
+        else
+          window.fail_function(data2.action);
+      });
+    } catch (err) {
+      window.fail_function();
     }
   }
   function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
@@ -65789,6 +65833,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * RENDER
@@ -65828,7 +65873,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = "outcomeoutcome";
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * FUNCTIONS
@@ -65863,7 +65908,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = "outcome";
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: false };
     }
@@ -66019,7 +66064,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "outcomehorizontallink";
+      this.objectType = CfObjectType.OUTCOMEHORIZONTALLINK;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66128,9 +66173,7 @@ ${latestSubscriptionCallbackError.current.stack}
   let OutcomeUnconnected$1 = class OutcomeUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = "outcome";
-      if (props.data.depth === 0)
-        this.objectType = "outcome_base";
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
     }
     /*******************************************************
@@ -66399,7 +66442,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66595,7 +66638,7 @@ ${latestSubscriptionCallbackError.current.stack}
       super(props);
       console.log("props");
       console.log(props);
-      this.objectType = "outcomenode";
+      this.objectType = CfObjectType.OUTCOMENODE;
     }
     /*******************************************************
      * LIFECYCLE
@@ -66689,7 +66732,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeComparisonUnconnected extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = "node";
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * RENDER
@@ -66797,33 +66840,39 @@ ${latestSubscriptionCallbackError.current.stack}
       if (renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
-      this.addEditable(data_override);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          id: data2.id,
-          ref: this.mainDiv,
-          onClick: (evt) => selection_manager.changeSelection(evt, this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-              titleText,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data_override.description,
-                defaultText: "Click to edit"
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(data_override),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: style2,
+            className: css_class,
+            id: data2.id,
+            ref: this.mainDiv,
+            onClick: (evt) => {
+              console.log("clicked");
+              console.log("clicked");
+              return () => selection_manager.changeSelection(evt, this);
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+                titleText,
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TitleText,
+                {
+                  text: data_override.description,
+                  defaultText: window.gettext("Click to edit")
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
+            ]
+          }
+        )
+      ] });
     }
   }
   const mapStateToProps$j = (state, ownProps) => {
@@ -81103,13 +81152,12 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeLink extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      __publicField(this, "objectClass");
       __publicField(this, "source_node");
       __publicField(this, "target_node");
       __publicField(this, "target_port_handle");
       __publicField(this, "source_port_handle");
       __publicField(this, "rerenderEvents");
-      this.objectType = "nodelink";
+      this.objectType = CfObjectType.NODELINK;
       this.objectClass = ".node-link";
       this.rerenderEvents = "ports-rendered." + this.props.data.id;
     }
@@ -81167,7 +81215,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (!this.source_node.is(":visible") || !this.target_node.is(":visible")) {
         return null;
       }
-      reactDomExports.createPortal(
+      const portal = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeLinkSVG,
           {
@@ -81189,8 +81237,10 @@ ${latestSubscriptionCallbackError.current.stack}
         ),
         $(".workflow-canvas")[0]
       );
-      this.addEditable(data2);
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        portal,
+        this.addEditable(data2)
+      ] });
     }
   }
   const mapStateToProps$i = (state, ownProps) => {
@@ -81725,8 +81775,11 @@ ${latestSubscriptionCallbackError.current.stack}
   let Node$1 = class Node extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = "node";
-      this.state = { initial_render: true, show_outcomes: false };
+      this.objectType = CfObjectType.NODE;
+      this.state = {
+        initial_render: true,
+        show_outcomes: false
+      };
     }
     /*******************************************************
      * LIFECYCLE
@@ -81787,6 +81840,7 @@ ${latestSubscriptionCallbackError.current.stack}
     makeDroppable() {
       $(this.mainDiv.current).droppable({
         tolerance: "pointer",
+        // @ts-ignore // droppable does not exist in type DroppableOptions
         droppable: ".outcome-ghost",
         over: (e, ui) => {
           const drop_item = $(e.target);
@@ -81818,6 +81872,7 @@ ${latestSubscriptionCallbackError.current.stack}
             COURSEFLOW_APP.tinyLoader.startLoad();
             updateOutcomenodeDegree(
               this.props.objectID,
+              // @ts-ignore // data draggable is custom
               drag_item[0].dataDraggable.outcome,
               1,
               (response_data) => {
@@ -81829,6 +81884,7 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     mouseIn(evt) {
+      const myComponent = this;
       if ($(".workflow-canvas").hasClass("creating-node-link"))
         return;
       if (!this.props.renderer.read_only)
@@ -81840,12 +81896,12 @@ ${latestSubscriptionCallbackError.current.stack}
         hovered: true
       });
       $(document).on("mousemove", function(evt2) {
-        if (!this || !this.mainDiv || mouseOutsidePadding(evt2, $(this.mainDiv.current), 20)) {
+        if (!myComponent || !myComponent.mainDiv || mouseOutsidePadding(evt2, $(myComponent.mainDiv.current), 20)) {
           $(
-            "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
+            "circle[data-node-id='" + myComponent.props.objectID + "'][data-port-type='source']"
           ).removeClass("mouseover");
           $(document).off(evt2);
-          this.setState({
+          myComponent.setState({
             hovered: false
           });
         }
@@ -82051,7 +82107,11 @@ ${latestSubscriptionCallbackError.current.stack}
       if (renderer.show_assignments) {
         mouseover_actions.push(this.addShowAssignment(data2));
       }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      document.getElementById("edit-menu") && ReactDOM.createPortal(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: "hello" }),
+        document.getElementById("edit-menu")
+      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           style: style2,
@@ -82060,7 +82120,10 @@ ${latestSubscriptionCallbackError.current.stack}
           ref: this.mainDiv,
           "data-selected": this.state.selected,
           "data-hovered": this.state.hovered,
-          onClick: (evt) => selection_manager.changeSelection(evt, this),
+          onClick: (evt) => {
+            console.log("clicked");
+            selection_manager.changeSelection(evt, this);
+          },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               lefticon,
@@ -82098,7 +82161,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ] })
           ]
         }
-      );
+      ) });
     }
   };
   const mapStateToProps$h = (state, ownProps) => {
@@ -82109,6 +82172,7 @@ ${latestSubscriptionCallbackError.current.stack}
     null
   )(Node$1);
   class NodeWeekUnconnected extends reactExports.Component {
+    // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
     constructor(props) {
       super(props);
       __publicField(this, "objectType");
@@ -82129,7 +82193,7 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         );
       });
-      this.objectType = "nodeweek";
+      this.objectType = CfObjectType.NODEWEEK;
       this.objectClass = ".node-week";
     }
     /*******************************************************
@@ -82187,9 +82251,26 @@ ${latestSubscriptionCallbackError.current.stack}
   class WeekUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      __publicField(this, "objectClass");
       __publicField(this, "node_block");
-      this.objectType = "week";
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "Nodes", () => {
+        if (!this.props.data.nodeweek_set.length) {
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." });
+        }
+        return this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeWeek,
+          {
+            objectID: nodeweek,
+            parentID: this.props.data.id,
+            renderer: this.props.renderer,
+            column_order: this.props.column_order
+          },
+          nodeweek
+        ));
+      });
+      this.objectType = CfObjectType.WEEK;
       this.objectClass = ".week";
       this.node_block = reactExports.createRef();
     }
@@ -82209,23 +82290,6 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * FUNCTIONS
      *******************************************************/
-    getNodes() {
-      const nodes = this.props.data.nodeweek_set.map((nodeweek) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NodeWeek,
-        {
-          objectID: nodeweek,
-          parentID: this.props.data.id,
-          renderer: this.props.renderer,
-          column_order: this.props.column_order
-        },
-        nodeweek
-      ));
-      if (nodes.length === 0)
-        nodes.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-week placeholder", style: { height: "100%" }, children: "Drag and drop nodes from the sidebar to add." })
-        );
-      return nodes;
-    }
     makeDragAndDrop() {
       this.makeSortableNode(
         $(this.node_block.current).children(".node-week").not(".ui-draggable"),
@@ -82344,7 +82408,6 @@ ${latestSubscriptionCallbackError.current.stack}
       const data2 = this.props.data;
       const renderer = this.props.renderer;
       const selection_manager = renderer.selection_manager;
-      const nodes = this.getNodes();
       let css_class = "week";
       if (data2.is_strategy)
         css_class += " strategy";
@@ -82352,17 +82415,11 @@ ${latestSubscriptionCallbackError.current.stack}
         css_class += " locked locked-" + data2.lock.user_id;
       if (data2.is_dropped)
         css_class += " dropped";
-      let default_text;
-      if (!renderer.is_strategy)
-        default_text = data2.week_type_display + " " + (this.props.rank + 1);
+      const default_text = !renderer.is_strategy ? data2.week_type_display + " " + (this.props.rank + 1) : void 0;
+      const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
       const style2 = {
         border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
       };
-      let dropIcon;
-      if (data2.is_dropped)
-        dropIcon = "droptriangleup";
-      else
-        dropIcon = "droptriangledown";
       const mouseoverActions = [];
       if (!this.props.renderer.read_only && !renderer.is_strategy) {
         mouseoverActions.push(this.addInsertSibling(data2));
@@ -82373,6 +82430,8 @@ ${latestSubscriptionCallbackError.current.stack}
         mouseoverActions.push(this.addCommenting());
       }
       this.addEditable(data2);
+      console.log("this.addEditable(data)");
+      console.log(data2);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -82389,7 +82448,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 className: "node-block",
                 id: this.props.objectID + "-node-block",
                 ref: this.node_block,
-                children: nodes
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Nodes, {})
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -82632,47 +82691,49 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
-      this.addEditable(data2);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          ref: this.mainDiv,
-          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data2.title,
-                defaultText: data2.week_type_display + " " + (this.props.rank + 1)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "node-block",
-                id: this.props.objectID + "-node-block",
-                ref: this.node_block,
-                children: node_blocks
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "week-drop-row hover-shade",
-                onClick: this.toggleDrop.bind(this),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
-                ]
-              }
-            )
-          ]
-        }
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(data2),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: style2,
+            className: css_class,
+            ref: this.mainDiv,
+            onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TitleText,
+                {
+                  text: data2.title,
+                  defaultText: data2.week_type_display + " " + (this.props.rank + 1)
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: "node-block",
+                  id: this.props.objectID + "-node-block",
+                  ref: this.node_block,
+                  children: node_blocks
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "week-drop-row hover-shade",
+                  onClick: this.toggleDrop.bind(this),
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
+                  ]
+                }
+              )
+            ]
+          }
+        )
+      ] });
     }
   }
   const mapStateToProps$f = (state, ownProps) => {
@@ -82685,9 +82746,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      __publicField(this, "objectType");
-      __publicField(this, "objectClass");
-      this.objectType = "weekworkflow";
+      this.objectType = CfObjectType.WEEKWORKFLOW;
       this.objectClass = ".week-workflow";
     }
     /*******************************************************
@@ -82782,7 +82841,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = {};
     }
     /*******************************************************
@@ -82856,7 +82915,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowBaseUnconnected extends EditableComponent {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -83066,7 +83125,7 @@ ${latestSubscriptionCallbackError.current.stack}
     restore() {
       this.setState({ disabled: true });
       COURSEFLOW_APP.tinyLoader.startLoad();
-      restoreSelfQuery$1(this.props.data.id, this.props.objectType, () => {
+      restoreSelfQuery(this.props.data.id, this.props.objectType, () => {
         COURSEFLOW_APP.tinyLoader.endLoad();
       });
     }
@@ -83078,7 +83137,7 @@ ${latestSubscriptionCallbackError.current.stack}
       )) {
         $(this.mainDiv.current).children("button").attr("disabled", true);
         COURSEFLOW_APP.tinyLoader.startLoad();
-        deleteSelfQuery$1(this.props.data.id, this.props.objectType, false, () => {
+        deleteSelfQuery(this.props.data.id, this.props.objectType, false, () => {
           COURSEFLOW_APP.tinyLoader.endLoad();
         });
       }
@@ -83098,6 +83157,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class RestoreBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * LIFECYCLE
@@ -83198,6 +83258,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
      * RENDER
@@ -83239,6 +83300,7 @@ ${latestSubscriptionCallbackError.current.stack}
         evt.stopPropagation();
         this.setState({ is_dropped: !this.state.is_dropped });
       });
+      this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: props.data.depth < 1 };
     }
@@ -83831,12 +83893,12 @@ ${latestSubscriptionCallbackError.current.stack}
   )(NodeBarColumnWorkflowUnconnected);
   class StrategyUnconnected extends ComponentWithToggleDrop {
     // @todo not used?
-    // constructor(props) {
-    //   super(props)
-    //   this.objectType = 'strategy'
-    //   this.objectClass = '.strategy'
-    //   this.node_block = React.createRef()
-    // }
+    constructor(props) {
+      super(props);
+      this.objectType = CfObjectType.STRATEGY;
+      this.objectClass = ".strategy";
+      this.node_block = reactExports.createRef();
+    }
     /*******************************************************
      * LIFECYCLE
      *******************************************************/
@@ -84064,6 +84126,7 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * RENDER
      *******************************************************/
+    // @todo why are these anchor links?
     render() {
       const renderer = this.props.renderer;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
@@ -84251,7 +84314,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class Column extends EditableComponentWithActions {
     constructor(props) {
       super(props);
-      this.objectType = "column";
+      this.objectType = CfObjectType.COLUMN;
       this.objectClass = ".column";
     }
     /*******************************************************
@@ -84316,7 +84379,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class ColumnWorkflow extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = "columnworkflow";
+      this.objectType = CfObjectType.COLUMNWORKFLOW;
       this.objectClass = ".column-workflow";
     }
     /*******************************************************
@@ -84469,7 +84532,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowViewUnconnected extends EditableComponentWithSorting {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = {};
     }
     /*******************************************************
@@ -84784,7 +84847,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentHorizontalReverseNode extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = "node";
+      this.objectType = CfObjectType.NODE;
       this.state = {};
     }
     /*******************************************************
@@ -85016,7 +85079,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = "week";
+      this.objectType = CfObjectType.WEEK;
       this.state = {};
     }
     /*******************************************************
@@ -85170,7 +85233,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class AlignmentView extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = { active: 0, active2: 0, sort: "outcome" };
     }
     /*******************************************************
@@ -85328,7 +85391,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridNodeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      this.objectType = "node";
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * RENDER
@@ -85382,6 +85445,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridWeekUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.WEEK;
     }
     /*******************************************************
      * RENDER
@@ -85490,6 +85554,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class GridViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.WORKFLOW;
       this.state = { dropped_list: [] };
     }
     /*******************************************************
@@ -85525,7 +85590,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class JumpToWeekViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = "week";
+      this.objectType = CfObjectType.WEEK;
       this.objectClass = ".week";
     }
     /*******************************************************
@@ -85889,7 +85954,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "outcome";
+      this.objectType = CfObjectType.OUTCOME;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86071,7 +86136,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class MatrixNodeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "node";
+      this.objectType = CfObjectType.NODE;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86112,7 +86177,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class MatrixWeekUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "week";
+      this.objectType = CfObjectType.WEEK;
     }
     /*******************************************************
      * RENDER
@@ -86295,7 +86360,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
-      this.objectType = "node";
+      this.objectType = ObjectType.NODE;
       this.state = {
         initial_render: true
       };
@@ -86331,7 +86396,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class CompetencyMatrixViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * FUNCTIONS
@@ -86601,6 +86666,7 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeTableViewUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
+      this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
      * FUNCTIONS
@@ -93348,7 +93414,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      getUsersForObjectQuery$1(
+      getUsersForObjectQuery(
         this.props.data.id,
         this.props.data.type,
         (response) => {
@@ -93612,7 +93678,7 @@ ${latestSubscriptionCallbackError.current.stack}
         this.props.data.type,
         permission_type,
         () => {
-          getUsersForObjectQuery$1(
+          getUsersForObjectQuery(
             this.props.data.id,
             this.props.data.type,
             (response) => {
@@ -94615,7 +94681,7 @@ ${latestSubscriptionCallbackError.current.stack}
           )
         ] }) });
       });
-      this.objectType = "workflow";
+      this.objectType = CfObjectType.WORKFLOW;
       this.allowed_tabs = [0, 1, 2, 3, 4];
       this.readOnly = this.props.renderer.read_only;
       this.public_view = this.props.renderer.public_view;
@@ -94910,43 +94976,45 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuBar,
-          {
-            overflowLinks: this.OverflowLinks,
-            visibleButtons: this.VisibleButtons,
-            viewbar: this.ViewBar,
-            userbar: this.UserBar
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
-            this.addEditable(this.props.data),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
-            this.getReturnLinks(),
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(this.props.data),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            MenuBar,
+            {
+              overflowLinks: this.OverflowLinks,
+              visibleButtons: this.VisibleButtons,
+              viewbar: this.ViewBar,
+              userbar: this.UserBar
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) }),
+              this.getReturnLinks(),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ParentWorkflowIndicator,
+                {
+                  renderer: this.props.renderer,
+                  workflow_id: this.workflowId
+                }
+              )
+            ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              ParentWorkflowIndicator,
+              RightSideBar,
               {
+                context: "workflow",
                 renderer: this.props.renderer,
-                workflow_id: this.workflowId
+                data: this.props.data,
+                parentRender: this.renderMethod
               }
             )
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            RightSideBar,
-            {
-              context: "workflow",
-              renderer: this.props.renderer,
-              data: this.props.data,
-              parentRender: this.renderMethod
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+        ] })
       ] });
     }
   }
@@ -95414,18 +95482,18 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class WorkflowCardCondensed extends WorkflowCard {
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    getButtons() {
-      return null;
-    }
-    getProjectTitle() {
-      if (this.props.workflowData.project_title) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
-      } else {
-        return "-";
-      }
+    constructor() {
+      super(...arguments);
+      /*******************************************************
+       * FUNCTIONS
+       *******************************************************/
+      __publicField(this, "ProjectTitle", () => {
+        if (this.props.workflowData.project_title) {
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-title", children: this.props.workflowData.project_title });
+        } else {
+          return "-";
+        }
+      });
     }
     /*******************************************************
      * RENDER
@@ -95443,7 +95511,7 @@ ${latestSubscriptionCallbackError.current.stack}
             evt.preventDefault();
           },
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-            this.getTypeIndicator(),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               WorkflowTitle,
               {
@@ -95452,8 +95520,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 data: data2
               }
             ),
-            this.getButtons(),
-            this.getProjectTitle()
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.ProjectTitle, {})
           ] })
         }
       );
@@ -95948,7 +96015,7 @@ ${latestSubscriptionCallbackError.current.stack}
         const new_state_dict = this.state.object_sets.slice();
         for (let i2 = 0; i2 < new_state_dict.length; i2++) {
           if (new_state_dict[i2].id === id) {
-            deleteSelfQuery$1(id, "objectset");
+            deleteSelfQuery(id, "objectset");
             new_state_dict.splice(i2, 1);
             this.setState({
               object_sets: new_state_dict
@@ -96509,7 +96576,7 @@ ${latestSubscriptionCallbackError.current.stack}
     // @todo this is wrapped because it is called by openShareMenu
     // so do not unwrap until the renderMessageBox is sorted out
     getUserData() {
-      getUsersForObjectQuery$1(this.props.data.id, this.props.data.type, (data2) => {
+      getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data2) => {
         this.setState({ users: data2 });
       });
     }
@@ -96530,7 +96597,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (window.confirm(
         window.gettext("Are you sure you want to delete this project?")
       )) {
-        deleteSelfQuery$1(this.props.data.id, "project", true, () => {
+        deleteSelfQuery(this.props.data.id, "project", true, () => {
           this.setState({ data: { ...this.props.data, deleted: true } });
         });
       }
@@ -96541,13 +96608,13 @@ ${latestSubscriptionCallbackError.current.stack}
           "Are you sure you want to permanently delete this project?"
         )
       )) {
-        deleteSelfQuery$1(this.props.data.id, "project", false, () => {
+        deleteSelfQuery(this.props.data.id, "project", false, () => {
           window.location.href = COURSEFLOW_APP.config.home_path;
         });
       }
     }
     restoreProject() {
-      restoreSelfQuery$1(this.props.data.id, "project", () => {
+      restoreSelfQuery(this.props.data.id, "project", () => {
         this.setState({ data: { ...this.props.data, deleted: false } });
       });
     }
@@ -97360,6 +97427,13 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
   }
+  const originalConsoleWarn = console.error;
+  console.error = (message, ...args) => {
+    if (/unique "key" prop/.test(message)) {
+      return;
+    }
+    originalConsoleWarn(message, ...args);
+  };
   const tinyLoader = new MouseCursorLoader($("body")[0]);
   COURSEFLOW_APP.tinyLoader = tinyLoader;
   const cache = createCache({
