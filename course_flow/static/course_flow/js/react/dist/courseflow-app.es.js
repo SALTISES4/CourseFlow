@@ -56589,30 +56589,29 @@ class TitleText extends reactExports.Component {
 }
 class WorkflowTitle extends reactExports.Component {
   render() {
+    const getText = () => {
+      let text = data2.title || window.gettext("Untitled");
+      if (data2.code) {
+        text = `${data2.code} - ${text}`;
+      }
+      if (["noaccess", "nouser"].includes(data2.url)) {
+        text += ` ${window.gettext(" (no access)")}`;
+      }
+      if (data2.deleted) {
+        text += " (deleted)";
+      }
+      return text;
+    };
     const data2 = this.props.data;
-    let text = data2.title;
-    if (data2.code)
-      text = data2.code + " - " + text;
-    if (text == null || text == "") {
-      text = window.gettext("Untitled");
-    }
-    if (data2.url == "noaccess" || data2.url == "nouser") {
-      text += window.gettext(" (no access)");
-    }
-    if (data2.deleted) {
-      text += " (deleted)";
-    }
-    let href = data2.url;
-    if (!data2.url)
-      href = COURSEFLOW_APP.config.update_path[data2.type].replace("0", data2.id);
+    const href = !data2.url ? COURSEFLOW_APP.config.update_path[data2.type].replace("0", data2.id) : data2.url;
     if (this.props.no_hyperlink || data2.url == "noaccess" || data2.url == "nouser") {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           className: this.props.class_name,
           "data-test-id": this.props.test_id,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
+          title: getText(),
+          dangerouslySetInnerHTML: { __html: getText() }
         }
       );
     } else {
@@ -56623,8 +56622,8 @@ class WorkflowTitle extends reactExports.Component {
           href,
           className: this.props.class_name,
           "data-test-id": this.props.test_id,
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
+          title: getText(),
+          dangerouslySetInnerHTML: { __html: getText() }
         }
       );
     }
@@ -65733,6 +65732,25 @@ class DatePicker extends reactExports.Component {
 class CollapsibleText extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Overflow", ({ text }) => {
+      if (this.state.overflow) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            onClick: (evt) => {
+              this.setState({ is_dropped: !this.state.is_dropped });
+              evt.stopPropagation();
+            },
+            className: "collapsed-text-show-more",
+            children: text
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    });
     this.state = {};
     this.mainDiv = reactExports.createRef();
   }
@@ -65749,58 +65767,36 @@ class CollapsibleText extends ComponentWithToggleDrop {
    * FUNCTIONS
    *******************************************************/
   checkSize() {
-    if (this.state.is_dropped)
-      return;
-    if (this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight) {
-      if (!this.state.overflow)
-        this.setState({ overflow: true });
-    } else {
-      if (this.state.overflow)
-        this.setState({ overflow: false });
+    if (!this.state.is_dropped) {
+      const isOverflowing2 = this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight;
+      if (this.state.overflow !== isOverflowing2) {
+        this.setState({ overflow: isOverflowing2 });
+      }
     }
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let css_class = "";
-    if (this.props.css_class)
-      css_class = this.props.css_class + " ";
-    css_class += "title-text collapsible-text";
-    let drop_text = window.gettext("show more");
-    if (this.state.is_dropped) {
-      css_class += " dropped";
-      drop_text = window.gettext("show less");
-    }
-    let overflow;
-    if (this.state.overflow)
-      overflow = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: (evt) => {
-            this.setState({ is_dropped: !this.state.is_dropped });
-            evt.stopPropagation();
-          },
-          className: "collapsed-text-show-more",
-          children: drop_text
-        }
-      );
-    let text = this.props.text;
-    if ((this.props.text == null || this.props.text == "") && this.props.defaultText != null) {
-      text = this.props.defaultText;
-    }
-    return [
+    const cssClasses = [
+      this.props.css_class ?? "",
+      "title-text collapsible-text",
+      this.state.is_dropped ? "dropped" : ""
+    ].join("");
+    const dropText = this.state.is_dropped ? window.gettext("show less") : window.gettext("show more");
+    const text = (this.props.text == null || this.props.text == "") && this.props.defaultText != null ? this.props.defaultText : this.props.text;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
           ref: this.mainDiv,
-          className: css_class,
+          className: cssClasses,
           title: text,
           dangerouslySetInnerHTML: { __html: text }
         }
       ),
-      overflow
-    ];
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Overflow, { text: dropText })
+    ] });
   }
 }
 class LegendLine extends reactExports.Component {
@@ -66629,255 +66625,6 @@ const OutcomeEdit = connect(
   mapOutcomeComparisonStateToProps,
   null
 )(OutcomeEditUnconnected);
-class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
-  constructor(props) {
-    super(props);
-    console.log("props");
-    console.log(props);
-    this.objectType = CfObjectType.OUTCOMENODE;
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.checkHidden();
-  }
-  componentDidUpdate() {
-    this.checkHidden();
-  }
-  componentWillUnmount() {
-    this.checkHidden();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  addDeleteSelf(data2) {
-    const icon = "close.svg";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ActionButton,
-      {
-        buttonIcon: icon,
-        buttonClass: "delete-self-button",
-        titleText: window.gettext("Delete"),
-        handleClick: this.deleteSelf.bind(this, data2)
-      }
-    );
-  }
-  deleteSelf(data2) {
-    if (this.props.deleteSelfOverride)
-      this.props.deleteSelfOverride();
-    else {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      updateOutcomenodeDegree(data2.node, data2.outcome, 0, (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    }
-  }
-  checkHidden() {
-    if ($(this.mainDiv.current).children(".outcome").length === 0) {
-      $(this.mainDiv.current).css("display", "none");
-    } else {
-      $(this.mainDiv.current).css("display", "");
-    }
-    const indicator = $(this.mainDiv.current).closest(".outcome-node-indicator");
-    if (indicator.length >= 0) {
-      const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
-      indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
-      if (num_outcomenodes === 0)
-        indicator.css("display", "none");
-      else
-        indicator.css("display", "");
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    if ((data2 == null ? void 0 : data2.outcome) === -1 || !(data2 == null ? void 0 : data2.outcome))
-      return null;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
-      {
-        className: "outcome-node outcomenode-" + data2.id,
-        id: data2.id,
-        ref: this.mainDiv,
-        children: [
-          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
-          (void 0)(data2.degree, this.props.outcomes_type),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            SimpleOutcome$1,
-            {
-              checkHidden: this.checkHidden.bind(this),
-              comments: true,
-              edit: true,
-              objectID: data2.outcome,
-              parentID: this.props.parentID,
-              throughParentID: data2.id,
-              renderer: this.props.renderer
-            }
-          )
-        ]
-      }
-    );
-  }
-}
-const mapStateToProps$k = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
-const OutcomeNode = connect(mapStateToProps$k, null)(OutcomeNodeUnconnected);
-class NodeComparisonUnconnected extends EditableComponentWithActions {
-  constructor(props) {
-    super(props);
-    this.objectType = CfObjectType.NODE;
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const side_actions = [];
-    let data_override;
-    let lefticon;
-    let righticon;
-    const data2 = this.props.data;
-    if (data2.represents_workflow) {
-      data_override = {
-        ...data2,
-        ...data2.linked_workflow_data,
-        id: data2.id
-      };
-    } else {
-      data_override = { ...data2 };
-    }
-    const renderer = this.props.renderer;
-    const selection_manager = renderer.selection_manager;
-    const style2 = {
-      backgroundColor: getColumnColour(this.props.column)
-    };
-    if (data2.lock) {
-      style2.outline = "2px solid " + data2.lock.user_colour;
-    }
-    if (checkSetHidden(data2, this.props.object_sets)) {
-      style2.display = "none";
-    }
-    let outcomenodes;
-    if (this.state.show_outcomes)
-      outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "outcome-node-container column-111111-" + data2.column,
-          onMouseLeave: () => {
-            this.setState({
-              show_outcomes: false
-            });
-          },
-          style: { borderColor: getColumnColour(this.props.column) },
-          children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            OutcomeNode,
-            {
-              objectID: outcomenode,
-              renderer
-            },
-            outcomenode
-          ))
-        }
-      );
-    if (data2.outcomenode_unique_set.length > 0) {
-      side_actions.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "outcome-node-indicator-number column-" + data2.column,
-              onMouseEnter: () => {
-                this.setState({ show_outcomes: true });
-              },
-              style: {
-                borderColor: getColumnColour(this.props.column)
-              },
-              children: data2.outcomenode_unique_set.length
-            }
-          ),
-          outcomenodes
-        ] })
-      );
-    }
-    if (data2.context_classification > 0) {
-      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.context_choices.find(
-            (obj) => obj.type == data2.context_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
-        }
-      );
-    }
-    if (data2.task_classification > 0) {
-      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          title: renderer.task_choices.find(
-            (obj) => obj.type == data2.task_classification
-          ).name,
-          src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
-        }
-      );
-    }
-    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
-    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
-    if (data2.lock)
-      css_class += " locked locked-" + data2.lock.user_id;
-    const mouseover_actions = [];
-    if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data2));
-      mouseover_actions.push(this.addDuplicateSelf(data2));
-      mouseover_actions.push(this.addDeleteSelf(data2));
-    }
-    if (renderer.view_comments) {
-      mouseover_actions.push(this.addCommenting());
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      this.addEditable(data_override),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          id: data2.id,
-          ref: this.mainDiv,
-          onClick: (evt) => {
-            console.log("clicked");
-            console.log("clicked");
-            return () => selection_manager.changeSelection(evt, this);
-          },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
-              titleText,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data_override.description,
-                defaultText: window.gettext("Click to edit")
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
-          ]
-        }
-      )
-    ] });
-  }
-}
-const mapStateToProps$j = (state, ownProps) => {
-  return getNodeByID(state, ownProps.objectID);
-};
-const NodeComparison = connect(
-  mapStateToProps$j,
-  null
-)(NodeComparisonUnconnected);
 function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function(target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -77304,7 +77051,7 @@ var dependencies$v = ["typed", "Index", "matrix", "range"];
 var createColumn = /* @__PURE__ */ factory(name$v, dependencies$v, (_ref) => {
   var {
     typed: typed2,
-    Index: Index3,
+    Index: Index2,
     matrix: matrix2,
     range: range2
   } = _ref;
@@ -77320,7 +77067,7 @@ var createColumn = /* @__PURE__ */ factory(name$v, dependencies$v, (_ref) => {
     }
     validateIndex(column2, value.size()[1]);
     var rowRange = range2(0, value.size()[0]);
-    var index = new Index3(rowRange, column2);
+    var index = new Index2(rowRange, column2);
     var result = value.subset(index);
     return isMatrix(result) ? result : matrix2([[result]]);
   }
@@ -78769,8 +78516,8 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     ImmutableDenseMatrix: ImmutableDenseMatrix2,
     getMatrixDataType: getMatrixDataType2
   } = _ref;
-  function Index3(ranges) {
-    if (!(this instanceof Index3)) {
+  function Index2(ranges) {
+    if (!(this instanceof Index2)) {
       throw new SyntaxError("Constructor must be called with the new operator");
     }
     this._dimensions = [];
@@ -78810,8 +78557,8 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
       this._sourceSize.push(sourceSize);
     }
   }
-  Index3.prototype.type = "Index";
-  Index3.prototype.isIndex = true;
+  Index2.prototype.type = "Index";
+  Index2.prototype.isIndex = true;
   function _createImmutableMatrix(arg) {
     for (var i = 0, l = arg.length; i < l; i++) {
       if (typeof arg[i] !== "number" || !isInteger$1(arg[i])) {
@@ -78820,19 +78567,19 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return new ImmutableDenseMatrix2(arg);
   }
-  Index3.prototype.clone = function() {
-    var index = new Index3();
+  Index2.prototype.clone = function() {
+    var index = new Index2();
     index._dimensions = clone$2(this._dimensions);
     index._isScalar = this._isScalar;
     index._sourceSize = this._sourceSize;
     return index;
   };
-  Index3.create = function(ranges) {
-    var index = new Index3();
-    Index3.apply(index, ranges);
+  Index2.create = function(ranges) {
+    var index = new Index2();
+    Index2.apply(index, ranges);
     return index;
   };
-  Index3.prototype.size = function() {
+  Index2.prototype.size = function() {
     var size2 = [];
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       var d = this._dimensions[i];
@@ -78840,7 +78587,7 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return size2;
   };
-  Index3.prototype.max = function() {
+  Index2.prototype.max = function() {
     var values2 = [];
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       var range2 = this._dimensions[i];
@@ -78848,7 +78595,7 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return values2;
   };
-  Index3.prototype.min = function() {
+  Index2.prototype.min = function() {
     var values2 = [];
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       var range2 = this._dimensions[i];
@@ -78856,24 +78603,24 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return values2;
   };
-  Index3.prototype.forEach = function(callback) {
+  Index2.prototype.forEach = function(callback) {
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       callback(this._dimensions[i], i, this);
     }
   };
-  Index3.prototype.dimension = function(dim) {
+  Index2.prototype.dimension = function(dim) {
     return this._dimensions[dim] || null;
   };
-  Index3.prototype.isObjectProperty = function() {
+  Index2.prototype.isObjectProperty = function() {
     return this._dimensions.length === 1 && typeof this._dimensions[0] === "string";
   };
-  Index3.prototype.getObjectProperty = function() {
+  Index2.prototype.getObjectProperty = function() {
     return this.isObjectProperty() ? this._dimensions[0] : null;
   };
-  Index3.prototype.isScalar = function() {
+  Index2.prototype.isScalar = function() {
     return this._isScalar;
   };
-  Index3.prototype.toArray = function() {
+  Index2.prototype.toArray = function() {
     var array = [];
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       var dimension = this._dimensions[i];
@@ -78881,8 +78628,8 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return array;
   };
-  Index3.prototype.valueOf = Index3.prototype.toArray;
-  Index3.prototype.toString = function() {
+  Index2.prototype.valueOf = Index2.prototype.toArray;
+  Index2.prototype.toString = function() {
     var strings = [];
     for (var i = 0, ii = this._dimensions.length; i < ii; i++) {
       var dimension = this._dimensions[i];
@@ -78894,16 +78641,16 @@ var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) =>
     }
     return "[" + strings.join(", ") + "]";
   };
-  Index3.prototype.toJSON = function() {
+  Index2.prototype.toJSON = function() {
     return {
       mathjs: "Index",
       dimensions: this._dimensions
     };
   };
-  Index3.fromJSON = function(json) {
-    return Index3.create(json.dimensions);
+  Index2.fromJSON = function(json) {
+    return Index2.create(json.dimensions);
   };
-  return Index3;
+  return Index2;
 }, {
   isClass: true
 });
@@ -80694,7 +80441,7 @@ var ImmutableDenseMatrix = /* @__PURE__ */ createImmutableDenseMatrixClass({
   DenseMatrix,
   smaller
 });
-var Index$2 = /* @__PURE__ */ createIndexClass({
+var Index$1 = /* @__PURE__ */ createIndexClass({
   ImmutableDenseMatrix,
   getMatrixDataType
 });
@@ -80768,7 +80515,7 @@ var range = /* @__PURE__ */ createRange({
   typed
 });
 var column = /* @__PURE__ */ createColumn({
-  Index: Index$2,
+  Index: Index$1,
   matrix,
   range,
   typed
@@ -81239,11 +80986,11 @@ class NodeLink extends EditableComponentWithActions {
     ] });
   }
 }
-const mapStateToProps$i = (state, ownProps) => {
+const mapStateToProps$k = (state, ownProps) => {
   return getNodeLinkByID(state, ownProps.objectID) || { data: void 0 };
 };
 const NodeLink$1 = connect(
-  mapStateToProps$i,
+  mapStateToProps$k,
   null
 )(NodeLink);
 function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = (_data2) => console.log("success")) {
@@ -81544,7 +81291,103 @@ class AssignmentBox extends reactExports.Component {
     );
   }
 }
-let Index$1 = class Index extends reactExports.Component {
+class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
+  constructor(props) {
+    super(props);
+    console.log("props");
+    console.log(props);
+    this.objectType = CfObjectType.OUTCOMENODE;
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    this.checkHidden();
+  }
+  componentDidUpdate() {
+    this.checkHidden();
+  }
+  componentWillUnmount() {
+    this.checkHidden();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  addDeleteSelf(data2) {
+    const icon = "close.svg";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ActionButton,
+      {
+        buttonIcon: icon,
+        buttonClass: "delete-self-button",
+        titleText: window.gettext("Delete"),
+        handleClick: this.deleteSelf.bind(this, data2)
+      }
+    );
+  }
+  deleteSelf(data2) {
+    if (this.props.deleteSelfOverride)
+      this.props.deleteSelfOverride();
+    else {
+      COURSEFLOW_APP.tinyLoader.startLoad();
+      updateOutcomenodeDegree(data2.node, data2.outcome, 0, (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      });
+    }
+  }
+  checkHidden() {
+    if ($(this.mainDiv.current).children(".outcome").length === 0) {
+      $(this.mainDiv.current).css("display", "none");
+    } else {
+      $(this.mainDiv.current).css("display", "");
+    }
+    const indicator = $(this.mainDiv.current).closest(".outcome-node-indicator");
+    if (indicator.length >= 0) {
+      const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
+      indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
+      if (num_outcomenodes === 0)
+        indicator.css("display", "none");
+      else
+        indicator.css("display", "");
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data2 = this.props.data;
+    if ((data2 == null ? void 0 : data2.outcome) === -1 || !(data2 == null ? void 0 : data2.outcome))
+      return null;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "outcome-node outcomenode-" + data2.id,
+        id: data2.id,
+        ref: this.mainDiv,
+        children: [
+          !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
+          (void 0)(data2.degree, this.props.outcomes_type),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SimpleOutcome$1,
+            {
+              checkHidden: this.checkHidden.bind(this),
+              comments: true,
+              edit: true,
+              objectID: data2.outcome,
+              parentID: this.props.parentID,
+              throughParentID: data2.id,
+              renderer: this.props.renderer
+            }
+          )
+        ]
+      }
+    );
+  }
+}
+const mapStateToProps$j = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+const OutcomeNode = connect(mapStateToProps$j, null)(OutcomeNodeUnconnected);
+class Index extends reactExports.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -81656,7 +81499,7 @@ let Index$1 = class Index extends reactExports.Component {
       }
     );
   }
-};
+}
 class AutoLink extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -81962,7 +81805,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     if (!this.state.initial_render) {
       nodePorts = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Index$1,
+          Index,
           {
             renderer,
             nodeID: this.props.objectID,
@@ -82160,11 +82003,11 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     ) });
   }
 };
-const mapStateToProps$h = (state, ownProps) => {
+const mapStateToProps$i = (state, ownProps) => {
   return getNodeByID(state, ownProps.objectID);
 };
 const Node$2 = connect(
-  mapStateToProps$h,
+  mapStateToProps$i,
   null
 )(Node$1);
 class NodeWeekUnconnected extends reactExports.Component {
@@ -82212,38 +82055,13 @@ class NodeWeekUnconnected extends reactExports.Component {
     );
   }
 }
-const mapStateToProps$g = (state, ownProps) => {
+const mapStateToProps$h = (state, ownProps) => {
   return getNodeWeekByID(state, ownProps.objectID);
 };
 const NodeWeek = connect(
-  mapStateToProps$g,
+  mapStateToProps$h,
   null
 )(NodeWeekUnconnected);
-class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getNode() {
-    const data2 = this.props.data;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NodeComparison,
-      {
-        objectID: data2.node,
-        parentID: this.props.parentID,
-        throughParentID: data2.id,
-        renderer: this.props.renderer,
-        column_order: this.props.column_order
-      }
-    );
-  }
-}
-const mapNodeWeekStateToProps = (state, ownProps) => {
-  return getNodeWeekByID(state, ownProps.objectID);
-};
-const NodeWeekComparison = connect(
-  mapNodeWeekStateToProps,
-  null
-)(NodeWeekComparisonUnconnected);
 class WeekUnconnected extends EditableComponentWithSorting {
   constructor(props) {
     super(props);
@@ -82404,13 +82222,12 @@ class WeekUnconnected extends EditableComponentWithSorting {
     const data2 = this.props.data;
     const renderer = this.props.renderer;
     const selection_manager = renderer.selection_manager;
-    let css_class = "week";
-    if (data2.is_strategy)
-      css_class += " strategy";
-    if (data2.lock)
-      css_class += " locked locked-" + data2.lock.user_id;
-    if (data2.is_dropped)
-      css_class += " dropped";
+    const cssClasses = [
+      "week",
+      data2.is_strategy ? "strategy" : "",
+      data2.lock ? "locked locked-" + data2.lock.user_id : "",
+      data2.is_dropped ? " dropped" : ""
+    ].join(" ");
     const default_text = !renderer.is_strategy ? data2.week_type_display + " " + (this.props.rank + 1) : void 0;
     const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
     const style2 = {
@@ -82432,7 +82249,7 @@ class WeekUnconnected extends EditableComponentWithSorting {
       "div",
       {
         style: style2,
-        className: css_class,
+        className: cssClasses,
         ref: this.mainDiv,
         onClick: (evt) => selection_manager.changeSelection(evt, this),
         children: [
@@ -82483,6 +82300,385 @@ const Week = connect(
   mapWeekStateToProps$3,
   null
 )(WeekUnconnected);
+class Term extends WeekUnconnected {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  makeDragAndDrop() {
+    this.makeSortableNode(
+      $(this.node_block.current).children().children(".node-week").not(".ui-draggable"),
+      this.props.objectID,
+      "nodeweek",
+      ".node-week",
+      false,
+      // @ts-ignore
+      [200, 1],
+      null,
+      ".node"
+    );
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data2 = this.props.data;
+    const node_blocks = [];
+    for (let i = 0; i < this.props.column_order.length; i++) {
+      const col = this.props.column_order[i];
+      const nodeweeks = [];
+      for (let j = 0; j < data2.nodeweek_set.length; j++) {
+        const nodeweek = data2.nodeweek_set[j];
+        if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
+          nodeweeks.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              NodeWeek,
+              {
+                objectID: nodeweek,
+                parentID: data2.id,
+                renderer: this.props.renderer,
+                column_order: this.props.column_order
+              },
+              nodeweek
+            )
+          );
+        }
+      }
+      if (nodeweeks.length == 0)
+        nodeweeks.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "node-week placeholder",
+              style: { height: "100%" }
+            }
+          )
+        );
+      node_blocks.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "node-block term column-" + col,
+            id: this.props.objectID + "-node-block-column-" + col,
+            children: nodeweeks
+          },
+          col
+        )
+      );
+    }
+    const cssClasses = [
+      "week",
+      data2.is_strategy ? "strategy" : "",
+      data2.lock ? "locked locked-" + data2.lock.user_id : "",
+      data2.is_dropped ? " dropped" : ""
+    ].join(" ");
+    const style2 = {
+      border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
+    };
+    const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
+    const mouseover_actions = [];
+    if (!this.props.renderer.read_only) {
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
+    }
+    if (this.props.renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      this.addEditable(data2),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          style: style2,
+          className: cssClasses,
+          ref: this.mainDiv,
+          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              TitleText,
+              {
+                text: data2.title,
+                defaultText: data2.week_type_display + " " + (this.props.rank + 1)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "node-block",
+                id: this.props.objectID + "-node-block",
+                ref: this.node_block,
+                children: node_blocks
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "week-drop-row hover-shade",
+                onClick: this.toggleDrop.bind(this),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
+                ]
+              }
+            )
+          ]
+        }
+      )
+    ] });
+  }
+}
+const mapStateToProps$g = (state, ownProps) => {
+  return getTermByID(state, ownProps.objectID);
+};
+const Term$1 = connect(
+  mapStateToProps$g,
+  null
+)(Term);
+class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
+  constructor(props) {
+    super(props);
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Week", () => {
+      const data2 = this.props.data;
+      if (this.props.condensed) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Term$1,
+          {
+            objectID: data2.week,
+            rank: this.props.order.indexOf(data2.id),
+            parentID: this.props.parentID,
+            renderer: this.props.renderer,
+            throughParentID: data2.id
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Week,
+        {
+          objectID: data2.week,
+          rank: this.props.order.indexOf(data2.id),
+          parentID: this.props.parentID,
+          renderer: this.props.renderer,
+          throughParentID: data2.id
+        }
+      );
+    });
+    this.objectType = CfObjectType.WEEKWORKFLOW;
+    this.objectClass = ".week-workflow";
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    var _a;
+    const data2 = this.props.data.id;
+    const cssClasses = [
+      "week-workflow",
+      data2.no_drag ? "no-drag" : "",
+      $((_a = this.mainDiv) == null ? void 0 : _a.current).hasClass("dragging") ? "dragging" : ""
+    ].join(" ");
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: cssClasses,
+        id: data2.id,
+        ref: this.mainDiv,
+        "data-child-id": data2.week,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Week, {})
+      }
+    );
+  }
+}
+const mapWeekWorkflowStateToProps$2 = (state, ownProps) => {
+  return getWeekWorkflowByID(state, ownProps.objectID);
+};
+const WeekWorkflow = connect(
+  mapWeekWorkflowStateToProps$2,
+  null
+)(WeekWorkflowUnconnected);
+class NodeComparisonUnconnected extends EditableComponentWithActions {
+  constructor(props) {
+    super(props);
+    this.objectType = CfObjectType.NODE;
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const side_actions = [];
+    let data_override;
+    let lefticon;
+    let righticon;
+    const data2 = this.props.data;
+    if (data2.represents_workflow) {
+      data_override = {
+        ...data2,
+        ...data2.linked_workflow_data,
+        id: data2.id
+      };
+    } else {
+      data_override = { ...data2 };
+    }
+    const renderer = this.props.renderer;
+    const selection_manager = renderer.selection_manager;
+    const style2 = {
+      backgroundColor: getColumnColour(this.props.column)
+    };
+    if (data2.lock) {
+      style2.outline = "2px solid " + data2.lock.user_colour;
+    }
+    if (checkSetHidden(data2, this.props.object_sets)) {
+      style2.display = "none";
+    }
+    let outcomenodes;
+    if (this.state.show_outcomes)
+      outcomenodes = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "outcome-node-container column-111111-" + data2.column,
+          onMouseLeave: () => {
+            this.setState({
+              show_outcomes: false
+            });
+          },
+          style: { borderColor: getColumnColour(this.props.column) },
+          children: data2.outcomenode_unique_set.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OutcomeNode,
+            {
+              objectID: outcomenode,
+              renderer
+            },
+            outcomenode
+          ))
+        }
+      );
+    if (data2.outcomenode_unique_set.length > 0) {
+      side_actions.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-node-indicator", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "outcome-node-indicator-number column-" + data2.column,
+              onMouseEnter: () => {
+                this.setState({ show_outcomes: true });
+              },
+              style: {
+                borderColor: getColumnColour(this.props.column)
+              },
+              children: data2.outcomenode_unique_set.length
+            }
+          ),
+          outcomenodes
+        ] })
+      );
+    }
+    if (data2.context_classification > 0) {
+      lefticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.context_choices.find(
+            (obj) => obj.type == data2.context_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + context_keys[data2.context_classification] + ".svg"
+        }
+      );
+    }
+    if (data2.task_classification > 0) {
+      righticon = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          title: renderer.task_choices.find(
+            (obj) => obj.type == data2.task_classification
+          ).name,
+          src: COURSEFLOW_APP.config.icon_path + task_keys[data2.task_classification] + ".svg"
+        }
+      );
+    }
+    const titleText = /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 });
+    const cssClasses = [
+      "node column-" + data2.column + " " + node_keys[data2.node_type],
+      data2.lock ? "locked locked-" + data2.lock.user_id : ""
+    ].join(" ");
+    const mouseover_actions = [];
+    if (!this.props.renderer.read_only) {
+      mouseover_actions.push(this.addInsertSibling(data2));
+      mouseover_actions.push(this.addDuplicateSelf(data2));
+      mouseover_actions.push(this.addDeleteSelf(data2));
+    }
+    if (renderer.view_comments) {
+      mouseover_actions.push(this.addCommenting());
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      this.addEditable(data_override),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          style: style2,
+          className: cssClasses,
+          id: data2.id,
+          ref: this.mainDiv,
+          onClick: (evt) => {
+            console.log("clicked");
+            console.log("clicked");
+            return () => selection_manager.changeSelection(evt, this);
+          },
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: lefticon }),
+              titleText,
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-icon", children: righticon })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-details", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              TitleText,
+              {
+                text: data_override.description,
+                defaultText: window.gettext("Click to edit")
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: side_actions })
+          ]
+        }
+      )
+    ] });
+  }
+}
+const mapStateToProps$f = (state, ownProps) => {
+  return getNodeByID(state, ownProps.objectID);
+};
+const NodeComparison = connect(
+  mapStateToProps$f,
+  null
+)(NodeComparisonUnconnected);
+class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  getNode() {
+    const data2 = this.props.data;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      NodeComparison,
+      {
+        objectID: data2.node,
+        parentID: this.props.parentID,
+        throughParentID: data2.id,
+        renderer: this.props.renderer,
+        column_order: this.props.column_order
+      }
+    );
+  }
+}
+const mapNodeWeekStateToProps = (state, ownProps) => {
+  return getNodeWeekByID(state, ownProps.objectID);
+};
+const NodeWeekComparison = connect(
+  mapNodeWeekStateToProps,
+  null
+)(NodeWeekComparisonUnconnected);
 class WeekComparisonUnconnected extends WeekUnconnected {
   /*******************************************************
    * LIFECYCLE
@@ -82602,211 +82798,15 @@ const WeekComparison = connect(
   mapWeekStateToProps$2,
   null
 )(WeekComparisonUnconnected);
-class Term extends WeekUnconnected {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  makeDragAndDrop() {
-    this.makeSortableNode(
-      $(this.node_block.current).children().children(".node-week").not(".ui-draggable"),
-      this.props.objectID,
-      "nodeweek",
-      ".node-week",
-      false,
-      // @ts-ignore
-      [200, 1],
-      null,
-      ".node"
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    const node_blocks = [];
-    for (let i = 0; i < this.props.column_order.length; i++) {
-      const col = this.props.column_order[i];
-      const nodeweeks = [];
-      for (let j = 0; j < data2.nodeweek_set.length; j++) {
-        const nodeweek = data2.nodeweek_set[j];
-        if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
-          nodeweeks.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              NodeWeek,
-              {
-                objectID: nodeweek,
-                parentID: data2.id,
-                renderer: this.props.renderer,
-                column_order: this.props.column_order
-              },
-              nodeweek
-            )
-          );
-        }
-      }
-      if (nodeweeks.length == 0)
-        nodeweeks.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "node-week placeholder",
-              style: { height: "100%" }
-            }
-          )
-        );
-      node_blocks.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "node-block term column-" + col,
-            id: this.props.objectID + "-node-block-column-" + col,
-            children: nodeweeks
-          },
-          col
-        )
-      );
-    }
-    let css_class = "week";
-    if (data2.is_strategy)
-      css_class += " strategy";
-    if (data2.lock)
-      css_class += " locked locked-" + data2.lock.user_id;
-    if (data2.is_dropped)
-      css_class += " dropped";
-    const style2 = {
-      border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
-    };
-    const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
-    const mouseover_actions = [];
-    if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data2));
-      mouseover_actions.push(this.addDuplicateSelf(data2));
-      mouseover_actions.push(this.addDeleteSelf(data2));
-    }
-    if (this.props.renderer.view_comments) {
-      mouseover_actions.push(this.addCommenting());
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      this.addEditable(data2),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          style: style2,
-          className: css_class,
-          ref: this.mainDiv,
-          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TitleText,
-              {
-                text: data2.title,
-                defaultText: data2.week_type_display + " " + (this.props.rank + 1)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: "node-block",
-                id: this.props.objectID + "-node-block",
-                ref: this.node_block,
-                children: node_blocks
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "week-drop-row hover-shade",
-                onClick: this.toggleDrop.bind(this),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right" })
-                ]
-              }
-            )
-          ]
-        }
-      )
-    ] });
-  }
-}
-const mapStateToProps$f = (state, ownProps) => {
-  return getTermByID(state, ownProps.objectID);
-};
-const Term$1 = connect(
-  mapStateToProps$f,
-  null
-)(Term);
-class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
-  constructor(props) {
-    super(props);
-    this.objectType = CfObjectType.WEEKWORKFLOW;
-    this.objectClass = ".week-workflow";
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    var _a;
-    const data2 = this.props.data;
-    let my_class = "week-workflow";
-    if (data2.no_drag)
-      my_class += " no-drag";
-    if ($((_a = this.mainDiv) == null ? void 0 : _a.current).hasClass("dragging"))
-      my_class += " dragging";
-    let week;
-    if (this.props.condensed)
-      week = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Term$1,
-        {
-          objectID: data2.week,
-          rank: this.props.order.indexOf(data2.id),
-          parentID: this.props.parentID,
-          renderer: this.props.renderer,
-          throughParentID: data2.id
-        }
-      );
-    else
-      week = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Week,
-        {
-          objectID: data2.week,
-          rank: this.props.order.indexOf(data2.id),
-          parentID: this.props.parentID,
-          renderer: this.props.renderer,
-          throughParentID: data2.id
-        }
-      );
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: my_class,
-        id: data2.id,
-        ref: this.mainDiv,
-        "data-child-id": data2.week,
-        children: week
-      }
-    );
-  }
-}
-const mapWeekWorkflowStateToProps$2 = (state, ownProps) => {
-  return getWeekWorkflowByID(state, ownProps.objectID);
-};
-const WeekWorkflow = connect(
-  mapWeekWorkflowStateToProps$2,
-  null
-)(WeekWorkflowUnconnected);
 class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    let my_class = "week-workflow";
-    if (data2.no_drag)
-      my_class += " no-drag";
+    const cssClasses = ["week-workflow", data2.no_drag ? "no-drag" : ""].join(
+      " "
+    );
     const week = /* @__PURE__ */ jsxRuntimeExports.jsx(
       WeekComparison,
       {
@@ -82820,7 +82820,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: my_class,
+        className: cssClasses,
         id: data2.id,
         ref: this.mainDiv,
         "data-child-id": data2.week,
@@ -85828,6 +85828,70 @@ function calculateTotal(children, outcomenodes) {
   }, null);
 }
 class TableCell extends reactExports.Component {
+  constructor() {
+    super(...arguments);
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Contents", ({ completionStatus, selfCompletion }) => {
+      if (completionStatus === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${COURSEFLOW_APP.config.icon_path}nocheck.svg` });
+      } else if (!completionStatus) {
+        return "";
+      }
+      if (this.props.outcomesType === 0 || completionStatus & 1) {
+        const icon = selfCompletion ? "solid_check.svg" : "check.svg";
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            className: selfCompletion ? "self-completed" : "",
+            src: `${COURSEFLOW_APP.config.icon_path}${icon}`
+          }
+        );
+      }
+      const outcomes = [
+        { bit: 2, label: "I" },
+        { bit: 4, label: "D" },
+        { bit: 8, label: "A" }
+      ];
+      return outcomes.filter(({ bit }) => completionStatus & bit).map(({ bit, label }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: `outcome-degree${selfCompletion & bit ? " self-completed" : ""}`,
+          children: label
+        },
+        label
+      ));
+    });
+    __publicField(this, "Input", () => {
+      const degree = this.props.degree;
+      const checked = !!degree;
+      if (this.props.readOnly || this.props.total) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      }
+      if (this.props.outcomesType === 0) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            onChange: this.toggleFunction.bind(this),
+            checked
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: degree, onChange: this.changeFunction.bind(this), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 0, children: "-" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1, children: "C" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 2, children: "I" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 4, children: "D" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 8, children: "A" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 6, children: "ID" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 10, children: "IA" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 12, children: "DA" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 14, children: "IDA" })
+      ] });
+    });
+  }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -85860,91 +85924,28 @@ class TableCell extends reactExports.Component {
       }
     );
   }
-  getContents(completion_status, self_completion) {
-    const contents = [];
-    let divclass = "";
-    if (completion_status === 0) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "nocheck.svg" });
-    } else if (!completion_status) {
-      return "";
-    }
-    if (this.props.outcomesType === 0 || completion_status & 1) {
-      if (self_completion)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            className: "self-completed",
-            src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
-          }
-        );
-      else
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "check.svg" });
-    }
-    if (completion_status & 2) {
-      if (self_completion & 2)
-        divclass = " self-completed";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
-      );
-    }
-    if (completion_status & 4) {
-      if (self_completion & 4)
-        divclass = " self-completed";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
-      );
-    }
-    if (completion_status & 8) {
-      if (self_completion & 8)
-        divclass = " self-completed";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
-      );
-    }
-    return contents;
-  }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const degree = this.props.degree;
-    let class_name = "table-cell";
-    let input;
-    if (this.props.total)
-      class_name += " total-cell";
-    if (this.props.grandTotal)
-      class_name += " grand-total-cell";
-    let checked = false;
-    if (degree)
-      checked = true;
-    if (!this.props.readOnly && !this.props.total) {
-      if (this.props.outcomesType === 0) {
-        input = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
+    const classNames = [
+      "table-cell",
+      this.props.total ? "total-cell" : "",
+      this.props.grandTotal ? "grand-total-cell" : ""
+    ].join(" ");
+    return (
+      // <div className={classNames} ref={this.mainDiv}> // @todo verify i don't think mainDiv is defined here
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: classNames, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          this.Contents,
           {
-            type: "checkbox",
-            onChange: this.toggleFunction.bind(this),
-            checked
+            completionStatus: this.props.degree,
+            selfCompletion: !this.props.total
           }
-        );
-      } else {
-        input = /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: degree, onChange: this.changeFunction.bind(this), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 0, children: "-" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1, children: "C" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 2, children: "I" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 4, children: "D" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 8, children: "A" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 6, children: "ID" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 10, children: "IA" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 12, children: "DA" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 14, children: "IDA" })
-        ] });
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: class_name, ref: this.mainDiv, children: [
-      this.getContents(degree, !this.props.total),
-      input
-    ] });
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Input, {})
+      ] })
+    );
   }
 }
 class OutcomeUnconnected2 extends ComponentWithToggleDrop {
@@ -85984,7 +85985,7 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
     if (is_dropped)
       droptext = window.gettext("hide");
     else
-      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
+      droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.ngettext(
         "descendant",
         "descendants",
         data2.child_outcome_links.length
@@ -86074,8 +86075,13 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
     return [full_row, child_rows];
   }
 }
-const mapOutcomeStateToProps = (state, own_props) => getOutcomeByID(state, own_props.objectID);
-const Outcome = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected2);
+const mapOutcomeStateToProps = (state, ownProps) => {
+  return getOutcomeByID(state, ownProps.objectID);
+};
+const Outcome = connect(
+  mapOutcomeStateToProps,
+  null
+)(OutcomeUnconnected2);
 class OutcomeBaseUnconnected extends ComponentWithToggleDrop {
   constructor() {
     super(...arguments);
@@ -86354,41 +86360,39 @@ const OutcomeLegend = connect(
   null
 )(OutcomeLegendUnconnected);
 class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop {
+  // StateType
   constructor(props) {
     super(props);
-    this.objectType = ObjectType.NODE;
-    this.state = {
-      initial_render: true
-    };
+    this.objectType = CfObjectType.NODE;
   }
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data2 = this.props.data;
-    if (data2.represents_workflow)
-      ({ ...data2, ...data2.linked_workflow_data, id: data2.id });
-    this.props.renderer.selection_manager;
     const style2 = {
       backgroundColor: getColumnColour(this.props.column)
     };
-    let css_class = "node column-" + data2.column + " " + node_keys[data2.node_type];
-    if (data2.is_dropped)
-      css_class += " dropped";
-    if (data2.lock)
-      css_class += " locked locked-" + data2.lock.user_id;
-    let comments;
+    const cssClasses = [
+      "node column-" + data2.column + " " + node_keys[data2.node_type],
+      data2.is_dropped ? "dropped" : "",
+      // @ts-ignore
+      data2.lock ? "locked locked-" + data2.lock.user_id : ""
+      // @todo it seems like data.lock will never be defined, verify this
+    ].join(" ");
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: this.mainDiv, className: "table-cell nodewrapper", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, style: style2, id: data2.id, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments })
-      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cssClasses, style: style2, id: String(data2.id), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(NodeTitle, { data: data2 }) }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
     ] });
   }
 }
-const mapNodeStateToProps = (state, own_props) => getNodeByID(state, own_props.objectID);
-const Index2 = connect(mapNodeStateToProps, null)(NodeOutcomeViewUnconnected);
+const mapNodeStateToProps = (state, ownProps) => {
+  return getNodeByID(state, ownProps.objectID);
+};
+const NodeOutcomeView = connect(
+  mapNodeStateToProps,
+  null
+)(NodeOutcomeViewUnconnected);
 class CompetencyMatrixViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -86547,7 +86551,12 @@ class CompetencyMatrixViewUnconnected extends reactExports.Component {
       nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header", children: nodecategory2.title }) }),
-        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Index2, { renderer: this.props.renderer, objectID: node2 }))
+        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeOutcomeView,
+          {
+            objectID: node2
+          }
+        ))
       ] }));
       const blank_line = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank-cell" }),
@@ -86801,7 +86810,12 @@ class OutcomeTableViewUnconnected extends reactExports.Component {
       const nodes = nodecategory.map((nodecategory2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "table-group", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper total-cell", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-category-header", children: nodecategory2.title }) }),
-        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(Index2, { renderer: this.props.renderer, objectID: node2 }))
+        nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          NodeOutcomeView,
+          {
+            objectID: node2
+          }
+        ))
       ] }));
       const outcomes = outcomes_sorted.map((category) => {
         var _a;

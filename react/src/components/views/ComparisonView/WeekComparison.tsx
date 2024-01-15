@@ -16,6 +16,9 @@ type ConnectedProps = GetWeekByIDType
 type OwnProps = {
   renderer: any
   objectID: number
+  rank?: number
+  parentID?: number
+  throughParentID: number
 }
 type PropsType = ConnectedProps & OwnProps
 

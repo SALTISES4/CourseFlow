@@ -4,10 +4,10 @@ import { connect } from 'react-redux'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import * as Utility from '@cfUtility'
 
-import WeekWorkflow from './WeekWorkflow'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType } from '@cfModule/types/enum'
+import WeekWorkflowComparison from '@cfViews/ComparisonView/WeekWorkflowComparison'
 // import $ from 'jquery'
 
 //Basic component representing the workflow
@@ -74,7 +74,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
     const data = this.props.data
     const renderer = this.props.renderer
     const weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
-      <WeekWorkflow
+      <WeekWorkflowComparison
         condensed={data.condensed}
         key={weekworkflow}
         objectID={weekworkflow}
