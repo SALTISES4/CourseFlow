@@ -186,7 +186,8 @@ class CompetencyMatrixViewUnconnected extends React.Component {
           {nodecategory.nodes.map((node) => (
             <NodeOutcomeView
               // renderer={this.props.renderer}  // renderer not used?
-              objectID={node} />
+              objectID={node}
+            />
           ))}
         </div>
       ))

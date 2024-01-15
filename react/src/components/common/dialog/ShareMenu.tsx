@@ -106,7 +106,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
       return [
         <div className="big-buttons-wrapper">
-
           <div
             className={public_class}
             // @ts-ignore @todo disabled is not allowed on a div
@@ -132,7 +131,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               {window.gettext('Only added collaborators can view')}
             </div>
           </div>
-
         </div>,
         disabled_indicator
       ]

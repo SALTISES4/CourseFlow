@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getWeekWorkflowByID } from '@cfFindState'
 import { WeekWorkflowUnconnected } from '@cfViews/WorkflowView/WeekWorkflow'
-import WeekComparison from "@cfViews/ComparisonView/WeekComparison";
+import WeekComparison from '@cfViews/ComparisonView/WeekComparison'
 
 /**
  * As above, but for the comparison view specifically. This renders a

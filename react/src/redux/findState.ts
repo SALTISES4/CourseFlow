@@ -3,7 +3,8 @@ import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
 import {
   AppState,
-  Columnworkflow, NodeType,
+  Columnworkflow,
+  NodeType,
   ObjectSet,
   Outcome,
   OutcomeOutcome,

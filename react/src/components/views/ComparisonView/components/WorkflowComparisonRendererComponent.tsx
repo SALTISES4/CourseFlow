@@ -4,7 +4,7 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
 import { getWorkflowContext } from '@XMLHTTP/API/workflow'
-import WorkflowComparison from "@cfPages/Workflow/WorkflowComparison";
+import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
 
 type OwnProps = {
   workflowID: any

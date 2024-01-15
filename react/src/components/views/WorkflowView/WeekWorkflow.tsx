@@ -71,7 +71,6 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
     // if (data.no_drag) my_class += ' no-drag'
     // if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
 
-
     return (
       <div
         className={cssClasses}
