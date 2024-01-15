@@ -43,7 +43,7 @@ export const getColumnByID = (state: AppState, id: number) => {
 export type GetWeekByIDType = {
   data: any
   column_order: any
-  sibling_count: any
+  sibling_count?: any
   nodeweeks: any
   workflow_id?: any
 }
@@ -109,7 +109,14 @@ export const getTermByID = (state: AppState, id: number): TermByIDType => {
   }
 }
 
-export const getWeekWorkflowByID = (state: AppState, id: number) => {
+export type GetWeekWorkflowByID = {
+  data: weekworkflow
+  order: state.workflow.weekworkflow_set
+}
+export const getWeekWorkflowByID = (
+  state: AppState,
+  id: number
+): GetWeekWorkflowByID => {
   for (const i in state.weekworkflow) {
     const weekworkflow = state.weekworkflow[i]
     if (weekworkflow.id == id)
@@ -117,7 +124,14 @@ export const getWeekWorkflowByID = (state: AppState, id: number) => {
   }
 }
 
-export const getOutcomeWorkflowByID = (state: AppState, id: number) => {
+export type GetOutcomeWorkflowByIDType = {
+  data: any
+  order: any
+}
+export const getOutcomeWorkflowByID = (
+  state: AppState,
+  id: number
+): GetOutcomeWorkflowByIDType => {
   for (const i in state.outcomeworkflow) {
     const outcomeworkflow = state.outcomeworkflow[i]
     if (outcomeworkflow.id == id)
@@ -137,7 +151,12 @@ export const getOutcomeWorkflowByID = (state: AppState, id: number) => {
 //   console.log('failed to find parent workflow')
 // }
 
-export const getNodeByID = (state: AppState, id: number) => {
+export type GetNodeByIDType = {
+  data: Node
+  column: any
+  object_sets: any
+}
+export const getNodeByID = (state: AppState, id: number): GetNodeByIDType => {
   for (const i in state.node) {
     var node = state.node[i]
     if (node.id === id) {
@@ -154,7 +173,15 @@ export const getNodeByID = (state: AppState, id: number) => {
   console.log('failed to find node')
 }
 
-export const getNodeWeekByID = (state: AppState, id: number) => {
+export type GetNodeWeekByIDType = {
+  data: any
+  order: any
+  column: any
+}
+export const getNodeWeekByID = (
+  state: AppState,
+  id: number
+): GetNodeWeekByIDType => {
   for (const i in state.nodeweek) {
     const nodeweek = state.nodeweek[i]
     if (nodeweek.id === id) {
@@ -168,7 +195,13 @@ export const getNodeWeekByID = (state: AppState, id: number) => {
   }
 }
 
-export const getNodeLinkByID = (state: AppState, id: number) => {
+export type GetNodeLinkByIDType = {
+  data: nodelink
+}
+export const getNodeLinkByID = (
+  state: AppState,
+  id: number
+): GetNodeLinkByIDType => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) return { data: nodelink }
@@ -440,7 +473,6 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflow_set: number[]
 ): SortedOutcomesFromOutcomeWorkflowSetType => {
-
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
     outcomeworkflow_set
@@ -450,7 +482,10 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   )
 
   // @todo clean up
-  const outcomes = Utility.filterThenSortByID<Outcome>(state.outcome, outcome_ids)
+  const outcomes = Utility.filterThenSortByID<Outcome>(
+    state.outcome,
+    outcome_ids
+  )
   if (outcomes.length === 0) {
     return outcomes
   }

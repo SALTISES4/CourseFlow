@@ -1,6 +1,6 @@
-import * as React from "react";
-import * as Constants from "@cfConstants";
-import $ from "jquery";
+import * as React from 'react'
+import * as Constants from '@cfConstants'
+import $ from 'jquery'
 
 type StateProps = {
   published: boolean

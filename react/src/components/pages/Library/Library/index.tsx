@@ -1,9 +1,9 @@
 // @ts-nocheck
 import * as React from 'react'
 import { LibraryQueryResp } from '@XMLHTTP/types.js'
-import { MenuBar } from '@cfCommonComponents/components/index.jsx'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
-import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
+import { getLibraryQuery } from '@XMLHTTP/API/pages'
+import MenuBar from '@cfCommonComponents/components/MenuBar'
 
 /*******************************************************
  * @LibraryRenderer

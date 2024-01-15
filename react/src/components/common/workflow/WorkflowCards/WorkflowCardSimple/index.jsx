@@ -34,8 +34,9 @@ class WorkflowCardSimple extends React.Component {
    * RENDER
    *******************************************************/
   render() {
-    var data = this.props.workflow_data
-    var css_class = 'simple-workflow workflow-for-menu hover-shade ' + data.type
+    const data = this.props.workflow_data
+    const css_class =
+      'simple-workflow workflow-for-menu hover-shade ' + data.type
 
     return (
       <div

@@ -1,11 +1,8 @@
 // @ts-nocheck
 import * as React from 'react'
-import {
-  Discipline,
-  ExploreViewContextDataDTO
-} from '@cfPages/Library/Explore/types'
-import { getLibraryQuery } from '@XMLHTTP/APIFunctions'
+import { ExploreViewContextDataDTO } from '@cfPages/Library/Explore/types'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
+import { getLibraryQuery } from '@XMLHTTP/API/pages'
 
 /*******************************************************
  * @ExploreRenderer

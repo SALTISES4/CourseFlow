@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { Outcome } from '../OutcomeEditView'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/PostFunctions'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 
 /**
  * Shows the outcome from the child workflow in the alignment view, and the outcomes
@@ -19,7 +19,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     const data = this.props.data
     const parent_outcomes = this.props.horizontal_links.map(
       (horizontal_link) => {
-        for (var i = 0; i < this.props.outcomenodes.length; i++) {
+        for (let i = 0; i < this.props.outcomenodes.length; i++) {
           if (
             this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome
           ) {
@@ -97,7 +97,7 @@ const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
   state,
   own_props
 ) => {
-  for (var i = 0; i < state.outcome.length; i++) {
+  for (let i = 0; i < state.outcome.length; i++) {
     if (state.outcome[i].id == own_props.objectID) {
       const outcome = state.outcome[i]
       const allowed_outcomenodes = Utility.filterThenSortByID(

@@ -12,18 +12,9 @@ import {
 } from '@reduxjs/toolkit'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
-import {
-  getPublicWorkflowChildDataQuery,
-  getPublicWorkflowDataQuery,
-  getPublicWorkflowParentDataQuery,
-  getWorkflowChildDataQuery,
-  getWorkflowParentDataQuery
-} from '@XMLHTTP/PostFunctions'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
-import { getWorkflowDataQuery, updateValueQuery } from '@XMLHTTP/APIFunctions'
 import {
-  Choice,
   Project,
   WorkflowDetailViewDTO
 } from '@cfPages/Workflow/Workflow/types'
@@ -34,6 +25,15 @@ import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
+import {
+  getPublicWorkflowChildDataQuery,
+  getPublicWorkflowDataQuery,
+  getPublicWorkflowParentDataQuery,
+  getWorkflowChildDataQuery,
+  getWorkflowDataQuery,
+  getWorkflowParentDataQuery
+} from '@XMLHTTP/API/workflow'
+import { updateValueQuery } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
 const cache = createCache({
@@ -88,7 +88,7 @@ class Workflow {
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
-  private getWorkflowParentData: (
+  protected getWorkflowParentData: (
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { debounce } from '@cfUtility'
-import { searchAllObjectsQuery } from '@XMLHTTP/APIFunctions'
 // import $ from 'jquery'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
+import { searchAllObjectsQuery } from '@XMLHTTP/API/pages'
 
 type Filter = {
   name: string

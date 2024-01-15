@@ -60,17 +60,11 @@ export class Loader {
 
 //Check if an object (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
 export function checkSetHidden(data, objectsets) {
-  let hidden = false
-  if (data.sets.length > 0 && objectsets) {
-    hidden = true
-    for (let i = 0; i < objectsets.length; i++) {
-      if (!objectsets[i].hidden && data.sets.indexOf(objectsets[i].id) >= 0) {
-        hidden = false
-        break
-      }
-    }
+  if (data.sets.length === 0 || !objectsets) {
+    return false
   }
-  return hidden
+
+  return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id))
 }
 
 // Do a bit of cleaning to unescape certain characters and display them correctly
@@ -205,5 +199,3 @@ export const debounce = (func, timeout = 300) => {
     }, timeout)
   }
 }
-
-

@@ -4,7 +4,7 @@ import * as Constants from '@cfConstants'
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {
   render() {
-    var text = this.props.text
+    let text = this.props.text
     if (
       (this.props.text == null || this.props.text == '') &&
       this.props.defaultText != null

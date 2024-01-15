@@ -1,10 +1,12 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
+import { deleteSelfQuery } from '@XMLHTTP/API/self'
 import {
-  addTerminologyQuery, deleteSelfQuery,
+  addTerminologyQuery,
   updateValueInstantQuery
-} from '@XMLHTTP/APIFunctions'
+} from '@XMLHTTP/API/global'
+
 // import $ from 'jquery'
 
 type Data = any
@@ -12,7 +14,6 @@ type StateProps = Data & {
   selected_set: any
   object_sets: any
   termsingular: any
-
 }
 type PropsType = {
   data: any

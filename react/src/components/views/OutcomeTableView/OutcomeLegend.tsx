@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { LegendLine } from '@cfUIComponents'
-import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView'
 import { AppState } from '@cfRedux/type.js'
-import { WorkflowLegendUnconnectedType } from '@cfViews/WorkflowView/WorkflowLegend'
+import {
+  WorkflowLegendUnconnected,
+  WorkflowLegendUnconnectedType
+} from '@cfViews/WorkflowView/WorkflowLegend'
 
 type ConnectedProps = {
   outcomes_type: any
@@ -72,20 +74,13 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
     )
   }
 }
-const mapStateToProps = (
-  state: AppState
-): ConnectedProps => {
+const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     outcomes_type: state.workflow.outcomes_type
   }
 }
 
-const OutcomeLegend = connect<
-  ConnectedProps,
-  object,
-  OwnProps,
-  AppState
->(
+const OutcomeLegend = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeLegendUnconnected)

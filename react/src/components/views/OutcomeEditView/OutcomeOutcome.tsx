@@ -1,8 +1,10 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
 import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The link between an outcome and its children
@@ -19,7 +21,7 @@ type PropsType = OwnProps & ConnectedProps
 class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
   constructor(props) {
     super(props)
-    // this.objectType = 'outcomeoutcome' // @todo verify this is not used
+    this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
   }
 
   /*******************************************************

@@ -31,7 +31,7 @@ class OutcomeUnconnected extends TableOutcomeUnconnected {
 }
 
 const mapOutcomeStateToProps = (state, own_props) => {
- return getOutcomeByID(state, own_props.objectID)
+  return getOutcomeByID(state, own_props.objectID)
 }
 /*******************************************************
  * CONNECT REDUX

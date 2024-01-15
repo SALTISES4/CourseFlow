@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { OutcomeNode } from '../WorkflowView'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/PostFunctions'
+import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 
 /**
  * Display the parent outcome tagged to a child workflow's outcome in the

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -14,7 +15,8 @@ import {
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
 import { AppState } from '@cfRedux/type'
-import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
+import { addStrategyQuery } from '@XMLHTTP/API/strategy'
+import { CfObjectType } from '@cfModule/types/enum'
 
 // data: any
 // column_order: any
@@ -23,9 +25,10 @@ import { addStrategyQuery } from '@XMLHTTP/APIFunctions'
 
 type ConnectedProps = GetWeekByIDType
 type OwnProps = {
-  column_order: any // @todo i think this is delivered by redux
   rank: number
-  nodes_by_column: any
+  column_order?: any // @todo i think this is delivered by redux
+  nodes_by_column?: any
+  throughParentID?: any
 } & EditableComponentWithSortingProps
 export type WeekUnconnectedPropsType = OwnProps
 
@@ -39,11 +42,10 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   P,
   EditableComponentWithSortingState
 > {
-  private objectClass: string
   protected node_block: React.RefObject<HTMLDivElement>
   constructor(props: P) {
     super(props)
-    this.objectType = 'week'
+    this.objectType = CfObjectType.WEEK
     this.objectClass = '.week'
     this.node_block = React.createRef()
   }
@@ -66,24 +68,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getNodes() {
-    const nodes = this.props.data.nodeweek_set.map((nodeweek) => (
-      <NodeWeek
-        key={nodeweek}
-        objectID={nodeweek}
-        parentID={this.props.data.id}
-        renderer={this.props.renderer}
-        column_order={this.props.column_order}
-      />
-    ))
-    if (nodes.length === 0)
-      nodes.push(
-        <div className="node-week placeholder" style={{ height: '100%' }}>
-          Drag and drop nodes from the sidebar to add.
-        </div>
-      )
-    return nodes
-  }
 
   makeDragAndDrop() {
     //Makes the nodeweeks in the node block draggable
@@ -212,29 +196,47 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   }
 
   /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  Nodes = () => {
+    if (!this.props.data.nodeweek_set.length) {
+      return (
+        <div className="node-week placeholder" style={{ height: '100%' }}>
+          Drag and drop nodes from the sidebar to add.
+        </div>
+      )
+    }
+    return this.props.data.nodeweek_set.map((nodeweek) => (
+      <NodeWeek
+        key={nodeweek}
+        objectID={nodeweek}
+        parentID={this.props.data.id}
+        renderer={this.props.renderer}
+        column_order={this.props.column_order}
+      />
+    ))
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data = this.props.data
     const renderer = this.props.renderer
     const selection_manager = renderer.selection_manager
-    const nodes = this.getNodes()
     let css_class = 'week'
     if (data.is_strategy) css_class += ' strategy'
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
     if (data.is_dropped) css_class += ' dropped'
 
-    let default_text
-    if (!renderer.is_strategy)
-      default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    const default_text = !renderer.is_strategy
+      ? data.week_type_display + ' ' + (this.props.rank + 1)
+      : undefined
+    const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
 
-    const style  = {
+    const style: React.CSSProperties = {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
-
-    let dropIcon
-    if (data.is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
 
     const mouseoverActions = []
     if (!this.props.renderer.read_only && !renderer.is_strategy) {
@@ -247,6 +249,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     this.addEditable(data)
+    console.log('this.addEditable(data)')
+    console.log(data)
     return (
       <div
         style={style}
@@ -263,7 +267,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           id={this.props.objectID + '-node-block'}
           ref={this.node_block}
         >
-          {nodes}
+          <this.Nodes />
         </div>
         <div
           className="week-drop-row hover-shade"
@@ -275,7 +279,12 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           </div>
           <div className="node-drop-side node-drop-right" />
         </div>
-        {/*{this.addEditable(data)} // @todo verify this */}
+        {/* // @ts-ignore */}
+        {
+          // @ts-ignore
+          // this.addEditable(data)
+        }
+        {/*// @todo verify this*/}
         {data.strategy_classification > 0 && (
           <div className="strategy-tab">
             <div className="strategy-tab-triangle" />

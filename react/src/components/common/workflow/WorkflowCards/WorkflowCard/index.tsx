@@ -2,13 +2,11 @@ import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { WorkflowTitle } from '@cfUIComponents/Titles'
-import {
-  setWorkflowVisibilityQuery,
-  toggleFavourite
-} from '@XMLHTTP/PostFunctions'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
+import { toggleFavourite } from '@XMLHTTP/API/pages'
+import { setWorkflowVisibilityQuery } from '@XMLHTTP/API/workflow'
 
 /*******************************************************
  * A workflow card for a menu
@@ -24,16 +22,20 @@ import { WorkflowType } from '@cfModule/types/enum'
 type StateType = {
   favourite: any
 }
+export type WorkflowCardState = StateType
 
-class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
-  private readonly mainDiv: React.RefObject<HTMLDivElement>
+class WorkflowCard<
+  P extends WorkflowCardProps,
+  S extends StateType
+> extends React.Component<P, S> {
+  protected readonly mainDiv: React.RefObject<HTMLDivElement>
   private readonly workflow: Workflow
 
-  constructor(props: WorkflowCardProps) {
+  constructor(props: P) {
     super(props)
     this.state = {
       favourite: props.workflowData.favourite
-    }
+    } as S
     this.workflow = this.props.workflowData
     this.mainDiv = React.createRef()
   }
@@ -186,7 +188,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
       this.workflow.type !== WorkflowType.PROJECT &&
       this.workflow.type !== WorkflowType.LIVE_PROJECT
 
-    if (!this.props.readOnly  && isTeacher && isEligibleType) {
+    if (!this.props.readOnly && isTeacher && isEligibleType) {
       return (
         <div
           className="permission-select"
@@ -256,7 +258,7 @@ class WorkflowCard extends React.Component<WorkflowCardProps, StateType> {
             data={this.workflow}
           />
           <this.Visible />
-          {<this.TypeIndicator />}
+          <this.TypeIndicator />
         </div>
         <div className="workflow-created">{creationText}</div>
         {description}

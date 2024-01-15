@@ -1,16 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import { makeProjectLiveQuery } from '@XMLHTTP/PostFunctions'
 // @local
-import { MenuBar } from '@cfCommonComponents/components'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
-import {
-  deleteSelfQuery,
-  duplicateBaseItemQuery,
-  getUsersForObjectQuery,
-  getWorkflowsForProjectQuery,
-  restoreSelfQuery
-} from '@XMLHTTP/APIFunctions'
 import {
   ProjectData,
   ProjectMenuProps
@@ -22,6 +13,12 @@ import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
+import MenuBar from '@cfCommonComponents/components/MenuBar'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
+import { makeProjectLiveQuery } from '@XMLHTTP/API/project'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
 
 /*******************************************************

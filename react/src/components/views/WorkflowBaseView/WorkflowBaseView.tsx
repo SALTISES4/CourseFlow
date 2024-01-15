@@ -3,25 +3,17 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 
-import { MenuBar } from '@cfCommonComponents/components/index.jsx'
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.jsx'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import ConnectionBar from '@cfModule/ConnectionBar'
 
-import { WorkflowView } from '../WorkflowView/index.js'
+import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
 import { AlignmentView } from '../AlignmentView/index.js'
 import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import {
-  deleteSelfQuery,
-  duplicateBaseItemQuery,
-  getTargetProjectMenu,
-  getUsersForObjectQuery,
-  restoreSelfQuery
-} from '@XMLHTTP/APIFunctions'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/WorkflowBaseView/ParentWorkflowIndicator'
@@ -32,10 +24,15 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 import { WorkflowTitle } from '@cfUIComponents'
 import CollapsibleText from '@cfUIComponents/CollapsibleText'
-import { AppState, Workflow } from '@cfRedux/type'
+import { AppState } from '@cfRedux/type'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
-import { ViewType } from '@cfModule/types/enum'
+import { CfObjectType, ViewType } from '@cfModule/types/enum'
+import MenuBar from '@cfCommonComponents/components/MenuBar'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
+import { getTargetProjectMenu } from '@XMLHTTP/API/project'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -87,7 +84,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   constructor(props: PropsType) {
     super(props)
 
-    this.objectType = 'workflow'
+    this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 1, 2, 3, 4]
 
     this.readOnly = this.props.renderer.read_only
@@ -620,7 +617,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           websocket={this.websocket}
           // connection_update_receive={this.props.renderer.connection_update_received}
           // renderer={renderer}
-
         />
       )
     }
@@ -944,41 +940,42 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    *******************************************************/
   render() {
     return (
-      <div className="main-block">
-        <MenuBar
-          overflowLinks={this.OverflowLinks}
-          visibleButtons={this.VisibleButtons}
-          viewbar={this.ViewBar}
-          userbar={this.UserBar}
-        />
-        <div className="right-panel-wrapper">
-          <div className="body-wrapper">
-            <div id="workflow-wrapper" className="workflow-wrapper">
-              {<this.Header />}
-              {this.addEditable(this.props.data)}
-
-              <div className="workflow-container">
-                <this.Content />
-              </div>
-              {this.getReturnLinks()}
-              <ParentWorkflowIndicator
-                renderer={this.props.renderer}
-                workflow_id={this.workflowId}
-              />
-            </div>
-          </div>
-          <RightSideBar
-            context="workflow"
-            renderer={this.props.renderer}
-            data={this.props.data}
-            parentRender={this.renderMethod}
+      <>
+        {this.addEditable(this.props.data)}
+        <div className="main-block">
+          <MenuBar
+            overflowLinks={this.OverflowLinks}
+            visibleButtons={this.VisibleButtons}
+            viewbar={this.ViewBar}
+            userbar={this.UserBar}
           />
-        </div>
+          <div className="right-panel-wrapper">
+            <div className="body-wrapper">
+              <div id="workflow-wrapper" className="workflow-wrapper">
+                {<this.Header />}
+                <div className="workflow-container">
+                  <this.Content />
+                </div>
+                {this.getReturnLinks()}
+                <ParentWorkflowIndicator
+                  renderer={this.props.renderer}
+                  workflow_id={this.workflowId}
+                />
+              </div>
+            </div>
+            <RightSideBar
+              context="workflow"
+              renderer={this.props.renderer}
+              data={this.props.data}
+              parentRender={this.renderMethod}
+            />
+          </div>
 
-        <this.ShareDialog />
-        <this.ExportDialog />
-        <this.ImportDialog />
-      </div>
+          <this.ShareDialog />
+          <this.ExportDialog />
+          <this.ImportDialog />
+        </div>
+      </>
     )
   }
 }

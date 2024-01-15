@@ -9,6 +9,7 @@ import { AppState } from '@cfRedux/type'
 
 type OwnProps = {
   objectID: number
+  throughParentID?: any
 } & WeekUnconnectedPropsType
 type ConnectedProps = TermByIDType
 type PropsType = OwnProps & ConnectedProps
@@ -101,44 +102,44 @@ class Term extends WeekUnconnected<PropsType> {
       mouseover_actions.push(this.addCommenting())
     }
 
-    // PORTAL
-    this.addEditable(data)
-
     return (
-      <div
-        style={style}
-        className={css_class}
-        ref={this.mainDiv}
-        onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
-        }
-      >
-        <div className="mouseover-container-bypass">
-          <div className="mouseover-actions">{mouseover_actions}</div>
-        </div>
-        <TitleText
-          text={data.title}
-          defaultText={data.week_type_display + ' ' + (this.props.rank + 1)}
-        />
+      <>
+        {this.addEditable(data)}
+
         <div
-          className="node-block"
-          id={this.props.objectID + '-node-block'}
-          ref={this.node_block}
+          style={style}
+          className={css_class}
+          ref={this.mainDiv}
+          onClick={(evt) =>
+            this.props.renderer.selection_manager.changeSelection(evt, this)
+          }
         >
-          {node_blocks}
-        </div>
-        <div
-          className="week-drop-row hover-shade"
-          onClick={this.toggleDrop.bind(this)}
-        >
-          <div className="node-drop-side node-drop-left"></div>
-          <div className="node-drop-middle">
-            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+          <div className="mouseover-container-bypass">
+            <div className="mouseover-actions">{mouseover_actions}</div>
           </div>
-          <div className="node-drop-side node-drop-right"></div>
+          <TitleText
+            text={data.title}
+            defaultText={data.week_type_display + ' ' + (this.props.rank + 1)}
+          />
+          <div
+            className="node-block"
+            id={this.props.objectID + '-node-block'}
+            ref={this.node_block}
+          >
+            {node_blocks}
+          </div>
+          <div
+            className="week-drop-row hover-shade"
+            onClick={this.toggleDrop.bind(this)}
+          >
+            <div className="node-drop-side node-drop-left"></div>
+            <div className="node-drop-middle">
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+            </div>
+            <div className="node-drop-side node-drop-right"></div>
+          </div>
         </div>
-        {/*{this.addEditable(data)}* // @todo this is a portal and shouldn't be returned in a render function */}
-      </div>
+      </>
     )
   }
 }

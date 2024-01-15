@@ -8,19 +8,18 @@ import EditableComponentWithComments, {
 import {
   deleteSelfQuery,
   duplicateSelfQuery,
-  insertChildQuery,
-  insertSiblingQuery,
   restoreSelfQuery
-} from '@XMLHTTP/APIFunctions'
+} from '@XMLHTTP/API/self'
+import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/global'
 
 type OwnProps = {
-  sibling_count: any
-  parentID: any
+  sibling_count?: any
+  parentID?: any
 } & EditableComponentWithCommentsType
 export type EditableComponentWithActionsProps = OwnProps
 
 type StateType = EditableComponentWithCommentsStateType
-export type EditableComponentWithCommentsState = StateType
+export type EditableComponentWithActionsState = StateType
 
 /**
  * Extends the React component to add a few features that are used in a large number of components

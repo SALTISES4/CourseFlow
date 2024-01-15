@@ -1,9 +1,11 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { getPublicParentWorkflowInfo } from '@XMLHTTP/PostFunctions.js'
 import { WorkflowTitle } from '@cfUIComponents'
 import { connect } from 'react-redux'
-import { getParentWorkflowInfoQuery } from '@XMLHTTP/APIFunctions'
+import {
+  getParentWorkflowInfoQuery,
+  getPublicParentWorkflowInfo
+} from '@XMLHTTP/API/workflow'
 // import $ from 'jquery'
 
 /**
@@ -43,8 +45,8 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
    *******************************************************/
   getTypeIndicator(data) {
     const type = data.type
-    let type_text = gettext(type)
-    if (data.is_strategy) type_text += gettext(' strategy')
+    let type_text = window.gettext(type)
+    if (data.is_strategy) type_text += window.gettext(' strategy')
     return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
   }
 

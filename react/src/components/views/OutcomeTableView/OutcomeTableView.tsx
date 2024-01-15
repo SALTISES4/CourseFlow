@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -14,6 +15,7 @@ import {
 } from '@cfRedux/type'
 import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The outcome table.
@@ -38,7 +40,7 @@ type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   constructor(props: PropsType) {
     super(props)
-    // this.objectType = 'workflow' @todo i don't think this is used
+    this.objectType = CfObjectType.WORKFLOW // @todo check addEditable
     //  this.state = {}
   }
 
