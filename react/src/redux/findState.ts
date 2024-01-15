@@ -3,7 +3,7 @@ import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
 import {
   AppState,
-  Columnworkflow,
+  Columnworkflow, NodeType,
   ObjectSet,
   Outcome,
   OutcomeOutcome,
@@ -152,7 +152,7 @@ export const getOutcomeWorkflowByID = (
 // }
 
 export type GetNodeByIDType = {
-  data: Node
+  data: NodeType
   column: any
   object_sets: any
 }

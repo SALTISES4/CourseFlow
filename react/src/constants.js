@@ -116,6 +116,7 @@ export const node_type_keys = {
   2: 'program node'
 }
 
+// @todo this is redundant now
 export const object_dictionary = {
   nodelink: 'nodelink',
   node: 'node',

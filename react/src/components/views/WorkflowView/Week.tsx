@@ -224,10 +224,17 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     const data = this.props.data
     const renderer = this.props.renderer
     const selection_manager = renderer.selection_manager
-    let css_class = 'week'
-    if (data.is_strategy) css_class += ' strategy'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
-    if (data.is_dropped) css_class += ' dropped'
+    // const css_class = 'week'
+
+    const cssClasses = [
+      'week',
+      data.is_strategy ? 'strategy' : '',
+      data.lock ? 'locked locked-' + data.lock.user_id : '',
+      data.is_dropped ? ' dropped' : ''
+    ].join(' ')
+    // if (data.is_strategy) css_class += ' strategy'
+    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    // if (data.is_dropped) css_class += ' dropped'
 
     const default_text = !renderer.is_strategy
       ? data.week_type_display + ' ' + (this.props.rank + 1)
@@ -254,7 +261,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     return (
       <div
         style={style}
-        className={css_class}
+        className={cssClasses}
         ref={this.mainDiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >

@@ -28,18 +28,13 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
     this.objectType = CfObjectType.WEEKWORKFLOW
     this.objectClass = '.week-workflow'
   }
-
   /*******************************************************
-   * RENDER
+   * COMPONENTS
    *******************************************************/
-  render() {
+  Week = () => {
     const data = this.props.data
-    let my_class = 'week-workflow'
-    if (data.no_drag) my_class += ' no-drag'
-    if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
-    let week
-    if (this.props.condensed)
-      week = (
+    if (this.props.condensed) {
+      return (
         <Term
           objectID={data.week}
           rank={this.props.order.indexOf(data.id)}
@@ -48,24 +43,43 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
           throughParentID={data.id}
         />
       )
-    else
-      week = (
-        <Week
-          objectID={data.week}
-          rank={this.props.order.indexOf(data.id)}
-          parentID={this.props.parentID}
-          renderer={this.props.renderer}
-          throughParentID={data.id}
-        />
-      )
+    }
+
+    return (
+      <Week
+        objectID={data.week}
+        rank={this.props.order.indexOf(data.id)}
+        parentID={this.props.parentID}
+        renderer={this.props.renderer}
+        throughParentID={data.id}
+      />
+    )
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data.id
+
+    const cssClasses = [
+      'week-workflow',
+      data.no_drag ? 'no-drag' : '',
+      $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
+    ].join(' ')
+    // let my_class = 'week-workflow'
+    // if (data.no_drag) my_class += ' no-drag'
+    // if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
+
+
     return (
       <div
-        className={my_class}
+        className={cssClasses}
         id={data.id}
         ref={this.mainDiv}
         data-child-id={data.week}
       >
-        {week}
+        <this.Week />
       </div>
     )
   }

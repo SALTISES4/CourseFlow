@@ -1,16 +1,19 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID } from '@cfFindState'
+import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
 import { Component } from '@cfParentComponents'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfParentComponents/ComponentWithToggleDrop'
+import { AppState } from '@cfRedux/type'
 // import $ from 'jquery'
 
-type PropsType = {
+type TableCellPropsType = {
   outcomesType: number
-  total: boolean
+  total?: boolean
   readOnly: boolean
   degree: number
   nodeID?: number
@@ -22,7 +25,7 @@ type PropsType = {
 /**
  *
  */
-class TableCell extends React.Component<PropsType> {
+class TableCell extends React.Component<TableCellPropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -55,101 +58,128 @@ class TableCell extends React.Component<PropsType> {
     )
   }
 
-  getContents(completion_status, self_completion) {
-    const contents = []
-    let divclass = ''
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
 
-    if (completion_status === 0) {
-      return <img src={COURSEFLOW_APP.config.icon_path + 'nocheck.svg'} />
-    } else if (!completion_status) {
+  Contents = ({ completionStatus, selfCompletion }) => {
+    if (completionStatus === 0) {
+      return <img src={`${COURSEFLOW_APP.config.icon_path}nocheck.svg`} />
+    } else if (!completionStatus) {
       return ''
     }
-    if (this.props.outcomesType === 0 || completion_status & 1) {
-      if (self_completion)
-        return (
-          <img
-            className="self-completed"
-            src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
-          />
-        )
-      else return <img src={COURSEFLOW_APP.config.icon_path + 'check.svg'} />
+
+    if (this.props.outcomesType === 0 || completionStatus & 1) {
+      const icon = selfCompletion ? 'solid_check.svg' : 'check.svg'
+      return (
+        <img
+          className={selfCompletion ? 'self-completed' : ''}
+          src={`${COURSEFLOW_APP.config.icon_path}${icon}`}
+        />
+      )
     }
 
-    // @todo why is bitwise being used here? needs explanation comments
-    if (completion_status & 2) {
-      if (self_completion & 2) divclass = ' self-completed'
-      contents.push(
-        <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
+    const outcomes = [
+      { bit: 2, label: 'I' },
+      { bit: 4, label: 'D' },
+      { bit: 8, label: 'A' }
+    ]
+
+    return outcomes
+      .filter(({ bit }) => completionStatus & bit)
+      .map(({ bit, label }) => (
+        <div
+          className={`outcome-degree${
+            selfCompletion & bit ? ' self-completed' : ''
+          }`}
+          key={label}
+        >
+          {label}
+        </div>
+      ))
+  }
+
+  Input = () => {
+    const degree = this.props.degree
+    const checked = !!degree
+
+    if (this.props.readOnly || this.props.total) {
+      return <></>
+    }
+
+    if (this.props.outcomesType === 0) {
+      return (
+        <input
+          type="checkbox"
+          onChange={this.toggleFunction.bind(this)}
+          checked={checked}
+        />
       )
     }
-    if (completion_status & 4) {
-      if (self_completion & 4) divclass = ' self-completed'
-      contents.push(
-        <div className={'outcome-developed outcome-degree' + divclass}>D</div>
-      )
-    }
-    if (completion_status & 8) {
-      if (self_completion & 8) divclass = ' self-completed'
-      contents.push(
-        <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
-      )
-    }
-    return contents
+
+    return (
+      <select value={degree} onChange={this.changeFunction.bind(this)}>
+        <option value={0}>{'-'}</option>
+        <option value={1}>{'C'}</option>
+        <option value={2}>{'I'}</option>
+        <option value={4}>{'D'}</option>
+        <option value={8}>{'A'}</option>
+        <option value={6}>{'ID'}</option>
+        <option value={10}>{'IA'}</option>
+        <option value={12}>{'DA'}</option>
+        <option value={14}>{'IDA'}</option>
+      </select>
+    )
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const degree = this.props.degree
-    let class_name = 'table-cell'
-    let input
-
-    if (this.props.total) class_name += ' total-cell'
-    if (this.props.grandTotal) class_name += ' grand-total-cell'
-
-    let checked = false
-    if (degree) checked = true
-
-    if (!this.props.readOnly && !this.props.total) {
-      if (this.props.outcomesType === 0) {
-        input = (
-          <input
-            type="checkbox"
-            onChange={this.toggleFunction.bind(this)}
-            checked={checked}
-          />
-        )
-      } else {
-        input = (
-          <select value={degree} onChange={this.changeFunction.bind(this)}>
-            <option value={0}>{'-'}</option>
-            <option value={1}>{'C'}</option>
-            <option value={2}>{'I'}</option>
-            <option value={4}>{'D'}</option>
-            <option value={8}>{'A'}</option>
-            <option value={6}>{'ID'}</option>
-            <option value={10}>{'IA'}</option>
-            <option value={12}>{'DA'}</option>
-            <option value={14}>{'IDA'}</option>
-          </select>
-        )
-      }
-    }
+    const classNames = [
+      'table-cell',
+      this.props.total ? 'total-cell' : '',
+      this.props.grandTotal ? 'grand-total-cell' : ''
+    ].join(' ')
 
     return (
-      <div className={class_name} ref={this.mainDiv}>
-        {this.getContents(degree, !this.props.total)}
-        {input}
+      // <div className={classNames} ref={this.mainDiv}> // @todo verify i don't think mainDiv is defined here
+      <div className={classNames}>
+        <this.Contents
+          completionStatus={this.props.degree}
+          selfCompletion={!this.props.total}
+        />
+        <this.Input />
       </div>
     )
   }
 }
 
+type ConnectedProps = GetOutcomeByIDType
+
+// @todo no idea what's required props here
+type OwnProps = {
+  parentID?: number
+  throughParentID?: number
+  renderer?: any
+  show_horizontal?: boolean
+  comments?: boolean
+  edit?: boolean
+  outcome_tree?: any
+  nodecategory?: any
+  outcomes_type?: any
+  updateParentCompletion?: any
+  completion_status_from_parents?: any
+  read_only?: boolean
+} & ComponentWithToggleProps
+
+// type StateProps = {}
+type PropsType = ConnectedProps & OwnProps
+
 /**
  *
  */
-export class OutcomeUnconnected extends Component {
+export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
@@ -190,7 +220,7 @@ export class OutcomeUnconnected extends Component {
         window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        window.gettext(
+        window.ngettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length
@@ -288,12 +318,60 @@ export class OutcomeUnconnected extends Component {
   }
 }
 
-const mapOutcomeStateToProps = (state, own_props) =>
-  getOutcomeByID(state, own_props.objectID)
-
+const mapOutcomeStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetOutcomeByIDType => {
+  return getOutcomeByID(state, ownProps.objectID)
+}
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const Outcome = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected)
+const Outcome = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapOutcomeStateToProps,
+  null
+)(OutcomeUnconnected)
 
 export default Outcome
+
+// Contents = ({completionStatus}, {selfCompletion}) => {
+//     const contents = []
+//     let divclass = ''
+//
+//     if (completionStatus === 0) {
+//       return <img src={COURSEFLOW_APP.config.icon_path + 'nocheck.svg'} />
+//     } else if (!completionStatus) {
+//       return ''
+//     }
+//     if (this.props.outcomesType === 0 || completionStatus & 1) {
+//       if (selfCompletion)
+//         return (
+//           <img
+//             className="self-completed"
+//             src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
+//           />
+//         )
+//       else return <img src={COURSEFLOW_APP.config.icon_path + 'check.svg'} />
+//     }
+//
+//     // @todo why is bitwise being used here? needs explanation comments
+//     if (completionStatus & 2) {
+//       if (selfCompletion & 2) divclass = ' self-completed'
+//       contents.push(
+//         <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
+//       )
+//     }
+//     if (completionStatus & 4) {
+//       if (selfCompletion & 4) divclass = ' self-completed'
+//       contents.push(
+//         <div className={'outcome-developed outcome-degree' + divclass}>D</div>
+//       )
+//     }
+//     if (completionStatus & 8) {
+//       if (selfCompletion & 8) divclass = ' self-completed'
+//       contents.push(
+//         <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
+//       )
+//     }
+//     return contents
+//   }
