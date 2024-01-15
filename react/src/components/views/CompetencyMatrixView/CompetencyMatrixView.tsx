@@ -205,7 +205,7 @@ class CompetencyMatrixViewUnconnected extends React.Component {
           {
             // @todo should this be set?
             // @ts-ignore
-            this.props?.object_sets.length > 0 && (
+            this.props?.object_sets?.length > 0 && (
               <div className="outcome-row outcome-category">
                 <div className="outcome-wrapper">
                   <div className="outcome-head">

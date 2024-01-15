@@ -9,7 +9,7 @@ import { toggleStrategyQuery } from '@XMLHTTP/API/strategy'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/global'
 import { CfObjectType } from '@cfModule/types/enum'
-import { ReactPortal } from 'react'
+import {ReactElement, ReactPortal} from 'react'
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -686,9 +686,9 @@ class EditableComponent<
   /*******************************************************
    * PORTAL
    *******************************************************/
-  addEditable(data, noDelete = false): React.ReactPortal {
+  addEditable(data, noDelete = false): React.ReactPortal | ReactElement{
     if (!this.state.selected) {
-      return null
+      return <></>
     }
 
     return ReactDOM.createPortal(
