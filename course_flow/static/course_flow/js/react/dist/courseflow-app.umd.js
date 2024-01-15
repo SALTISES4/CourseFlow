@@ -81295,6 +81295,40 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  const CompletionImg = ({
+    completionStatus,
+    outcomesType
+  }) => {
+    const contents = [];
+    if (outcomesType === 0 || completionStatus & 1) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          className: "self-completed",
+          src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
+        }
+      );
+    }
+    if (completionStatus & 2) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
+      );
+    }
+    if (completionStatus & 4) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
+      );
+    }
+    if (completionStatus & 8) {
+      const divclass = "";
+      contents.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
+      );
+    }
+    return contents;
+  };
   class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -81371,7 +81405,13 @@ ${latestSubscriptionCallbackError.current.stack}
           ref: this.mainDiv,
           children: [
             !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
-            (void 0)(data2.degree, this.props.outcomes_type),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              CompletionImg,
+              {
+                completionStatus: data2.degree,
+                outcomesType: this.props.outcomes_type
+              }
+            ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SimpleOutcome$1,
               {
@@ -83624,40 +83664,6 @@ ${latestSubscriptionCallbackError.current.stack}
     MapStateToProps,
     null
   )(ParentOutcomeUnconnected);
-  const CompletionImg = ({
-    completionStatus,
-    outcomesType
-  }) => {
-    const contents = [];
-    if (outcomesType === 0 || completionStatus & 1) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "img",
-        {
-          className: "self-completed",
-          src: COURSEFLOW_APP.config.icon_path + "solid_check.svg"
-        }
-      );
-    }
-    if (completionStatus & 2) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-introduced outcome-degree" + divclass, children: "I" })
-      );
-    }
-    if (completionStatus & 4) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-developed outcome-degree" + divclass, children: "D" })
-      );
-    }
-    if (completionStatus & 8) {
-      const divclass = "";
-      contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-advanced outcome-degree" + divclass, children: "A" })
-      );
-    }
-    return contents;
-  };
   class ParentOutcomeBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);

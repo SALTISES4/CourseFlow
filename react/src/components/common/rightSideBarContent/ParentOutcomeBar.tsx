@@ -42,6 +42,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
             <h4>{categoryItem.objectset.title}</h4>
             {categoryItem.outcomes.map((outcomeItem, index) => (
               <div key={index} className="parent-outcome-node">
+                {/* @todo double check these vars  */}
                 <CompletionImg
                   outcomesType={outcomeItem.degree}
                   completionStatus={1}
