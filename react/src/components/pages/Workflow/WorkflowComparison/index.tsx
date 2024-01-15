@@ -74,6 +74,16 @@ export class WorkflowComparison extends Workflow {
     }
   }
 
+
+
+
+
+
+
+
+
+  
+
   connection_opened(reconnect = false) {
     const loader = new Utility.Loader(this.container)
     this.getWorkflowData(this.workflowID, (response) => {
