@@ -82915,6 +82915,17 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowBaseUnconnected extends EditableComponent {
     constructor(props) {
       super(props);
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "Content", () => {
+        const data2 = this.props.data;
+        const renderer = this.props.renderer;
+        if (renderer.view_type === ViewType.OUTCOME_EDIT) {
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data2.id });
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data2.id });
+      });
       this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
@@ -82957,20 +82968,12 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data2 = this.props.data;
-      const renderer = this.props.renderer;
-      renderer.selection_manager;
-      let workflow_content;
-      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEdit, { renderer, objectID: data2.id });
-      } else {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow$1, { renderer, objectID: data2.id });
-      }
-      const style2 = {};
-      if (data2.lock) {
-        style2.border = "2px solid " + data2.lock.user_colour;
-      }
-      this.addEditable(data2, true);
+      const style2 = {
+        border: data2.lock ? "2px solid " + data2.lock.user_colour : void 0
+        // @todo not sure what the best default state is for this
+      };
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        this.addEditable(data2, true),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-header", style: style2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowCard,
           {
@@ -82978,7 +82981,7 @@ ${latestSubscriptionCallbackError.current.stack}
             selectAction: this.openEdit.bind(this, null)
           }
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: workflow_content })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {}) })
       ] });
     }
   }
