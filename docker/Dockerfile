@@ -1,11 +1,21 @@
 # @todo alpine having problems
 # FROM python:alpine3.7 as service_deps
-FROM python:3.9.5 as service_deps
+#FROM python:3.9.18-bullseye as service_deps
+FROM python:3.9.18-bullseye as service_deps
 #ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 #FROM circleci/python:3.8-node-browsers as service_deps
 
 
 WORKDIR /app
+#RUN apt-get clean
+#RUN mv -i /etc/apt/trusted.gpg.d/debian-archive-*.asc  /root/
+#RUN ln -s /usr/share/keyrings/debian-archive-* /etc/apt/trusted.gpg.d/
+#RUN rm -rf /var/lib/apt/lists/*
+#RUN apt-get update
+#RUN apt-get install -y --reinstall ca-certificates
+#RUN apt-key adv --fetch-keys http://deb.debian.org/debian-archive-keyring.gpg
+#RUN apt-key adv --fetch-keys http://security.debian.org/debian-security-archive-keyring.gpg
+
 
 ########################
 # COPY FILES
@@ -13,8 +23,8 @@ WORKDIR /app
 COPY ./course_flow.py ./src/
 COPY ./pyproject.toml ./src/
 COPY ./pytest.ini ./src/
-COPY ./setup.py ./src/
-COPY ./setup.cfg ./src/
+#COPY ./setup.py ./src/
+#COPY ./setup.cfg ./src/
 COPY ./SALTISE_course_flow.egg-inf[o] ./src/SALTISE_course_flow.egg-info
 COPY ./course_flow/ ./src/course_flow
 COPY ./requirements/ ./src/requirements
@@ -52,22 +62,34 @@ RUN python3 -m pip install -r requirements/requirements.txt
 #RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 #RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 #RUN chmod +x /usr/local/bin/chromedriver
+# GECKO FOR SELENIUMRUN chmod +x /usr/local/bin/chromedriver
+
+
+
+FROM service_deps as selenium_deps
 
 ########################
-# GECKO FOR SELENIUMRUN chmod +x /usr/local/bin/chromedriver
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6DCF7707EBC211F
-RUN sh -c 'echo "deb http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/mozilla.list'
-RUN apt -y update
-RUN apt install -y firefox
+
+#RUN apt-get -y update
+#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6DCF7707EBC211F
+#RUN sh -c 'echo "deb https://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/mozilla.list'
+#RUN apt -y update
+#RUN apt-get -y update
+#RUN apt -y update
+#RUN apt install -y firefox
+#RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
+#RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
+
+
+RUN apt-get update
+RUN apt-get install -y firefox-esr
 RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
 RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
 
 # set display port to avoid crash
 ENV DISPLAY=:99
 
-FROM service_deps as builder
-
-FROM builder as service
+FROM selenium_deps as service
 
 ########################
 # entrypoint
