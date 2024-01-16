@@ -58,8 +58,10 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       if (
         this.state.parent_workflows.length == 0 &&
         this.props.child_workflows.length == 0
-      )
+      ) {
         return null
+      }
+
       const parent_workflows = this.state.parent_workflows.map(
         (parent_workflow, index) => (
           <WorkflowTitle

@@ -1,9 +1,8 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getWeekWorkflowByID } from '@cfFindState'
-import Week from './Week'
 import { WeekWorkflowUnconnected } from '@cfViews/WorkflowView/WeekWorkflow'
+import WeekComparison from '@cfViews/ComparisonView/WeekComparison'
 
 /**
  * As above, but for the comparison view specifically. This renders a
@@ -15,10 +14,13 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
    *******************************************************/
   render() {
     const data = this.props.data
-    let my_class = 'week-workflow'
-    if (data.no_drag) my_class += ' no-drag'
+
+    const cssClasses = ['week-workflow', data.no_drag ? 'no-drag' : ''].join(
+      ' '
+    )
+
     const week = (
-      <Week
+      <WeekComparison
         objectID={data.week}
         rank={this.props.order.indexOf(data.id)}
         parentID={this.props.parentID}
@@ -29,7 +31,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
 
     return (
       <div
-        className={my_class}
+        className={cssClasses}
         id={data.id}
         ref={this.mainDiv}
         data-child-id={data.week}

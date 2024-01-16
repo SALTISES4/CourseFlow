@@ -424,14 +424,9 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addShowAssignment(data))
     }
 
-    document.getElementById('edit-menu') &&
-      ReactDOM.createPortal(
-        <div>hello</div>,
-        document.getElementById('edit-menu')
-      )
-
     return (
       <>
+        {this.addEditable(data_override)}
         <div
           style={style}
           className={css_class}
@@ -439,10 +434,9 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-          onClick={(evt) => {
-            console.log('clicked')
-            selection_manager.changeSelection(evt, this)
-          }}
+          onClick={(evt) =>
+            this.props.renderer.selection_manager.changeSelection(evt, this)
+          }
         >
           <div className="node-top-row">
             {lefticon}

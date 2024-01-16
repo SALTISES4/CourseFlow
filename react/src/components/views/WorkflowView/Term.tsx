@@ -81,10 +81,16 @@ class Term extends WeekUnconnected<PropsType> {
       )
     }
 
-    let css_class = 'week'
-    if (data.is_strategy) css_class += ' strategy'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
-    if (data.is_dropped) css_class += ' dropped'
+    const cssClasses = [
+      'week',
+      data.is_strategy ? 'strategy' : '',
+      data.lock ? 'locked locked-' + data.lock.user_id : '',
+      data.is_dropped ? ' dropped' : ''
+    ].join(' ')
+    // const css_class = 'week'
+    // if (data.is_strategy) css_class += ' strategy'
+    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    //    if (data.is_dropped) css_class += ' dropped'
 
     const style = {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
@@ -108,7 +114,7 @@ class Term extends WeekUnconnected<PropsType> {
 
         <div
           style={style}
-          className={css_class}
+          className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) =>
             this.props.renderer.selection_manager.changeSelection(evt, this)

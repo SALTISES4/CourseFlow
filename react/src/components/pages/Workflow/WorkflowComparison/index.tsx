@@ -5,7 +5,6 @@ import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
 import WorkflowBase from '@cfViews/ComparisonView/WorkflowBase'
-// import { WorkflowBase as WorkflowComparisonBaseView } from '@cfViews/ComparisonView'
 import * as Utility from '@cfUtility'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
@@ -43,6 +42,17 @@ export class WorkflowComparison extends Workflow {
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
+
+      /**
+       * @todo
+       * so it seems like this is structured as a callback on the API async request only because OUTCOME_EDIT
+       * is not the default 'view' state, see also the render function of the 'parent' workflow class
+       * 1 - this request could be fired here perhaps, but WorkflowBase is called regardless, WorkflowBase must handle awating data
+       * 2 - getWorkflowParentData (and all APIs) should have some async/await features, if we're not using react query hooks
+       * 3 - finally view_type should be used as a state manager, which it is sort of inside the  <WorkflowBase
+       * so that's fine, but not here where we decide to call queries
+       *
+       */
       this.getWorkflowParentData(this.workflowID, (response) => {
         store.dispatch(ActionCreator.refreshStoreData(response.data_package))
         reactDom.render(
@@ -63,6 +73,16 @@ export class WorkflowComparison extends Workflow {
       )
     }
   }
+
+
+
+
+
+
+
+
+
+  
 
   connection_opened(reconnect = false) {
     const loader = new Utility.Loader(this.container)

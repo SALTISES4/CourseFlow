@@ -15,7 +15,7 @@ export class SelectionManager {
   private mouseClicked: boolean
   private readOnly: boolean
   private lastSidebarTab: number
-  private currentSelection: any
+  private currentSelection: React.Component<any>
 
   constructor(readOnly: boolean) {
     this.currentSelection = null
@@ -65,7 +65,7 @@ export class SelectionManager {
    * @param evt - The event that triggered the selection change.
    * @param newSelection - The new selection object.
    */
-  changeSelection(evt?: JQuery.Event, newSelection?: React.ReactElement): void {
+  changeSelection(evt?: JQuery.Event, newSelection?: React.Component<any>): void {
     if (evt) {
       evt.stopPropagation()
     }

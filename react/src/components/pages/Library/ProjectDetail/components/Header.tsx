@@ -27,6 +27,8 @@ const Header = ({
   // @todo see error below, verify data type of data.disciplines
   console.log(allDisciplines)
   console.log(data.disciplines)
+  console.log('disciplines')
+  console.log(disciplines)
 
   return (
     <div className="project-header">
@@ -59,7 +61,7 @@ const Header = ({
             {allDisciplines
               .filter(
                 // @ts-ignore
-                (discipline) => disciplines.indexOf(discipline.id) >= 0 // @todo don't understand this error yet
+                (discipline) => disciplines.indexOf(discipline.id) >= 0 // @todo what is shape of 'disiplines' ?
               )
               .map((discipline) => discipline.title)
               .join(', ') || window.gettext('None')}

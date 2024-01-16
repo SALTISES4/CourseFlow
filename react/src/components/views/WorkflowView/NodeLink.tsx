@@ -16,7 +16,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 type ConnectedProps = GetNodeLinkByIDType
 type OwnProps = {
   objectID: number
-  node_div: any
+  node_div: React.RefObject<HTMLDivElement>
   renderer: any
 } & EditableComponentWithActionsProps
 type StateProps = EditableComponentWithActionsState
@@ -27,7 +27,7 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
-  private source_node: any
+  private source_node: JQuery
   private target_node: JQuery
   private target_port_handle: d3.Selection<
     SVGElement,
@@ -70,6 +70,8 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
+    console.log('NodeLink this.props.data')
+    console.log(this.props)
     const data = this.props.data
     const style: React.CSSProperties = {}
 
@@ -86,23 +88,31 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 
       this.source_node.on(this.rerenderEvents, this.rerender.bind(this))
       this.target_node.on(this.rerenderEvents, this.rerender.bind(this))
-      // @ts-ignore
-      this.source_port_handle = d3.select(
-        'g.port-' +
-          data.source_node +
-          " circle[data-port-type='source'][data-port='" +
-          Constants.port_keys[data.source_port] +
-          "']"
-      )
-      // @ts-ignore
-      this.target_port_handle = d3.select(
-        'g.port-' +
-          data.target_node +
-          " circle[data-port-type='target'][data-port='" +
-          Constants.port_keys[data.target_port] +
-          "']"
-      )
+
+      // this css selector defines the circle attached to each node
+      // from which the line is connected
+      const cssSourcePortSelector = [
+        `g.port-${data.source_node}`,
+        ` circle[data-port-type='source']`,
+        `[data-port='${Constants.port_keys[data.source_port]}']`
+      ].join('')
+
+      // this css selector defines the circle attached to each node
+      // to which the line is connected
+      const cssSourceTargetSelector = [
+        `g.port-${data.target_node} `,
+        ` circle[data-port-type='target']`,
+        `[data-port='${Constants.port_keys[data.target_port]}']`
+      ].join('')
+
+      // eslint-disable-next-line no-undef
+      this.source_port_handle = d3.select(cssSourcePortSelector)
+      this.target_port_handle = d3.select(cssSourceTargetSelector)
+
     }
+
+    console.log('g port')
+    console.log()
 
     const node_selected =
       this.source_node.attr('data-selected') === 'true' ||
@@ -111,7 +121,9 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       this.source_node.attr('data-hovered') === 'true' ||
       this.target_node.attr('data-hovered') === 'true'
 
-    if (data.dashed) style.strokeDasharray = '5,5'
+    if (data.dashed) {
+      style.strokeDasharray = '5,5'
+    }
     if (
       this.source_node.css('display') == 'none' ||
       this.target_node.css('display') == 'none'
@@ -123,10 +135,12 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       width: this.source_node.outerWidth(),
       height: this.source_node.outerHeight()
     }
+
     const target_dims = {
       width: this.target_node.outerWidth(),
       height: this.target_node.outerHeight()
     }
+
     if (!source_dims.width || !target_dims.width) {
       return null
     }
@@ -141,7 +155,8 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         style={style}
         hovered={node_hovered}
         node_selected={node_selected}
-        lock={data.lock}
+        // @ts-ignore
+        lock={data.lock} // @todo where is lock defined?
         title={data.title}
         text_position={data.text_position}
         source_port_handle={this.source_port_handle}

@@ -46,8 +46,7 @@
   "globals": {
     "$": true,
     "COURSEFLOW_APP": true,
-     "JSX": true
-
+    "JSX": true
   },
   "plugins": [
     "react",
@@ -56,6 +55,12 @@
     "react-hooks"
   ],
   "rules": {
+//    "newline-per-chained-call": [
+//      "error",
+//      {
+//        "ignoreChainWithDepth": 2
+//      }
+//    ],
     "no-var": "warn",
     "no-undef": "warn",
     "no-prototype-builtins": "warn",
