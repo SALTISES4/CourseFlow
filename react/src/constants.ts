@@ -1,4 +1,5 @@
 import * as Utility from '@cfUtility'
+import {NumTuple} from "@cfModule/types/common";
 
 /*
 Determines how long an action locks an object
@@ -30,7 +31,7 @@ export const node_ports = {
 
 export const port_keys = ['n', 'e', 's', 'w']
 
-export const port_direction = [
+export const port_direction: NumTuple[] = [
   [0, -1],
   [1, 0],
   [0, 1],

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import * as Constants from '@cfConstants'
@@ -7,17 +6,21 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { ObjectLock } from '@cfModule/types/common'
+import { NumTuple } from '@cfModule/types/common'
 
-type Direction = { source: number[]; target: number[] }
+// eslint-disable-next-line no-undef
+type Direction = { source: NumTuple; target: NumTuple }
 
 type DirectionArray = { source: number[][]; target: number[][] }
+type Port = 'source' | 'target'
 
 /**
  * Creates paths between two ports
  *  SVG portion of a NodeLink
  */
 class PathGenerator {
-  private direction: { source: any; target: any }
+  // private direction: DirectionArray
+  private direction: Direction
   private hasTicked: { source: boolean; target: boolean }
   private node_dims: Direction
   private findcounter: number
@@ -25,12 +28,12 @@ class PathGenerator {
   private point_arrays: DirectionArray
   private last_point: Direction
   constructor(
-    source_point: number[],
+    source_point: NumTuple,
     source_port: number,
-    target_point: number[],
+    target_point: NumTuple,
     target_port: number,
-    source_dims: number[],
-    target_dims: number[]
+    source_dims: NumTuple,
+    target_dims: NumTuple
   ) {
     this.point_arrays = {
       source: [source_point],
@@ -38,8 +41,8 @@ class PathGenerator {
     }
     this.last_point = { source: source_point, target: target_point }
     this.direction = {
-      source: Constants.port_direction[source_port],
-      target: Constants.port_direction[target_port]
+      source: Constants.port_direction[source_port] as NumTuple,
+      target: Constants.port_direction[target_port] as NumTuple
     }
     this.hasTicked = { source: false, target: false }
     this.node_dims = { source: source_dims, target: target_dims }
@@ -80,9 +83,11 @@ class PathGenerator {
   // }
 
   //gets the point at the given fraction of our path length
-  getFractionalPoint(position) {
+  getFractionalPoint(position: number): NumTuple {
     const totalLength = this.getPathLength()
-    if (totalLength === 0) return [0, 0]
+    if (totalLength === 0) {
+      return [0, 0]
+    }
 
     let runLength = 0
     const targetLength = totalLength * position
@@ -130,40 +135,42 @@ class PathGenerator {
     }
   }
 
-  addPoint(point, port = 'source') {
+  addPoint(point: NumTuple, port: Port = 'source') {
     this.point_arrays[port].push(point)
     this.last_point[port] = point
   }
 
-  addDelta(delta, port = 'source') {
+  addDelta(delta: NumTuple, port: Port = 'source') {
     this.addPoint(math.add(delta, this.last_point[port]), port)
   }
 
   //Pads out away from the node edge
-  padOut(port) {
+  padOut(port: Port) {
     this.addDelta(
-      math.multiply(Constants.port_padding, this.direction[port]),
+      // is of type MathType
+      math.multiply(Constants.port_padding, this.direction[port]) as NumTuple,
       port
     )
   }
 
   //Turns perpendicular to move around the edge of the node
-  tickPerpendicular(port = 'source') {
-    const otherport = port === 'target' ? 'source' : 'target'
-
-    console.log('this.direction')
-    console.log(this.direction)
-
+  tickPerpendicular(port: Port = 'source') {
+    const otherPort: Port = port === 'target' ? 'source' : 'target'
 
     this.padOut(port)
+
+    const test = math.multiply([1, 0], this.direction[port][1] ** 2)
+
+    // @ts-ignore
     const matrix = math.matrix([
       math.multiply([1, 0], this.direction[port][1] ** 2),
       math.multiply([0, 1], this.direction[port][0] ** 2)
     ])
-    const sub = math.subtract(this.last_point[otherport], this.last_point[port])
+    const sub = math.subtract(this.last_point[otherPort], this.last_point[port])
 
-    const new_direction = math.multiply(matrix, sub)._data
+    // const new_direction = math.multiply(matrix, sub)._data // _data is a private class property
 
+    const new_direction = math.multiply(matrix, sub).toArray()
     const norm = math.norm(new_direction)
 
     if (norm === 0) {
@@ -171,21 +178,22 @@ class PathGenerator {
     }
 
     this.direction[port] = math.multiply(
+      // @ts-ignore
       1.0 / math.norm(new_direction),
       new_direction
-    )
+    ) as NumTuple
 
     this.addDelta(
       math.multiply(
         this.getNodeOutline(this.direction[port], port),
         this.direction[port]
-      ),
+      ) as NumTuple,
       port
     )
   }
 
   //Determines how far we need to move in order to move around the edge of the node
-  getNodeOutline(direction, port) {
+  getNodeOutline(direction: [number, number], port: Port): number {
     if (this.hasTicked[port]) {
       return Math.abs(math.dot(direction, this.node_dims[port]))
     } else {
@@ -198,7 +206,7 @@ class PathGenerator {
   /**
    *
    */
-  joinArrays() {
+  joinArrays(): number[][] {
     const joined = this.point_arrays['source'].slice()
     //We have remaining either a corner or both point towards each other
     if (math.dot(this.direction['source'], this.direction['target']) == 0) {
@@ -267,16 +275,16 @@ type PropsType = OwnProps & ComponentWithToggleProps
 class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
   private parentNode: string
   getPathArray(
-    source_point: number[],
+    source_point: NumTuple,
     source_port: number,
-    target_point: number[],
+    target_point: NumTuple,
     target_port: number
   ) {
-    const source_dims = [
+    const source_dims: NumTuple = [
       this.props.source_dimensions.width,
       this.props.source_dimensions.height
     ]
-    const target_dims = [
+    const target_dims: NumTuple = [
       this.props.target_dimensions.width,
       this.props.target_dimensions.height
     ]
@@ -289,7 +297,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       target_dims
     )
   }
-  getPath(pathArray) {
+  getPath(pathArray: NumTuple[]): string {
     return pathArray.reduce(
       (acc, point, index) =>
         `${acc}${index > 0 ? ' L' : ''}${point[0]} ${point[1]}`,
@@ -380,24 +388,40 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
   render() {
     try {
       const source_transform = Utility.getSVGTranslation(
-        this.props.source_port_handle.select(this.parentNode).attr('transform')
+        this.props.source_port_handle
+          .select(function () {
+            // @todo be careful of the scope of this here
+            // we need to sort this out
+            return this.parentNode as Element
+          })
+          .attr('transform')
       )
 
-      this.props.target_port_handle.select(this.parentNode).attr('transform')
+      this.props.target_port_handle
+        .select(function () {
+          // @todo be careful of the scope of this here
+          return this.parentNode as Element
+        })
+        .attr('transform')
 
       const target_transform = Utility.getSVGTranslation(
-        this.props.target_port_handle.select(this.parentNode).attr('transform')
+        this.props.target_port_handle
+          .select(function () {
+            // @todo be careful of the scope of this here
+            return this.parentNode as Element
+          })
+          .attr('transform')
       )
 
       // @todo what is all this doing?
-      const source_point = [
+      const source_point: NumTuple = [
         parseInt(this.props.source_port_handle.attr('cx')) +
           parseInt(source_transform[0]),
         parseInt(this.props.source_port_handle.attr('cy')) +
           parseInt(source_transform[1])
       ]
 
-      const target_point = [
+      const target_point: NumTuple = [
         parseInt(this.props.target_port_handle.attr('cx')) +
           parseInt(target_transform[0]),
         parseInt(this.props.target_port_handle.attr('cy')) +

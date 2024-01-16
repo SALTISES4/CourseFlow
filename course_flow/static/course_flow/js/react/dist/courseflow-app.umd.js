@@ -80642,6 +80642,7 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   class PathGenerator {
     constructor(source_point, source_port, target_point, target_port, source_dims, target_dims) {
+      // private direction: DirectionArray
       __publicField(this, "direction");
       __publicField(this, "hasTicked");
       __publicField(this, "node_dims");
@@ -80693,8 +80694,9 @@ ${latestSubscriptionCallbackError.current.stack}
     //gets the point at the given fraction of our path length
     getFractionalPoint(position2) {
       const totalLength = this.getPathLength();
-      if (totalLength === 0)
+      if (totalLength === 0) {
         return [0, 0];
+      }
       let runLength = 0;
       const targetLength = totalLength * position2;
       for (let i2 = 1; i2 < this.full_array.length; i2++) {
@@ -80742,27 +80744,28 @@ ${latestSubscriptionCallbackError.current.stack}
     //Pads out away from the node edge
     padOut(port) {
       this.addDelta(
+        // is of type MathType
         multiply(port_padding, this.direction[port]),
         port
       );
     }
     //Turns perpendicular to move around the edge of the node
     tickPerpendicular(port = "source") {
-      const otherport = port === "target" ? "source" : "target";
-      console.log("this.direction");
-      console.log(this.direction);
+      const otherPort = port === "target" ? "source" : "target";
       this.padOut(port);
+      multiply([1, 0], this.direction[port][1] ** 2);
       const matrix$1 = matrix([
         multiply([1, 0], this.direction[port][1] ** 2),
         multiply([0, 1], this.direction[port][0] ** 2)
       ]);
-      const sub2 = subtract(this.last_point[otherport], this.last_point[port]);
-      const new_direction = multiply(matrix$1, sub2)._data;
+      const sub2 = subtract(this.last_point[otherPort], this.last_point[port]);
+      const new_direction = multiply(matrix$1, sub2).toArray();
       const norm$1 = norm(new_direction);
       if (norm$1 === 0) {
         throw "Non-numeric";
       }
       this.direction[port] = multiply(
+        // @ts-ignore
         1 / norm(new_direction),
         new_direction
       );
@@ -80929,11 +80932,17 @@ ${latestSubscriptionCallbackError.current.stack}
     render() {
       try {
         const source_transform = getSVGTranslation(
-          this.props.source_port_handle.select(this.parentNode).attr("transform")
+          this.props.source_port_handle.select(function() {
+            return this.parentNode;
+          }).attr("transform")
         );
-        this.props.target_port_handle.select(this.parentNode).attr("transform");
+        this.props.target_port_handle.select(function() {
+          return this.parentNode;
+        }).attr("transform");
         const target_transform = getSVGTranslation(
-          this.props.target_port_handle.select(this.parentNode).attr("transform")
+          this.props.target_port_handle.select(function() {
+            return this.parentNode;
+          }).attr("transform")
         );
         const source_point = [
           parseInt(this.props.source_port_handle.attr("cx")) + parseInt(source_transform[0]),
