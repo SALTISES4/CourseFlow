@@ -145,9 +145,14 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
 
     const titleText = <NodeTitle data={data} />
 
-    let css_class =
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    // let css_class =
+    //   'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
+    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+
+    const cssClasses = [
+      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
+      data.lock ? 'locked locked-' + data.lock.user_id : ''
+    ].join(' ')
 
     const mouseover_actions = []
     if (!this.props.renderer.read_only) {
@@ -164,7 +169,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
         {this.addEditable(data_override)}
         <div
           style={style}
-          className={css_class}
+          className={cssClasses}
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {

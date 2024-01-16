@@ -6,7 +6,7 @@ import { EditableComponent } from '@cfParentComponents'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
-import ActionCreator from '@cfRedux/ActionCreator.ts'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/type'
 // import $ from 'jquery'
@@ -58,35 +58,43 @@ class WorkflowBaseUnconnected extends EditableComponent {
   }
 
   /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+
+  Content = () => {
+    const data = this.props.data
+    const renderer = this.props.renderer
+
+    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
+      return <OutcomeEdit renderer={renderer} objectID={data.id} />
+    }
+    return <Workflow renderer={renderer} objectID={data.id} />
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data = this.props.data
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    //  const renderer = this.props.renderer
+    // const selection_manager = renderer.selection_manager
 
-    let workflow_content
-    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      workflow_content = <OutcomeEdit renderer={renderer} objectID={data.id} />
-    } else {
-      workflow_content = <Workflow renderer={renderer} objectID={data.id} />
+    const style: React.CSSProperties = {
+      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined // @todo not sure what the best default state is for this
     }
 
-    const style = {}
-    if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
-    }
-
-    this.addEditable(data, true)
     return (
       <>
+        {this.addEditable(data, true)}
         <div className="workflow-header" style={style}>
           <WorkflowCard
             workflowData={data}
             selectAction={this.openEdit.bind(this, null)}
           />
         </div>
-        <div className="workflow-container">{workflow_content}</div>
+        <div className="workflow-container">
+          <this.Content />
+        </div>
       </>
     )
   }

@@ -1,3 +1,5 @@
+import * as d3 from 'd3'
+import jQuery from 'jQuery'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -20,7 +22,8 @@ declare global {
     lastUpdateCallTimer
   }
 
-  const $: JQuery
+  const $: jQuery
+  const d3: d3
   const COURSEFLOW_APP: CourseflowAppGlobals
 }
 
@@ -34,8 +37,8 @@ interface CourseflowAppGlobals {
   contextData: ContextData
   tinyLoader: TinyLoader
   makeDropdown: (
-    item: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> | string, // @todo ...
-    item2?: HTMLElement | HTMLDivElement | JQuery<HTMLDivElement> | string // @todo ...
+    item: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string, // @todo ...
+    item2?: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string // @todo ...
   ) => void
 }
 

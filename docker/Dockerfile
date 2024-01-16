@@ -1,6 +1,6 @@
 # @todo alpine having problems
 # FROM python:alpine3.7 as service_deps
-FROM python:3.8.10 as service_deps
+FROM python:3.9.5 as service_deps
 #ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 #FROM circleci/python:3.8-node-browsers as service_deps
 
@@ -15,7 +15,7 @@ COPY ./pyproject.toml ./src/
 COPY ./pytest.ini ./src/
 COPY ./setup.py ./src/
 COPY ./setup.cfg ./src/
-COPY ./SALTISE_course_flow.egg-info ./src/SALTISE_course_flow.egg-info
+COPY ./SALTISE_course_flow.egg-inf[o] ./src/SALTISE_course_flow.egg-info
 COPY ./course_flow/ ./src/course_flow
 COPY ./requirements/ ./src/requirements
 

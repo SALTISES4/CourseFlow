@@ -475,11 +475,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       }
     ]
       .filter((item) => item.disabled.indexOf(this.data.type) == -1)
-      .map((item) => {
+      .map((item, index) => {
         let view_class = 'hover-shade'
         if (item.type === renderer.view_type) view_class += ' active'
         return (
           <a
+            key={index}
             id={'button_' + item.type}
             className={view_class}
             onClick={this.changeView.bind(this, item.type)}
@@ -500,12 +501,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       </div>
     )
 
-    return [
-      <div className="workflow-view-select hide-print">
-        {view_buttons_sorted}
-      </div>,
-      workflow_content
-    ]
+    return (
+      <>
+        <div className="workflow-view-select hide-print">
+          {view_buttons_sorted}
+        </div>
+        {workflow_content}
+      </>
+    )
   }
 
   /*******************************************************

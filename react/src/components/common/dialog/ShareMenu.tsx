@@ -118,6 +118,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             </div>
             <div className="big-button-description">{public_text}</div>
           </div>
+
           <div
             className={private_class}
             onClick={this.setPublication.bind(this, false)}

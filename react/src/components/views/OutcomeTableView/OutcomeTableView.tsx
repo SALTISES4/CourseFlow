@@ -213,7 +213,10 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
             <div className="node-category-header">{nodecategory.title}</div>
           </div>
           {nodecategory.nodes.map((node) => (
-            <NodeOutcomeView renderer={this.props.renderer} objectID={node} />
+            <NodeOutcomeView
+              // renderer={this.props.renderer}  // renderer not used?
+              objectID={node}
+            />
           ))}
         </div>
       ))
@@ -223,7 +226,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
           {
             // @todo  should object_sets be set?
             // @ts-ignore
-            this.props?.object_sets.length > 0 && (
+            this.props?.object_sets?.length > 0 && (
               <div className="outcome-row outcome-category">
                 <div className="outcome-head">
                   <h4>{category.objectset.title}</h4>

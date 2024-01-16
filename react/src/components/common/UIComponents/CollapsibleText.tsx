@@ -36,29 +36,22 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
    * FUNCTIONS
    *******************************************************/
   checkSize() {
-    if (this.state.is_dropped) return
-    if (this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight) {
-      if (!this.state.overflow) this.setState({ overflow: true })
-    } else {
-      if (this.state.overflow) this.setState({ overflow: false })
+    if (!this.state.is_dropped) {
+      const isOverflowing =
+        this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight
+      if (this.state.overflow !== isOverflowing) {
+        this.setState({ overflow: isOverflowing })
+      }
     }
   }
 
   /*******************************************************
-   * RENDER
+   * COMPONENTS
    *******************************************************/
-  render() {
-    let css_class = ''
-    if (this.props.css_class) css_class = this.props.css_class + ' '
-    css_class += 'title-text collapsible-text'
-    let drop_text = window.gettext('show more')
-    if (this.state.is_dropped) {
-      css_class += ' dropped'
-      drop_text = window.gettext('show less')
-    }
-    let overflow
-    if (this.state.overflow)
-      overflow = (
+
+  Overflow = ({ text }: { text: string }) => {
+    if (this.state.overflow) {
+      return (
         <div
           onClick={(evt) => {
             this.setState({ is_dropped: !this.state.is_dropped })
@@ -66,26 +59,53 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
           }}
           className="collapsed-text-show-more"
         >
-          {drop_text}
+          {text}
         </div>
       )
+    }
+    return <></>
+  }
 
-    let text = this.props.text
-    if (
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const cssClasses = [
+      this.props.css_class ?? '',
+      'title-text collapsible-text',
+      this.state.is_dropped ? 'dropped' : ''
+    ].join('')
+
+    // if (this.props.css_class) css_class = this.props.css_class + ' '
+    // css_class += 'title-text collapsible-text'
+
+    // let drop_text = window.gettext('show more')
+    // if (this.state.is_dropped) {
+    //   css_class += ' dropped'
+    //   drop_text = window.gettext('show less')
+    // }
+
+    const dropText = this.state.is_dropped
+      ? window.gettext('show less')
+      : window.gettext('show more')
+
+    const text =
       (this.props.text == null || this.props.text == '') &&
       this.props.defaultText != null
-    ) {
-      text = this.props.defaultText
-    }
-    return [
-      <div
-        ref={this.mainDiv}
-        className={css_class}
-        title={text}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />,
-      overflow
-    ]
+        ? this.props.defaultText
+        : this.props.text
+
+    return (
+      <>
+        <div
+          ref={this.mainDiv}
+          className={cssClasses}
+          title={text}
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
+        <this.Overflow text={dropText} />
+      </>
+    )
   }
 }
 

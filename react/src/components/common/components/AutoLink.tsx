@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
@@ -147,7 +148,7 @@ class AutoLink extends React.Component<PropsType> {
       this.source_node.attr('data-hovered') === 'true' ||
       this.target_node.attr('data-hovered') === 'true'
 
-    reactDom.createPortal(
+    const portal = reactDom.createPortal(
       <NodeLinkSVG
         hovered={node_hovered}
         node_selected={node_selected}
@@ -160,7 +161,7 @@ class AutoLink extends React.Component<PropsType> {
       />,
       $('.workflow-canvas')[0]
     )
-    return <></>
+    return <>{portal}</>
   }
 }
 

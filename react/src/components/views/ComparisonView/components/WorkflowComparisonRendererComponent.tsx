@@ -4,6 +4,7 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
 import { getWorkflowContext } from '@XMLHTTP/API/workflow'
+import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
 
 type OwnProps = {
   workflowID: any
@@ -58,9 +59,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
       // this needs to be imported directly but that would cuase Circ D.
-      // @todo lost global'renderers'
-      // @ts-ignore
-      this.renderer = new renderers.WorkflowComparisonRenderer(
+      this.renderer = new WorkflowComparison(
         this.props.workflowID,
         JSON.parse(context_data.data_package),
         '#workflow-inner-wrapper',
@@ -71,7 +70,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       )
 
       this.renderer.silent_connect_fail = true
-      this.renderer.connect()
+      this.renderer.init()
 
       loader.endLoad()
     })

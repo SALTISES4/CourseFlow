@@ -24,23 +24,28 @@ export class TitleText extends React.Component {
 //Title text for a workflow
 export class WorkflowTitle extends React.Component {
   render() {
+    const getText = () => {
+      let text = data.title || window.gettext('Untitled')
+
+      if (data.code) {
+        text = `${data.code} - ${text}`
+      }
+
+      if (['noaccess', 'nouser'].includes(data.url)) {
+        text += ` ${window.gettext(' (no access)')}`
+      }
+
+      if (data.deleted) {
+        text += ' (deleted)'
+      }
+      return text
+    }
+
     const data = this.props.data
-    let text = data.title
 
-    if (data.code) text = data.code + ' - ' + text
-
-    if (text == null || text == '') {
-      text = window.gettext('Untitled')
-    }
-    if (data.url == 'noaccess' || data.url == 'nouser') {
-      text += window.gettext(' (no access)')
-    }
-    if (data.deleted) {
-      text += ' (deleted)'
-    }
-    let href = data.url
-    if (!data.url)
-      href = COURSEFLOW_APP.config.update_path[data.type].replace('0', data.id)
+    const href = !data.url
+      ? COURSEFLOW_APP.config.update_path[data.type].replace('0', data.id)
+      : data.url
 
     if (
       this.props.no_hyperlink ||
@@ -51,8 +56,8 @@ export class WorkflowTitle extends React.Component {
         <div
           className={this.props.class_name}
           data-test-id={this.props.test_id}
-          title={text}
-          dangerouslySetInnerHTML={{ __html: text }}
+          title={getText()}
+          dangerouslySetInnerHTML={{ __html: getText() }}
         />
       )
     } else {
@@ -62,8 +67,8 @@ export class WorkflowTitle extends React.Component {
           href={href}
           className={this.props.class_name}
           data-test-id={this.props.test_id}
-          title={text}
-          dangerouslySetInnerHTML={{ __html: text }}
+          title={getText()}
+          dangerouslySetInnerHTML={{ __html: getText() }}
         />
       )
     }
