@@ -61037,8 +61037,8 @@ class ActionCreator {
 /*******************************************************
  * COMMON / DYNAMIC OBJECT
  *******************************************************/
-__publicField(ActionCreator, "createLockAction", (object_id, object_type, lock2, user_id2, user_colour) => {
-  if (lock2)
+__publicField(ActionCreator, "createLockAction", (object_id, object_type, lock, user_id2, user_colour) => {
+  if (lock)
     return {
       type: object_type + "/createLock",
       payload: {
@@ -62890,7 +62890,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
   startSortFunction(id, through_type) {
     this.lockChild(id, true, through_type);
   }
-  lockChild(id, lock2, through_type) {
+  lockChild(id, lock, through_type) {
     let object_type;
     if (through_type == "nodeweek")
       object_type = "node";
@@ -62905,7 +62905,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
     this.props.renderer.lock_update(
       { object_id: id, object_type },
       lock_times.move,
-      lock2
+      lock
     );
   }
 }
@@ -63014,8 +63014,9 @@ const getNodeWeekByID = (state, id) => {
 const getNodeLinkByID = (state, id) => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i];
-    if (nodelink.id === id)
+    if (nodelink.id === id) {
       return { data: nodelink };
+    }
   }
 };
 const getColumnWorkflowByID = (state, id) => {
@@ -69015,8 +69016,8 @@ var _createTyped2 = function _createTyped() {
   _createTyped2 = typedFunction.create;
   return typedFunction;
 };
-var dependencies$17 = ["?BigNumber", "?Complex", "?DenseMatrix", "?Fraction"];
-var createTyped = /* @__PURE__ */ factory("typed", dependencies$17, function createTyped2(_ref) {
+var dependencies$18 = ["?BigNumber", "?Complex", "?DenseMatrix", "?Fraction"];
+var createTyped = /* @__PURE__ */ factory("typed", dependencies$18, function createTyped2(_ref) {
   var {
     BigNumber: BigNumber2,
     Complex: Complex2,
@@ -69535,7 +69536,7 @@ P.cubeRoot = P.cbrt = function() {
     t = r2;
     t3 = t.times(t).times(t);
     t3plusx = t3.plus(x);
-    r2 = divide(t3plusx.plus(x).times(t), t3plusx.plus(t3), sd + 2, 1);
+    r2 = divide$1(t3plusx.plus(x).times(t), t3plusx.plus(t3), sd + 2, 1);
     if (digitsToString(t.d).slice(0, sd) === (n = digitsToString(r2.d)).slice(0, sd)) {
       n = n.slice(sd - 3, sd + 1);
       if (n == "9999" || !rep && n == "4999") {
@@ -69575,11 +69576,11 @@ P.decimalPlaces = P.dp = function() {
   return n;
 };
 P.dividedBy = P.div = function(y) {
-  return divide(this, new this.constructor(y));
+  return divide$1(this, new this.constructor(y));
 };
 P.dividedToIntegerBy = P.divToInt = function(y) {
   var x = this, Ctor = x.constructor;
-  return finalise(divide(x, new Ctor(y), 0, 1, 1), Ctor.precision, Ctor.rounding);
+  return finalise(divide$1(x, new Ctor(y), 0, 1, 1), Ctor.precision, Ctor.rounding);
 };
 P.equals = P.eq = function(y) {
   return this.cmp(y) === 0;
@@ -69656,7 +69657,7 @@ P.hyperbolicTangent = P.tanh = function() {
   rm = Ctor.rounding;
   Ctor.precision = pr + 7;
   Ctor.rounding = 1;
-  return divide(x.sinh(), x.cosh(), Ctor.precision = pr, Ctor.rounding = rm);
+  return divide$1(x.sinh(), x.cosh(), Ctor.precision = pr, Ctor.rounding = rm);
 };
 P.inverseCosine = P.acos = function() {
   var halfPi, x = this, Ctor = x.constructor, k = x.abs().cmp(1), pr = Ctor.precision, rm = Ctor.rounding;
@@ -69717,7 +69718,7 @@ P.inverseHyperbolicTangent = P.atanh = function() {
   if (Math.max(xsd, pr) < 2 * -x.e - 1)
     return finalise(new Ctor(x), pr, rm, true);
   Ctor.precision = wpr = xsd - x.e;
-  x = divide(x.plus(1), new Ctor(1).minus(x), wpr + pr, 1);
+  x = divide$1(x.plus(1), new Ctor(1).minus(x), wpr + pr, 1);
   Ctor.precision = pr + 4;
   Ctor.rounding = 1;
   x = x.ln();
@@ -69842,13 +69843,13 @@ P.logarithm = P.log = function(base) {
   sd = pr + guard;
   num = naturalLogarithm(arg, sd);
   denominator = isBase10 ? getLn10(Ctor, sd + 10) : naturalLogarithm(base, sd);
-  r2 = divide(num, denominator, sd, 1);
+  r2 = divide$1(num, denominator, sd, 1);
   if (checkRoundingDigits(r2.d, k = pr, rm)) {
     do {
       sd += 10;
       num = naturalLogarithm(arg, sd);
       denominator = isBase10 ? getLn10(Ctor, sd + 10) : naturalLogarithm(base, sd);
-      r2 = divide(num, denominator, sd, 1);
+      r2 = divide$1(num, denominator, sd, 1);
       if (!inf) {
         if (+digitsToString(r2.d).slice(k + 1, k + 15) + 1 == 1e14) {
           r2 = finalise(r2, pr + 1, 0);
@@ -69965,10 +69966,10 @@ P.modulo = P.mod = function(y) {
   }
   external = false;
   if (Ctor.modulo == 9) {
-    q = divide(x, y.abs(), 0, 3, 1);
+    q = divide$1(x, y.abs(), 0, 3, 1);
     q.s *= y.s;
   } else {
-    q = divide(x, y, 0, Ctor.modulo, 1);
+    q = divide$1(x, y, 0, Ctor.modulo, 1);
   }
   q = q.times(y);
   external = true;
@@ -70113,7 +70114,7 @@ P.squareRoot = P.sqrt = function() {
   sd = (e = Ctor.precision) + 3;
   for (; ; ) {
     t = r2;
-    r2 = t.plus(divide(x, t, sd + 2, 1)).times(0.5);
+    r2 = t.plus(divide$1(x, t, sd + 2, 1)).times(0.5);
     if (digitsToString(t.d).slice(0, sd) === (n = digitsToString(r2.d)).slice(0, sd)) {
       n = n.slice(sd - 3, sd + 1);
       if (n == "9999" || !rep && n == "4999") {
@@ -70150,7 +70151,7 @@ P.tangent = P.tan = function() {
   Ctor.rounding = 1;
   x = x.sin();
   x.s = 1;
-  x = divide(x, new Ctor(1).minus(x.times(x)).sqrt(), pr + 10, 0);
+  x = divide$1(x, new Ctor(1).minus(x.times(x)).sqrt(), pr + 10, 0);
   Ctor.precision = pr;
   Ctor.rounding = rm;
   return finalise(quadrant == 2 || quadrant == 4 ? x.neg() : x, pr, rm, true);
@@ -70263,7 +70264,7 @@ P.toFraction = function(maxD) {
   pr = Ctor.precision;
   Ctor.precision = e = xd.length * LOG_BASE * 2;
   for (; ; ) {
-    q = divide(n, d, 0, 1, 1);
+    q = divide$1(n, d, 0, 1, 1);
     d2 = d0.plus(q.times(d1));
     if (d2.cmp(maxD) == 1)
       break;
@@ -70276,11 +70277,11 @@ P.toFraction = function(maxD) {
     d = n.minus(q.times(d2));
     n = d2;
   }
-  d2 = divide(maxD.minus(d0), d1, 0, 1, 1);
+  d2 = divide$1(maxD.minus(d0), d1, 0, 1, 1);
   n0 = n0.plus(d2.times(n12));
   d0 = d0.plus(d2.times(d1));
   n0.s = n12.s = x.s;
-  r2 = divide(n12, d1, e, 1).minus(x).abs().cmp(divide(n0, d0, e, 1).minus(x).abs()) < 1 ? [n12, d1] : [n0, d0];
+  r2 = divide$1(n12, d1, e, 1).minus(x).abs().cmp(divide$1(n0, d0, e, 1).minus(x).abs()) < 1 ? [n12, d1] : [n0, d0];
   Ctor.precision = pr;
   external = true;
   return r2;
@@ -70313,7 +70314,7 @@ P.toNearest = function(y, rm) {
   }
   if (y.d[0]) {
     external = false;
-    x = divide(x, y, 0, rm, 1).times(y);
+    x = divide$1(x, y, 0, rm, 1).times(y);
     external = true;
     finalise(x);
   } else {
@@ -70522,7 +70523,7 @@ function cosine(Ctor, x) {
   Ctor.precision -= k;
   return x;
 }
-var divide = /* @__PURE__ */ function() {
+var divide$1 = /* @__PURE__ */ function() {
   function multiplyInteger(x, k, base) {
     var temp, carry = 0, i = x.length;
     for (x = x.slice(); i--; ) {
@@ -70919,7 +70920,7 @@ function naturalExponential(x, sd) {
   for (; ; ) {
     pow2 = finalise(pow2.times(x), wpr, 1);
     denominator = denominator.times(++i);
-    t = sum2.plus(divide(pow2, denominator, wpr, 1));
+    t = sum2.plus(divide$1(pow2, denominator, wpr, 1));
     if (digitsToString(t.d).slice(0, wpr) === digitsToString(sum2.d).slice(0, wpr)) {
       j = k;
       while (j--)
@@ -70976,21 +70977,21 @@ function naturalLogarithm(y, sd) {
     return sd == null ? finalise(x, pr, rm, external = true) : x;
   }
   x1 = x;
-  sum2 = numerator = x = divide(x.minus(1), x.plus(1), wpr, 1);
+  sum2 = numerator = x = divide$1(x.minus(1), x.plus(1), wpr, 1);
   x2 = finalise(x.times(x), wpr, 1);
   denominator = 3;
   for (; ; ) {
     numerator = finalise(numerator.times(x2), wpr, 1);
-    t = sum2.plus(divide(numerator, new Ctor(denominator), wpr, 1));
+    t = sum2.plus(divide$1(numerator, new Ctor(denominator), wpr, 1));
     if (digitsToString(t.d).slice(0, wpr) === digitsToString(sum2.d).slice(0, wpr)) {
       sum2 = sum2.times(2);
       if (e !== 0)
         sum2 = sum2.plus(getLn10(Ctor, wpr + 2, pr).times(e + ""));
-      sum2 = divide(sum2, new Ctor(n), wpr, 1);
+      sum2 = divide$1(sum2, new Ctor(n), wpr, 1);
       if (sd == null) {
         if (checkRoundingDigits(sum2.d, wpr - guard, rm, rep)) {
           Ctor.precision = wpr += guard;
-          t = numerator = x = divide(x1.minus(1), x1.plus(1), wpr, 1);
+          t = numerator = x = divide$1(x1.minus(1), x1.plus(1), wpr, 1);
           x2 = finalise(x.times(x), wpr, 1);
           denominator = rep = 1;
         } else {
@@ -71109,7 +71110,7 @@ function parseOther(x, str) {
   x.d = xd;
   external = false;
   if (isFloat)
-    x = divide(x, divisor, len * 4);
+    x = divide$1(x, divisor, len * 4);
   if (p)
     x = x.times(Math.abs(p) < 54 ? mathpow(2, p) : Decimal.pow(2, p));
   external = true;
@@ -71137,9 +71138,9 @@ function taylorSeries(Ctor, n, x, y, isHyperbolic) {
   x2 = x.times(x);
   u = new Ctor(y);
   for (; ; ) {
-    t = divide(u.times(x2), new Ctor(n++ * n++), pr, 1);
+    t = divide$1(u.times(x2), new Ctor(n++ * n++), pr, 1);
     u = isHyperbolic ? y.plus(t) : y.minus(t);
-    y = divide(t.times(x2), new Ctor(n++ * n++), pr, 1);
+    y = divide$1(t.times(x2), new Ctor(n++ * n++), pr, 1);
     t = u.plus(y);
     if (t.d[k] !== void 0) {
       for (j = k; t.d[j] === u.d[j] && j--; )
@@ -71229,7 +71230,7 @@ function toStringBinary(x, baseOut, sd, rm) {
         x = new Ctor(x);
         x.d = xd;
         x.e = e;
-        x = divide(x, y, sd, rm, 0, base);
+        x = divide$1(x, y, sd, rm, 0, base);
         xd = x.d;
         e = x.e;
         roundUp = inexact;
@@ -71332,13 +71333,13 @@ function atan2(y, x) {
   } else if (x.s < 0) {
     this.precision = wpr;
     this.rounding = 1;
-    r2 = this.atan(divide(y, x, wpr, 1));
+    r2 = this.atan(divide$1(y, x, wpr, 1));
     x = getPi(this, wpr, 1);
     this.precision = pr;
     this.rounding = rm;
     r2 = y.s < 0 ? r2.minus(x) : r2.plus(x);
   } else {
-    r2 = this.atan(divide(y, x, wpr, 1));
+    r2 = this.atan(divide$1(y, x, wpr, 1));
   }
   return r2;
 }
@@ -71714,9 +71715,9 @@ P[Symbol.toStringTag] = "Decimal";
 var Decimal = P.constructor = clone(DEFAULTS);
 LN10 = new Decimal(LN10);
 PI = new Decimal(PI);
-var name$17 = "BigNumber";
-var dependencies$16 = ["?on", "config"];
-var createBigNumberClass = /* @__PURE__ */ factory(name$17, dependencies$16, (_ref) => {
+var name$18 = "BigNumber";
+var dependencies$17 = ["?on", "config"];
+var createBigNumberClass = /* @__PURE__ */ factory(name$18, dependencies$17, (_ref) => {
   var {
     on,
     config: config3
@@ -72750,9 +72751,9 @@ var complex$1 = { exports: {} };
 })(complex$1);
 var complexExports = complex$1.exports;
 const Complex$1 = /* @__PURE__ */ getDefaultExportFromCjs(complexExports);
-var name$16 = "Complex";
-var dependencies$15 = [];
-var createComplexClass = /* @__PURE__ */ factory(name$16, dependencies$15, () => {
+var name$17 = "Complex";
+var dependencies$16 = [];
+var createComplexClass = /* @__PURE__ */ factory(name$17, dependencies$16, () => {
   Object.defineProperty(Complex$1, "name", {
     value: "Complex"
   });
@@ -73523,9 +73524,9 @@ var fraction$1 = { exports: {} };
 })(fraction$1);
 var fractionExports = fraction$1.exports;
 const Fraction$1 = /* @__PURE__ */ getDefaultExportFromCjs(fractionExports);
-var name$15 = "Fraction";
-var dependencies$14 = [];
-var createFractionClass = /* @__PURE__ */ factory(name$15, dependencies$14, () => {
+var name$16 = "Fraction";
+var dependencies$15 = [];
+var createFractionClass = /* @__PURE__ */ factory(name$16, dependencies$15, () => {
   Object.defineProperty(Fraction$1, "name", {
     value: "Fraction"
   });
@@ -73546,9 +73547,9 @@ var createFractionClass = /* @__PURE__ */ factory(name$15, dependencies$14, () =
 }, {
   isClass: true
 });
-var name$14 = "Matrix";
-var dependencies$13 = [];
-var createMatrixClass = /* @__PURE__ */ factory(name$14, dependencies$13, () => {
+var name$15 = "Matrix";
+var dependencies$14 = [];
+var createMatrixClass = /* @__PURE__ */ factory(name$15, dependencies$14, () => {
   function Matrix2() {
     if (!(this instanceof Matrix2)) {
       throw new SyntaxError("Constructor must be called with the new operator");
@@ -73617,9 +73618,9 @@ function maxArgumentCount(fn) {
     return Math.max(args, count);
   }, -1);
 }
-var name$13 = "DenseMatrix";
-var dependencies$12 = ["Matrix"];
-var createDenseMatrixClass = /* @__PURE__ */ factory(name$13, dependencies$12, (_ref) => {
+var name$14 = "DenseMatrix";
+var dependencies$13 = ["Matrix"];
+var createDenseMatrixClass = /* @__PURE__ */ factory(name$14, dependencies$13, (_ref) => {
   var {
     Matrix: Matrix2
   } = _ref;
@@ -74133,13 +74134,13 @@ function deepMap(array, callback, skipZeros) {
     return callback(array);
   }
 }
-var name$12 = "isInteger";
-var dependencies$11 = ["typed"];
-var createIsInteger = /* @__PURE__ */ factory(name$12, dependencies$11, (_ref) => {
+var name$13 = "isInteger";
+var dependencies$12 = ["typed"];
+var createIsInteger = /* @__PURE__ */ factory(name$13, dependencies$12, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$12, {
+  return typed2(name$13, {
     number: isInteger$1,
     // TODO: what to do with isInteger(add(0.1, 0.2))  ?
     BigNumber: function BigNumber2(x) {
@@ -74189,13 +74190,13 @@ function isZeroNumber(x) {
   return x === 0;
 }
 isZeroNumber.signature = n1;
-var name$11 = "isPositive";
-var dependencies$10 = ["typed"];
-var createIsPositive = /* @__PURE__ */ factory(name$11, dependencies$10, (_ref) => {
+var name$12 = "isPositive";
+var dependencies$11 = ["typed"];
+var createIsPositive = /* @__PURE__ */ factory(name$12, dependencies$11, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$11, {
+  return typed2(name$12, {
     number: isPositiveNumber,
     BigNumber: function BigNumber2(x) {
       return !x.isNeg() && !x.isZero() && !x.isNaN();
@@ -74207,13 +74208,13 @@ var createIsPositive = /* @__PURE__ */ factory(name$11, dependencies$10, (_ref) 
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$10 = "isZero";
-var dependencies$$ = ["typed"];
-var createIsZero = /* @__PURE__ */ factory(name$10, dependencies$$, (_ref) => {
+var name$11 = "isZero";
+var dependencies$10 = ["typed"];
+var createIsZero = /* @__PURE__ */ factory(name$11, dependencies$10, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$10, {
+  return typed2(name$11, {
     number: isZeroNumber,
     BigNumber: function BigNumber2(x) {
       return x.isZero();
@@ -74265,9 +74266,9 @@ var createCompareUnits = /* @__PURE__ */ factory("compareUnits", ["typed"], (_re
     })
   };
 });
-var name$$ = "equalScalar";
-var dependencies$_ = ["typed", "config"];
-var createEqualScalar = /* @__PURE__ */ factory(name$$, dependencies$_, (_ref) => {
+var name$10 = "equalScalar";
+var dependencies$$ = ["typed", "config"];
+var createEqualScalar = /* @__PURE__ */ factory(name$10, dependencies$$, (_ref) => {
   var {
     typed: typed2,
     config: config3
@@ -74275,7 +74276,7 @@ var createEqualScalar = /* @__PURE__ */ factory(name$$, dependencies$_, (_ref) =
   var compareUnits = createCompareUnits({
     typed: typed2
   });
-  return typed2(name$$, {
+  return typed2(name$10, {
     "boolean, boolean": function booleanBoolean(x, y) {
       return x === y;
     },
@@ -74293,20 +74294,20 @@ var createEqualScalar = /* @__PURE__ */ factory(name$$, dependencies$_, (_ref) =
     }
   }, compareUnits);
 });
-factory(name$$, ["typed", "config"], (_ref2) => {
+factory(name$10, ["typed", "config"], (_ref2) => {
   var {
     typed: typed2,
     config: config3
   } = _ref2;
-  return typed2(name$$, {
+  return typed2(name$10, {
     "number, number": function numberNumber(x, y) {
       return nearlyEqual$1(x, y, config3.epsilon);
     }
   });
 });
-var name$_ = "SparseMatrix";
-var dependencies$Z = ["typed", "equalScalar", "Matrix"];
-var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_ref) => {
+var name$$ = "SparseMatrix";
+var dependencies$_ = ["typed", "equalScalar", "Matrix"];
+var createSparseMatrixClass = /* @__PURE__ */ factory(name$$, dependencies$_, (_ref) => {
   var {
     typed: typed2,
     equalScalar: equalScalar2,
@@ -75134,8 +75135,8 @@ var createSparseMatrixClass = /* @__PURE__ */ factory(name$_, dependencies$Z, (_
 }, {
   isClass: true
 });
-var name$Z = "number";
-var dependencies$Y = ["typed"];
+var name$_ = "number";
+var dependencies$Z = ["typed"];
 function getNonDecimalNumberParts(input) {
   var nonDecimalWithRadixMatch = input.match(/(0[box])([0-9a-fA-F]*)\.([0-9a-fA-F]*)/);
   if (nonDecimalWithRadixMatch) {
@@ -75169,7 +75170,7 @@ function makeNumberFromNonDecimalParts(parts) {
   }
   return result;
 }
-var createNumber = /* @__PURE__ */ factory(name$Z, dependencies$Y, (_ref) => {
+var createNumber = /* @__PURE__ */ factory(name$_, dependencies$Z, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -75231,9 +75232,9 @@ var createNumber = /* @__PURE__ */ factory(name$Z, dependencies$Y, (_ref) => {
   };
   return number2;
 });
-var name$Y = "bignumber";
-var dependencies$X = ["typed", "BigNumber"];
-var createBignumber = /* @__PURE__ */ factory(name$Y, dependencies$X, (_ref) => {
+var name$Z = "bignumber";
+var dependencies$Y = ["typed", "BigNumber"];
+var createBignumber = /* @__PURE__ */ factory(name$Z, dependencies$Y, (_ref) => {
   var {
     typed: typed2,
     BigNumber: BigNumber2
@@ -75280,9 +75281,9 @@ var createBignumber = /* @__PURE__ */ factory(name$Y, dependencies$X, (_ref) => 
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$X = "complex";
-var dependencies$W = ["typed", "Complex"];
-var createComplex = /* @__PURE__ */ factory(name$X, dependencies$W, (_ref) => {
+var name$Y = "complex";
+var dependencies$X = ["typed", "Complex"];
+var createComplex = /* @__PURE__ */ factory(name$Y, dependencies$X, (_ref) => {
   var {
     typed: typed2,
     Complex: Complex2
@@ -75325,9 +75326,9 @@ var createComplex = /* @__PURE__ */ factory(name$X, dependencies$W, (_ref) => {
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$W = "fraction";
-var dependencies$V = ["typed", "Fraction"];
-var createFraction = /* @__PURE__ */ factory(name$W, dependencies$V, (_ref) => {
+var name$X = "fraction";
+var dependencies$W = ["typed", "Fraction"];
+var createFraction = /* @__PURE__ */ factory(name$X, dependencies$W, (_ref) => {
   var {
     typed: typed2,
     Fraction: Fraction2
@@ -75365,16 +75366,16 @@ var createFraction = /* @__PURE__ */ factory(name$W, dependencies$V, (_ref) => {
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$V = "matrix";
-var dependencies$U = ["typed", "Matrix", "DenseMatrix", "SparseMatrix"];
-var createMatrix = /* @__PURE__ */ factory(name$V, dependencies$U, (_ref) => {
+var name$W = "matrix";
+var dependencies$V = ["typed", "Matrix", "DenseMatrix", "SparseMatrix"];
+var createMatrix = /* @__PURE__ */ factory(name$W, dependencies$V, (_ref) => {
   var {
     typed: typed2,
     Matrix: Matrix2,
     DenseMatrix: DenseMatrix2,
     SparseMatrix: SparseMatrix2
   } = _ref;
-  return typed2(name$V, {
+  return typed2(name$W, {
     "": function _2() {
       return _create([]);
     },
@@ -75403,16 +75404,16 @@ var createMatrix = /* @__PURE__ */ factory(name$V, dependencies$U, (_ref) => {
     throw new TypeError("Unknown matrix type " + JSON.stringify(format2) + ".");
   }
 });
-var name$U = "matrixFromColumns";
-var dependencies$T = ["typed", "matrix", "flatten", "size"];
-var createMatrixFromColumns = /* @__PURE__ */ factory(name$U, dependencies$T, (_ref) => {
+var name$V = "matrixFromColumns";
+var dependencies$U = ["typed", "matrix", "flatten", "size"];
+var createMatrixFromColumns = /* @__PURE__ */ factory(name$V, dependencies$U, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
     flatten: flatten2,
     size: size2
   } = _ref;
-  return typed2(name$U, {
+  return typed2(name$V, {
     "...Array": function Array2(arr) {
       return _createArray(arr);
     },
@@ -75458,13 +75459,13 @@ var createMatrixFromColumns = /* @__PURE__ */ factory(name$U, dependencies$T, (_
     }
   }
 });
-var name$T = "unaryMinus";
-var dependencies$S = ["typed"];
-var createUnaryMinus = /* @__PURE__ */ factory(name$T, dependencies$S, (_ref) => {
+var name$U = "unaryMinus";
+var dependencies$T = ["typed"];
+var createUnaryMinus = /* @__PURE__ */ factory(name$U, dependencies$T, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$T, {
+  return typed2(name$U, {
     number: unaryMinusNumber,
     "Complex | BigNumber | Fraction": (x) => x.neg(),
     Unit: typed2.referToSelf((self2) => (x) => {
@@ -75477,26 +75478,26 @@ var createUnaryMinus = /* @__PURE__ */ factory(name$T, dependencies$S, (_ref) =>
     // TODO: add support for string
   });
 });
-var name$S = "abs";
-var dependencies$R = ["typed"];
-var createAbs = /* @__PURE__ */ factory(name$S, dependencies$R, (_ref) => {
+var name$T = "abs";
+var dependencies$S = ["typed"];
+var createAbs = /* @__PURE__ */ factory(name$T, dependencies$S, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$S, {
+  return typed2(name$T, {
     number: absNumber,
     "Complex | BigNumber | Fraction | Unit": (x) => x.abs(),
     // deep map collection, skip zeros since abs(0) = 0
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$R = "addScalar";
-var dependencies$Q = ["typed"];
-var createAddScalar = /* @__PURE__ */ factory(name$R, dependencies$Q, (_ref) => {
+var name$S = "addScalar";
+var dependencies$R = ["typed"];
+var createAddScalar = /* @__PURE__ */ factory(name$S, dependencies$R, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$R, {
+  return typed2(name$S, {
     "number, number": addNumber,
     "Complex, Complex": function ComplexComplex(x, y) {
       return x.add(y);
@@ -75523,9 +75524,9 @@ var createAddScalar = /* @__PURE__ */ factory(name$R, dependencies$Q, (_ref) => 
     })
   });
 });
-var name$Q = "matAlgo11xS0s";
-var dependencies$P = ["typed", "equalScalar"];
-var createMatAlgo11xS0s = /* @__PURE__ */ factory(name$Q, dependencies$P, (_ref) => {
+var name$R = "matAlgo11xS0s";
+var dependencies$Q = ["typed", "equalScalar"];
+var createMatAlgo11xS0s = /* @__PURE__ */ factory(name$R, dependencies$Q, (_ref) => {
   var {
     typed: typed2,
     equalScalar: equalScalar2
@@ -75576,9 +75577,9 @@ var createMatAlgo11xS0s = /* @__PURE__ */ factory(name$Q, dependencies$P, (_ref)
     });
   };
 });
-var name$P = "matAlgo12xSfs";
-var dependencies$O = ["typed", "DenseMatrix"];
-var createMatAlgo12xSfs = /* @__PURE__ */ factory(name$P, dependencies$O, (_ref) => {
+var name$Q = "matAlgo12xSfs";
+var dependencies$P = ["typed", "DenseMatrix"];
+var createMatAlgo12xSfs = /* @__PURE__ */ factory(name$Q, dependencies$P, (_ref) => {
   var {
     typed: typed2,
     DenseMatrix: DenseMatrix2
@@ -75629,9 +75630,9 @@ var createMatAlgo12xSfs = /* @__PURE__ */ factory(name$P, dependencies$O, (_ref)
     });
   };
 });
-var name$O = "matAlgo14xDs";
-var dependencies$N = ["typed"];
-var createMatAlgo14xDs = /* @__PURE__ */ factory(name$O, dependencies$N, (_ref) => {
+var name$P = "matAlgo14xDs";
+var dependencies$O = ["typed"];
+var createMatAlgo14xDs = /* @__PURE__ */ factory(name$P, dependencies$O, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -75667,9 +75668,9 @@ var createMatAlgo14xDs = /* @__PURE__ */ factory(name$O, dependencies$N, (_ref) 
     return cv;
   }
 });
-var name$N = "matAlgo03xDSf";
-var dependencies$M = ["typed"];
-var createMatAlgo03xDSf = /* @__PURE__ */ factory(name$N, dependencies$M, (_ref) => {
+var name$O = "matAlgo03xDSf";
+var dependencies$N = ["typed"];
+var createMatAlgo03xDSf = /* @__PURE__ */ factory(name$O, dependencies$N, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -75729,9 +75730,9 @@ var createMatAlgo03xDSf = /* @__PURE__ */ factory(name$N, dependencies$M, (_ref)
     });
   };
 });
-var name$M = "matAlgo05xSfSf";
-var dependencies$L = ["typed", "equalScalar"];
-var createMatAlgo05xSfSf = /* @__PURE__ */ factory(name$M, dependencies$L, (_ref) => {
+var name$N = "matAlgo05xSfSf";
+var dependencies$M = ["typed", "equalScalar"];
+var createMatAlgo05xSfSf = /* @__PURE__ */ factory(name$N, dependencies$M, (_ref) => {
   var {
     typed: typed2,
     equalScalar: equalScalar2
@@ -75824,9 +75825,9 @@ var createMatAlgo05xSfSf = /* @__PURE__ */ factory(name$M, dependencies$L, (_ref
     });
   };
 });
-var name$L = "matAlgo13xDD";
-var dependencies$K = ["typed"];
-var createMatAlgo13xDD = /* @__PURE__ */ factory(name$L, dependencies$K, (_ref) => {
+var name$M = "matAlgo13xDD";
+var dependencies$L = ["typed"];
+var createMatAlgo13xDD = /* @__PURE__ */ factory(name$M, dependencies$L, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -75874,9 +75875,9 @@ var createMatAlgo13xDD = /* @__PURE__ */ factory(name$L, dependencies$K, (_ref) 
     return cv;
   }
 });
-var name$K = "broadcast";
+var name$L = "broadcast";
 var dependancies = ["concat"];
-var createBroadcast = /* @__PURE__ */ factory(name$K, dependancies, (_ref) => {
+var createBroadcast = /* @__PURE__ */ factory(name$L, dependancies, (_ref) => {
   var {
     concat: concat2
   } = _ref;
@@ -75919,9 +75920,9 @@ var createBroadcast = /* @__PURE__ */ factory(name$K, dependancies, (_ref) => {
     return concat2(...Array(sizeToStretch).fill(arrayToStretch), dimToStretch);
   }
 });
-var name$J = "matrixAlgorithmSuite";
-var dependencies$J = ["typed", "matrix", "concat"];
-var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$J, dependencies$J, (_ref) => {
+var name$K = "matrixAlgorithmSuite";
+var dependencies$K = ["typed", "matrix", "concat"];
+var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$K, dependencies$K, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -76044,9 +76045,9 @@ var createMatrixAlgorithmSuite = /* @__PURE__ */ factory(name$J, dependencies$J,
     return matrixSignatures;
   };
 });
-var name$I = "matAlgo01xDSid";
-var dependencies$I = ["typed"];
-var createMatAlgo01xDSid = /* @__PURE__ */ factory(name$I, dependencies$I, (_ref) => {
+var name$J = "matAlgo01xDSid";
+var dependencies$J = ["typed"];
+var createMatAlgo01xDSid = /* @__PURE__ */ factory(name$J, dependencies$J, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -76101,9 +76102,9 @@ var createMatAlgo01xDSid = /* @__PURE__ */ factory(name$I, dependencies$I, (_ref
     });
   };
 });
-var name$H = "matAlgo04xSidSid";
-var dependencies$H = ["typed", "equalScalar"];
-var createMatAlgo04xSidSid = /* @__PURE__ */ factory(name$H, dependencies$H, (_ref) => {
+var name$I = "matAlgo04xSidSid";
+var dependencies$I = ["typed", "equalScalar"];
+var createMatAlgo04xSidSid = /* @__PURE__ */ factory(name$I, dependencies$I, (_ref) => {
   var {
     typed: typed2,
     equalScalar: equalScalar2
@@ -76201,9 +76202,9 @@ var createMatAlgo04xSidSid = /* @__PURE__ */ factory(name$H, dependencies$H, (_r
     });
   };
 });
-var name$G = "matAlgo10xSids";
-var dependencies$G = ["typed", "DenseMatrix"];
-var createMatAlgo10xSids = /* @__PURE__ */ factory(name$G, dependencies$G, (_ref) => {
+var name$H = "matAlgo10xSids";
+var dependencies$H = ["typed", "DenseMatrix"];
+var createMatAlgo10xSids = /* @__PURE__ */ factory(name$H, dependencies$H, (_ref) => {
   var {
     typed: typed2,
     DenseMatrix: DenseMatrix2
@@ -76254,9 +76255,9 @@ var createMatAlgo10xSids = /* @__PURE__ */ factory(name$G, dependencies$G, (_ref
     });
   };
 });
-var name$F = "multiplyScalar";
-var dependencies$F = ["typed"];
-var createMultiplyScalar = /* @__PURE__ */ factory(name$F, dependencies$F, (_ref) => {
+var name$G = "multiplyScalar";
+var dependencies$G = ["typed"];
+var createMultiplyScalar = /* @__PURE__ */ factory(name$G, dependencies$G, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -76275,9 +76276,9 @@ var createMultiplyScalar = /* @__PURE__ */ factory(name$F, dependencies$F, (_ref
     "Unit, number | Fraction | BigNumber | Complex | Unit": (x, y) => x.multiply(y)
   });
 });
-var name$E = "multiply";
-var dependencies$E = ["typed", "matrix", "addScalar", "multiplyScalar", "equalScalar", "dot"];
-var createMultiply = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
+var name$F = "multiply";
+var dependencies$F = ["typed", "matrix", "addScalar", "multiplyScalar", "equalScalar", "dot"];
+var createMultiply = /* @__PURE__ */ factory(name$F, dependencies$F, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -76705,7 +76706,7 @@ var createMultiply = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
     cptr[bcolumns] = cindex.length;
     return c;
   }
-  return typed2(name$E, multiplyScalar2, {
+  return typed2(name$F, multiplyScalar2, {
     // we extend the signatures of multiplyScalar with signatures dealing with matrices
     "Array, Array": typed2.referTo("Matrix, Matrix", (selfMM) => (x, y) => {
       _validateMatrixDimensions(arraySize(x), arraySize(y));
@@ -76759,16 +76760,16 @@ var createMultiply = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
     })
   });
 });
-var name$D = "sign";
-var dependencies$D = ["typed", "BigNumber", "Fraction", "complex"];
-var createSign = /* @__PURE__ */ factory(name$D, dependencies$D, (_ref) => {
+var name$E = "sign";
+var dependencies$E = ["typed", "BigNumber", "Fraction", "complex"];
+var createSign = /* @__PURE__ */ factory(name$E, dependencies$E, (_ref) => {
   var {
     typed: typed2,
     BigNumber: _BigNumber,
     complex: complex2,
     Fraction: _Fraction
   } = _ref;
-  return typed2(name$D, {
+  return typed2(name$E, {
     number: signNumber,
     Complex: function Complex2(x) {
       return x.im === 0 ? complex2(signNumber(x.re)) : x.sign();
@@ -76789,9 +76790,9 @@ var createSign = /* @__PURE__ */ factory(name$D, dependencies$D, (_ref) => {
     })
   });
 });
-var name$C = "sqrt";
-var dependencies$C = ["config", "typed", "Complex"];
-var createSqrt = /* @__PURE__ */ factory(name$C, dependencies$C, (_ref) => {
+var name$D = "sqrt";
+var dependencies$D = ["config", "typed", "Complex"];
+var createSqrt = /* @__PURE__ */ factory(name$D, dependencies$D, (_ref) => {
   var {
     config: config3,
     typed: typed2,
@@ -76823,9 +76824,9 @@ var createSqrt = /* @__PURE__ */ factory(name$C, dependencies$C, (_ref) => {
     }
   }
 });
-var name$B = "subtract";
-var dependencies$B = ["typed", "matrix", "equalScalar", "addScalar", "unaryMinus", "DenseMatrix", "concat"];
-var createSubtract = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
+var name$C = "subtract";
+var dependencies$C = ["typed", "matrix", "equalScalar", "addScalar", "unaryMinus", "DenseMatrix", "concat"];
+var createSubtract = /* @__PURE__ */ factory(name$C, dependencies$C, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -76858,7 +76859,7 @@ var createSubtract = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
     matrix: matrix2,
     concat: concat2
   });
-  return typed2(name$B, {
+  return typed2(name$C, {
     "number, number": (x, y) => x - y,
     "Complex, Complex": (x, y) => x.sub(y),
     "BigNumber, BigNumber": (x, y) => x.minus(y),
@@ -76886,9 +76887,9 @@ var createSubtract = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
     sS: matAlgo10xSids
   }));
 });
-var name$A = "matAlgo07xSSf";
-var dependencies$A = ["typed", "DenseMatrix"];
-var createMatAlgo07xSSf = /* @__PURE__ */ factory(name$A, dependencies$A, (_ref) => {
+var name$B = "matAlgo07xSSf";
+var dependencies$B = ["typed", "DenseMatrix"];
+var createMatAlgo07xSSf = /* @__PURE__ */ factory(name$B, dependencies$B, (_ref) => {
   var {
     typed: typed2,
     DenseMatrix: DenseMatrix2
@@ -76950,52 +76951,52 @@ var createMatAlgo07xSSf = /* @__PURE__ */ factory(name$A, dependencies$A, (_ref)
     }
   }
 });
-var name$z = "conj";
-var dependencies$z = ["typed"];
-var createConj = /* @__PURE__ */ factory(name$z, dependencies$z, (_ref) => {
+var name$A = "conj";
+var dependencies$A = ["typed"];
+var createConj = /* @__PURE__ */ factory(name$A, dependencies$A, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$z, {
+  return typed2(name$A, {
     "number | BigNumber | Fraction": (x) => x,
     Complex: (x) => x.conjugate(),
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$y = "im";
-var dependencies$y = ["typed"];
-var createIm = /* @__PURE__ */ factory(name$y, dependencies$y, (_ref) => {
+var name$z = "im";
+var dependencies$z = ["typed"];
+var createIm = /* @__PURE__ */ factory(name$z, dependencies$z, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$y, {
+  return typed2(name$z, {
     number: () => 0,
     "BigNumber | Fraction": (x) => x.mul(0),
     Complex: (x) => x.im,
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$x = "re";
-var dependencies$x = ["typed"];
-var createRe = /* @__PURE__ */ factory(name$x, dependencies$x, (_ref) => {
+var name$y = "re";
+var dependencies$y = ["typed"];
+var createRe = /* @__PURE__ */ factory(name$y, dependencies$y, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$x, {
+  return typed2(name$y, {
     "number | BigNumber | Fraction": (x) => x,
     Complex: (x) => x.re,
     "Array | Matrix": typed2.referToSelf((self2) => (x) => deepMap(x, self2))
   });
 });
-var name$w = "concat";
-var dependencies$w = ["typed", "matrix", "isInteger"];
-var createConcat = /* @__PURE__ */ factory(name$w, dependencies$w, (_ref) => {
+var name$x = "concat";
+var dependencies$x = ["typed", "matrix", "isInteger"];
+var createConcat = /* @__PURE__ */ factory(name$x, dependencies$x, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
     isInteger: isInteger2
   } = _ref;
-  return typed2(name$w, {
+  return typed2(name$x, {
     // TODO: change signature to '...Array | Matrix, dim?' when supported
     "...Array | Matrix | number | BigNumber": function ArrayMatrixNumberBigNumber(args) {
       var i;
@@ -77046,16 +77047,16 @@ var createConcat = /* @__PURE__ */ factory(name$w, dependencies$w, (_ref) => {
     }
   });
 });
-var name$v = "column";
-var dependencies$v = ["typed", "Index", "matrix", "range"];
-var createColumn = /* @__PURE__ */ factory(name$v, dependencies$v, (_ref) => {
+var name$w = "column";
+var dependencies$w = ["typed", "Index", "matrix", "range"];
+var createColumn = /* @__PURE__ */ factory(name$w, dependencies$w, (_ref) => {
   var {
     typed: typed2,
     Index: Index2,
     matrix: matrix2,
     range: range2
   } = _ref;
-  return typed2(name$v, {
+  return typed2(name$w, {
     "Matrix, number": _column,
     "Array, number": function ArrayNumber(value, column2) {
       return _column(matrix2(clone$2(value)), column2).valueOf();
@@ -77072,16 +77073,16 @@ var createColumn = /* @__PURE__ */ factory(name$v, dependencies$v, (_ref) => {
     return isMatrix(result) ? result : matrix2([[result]]);
   }
 });
-var name$u = "diag";
-var dependencies$u = ["typed", "matrix", "DenseMatrix", "SparseMatrix"];
-var createDiag = /* @__PURE__ */ factory(name$u, dependencies$u, (_ref) => {
+var name$v = "diag";
+var dependencies$v = ["typed", "matrix", "DenseMatrix", "SparseMatrix"];
+var createDiag = /* @__PURE__ */ factory(name$v, dependencies$v, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
     DenseMatrix: DenseMatrix2,
     SparseMatrix: SparseMatrix2
   } = _ref;
-  return typed2(name$u, {
+  return typed2(name$v, {
     // FIXME: simplify this huge amount of signatures as soon as typed-function supports optional arguments
     Array: function Array2(x) {
       return _diag(x, 0, arraySize(x), null);
@@ -77161,14 +77162,14 @@ var createDiag = /* @__PURE__ */ factory(name$u, dependencies$u, (_ref) => {
     return format2 !== null ? matrix2(vector) : vector;
   }
 });
-var name$t = "flatten";
-var dependencies$t = ["typed", "matrix"];
-var createFlatten = /* @__PURE__ */ factory(name$t, dependencies$t, (_ref) => {
+var name$u = "flatten";
+var dependencies$u = ["typed", "matrix"];
+var createFlatten = /* @__PURE__ */ factory(name$u, dependencies$u, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2
   } = _ref;
-  return typed2(name$t, {
+  return typed2(name$u, {
     Array: function Array2(x) {
       return flatten$1(x);
     },
@@ -77178,13 +77179,13 @@ var createFlatten = /* @__PURE__ */ factory(name$t, dependencies$t, (_ref) => {
     }
   });
 });
-var name$s = "getMatrixDataType";
-var dependencies$s = ["typed"];
-var createGetMatrixDataType = /* @__PURE__ */ factory(name$s, dependencies$s, (_ref) => {
+var name$t = "getMatrixDataType";
+var dependencies$t = ["typed"];
+var createGetMatrixDataType = /* @__PURE__ */ factory(name$t, dependencies$t, (_ref) => {
   var {
     typed: typed2
   } = _ref;
-  return typed2(name$s, {
+  return typed2(name$t, {
     Array: function Array2(x) {
       return getArrayDataType(x, typeOf);
     },
@@ -77193,9 +77194,9 @@ var createGetMatrixDataType = /* @__PURE__ */ factory(name$s, dependencies$s, (_
     }
   });
 });
-var name$r = "identity";
-var dependencies$r = ["typed", "config", "matrix", "BigNumber", "DenseMatrix", "SparseMatrix"];
-var createIdentity = /* @__PURE__ */ factory(name$r, dependencies$r, (_ref) => {
+var name$s = "identity";
+var dependencies$s = ["typed", "config", "matrix", "BigNumber", "DenseMatrix", "SparseMatrix"];
+var createIdentity = /* @__PURE__ */ factory(name$s, dependencies$s, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -77204,7 +77205,7 @@ var createIdentity = /* @__PURE__ */ factory(name$r, dependencies$r, (_ref) => {
     DenseMatrix: DenseMatrix2,
     SparseMatrix: SparseMatrix2
   } = _ref;
-  return typed2(name$r, {
+  return typed2(name$s, {
     "": function _2() {
       return config3.matrix === "Matrix" ? matrix2([]) : [];
     },
@@ -77289,9 +77290,9 @@ function noFraction() {
 function noMatrix() {
   throw new Error('No "matrix" implementation available');
 }
-var name$q = "range";
-var dependencies$q = ["typed", "config", "?matrix", "?bignumber", "smaller", "smallerEq", "larger", "largerEq", "add", "isPositive"];
-var createRange = /* @__PURE__ */ factory(name$q, dependencies$q, (_ref) => {
+var name$r = "range";
+var dependencies$r = ["typed", "config", "?matrix", "?bignumber", "smaller", "smallerEq", "larger", "largerEq", "add", "isPositive"];
+var createRange = /* @__PURE__ */ factory(name$r, dependencies$r, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -77304,7 +77305,7 @@ var createRange = /* @__PURE__ */ factory(name$q, dependencies$q, (_ref) => {
     add: add2,
     isPositive: isPositive2
   } = _ref;
-  return typed2(name$q, {
+  return typed2(name$r, {
     // TODO: simplify signatures when typed-function supports default values and optional arguments
     // TODO: a number or boolean should not be converted to string here
     string: _strRange,
@@ -77401,15 +77402,15 @@ var createRange = /* @__PURE__ */ factory(name$q, dependencies$q, (_ref) => {
     }
   }
 });
-var name$p = "size";
-var dependencies$p = ["typed", "config", "?matrix"];
-var createSize = /* @__PURE__ */ factory(name$p, dependencies$p, (_ref) => {
+var name$q = "size";
+var dependencies$q = ["typed", "config", "?matrix"];
+var createSize = /* @__PURE__ */ factory(name$q, dependencies$q, (_ref) => {
   var {
     typed: typed2,
     config: config3,
     matrix: matrix2
   } = _ref;
-  return typed2(name$p, {
+  return typed2(name$q, {
     Matrix: function Matrix2(x) {
       return x.create(x.size());
     },
@@ -77422,14 +77423,14 @@ var createSize = /* @__PURE__ */ factory(name$p, dependencies$p, (_ref) => {
     }
   });
 });
-var name$o = "transpose";
-var dependencies$o = ["typed", "matrix"];
-var createTranspose = /* @__PURE__ */ factory(name$o, dependencies$o, (_ref) => {
+var name$p = "transpose";
+var dependencies$p = ["typed", "matrix"];
+var createTranspose = /* @__PURE__ */ factory(name$p, dependencies$p, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2
   } = _ref;
-  return typed2(name$o, {
+  return typed2(name$p, {
     Array: (x) => transposeMatrix(matrix2(x)).valueOf(),
     Matrix: transposeMatrix,
     any: clone$2
@@ -77520,30 +77521,30 @@ var createTranspose = /* @__PURE__ */ factory(name$o, dependencies$o, (_ref) => 
     });
   }
 });
-var name$n = "ctranspose";
-var dependencies$n = ["typed", "transpose", "conj"];
-var createCtranspose = /* @__PURE__ */ factory(name$n, dependencies$n, (_ref) => {
+var name$o = "ctranspose";
+var dependencies$o = ["typed", "transpose", "conj"];
+var createCtranspose = /* @__PURE__ */ factory(name$o, dependencies$o, (_ref) => {
   var {
     typed: typed2,
     transpose: transpose2,
     conj: conj2
   } = _ref;
-  return typed2(name$n, {
+  return typed2(name$o, {
     any: function any(x) {
       return conj2(transpose2(x));
     }
   });
 });
-var name$m = "zeros";
-var dependencies$m = ["typed", "config", "matrix", "BigNumber"];
-var createZeros = /* @__PURE__ */ factory(name$m, dependencies$m, (_ref) => {
+var name$n = "zeros";
+var dependencies$n = ["typed", "config", "matrix", "BigNumber"];
+var createZeros = /* @__PURE__ */ factory(name$n, dependencies$n, (_ref) => {
   var {
     typed: typed2,
     config: config3,
     matrix: matrix2,
     BigNumber: BigNumber2
   } = _ref;
-  return typed2(name$m, {
+  return typed2(name$n, {
     "": function _2() {
       return config3.matrix === "Array" ? _zeros([]) : _zeros([], "default");
     },
@@ -77605,9 +77606,9 @@ var createZeros = /* @__PURE__ */ factory(name$m, dependencies$m, (_ref) => {
     });
   }
 });
-var name$l = "numeric";
-var dependencies$l = ["number", "?bignumber", "?fraction"];
-var createNumeric = /* @__PURE__ */ factory(name$l, dependencies$l, (_ref) => {
+var name$m = "numeric";
+var dependencies$m = ["number", "?bignumber", "?fraction"];
+var createNumeric = /* @__PURE__ */ factory(name$m, dependencies$m, (_ref) => {
   var {
     number: _number,
     bignumber: bignumber2,
@@ -77644,14 +77645,14 @@ var createNumeric = /* @__PURE__ */ factory(name$l, dependencies$l, (_ref) => {
     }
   };
 });
-var name$k = "divideScalar";
-var dependencies$k = ["typed", "numeric"];
-var createDivideScalar = /* @__PURE__ */ factory(name$k, dependencies$k, (_ref) => {
+var name$l = "divideScalar";
+var dependencies$l = ["typed", "numeric"];
+var createDivideScalar = /* @__PURE__ */ factory(name$l, dependencies$l, (_ref) => {
   var {
     typed: typed2,
     numeric: numeric2
   } = _ref;
-  return typed2(name$k, {
+  return typed2(name$l, {
     "number, number": function numberNumber(x, y) {
       return x / y;
     },
@@ -77668,9 +77669,9 @@ var createDivideScalar = /* @__PURE__ */ factory(name$k, dependencies$k, (_ref) 
     "number | Fraction | Complex | BigNumber, Unit": (x, y) => y.divideInto(x)
   });
 });
-var name$j = "pow";
-var dependencies$j = ["typed", "config", "identity", "multiply", "matrix", "inv", "fraction", "number", "Complex"];
-var createPow = /* @__PURE__ */ factory(name$j, dependencies$j, (_ref) => {
+var name$k = "pow";
+var dependencies$k = ["typed", "config", "identity", "multiply", "matrix", "inv", "fraction", "number", "Complex"];
+var createPow = /* @__PURE__ */ factory(name$k, dependencies$k, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -77682,7 +77683,7 @@ var createPow = /* @__PURE__ */ factory(name$j, dependencies$j, (_ref) => {
     fraction: fraction2,
     Complex: Complex2
   } = _ref;
-  return typed2(name$j, {
+  return typed2(name$k, {
     "number, number": _pow,
     "Complex, Complex": function ComplexComplex(x, y) {
       return x.pow(y);
@@ -77877,9 +77878,9 @@ function createSolveValidation(_ref) {
     }
   };
 }
-var name$i = "usolve";
-var dependencies$i = ["typed", "matrix", "divideScalar", "multiplyScalar", "subtract", "equalScalar", "DenseMatrix"];
-var createUsolve = /* @__PURE__ */ factory(name$i, dependencies$i, (_ref) => {
+var name$j = "usolve";
+var dependencies$j = ["typed", "matrix", "divideScalar", "multiplyScalar", "subtract", "equalScalar", "DenseMatrix"];
+var createUsolve = /* @__PURE__ */ factory(name$j, dependencies$j, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -77892,7 +77893,7 @@ var createUsolve = /* @__PURE__ */ factory(name$i, dependencies$i, (_ref) => {
   var solveValidation = createSolveValidation({
     DenseMatrix: DenseMatrix2
   });
-  return typed2(name$i, {
+  return typed2(name$j, {
     "SparseMatrix, Array | Matrix": function SparseMatrixArrayMatrix(m2, b) {
       return _sparseBackwardSubstitution(m2, b);
     },
@@ -77979,9 +77980,9 @@ var createUsolve = /* @__PURE__ */ factory(name$i, dependencies$i, (_ref) => {
     });
   }
 });
-var name$h = "usolveAll";
-var dependencies$h = ["typed", "matrix", "divideScalar", "multiplyScalar", "subtract", "equalScalar", "DenseMatrix"];
-var createUsolveAll = /* @__PURE__ */ factory(name$h, dependencies$h, (_ref) => {
+var name$i = "usolveAll";
+var dependencies$i = ["typed", "matrix", "divideScalar", "multiplyScalar", "subtract", "equalScalar", "DenseMatrix"];
+var createUsolveAll = /* @__PURE__ */ factory(name$i, dependencies$i, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -77994,7 +77995,7 @@ var createUsolveAll = /* @__PURE__ */ factory(name$h, dependencies$h, (_ref) => 
   var solveValidation = createSolveValidation({
     DenseMatrix: DenseMatrix2
   });
-  return typed2(name$h, {
+  return typed2(name$i, {
     "SparseMatrix, Array | Matrix": function SparseMatrixArrayMatrix(m2, b) {
       return _sparseBackwardSubstitution(m2, b);
     },
@@ -78100,9 +78101,9 @@ var createUsolveAll = /* @__PURE__ */ factory(name$h, dependencies$h, (_ref) => 
     }));
   }
 });
-var name$g = "equal";
-var dependencies$g = ["typed", "matrix", "equalScalar", "DenseMatrix", "concat"];
-var createEqual = /* @__PURE__ */ factory(name$g, dependencies$g, (_ref) => {
+var name$h = "equal";
+var dependencies$h = ["typed", "matrix", "equalScalar", "DenseMatrix", "concat"];
+var createEqual = /* @__PURE__ */ factory(name$h, dependencies$h, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -78126,7 +78127,7 @@ var createEqual = /* @__PURE__ */ factory(name$g, dependencies$g, (_ref) => {
     matrix: matrix2,
     concat: concat2
   });
-  return typed2(name$g, createEqualNumber({
+  return typed2(name$h, createEqualNumber({
     typed: typed2,
     equalScalar: equalScalar2
   }), matrixAlgorithmSuite({
@@ -78136,12 +78137,12 @@ var createEqual = /* @__PURE__ */ factory(name$g, dependencies$g, (_ref) => {
     Ss: matAlgo12xSfs
   }));
 });
-var createEqualNumber = factory(name$g, ["typed", "equalScalar"], (_ref2) => {
+var createEqualNumber = factory(name$h, ["typed", "equalScalar"], (_ref2) => {
   var {
     typed: typed2,
     equalScalar: equalScalar2
   } = _ref2;
-  return typed2(name$g, {
+  return typed2(name$h, {
     "any, any": function anyAny(x, y) {
       if (x === null) {
         return y === null;
@@ -78159,9 +78160,9 @@ var createEqualNumber = factory(name$g, ["typed", "equalScalar"], (_ref2) => {
     }
   });
 });
-var name$f = "smaller";
-var dependencies$f = ["typed", "config", "matrix", "DenseMatrix", "concat"];
-var createSmaller = /* @__PURE__ */ factory(name$f, dependencies$f, (_ref) => {
+var name$g = "smaller";
+var dependencies$g = ["typed", "config", "matrix", "DenseMatrix", "concat"];
+var createSmaller = /* @__PURE__ */ factory(name$g, dependencies$g, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -78188,7 +78189,7 @@ var createSmaller = /* @__PURE__ */ factory(name$f, dependencies$f, (_ref) => {
   var compareUnits = createCompareUnits({
     typed: typed2
   });
-  return typed2(name$f, createSmallerNumber({
+  return typed2(name$g, createSmallerNumber({
     typed: typed2,
     config: config3
   }), {
@@ -78206,20 +78207,20 @@ var createSmaller = /* @__PURE__ */ factory(name$f, dependencies$f, (_ref) => {
     Ss: matAlgo12xSfs
   }));
 });
-var createSmallerNumber = /* @__PURE__ */ factory(name$f, ["typed", "config"], (_ref2) => {
+var createSmallerNumber = /* @__PURE__ */ factory(name$g, ["typed", "config"], (_ref2) => {
   var {
     typed: typed2,
     config: config3
   } = _ref2;
-  return typed2(name$f, {
+  return typed2(name$g, {
     "number, number": function numberNumber(x, y) {
       return x < y && !nearlyEqual$1(x, y, config3.epsilon);
     }
   });
 });
-var name$e = "smallerEq";
-var dependencies$e = ["typed", "config", "matrix", "DenseMatrix", "concat"];
-var createSmallerEq = /* @__PURE__ */ factory(name$e, dependencies$e, (_ref) => {
+var name$f = "smallerEq";
+var dependencies$f = ["typed", "config", "matrix", "DenseMatrix", "concat"];
+var createSmallerEq = /* @__PURE__ */ factory(name$f, dependencies$f, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -78246,7 +78247,7 @@ var createSmallerEq = /* @__PURE__ */ factory(name$e, dependencies$e, (_ref) => 
   var compareUnits = createCompareUnits({
     typed: typed2
   });
-  return typed2(name$e, createSmallerEqNumber({
+  return typed2(name$f, createSmallerEqNumber({
     typed: typed2,
     config: config3
   }), {
@@ -78264,20 +78265,20 @@ var createSmallerEq = /* @__PURE__ */ factory(name$e, dependencies$e, (_ref) => 
     Ss: matAlgo12xSfs
   }));
 });
-var createSmallerEqNumber = /* @__PURE__ */ factory(name$e, ["typed", "config"], (_ref2) => {
+var createSmallerEqNumber = /* @__PURE__ */ factory(name$f, ["typed", "config"], (_ref2) => {
   var {
     typed: typed2,
     config: config3
   } = _ref2;
-  return typed2(name$e, {
+  return typed2(name$f, {
     "number, number": function numberNumber(x, y) {
       return x <= y || nearlyEqual$1(x, y, config3.epsilon);
     }
   });
 });
-var name$d = "larger";
-var dependencies$d = ["typed", "config", "matrix", "DenseMatrix", "concat"];
-var createLarger = /* @__PURE__ */ factory(name$d, dependencies$d, (_ref) => {
+var name$e = "larger";
+var dependencies$e = ["typed", "config", "matrix", "DenseMatrix", "concat"];
+var createLarger = /* @__PURE__ */ factory(name$e, dependencies$e, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -78304,7 +78305,7 @@ var createLarger = /* @__PURE__ */ factory(name$d, dependencies$d, (_ref) => {
   var compareUnits = createCompareUnits({
     typed: typed2
   });
-  return typed2(name$d, createLargerNumber({
+  return typed2(name$e, createLargerNumber({
     typed: typed2,
     config: config3
   }), {
@@ -78322,20 +78323,20 @@ var createLarger = /* @__PURE__ */ factory(name$d, dependencies$d, (_ref) => {
     Ss: matAlgo12xSfs
   }));
 });
-var createLargerNumber = /* @__PURE__ */ factory(name$d, ["typed", "config"], (_ref2) => {
+var createLargerNumber = /* @__PURE__ */ factory(name$e, ["typed", "config"], (_ref2) => {
   var {
     typed: typed2,
     config: config3
   } = _ref2;
-  return typed2(name$d, {
+  return typed2(name$e, {
     "number, number": function numberNumber(x, y) {
       return x > y && !nearlyEqual$1(x, y, config3.epsilon);
     }
   });
 });
-var name$c = "largerEq";
-var dependencies$c = ["typed", "config", "matrix", "DenseMatrix", "concat"];
-var createLargerEq = /* @__PURE__ */ factory(name$c, dependencies$c, (_ref) => {
+var name$d = "largerEq";
+var dependencies$d = ["typed", "config", "matrix", "DenseMatrix", "concat"];
+var createLargerEq = /* @__PURE__ */ factory(name$d, dependencies$d, (_ref) => {
   var {
     typed: typed2,
     config: config3,
@@ -78362,7 +78363,7 @@ var createLargerEq = /* @__PURE__ */ factory(name$c, dependencies$c, (_ref) => {
   var compareUnits = createCompareUnits({
     typed: typed2
   });
-  return typed2(name$c, createLargerEqNumber({
+  return typed2(name$d, createLargerEqNumber({
     typed: typed2,
     config: config3
   }), {
@@ -78380,20 +78381,20 @@ var createLargerEq = /* @__PURE__ */ factory(name$c, dependencies$c, (_ref) => {
     Ss: matAlgo12xSfs
   }));
 });
-var createLargerEqNumber = /* @__PURE__ */ factory(name$c, ["typed", "config"], (_ref2) => {
+var createLargerEqNumber = /* @__PURE__ */ factory(name$d, ["typed", "config"], (_ref2) => {
   var {
     typed: typed2,
     config: config3
   } = _ref2;
-  return typed2(name$c, {
+  return typed2(name$d, {
     "number, number": function numberNumber(x, y) {
       return x >= y || nearlyEqual$1(x, y, config3.epsilon);
     }
   });
 });
-var name$b = "ImmutableDenseMatrix";
-var dependencies$b = ["smaller", "DenseMatrix"];
-var createImmutableDenseMatrixClass = /* @__PURE__ */ factory(name$b, dependencies$b, (_ref) => {
+var name$c = "ImmutableDenseMatrix";
+var dependencies$c = ["smaller", "DenseMatrix"];
+var createImmutableDenseMatrixClass = /* @__PURE__ */ factory(name$c, dependencies$c, (_ref) => {
   var {
     smaller: smaller2,
     DenseMatrix: DenseMatrix2
@@ -78509,9 +78510,9 @@ var createImmutableDenseMatrixClass = /* @__PURE__ */ factory(name$b, dependenci
 }, {
   isClass: true
 });
-var name$a = "Index";
-var dependencies$a = ["ImmutableDenseMatrix", "getMatrixDataType"];
-var createIndexClass = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) => {
+var name$b = "Index";
+var dependencies$b = ["ImmutableDenseMatrix", "getMatrixDataType"];
+var createIndexClass = /* @__PURE__ */ factory(name$b, dependencies$b, (_ref) => {
   var {
     ImmutableDenseMatrix: ImmutableDenseMatrix2,
     getMatrixDataType: getMatrixDataType2
@@ -78663,9 +78664,9 @@ function _booleansArrayToNumbersForIndex(booleanArrayIndex) {
   });
   return indexOfNumbers;
 }
-var name$9 = "atan";
-var dependencies$9 = ["typed"];
-var createAtan = /* @__PURE__ */ factory(name$9, dependencies$9, (_ref) => {
+var name$a = "atan";
+var dependencies$a = ["typed"];
+var createAtan = /* @__PURE__ */ factory(name$a, dependencies$a, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -78694,9 +78695,23 @@ var createTrigUnit = /* @__PURE__ */ factory("trigUnit", ["typed"], (_ref) => {
     })
   };
 });
-var name$8 = "cos";
+var name$9 = "cos";
+var dependencies$9 = ["typed"];
+var createCos = /* @__PURE__ */ factory(name$9, dependencies$9, (_ref) => {
+  var {
+    typed: typed2
+  } = _ref;
+  var trigUnit = createTrigUnit({
+    typed: typed2
+  });
+  return typed2(name$9, {
+    number: Math.cos,
+    "Complex | BigNumber": (x) => x.cos()
+  }, trigUnit);
+});
+var name$8 = "sin";
 var dependencies$8 = ["typed"];
-var createCos = /* @__PURE__ */ factory(name$8, dependencies$8, (_ref) => {
+var createSin = /* @__PURE__ */ factory(name$8, dependencies$8, (_ref) => {
   var {
     typed: typed2
   } = _ref;
@@ -78704,27 +78719,13 @@ var createCos = /* @__PURE__ */ factory(name$8, dependencies$8, (_ref) => {
     typed: typed2
   });
   return typed2(name$8, {
-    number: Math.cos,
-    "Complex | BigNumber": (x) => x.cos()
-  }, trigUnit);
-});
-var name$7 = "sin";
-var dependencies$7 = ["typed"];
-var createSin = /* @__PURE__ */ factory(name$7, dependencies$7, (_ref) => {
-  var {
-    typed: typed2
-  } = _ref;
-  var trigUnit = createTrigUnit({
-    typed: typed2
-  });
-  return typed2(name$7, {
     number: Math.sin,
     "Complex | BigNumber": (x) => x.sin()
   }, trigUnit);
 });
-var name$6 = "add";
-var dependencies$6 = ["typed", "matrix", "addScalar", "equalScalar", "DenseMatrix", "SparseMatrix", "concat"];
-var createAdd = /* @__PURE__ */ factory(name$6, dependencies$6, (_ref) => {
+var name$7 = "add";
+var dependencies$7 = ["typed", "matrix", "addScalar", "equalScalar", "DenseMatrix", "SparseMatrix", "concat"];
+var createAdd = /* @__PURE__ */ factory(name$7, dependencies$7, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -78750,7 +78751,7 @@ var createAdd = /* @__PURE__ */ factory(name$6, dependencies$6, (_ref) => {
     matrix: matrix2,
     concat: concat2
   });
-  return typed2(name$6, {
+  return typed2(name$7, {
     "any, any": addScalar2,
     "any, any, ...any": typed2.referToSelf((self2) => (x, y, rest) => {
       var result = self2(x, y);
@@ -78766,9 +78767,9 @@ var createAdd = /* @__PURE__ */ factory(name$6, dependencies$6, (_ref) => {
     Ss: matAlgo10xSids
   }));
 });
-var name$5 = "norm";
-var dependencies$5 = ["typed", "abs", "add", "pow", "conj", "sqrt", "multiply", "equalScalar", "larger", "smaller", "matrix", "ctranspose", "eigs"];
-var createNorm = /* @__PURE__ */ factory(name$5, dependencies$5, (_ref) => {
+var name$6 = "norm";
+var dependencies$6 = ["typed", "abs", "add", "pow", "conj", "sqrt", "multiply", "equalScalar", "larger", "smaller", "matrix", "ctranspose", "eigs"];
+var createNorm = /* @__PURE__ */ factory(name$6, dependencies$6, (_ref) => {
   var {
     typed: typed2,
     abs: abs2,
@@ -78784,7 +78785,7 @@ var createNorm = /* @__PURE__ */ factory(name$5, dependencies$5, (_ref) => {
     ctranspose: ctranspose2,
     eigs: eigs2
   } = _ref;
-  return typed2(name$5, {
+  return typed2(name$6, {
     number: Math.abs,
     Complex: function Complex2(x) {
       return x.abs();
@@ -78923,9 +78924,9 @@ var createNorm = /* @__PURE__ */ factory(name$5, dependencies$5, (_ref) => {
     }
   }
 });
-var name$4 = "dot";
-var dependencies$4 = ["typed", "addScalar", "multiplyScalar", "conj", "size"];
-var createDot = /* @__PURE__ */ factory(name$4, dependencies$4, (_ref) => {
+var name$5 = "dot";
+var dependencies$5 = ["typed", "addScalar", "multiplyScalar", "conj", "size"];
+var createDot = /* @__PURE__ */ factory(name$5, dependencies$5, (_ref) => {
   var {
     typed: typed2,
     addScalar: addScalar2,
@@ -78933,7 +78934,7 @@ var createDot = /* @__PURE__ */ factory(name$4, dependencies$4, (_ref) => {
     conj: conj2,
     size: size2
   } = _ref;
-  return typed2(name$4, {
+  return typed2(name$5, {
     "Array | DenseMatrix, Array | DenseMatrix": _denseDot,
     "SparseMatrix, SparseMatrix": _sparseDot
   });
@@ -79039,9 +79040,9 @@ var createDot = /* @__PURE__ */ factory(name$4, dependencies$4, (_ref) => {
     return isMatrix(x) ? x.size() : size2(x);
   }
 });
-var name$3 = "qr";
-var dependencies$3 = ["typed", "matrix", "zeros", "identity", "isZero", "equal", "sign", "sqrt", "conj", "unaryMinus", "addScalar", "divideScalar", "multiplyScalar", "subtract", "complex"];
-var createQr = /* @__PURE__ */ factory(name$3, dependencies$3, (_ref) => {
+var name$4 = "qr";
+var dependencies$4 = ["typed", "matrix", "zeros", "identity", "isZero", "equal", "sign", "sqrt", "conj", "unaryMinus", "addScalar", "divideScalar", "multiplyScalar", "subtract", "complex"];
+var createQr = /* @__PURE__ */ factory(name$4, dependencies$4, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -79059,7 +79060,7 @@ var createQr = /* @__PURE__ */ factory(name$3, dependencies$3, (_ref) => {
     subtract: subtract2,
     complex: complex2
   } = _ref;
-  return _extends(typed2(name$3, {
+  return _extends(typed2(name$4, {
     DenseMatrix: function DenseMatrix2(m2) {
       return _denseQR(m2);
     },
@@ -79150,9 +79151,9 @@ var createQr = /* @__PURE__ */ factory(name$3, dependencies$3, (_ref) => {
     throw new Error("qr not implemented for sparse matrices yet");
   }
 });
-var name$2 = "det";
-var dependencies$2 = ["typed", "matrix", "subtract", "multiply", "divideScalar", "isZero", "unaryMinus"];
-var createDet = /* @__PURE__ */ factory(name$2, dependencies$2, (_ref) => {
+var name$3 = "det";
+var dependencies$3 = ["typed", "matrix", "subtract", "multiply", "divideScalar", "isZero", "unaryMinus"];
+var createDet = /* @__PURE__ */ factory(name$3, dependencies$3, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -79162,7 +79163,7 @@ var createDet = /* @__PURE__ */ factory(name$2, dependencies$2, (_ref) => {
     isZero: isZero2,
     unaryMinus: unaryMinus2
   } = _ref;
-  return typed2(name$2, {
+  return typed2(name$3, {
     any: function any(x) {
       return clone$2(x);
     },
@@ -79243,9 +79244,9 @@ var createDet = /* @__PURE__ */ factory(name$2, dependencies$2, (_ref) => {
     }
   }
 });
-var name$1 = "inv";
-var dependencies$1 = ["typed", "matrix", "divideScalar", "addScalar", "multiply", "unaryMinus", "det", "identity", "abs"];
-var createInv = /* @__PURE__ */ factory(name$1, dependencies$1, (_ref) => {
+var name$2 = "inv";
+var dependencies$2 = ["typed", "matrix", "divideScalar", "addScalar", "multiply", "unaryMinus", "det", "identity", "abs"];
+var createInv = /* @__PURE__ */ factory(name$2, dependencies$2, (_ref) => {
   var {
     typed: typed2,
     matrix: matrix2,
@@ -79257,7 +79258,7 @@ var createInv = /* @__PURE__ */ factory(name$1, dependencies$1, (_ref) => {
     identity: identity2,
     abs: abs2
   } = _ref;
-  return typed2(name$1, {
+  return typed2(name$2, {
     "Array | Matrix": function ArrayMatrix(x) {
       var size2 = isMatrix(x) ? x.size() : arraySize(x);
       switch (size2.length) {
@@ -80019,9 +80020,9 @@ function createRealSymmetric(_ref) {
   }
   return main;
 }
-var name = "eigs";
-var dependencies = ["config", "typed", "matrix", "addScalar", "equal", "subtract", "abs", "atan", "cos", "sin", "multiplyScalar", "divideScalar", "inv", "bignumber", "multiply", "add", "larger", "column", "flatten", "number", "complex", "sqrt", "diag", "qr", "usolve", "usolveAll", "im", "re", "smaller", "matrixFromColumns", "dot"];
-var createEigs = /* @__PURE__ */ factory(name, dependencies, (_ref) => {
+var name$1 = "eigs";
+var dependencies$1 = ["config", "typed", "matrix", "addScalar", "equal", "subtract", "abs", "atan", "cos", "sin", "multiplyScalar", "divideScalar", "inv", "bignumber", "multiply", "add", "larger", "column", "flatten", "number", "complex", "sqrt", "diag", "qr", "usolve", "usolveAll", "im", "re", "smaller", "matrixFromColumns", "dot"];
+var createEigs = /* @__PURE__ */ factory(name$1, dependencies$1, (_ref) => {
   var {
     config: config3,
     typed: typed2,
@@ -80225,6 +80226,43 @@ var createEigs = /* @__PURE__ */ factory(name, dependencies, (_ref) => {
       throw TypeError("Matrix contains unsupported types only.");
     }
   }
+});
+var name = "divide";
+var dependencies = ["typed", "matrix", "multiply", "equalScalar", "divideScalar", "inv"];
+var createDivide = /* @__PURE__ */ factory(name, dependencies, (_ref) => {
+  var {
+    typed: typed2,
+    matrix: matrix2,
+    multiply: multiply2,
+    equalScalar: equalScalar2,
+    divideScalar: divideScalar2,
+    inv: inv2
+  } = _ref;
+  var matAlgo11xS0s = createMatAlgo11xS0s({
+    typed: typed2,
+    equalScalar: equalScalar2
+  });
+  var matAlgo14xDs = createMatAlgo14xDs({
+    typed: typed2
+  });
+  return typed2("divide", extend({
+    // we extend the signatures of divideScalar with signatures dealing with matrices
+    "Array | Matrix, Array | Matrix": function ArrayMatrixArrayMatrix(x, y) {
+      return multiply2(x, inv2(y));
+    },
+    "DenseMatrix, any": function DenseMatrixAny(x, y) {
+      return matAlgo14xDs(x, y, divideScalar2, false);
+    },
+    "SparseMatrix, any": function SparseMatrixAny(x, y) {
+      return matAlgo11xS0s(x, y, divideScalar2, false);
+    },
+    "Array, any": function ArrayAny(x, y) {
+      return matAlgo14xDs(matrix2(x), y, divideScalar2, false).valueOf();
+    },
+    "any, Array | Matrix": function anyArrayMatrix(x, y) {
+      return multiply2(x, inv2(y));
+    }
+  }, divideScalar2.signatures));
 });
 var BigNumber = /* @__PURE__ */ createBigNumberClass({
   config: config$1
@@ -80542,6 +80580,14 @@ var pow = /* @__PURE__ */ createPow({
   number,
   typed
 });
+var divide = /* @__PURE__ */ createDivide({
+  divideScalar,
+  equalScalar,
+  inv,
+  matrix,
+  multiply,
+  typed
+});
 var eigs = /* @__PURE__ */ createEigs({
   abs,
   add,
@@ -80592,7 +80638,17 @@ var norm = /* @__PURE__ */ createNorm({
 });
 class PathGenerator {
   constructor(source_point, source_port, target_point, target_port, source_dims, target_dims) {
-    this.point_arrays = { source: [source_point], target: [target_point] };
+    __publicField(this, "direction");
+    __publicField(this, "hasTicked");
+    __publicField(this, "node_dims");
+    __publicField(this, "findcounter");
+    __publicField(this, "full_array");
+    __publicField(this, "point_arrays");
+    __publicField(this, "last_point");
+    this.point_arrays = {
+      source: [source_point],
+      target: [target_point]
+    };
     this.last_point = { source: source_point, target: target_point };
     this.direction = {
       source: port_direction[source_port],
@@ -80615,53 +80671,59 @@ class PathGenerator {
   }
   //gets the total length of our path
   getPathLength() {
-    let length2 = 0;
-    for (let i = 1; i < this.full_array.length; i++) {
-      const seg_len = norm(
-        subtract(this.full_array[i], this.full_array[i - 1])
-      );
-      length2 += seg_len;
-    }
-    return length2;
+    return this.full_array.slice(1).reduce(
+      (acc, currentPoint, index) => acc + norm(subtract(currentPoint, this.full_array[index])),
+      0
+    );
   }
+  // getPathLength() {
+  //   let length = 0
+  //   for (let i = 1; i < this.full_array.length; i++) {
+  //     const seg_len = mathnorm(
+  //       mathsubtract(this.full_array[i], this.full_array[i - 1])
+  //     )
+  //     length += seg_len
+  //   }
+  //   return length
+  // }
   //gets the point at the given fraction of our path length
   getFractionalPoint(position2) {
-    const length2 = this.getPathLength();
-    if (length2 === 0)
+    const totalLength = this.getPathLength();
+    if (totalLength === 0)
       return [0, 0];
-    const point = this.full_array[1];
-    let run_length = 0;
-    const target_length = length2 * position2;
+    let runLength = 0;
+    const targetLength = totalLength * position2;
     for (let i = 1; i < this.full_array.length; i++) {
-      const seg = subtract(this.full_array[i], this.full_array[i - 1]);
-      const seg_len = norm(seg);
-      if (run_length + seg_len < target_length)
-        run_length += seg_len;
-      else {
-        const remaining_len = target_length - run_length;
+      const segment = subtract(this.full_array[i], this.full_array[i - 1]);
+      const segmentLength = number(norm(segment));
+      runLength += segmentLength;
+      if (runLength >= targetLength) {
+        const remainingLength = targetLength - (runLength - segmentLength);
         return add(
           this.full_array[i - 1],
-          multiply(seg, remaining_len / seg_len)
+          multiply(divide(segment, segmentLength), remainingLength)
         );
       }
     }
-    return point;
+    return this.full_array[1];
   }
   //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
   findNextPoint() {
     if (this.findcounter > 8)
       return;
     this.findcounter++;
-    if (dot(
+    const isSourceNegative = dot(
       this.direction["source"],
       subtract(this.last_point["target"], this.last_point["source"])
-    ) < 0) {
-      this.tickPerpendicular("source");
-      this.findNextPoint();
-    } else if (dot(
+    ) < 0;
+    const isTargetNegative = dot(
       this.direction["target"],
       subtract(this.last_point["source"], this.last_point["target"])
-    ) < 0) {
+    ) < 0;
+    if (isSourceNegative) {
+      this.tickPerpendicular("source");
+      this.findNextPoint();
+    } else if (isTargetNegative) {
       this.tickPerpendicular("target");
       this.findNextPoint();
     }
@@ -80682,20 +80744,20 @@ class PathGenerator {
   }
   //Turns perpendicular to move around the edge of the node
   tickPerpendicular(port = "source") {
-    let otherport = "target";
-    if (port === "target")
-      otherport = "source";
+    const otherport = port === "target" ? "source" : "target";
+    console.log("this.direction");
+    console.log(this.direction);
     this.padOut(port);
-    const new_direction = multiply(
-      matrix([
-        multiply([1, 0], this.direction[port][1] ** 2),
-        multiply([0, 1], this.direction[port][0] ** 2)
-      ]),
-      subtract(this.last_point[otherport], this.last_point[port])
-    )._data;
+    const matrix$1 = matrix([
+      multiply([1, 0], this.direction[port][1] ** 2),
+      multiply([0, 1], this.direction[port][0] ** 2)
+    ]);
+    const sub2 = subtract(this.last_point[otherport], this.last_point[port]);
+    const new_direction = multiply(matrix$1, sub2)._data;
     const norm$1 = norm(new_direction);
-    if (norm$1 === 0)
+    if (norm$1 === 0) {
       throw "Non-numeric";
+    }
     this.direction[port] = multiply(
       1 / norm(new_direction),
       new_direction
@@ -80718,6 +80780,9 @@ class PathGenerator {
     }
   }
   //joins the two arrays, either as a corner or a double corner
+  /**
+   *
+   */
   joinArrays() {
     const joined = this.point_arrays["source"].slice();
     if (dot(this.direction["source"], this.direction["target"]) == 0) {
@@ -80752,17 +80817,38 @@ class PathGenerator {
   }
 }
 class NodeLinkSVG extends ComponentWithToggleDrop {
-  // componentDidUpdate() {
-  //   if (
-  //     this.props.hovered ||
-  //     this.state.hovered ||
-  //     this.props.selected ||
-  //     this.props.node_selected
-  //   ) {
-  //     // d3.select(this.mainDiv.current).raise();
-  //     // d3.selectAll(".node-ports").raise();
-  //   }
-  // }
+  constructor() {
+    super(...arguments);
+    __publicField(this, "parentNode");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Title", ({ pathArray }) => {
+      if (this.props.title && this.props.title !== "") {
+        const text_position = pathArray.getFractionalPoint(
+          this.props.text_position / 100
+        );
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "foreignObject",
+          {
+            width: "100",
+            height: "100",
+            x: text_position[0] - 50,
+            y: text_position[1] - 50,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nodelinkwrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "nodelinktext",
+                dangerouslySetInnerHTML: { __html: this.props.title },
+                onClick: this.props.clickFunction
+              }
+            ) })
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    });
+  }
   getPathArray(source_point, source_port, target_point, target_port) {
     const source_dims = [
       this.props.source_dimensions.width,
@@ -80781,26 +80867,69 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
       target_dims
     );
   }
-  getPath(path_array) {
-    let path = "M";
-    for (let i = 0; i < path_array.length; i++) {
-      if (i > 0)
-        path += " L";
-      const thispoint = path_array[i];
-      path += thispoint[0] + " " + thispoint[1];
+  getPath(pathArray) {
+    return pathArray.reduce(
+      (acc, point, index) => `${acc}${index > 0 ? " L" : ""}${point[0]} ${point[1]}`,
+      "M"
+    );
+  }
+  // getPath(path_array) {
+  //   let path = 'M'
+  //   for (let i = 0; i < path_array.length; i++) {
+  //     if (i > 0) path += ' L'
+  //     const thispoint = path_array[i]
+  //     path += thispoint[0] + ' ' + thispoint[1]
+  //   }
+  //   return path
+  // }
+  getStyle() {
+    var _a;
+    if (this.props.hovered) {
+      return {
+        ...this.props.style,
+        stroke: "yellow",
+        opacity: 1
+      };
     }
-    return path;
+    if (this.props.node_selected) {
+      return {
+        ...this.props.style,
+        // @ts-ignore
+        stroke: myColour ?? "",
+        // @todo find out where this comes from
+        opacity: 0.4
+      };
+    }
+    if (this.props.selected) {
+      return {
+        ...this.props.style,
+        // @ts-ignore
+        stroke: myColour ?? "",
+        // @todo find out where this comes from
+        opacity: 1
+      };
+    }
+    if (this.props.lock) {
+      return {
+        ...this.props.style,
+        stroke: ((_a = this.props.lock) == null ? void 0 : _a.user_colour) ?? "",
+        opacity: 1
+      };
+    }
+    return {
+      ...this.props.style,
+      stroke: "black",
+      opacity: 0.4
+    };
   }
   render() {
     try {
       const source_transform = getSVGTranslation(
-        this.props.source_port_handle.select(function() {
-          return this.parentNode;
-        }).attr("transform")
+        this.props.source_port_handle.select(this.parentNode).attr("transform")
       );
+      this.props.target_port_handle.select(this.parentNode).attr("transform");
       const target_transform = getSVGTranslation(
-        this.props.target_port_handle.select(function() {
-        }).attr("transform")
+        this.props.target_port_handle.select(this.parentNode).attr("transform")
       );
       const source_point = [
         parseInt(this.props.source_port_handle.attr("cx")) + parseInt(source_transform[0]),
@@ -80817,75 +80946,45 @@ class NodeLinkSVG extends ComponentWithToggleDrop {
         this.props.target_port
       );
       const path = this.getPath(path_array.findPath());
-      let style2;
-      if (this.props.style)
-        style2 = { ...this.props.style };
-      else
-        style2 = {};
-      if (this.props.hovered || this.state.hovered) {
-        style2.stroke = "yellow";
-        style2.opacity = 1;
-      } else if (this.props.node_selected) {
-        style2.stroke = myColour ?? "";
-        style2.opacity = 0.4;
-      } else if (this.props.selected) {
-        style2.stroke = myColour ?? "";
-        style2.opacity = 1;
-      } else if (this.props.lock) {
-        style2.stroke = (lock == null ? void 0 : lock.user_colour) ?? "";
-        style2.opacity = 1;
-      } else {
-        style2.stroke = "black";
-        style2.opacity = 0.4;
-      }
-      let title;
-      if (this.props.title && this.props.title !== "") {
-        const text_position = path_array.getFractionalPoint(
-          this.props.text_position / 100
-        );
-        title = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "foreignObject",
-          {
-            width: "100",
-            height: "100",
-            x: text_position[0] - 50,
-            y: text_position[1] - 50,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "nodelinkwrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
+      const style2 = this.getStyle();
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "g",
+        {
+          ref: this.mainDiv,
+          stroke: "black",
+          fill: "none",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "path",
               {
-                className: "nodelinktext",
-                dangerouslySetInnerHTML: { __html: this.props.title },
-                onClick: this.props.clickFunction
+                opacity: "0",
+                strokeWidth: "10px",
+                d: path,
+                onClick: this.props.clickFunction,
+                onMouseEnter: () => this.setState({
+                  hovered: true
+                }),
+                onMouseLeave: () => this.setState({
+                  hovered: false
+                }),
+                className: "nodelink"
               }
-            ) })
-          }
-        );
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { ref: this.mainDiv, stroke: "black", fill: "none", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "path",
-          {
-            opacity: "0",
-            strokeWidth: "10px",
-            d: path,
-            onClick: this.props.clickFunction,
-            onMouseEnter: () => this.setState({ hovered: true }),
-            onMouseLeave: () => this.setState({ hovered: false }),
-            className: "nodelink"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "path",
-          {
-            style: style2,
-            strokeWidth: "2px",
-            d: path,
-            markerEnd: "url(#arrow)"
-          }
-        ),
-        title
-      ] });
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "path",
+              {
+                style: style2,
+                strokeWidth: "2px",
+                d: path,
+                markerEnd: "url(#arrow)"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, { pathArray: path_array })
+          ]
+        }
+      );
     } catch (err) {
+      console.log("could not draw a node link");
       return null;
     }
   }
@@ -80921,6 +81020,8 @@ class NodeLink extends EditableComponentWithActions {
    * RENDER
    *******************************************************/
   render() {
+    console.log("NodeLink this.props.data");
+    console.log(this.props);
     const data2 = this.props.data;
     const style2 = {};
     if (!this.source_node || !this.source_node.outerWidth() || !this.target_node || !this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()) {
@@ -80928,17 +81029,26 @@ class NodeLink extends EditableComponentWithActions {
       this.target_node = $("#" + data2.target_node + ".node");
       this.source_node.on(this.rerenderEvents, this.rerender.bind(this));
       this.target_node.on(this.rerenderEvents, this.rerender.bind(this));
-      this.source_port_handle = d3.select(
-        "g.port-" + data2.source_node + " circle[data-port-type='source'][data-port='" + port_keys[data2.source_port] + "']"
-      );
-      this.target_port_handle = d3.select(
-        "g.port-" + data2.target_node + " circle[data-port-type='target'][data-port='" + port_keys[data2.target_port] + "']"
-      );
+      const cssSourcePortSelector = [
+        `g.port-${data2.source_node}`,
+        ` circle[data-port-type='source']`,
+        `[data-port='${port_keys[data2.source_port]}']`
+      ].join("");
+      const cssSourceTargetSelector = [
+        `g.port-${data2.target_node} `,
+        ` circle[data-port-type='target']`,
+        `[data-port='${port_keys[data2.target_port]}']`
+      ].join("");
+      this.source_port_handle = d3.select(cssSourcePortSelector);
+      this.target_port_handle = d3.select(cssSourceTargetSelector);
     }
+    console.log("g port");
+    console.log();
     const node_selected = this.source_node.attr("data-selected") === "true" || this.target_node.attr("data-selected") === "true";
     const node_hovered = this.source_node.attr("data-hovered") === "true" || this.target_node.attr("data-hovered") === "true";
-    if (data2.dashed)
+    if (data2.dashed) {
       style2.strokeDasharray = "5,5";
+    }
     if (this.source_node.css("display") == "none" || this.target_node.css("display") == "none") {
       style2.display = "none";
     }
@@ -84205,8 +84315,6 @@ class ConnectionBar extends reactExports.Component {
     super(props);
     __publicField(this, "user_name");
     __publicField(this, "myColour");
-    console.log("ConnectionBar props");
-    console.log(props);
     this.state = {
       connected_users: []
     };
@@ -95429,7 +95537,7 @@ class Workflow {
     this.store.dispatch(ActionCreator.changeField(id, object_type, json));
     updateValueQuery(id, object_type, json, true);
   }
-  lock_update(obj, time, lock2) {
+  lock_update(obj, time, lock) {
     if (this.websocket) {
       this.websocket.send(
         JSON.stringify({
@@ -95439,7 +95547,7 @@ class Workflow {
             expires: Date.now() + time,
             user_id: this.user_id,
             user_colour: COURSEFLOW_APP.contextData.myColour,
-            lock: lock2
+            lock
           }
         })
       );
@@ -95955,6 +96063,8 @@ const Header = ({
   console.log("discipline");
   console.log(allDisciplines);
   console.log(data2.disciplines);
+  console.log("disciplines");
+  console.log(disciplines);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowTitle,
@@ -95992,7 +96102,7 @@ const Header = ({
           allDisciplines.filter(
             // @ts-ignore
             (discipline) => disciplines.indexOf(discipline.id) >= 0
-            // @todo don't understand this error yet
+            // @todo what is shape of 'disiplines' ?
           ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
         ] })
       ] })

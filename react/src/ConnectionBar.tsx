@@ -1,12 +1,5 @@
 import * as React from 'react'
 
-type ConnectedUser = {
-  user_name: string
-  user_colour: string
-  user_id: string
-  timeout: string
-}
-
 const ConnectedUser = ({
   user_colour,
   user_name
@@ -30,25 +23,28 @@ const ConnectedUser = ({
 // @todo not sure where this goes
 
 //Container for common elements for workflows
+type ConnectedUserType = {
+  user_name: string
+  user_colour: string
+  user_id: string
+  timeout: string
+}
 
 type PropsType = {
-  user_id: any
+  user_id: number
   websocket: WebSocket
   //  renderer: any
 }
 
 type StateType = {
-  connected_users: ConnectedUser[]
+  connected_users: ConnectedUserType[]
 }
 
 export class ConnectionBar extends React.Component<PropsType, StateType> {
-  private user_name: any
-  private myColour: any
+  private user_name: string
+  private myColour: string
   constructor(props: PropsType) {
     super(props)
-
-    console.log('ConnectionBar props')
-    console.log(props)
 
     this.state = {
       connected_users: []

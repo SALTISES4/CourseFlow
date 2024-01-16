@@ -258,6 +258,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     this.addEditable(data)
     console.log('this.addEditable(data)')
     console.log(data)
+
     return (
       <div
         style={style}
