@@ -9,7 +9,10 @@ import React from 'react'
 // import 'jquery-ui';
 
 /**
- * Manages the current selection, ensuring we only have one at a time
+ * Manages the current selection
+ * provably the right sidebar (?)
+ * what else is it doing besides being the active tab manageer?
+ * need to define responsibilities
  */
 export class SelectionManager {
   private mouseClicked: boolean
@@ -65,7 +68,10 @@ export class SelectionManager {
    * @param evt - The event that triggered the selection change.
    * @param newSelection - The new selection object.
    */
-  changeSelection(evt?: JQuery.Event, newSelection?: React.Component<any>): void {
+  changeSelection(
+    evt?: JQuery.Event,
+    newSelection?: React.Component<any>
+  ): void {
     if (evt) {
       evt.stopPropagation()
     }

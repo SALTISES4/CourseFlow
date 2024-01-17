@@ -25,6 +25,7 @@ declare global {
   const $: jQuery
   const d3: d3
   const COURSEFLOW_APP: CourseflowAppGlobals
+  const makeActiveSidebar: (id: string) => void // @todo
 }
 
 interface CourseflowAppGlobals {

@@ -208,8 +208,11 @@ export type Nodelink = {
   text_position: number
 }
 
+// @todo i think this is missing attributes
 export type ObjectSet = {
   title: string
+  hidden?: boolean // not sure if this is the same objectset
+  id?: number // not sure if this is the same objectset
 }
 
 export type ParentWorkflow = any

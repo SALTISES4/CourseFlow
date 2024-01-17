@@ -57,3 +57,7 @@ export type SectionObject = {
 export type ToggleStrategyQueryResp = {
   action: VERB
 }
+
+export type GetWorkflowSelectMenuResp = {
+  workflowID: number
+}

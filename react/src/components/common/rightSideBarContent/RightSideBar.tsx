@@ -22,7 +22,7 @@ type ChildRenderer = {
 
 type PropsType = {
   renderer: ChildRenderer
-  parentRender: any
+  parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   context: any
   object_sets: any
   toggleObjectSet: any
@@ -97,12 +97,7 @@ class RightSideBar extends React.Component<PropsType> {
     return (
       <OutcomeBar
         // renderer={renderer}
-        renderMethod={
-          this.props.parentRender as (
-            container: any,
-            view_type: ViewType
-          ) => void
-        }
+        renderMethod={this.props.parentRender}
         readOnly={true}
       />
     )

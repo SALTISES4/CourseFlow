@@ -1,17 +1,21 @@
-// @ts-nocheck
 import * as React from 'react'
 import { LibraryQueryResp } from '@XMLHTTP/types.js'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
+import { Workflow } from '@cfModule/types/common'
 
+type PropsType = Record<string, never>
+type StateType = {
+  project_data?: Workflow[]
+}
 /*******************************************************
  * @LibraryRenderer
  *******************************************************/
-class LibraryPage extends React.Component {
+class LibraryPage extends React.Component<PropsType, StateType> {
   private createDiv: React.RefObject<HTMLDivElement>
 
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     this.state = {}
     this.createDiv = React.createRef()
@@ -34,7 +38,7 @@ class LibraryPage extends React.Component {
    */
   CreateButton = () => {
     /**
-     * NOTE: this create button previously had a condition where
+     * NOTE: this creates button previously had a condition where
      * would only render it props.readonly was not defined, but read only not set for library path ever
      *  (??) verify
      */
@@ -46,7 +50,10 @@ class LibraryPage extends React.Component {
         ref={this.createDiv}
       >
         <span className="material-symbols-rounded filled green">
-          add_circle
+          {/*
+           // this has text add_circle in it before
+           add_circle
+           */}
         </span>
         <div id="create-links-project" className="create-dropdown">
           <a
@@ -100,7 +107,7 @@ class LibraryPage extends React.Component {
         />
         <div className="project-menu">
           <WorkflowFilter
-            renderer={this}
+            // renderer={this} @todo rendere is no longer used, but check this to make sure we're getting the data we need into this component
             workflows={this.state.project_data}
             context="library"
           />

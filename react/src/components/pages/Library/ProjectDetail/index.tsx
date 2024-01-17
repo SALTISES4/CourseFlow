@@ -2,14 +2,14 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
 import {
-  ProjectData,
   ProjectViewDTO
 } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline } from '@cfModule/types/common'
+import { Project } from '../../Workflow/Workflow/types'
 
 class ProjectPage extends React.Component<ProjectViewDTO> {
   private readonly readOnly: boolean
-  private readonly projectData: ProjectData
+  private readonly projectData: Project
   private readonly allDisciplines: Discipline[]
   private readonly userRole: number
   private readonly userId: number

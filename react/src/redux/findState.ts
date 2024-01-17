@@ -3,7 +3,8 @@ import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
 import {
   AppState,
-  Columnworkflow, Nodelink,
+  Columnworkflow,
+  Nodelink,
   NodeType,
   ObjectSet,
   Outcome,
@@ -203,14 +204,14 @@ export const getNodeLinkByID = (
   state: AppState,
   id: number
 ): GetNodeLinkByIDType => {
-//  console.log(id)
+  //  console.log(id)
   for (const i in state.nodelink) {
-  // console.log(i)
-  // console.log('state.nodelink')
-  // console.log(state.nodelink)
+    // console.log(i)
+    // console.log('state.nodelink')
+    // console.log(state.nodelink)
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) {
-      return {data: nodelink}
+      return { data: nodelink }
     }
   }
 }

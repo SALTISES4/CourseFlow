@@ -23,7 +23,7 @@ function openAddedWorkflowMenu(response, updateFunction) {
   }
 }
 
-function openWorkflowSelectMenu(response, updateFunction) {
+export function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === DATA_ACTIONS.POSTED) {
     renderMessageBox(response, 'workflow_select_menu', updateFunction)
   } else {

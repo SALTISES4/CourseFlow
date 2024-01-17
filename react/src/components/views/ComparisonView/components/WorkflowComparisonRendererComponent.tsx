@@ -5,12 +5,12 @@ import ComponentWithToggleDrop, {
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
 import { getWorkflowContext } from '@XMLHTTP/API/workflow'
 import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
+import {CfObjectType} from "@cfModule/types/enum";
 
 type OwnProps = {
   workflowID: any
   selection_manager: any
-  tiny_loader: any
-  view_type: any
+  view_type: CfObjectType
   object_sets: any
   removeFunction: any
 } & ComponentWithToggleProps
@@ -64,7 +64,6 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
         JSON.parse(context_data.data_package),
         '#workflow-inner-wrapper',
         this.props.selection_manager,
-        this.props.tiny_loader,
         this.props.view_type,
         this.props.object_sets
       )

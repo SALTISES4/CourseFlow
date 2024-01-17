@@ -20,13 +20,11 @@ export class WorkflowComparison extends Workflow {
     data_package,
     container,
     selection_manager,
-    tiny_loader,
     view_type,
     initial_object_sets
   ) {
     super(workflowID, data_package)
     this.selection_manager = selection_manager
-    this.tiny_loader = tiny_loader
     this.container = container
     this.view_type = view_type
     this.initial_object_sets = initial_object_sets
@@ -47,6 +45,7 @@ export class WorkflowComparison extends Workflow {
        * @todo
        * so it seems like this is structured as a callback on the API async request only because OUTCOME_EDIT
        * is not the default 'view' state, see also the render function of the 'parent' workflow class
+       * note OUTCOME_EDIT assumes that the standard 'view' ViewType.WORKFLOW switch has been fired at least once
        * 1 - this request could be fired here perhaps, but WorkflowBase is called regardless, WorkflowBase must handle awating data
        * 2 - getWorkflowParentData (and all APIs) should have some async/await features, if we're not using react query hooks
        * 3 - finally view_type should be used as a state manager, which it is sort of inside the  <WorkflowBase
@@ -73,16 +72,6 @@ export class WorkflowComparison extends Workflow {
       )
     }
   }
-
-
-
-
-
-
-
-
-
-  
 
   connection_opened(reconnect = false) {
     const loader = new Utility.Loader(this.container)

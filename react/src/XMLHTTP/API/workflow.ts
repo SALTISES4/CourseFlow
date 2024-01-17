@@ -1,6 +1,7 @@
 //Get the data from all child workflows
 import { DATA_ACTIONS } from '@XMLHTTP/common'
 import {
+  GetWorkflowSelectMenuResp,
   LinkedWorkflowMenuQueryResp,
   ParentWorkflowInfoQueryResp
 } from '@XMLHTTP/types/query'
@@ -9,6 +10,8 @@ import {
   WorkflowsForProjectQueryResp
 } from '@XMLHTTP/types'
 import { ToDefine } from '@cfModule/types/common'
+import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import { CfObjectType } from '@cfModule/types/enum'
 
 /*******************************************************
  * WORKFLOWS
@@ -308,13 +311,14 @@ export function getPublicParentWorkflowInfo(
 }
 
 //Get the workflows that can be selected for the project, shaped for a menu
-export function getWorkflowSelectMenu(
-  projectPk,
-  type_filter,
-  get_strategies,
-  self_only,
-  updateFunction,
-  receiptFunction
+export function getWorkflowSelectMenuQuery(
+  projectPk: number,
+  type_filter: CfObjectType,
+  get_strategies: boolean,
+  self_only: boolean,
+  callBackFunction: (_data: GetWorkflowSelectMenuResp) => void
+  // updateFunction,
+  //  receiptFunction
 ) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
@@ -323,11 +327,17 @@ export function getWorkflowSelectMenu(
       type_filter: JSON.stringify(type_filter),
       get_strategies: JSON.stringify(get_strategies),
       self_only: JSON.stringify(self_only)
-    },
-    (data) => {
-      // @TODO call to react render
-      //  openWorkflowSelectMenu(data, updateFunction)
-      if (receiptFunction) receiptFunction()
     }
+    // (data) => {
+    //   // @TODO call to react render
+    //   receiptFunction(data)
+    // }
   )
+    .done(function (data) {
+      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }

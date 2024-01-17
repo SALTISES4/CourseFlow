@@ -2,10 +2,7 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 // @local
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
-import {
-  ProjectData,
-  ProjectMenuProps
-} from '@cfPages/Library/ProjectDetail/types'
+import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
 import { Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types'
 import { Dialog, DialogTitle } from '@mui/material'
@@ -19,6 +16,7 @@ import { makeProjectLiveQuery } from '@XMLHTTP/API/project'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
+import { Project } from '@cfPages/Workflow/Workflow/types'
 // import $ from 'jquery'
 
 /*******************************************************
@@ -28,7 +26,7 @@ import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 interface StateType {
-  data?: ProjectData
+  data?: Project
   view_type?: string
   users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
@@ -184,14 +182,19 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         </div>
       )
     }
-    return [
-      <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
-        <div>{window.gettext('Restore project')}</div>
-      </div>,
-      <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
-        <div>{window.gettext('Permanently delete project')}</div>
-      </div>
-    ]
+    return (
+      <>
+        <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
+          <div>{window.gettext('Restore project')}</div>
+        </div>
+        <div
+          className="hover-shade"
+          onClick={this.deleteProjectHard.bind(this)}
+        >
+          <div>{window.gettext('Permanently delete project')}</div>
+        </div>
+      </>
+    )
   }
 
   ExportButton = () => {
@@ -241,52 +244,48 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   OverflowLinks = () => {
-    const data = this.state.data
+    const { data } = this.state
+    const { userId } = this.props
 
-    let liveproject
-    const overflow_links = []
+    const isAuthor = data.author_id === userId
 
-    if (data.author_id === this.props.userId) {
-      if (data.liveproject) {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
-              '0',
-              String(data.id)
-            )}
-          >
-            {window.gettext('View Classroom')}
-          </a>
-        )
-      } else {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            onClick={this.makeLive.bind(this)}
-          >
-            {window.gettext('Create Classroom')}
-          </a>
-        )
-      }
-    }
+    // Creating the live project link
+    const liveProjectLink = isAuthor ? (
+      <a
+        id="live-project"
+        className="hover-shade"
+        href={
+          data.liveproject
+            ? COURSEFLOW_APP.config.update_path.liveproject.replace(
+                '0',
+                String(data.id)
+              )
+            : '#'
+        }
+        onClick={!data.liveproject ? this.makeLive.bind(this) : undefined}
+      >
+        {window.gettext(
+          data.liveproject ? 'View Classroom' : 'Create Classroom'
+        )}
+      </a>
+    ) : null
 
-    overflow_links.push(liveproject)
-    overflow_links.push(
+    // Constructing the overflow links array
+    const overflowLinks = [
+      liveProjectLink,
       <a id="comparison-view" className="hover-shade" href="comparison">
         {window.gettext('Workflow comparison tool')}
-      </a>
-    )
-    overflow_links.push(<hr />)
-    overflow_links.push(<this.ExportButton />)
-    overflow_links.push(<this.CopyButton />)
-    if (data.author_id === this.props.userId) {
-      overflow_links.push(<hr />)
-      overflow_links.push(<this.DeleteProjectButton />)
+      </a>,
+      <hr />,
+      <this.ExportButton />,
+      <this.CopyButton />
+    ]
+
+    if (isAuthor) {
+      overflowLinks.push(<hr />, <this.DeleteProjectButton />)
     }
-    return overflow_links
+
+    return overflowLinks.filter((link) => link !== null)
   }
 
   /*******************************************************

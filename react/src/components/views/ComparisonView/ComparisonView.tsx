@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
@@ -10,7 +9,10 @@ import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
-import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
+import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
+import { AppState, Workflow } from '@cfRedux/type'
+import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import { GetWorkflowSelectMenuResp } from '@XMLHTTP/types/query'
 // import $ from 'jquery'
 
 /**
@@ -19,8 +21,23 @@ import { getWorkflowSelectMenu } from '@XMLHTTP/API/workflow'
  * Also controls the sidebar and menubar (the latter not currently used here).
  * When a workflow is added a WorkflowComparisonRenderer component is created.
  */
-class ComparisonView extends React.Component {
-  constructor(props) {
+
+type StateType = {
+  object_sets: AppState['objectset'] // @todo this is a guess, verify
+  workflows: number[]
+}
+type PropsType = {
+  view_type: any
+  // turn this into config object
+  renderer: any
+  data: any
+  selection_manager: any
+}
+class ComparisonView extends React.Component<PropsType, StateType> {
+  private allowed_tabs: number[]
+  private objectType: CfObjectType
+
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 3]
@@ -66,7 +83,10 @@ class ComparisonView extends React.Component {
       <a
         className="hover-shade no-underline"
         id="project-return"
-        href={COURSEFLOW_APP.config.update_path['project'].replace(0, data.id)}
+        href={COURSEFLOW_APP.config.update_path['project'].replace(
+          String(0),
+          data.id
+        )}
       >
         <span className="green material-symbols-rounded">arrow_back_ios</span>
         <div>{window.gettext('Return to project')}</div>
@@ -96,68 +116,114 @@ class ComparisonView extends React.Component {
     })
   }
 
+  // updateTabs() {
+  //   const disabled_tabs = []
+  //
+  //   //If the view type has changed, enable only appropriate tabs, and change the selection to none
+  //   this.props.renderer.selection_manager.changeSelection(null, null)
+  //
+  //   for (let i = 0; i < 4; i++) {
+  //     if (this.allowed_tabs.indexOf(i) < 0) {
+  //       disabled_tabs.push(i)
+  //     }
+  //   }
+  //
+  //   $('#sidebar').tabs({ disabled: false })
+  //
+  //   const current_tab = $('#sidebar').tabs('option', 'active')
+  //
+  //   if (this.allowed_tabs.indexOf(current_tab) < 0) {
+  //     if (this.allowed_tabs.length == 0) {
+  //       $('#sidebar').tabs({ active: false })
+  //     } else {
+  //       $('#sidebar').tabs({ active: this.allowed_tabs[0] })
+  //     }
+  //   }
+  //
+  //   $('#sidebar').tabs({ disabled: disabled_tabs })
+  // }
+
   updateTabs() {
-    //If the view type has changed, enable only appropriate tabs, and change the selection to none
+    // Clear current selection
     this.props.renderer.selection_manager.changeSelection(null, null)
-    const disabled_tabs = []
-    for (let i = 0; i < 4; i++)
-      if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
+
+    // Determine disabled tabs
+    const disabledTabs = [0, 1, 2, 3].filter(
+      (tabIndex) => !this.allowed_tabs.includes(tabIndex)
+    )
+
+    // Initialize sidebar tabs with no disabled tabs
     $('#sidebar').tabs({ disabled: false })
-    const current_tab = $('#sidebar').tabs('option', 'active')
-    if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0) $('#sidebar').tabs({ active: false })
-      else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
+
+    // Get the currently active tab
+    const currentTab = $('#sidebar').tabs('option', 'active')
+
+    // Check if the current tab is allowed, and if not, update accordingly
+    if (!this.allowed_tabs.includes(currentTab)) {
+      const newActiveTab =
+        this.allowed_tabs.length === 0 ? false : this.allowed_tabs[0]
+      $('#sidebar').tabs({ active: newActiveTab })
     }
-    $('#sidebar').tabs({ disabled: disabled_tabs })
+
+    // Finally, disable the appropriate tabs
+    $('#sidebar').tabs({ disabled: disabledTabs })
   }
 
   changeView(type) {
     this.props.renderer.selection_manager.changeSelection(null, null)
 
-    // ?? pass in the parent renderer container as its own new container, how is this working?
+    // force re-render the parent, see comment in react/src/components/views/ComparisonView/ComparisonView.tsx
+    // this can be our state updater
+    // but refactor when other bugs from 1st pass refactor addressed (?)
     this.props.renderer.render(this.props.renderer.container, type)
   }
 
   openEdit() {}
 
+  updateFunction = (responseData: GetWorkflowSelectMenuResp) => {
+    if (responseData.workflowID != null) {
+      const workflows = this.state.workflows.slice()
+      workflows.push(responseData.workflowID)
+      this.setState({
+        workflows: workflows
+      })
+    }
+  }
+
   loadWorkflow() {
-    const renderer = this.props.renderer
     COURSEFLOW_APP.tinyLoader.startLoad()
-    getWorkflowSelectMenu(
+    getWorkflowSelectMenuQuery(
       this.props.data.id,
-      'workflow',
+      CfObjectType.WORKFLOW,
       false,
       true,
-      (response_data) => {
-        if (response_data.workflowID != null) {
-          const workflows = this.state.workflows.slice()
-          workflows.push(response_data.workflowID)
-          this.setState({ workflows: workflows })
-        }
-      },
-      () => {
-        renderer.tiny_loader.endLoad()
+      (data) => {
+        // @todo move this to dialog
+        openWorkflowSelectMenu(data, () => this.updateFunction(data))
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
 
-  removeWorkflow(workflow_id) {
+  removeWorkflow(workflowId: number) {
     const workflows = this.state.workflows.slice()
-    workflows.splice(workflows.indexOf(workflow_id), 1)
+    workflows.splice(workflows.indexOf(workflowId), 1)
     this.setState({ workflows: workflows })
   }
 
-  toggleObjectSet(id) {
+  toggleObjectSet(id: number) {
+    let hidden: boolean
     const object_sets = this.state.object_sets.slice()
-    let hidden
-    for (let i = 0; i < object_sets.length; i++) {
-      if (object_sets[i].id === id) {
-        hidden = !object_sets[i].hidden
-        object_sets[i].hidden = hidden
-        break
-      }
+
+    const object = object_sets.find((objectSet) => objectSet.id === id)
+    if (object) {
+      hidden = !object.hidden
+      object.hidden = hidden
     }
+
     this.setState({ object_sets: object_sets })
+
+    // @todo what is this doing?
     $(document).triggerHandler('object_set_toggled', { id: id, hidden: hidden })
   }
 
@@ -175,6 +241,7 @@ class ComparisonView extends React.Component {
           id="share-button"
           className="hover-shade"
           title={window.gettext('Sharing')}
+          // @todo move to dialog
           onClick={renderMessageBox.bind(
             this,
             data,
@@ -199,11 +266,12 @@ class ComparisonView extends React.Component {
       }
     ]
       .filter((item) => item.disabled.indexOf(data.type) == -1)
-      .map((item) => {
+      .map((item, index) => {
         let view_class = 'hover-shade'
         if (item.type == renderer.view_type) view_class += ' active'
         return (
           <div
+            key={index}
             id={'button_' + item.type}
             className={view_class}
             onClick={this.changeView.bind(this, item.type)}
@@ -221,7 +289,7 @@ class ComparisonView extends React.Component {
         view_type={renderer.view_type}
         workflowID={workflowID}
         key={workflowID}
-        tiny_loader={this.props.tiny_loader}
+        // tiny_loader={this.props.tiny_loader}
         selection_manager={this.props.selection_manager}
         object_sets={this.state.object_sets}
       />
@@ -241,9 +309,10 @@ class ComparisonView extends React.Component {
       </div>
     )
 
-    const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
-    }
+    // @todo not used ?
+    // const style: React.CSSProperties = {
+    //   border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
+    // }
 
     return (
       <div className="main-block">
@@ -263,6 +332,7 @@ class ComparisonView extends React.Component {
           <RightSideBar
             context="comparison"
             renderer={this.props.renderer}
+            parentRender={this.props.renderer.render}
             data={data}
             toggleObjectSet={this.toggleObjectSet.bind(this)}
             object_sets={this.state.object_sets}

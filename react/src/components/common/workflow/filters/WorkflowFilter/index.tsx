@@ -5,7 +5,6 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
 import { searchAllObjectsQuery } from '@XMLHTTP/API/pages'
-// import $ from 'jquery'
 
 /*******************************************************
  * workflow filter is a shared component that
@@ -101,95 +100,15 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       })
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   getPlaceholder() {
     if (this.props.context === 'project') {
       return window.gettext('Search the project')
     } else {
       return window.gettext('Search the library')
     }
-  }
-
-  getFilter() {
-    const activeFilter = this.filters[this.state.activeFilter]
-
-    const filters = this.filters.map((filter, i) => {
-      let css_class = 'filter-option'
-      if (this.state.activeFilter === i) css_class += ' active'
-
-      return (
-        <div
-          className={css_class}
-          onClick={() =>
-            this.setState({
-              ...this.state,
-              activeFilter: i
-            })
-          }
-        >
-          {filter.display}
-        </div>
-      )
-    })
-
-    return (
-      <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
-        <div
-          className={
-            'workflow-sort-indicator hover-shade item-' +
-            this.state.activeFilter
-          }
-        >
-          <span className="material-symbols-rounded">filter_alt</span>
-          <div>{activeFilter.display}</div>
-        </div>
-        <div className="create-dropdown">{filters}</div>
-      </div>
-    )
-  }
-
-  getSort() {
-    const activeSort = this.sorts[this.state.activeSort]
-
-    const sorts = this.sorts.map((sort, i) => {
-      let sort_dir
-      let css_class = 'filter-option'
-      if (this.state.activeSort === i) {
-        css_class += ' active'
-        if (this.state.reversed)
-          sort_dir = <span className="material-symbols-rounded">north</span>
-        else sort_dir = <span className="material-symbols-rounded">south</span>
-      }
-      return (
-        <div
-          className={css_class}
-          onClick={(evt) => {
-            evt.stopPropagation()
-            this.sortChange(i)
-            //This is very hacky, but if we're updating we need to re-open the sort dropdown
-            $(this.sortDOM.current)
-              .children('.create-dropdown')
-              .addClass('active')
-          }}
-        >
-          {sort_dir}
-          {sort.display}
-        </div>
-      )
-    })
-
-    return (
-      <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
-        <div
-          className={
-            'workflow-sort-indicator hover-shade item-' + this.state.activeSort
-          }
-        >
-          <span className="material-symbols-rounded">sort</span>
-          <div>{activeSort.display}</div>
-        </div>
-        <div className="create-dropdown">{sorts}</div>
-      </div>
-    )
   }
 
   sortWorkflows(workflows) {
@@ -339,10 +258,101 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
   }
 
   /*******************************************************
-   * RENDER
+   * COMPONENTS
    *******************************************************/
+  Filter = () => {
+    const activeFilter = this.filters[this.state.activeFilter]
 
-  renderWorkflowCards() {
+    const filters = this.filters.map((filter, i) => {
+      let css_class = 'filter-option'
+      if (this.state.activeFilter === i) css_class += ' active'
+
+      return (
+        <div
+          className={css_class}
+          onClick={() =>
+            this.setState({
+              ...this.state,
+              activeFilter: i
+            })
+          }
+        >
+          {filter.display}
+        </div>
+      )
+    })
+
+    return (
+      <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
+        <div
+          className={
+            'workflow-sort-indicator hover-shade item-' +
+            this.state.activeFilter
+          }
+        >
+          <span className="material-symbols-rounded">filter_alt</span>
+          <div>{activeFilter.display}</div>
+        </div>
+        <div className="create-dropdown">{filters}</div>
+      </div>
+    )
+  }
+
+  Sort = () => {
+    const activeSort = this.sorts[this.state.activeSort]
+
+    const sorts = this.sorts.map((sort, i) => {
+      const cssClasses = [
+        'filter-option',
+        this.state.activeSort === i ? 'active' : ''
+      ].join(' ')
+
+      const SortDir = () => {
+        if (this.state.activeSort !== i) {
+          return <></>
+        }
+
+        if (this.state.reversed) {
+          return <span className="material-symbols-rounded">north</span>
+        }
+
+        return <span className="material-symbols-rounded">south</span>
+      }
+
+      return (
+        <div
+          className={cssClasses}
+          onClick={(evt) => {
+            evt.stopPropagation()
+            this.sortChange(i)
+            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+            $(this.sortDOM.current)
+              .children('.create-dropdown')
+              .addClass('active')
+          }}
+        >
+          <SortDir />
+          {sort.display}
+        </div>
+      )
+    })
+
+    return (
+      <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
+        <div
+          className={
+            'workflow-sort-indicator hover-shade item-' + this.state.activeSort
+          }
+        >
+          <span className="material-symbols-rounded">sort</span>
+          <div>{activeSort.display}</div>
+        </div>
+        <div className="create-dropdown">{sorts}</div>
+      </div>
+    )
+  }
+
+  WorkflowCards = () => {
     if (!this.state.workflows) return <WorkflowLoader />
 
     const sortedAndFilteredWorkflows = this.sortWorkflows(
@@ -360,7 +370,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     ))
   }
 
-  renderSearchResults() {
+  SearchResults = () => {
     const { searchResults, searchFilter } = this.state
     const results = searchResults.map((workflow) => (
       <WorkflowCardCondensed
@@ -382,7 +392,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     return results
   }
 
-  renderSearchFilterLock() {
+  SearchFilterLock = () => {
     if (!this.state.searchFilterLock) return null
 
     return (
@@ -397,29 +407,38 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       </div>
     )
   }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
 
   render() {
-    return [
-      <div className="workflow-filter-top">
-        <div id="workflow-search" ref={this.searchDOM}>
-          <input
-            placeholder={this.getPlaceholder()}
-            onChange={debounce(this.searchChange.bind(this))}
-            id="workflow-search-input"
-            className="search-input"
-            autoComplete="off"
-          />
-          <span className="material-symbols-rounded">search</span>
-          <div className="create-dropdown">{this.renderSearchResults()}</div>
-          {this.renderSearchFilterLock()}
+    return (
+      <>
+        <div className="workflow-filter-top">
+          <div id="workflow-search" ref={this.searchDOM}>
+            <input
+              placeholder={this.getPlaceholder()}
+              onChange={debounce(this.searchChange.bind(this))}
+              id="workflow-search-input"
+              className="search-input"
+              autoComplete="off"
+            />
+            <span className="material-symbols-rounded">search</span>
+            <div className="create-dropdown">
+              <this.SearchResults />
+            </div>
+            <this.SearchFilterLock />
+          </div>
+          <div className="workflow-filter-sort">
+            <this.Filter />
+            <this.Sort />
+          </div>
         </div>
-        <div className="workflow-filter-sort">
-          {this.getFilter()}
-          {this.getSort()}
+        <div className="menu-grid">
+          <this.WorkflowCards />
         </div>
-      </div>,
-      <div className="menu-grid">{this.renderWorkflowCards()}</div>
-    ]
+      </>
+    )
   }
 }
 

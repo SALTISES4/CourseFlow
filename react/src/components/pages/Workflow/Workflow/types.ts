@@ -1,3 +1,5 @@
+import {Discipline} from "@cfModule/types/common";
+
 export type WorkflowDetailViewDTO = {
   public_view: boolean
   user_id: number
@@ -35,7 +37,7 @@ export type Project = {
   deleted: boolean
   deleted_on: Date
   description: string
-  disciplines: any[]
+  disciplines: Discipline[]
   favourite: boolean
   id: number
   last_modified: string
@@ -52,3 +54,24 @@ export type ObjectPermission = {
   permission_type: number
   last_viewed: Date
 }
+
+// export type ProjectData = {
+//   author: string
+//   author_id: number
+//   created_on: string
+//   deleted: boolean
+//   deleted_on: string
+//   description: string
+//   disciplines: Discipline[] // @todo this might be just ints / IDS
+//   favourite: boolean
+//   id: number
+//   last_modified: string
+//   liveproject: null
+//   object_permission: ObjectPermission
+//   object_sets: any[]
+//   published: boolean
+//   title: string
+//   type: string
+//   workflowproject_set: number[]
+// }
+

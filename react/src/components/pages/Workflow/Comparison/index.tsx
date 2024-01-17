@@ -1,85 +1,77 @@
-// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import { SelectionManager } from '@cfRedux/helpers'
 import * as Constants from '@cfConstants'
-import { ComparisonView } from '@cfViews/ComparisonView'
 import { ViewType } from '@cfModule/types/enum.js'
+import ComparisonView from '@cfViews/ComparisonView/ComparisonView'
+import { Project } from '@cfPages/Workflow/Workflow/types'
 
-/**
- * export interface Welcome2 {
- *     project_data:    ProjectData;
- *     is_strategy:     boolean;
- *     user_permission: number;
- *     user_role:       number;
- *     public_view:     boolean;
- *     user_name:       string;
- *     user_id:         number;
- *     myColour:        string;
- *     changeFieldID:   number;
- * }
- *
- * export interface ProjectData {
- *     deleted:             boolean;
- *     deleted_on:          string;
- *     id:                  number;
- *     title:               string;
- *     description:         string;
- *     author:              string;
- *     author_id:           number;
- *     published:           boolean;
- *     created_on:          string;
- *     last_modified:       string;
- *     workflowproject_set: number[];
- *     disciplines:         any[];
- *     type:                string;
- *     object_sets:         any[];
- *     favourite:           boolean;
- *     liveproject:         null;
- *     object_permission:   ObjectPermission;
- * }
- *
- * export interface ObjectPermission {
- *     permission_type: number;
- *     last_viewed:     Date;
- * }
- */
+type ParamsType = {
+  data: {
+    project_data: Project
+    is_strategy: boolean
+    user_permission: number
+    user_role: number
+    public_view: boolean
+    user_name: string
+    user_id: number
+    myColour: string
+    changeFieldID: number
+  }
+}
 export class WorkflowComparison {
-  constructor(props) {
-    this.project_data = props.data.project_data
-    this.user_permission = props.user_permission
-    makeActiveSidebar('#project' + this.project_data.id)
+  private selection_manager: SelectionManager
+  private readOnly: boolean
+  private viewComments: boolean
+  private addComments: boolean
+  private projectData: any
+  private view_type: ViewType
+  private container: JQuery
+  private userPermission: any
+
+  constructor(props: ParamsType) {
+    this.projectData = props.data.project_data
+    this.userPermission = props.data.user_permission // @todo double check we're getting this from data object
+
+    //@todo this a jquery global function and needs to be refactored / removed
+    makeActiveSidebar('#project' + this.projectData.id)
   }
 
+  // @todo as with Workflow component, calling this render function from a child component of
+  // ComparisonView is an anti-patterm
+  // render ComparisonView
+  //  -- then pass a 'view type' state handler to the child
+  //  -- not sure why there's a loader at level since we don't make a query here, but it can probably go
+  //
   render(container, view_type = ViewType.WORKFLOW) {
     this.container = container
     this.view_type = view_type
 
     reactDom.render(<WorkflowLoader />, container[0])
 
-    switch (this.user_permission) {
+    switch (this.userPermission) {
       case Constants.permission_keys['none']:
       case Constants.permission_keys['view']:
-        this.read_only = true
+        this.readOnly = true
         break
 
       case Constants.permission_keys['comment']:
-        this.read_only = true
-        this.view_comments = true
-        this.add_comments = true
+        this.readOnly = true
+        this.viewComments = true
+        this.addComments = true
         break
 
       case Constants.permission_keys['edit']:
-        this.read_only = false
-        this.view_comments = true
-        this.add_comments = true
+        this.readOnly = false
+        this.viewComments = true
+        this.addComments = true
         break
       default:
         break
     }
 
-    this.selection_manager = new SelectionManager(this.read_only)
+    this.selection_manager = new SelectionManager(this.readOnly)
 
     if (
       view_type === ViewType.WORKFLOW ||
@@ -90,7 +82,7 @@ export class WorkflowComparison {
           view_type={view_type}
           // turn this into config object
           renderer={this}
-          data={this.project_data}
+          data={this.projectData}
           selection_manager={this.selection_manager}
         />,
         container[0]

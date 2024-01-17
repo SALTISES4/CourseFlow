@@ -95568,10 +95568,9 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class WorkflowComparison extends Workflow {
-    constructor(workflowID, data_package, container, selection_manager, tiny_loader, view_type, initial_object_sets) {
+    constructor(workflowID, data_package, container, selection_manager, view_type, initial_object_sets) {
       super(workflowID, data_package);
       this.selection_manager = selection_manager;
-      this.tiny_loader = tiny_loader;
       this.container = container;
       this.view_type = view_type;
       this.initial_object_sets = initial_object_sets;
@@ -95670,6 +95669,139 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "filterDOM");
       __publicField(this, "searchDOM");
       __publicField(this, "sortDOM");
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "Filter", () => {
+        const activeFilter = this.filters[this.state.activeFilter];
+        const filters = this.filters.map((filter, i2) => {
+          let css_class = "filter-option";
+          if (this.state.activeFilter === i2)
+            css_class += " active";
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: css_class,
+              onClick: () => this.setState({
+                ...this.state,
+                activeFilter: i2
+              }),
+              children: filter.display
+            }
+          );
+        });
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
+        ] });
+      });
+      __publicField(this, "Sort", () => {
+        const activeSort = this.sorts[this.state.activeSort];
+        const sorts = this.sorts.map((sort, i2) => {
+          const cssClasses = [
+            "filter-option",
+            this.state.activeSort === i2 ? "active" : ""
+          ].join(" ");
+          const SortDir = () => {
+            if (this.state.activeSort !== i2) {
+              return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+            }
+            if (this.state.reversed) {
+              return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
+            }
+            return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
+          };
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: cssClasses,
+              onClick: (evt) => {
+                evt.stopPropagation();
+                this.sortChange(i2);
+                $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+              },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(SortDir, {}),
+                sort.display
+              ]
+            }
+          );
+        });
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
+        ] });
+      });
+      __publicField(this, "WorkflowCards", () => {
+        if (!this.state.workflows)
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
+        const sortedAndFilteredWorkflows = this.sortWorkflows(
+          this.filterWorkflows(this.state.workflows)
+        );
+        return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCard,
+          {
+            workflowData: workflow,
+            updateWorkflow: this.props.updateWorkflow,
+            userRole: this.props.user_role,
+            readOnly: this.props.read_only,
+            projectData: this.props.project_data
+          },
+          workflow.type + workflow.id
+        ));
+      });
+      __publicField(this, "SearchResults", () => {
+        const { searchResults, searchFilter } = this.state;
+        const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCardCondensed,
+          {
+            workflowData: workflow,
+            context: this.props.context
+          },
+          workflow.type + workflow.id
+        ));
+        if (searchFilter && !searchResults.length) {
+          results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
+        } else if (results.length === 10) {
+          results.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
+          );
+        }
+        return results;
+      });
+      __publicField(this, "SearchFilterLock", () => {
+        if (!this.state.searchFilterLock)
+          return null;
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              onClick: this.clearSearchLock.bind(this),
+              className: "material-symbols-rounded hover-shade",
+              children: "close"
+            }
+          ),
+          window.gettext("Search: " + this.state.searchFilterLock)
+        ] });
+      });
       this.state = {
         workflows: props.workflows,
         activeFilter: 0,
@@ -95722,86 +95854,15 @@ ${latestSubscriptionCallbackError.current.stack}
           workflows: this.props.workflows
         });
     }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
     getPlaceholder() {
       if (this.props.context === "project") {
         return window.gettext("Search the project");
       } else {
         return window.gettext("Search the library");
       }
-    }
-    getFilter() {
-      const activeFilter = this.filters[this.state.activeFilter];
-      const filters = this.filters.map((filter, i2) => {
-        let css_class = "filter-option";
-        if (this.state.activeFilter === i2)
-          css_class += " active";
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: css_class,
-            onClick: () => this.setState({
-              ...this.state,
-              activeFilter: i2
-            }),
-            children: filter.display
-          }
-        );
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
-      ] });
-    }
-    getSort() {
-      const activeSort = this.sorts[this.state.activeSort];
-      const sorts = this.sorts.map((sort, i2) => {
-        let sort_dir;
-        let css_class = "filter-option";
-        if (this.state.activeSort === i2) {
-          css_class += " active";
-          if (this.state.reversed)
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
-          else
-            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
-        }
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: css_class,
-            onClick: (evt) => {
-              evt.stopPropagation();
-              this.sortChange(i2);
-              $(this.sortDOM.current).children(".create-dropdown").addClass("active");
-            },
-            children: [
-              sort_dir,
-              sort.display
-            ]
-          }
-        );
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
-      ] });
     }
     sortWorkflows(workflows) {
       const sort = this.sorts[this.state.activeSort].name;
@@ -95925,60 +95986,8 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * RENDER
      *******************************************************/
-    renderWorkflowCards() {
-      if (!this.state.workflows)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
-      const sortedAndFilteredWorkflows = this.sortWorkflows(
-        this.filterWorkflows(this.state.workflows)
-      );
-      return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          workflowData: workflow,
-          updateWorkflow: this.props.updateWorkflow,
-          userRole: this.props.user_role,
-          readOnly: this.props.read_only,
-          projectData: this.props.project_data
-        },
-        workflow.type + workflow.id
-      ));
-    }
-    renderSearchResults() {
-      const { searchResults, searchFilter } = this.state;
-      const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCardCondensed,
-        {
-          workflowData: workflow,
-          context: this.props.context
-        },
-        workflow.type + workflow.id
-      ));
-      if (searchFilter && !searchResults.length) {
-        results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
-      } else if (results.length === 10) {
-        results.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
-        );
-      }
-      return results;
-    }
-    renderSearchFilterLock() {
-      if (!this.state.searchFilterLock)
-        return null;
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            onClick: this.clearSearchLock.bind(this),
-            className: "material-symbols-rounded hover-shade",
-            children: "close"
-          }
-        ),
-        window.gettext("Search: " + this.state.searchFilterLock)
-      ] });
-    }
     render() {
-      return [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -95992,77 +96001,64 @@ ${latestSubscriptionCallbackError.current.stack}
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
-            this.renderSearchFilterLock()
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.SearchResults, {}) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.SearchFilterLock, {})
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
-            this.getFilter(),
-            this.getSort()
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Filter, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Sort, {})
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
-      ];
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, {}) })
+      ] });
     }
   }
   const Users = ({ users, readOnly, openShareDialog }) => {
-    let users_group = [];
     if (!users)
       return null;
     const { author, editors, commentors, viewers, published } = users;
     if (!author)
       return null;
-    if (published) {
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          " ",
-          window.gettext("All CourseFlow")
-        ] })
-      );
-    }
-    users_group.push([
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("author"),
-        getUserDisplay(author)
-      ] }),
-      editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("edit"),
-        getUserDisplay(user)
-      ] })),
-      commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("comment"),
-        getUserDisplay(user)
-      ] })),
-      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      published && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
         getUserTag("view"),
-        getUserDisplay(user)
-      ] }))
-    ]);
-    users_group = users_group.flat(2);
-    const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-    if (users_group.length > 4) {
-      usersBlocks.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-          "+",
-          users_group.length - 4,
-          " ",
-          window.gettext("more")
-        ] })
-      );
-    }
-    if (!readOnly)
-      usersBlocks.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "user-name collapsed-text-show-more",
-            onClick: openShareDialog,
-            children: window.gettext("Modify")
-          }
-        )
-      );
-    return usersBlocks;
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+        " ",
+        window.gettext("All CourseFlow")
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "users-group", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("author"),
+          getUserDisplay(author)
+        ] }),
+        editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("edit"),
+          getUserDisplay(user)
+        ] }, user.id)),
+        commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("comment"),
+          getUserDisplay(user)
+        ] }, user.id)),
+        viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("view"),
+          getUserDisplay(user)
+        ] }, user.id))
+      ] }),
+      viewers.length + commentors.length + editors.length > 4 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+        "+",
+        viewers.length + commentors.length + editors.length - 4,
+        " ",
+        window.gettext("more")
+      ] }),
+      !readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "user-name collapsed-text-show-more",
+          onClick: openShareDialog,
+          children: window.gettext("Modify")
+        }
+      )
+    ] });
   };
   const Header = ({
     allDisciplines,
@@ -96431,10 +96427,17 @@ ${latestSubscriptionCallbackError.current.stack}
         if (!this.state.data.deleted) {
           return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
         }
-        return [
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
-        ];
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "hover-shade",
+              onClick: this.deleteProjectHard.bind(this),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") })
+            }
+          )
+        ] });
       });
       __publicField(this, "ExportButton", () => {
         if (this.props.userId) {
@@ -96479,47 +96482,35 @@ ${latestSubscriptionCallbackError.current.stack}
         return null;
       });
       __publicField(this, "OverflowLinks", () => {
-        const data2 = this.state.data;
-        let liveproject;
-        const overflow_links = [];
-        if (data2.author_id === this.props.userId) {
-          if (data2.liveproject) {
-            liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                id: "live-project",
-                className: "hover-shade",
-                href: COURSEFLOW_APP.config.update_path.liveproject.replace(
-                  "0",
-                  String(data2.id)
-                ),
-                children: window.gettext("View Classroom")
-              }
-            );
-          } else {
-            liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                id: "live-project",
-                className: "hover-shade",
-                onClick: this.makeLive.bind(this),
-                children: window.gettext("Create Classroom")
-              }
-            );
+        const { data: data2 } = this.state;
+        const { userId } = this.props;
+        const isAuthor = data2.author_id === userId;
+        const liveProjectLink = isAuthor ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            id: "live-project",
+            className: "hover-shade",
+            href: data2.liveproject ? COURSEFLOW_APP.config.update_path.liveproject.replace(
+              "0",
+              String(data2.id)
+            ) : "#",
+            onClick: !data2.liveproject ? this.makeLive.bind(this) : void 0,
+            children: window.gettext(
+              data2.liveproject ? "View Classroom" : "Create Classroom"
+            )
           }
+        ) : null;
+        const overflowLinks = [
+          liveProjectLink,
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {})
+        ];
+        if (isAuthor) {
+          overflowLinks.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
         }
-        overflow_links.push(liveproject);
-        overflow_links.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
-        );
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
-        if (data2.author_id === this.props.userId) {
-          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
-        }
-        return overflow_links;
+        return overflowLinks.filter((link) => link !== null);
       });
       /*******************************************************
        * VISIBLE BUTTONS
@@ -96910,7 +96901,7 @@ ${latestSubscriptionCallbackError.current.stack}
             title: window.gettext("Create project or strategy"),
             ref: this.createDiv,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green", children: "add_circle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "a",
@@ -96985,7 +96976,6 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowFilter,
           {
-            renderer: this,
             workflows: this.state.project_data,
             context: "library"
           }
@@ -97005,8 +96995,6 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     componentDidMount() {
       getFavouritesQuery((data2) => {
-        console.log("data");
-        console.log(data2);
         this.setState({
           project_data: data2.data_package
         });
@@ -97032,6 +97020,28 @@ ${latestSubscriptionCallbackError.current.stack}
     constructor(props) {
       super(props);
       __publicField(this, "isTeacher");
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "WorkflowCards", ({
+        workflows,
+        keyPrefix
+      }) => {
+        return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
+      });
+      __publicField(this, "Home", ({
+        title,
+        content,
+        path
+      }) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
+        ] });
+      });
       this.state = {
         projects: [],
         favourites: []
@@ -97052,38 +97062,29 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * Render
      *******************************************************/
-    renderWorkflowCards(workflows, keyPrefix) {
-      return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
-    }
-    renderHomeItem(title, content, path) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
-      ] });
-    }
     render() {
       const { projects, favourites } = this.state;
-      const projectsContent = this.renderWorkflowCards(projects, "project");
-      const favouritesContent = this.renderWorkflowCards(favourites, "favourite");
+      const projectsContent = /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, { workflows: projects, keyPrefix: "project" });
+      const favouritesContent = /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, { workflows: favourites, keyPrefix: "favourite" });
       const projectTitle = this.isTeacher ? "Recent projects" : "Recent classrooms";
       const projectPath = this.isTeacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
       const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
-      const projectBox = this.renderHomeItem(
-        projectTitle,
-        projectsContent,
-        projectPath
+      const projectBox = /* @__PURE__ */ jsxRuntimeExports.jsx(
+        this.Home,
+        {
+          title: projectTitle,
+          content: projectsContent,
+          path: projectPath
+        }
       );
-      let favouriteBox;
-      if (this.isTeacher) {
-        favouriteBox = this.renderHomeItem(
-          "Favourites",
-          favouritesContent,
-          favouritePath
-        );
-      }
+      const favouriteBox = this.isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+        this.Home,
+        {
+          title: "Favourites",
+          content: favouritesContent,
+          path: favouritePath
+        }
+      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
         projectBox,
         favouriteBox
@@ -97525,13 +97526,15 @@ ${latestSubscriptionCallbackError.current.stack}
   class ExplorePage extends reactExports.Component {
     constructor(props) {
       super(props);
+      __publicField(this, "createDiv");
       this.createDiv = reactExports.createRef();
     }
     componentDidMount() {
       getLibraryQuery((data2) => {
-        this.setState({ project_data: data2.data_package });
+        this.setState({
+          project_data: data2.data_package
+        });
       });
-      COURSEFLOW_APP.makeDropdown(this.createDiv.current);
       COURSEFLOW_APP.makeDropdown(this.createDiv.current);
     }
     render() {
@@ -97541,8 +97544,7 @@ ${latestSubscriptionCallbackError.current.stack}
           disciplines: this.props.disciplines,
           workflows: this.props.initial_workflows,
           pages: this.props.initial_pages,
-          context: "library",
-          sadfasdf: true
+          context: "library"
         }
       ) });
     }

@@ -1,7 +1,8 @@
 import { Discipline } from '@cfModule/types/common'
+import { Project } from '../../Workflow/Workflow/types'
 
 export type ProjectViewDTO = {
-  project_data: ProjectData
+  project_data: Project
   user_role: number
   user_permission: number
   disciplines: Discipline[]
@@ -23,7 +24,7 @@ export type ObjectPermission = {
  *******************************************************/
 
 export type ProjectMenuProps = {
-  data: ProjectData
+  data: Project
   userId: number
   projectPaths
   allDisciplines
@@ -32,29 +33,29 @@ export type ProjectMenuProps = {
 }
 
 export type RenderProps = {
-  project_data: ProjectData
+  project_data: Project
   user_role: number
   user_permission: number
   disciplines: Discipline[]
   user_id: number
 }
 
-export type ProjectData = {
-  author: string
-  author_id: number
-  created_on: string
-  deleted: boolean
-  deleted_on: string
-  description: string
-  disciplines: Discipline[] // @todo this might be just ints / IDS
-  favourite: boolean
-  id: number
-  last_modified: string
-  liveproject: null
-  object_permission: ObjectPermission
-  object_sets: any[]
-  published: boolean
-  title: string
-  type: string
-  workflowproject_set: number[]
-}
+// export type ProjectData = {
+//   author: string
+//   author_id: number
+//   created_on: string
+//   deleted: boolean
+//   deleted_on: string
+//   description: string
+//   disciplines: Discipline[] // @todo this might be just ints / IDS
+//   favourite: boolean
+//   id: number
+//   last_modified: string
+//   liveproject: null
+//   object_permission: ObjectPermission
+//   object_sets: any[]
+//   published: boolean
+//   title: string
+//   type: string
+//   workflowproject_set: number[]
+// }

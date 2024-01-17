@@ -9,69 +9,136 @@ type PropsType = {
 }
 
 const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
-  let users_group = []
-
   if (!users) return null
+
+  // @todo users shape
   const { author, editors, commentors, viewers, published } = users
 
   if (!author) return null
 
-  if (published) {
-    users_group.push(
-      <div className="user-name">
-        {Utility.getUserTag('view')}
-        <span className="material-symbols-rounded">public</span>{' '}
-        {window.gettext('All CourseFlow')}
-      </div>
-    )
-  }
-
-  users_group.push([
-    <div className="user-name">
-      {Utility.getUserTag('author')}
-      {Utility.getUserDisplay(author)}
-    </div>,
-    editors
-      .filter((user) => user.id != author.id)
-      .map((user) => (
+  return (
+    <>
+      {published && (
         <div className="user-name">
-          {Utility.getUserTag('edit')}
-          {Utility.getUserDisplay(user)}
+          {Utility.getUserTag('view')}
+          <span className="material-symbols-rounded">public</span>{' '}
+          {window.gettext('All CourseFlow')}
         </div>
-      )),
-    commentors.map((user) => (
-      <div className="user-name">
-        {Utility.getUserTag('comment')}
-        {Utility.getUserDisplay(user)}
-      </div>
-    )),
-    viewers.map((user) => (
-      <div className="user-name">
-        {Utility.getUserTag('view')}
-        {Utility.getUserDisplay(user)}
-      </div>
-    ))
-  ])
-  users_group = users_group.flat(2)
+      )}
 
-  const usersBlocks = [<div className="users-group">{users_group}</div>]
-  if (users_group.length > 4) {
-    usersBlocks.push(
-      <div className="workflow-created">
-        +{users_group.length - 4} {window.gettext('more')}
+      <div className="users-group">
+        <div className="user-name">
+          {Utility.getUserTag('author')}
+          {Utility.getUserDisplay(author)}
+        </div>
+
+        {editors
+          .filter((user) => user.id !== author.id)
+          .map((user) => (
+            <div key={user.id} className="user-name">
+              {Utility.getUserTag('edit')}
+              {Utility.getUserDisplay(user)}
+            </div>
+          ))}
+
+        {commentors.map((user) => (
+          <div key={user.id} className="user-name">
+            {Utility.getUserTag('comment')}
+            {Utility.getUserDisplay(user)}
+          </div>
+        ))}
+
+        {viewers.map((user) => (
+          <div key={user.id} className="user-name">
+            {Utility.getUserTag('view')}
+            {Utility.getUserDisplay(user)}
+          </div>
+        ))}
       </div>
-    )
-  }
-  if (!readOnly)
-    usersBlocks.push(
-      <div
-        className="user-name collapsed-text-show-more"
-        onClick={openShareDialog}
-      >
-        {window.gettext('Modify')}
-      </div>
-    )
-  return usersBlocks
+
+      {viewers.length + commentors.length + editors.length > 4 && (
+        <div className="workflow-created">
+          +{viewers.length + commentors.length + editors.length - 4}{' '}
+          {window.gettext('more')}
+        </div>
+      )}
+
+      {!readOnly && (
+        <div
+          className="user-name collapsed-text-show-more"
+          onClick={openShareDialog}
+        >
+          {window.gettext('Modify')}
+        </div>
+      )}
+    </>
+  )
 }
 
 export default Users
+
+// const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
+//   let users_group = []
+//
+//   if (!users) return null
+//   const { author, editors, commentors, viewers, published } = users
+//
+//   if (!author) return null
+//
+//   if (published) {
+//     users_group.push(
+//       <div className="user-name">
+//         {Utility.getUserTag('view')}
+//         <span className="material-symbols-rounded">public</span>{' '}
+//         {window.gettext('All CourseFlow')}
+//       </div>
+//     )
+//   }
+//
+//   users_group.push([
+//     <div className="user-name">
+//       {Utility.getUserTag('author')}
+//       {Utility.getUserDisplay(author)}
+//     </div>,
+//     editors
+//       .filter((user) => user.id != author.id)
+//       .map((user) => (
+//         <div className="user-name">
+//           {Utility.getUserTag('edit')}
+//           {Utility.getUserDisplay(user)}
+//         </div>
+//       )),
+//     commentors.map((user) => (
+//       <div className="user-name">
+//         {Utility.getUserTag('comment')}
+//         {Utility.getUserDisplay(user)}
+//       </div>
+//     )),
+//     viewers.map((user) => (
+//       <div className="user-name">
+//         {Utility.getUserTag('view')}
+//         {Utility.getUserDisplay(user)}
+//       </div>
+//     ))
+//   ])
+//   users_group = users_group.flat(2)
+//
+//   const usersBlocks = [<div className="users-group">{users_group}</div>]
+//   if (users_group.length > 4) {
+//     usersBlocks.push(
+//       <div className="workflow-created">
+//         +{users_group.length - 4} {window.gettext('more')}
+//       </div>
+//     )
+//   }
+//   if (!readOnly)
+//     usersBlocks.push(
+//       <div
+//         className="user-name collapsed-text-show-more"
+//         onClick={openShareDialog}
+//       >
+//         {window.gettext('Modify')}
+//       </div>
+//     )
+//   return usersBlocks
+// }
