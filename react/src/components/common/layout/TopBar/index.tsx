@@ -57,10 +57,12 @@ type TopBarAPIResponse = {
   }
 }
 
+// TODO: Extract this into separate component/modal functionality
+// see https://course-flow.atlassian.net/browse/COUR-307
 // supported "add" menu actions
-type CreateActionType = 'program' | 'activity' | 'course'
+export type CreateActionType = 'program' | 'activity' | 'course'
 
-function openCreateActionModal(type: CreateActionType) {
+export function openCreateActionModal(type: CreateActionType) {
   const createUrl = COURSEFLOW_APP.config.create_path[type]
   COURSEFLOW_APP.tinyLoader.startLoad()
   getTargetProjectMenu<{ parentID: number }>(

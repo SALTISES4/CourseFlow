@@ -38972,9 +38972,6 @@ const theme = createTheme({
     primary: {
       main: "#04BA74",
       light: "#52C68C",
-      // @ts-ignore
-      lightest: "#e2f5eb",
-      // lightest doesn't seen to be defined
       dark: "#009E52",
       contrastText: "#fff"
     },
@@ -38983,6 +38980,9 @@ const theme = createTheme({
       light: "#90A4AE",
       dark: "#607D8B"
     },
+    courseflow: {
+      lightest: "#e2f5eb"
+    },
     divider: "#CFD8DC",
     action: {
       hover: "rgba(4, 186, 116, 0.08)"
@@ -38990,6 +38990,16 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontWeight: 600
+        }
+      }
+    }
   }
 });
 const defaultTheme = createTheme();
@@ -47636,32 +47646,30 @@ function requireCreateSvgIcon() {
   })(createSvgIcon);
   return createSvgIcon;
 }
-var _interopRequireDefault$b = interopRequireDefaultExports;
+var _interopRequireDefault$c = interopRequireDefaultExports;
 Object.defineProperty(MoreHoriz, "__esModule", {
   value: true
 });
-var default_1$b = MoreHoriz.default = void 0;
-var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-var _jsxRuntime$b = jsxRuntimeExports;
-var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+var default_1$c = MoreHoriz.default = void 0;
+var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+var _jsxRuntime$c = jsxRuntimeExports;
+var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
   d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
 }), "MoreHoriz");
-default_1$b = MoreHoriz.default = _default$b;
+default_1$c = MoreHoriz.default = _default$c;
 const OuterContentWrap = styled$1(Box$1, {
   shouldForwardProp: (prop) => prop !== "narrow"
-})(
-  ({ theme: theme2, narrow }) => ({
-    padding: theme2.spacing(8),
-    paddingTop: 0,
-    ...narrow && {
-      maxWidth: "34.25rem",
-      marginLeft: "auto",
-      marginRight: "auto",
-      paddingLeft: theme2.spacing(2),
-      paddingRight: theme2.spacing(2)
-    }
-  })
-);
+})(({ theme: theme2, narrow }) => ({
+  padding: theme2.spacing(8),
+  paddingTop: 0,
+  ...narrow && {
+    maxWidth: "34.25rem",
+    marginLeft: "auto",
+    marginRight: "auto",
+    paddingLeft: theme2.spacing(2),
+    paddingRight: theme2.spacing(2)
+  }
+}));
 function permission_translate() {
   return {
     author: window.gettext("Owner"),
@@ -47995,7 +48003,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
         {
           alignItems: "flex-start",
           sx: {
-            backgroundColor: n.unread && !pageState.allRead ? "primary.lightest" : null
+            backgroundColor: n.unread && !pageState.allRead ? "courseflow.lightest" : null
           },
           secondaryAction: /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
@@ -48003,7 +48011,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
               onClick: (e) => handleMenuOpen(e, n),
               "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
               "aria-haspopup": "true",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
             }
           ),
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -54708,92 +54716,92 @@ const ProfileSettingsPage = ({ formData }) => {
     )
   ] });
 };
-var Home = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
-Object.defineProperty(Home, "__esModule", {
+var Home$1 = {};
+var _interopRequireDefault$b = interopRequireDefaultExports;
+Object.defineProperty(Home$1, "__esModule", {
   value: true
 });
-var default_1$a = Home.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+var default_1$b = Home$1.default = void 0;
+var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+var _jsxRuntime$b = jsxRuntimeExports;
+var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
   d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
 }), "Home");
-default_1$a = Home.default = _default$a;
+default_1$b = Home$1.default = _default$b;
 var FolderCopy = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
+var _interopRequireDefault$a = interopRequireDefaultExports;
 Object.defineProperty(FolderCopy, "__esModule", {
   value: true
 });
-var default_1$9 = FolderCopy.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+var default_1$a = FolderCopy.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)([/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
   d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+}, "0"), /* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
   d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
 }, "1")], "FolderCopy");
-default_1$9 = FolderCopy.default = _default$9;
+default_1$a = FolderCopy.default = _default$a;
 var Search = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
+var _interopRequireDefault$9 = interopRequireDefaultExports;
 Object.defineProperty(Search, "__esModule", {
   value: true
 });
-var default_1$8 = Search.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+var default_1$9 = Search.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
   d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
 }), "Search");
-default_1$8 = Search.default = _default$8;
+default_1$9 = Search.default = _default$9;
 var CalendarMonth = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
+var _interopRequireDefault$8 = interopRequireDefaultExports;
 Object.defineProperty(CalendarMonth, "__esModule", {
   value: true
 });
-var default_1$7 = CalendarMonth.default = void 0;
-var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-var _jsxRuntime$7 = jsxRuntimeExports;
-var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+var default_1$8 = CalendarMonth.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
   d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
 }), "CalendarMonth");
-default_1$7 = CalendarMonth.default = _default$7;
+default_1$8 = CalendarMonth.default = _default$8;
 var HelpRounded = {};
-var _interopRequireDefault$6 = interopRequireDefaultExports;
+var _interopRequireDefault$7 = interopRequireDefaultExports;
 Object.defineProperty(HelpRounded, "__esModule", {
   value: true
 });
-var default_1$6 = HelpRounded.default = void 0;
-var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-var _jsxRuntime$6 = jsxRuntimeExports;
-var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+var default_1$7 = HelpRounded.default = void 0;
+var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+var _jsxRuntime$7 = jsxRuntimeExports;
+var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
 }), "HelpRounded");
-default_1$6 = HelpRounded.default = _default$6;
+default_1$7 = HelpRounded.default = _default$7;
 var ArrowBack = {};
-var _interopRequireDefault$5 = interopRequireDefaultExports;
+var _interopRequireDefault$6 = interopRequireDefaultExports;
 Object.defineProperty(ArrowBack, "__esModule", {
   value: true
 });
-var default_1$5 = ArrowBack.default = void 0;
-var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
-var _jsxRuntime$5 = jsxRuntimeExports;
-var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+var default_1$6 = ArrowBack.default = void 0;
+var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+var _jsxRuntime$6 = jsxRuntimeExports;
+var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
   d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
 }), "ArrowBack");
-default_1$5 = ArrowBack.default = _default$5;
+default_1$6 = ArrowBack.default = _default$6;
 var Menu2 = {};
-var _interopRequireDefault$4 = interopRequireDefaultExports;
+var _interopRequireDefault$5 = interopRequireDefaultExports;
 Object.defineProperty(Menu2, "__esModule", {
   value: true
 });
-var default_1$4 = Menu2.default = void 0;
-var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
-var _jsxRuntime$4 = jsxRuntimeExports;
-var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+var default_1$5 = Menu2.default = void 0;
+var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
+var _jsxRuntime$5 = jsxRuntimeExports;
+var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
   d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
 }), "Menu");
-default_1$4 = Menu2.default = _default$4;
+default_1$5 = Menu2.default = _default$5;
 function useApi(url, debug = false) {
   const [state, setState] = reactExports.useState({
     loading: true,
@@ -55167,7 +55175,7 @@ const Sidebar = () => {
         "aria-label": "collapse sidebar",
         collapsed,
         onClick: toggleCollapse,
-        children: collapsed ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$4, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$5, {})
+        children: collapsed ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$5, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarInner, { elevation: 8, children: [
@@ -55184,7 +55192,7 @@ const Sidebar = () => {
             href: COURSEFLOW_APP.config.home_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.home })
             ]
           }
@@ -55198,7 +55206,7 @@ const Sidebar = () => {
               href: COURSEFLOW_APP.config.my_library_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_library })
               ]
             }
@@ -55211,7 +55219,7 @@ const Sidebar = () => {
               href: COURSEFLOW_APP.config.explore_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.explore })
               ]
             }
@@ -55225,7 +55233,7 @@ const Sidebar = () => {
             href: COURSEFLOW_APP.config.my_liveprojects_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_classrooms })
             ]
           }
@@ -55274,7 +55282,7 @@ const Sidebar = () => {
           component: "a",
           href: "https://courseflow.freshdesk.com/support/home",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, { color: "primary" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, { color: "primary" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.help_support })
           ]
         }
@@ -55626,53 +55634,53 @@ process.env.NODE_ENV !== "production" ? Toolbar.propTypes = {
 } : void 0;
 const Toolbar$1 = Toolbar;
 var AccountCircle = {};
-var _interopRequireDefault$3 = interopRequireDefaultExports;
+var _interopRequireDefault$4 = interopRequireDefaultExports;
 Object.defineProperty(AccountCircle, "__esModule", {
   value: true
 });
-var default_1$3 = AccountCircle.default = void 0;
-var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
-var _jsxRuntime$3 = jsxRuntimeExports;
-var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
+var default_1$4 = AccountCircle.default = void 0;
+var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
+var _jsxRuntime$4 = jsxRuntimeExports;
+var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
 }), "AccountCircle");
-default_1$3 = AccountCircle.default = _default$3;
+default_1$4 = AccountCircle.default = _default$4;
 var Logout = {};
-var _interopRequireDefault$2 = interopRequireDefaultExports;
+var _interopRequireDefault$3 = interopRequireDefaultExports;
 Object.defineProperty(Logout, "__esModule", {
   value: true
 });
-var default_1$2 = Logout.default = void 0;
-var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
-var _jsxRuntime$2 = jsxRuntimeExports;
-var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
+var default_1$3 = Logout.default = void 0;
+var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
+var _jsxRuntime$3 = jsxRuntimeExports;
+var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
   d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
 }), "Logout");
-default_1$2 = Logout.default = _default$2;
+default_1$3 = Logout.default = _default$3;
 var Notifications = {};
-var _interopRequireDefault$1 = interopRequireDefaultExports;
+var _interopRequireDefault$2 = interopRequireDefaultExports;
 Object.defineProperty(Notifications, "__esModule", {
   value: true
 });
-var default_1$1 = Notifications.default = void 0;
-var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
-var _jsxRuntime$1 = jsxRuntimeExports;
-var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
+var default_1$2 = Notifications.default = void 0;
+var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
+var _jsxRuntime$2 = jsxRuntimeExports;
+var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
   d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
 }), "Notifications");
-default_1$1 = Notifications.default = _default$1;
+default_1$2 = Notifications.default = _default$2;
 var AddCircle = {};
-var _interopRequireDefault = interopRequireDefaultExports;
+var _interopRequireDefault$1 = interopRequireDefaultExports;
 Object.defineProperty(AddCircle, "__esModule", {
   value: true
 });
-var default_1 = AddCircle.default = void 0;
-var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
-var _jsxRuntime = jsxRuntimeExports;
-var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+var default_1$1 = AddCircle.default = void 0;
+var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
+var _jsxRuntime$1 = jsxRuntimeExports;
+var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
-default_1 = AddCircle.default = _default;
+default_1$1 = AddCircle.default = _default$1;
 function getDialogUtilityClass(slot) {
   return generateUtilityClass("MuiDialog", slot);
 }
@@ -57985,7 +57993,7 @@ const TopBar = () => {
           {
             alignItems: "flex-start",
             sx: {
-              backgroundColor: n.unread ? "primary.lightest" : null
+              backgroundColor: n.unread ? "courseflow.lightest" : null
             },
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
               n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
@@ -58046,7 +58054,7 @@ const TopBar = () => {
           apiData.menus.account.daliteText
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$3, {}),
           " ",
           COURSEFLOW_APP.strings.sign_out
         ] })
@@ -58066,7 +58074,7 @@ const TopBar = () => {
             "aria-haspopup": "true",
             color: "primary",
             onClick: handleAddMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1, {})
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$1, {})
           }
         ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -58082,7 +58090,7 @@ const TopBar = () => {
               {
                 badgeContent: apiData.notifications.unread,
                 color: "primary",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$1, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {})
               }
             )
           }
@@ -58096,7 +58104,7 @@ const TopBar = () => {
             "aria-controls": "account-menu",
             "aria-haspopup": "true",
             onClick: handleMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$3, {})
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$4, {})
           }
         )
       ] })
@@ -97024,34 +97032,90 @@ class Favourites extends reactExports.Component {
     ) });
   }
 }
-class HomePage extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "isTeacher");
-    this.state = {
-      projects: [],
-      favourites: []
-    };
-    this.isTeacher = props.is_teacher;
+var Close = {};
+var _interopRequireDefault = interopRequireDefaultExports;
+Object.defineProperty(Close, "__esModule", {
+  value: true
+});
+var default_1 = Close.default = void 0;
+var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
+var _jsxRuntime = jsxRuntimeExports;
+var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+  d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+}), "Close");
+default_1 = Close.default = _default;
+const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  position: "relative",
+  padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
+  border: `1px solid ${theme2.palette.divider}`,
+  textAlign: "center"
+}));
+const Actions = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "flex",
+  justifyContent: "center",
+  flexWrap: "wrap",
+  gap: theme2.spacing(2),
+  marginTop: theme2.spacing(3)
+}));
+const CloseButton = styled$1(IconButton$1)(({ theme: theme2 }) => ({
+  position: "absolute",
+  top: theme2.spacing(1),
+  right: theme2.spacing(1),
+  color: theme2.palette.primary.main
+}));
+const Welcome = ({ hide }) => {
+  const [visible, setVisible] = reactExports.useState(true);
+  function handleClose() {
+    setVisible(!visible);
   }
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
+  function handleCreateClick(resourceType) {
+    openCreateActionModal(resourceType);
+  }
+  if (hide || !visible) {
+    return null;
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
+      "Tell us a bit more about your goals so that we can help you get started."
+    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Actions, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button$1,
+        {
+          variant: "contained",
+          onClick: () => handleCreateClick("program"),
+          children: window.gettext("I want to create a program")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: () => handleCreateClick("course"), children: window.gettext("I want to create a course") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button$1,
+        {
+          variant: "contained",
+          onClick: () => handleCreateClick("activity"),
+          children: window.gettext("I want to create an activity")
+        }
+      )
+    ] })
+  ] });
+};
+const Home = ({ is_teacher }) => {
+  const [state, setState] = reactExports.useState({
+    loading: true,
+    projects: [],
+    favourites: []
+  });
+  reactExports.useEffect(() => {
     getHomeQuery((data2) => {
-      this.setState({
-        projects: data2.projects,
-        favourites: data2.favourites
-      });
+      setState({ ...data2, loading: false });
     });
-  }
-  /*******************************************************
-   * Render
-   *******************************************************/
-  renderWorkflowCards(workflows, keyPrefix) {
+  }, []);
+  function renderWorkflowCards(workflows, keyPrefix) {
     return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
   }
-  renderHomeItem(title, content, path) {
+  function renderHomeItem(title, content, path) {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
@@ -97060,32 +97124,34 @@ class HomePage extends reactExports.Component {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
     ] });
   }
-  render() {
-    const { projects, favourites } = this.state;
-    const projectsContent = this.renderWorkflowCards(projects, "project");
-    const favouritesContent = this.renderWorkflowCards(favourites, "favourite");
-    const projectTitle = this.isTeacher ? "Recent projects" : "Recent classrooms";
-    const projectPath = this.isTeacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
-    const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
-    const projectBox = this.renderHomeItem(
-      projectTitle,
-      projectsContent,
-      projectPath
-    );
-    let favouriteBox;
-    if (this.isTeacher) {
-      favouriteBox = this.renderHomeItem(
-        "Favourites",
-        favouritesContent,
-        favouritePath
-      );
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
-      projectBox,
-      favouriteBox
-    ] });
+  if (state.loading) {
+    return null;
   }
-}
+  const { projects, favourites } = state;
+  const projectsContent = renderWorkflowCards(projects, "project");
+  const favouritesContent = renderWorkflowCards(favourites, "favourite");
+  const projectTitle = is_teacher ? window.gettext("Recent projects") : window.gettext("Recent classrooms");
+  const projectPath = is_teacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
+  const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
+  const projectsSection = renderHomeItem(
+    projectTitle,
+    projectsContent,
+    projectPath
+  );
+  let favouritesSection = null;
+  if (is_teacher) {
+    favouritesSection = renderHomeItem(
+      "Favourites",
+      favouritesContent,
+      favouritePath
+    );
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!state.projects.length }),
+    projectsSection,
+    favouritesSection
+  ] });
+};
 class ExploreFilter extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -97590,7 +97656,7 @@ function renderComponents(components) {
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     case "home":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(HomePage, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { ...COURSEFLOW_APP.contextData });
     case "favorites":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Favourites, {});
     case "library":

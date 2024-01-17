@@ -1,53 +1,40 @@
-import * as React from 'react'
+import React, { useEffect, useState, ReactNode } from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { Workflow } from '@cfModule/types/common'
 import { getHomeQuery } from '@XMLHTTP/API/pages'
+import { OuterContentWrap } from '@cfModule/mui/helper'
+import Welcome from './components/Welcome'
 
-/*******************************************************
- * @HomeRenderer
- *******************************************************/
 type PropsType = {
-  is_teacher: string
+  is_teacher: boolean
 }
+
 type StateType = {
+  loading: boolean
   projects: Workflow[]
   favourites: Workflow[]
 }
 
-class HomePage extends React.Component<PropsType, StateType> {
-  private readonly isTeacher
+const Home = ({ is_teacher }: PropsType) => {
+  const [state, setState] = useState<StateType>({
+    loading: true,
+    projects: [],
+    favourites: []
+  })
 
-  constructor(props: PropsType) {
-    super(props)
-    this.state = {
-      projects: [],
-      favourites: []
-    }
-    this.isTeacher = props.is_teacher // @todo reassign props
-  }
-
-  /*******************************************************
-   * Lifecycle hooks
-   *******************************************************/
-  componentDidMount() {
+  useEffect(() => {
     getHomeQuery((data) => {
-      this.setState({
-        projects: data.projects,
-        favourites: data.favourites
-      })
+      setState({ ...data, loading: false })
     })
-  }
+  }, [])
 
-  /*******************************************************
-   * Render
-   *******************************************************/
-  renderWorkflowCards(workflows, keyPrefix) {
+  function renderWorkflowCards(workflows: Workflow[], keyPrefix: string) {
     return workflows.map((workflow, index) => (
       <WorkflowCard key={`${keyPrefix}-${index}`} workflowData={workflow} />
     ))
   }
 
-  renderHomeItem(title, content, path) {
+  function renderHomeItem(title: string, content: ReactNode, path: string) {
     return (
       <div className="home-item">
         <div className="home-title-row">
@@ -61,41 +48,46 @@ class HomePage extends React.Component<PropsType, StateType> {
     )
   }
 
-  render() {
-    const { projects, favourites } = this.state
-    const projectsContent = this.renderWorkflowCards(projects, 'project')
-    const favouritesContent = this.renderWorkflowCards(favourites, 'favourite')
+  if (state.loading) {
+    return null
+  }
 
-    const projectTitle = this.isTeacher
-      ? 'Recent projects'
-      : 'Recent classrooms'
-    const projectPath = this.isTeacher
-      ? COURSEFLOW_APP.config.my_library_path
-      : COURSEFLOW_APP.config.my_liveprojects_path
-    const favouritePath = COURSEFLOW_APP.config.my_favourites_path
+  const { projects, favourites } = state
+  const projectsContent = renderWorkflowCards(projects, 'project')
+  const favouritesContent = renderWorkflowCards(favourites, 'favourite')
 
-    const projectBox = this.renderHomeItem(
-      projectTitle,
-      projectsContent,
-      projectPath
-    )
+  const projectTitle = is_teacher
+    ? window.gettext('Recent projects')
+    : window.gettext('Recent classrooms')
 
-    let favouriteBox
-    if (this.isTeacher) {
-      favouriteBox = this.renderHomeItem(
-        'Favourites',
-        favouritesContent,
-        favouritePath
-      )
-    }
+  const projectPath = is_teacher
+    ? COURSEFLOW_APP.config.my_library_path
+    : COURSEFLOW_APP.config.my_liveprojects_path
 
-    return (
-      <div className="home-menu-container">
-        {projectBox}
-        {favouriteBox}
-      </div>
+  const favouritePath = COURSEFLOW_APP.config.my_favourites_path
+
+  const projectsSection = renderHomeItem(
+    projectTitle,
+    projectsContent,
+    projectPath
+  )
+
+  let favouritesSection: ReactNode = null
+  if (is_teacher) {
+    favouritesSection = renderHomeItem(
+      'Favourites',
+      favouritesContent,
+      favouritePath
     )
   }
+
+  return (
+    <OuterContentWrap>
+      <Welcome hide={!!state.projects.length} />
+      {projectsSection}
+      {favouritesSection}
+    </OuterContentWrap>
+  )
 }
 
-export default HomePage
+export default Home
