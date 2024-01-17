@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38-django3_2
+envlist = py39-django3_2
 
 [testenv]
 setenv =
