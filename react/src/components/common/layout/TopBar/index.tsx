@@ -189,7 +189,7 @@ const TopBar = () => {
             key={idx}
             alignItems="flex-start"
             sx={{
-              backgroundColor: n.unread ? 'primary.lightest' : null
+              backgroundColor: n.unread ? 'courseflow.lightest' : null
             }}
           >
             <ListItemButton component="a" href={n.url}>

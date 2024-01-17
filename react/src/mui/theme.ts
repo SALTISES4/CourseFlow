@@ -5,8 +5,6 @@ export default createTheme({
     primary: {
       main: '#04BA74',
       light: '#52C68C',
-      // @ts-ignore
-      lightest: '#e2f5eb', // lightest doesn't seen to be defined
       dark: '#009E52',
       contrastText: '#fff'
     },
@@ -14,6 +12,9 @@ export default createTheme({
       main: '#78909C',
       light: '#90A4AE',
       dark: '#607D8B'
+    },
+    courseflow: {
+      lightest: '#e2f5eb'
     },
     divider: '#CFD8DC',
     action: {
