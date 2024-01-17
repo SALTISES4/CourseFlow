@@ -1,6 +1,6 @@
-import { createTheme } from '@mui/material/styles'
+import { Theme, createTheme } from '@mui/material/styles'
 
-export default createTheme({
+const theme: Theme = createTheme({
   palette: {
     primary: {
       main: '#04BA74',
@@ -23,5 +23,17 @@ export default createTheme({
   },
   typography: {
     fontFamily: ['"Open Sans"', 'Helvetica', 'Arial', 'sans-serif'].join(',')
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600
+        }
+      }
+    }
   }
 })
+
+export default theme
