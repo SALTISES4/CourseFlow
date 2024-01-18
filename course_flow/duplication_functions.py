@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.utils import timezone
 
-from course_flow.models import Project, User
+from course_flow.models import OutcomeNode, Project, User
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.course import Course
@@ -15,7 +15,6 @@ from course_flow.models.relations.nodeWeek import NodeWeek
 from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
 )
-from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow

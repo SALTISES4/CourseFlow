@@ -24,9 +24,9 @@ class ActionCreator {
   static createLockAction = (
     object_id,
     object_type,
-    lock,
-    user_id,
-    user_colour
+    lock?,
+    user_id?,
+    user_colour?
   ) => {
     if (lock)
       return {

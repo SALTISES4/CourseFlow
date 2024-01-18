@@ -109,9 +109,11 @@ class Workflow {
   unread_comments: any
   container: any
   view_type: any
-  private workflowRender: OmitThisParameter<(container, view_type?: string) => void>;
-  private locks: {};
-  private silent_connect_fail: any;
+  private workflowRender: OmitThisParameter<
+    (container, view_type?: ViewType) => void
+  >
+  private locks: {}
+  private silent_connect_fail: any
 
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
@@ -295,7 +297,7 @@ class Workflow {
   /*******************************************************
    * REACT TO MOVE
    *******************************************************/
-  render(container, view_type = 'workflowview') {
+  render(container, view_type: ViewType = ViewType.WORKFLOW) {
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)
@@ -312,8 +314,6 @@ class Workflow {
     this.container = container // @todo where is view_type set?
     // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
 
-
-
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
@@ -329,6 +329,13 @@ class Workflow {
                 // legacyRenderer={this}
                 parentRender={this.workflowRender}
                 // readOnly={this.read_only}
+                config={{
+                  canView: this.can_view,
+                  isStudent: this.is_student,
+                  projectPermission: this.project_permission,
+                  alwaysStatic: this.always_static
+                }}
+                websocket={this.websocket}
               />
             </WorkFlowConfigProvider>
           </Provider>,
@@ -348,6 +355,13 @@ class Workflow {
                     // renderer={this}
                     // legacyRenderer={this}
                     parentRender={this.workflowRender}
+                    config={{
+                      canView: this.can_view,
+                      isStudent: this.is_student,
+                      projectPermission: this.project_permission,
+                      alwaysStatic: this.always_static
+                    }}
+                    websocket={this.websocket}
                   />
                 </WorkFlowConfigProvider>
               </Provider>
@@ -396,6 +410,7 @@ class Workflow {
 
       this.store = createStore(
         Reducers.rootWorkflowReducer,
+        // @ts-ignore @todo check out data_package type
         response.data_package,
         composeEnhancers()
       )
@@ -404,6 +419,7 @@ class Workflow {
       this.clear_queue(response.data_package?.workflow.edit_count) // @todo why would there be a queue if we're not using pubsub?
 
       if (reconnect) {
+        // @ts-ignore
         this.attempt_reconnect() // @todo why would we try to reconnect if we're not using pubsub?
       }
     })
@@ -448,7 +464,8 @@ class Workflow {
         this.connection_update_received(data)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
-        this.parent_workflow_updated(data.edit_count)
+        // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
+        this.parent_workflow_updated()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
         this.child_workflow_updated(data.edit_count, data.child_workflow_id)
@@ -562,6 +579,7 @@ class Workflow {
             ...obj,
             expires: Date.now() + time,
             user_id: this.user_id,
+            // @ts-ignore
             user_colour: COURSEFLOW_APP.contextData.myColour,
             lock: lock
           }

@@ -6,9 +6,10 @@ import * as Constants from '@cfConstants'
 import { AppState, Column } from '@cfModule/redux/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type OwnProps = {
-  renderer: any
+  // renderer: any
   data: any
 }
 type ConnectedProps = {
@@ -23,6 +24,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
   PropsType,
   StateProps
 > {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE
@@ -32,8 +34,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
    * RENDER
    *******************************************************/
   render() {
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
     const data = this.props.data
 
     const data_override = data.represents_workflow
@@ -67,7 +68,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       css_class += ' locked locked-' + data.lock.user_id
     }
 
-    const comments = this.props.renderer.view_comments
+    const comments = this.context.view_comments
       ? this.addCommenting()
       : undefined
 

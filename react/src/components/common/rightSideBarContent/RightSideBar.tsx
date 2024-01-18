@@ -23,11 +23,11 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type PropsType = {
   // renderer: ChildRenderer
-  parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   context: any
-  object_sets: any
-  toggleObjectSet: any
+  parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   data: any
+  object_sets?: any
+  toggleObjectSet?: any
 }
 
 class RightSideBar extends React.Component<PropsType> {
@@ -89,12 +89,11 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   getOutcomeBar() {
-
     if (this.props.context === WFContext.COMPARISON) {
       return null
     }
     if (this.props.context.view_type === ViewType.OUTCOME_EDIT) {
-      return <ParentOutcomeBar  />
+      return <ParentOutcomeBar />
     }
     return (
       <OutcomeBar
@@ -107,7 +106,9 @@ class RightSideBar extends React.Component<PropsType> {
 
   getViewBar() {
     if (this.props.context === WFContext.WORKFLOW) {
-      return <ViewBar data={this.props.data}/* renderer={this.props.renderer}*/ />
+      return (
+        <ViewBar data={this.props.data} /* renderer={this.props.renderer}*/ />
+      )
     }
     if (this.props.context === WFContext.COMPARISON) {
       return (
@@ -122,8 +123,7 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   getRestoreBar() {
-    if (this.props.context === WFContext.WORKFLOW)
-      return <RestoreBar />
+    if (this.props.context === WFContext.WORKFLOW) return <RestoreBar />
     return null
   }
 

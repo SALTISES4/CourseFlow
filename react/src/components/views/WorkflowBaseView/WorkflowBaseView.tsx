@@ -35,7 +35,6 @@ import { getTargetProjectMenu } from '@XMLHTTP/API/project'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-import WorkflowClass from '@cfPages/Workflow/Workflow'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -57,10 +56,15 @@ type ConnectedProps = {
  */
 
 type SelfProps = {
-  view_type: string
-  renderer: WorkflowClass
-  // id: number don't know why id waw here
+  view_type: ViewType // doese this live in context or do we pass it?
   parentRender: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
+  config: {
+    canView: boolean
+    isStudent: boolean
+    projectPermission: number
+    alwaysStatic: boolean
+  }
+  websocket: WebSocket
 } & EditableComponentProps
 
 type PropsType = ConnectedProps & SelfProps
@@ -69,6 +73,7 @@ type StateType = {
   openShareDialog: boolean
   openExportDialog: boolean
   openImportDialog: boolean
+  openEditDialog: boolean
   data?: any
 } & EditableComponentStateType
 /**
@@ -85,10 +90,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   StateType
 > {
   declare context: React.ContextType<typeof WorkFlowConfigContext>
-  private allowed_tabs: number[]
+
+  // Constants
+  protected objectType = CfObjectType.WORKFLOW
+  private allowed_tabs = [0, 1, 2, 3, 4]
+
   private readOnly: any
   private public_view: any
-  private can_view: boolean
   private data: any
   private project: any
   private selection_manager: any
@@ -100,34 +108,45 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private project_permission: number
   private object_sets: any
   private workflowId: any
-  private is_student: boolean
-  private view_type: any;
+  private view_type: any
+  private can_view: boolean
+
   constructor(props: PropsType) {
     super(props)
 
-    this.objectType = CfObjectType.WORKFLOW
-    this.allowed_tabs = [0, 1, 2, 3, 4]
+    this.data = this.props.data
+    this.object_sets = this.props.object_sets
 
     this.readOnly = this.context.read_only
-    this.public_view = this.context.public_view
-    this.can_view = this.context.can_view
-    this.can_view = this.context.is_student
-    this.data = this.props.data
-    this.project = this.context.project
+    this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager
+
+    // this should be a state type, but leave in context for now
+    this.container = this.context.container
+
+    // to be added
+    this.view_type = this.context.view_type
+    this.user_id = this.context.user_id
+
+    // used in assignmentbox
+    this.project = this.context.project
+
+    // used in parentworkflowindicator
+    this.public_view = this.context.public_view
+
+    // used in connectionBar, but websocket status shouldn't go in the same context
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
     this.renderMethod = this.props.parentRender
 
-    this.container = this.context.container
-    this.view_type = this.context.view_type
-    this.websocket = this.context.websocket
-    this.always_static = this.context.always_static
-    this.user_id = this.context.user_id
-    this.project_permission = this.context.project_permission
-    this.object_sets = this.props.object_sets
-    this.workflowId = this.context.workflowID
+    // not used in other components
+    // @todo what is the definition of canView ? since both these values are assigned in parent, figure it out there
+    this.can_view = this.props.config.canView
+    this.can_view = this.props.config.isStudent
+
+    this.project_permission = this.props.config.projectPermission
+    this.always_static = this.props.config.alwaysStatic
 
     this.state = {
       users: null,
@@ -154,7 +173,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    if (this.public_view || this.is_student) return null
+    if (this.public_view || this.props.config.isStudent) return null
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data })
     })
@@ -222,18 +241,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.renderMethod(this.container, type)
   }
 
-  expandAll(type: ViewType) {
-    this.props[type].forEach((week) =>
-      toggleDropReduxAction(week.id, type, true, this.props.dispatch)
-    )
-  }
-
-  collapseAll(type: ViewType) {
-    this.props[type].forEach((week) =>
-      toggleDropReduxAction(week.id, type, false, this.props.dispatch)
-    )
-  }
-
   openEditMenu(evt) {
     this.selection_manager.changeSelection(evt, this)
   }
@@ -250,6 +257,23 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       () => {
         closeMessageBox()
       }
+    )
+  }
+
+  // @todo it this ViewType or cfobjecttype
+  expandAll(type: CfObjectType) {
+    // this is weird, not defined in propstype
+    this.props[type].forEach((week) =>
+      // @ts-ignore
+      toggleDropReduxAction(week.id, type, true, this.props.dispatch)
+    )
+  }
+
+  collapseAll(type: CfObjectType) {
+    // this is weird, not defined in propstype
+    this.props[type].forEach((week) =>
+      // @ts-ignore
+      toggleDropReduxAction(week.id, type, false, this.props.dispatch)
     )
   }
 
@@ -381,7 +405,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   getReturnLinks() {
     const return_links = []
-    if (this.project && !this.is_student && !this.public_view) {
+    if (this.project && !this.props.config.isStudent && !this.public_view) {
       return_links.push(
         <a
           className="hover-shade no-underline"
@@ -424,7 +448,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   Content = () => {
     // const data = this.data
-    const renderer = this.props.renderer
 
     let workflow_content
     if (this.view_type == ViewType.OUTCOMETABLE) {
@@ -455,9 +478,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
       this.allowed_tabs = [3]
     } else {
-      workflow_content = <WorkflowView renderer={renderer} />
+      // @ts-ignore this is tricky because <WorkflowView /> def needs objectID but don't see it in history anywhere
+      workflow_content = <WorkflowView />
       this.allowed_tabs = [1, 2, 3, 4]
-      if (renderer.read_only) this.allowed_tabs = [2, 3]
+      if (this.context.read_only) this.allowed_tabs = [2, 3]
     }
 
     if (this.data.is_strategy) return workflow_content
@@ -504,7 +528,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       .filter((item) => item.disabled.indexOf(this.data.type) == -1)
       .map((item, index) => {
         let view_class = 'hover-shade'
-        if (item.type === renderer.view_type) view_class += ' active'
+        if (item.type === this.view_type) view_class += ' active'
         return (
           <a
             key={index}
@@ -550,7 +574,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <JumpToWeekWorkflow
           key={`weekworkflow-${index}`}
           order={this.data.weekworkflow_set}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           objectID={weekworkflow}
         />
       )
@@ -578,14 +602,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <div className="create-dropdown">
           <div
             className="flex-middle hover-shade"
-            onClick={this.expandAll.bind(this, 'week')}
+            onClick={this.expandAll.bind(this, CfObjectType.WEEK)}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{window.gettext('Expand all weeks')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
-            onClick={this.collapseAll.bind(this, 'week')}
+            onClick={this.collapseAll.bind(this, CfObjectType.WEEK)}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{window.gettext('Collapse all weeks')}</div>
@@ -593,14 +617,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           <hr />
           <div
             className="flex-middle hover-shade"
-            onClick={this.expandAll.bind(this, 'node')}
+            onClick={this.expandAll.bind(this, CfObjectType.NODE)}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{window.gettext('Expand all nodes')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
-            onClick={this.collapseAll.bind(this, 'node')}
+            onClick={this.collapseAll.bind(this, CfObjectType.NODE)}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{window.gettext('Collapse all nodes')}</div>
@@ -608,14 +632,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           <hr />
           <div
             className="flex-middle hover-shade"
-            onClick={this.expandAll.bind(this, 'outcome')}
+            onClick={this.expandAll.bind(this, CfObjectType.OUTCOME)}
           >
             <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{window.gettext('Expand all outcomes')}</div>
           </div>
           <div
             className="flex-middle hover-shade"
-            onClick={this.collapseAll.bind(this, 'outcome')}
+            onClick={this.collapseAll.bind(this, CfObjectType.OUTCOME)}
           >
             <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{window.gettext('Collapse all outcomes')}</div>
@@ -638,12 +662,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * USERBAR
    *******************************************************/
   UserBar = () => {
-    const renderer = this.props.renderer
-
     if (!this.always_static) {
       return (
         <ConnectionBar
-          user_id={renderer.user_id}
+          user_id={this.context.user_id}
           websocket={this.websocket}
           // connection_update_receive={this.context.connection_update_received}
           // renderer={renderer}
@@ -708,6 +730,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     if (this.public_view && !this.user_id) {
       return null
     }
+
+    // @todo ...
     if (this.can_view && !this.can_view) {
       return null
     }
@@ -744,7 +768,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               }
             )
           } else {
-            getTargetProjectMenu(-1, (response_data) => {
+            getTargetProjectMenu<{ parentID: number }>(-1, (response_data) => {
               if (response_data.parentID != null) {
                 const utilLoader = new Utility.Loader('body')
                 duplicateBaseItemQuery(
@@ -816,27 +840,32 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   DeleteWorkflowButton = () => {
     if (this.readOnly) return null
-    if (!this.data.deleted)
-      return [
-        <hr />,
-        <div
-          id="delete-workflow"
-          className="hover-shade"
-          onClick={this.deleteWorkflow.bind(this)}
-        >
-          <div>{window.gettext('Archive workflow')}</div>
-        </div>
-      ]
-    else
-      return [
-        <hr />,
+
+    if (!this.data.deleted) {
+      return (
+        <>
+          <hr />
+          <div
+            id="delete-workflow"
+            className="hover-shade"
+            onClick={this.deleteWorkflow.bind(this)}
+          >
+            <div>{window.gettext('Archive workflow')}</div>
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <hr />
         <div
           id="restore-workflow"
           className="hover-shade"
           onClick={this.restoreWorkflow.bind(this)}
         >
           <div>{window.gettext('Restore workflow')}</div>
-        </div>,
+        </div>
         <div
           id="permanently-delete-workflow"
           className="hover-shade"
@@ -844,7 +873,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         >
           <div>{window.gettext('Permanently delete workflow')}</div>
         </div>
-      ]
+      </>
+    )
   }
 
   OverflowLinks = () => {

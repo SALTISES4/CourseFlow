@@ -12,12 +12,13 @@ import {
   EditableComponentWithCommentsType
 } from '@cfParentComponents/EditableComponentWithComments'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 /**
  * A block representing a term in the grid view
  */
 
 type OwnProps = {
-  renderer: any
+  // renderer: any
   rank: number
   data: any
 } & EditableComponentWithCommentsType
@@ -37,6 +38,8 @@ class GridWeekUnconnected extends EditableComponentWithComments<
   PropsType,
   EditableComponentWithCommentsStateType
 > {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
 
@@ -53,11 +56,9 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     const data = this.props.data
 
     const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
-    const nodes = this.props.nodes.map((node) => (
-      <GridNode renderer={this.props.renderer} data={node} />
-    ))
+    const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
 
-    const comments = this.props.renderer.view_comments
+    const comments = this.context.view_comments
       ? this.addCommenting()
       : undefined
 
@@ -69,7 +70,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.get_border_style()}
         onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
       >
         <div className="week-title">

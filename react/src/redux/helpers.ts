@@ -1,4 +1,4 @@
-import { ViewType } from '@cfModule/types/enum'
+import {CfObjectType, ViewType} from '@cfModule/types/enum'
 import * as Constants from '../constants'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { Action } from 'redux'
@@ -254,7 +254,7 @@ export class SelectionManager {
  */
 export function toggleDropReduxAction(
   objectID: number,
-  objectType: ViewType,
+  objectType: CfObjectType, //i thibnk this is CfObjectType
   is_dropped: string | boolean,
   dispatch: Dispatch<Action>,
   depth = 1

@@ -3,7 +3,8 @@ export enum ViewType {
   OUTCOME_EDIT = 'outcomeedit',
   GRID = 'grid',
   OUTCOMETABLE = 'outcometable',
-  ALIGNMENTANALYSIS = 'alignmentanalysis'
+  ALIGNMENTANALYSIS = 'alignmentanalysis',
+  // WEEK = 'week',
 }
 
 export enum WFContext {
