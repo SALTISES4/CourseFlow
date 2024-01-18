@@ -14,7 +14,7 @@ import { insertedAtInstant } from '@XMLHTTP/API/global'
 
 type ConnectedProps = GetWeekByIDType
 type OwnProps = {
-  renderer: any
+  // renderer: any
   objectID: number
   rank?: number
   parentID?: number
@@ -103,7 +103,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
         key={nodeweek}
         objectID={nodeweek}
         parentID={this.props.data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     ))

@@ -82,6 +82,7 @@ export class WorkflowComparison {
           view_type={view_type}
           // turn this into config object
           renderer={this}
+          // legacyRenderer={this}
           data={this.projectData}
           selection_manager={this.selection_manager}
         />,

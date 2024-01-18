@@ -26,6 +26,14 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * Represents the node in the comparison view
  */
+
+/**
+ * renderer.selection_manager
+ * renderer.view_comments
+ * renderer.context_choices
+ * renderer.task_choices
+ * renderer.read_only
+ */
 class NodeComparisonUnconnected extends EditableComponentWithActions<
   PropsType,
   StateProps
@@ -84,7 +92,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
             <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
-              renderer={renderer}
+              legacyRenderer={this.props.legacyRenderer}
             />
           ))}
         </div>
@@ -173,7 +181,6 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('clicked')
             console.log('clicked')
             return () => selection_manager.changeSelection(evt, this)
           }}

@@ -4,7 +4,7 @@ import {
   NodeBarColumnUnconnectedType
 } from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumn'
 
-type PropsType = NodeBarColumnUnconnectedType
+// type PropsType = NodeBarColumnUnconnectedType
 /**
  * As the NodeBarColumn component, but creates a new column.
  * @todo having a component class that is both connected and unconnected being extended from is too complicated
@@ -28,7 +28,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected<NodeBarColumnUnconne
    * RENDER
    *******************************************************/
   render() {
-    const choice = this.props.columnChoices.find(
+    const choice = this.props?.columnChoices?.find(
       (columnChoice) => columnChoice.type === this.props.columnType
     )
     const title = choice ? `New ${choice.name}` : 'New'

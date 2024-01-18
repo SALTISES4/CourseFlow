@@ -16,13 +16,11 @@ type ConnectedProps = {
   outcomes: any
   nodelinks: any
 }
-type OwnProps = {
-  renderer: any
-}
+type OwnProps = any
 type PropsType = ConnectedProps & OwnProps
 
 class RestoreBarUnconnected extends React.Component<PropsType> {
-  private objectType: CfObjectType;
+  private objectType: CfObjectType
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW // @todo check addEditable
@@ -63,7 +61,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
         key={column.id}
         objectType="column"
         data={column}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     ))
     const weeks = this.props.weeks.map((week) => (
@@ -71,7 +69,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
         key={week.id}
         objectType="week"
         data={week}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     ))
     const nodes = this.props.nodes.map((node) => (
@@ -79,7 +77,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
         key={node.id}
         objectType="node"
         data={node}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     ))
     const outcomes = this.props.outcomes.map((outcome) => (
@@ -87,7 +85,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
         key={outcome.id}
         objectType="outcome"
         data={outcome}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     ))
     const nodelinks = this.props.nodelinks.map((nodelink) => (
@@ -95,7 +93,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
         key={nodelink.id}
         objectType="nodelink"
         data={nodelink}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     ))
 

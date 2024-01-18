@@ -10,6 +10,7 @@ import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/global'
 import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -32,14 +33,26 @@ type ChildRenderer = {
   show_assignments?: any
 }
 
+export type LegacyRendererProps = {
+  task_choices: any
+  time_choices: any
+  read_only: any
+  context_choices: any
+  outcome_type_choices: any
+  strategy_classification_choices: any
+  change_field: any
+}
+
 export type EditableComponentProps = {
-  renderer: ChildRenderer
+  // renderer: ChildRenderer
   data?: any
   placeholder?: any
   text?: any
   textChangeFunction?: any
   disabled?: any
   object_sets?: any
+  // from renderer
+  // legacyRenderer: LegacyRendererProps
 }
 
 type StateType = {
@@ -51,6 +64,9 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
+  // static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   //Makes the item selectable
 
   /*******************************************************
@@ -72,7 +88,7 @@ class EditableComponent<
   checkboxChanged(field, evt) {
     const do_change = true
     if (do_change)
-      this.props.renderer.change_field(
+      this.context.change_field(
         this.props.data.id,
         Constants.object_dictionary[this.objectType],
         field,
@@ -81,7 +97,7 @@ class EditableComponent<
   }
 
   valueChanged(field, new_value) {
-    this.props.renderer.change_field(
+    this.context.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
@@ -105,7 +121,7 @@ class EditableComponent<
     else if (!value) value = ''
     if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
     if (evt.target.type == 'number' && value == '') value = 0
-    this.props.renderer.change_field(
+    this.context.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
@@ -150,7 +166,7 @@ class EditableComponent<
           value={data.task_classification}
           onChange={this.inputChanged.bind(this, 'task_classification')}
         >
-          {this.props.renderer.task_choices
+          {this.context.task_choices
             .filter(
               (choice) =>
                 Math.floor(choice.type / 100) == data.node_type ||
@@ -186,7 +202,7 @@ class EditableComponent<
             value={data.time_units}
             onChange={this.inputChanged.bind(this, 'time_units')}
           >
-            {this.props.renderer.time_choices.map((choice) => (
+            {this.context.time_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -242,7 +258,7 @@ class EditableComponent<
           maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.props.renderer.read_only}
+          readOnly={this.context.read_only}
         />
       </div>
     )
@@ -258,7 +274,7 @@ class EditableComponent<
           value={data.context_classification}
           onChange={this.inputChanged.bind(this, 'context_classification')}
         >
-          {this.props.renderer.context_choices
+          {this.context.context_choices
             .filter(
               (choice) =>
                 Math.floor(choice.type / 100) == data.node_type ||
@@ -346,7 +362,7 @@ class EditableComponent<
             value={data.outcomes_type}
             onChange={this.inputChanged.bind(this, 'outcomes_type')}
           >
-            {this.props.renderer.outcome_type_choices.map((choice) => (
+            {this.context.context_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -499,7 +515,7 @@ class EditableComponent<
           value={data.strategy_classification}
           onChange={this.inputChanged.bind(this, 'strategy_classification')}
         >
-          {this.props.renderer.strategy_classification_choices.map((choice) => (
+          {this.context.context_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
@@ -543,7 +559,7 @@ class EditableComponent<
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const read_only = this.props.renderer.read_only
+    const read_only = this.context.read_only
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.object_dictionary[this.objectType]
     const override = data.represents_workflow ? true : false

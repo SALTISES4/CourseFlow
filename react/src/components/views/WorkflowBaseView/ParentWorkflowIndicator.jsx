@@ -23,7 +23,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.props.renderer.public_view) {
+    if (this.context.public_view) {
       getPublicParentWorkflowInfo(this.props.workflow_id, (response_data) =>
         this.setState({
           parent_workflows: response_data.parent_workflows,

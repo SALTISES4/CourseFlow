@@ -20,6 +20,7 @@ import {
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import ReactDOM from 'react-dom'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeByIDType
@@ -39,6 +40,8 @@ type PropsType = ConnectedProps & OwnProps
  * Represents the node in the workflow view
  */
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE
@@ -161,11 +164,11 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     })
   }
 
-  mouseIn(evt) {
+  mouseIn(_evt) {
     const myComponent = this
 
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (!this.props.renderer.read_only)
+    if (!this.context.read_only)
       $(
         "circle[data-node-id='" +
           this.props.objectID +
@@ -210,7 +213,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         show={this.state.show_assignments}
         has_assignment={this.props.data.has_assignment}
         parent={this}
-        renderer={this.props.renderer}
+        renderer={this.context}
         node_id={data.id}
         dispatch={this.props.dispatch.bind(this)}
       />
@@ -241,8 +244,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseover_actions = []
 
     const data = this.props.data
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const renderer = this.context
+    const selection_manager = this.context.selection_manager
 
     if (data.represents_workflow) {
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
@@ -287,7 +290,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
             <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
-              renderer={renderer}
+              // renderer={renderer}
+              legacyRenderer={this.context}
             />
           ))}
         </div>
@@ -411,7 +415,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     if (data.is_dropped) css_class += ' dropped'
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
@@ -435,7 +439,10 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.props.renderer.selection_manager.changeSelection(evt, this)
+            this.context.selection_manager.changeSelection(
+              evt,
+              this
+            )
           }
         >
           <div className="node-top-row">
@@ -463,8 +470,9 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
                 {data_override.time_required &&
                   data_override.time_required +
                     ' ' +
-                    this.props.renderer.time_choices[data_override.time_units]
-                      .name}
+                    this.context.time_choices[
+                      data_override.time_units
+                    ].name}
               </div>
             </div>
           </div>

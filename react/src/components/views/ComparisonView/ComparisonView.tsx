@@ -331,7 +331,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
           </div>
           <RightSideBar
             context="comparison"
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
             parentRender={this.props.renderer.render}
             data={data}
             toggleObjectSet={this.toggleObjectSet.bind(this)}

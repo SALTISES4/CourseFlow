@@ -6,6 +6,7 @@ import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfCommonComponents/rightSideBarContent/NodeBar'
 import { ViewType, WFContext } from '@cfModule/types/enum.js'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 /**
@@ -13,15 +14,15 @@ import { ViewType, WFContext } from '@cfModule/types/enum.js'
  * including the comparison view.
  */
 
-type ChildRenderer = {
-  view_type: any
-  is_strategy: any
-  read_only: any
-  column_choices: any
-}
+// type ChildRenderer = {
+//   view_type: any
+//   is_strategy: any
+//   read_only: any
+//   column_choices: any
+// }
 
 type PropsType = {
-  renderer: ChildRenderer
+  // renderer: ChildRenderer
   parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   context: any
   object_sets: any
@@ -30,6 +31,8 @@ type PropsType = {
 }
 
 class RightSideBar extends React.Component<PropsType> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   /*******************************************************
    * props from renderer
    *
@@ -78,21 +81,20 @@ class RightSideBar extends React.Component<PropsType> {
         <NodeBar
           // view_type={this.props.renderer.view_type}
           // renderer={this.props.renderer}
-          readOnly={this.props.renderer.read_only}
-          columnChoices={this.props.renderer.column_choices}
+          readOnly={this.context.read_only}
+          columnChoices={this.context.column_choices}
         />
       )
     return null
   }
 
   getOutcomeBar() {
-    const renderer = this.props.renderer
 
     if (this.props.context === WFContext.COMPARISON) {
       return null
     }
-    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      return <ParentOutcomeBar renderer={renderer} />
+    if (this.props.context.view_type === ViewType.OUTCOME_EDIT) {
+      return <ParentOutcomeBar  />
     }
     return (
       <OutcomeBar
@@ -105,7 +107,7 @@ class RightSideBar extends React.Component<PropsType> {
 
   getViewBar() {
     if (this.props.context === WFContext.WORKFLOW) {
-      return <ViewBar data={this.props.data} renderer={this.props.renderer} />
+      return <ViewBar data={this.props.data}/* renderer={this.props.renderer}*/ />
     }
     if (this.props.context === WFContext.COMPARISON) {
       return (
@@ -121,7 +123,7 @@ class RightSideBar extends React.Component<PropsType> {
 
   getRestoreBar() {
     if (this.props.context === WFContext.WORKFLOW)
-      return <RestoreBar renderer={this.props.renderer} />
+      return <RestoreBar />
     return null
   }
 
@@ -131,7 +133,6 @@ class RightSideBar extends React.Component<PropsType> {
 
   // @todo why are these anchor links?
   render() {
-    const renderer = this.props.renderer
     return (
       <div id="sidebar" className="side-bar hide-print">
         <ul>
@@ -156,7 +157,7 @@ class RightSideBar extends React.Component<PropsType> {
             </a>
           </li>
 
-          {!renderer.is_strategy && (
+          {!this.context.is_strategy && (
             <>
               <li className="hover-shade">
                 <a href="#outcome-bar">
@@ -198,7 +199,7 @@ class RightSideBar extends React.Component<PropsType> {
           {this.getNodeBar()}
         </div>
 
-        {!this.props.renderer.is_strategy && (
+        {!this.context.is_strategy && (
           <>
             <div id="outcome-bar" className="right-panel-container">
               {this.getOutcomeBar()}
@@ -209,7 +210,7 @@ class RightSideBar extends React.Component<PropsType> {
           </>
         )}
 
-        {!renderer.read_only && (
+        {!this.context.read_only && (
           <div id="restore-bar" className="right-panel-container">
             {this.getRestoreBar()}
           </div>

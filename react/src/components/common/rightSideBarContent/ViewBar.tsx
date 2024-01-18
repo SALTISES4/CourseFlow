@@ -2,13 +2,14 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/type'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type ConnectedProps = {
   object_sets: any
 }
 type OwnProps = {
   data: any
-  renderer: any
+  // renderer: any
   dispatch?: any
 }
 type PropsType = ConnectedProps & OwnProps
@@ -19,6 +20,8 @@ type PropsType = ConnectedProps & OwnProps
  * workflow that allows this.
  */
 class ViewBarUnconnected extends React.Component<PropsType> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -49,13 +52,18 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      this.props.renderer.view_type === 'outcometable' ||
-      this.props.renderer.view_type === 'horizontaloutcometable'
+      // @ts-ignore
+      this.context.view_type === 'outcometable' ||
+      // @ts-ignore
+      this.context.view_type === 'horizontaloutcometable'
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {this.props.renderer.outcome_sort_choices.map((choice) => (
+
+          {
+            // @ts-ignore
+            this.context.outcome_sort_choices.map((choice) => (
             <div>
               <input
                 disabled={

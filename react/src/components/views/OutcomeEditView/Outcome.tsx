@@ -16,6 +16,7 @@ import ActionCreator from '@cfRedux/ActionCreator.ts'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 import { insertedAtInstant } from '@XMLHTTP/API/global'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 /**
@@ -23,6 +24,7 @@ import { CfObjectType } from '@cfModule/types/enum'
  * is tagged with other outcomes from a parent workflow
  */
 class OutcomeHorizontalLinkUnconnected extends Component {
+  static contextType = WorkFlowConfigContext
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEHORIZONTALLINK
@@ -121,11 +123,11 @@ class OutcomeHorizontalLinkUnconnected extends Component {
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.props.renderer.read_only && (
+        {!this.context.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
         )}
         <SimpleOutcome
-          renderer={this.props.renderer}
+          // renderer={this.context}
           checkHidden={this.checkHidden.bind(this)}
           objectID={data.parent_outcome}
           parentID={this.props.parentID}
@@ -194,11 +196,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.props.renderer.micro_update(
+    this.context.micro_update(
       ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      this.props.renderer,
+      this.context,
       child_id,
       'outcome',
       new_parent,
@@ -219,7 +221,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
       )
     ) {
       insertedAt(
-        this.props.renderer,
+        this.context,
         null,
         'outcome',
         new_parent,
@@ -306,7 +308,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
           key={outcomeoutcome}
           objectID={outcomeoutcome}
           parentID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.context}
           show_horizontal={this.props.show_horizontal}
           parent_depth={this.props.data.depth}
         />
@@ -324,7 +326,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
             <OutcomeHorizontalLink
               key={horizontal_link}
               objectID={horizontal_link}
-              renderer={this.props.renderer}
+              // renderer={this.context}
             />
           ))}
         </div>
@@ -349,13 +351,13 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
       )
     }
 
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
       if (data.depth < 2) mouseover_actions.push(this.addInsertChild(data))
     }
-    if (this.props.renderer.view_comments) {
+    if (this.context.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(this.addCommenting())
     }
@@ -381,7 +383,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
     }
 
     if (
-      !this.props.renderer.read_only &&
+      !this.context.read_only &&
       data.depth < 2 &&
       data.child_outcome_links.length === 0 &&
       children
@@ -404,7 +406,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
         className={css_class}
         ref={this.mainDiv}
         onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
       >
         <div className="outcome-title">
@@ -431,7 +433,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting {
             {children}
           </ol>
         )}
-        {!this.props.renderer.read_only && data.depth < 2 && (
+        {!this.context.read_only && data.depth < 2 && (
           <div
             className="outcome-create-child"
             onClick={this.insertChild.bind(this, data)}

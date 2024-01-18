@@ -5,6 +5,7 @@ import EditableComponentWithActions, {
   EditableComponentWithActionsState
 } from './EditableComponentWithActions'
 import { newNodeQuery } from '@XMLHTTP/API/node'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type OwnProps = {
@@ -19,6 +20,8 @@ class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponentWithActions<P, S> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   /*******************************************************
    * PLACHOLDERS
    *******************************************************/
@@ -67,7 +70,10 @@ class EditableComponentWithSorting<
     handle = false,
     containment = '.workflow-container'
   ) {
-    if (this.props.renderer.read_only) return
+    if (this.context.read_only) {
+      return
+    }
+
     let cursorAt = {}
     if (draggable_type == 'weekworkflow') cursorAt = { top: 20 }
     if (draggable_type == 'nodeweek') cursorAt = { top: 20, left: 50 }
@@ -112,7 +118,7 @@ class EditableComponentWithSorting<
         drag_item.attr('data-restrict-to', restrictTo)
         const old_index = drag_item.prevAll().length
         drag_item.attr('data-old-index', old_index)
-        props.renderer.selection_manager.changeSelection(null, null)
+        this.context.selection_manager.changeSelection(null, null)
         this.startSortFunction(
           parseInt(drag_item.attr('data-child-id')),
           draggable_type
@@ -245,7 +251,7 @@ class EditableComponentWithSorting<
     if (through_type == 'outcomeoutcome') object_type = 'outcome'
     if (through_type == 'outcomeworkflow') object_type = 'outcome'
 
-    this.props.renderer.lock_update(
+    this.context.lock_update(
       { object_id: id, object_type: object_type },
       Constants.lock_times.move,
       lock

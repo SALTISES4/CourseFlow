@@ -2,15 +2,27 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import SimpleOutcome from './SimpleOutcome'
-import { getOutcomeOutcomeByID } from '@cfFindState'
+import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum'
+import { AppState } from '@cfRedux/type'
+
+type OwnProps = {
+  objectID: number
+  edit: any
+  comments: any
+  parentID: any
+}
+
+type ConnectedProps = OutcomeOutcomeByIDType
+type PropsType = OwnProps & ConnectedProps
 
 /**
  * Basic component representing an outcome to outcome
  * link for a simple non-editable block
  */
-export class SimpleOutcomeOutcomeUnconnected extends React.Component {
-  constructor(props) {
+export class SimpleOutcomeOutcomeUnconnected extends React.Component<PropsType> {
+  private objectType: CfObjectType
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME
   }
@@ -39,17 +51,22 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component {
     const data = this.props.data
 
     return (
-      <div className="outcome-outcome" id={data.id} ref={this.mainDiv}>
+      /*<div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined */
+      <div className="outcome-outcome" id={String(data.id)}>
         {this.getChildType()}
       </div>
     )
   }
 }
 
-const mapOutcomeOutcomeStateToProps = (state, own_props) =>
-  getOutcomeOutcomeByID(state, own_props.objectID)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): OutcomeOutcomeByIDType => {
+  return getOutcomeOutcomeByID(state, ownProps.objectID)
+}
 const SimpleOutcomeOutcome = connect(
-  mapOutcomeOutcomeStateToProps,
+  mapStateToProps,
   null
 )(SimpleOutcomeOutcomeUnconnected)
 

@@ -1,24 +1,38 @@
 // @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Component } from '@cfParentComponents'
-import ActionButton from '@cfUIComponents/ActionButton'
-import { getOutcomeNodeByID } from '@cfFindState'
+import { getOutcomeNodeByID, OutcomeNodeByIDType } from '@cfFindState'
 import { SimpleOutcome } from '../OutcomeEditView'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import CompletionImg from '@cfUIComponents/CompletionImg'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfParentComponents/ComponentWithToggleDrop'
+import { AppState } from '@cfRedux/type'
+import { ActionButton } from '@cfUIComponents'
+import { SimpleOutcomeUnconnectedPropsType } from '@cfViews/OutcomeEditView/SimpleOutcome'
 // import $ from 'jquery'
 
+type ConnectedProps = OutcomeNodeByIDType
+type OwnProps = {
+  parentID?: number // is this required:
+  outcomes_type?: any
+  deleteSelfOverride?: any
+  // renderer: any
+  legacyRenderer: SimpleOutcomeUnconnectedPropsType['legacyRenderer']
+} & ComponentWithToggleProps
+type PropsType = ConnectedProps & OwnProps
 /**
  * The link between nodes and their tagged outcomes,
  * primarily used in the outcome edit view
+ *
+ * renderer.read_only
+ *
  */
-class OutcomeNodeUnconnected extends Component {
-  constructor(props) {
+class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
+  constructor(props: PropsType) {
     super(props)
-    console.log('props')
-    console.log(props)
     this.objectType = CfObjectType.OUTCOMENODE
   }
 
@@ -41,7 +55,7 @@ class OutcomeNodeUnconnected extends Component {
    * FUNCTIONS
    *******************************************************/
   //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  addDeleteSelf(data) {
+  addDeleteSelf(data: any, _iconDefault: string) {
     const icon = 'close.svg'
     return (
       <ActionButton
@@ -77,11 +91,14 @@ class OutcomeNodeUnconnected extends Component {
       const num_outcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
+
       indicator
         .children('.outcome-node-indicator-number')
-        .html(num_outcomenodes)
-      if (num_outcomenodes === 0) indicator.css('display', 'none')
-      else indicator.css('display', '')
+        .html(String(num_outcomenodes))
+
+      if (num_outcomenodes === 0) {
+        indicator.css('display', 'none')
+      } else indicator.css('display', '')
     }
   }
 
@@ -102,7 +119,7 @@ class OutcomeNodeUnconnected extends Component {
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.props.renderer.read_only && (
+        {!this.props.legacyRenderer.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
         )}
 
@@ -118,15 +135,23 @@ class OutcomeNodeUnconnected extends Component {
           objectID={data.outcome}
           parentID={this.props.parentID}
           throughParentID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
+          legacyRenderer={this.props.legacyRenderer}
         />
       </div>
     )
   }
 }
-const mapStateToProps = (state, own_props) =>
-  getOutcomeNodeByID(state, own_props.objectID)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): OutcomeNodeByIDType => {
+  return getOutcomeNodeByID(state, ownProps.objectID)
+}
 
-const OutcomeNode = connect(mapStateToProps, null)(OutcomeNodeUnconnected)
+const OutcomeNode = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(OutcomeNodeUnconnected)
 
 export default OutcomeNode

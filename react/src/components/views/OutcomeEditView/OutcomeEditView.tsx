@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
@@ -9,13 +8,21 @@ import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
+type PropsType = any
+type StateType = any
 /**
  * The view of a workflow in which the outcomes can be added,
  * edited, removed
  */
-export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
+export class OutcomeEditViewUnconnected extends EditableComponentWithSorting<
+  PropsType,
+  StateType
+> {
+  // static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -36,7 +43,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   getAddNew(objectset) {
     let add_new_outcome
-    if (!this.props.renderer.read_only)
+    if (!this.context.read_only)
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -62,11 +69,14 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       'outcomeworkflow',
       '.outcome-workflow'
     )
-    if (this.props.data.depth === 0) this.makeDroppable()
+    if (this.props.data.depth === 0) {
+      // @ts-ignore
+      this.makeDroppable()
+    }
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.props.renderer.micro_update(
+    this.context.micro_update(
       ActionCreator.moveOutcomeWorkflow(
         id,
         new_position,
@@ -75,7 +85,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       )
     )
     insertedAt(
-      this.props.renderer,
+      this.props.renderer, // to remove
       child_id,
       'outcome',
       this.props.workflow.id,
@@ -111,7 +121,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
                   key={outcome.id}
                   objectID={outcome.id}
                   parentID={this.props.workflow.id}
-                  renderer={this.props.renderer}
+                  //renderer={this.props.renderer}
                   show_horizontal={true}
                 />
               </div>

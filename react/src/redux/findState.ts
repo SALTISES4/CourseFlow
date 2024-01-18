@@ -11,6 +11,7 @@ import {
   OutcomeOutcome,
   Week
 } from '@cfRedux/type'
+import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode";
 
 /*******************************************************
  * TYPES
@@ -474,7 +475,10 @@ export const getOutcomeOutcomeByID = (
   console.log('failed to find outcomeoutcome')
 }
 
-export const getOutcomeNodeByID = (state: AppState, id: number) => {
+export type OutcomeNodeByIDType = {
+  data: OutcomeNode
+}
+export const getOutcomeNodeByID = (state: AppState, id: number): OutcomeNodeByIDType  => {
   const outcomeNode = state.outcomenode.find((node) => node.id === id)
   if (outcomeNode) {
     return {

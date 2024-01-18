@@ -25,7 +25,7 @@ type OwnProps = {
   show: any
   comments: any
   parent: any
-  renderer: any
+  // renderer: any /  not used
   workflowID: any
   unread_comments: any
   read_only: boolean

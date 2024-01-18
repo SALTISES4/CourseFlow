@@ -15,6 +15,7 @@ import * as Reducers from '@cfReducers'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import {
+  Choice,
   Project,
   WorkflowDetailViewDTO
 } from '@cfPages/Workflow/Workflow/types'
@@ -34,6 +35,7 @@ import {
   getWorkflowParentDataQuery
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/global'
+import { WorkFlowConfigProvider } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 const cache = createCache({
@@ -57,30 +59,30 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 class Workflow {
   private message_queue: any[]
   private messages_queued: boolean
-  private public_view: boolean
-  private workflowID: number
-  // private column_choices: Choice[]
-  // private context_choices: Choice[]
-  // private task_choices: Choice[]
-  // private time_choices: Choice[]
-  // private outcome_type_choices: Choice[]
-  // private outcome_sort_choices: Choice[]
-  // private strategy_classification_choices: Choice[]
-  private is_strategy: boolean
-  private project: Project
+  public_view: boolean
+  workflowID: number
+  column_choices: Choice[]
+  context_choices: Choice[]
+  task_choices: Choice[]
+  time_choices: Choice[]
+  private outcome_type_choices: Choice[]
+  private outcome_sort_choices: Choice[]
+  strategy_classification_choices: Choice[]
+  is_strategy: boolean
+  project: Project
   private user_permission: number
   private user_role: number
-  private user_id: number
-  private read_only: boolean
-  private always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
-  private project_permission: number
-  private can_view: boolean
-  private view_comments: boolean
-  private add_comments: boolean
-  private is_student: boolean
-  private show_assignments: boolean
+  user_id: number
+  read_only: boolean
+  always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
+  project_permission: number
+  can_view: boolean
+  view_comments: boolean
+  add_comments: boolean
+  is_student: boolean
+  show_assignments: boolean
   private is_teacher: boolean
-  private selection_manager: SelectionManager
+  selection_manager: SelectionManager
   private child_data_completed: boolean
   private child_data_needed: any[]
   private fetching_child_data: boolean
@@ -96,7 +98,7 @@ class Workflow {
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
-  private websocket: WebSocket
+  websocket: WebSocket
   private has_disconnected: boolean
   private has_rendered: boolean
   private is_static: boolean
@@ -104,6 +106,10 @@ class Workflow {
 
   // NOTE: this is not yet a react component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
+  unread_comments: any
+  container: any;
+  view_type: any;
+
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
       column_choices,
@@ -303,6 +309,22 @@ class Workflow {
     this.container = container // @todo where is view_type set?
     this.selection_manager.renderer = this // @todo explicit props
 
+    // const rendererContextObject = {
+    //   task_choices: this.task_choices,
+    //   time_choices: this.time_choices,
+    //   read_only: this.read_only,
+    //   context_choices: this.props.renderer.context_choices,
+    //   outcome_type_choices: this.props.renderer.outcome_type_choices,
+    //   strategy_classification_choices:
+    //     this.props.renderer.strategy_classification_choices,
+    //   change_field: this.props.renderer.change_field,
+    //   workflowID: this.props.renderer.workflowID,
+    //   unread_comments: this.props.renderer.unread_comments,
+    //   add_comments: this.props.renderer.add_comments,
+    //   view_comments: this.props.renderer.view_comments,
+    //   selection_manager: this.props.renderer.selection_manager
+    // }
+
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
       this.getWorkflowParentData(this.workflowID, (response) => {
@@ -311,12 +333,15 @@ class Workflow {
         )
         reactDom.render(
           <Provider store={this.store}>
-            <WorkflowBaseView
-              view_type={view_type}
-              renderer={this}
-              parentRender={this.workflowRender}
-              readOnly={this.read_only}
-            />
+            <WorkFlowConfigProvider>
+              <WorkflowBaseView
+                view_type={view_type}
+                renderer={this}
+                legacyRenderer={this}
+                parentRender={this.workflowRender}
+                readOnly={this.read_only}
+              />
+            </WorkFlowConfigProvider>
           </Provider>,
           container[0]
         )
@@ -328,11 +353,14 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkflowBaseView
-                  view_type={view_type}
-                  renderer={this}
-                  parentRender={this.workflowRender}
-                />
+                <WorkFlowConfigProvider>
+                  <WorkflowBaseView
+                    view_type={view_type}
+                    renderer={this}
+                    legacyRenderer={this}
+                    parentRender={this.workflowRender}
+                  />
+                </WorkFlowConfigProvider>
               </Provider>
             </ThemeProvider>
           </CacheProvider>,

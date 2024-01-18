@@ -10,17 +10,14 @@ type OwnProps = {
   objectID: number
   parentID: number
   column_order: any
-  renderer: any
+  // renderer: any
 }
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * Represents the node-week throughmodel
  */
-class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
-  P,
-  S
-> {
+class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   private objectType: string
   private objectClass: string
   // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
@@ -42,7 +39,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
         parentID={this.props.parentID}
         // @ts-ignore
         throughParentID={data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     )
