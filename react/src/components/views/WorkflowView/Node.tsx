@@ -117,6 +117,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 
   makeDroppable() {
+    // @ts-ignore
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       // @ts-ignore // droppable does not exist in type DroppableOptions
@@ -244,7 +245,6 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseover_actions = []
 
     const data = this.props.data
-    const renderer = this.context
     const selection_manager = this.context.selection_manager
 
     if (data.represents_workflow) {
@@ -256,7 +256,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     if (!this.state.initial_render) {
       nodePorts = reactDom.createPortal(
         <NodePorts
-          renderer={renderer}
+          // renderer={renderer}
           nodeID={this.props.objectID}
           node_div={this.mainDiv}
           dispatch={this.props.dispatch}
@@ -268,7 +268,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           key={link}
           objectID={link}
           node_div={this.mainDiv}
-          renderer={renderer}
+          // renderer={renderer}
         />
       ))
       if (data.has_autolink)
@@ -322,7 +322,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              renderer.context_choices.find(
+              this.context.context_choices.find(
                 (obj) => obj.type == data.context_classification
               ).name
             }
@@ -339,7 +339,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              renderer.task_choices.find(
+              this.context.task_choices.find(
                 (obj) => obj.type == data.task_classification
               ).name
             }
@@ -420,11 +420,11 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) {
+    if (this.context.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(this.addCommenting())
     }
-    if (renderer.show_assignments) {
+    if (this.context.show_assignments) {
       mouseover_actions.push(this.addShowAssignment(data))
     }
 

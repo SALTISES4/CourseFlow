@@ -14,45 +14,13 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 //Extends the React component to add a few features that are used in a large number of components
 
-// type ChildRenderer = {
-//   outcome_type_choices: any
-//   read_only: boolean
-//   context_choices: any
-//   task_choices: any
-//   time_choices: any
-//   strategy_classification_choices: any
-//   change_field: any
-//   workflowID: any
-//   unread_comments: any
-//   add_comments: any
-//   selection_manager: any
-//   lock_update: any
-//   micro_update?: any
-//   is_strategy?: any
-//   view_comments?: any
-//   show_assignments?: any
-// }
-
-// export type LegacyRendererProps = {
-//   task_choices: any
-//   time_choices: any
-//   read_only: any
-//   context_choices: any
-//   outcome_type_choices: any
-//   strategy_classification_choices: any
-//   change_field: any
-// }
-
 export type EditableComponentProps = {
-  // renderer: ChildRenderer
   data?: any
   placeholder?: any
   text?: any
   textChangeFunction?: any
   disabled?: any
   object_sets?: any
-  // from renderer
-  // legacyRenderer: LegacyRendererProps
 }
 
 type StateType = {

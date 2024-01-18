@@ -11,13 +11,13 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { CfObjectType } from '@cfModule/types/enum'
+import {WorkFlowConfigContext} from "@cfModule/context/workFlowConfigContext";
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeLinkByIDType
 type OwnProps = {
   objectID: number
   node_div: React.RefObject<HTMLDivElement>
-  renderer: any
 } & EditableComponentWithActionsProps
 type StateProps = EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
@@ -27,6 +27,7 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   private source_node: JQuery
   private target_node: JQuery
   private target_port_handle: d3.Selection<
@@ -164,7 +165,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         target_port_handle={this.target_port_handle}
         target_port={data.target_port}
         clickFunction={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
         selected={this.state.selected}
         source_dimensions={source_dims}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
@@ -5,11 +6,13 @@ import { TitleText } from '@cfUIComponents'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 import { CfObjectType } from '@cfModule/types/enum.js'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  * The representation of a week in the alignment view.
  */
 class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.WEEK
@@ -35,14 +38,13 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
       return (
         <AlignmentHorizontalReverseNode
           objectID={nodeweek.node}
-          // renderer={this.props.renderer}
           restriction_set={this.props.restriction_set}
         />
       )
     })
 
     let comments
-    if (this.props.renderer.view_comments) comments = this.addCommenting()
+    if (this.context.view_comments) comments = this.addCommenting()
 
     return (
       <div
@@ -50,7 +52,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
         ref={this.mainDiv}
         style={this.get_border_style()}
         onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
       >
         <TitleText text={data.title} defaultText={default_text} />

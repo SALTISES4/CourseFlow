@@ -13,7 +13,7 @@ type ChildRenderer = {
   outcome_type_choices: any
   strategy_classification_choices: any
   change_field: any
-  workflowID: any
+  workflowID: number
   unread_comments: any
   add_comments: any
   view_comments?: any
@@ -24,6 +24,9 @@ type ChildRenderer = {
   is_strategy?: any
   show_assignments?: any
   column_choices: any
+
+  // news
+  user_id: number
 }
 const initialWorkFlowConfig: ChildRenderer = {
   // Initialize all required fields
@@ -70,7 +73,9 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       micro_update: workflowInstance.micro_update,
       is_strategy: workflowInstance.is_strategy,
       show_assignments: workflowInstance.show_assignments,
-      column_choices: workflowInstance.column_choices
+      column_choices: workflowInstance.column_choices,
+
+      user_id: workflowInstance.user_id
     }
     return formattedValue
   }

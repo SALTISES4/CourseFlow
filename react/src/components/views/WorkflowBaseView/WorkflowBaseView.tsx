@@ -127,12 +127,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     // to be added
     this.view_type = this.context.view_type
     this.user_id = this.context.user_id
+    this.public_view = this.context.public_view
 
     // used in assignmentbox
     this.project = this.context.project
 
     // used in parentworkflowindicator
-    this.public_view = this.context.public_view
 
     // used in connectionBar, but websocket status shouldn't go in the same context
 
@@ -1004,6 +1004,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return (
       <>
         {this.addEditable(this.props.data)}
+        {this.getReturnLinks()}
         <div className="main-block">
           <MenuBar
             overflowLinks={this.OverflowLinks}
@@ -1018,7 +1019,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                 <div className="workflow-container">
                   <this.Content />
                 </div>
-                {this.getReturnLinks()}
+
                 <ParentWorkflowIndicator
                   // renderer={this.props.renderer}
                   // legacyRenderer={this.props.legacyRenderer}

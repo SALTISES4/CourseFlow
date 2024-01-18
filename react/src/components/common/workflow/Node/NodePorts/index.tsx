@@ -7,7 +7,12 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 //The ports used to connect links for the nodes
-export class NodePorts extends React.Component {
+type PropsType = {
+  dispatch: any
+  node_div: any
+  nodeID: any
+}
+export class NodePorts extends React.Component<PropsType> {
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props) {
     super(props)
