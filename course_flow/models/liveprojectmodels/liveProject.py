@@ -1,8 +1,11 @@
+# This model is part of a now-decomissioned Live Project mode.
+# The tables are kept for backwards compatibility, in case
+# the feature is once again needed.
+
 from django.db import models
 from django.utils import timezone
 
-from .project import Project
-from .workflow import Workflow
+from course_flow.models import Project, Workflow
 
 
 class LiveProject(models.Model):

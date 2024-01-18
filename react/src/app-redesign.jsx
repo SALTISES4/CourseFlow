@@ -153,8 +153,6 @@ const getAppComponent = () => {
       workflowWrapper.init()
       return null
     }
-    case 'my_live_projects':
-      return <WorkflowGrid {...window.contextData} />
   }
   return null
 }

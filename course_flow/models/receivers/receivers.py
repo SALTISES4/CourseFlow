@@ -10,14 +10,13 @@ from course_flow.models.column import Column
 from course_flow.models.comment import Comment
 from course_flow.models.course import Course
 from course_flow.models.favourite import Favourite
-from course_flow.models.liveAssignment import LiveAssignment
-from course_flow.models.liveProject import LiveProject
+from course_flow.models.liveprojectmodels import UserAssignment
 from course_flow.models.node import Node
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.outcome import Outcome
 from course_flow.models.program import Program
+from course_flow.models.project import Project
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
-from course_flow.models.relations.liveProjectUser import LiveProjectUser
 from course_flow.models.relations.nodeLink import NodeLink
 from course_flow.models.relations.nodeWeek import NodeWeek
 from course_flow.models.relations.outcomeHorizontalLink import (
@@ -27,7 +26,7 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
-from course_flow.models.userAssignment import UserAssignment
+from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
 from course_flow.utils import get_all_outcomes_for_outcome
@@ -484,15 +483,7 @@ def delete_existing_horizontal_link(sender, instance, **kwargs):
 def set_permissions_to_project_objects(sender, instance, created, **kwargs):
     if created:
         if instance.content_type == ContentType.objects.get_for_model(Project):
-            if instance.permission_type == ObjectPermission.PERMISSION_STUDENT:
-                liveproject = instance.content_object.liveproject
-                if liveproject is not None:
-                    if liveproject.default_all_workflows_visible:
-                        workflows = instance.content_object.workflows.all()
-                    else:
-                        workflows = liveproject.visible_workflows.all()
-            else:
-                workflows = instance.content_object.workflows.all()
+            workflows = instance.content_object.workflows.all()
             for workflow in workflows:
                 # If user already has edit or comment permissions and we are adding view, do not override
                 if (
@@ -586,20 +577,6 @@ def delete_existing_permission(sender, instance, **kwargs):
         content_type=instance.content_type,
         object_id=instance.object_id,
     ).delete()
-
-
-@receiver(pre_save, sender=LiveProjectUser)
-def delete_existing_role(sender, instance, **kwargs):
-    LiveProjectUser.objects.filter(
-        user=instance.user,
-        liveproject=instance.liveproject,
-    ).delete()
-
-
-@receiver(post_save, sender=LiveProjectUser)
-def delete_role_none(sender, instance, **kwargs):
-    if instance.role_type == instance.ROLE_NONE:
-        instance.delete()
 
 
 @receiver(pre_delete, sender=ObjectPermission)
@@ -799,109 +776,3 @@ def set_publication_workflow(sender, instance, created, **kwargs):
                 permission_type=op.permission_type,
             )
         workflow.save()
-
-
-@receiver(post_save, sender=WeekWorkflow)
-def switch_week_to_static(sender, instance, created, **kwargs):
-    if created:
-        if instance.workflow.static:
-            for node in instance.week.nodes.all():
-                node.students.add(*list(instance.workflow.students.all()))
-
-
-@receiver(pre_save, sender=LiveProject)
-def add_all_workflows(sender, instance, **kwargs):
-    if instance.default_all_workflows_visible:
-        if LiveProject.objects.get(
-            pk=instance.pk
-        ).default_all_workflows_visible:
-            return
-        instance.visible_workflows.add(
-            *Workflow.objects.filter(project=instance.project, deleted=False)
-        )
-
-
-@receiver(post_save, sender=LiveProject)
-def add_owner_to_liveproject(sender, instance, created, **kwargs):
-    if created:
-        LiveProjectUser.objects.create(
-            liveproject=instance,
-            user=instance.project.author,
-            role_type=LiveProjectUser.ROLE_TEACHER,
-        )
-
-
-@receiver(post_save, sender=WorkflowProject)
-def add_to_visible_workflows(sender, instance, created, **kwargs):
-    if created and abs(
-        instance.workflow.created_on - timezone.now()
-    ) < timezone.timedelta(seconds=10):
-        project = instance.project
-        if project is not None:
-            try:
-                liveproject = project.liveproject
-                if liveproject.default_all_workflows_visible:
-                    liveproject.visible_workflows.add(instance.workflow)
-            except AttributeError:
-                pass
-
-
-@receiver(pre_save, sender=Workflow)
-def add_or_remove_visible_workflow_on_delete_restore(
-    sender, instance, **kwargs
-):
-    workflow = Workflow.objects.get(pk=instance.pk)
-    if workflow.deleted != instance.deleted:
-        project = instance.get_project()
-        if project is not None:
-            try:
-                liveproject = project.liveproject
-                if instance.deleted:
-                    liveproject.visible_workflows.remove(workflow)
-                elif liveproject.default_all_workflows_visible:
-                    liveproject.visible_workflows.add(workflow)
-            except AttributeError:
-                pass
-
-
-@receiver(post_save, sender=LiveProjectUser)
-def add_user_to_assignments(sender, instance, created, **kwargs):
-    if (
-        instance.role_type == LiveProjectUser.ROLE_STUDENT
-        and instance.liveproject.default_assign_to_all
-    ):
-        for assignment in LiveAssignment.objects.filter(
-            liveproject=instance.liveproject,
-        ).exclude(userassignment__user=instance.user):
-            UserAssignment.objects.create(
-                user=instance.user, assignment=assignment
-            )
-
-            @receiver(post_save, sender=LiveProjectUser)
-            def add_user_to_assignments(sender, instance, created, **kwargs):
-                if instance.role_type == LiveProjectUser.ROLE_NONE:
-                    UserAssignment.objects.filter(
-                        assignment__liveproject=instance.liveproject
-                    ).delete()
-
-            @receiver(post_save, sender=LiveAssignment)
-            def live_assignment_creation_defaults(
-                sender, instance, created, **kwargs
-            ):
-                if created:
-                    liveproject = instance.liveproject
-                    instance.self_reporting = (
-                        liveproject.default_self_reporting
-                    )
-                    instance.single_completion = (
-                        liveproject.default_single_completion
-                    )
-                    if liveproject.default_assign_to_all:
-                        students = LiveProjectUser.objects.filter(
-                            liveproject=liveproject,
-                            role_type=LiveProjectUser.ROLE_STUDENT,
-                        )
-                        for student in students:
-                            UserAssignment.objects.create(
-                                user=student.user, assignment=instance
-                            )

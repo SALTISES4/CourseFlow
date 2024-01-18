@@ -1,8 +1,12 @@
+# This model is part of a now-decomissioned Live Project mode.
+# The tables are kept for backwards compatibility, in case
+# the feature is once again needed.
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models import LiveProject
+from .liveProject import LiveProject
 
 User = get_user_model()
 

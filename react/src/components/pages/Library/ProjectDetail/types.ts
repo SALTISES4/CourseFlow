@@ -2,7 +2,6 @@ import { Discipline } from '@cfModule/types/common'
 
 export type ProjectViewDTO = {
   project_data: ProjectData
-  user_role: number
   user_permission: number
   disciplines: Discipline[]
   user_id: number
@@ -27,13 +26,11 @@ export type ProjectMenuProps = {
   userId: number
   projectPaths
   allDisciplines
-  userRole
   readOnly
 }
 
 export type RenderProps = {
   project_data: ProjectData
-  user_role: number
   user_permission: number
   disciplines: Discipline[]
   user_id: number

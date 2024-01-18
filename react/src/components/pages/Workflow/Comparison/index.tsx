@@ -12,7 +12,6 @@ import { ViewType } from '@cfModule/types/enum.js'
  *     project_data:    ProjectData;
  *     is_strategy:     boolean;
  *     user_permission: number;
- *     user_role:       number;
  *     public_view:     boolean;
  *     user_name:       string;
  *     user_id:         number;

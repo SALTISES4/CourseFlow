@@ -243,37 +243,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   OverflowLinks = () => {
     const data = this.state.data
 
-    let liveproject
     const overflow_links = []
 
-    if (data.author_id === this.props.userId) {
-      if (data.liveproject) {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
-              '0',
-              String(data.id)
-            )}
-          >
-            {window.gettext('View Classroom')}
-          </a>
-        )
-      } else {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            onClick={this.makeLive.bind(this)}
-          >
-            {window.gettext('Create Classroom')}
-          </a>
-        )
-      }
-    }
-
-    overflow_links.push(liveproject)
     overflow_links.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
         {window.gettext('Workflow comparison tool')}
@@ -375,33 +346,9 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    *
    *******************************************************/
   Content = () => {
-    const return_val = []
-
-    if (
-      this.state.data.liveproject &&
-      this.props.userRole === Constants.role_keys.teacher
-    )
-      return_val.push(
-        <div className="workflow-view-select hide-print">
-          {this.viewButtons.map((item) => {
-            let view_class = 'hover-shade'
-            if (item.type === this.state.view_type) view_class += ' active'
-            return (
-              <a
-                id={'button_' + item.type}
-                className={view_class}
-                onClick={this.changeView.bind(this, item.type)}
-              >
-                {item.name}
-              </a>
-            )
-          })}
-        </div>
-      )
 
     return (
       <WorkflowFilter
-        user_role={this.props.userRole}
         read_only={this.props.readOnly}
         project_data={this.state.data}
         workflows={this.state.workflow_data}
@@ -446,18 +393,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log('liveproject updated')
-    } else {
-      this.setState({
-        ...this.state,
-        data: {
-          ...this.state.data,
-          ...new_data
-        },
-        openEditDialog: false
-      })
-    }
+    this.setState({
+      ...this.state,
+      data: {
+        ...this.state.data,
+        ...new_data
+      },
+      openEditDialog: false
+    })
   }
 
   ShareDialog = () => {
@@ -488,7 +431,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           data={{
             ...this.state.data,
             all_disciplines: this.props.allDisciplines,
-            user_role: this.props.userRole
             // renderer: this.props.renderer
           }}
           actionFunction={this.updateFunction}

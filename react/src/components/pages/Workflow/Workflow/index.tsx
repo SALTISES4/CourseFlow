@@ -69,7 +69,6 @@ class Workflow {
   private is_strategy: boolean
   private project: Project
   private user_permission: number
-  private user_role: number
   private user_id: number
   private read_only: boolean
   private always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
@@ -78,7 +77,6 @@ class Workflow {
   private view_comments: boolean
   private add_comments: boolean
   private is_student: boolean
-  private show_assignments: boolean
   private is_teacher: boolean
   private selection_manager: SelectionManager
   private child_data_completed: boolean
@@ -136,7 +134,6 @@ class Workflow {
     this.project = project
 
     this.user_permission = propsConfig.user_permission
-    this.user_role = propsConfig.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
     this.user_id = propsConfig.user_id
     this.read_only = true
     this.workflowRender = this.render.bind(this)
@@ -165,24 +162,6 @@ class Workflow {
         this.view_comments = true
         this.add_comments = true
         this.can_view = true
-        break
-
-      // No default case needed here if these are the only options
-    }
-
-    switch (propsConfig.user_role) {
-      case Constants.role_keys['none']:
-        // @todo what is happening in this option?
-        break
-
-      case Constants.role_keys['student']:
-        this.is_student = true
-        this.show_assignments = true
-        break
-
-      case Constants.role_keys['teacher']:
-        this.is_teacher = true
-        this.show_assignments = true
         break
 
       // No default case needed here if these are the only options

@@ -47636,17 +47636,17 @@ function requireCreateSvgIcon() {
   })(createSvgIcon);
   return createSvgIcon;
 }
-var _interopRequireDefault$b = interopRequireDefaultExports;
+var _interopRequireDefault$a = interopRequireDefaultExports;
 Object.defineProperty(MoreHoriz, "__esModule", {
   value: true
 });
-var default_1$b = MoreHoriz.default = void 0;
-var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-var _jsxRuntime$b = jsxRuntimeExports;
-var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+var default_1$a = MoreHoriz.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
   d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
 }), "MoreHoriz");
-default_1$b = MoreHoriz.default = _default$b;
+default_1$a = MoreHoriz.default = _default$a;
 const OuterContentWrap = styled$1(Box$1, {
   shouldForwardProp: (prop) => prop !== "narrow"
 })(
@@ -48003,7 +48003,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
               onClick: (e) => handleMenuOpen(e, n),
               "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
               "aria-haspopup": "true",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
             }
           ),
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -54709,55 +54709,43 @@ const ProfileSettingsPage = ({ formData }) => {
   ] });
 };
 var Home = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
+var _interopRequireDefault$9 = interopRequireDefaultExports;
 Object.defineProperty(Home, "__esModule", {
   value: true
 });
-var default_1$a = Home.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+var default_1$9 = Home.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
   d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
 }), "Home");
-default_1$a = Home.default = _default$a;
+default_1$9 = Home.default = _default$9;
 var FolderCopy = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
+var _interopRequireDefault$8 = interopRequireDefaultExports;
 Object.defineProperty(FolderCopy, "__esModule", {
   value: true
 });
-var default_1$9 = FolderCopy.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+var default_1$8 = FolderCopy.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)([/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
   d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+}, "0"), /* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
   d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
 }, "1")], "FolderCopy");
-default_1$9 = FolderCopy.default = _default$9;
+default_1$8 = FolderCopy.default = _default$8;
 var Search = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
+var _interopRequireDefault$7 = interopRequireDefaultExports;
 Object.defineProperty(Search, "__esModule", {
   value: true
 });
-var default_1$8 = Search.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-}), "Search");
-default_1$8 = Search.default = _default$8;
-var CalendarMonth = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
-Object.defineProperty(CalendarMonth, "__esModule", {
-  value: true
-});
-var default_1$7 = CalendarMonth.default = void 0;
+var default_1$7 = Search.default = void 0;
 var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
 var _jsxRuntime$7 = jsxRuntimeExports;
 var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-  d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
-}), "CalendarMonth");
-default_1$7 = CalendarMonth.default = _default$7;
+  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+}), "Search");
+default_1$7 = Search.default = _default$7;
 var HelpRounded = {};
 var _interopRequireDefault$6 = interopRequireDefaultExports;
 Object.defineProperty(HelpRounded, "__esModule", {
@@ -55184,7 +55172,7 @@ const Sidebar = () => {
             href: COURSEFLOW_APP.config.home_path,
             selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.home })
             ]
           }
@@ -55198,7 +55186,7 @@ const Sidebar = () => {
               href: COURSEFLOW_APP.config.my_library_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_library })
               ]
             }
@@ -55211,25 +55199,12 @@ const Sidebar = () => {
               href: COURSEFLOW_APP.config.explore_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.explore })
               ]
             }
           ) })
-        ] }) : null,
-        !apiData.is_anonymous ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          ListItemButton$1,
-          {
-            component: "a",
-            "data-test-id": "panel-my-live-projects",
-            href: COURSEFLOW_APP.config.my_liveprojects_path,
-            selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_classrooms })
-            ]
-          }
-        ) }) : null
+        ] }) : null
       ] }),
       apiData.is_teacher && apiData.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
@@ -56659,44 +56634,6 @@ class NodeTitle extends reactExports.Component {
     );
   }
 }
-class AssignmentTitle extends reactExports.Component {
-  render() {
-    const data2 = this.props.data;
-    let text;
-    if (data2.task.represents_workflow && data2.task.linked_workflow_data) {
-      text = data2.task.linked_workflow_data.title;
-      if (data2.task.linked_workflow_data.code)
-        text = data2.task.linked_workflow_data.code + " - " + text;
-    } else
-      text = data2.task.title;
-    if (text == null || text == "") {
-      text = window.gettext("Untitled");
-    }
-    if (this.props.user_role == role_keys.teacher) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "a",
-        {
-          href: COURSEFLOW_APP.config.update_path.liveassignment.replace(
-            "0",
-            data2.id
-          ),
-          className: "workflow-title hover-shade",
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    } else {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "span",
-        {
-          className: "workflow-title",
-          title: text,
-          dangerouslySetInnerHTML: { __html: text }
-        }
-      );
-    }
-  }
-}
 class OutcomeTitle extends reactExports.Component {
   render() {
     const data2 = this.props.data;
@@ -57097,9 +57034,8 @@ class WorkflowCard extends reactExports.Component {
       ] });
     });
     __publicField(this, "Visible", () => {
-      const isTeacher = this.props.userRole === role_keys.teacher;
       const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
-      if (!this.props.readOnly && isTeacher && isEligibleType) {
+      if (!this.props.readOnly && isEligibleType) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -61037,13 +60973,13 @@ class ActionCreator {
 /*******************************************************
  * COMMON / DYNAMIC OBJECT
  *******************************************************/
-__publicField(ActionCreator, "createLockAction", (object_id, object_type, lock, user_id2, user_colour) => {
+__publicField(ActionCreator, "createLockAction", (object_id, object_type, lock, user_id, user_colour) => {
   if (lock)
     return {
       type: object_type + "/createLock",
       payload: {
         id: object_id,
-        lock: { user_id: user_id2, user_colour }
+        lock: { user_id, user_colour }
       }
     };
   else
@@ -62084,12 +62020,12 @@ function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_da
     window.fail_function();
   }
 }
-function setUserPermission(user_id2, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
+function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
-      permission_user: JSON.stringify(user_id2),
+      permission_user: JSON.stringify(user_id),
       permission_type: JSON.stringify(permission_type)
     }).done(function(data2) {
       if (data2.action === DATA_ACTIONS.POSTED)
@@ -65692,43 +65628,6 @@ Date.prototype.fp_incr = function(days) {
 };
 if (typeof window !== "undefined") {
   window.flatpickr = flatpickr;
-}
-class DatePicker extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "input");
-    __publicField(this, "flatpickrInstance");
-    this.input = reactExports.createRef();
-  }
-  componentDidMount() {
-    if (this.input.current) {
-      this.flatpickrInstance = flatpickr(this.input.current, {
-        enableTime: true,
-        dateFormat: "Z",
-        altInput: true,
-        altFormat: "D M J, Y - H:i",
-        onChange: (selectedDates, dateStr) => {
-          this.props.onChange(dateStr);
-        }
-      });
-    }
-  }
-  componentWillUnmount() {
-    if (this.flatpickrInstance) {
-      this.flatpickrInstance.destroy();
-    }
-  }
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "input",
-      {
-        disabled: this.props.disabled || false,
-        ref: this.input,
-        id: this.props.id,
-        defaultValue: this.props.default_value
-      }
-    );
-  }
 }
 class CollapsibleText extends ComponentWithToggleDrop {
   constructor(props) {
@@ -81110,304 +81009,6 @@ const NodeLink$1 = connect(
   mapStateToProps$k,
   null
 )(NodeLink);
-function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
-      nodePk: JSON.stringify(nodePk),
-      liveprojectPk: JSON.stringify(liveprojectPk)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
-      userassignmentPk: JSON.stringify(userassignmentPk),
-      completed: JSON.stringify(completed)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getAssignmentsForNode(nodePk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
-      nodePk: JSON.stringify(nodePk)
-    }).done(function(data2) {
-      if (data2.action === DATA_ACTIONS.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-class AssignmentForNode extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.state = { is_dropped: false };
-    this.user_id = COURSEFLOW_APP.contextData.user_id;
-    if (props.data.user_assignment)
-      this.state.completed = props.data.user_assignment.completed;
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  toggleDrop() {
-    this.setState((state) => {
-      return { is_dropped: !state.is_dropped };
-    });
-  }
-  changeCompletion(evt) {
-    const checked = evt.target.checked;
-    this.setState({ completed: checked });
-    setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data2 = this.props.data;
-    const node_data = data2.task;
-    if (node_data.represents_workflow)
-      ({
-        ...node_data,
-        ...node_data.linked_workflow_data,
-        id: data2.id
-      });
-    else
-      ({ ...node_data });
-    const css_class = "assignment-in-node";
-    let completion_data;
-    if (data2.user_assignment) {
-      let disabled = true;
-      if (this.props.renderer.user_role == role_keys.teacher || data2.self_reporting && //check AssignmentView for user defined in global scope
-      data2.user_assignment.liveprojectuser.user.id === user_id)
-        disabled = false;
-      let extra_data;
-      if (data2.single_completion && data2.user_assignment.completed) {
-        extra_data = [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            window.gettext("Completed by ") + getUserDisplay(
-              data2.user_assignment.liveprojectuser.user
-            ) + window.gettext(" on "),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                default_value: data2.user_assignment.completed_on,
-                disabled: true
-              }
-            )
-          ] })
-        ];
-      }
-      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-          window.gettext("Completion"),
-          ": "
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            disabled,
-            checked: this.state.completed,
-            onChange: this.changeCompletion.bind(this)
-          }
-        ),
-        extra_data
-      ] });
-    } else if (data2.completion_info) {
-      completion_data = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Completion") + ": " + data2.completion_info });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentTitle,
-        {
-          user_role: this.props.renderer.user_role,
-          data: data2
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("End Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "end_date",
-                default_value: data2.end_date,
-                disabled: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-              window.gettext("Start Date"),
-              ": "
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              DatePicker,
-              {
-                id: "start_date",
-                default_value: data2.start_date,
-                disabled: true
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
-      ] })
-    ] });
-  }
-}
-class AssignmentBox extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    this.input = reactExports.createRef();
-    this.state = {
-      my_assignments: [],
-      all_assignments: []
-    };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.setState({
-      has_rendered: true
-    });
-  }
-  componentDidUpdate(prevProps) {
-    if (this.props.show && !prevProps.show)
-      this.reloadAssignments();
-    if (!this.props.show && prevProps.show)
-      this.setState({ my_assignments: [], all_assignments: [] });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  reloadAssignments() {
-    const node_id = this.props.node_id;
-    const props = this.props;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    getAssignmentsForNode(node_id, (response_data) => {
-      COURSEFLOW_APP.tinyLoader.endLoad();
-      this.setState(response_data.data_package);
-      if (!this.props.has_assignment && (response_data.data_package.my_assignments.length > 0 || response_data.data_package.all_assignments.length > 0)) {
-        props.dispatch(
-          ActionCreator.reloadAssignmentsAction(props.node_id, true)
-        );
-      } else if (this.props.has_assignment && response_data.data_package.my_assignments.length == 0 && response_data.data_package.all_assignments.length == 0) {
-        props.dispatch(
-          ActionCreator.reloadAssignmentsAction(props.node_id, false)
-        );
-      }
-    });
-  }
-  createAssignment() {
-    const props = this.props;
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    createAssignmentQuery(
-      props.node_id,
-      props.renderer.project.id,
-      (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-        this.reloadAssignments();
-      }
-    );
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let all_assignments;
-    let assignment_indicator = null;
-    if (!this.state.has_rendered) {
-      return null;
-    }
-    if (this.props.has_assignment) {
-      assignment_indicator = reactDomExports.createPortal(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "comment-indicator hover-shade",
-            onClick: this.props.parent.showAssignment.bind(this.props.parent),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "assignment.svg" })
-          }
-        ),
-        $(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
-      );
-    }
-    if (!this.props.show) {
-      return assignment_indicator;
-    }
-    const top_contents = [];
-    top_contents.push(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "close-button hover-shade",
-          title: window.gettext("Close"),
-          onClick: this.props.parent.showAssignment.bind(this.props.parent),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-        }
-      )
-    );
-    if (this.props.renderer.is_teacher) {
-      top_contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "create-assignment hover-shade",
-            title: window.gettext("Create New"),
-            onClick: this.createAssignment.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "add_new.svg" })
-          }
-        )
-      );
-    }
-    if (!this.props.has_assignment) {
-      top_contents.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Not yet assigned") }));
-    }
-    const my_assignments = this.state.my_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
-    if (my_assignments.length > 0)
-      my_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My Assignments") }));
-    if (this.props.renderer.is_teacher) {
-      all_assignments = this.state.all_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
-      if (all_assignments.length > 0)
-        all_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("All Assignments") }));
-      if (my_assignments.length > 0 && all_assignments.length > 0)
-        all_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-    }
-    return reactDomExports.createPortal(
-      [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-box", onClick: (evt) => evt.stopPropagation(), children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-top-row", children: top_contents }),
-          my_assignments,
-          all_assignments
-        ] }),
-        assignment_indicator
-      ],
-      $(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
-    );
-  }
-}
 const CompletionImg = ({
   completionStatus,
   outcomesType
@@ -81903,40 +81504,6 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
       }
     });
   }
-  addShowAssignment(data2) {
-    return [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ActionButton,
-        {
-          buttonIcon: "assignment.svg",
-          buttonClass: "assignment-button",
-          titleText: window.gettext("Show Assignment Info"),
-          handleClick: this.showAssignment.bind(this)
-        },
-        0
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AssignmentBox,
-        {
-          show: this.state.show_assignments,
-          has_assignment: this.props.data.has_assignment,
-          parent: this,
-          renderer: this.props.renderer,
-          node_id: data2.id,
-          dispatch: this.props.dispatch.bind(this)
-        },
-        1
-      )
-    ];
-  }
-  showAssignment(evt) {
-    this.props;
-    evt.stopPropagation();
-    if (!this.state.show_assignments) {
-      this.setState({ show_assignments: true });
-    } else
-      this.setState({ show_assignments: false });
-  }
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -82099,9 +81666,6 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
     }
     if (renderer.view_comments) {
       mouseover_actions.push(this.addCommenting());
-    }
-    if (renderer.show_assignments) {
-      mouseover_actions.push(this.addShowAssignment(data2));
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(data_override),
@@ -95186,7 +94750,6 @@ class Workflow {
     __publicField(this, "is_strategy");
     __publicField(this, "project");
     __publicField(this, "user_permission");
-    __publicField(this, "user_role");
     __publicField(this, "user_id");
     __publicField(this, "read_only");
     __publicField(this, "always_static");
@@ -95196,7 +94759,6 @@ class Workflow {
     __publicField(this, "view_comments");
     __publicField(this, "add_comments");
     __publicField(this, "is_student");
-    __publicField(this, "show_assignments");
     __publicField(this, "is_teacher");
     __publicField(this, "selection_manager");
     __publicField(this, "child_data_completed");
@@ -95235,7 +94797,6 @@ class Workflow {
     this.is_strategy = is_strategy;
     this.project = project;
     this.user_permission = propsConfig.user_permission;
-    this.user_role = propsConfig.user_role ?? role_keys["none"];
     this.user_id = propsConfig.user_id;
     this.read_only = true;
     this.workflowRender = this.render.bind(this);
@@ -95259,18 +94820,6 @@ class Workflow {
         this.view_comments = true;
         this.add_comments = true;
         this.can_view = true;
-        break;
-    }
-    switch (propsConfig.user_role) {
-      case role_keys["none"]:
-        break;
-      case role_keys["student"]:
-        this.is_student = true;
-        this.show_assignments = true;
-        break;
-      case role_keys["teacher"]:
-        this.is_teacher = true;
-        this.show_assignments = true;
         break;
     }
     this.getWorkflowData = this.public_view ? getPublicWorkflowDataQuery : getWorkflowDataQuery;
@@ -95932,7 +95481,6 @@ class WorkflowFilter extends reactExports.Component {
       {
         workflowData: workflow,
         updateWorkflow: this.props.updateWorkflow,
-        userRole: this.props.user_role,
         readOnly: this.props.read_only,
         projectData: this.props.project_data
       },
@@ -96476,35 +96024,7 @@ class ProjectMenu extends reactExports.Component {
     });
     __publicField(this, "OverflowLinks", () => {
       const data2 = this.state.data;
-      let liveproject;
       const overflow_links = [];
-      if (data2.author_id === this.props.userId) {
-        if (data2.liveproject) {
-          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              id: "live-project",
-              className: "hover-shade",
-              href: COURSEFLOW_APP.config.update_path.liveproject.replace(
-                "0",
-                String(data2.id)
-              ),
-              children: window.gettext("View Classroom")
-            }
-          );
-        } else {
-          liveproject = /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              id: "live-project",
-              className: "hover-shade",
-              onClick: this.makeLive.bind(this),
-              children: window.gettext("Create Classroom")
-            }
-          );
-        }
-      }
-      overflow_links.push(liveproject);
       overflow_links.push(
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
       );
@@ -96606,28 +96126,9 @@ class ProjectMenu extends reactExports.Component {
      *
      *******************************************************/
     __publicField(this, "Content", () => {
-      const return_val = [];
-      if (this.state.data.liveproject && this.props.userRole === role_keys.teacher)
-        return_val.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
-            let view_class = "hover-shade";
-            if (item.type === this.state.view_type)
-              view_class += " active";
-            return /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                id: "button_" + item.type,
-                className: view_class,
-                onClick: this.changeView.bind(this, item.type),
-                children: item.name
-              }
-            );
-          }) })
-        );
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowFilter,
         {
-          user_role: this.props.userRole,
           read_only: this.props.readOnly,
           project_data: this.state.data,
           workflows: this.state.workflow_data,
@@ -96661,8 +96162,7 @@ class ProjectMenu extends reactExports.Component {
           type: "project_edit_menu",
           data: {
             ...this.state.data,
-            all_disciplines: this.props.allDisciplines,
-            user_role: this.props.userRole
+            all_disciplines: this.props.allDisciplines
             // renderer: this.props.renderer
           },
           actionFunction: this.updateFunction,
@@ -96811,18 +96311,14 @@ class ProjectMenu extends reactExports.Component {
     });
   }
   updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log("liveproject updated");
-    } else {
-      this.setState({
-        ...this.state,
-        data: {
-          ...this.state.data,
-          ...new_data
-        },
-        openEditDialog: false
-      });
-    }
+    this.setState({
+      ...this.state,
+      data: {
+        ...this.state.data,
+        ...new_data
+      },
+      openEditDialog: false
+    });
   }
   /*******************************************************
    * RENDER
@@ -96863,13 +96359,11 @@ class ProjectPage extends reactExports.Component {
     __publicField(this, "readOnly");
     __publicField(this, "projectData");
     __publicField(this, "allDisciplines");
-    __publicField(this, "userRole");
     __publicField(this, "userId");
     __publicField(this, "projectPaths");
     this.readOnly = true;
     this.projectData = this.props.project_data;
     this.allDisciplines = this.props.disciplines;
-    this.userRole = this.props.user_role;
     this.userId = this.props.user_id;
     this.projectPaths = this.props.create_path_this_project;
     if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
@@ -96882,7 +96376,6 @@ class ProjectPage extends reactExports.Component {
       {
         projectPaths: this.projectPaths,
         allDisciplines: this.allDisciplines,
-        userRole: this.userRole,
         readOnly: this.readOnly,
         data: this.projectData,
         userId: this.userId
@@ -97618,8 +97111,6 @@ const getAppComponent = () => {
       workflowWrapper.init();
       return null;
     }
-    case "my_live_projects":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowGrid, { ...window.contextData });
   }
   return null;
 };
