@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import {
   getOutcomeByID,
@@ -34,6 +33,7 @@ type OutcomeBarOutcomeOutcomePropsType = OutcomeBarOutcomeOutcomeOwnProps &
   OutcomeBarOutcomeOutcomeConnectedProps
 
 class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutcomeOutcomePropsType> {
+  private objectType: CfObjectType;
   constructor(props: OutcomeBarOutcomeOutcomePropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable

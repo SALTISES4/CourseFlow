@@ -62912,7 +62912,7 @@ class EditableComponentWithSorting extends EditableComponentWithActions {
 const getColumnByID = (state, id) => {
   for (const i in state.column) {
     const column2 = state.column[i];
-    if (column2.id == id)
+    if (column2.id == id) {
       return {
         data: column2,
         sibling_count: state.workflow.columnworkflow_set.length,
@@ -62921,6 +62921,7 @@ const getColumnByID = (state, id) => {
           (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
         )
       };
+    }
   }
 };
 const getWeekByID = (state, id) => {
@@ -63076,67 +63077,56 @@ function findTopRank(state, outcome) {
   }
 }
 const getOutcomeByID = (state, id) => {
-  const state_section = state.outcome;
-  for (const i in state_section) {
-    const outcome = state_section[i];
-    if (outcome.id === id) {
-      if (outcome.is_dropped === void 0) {
-        outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
-      }
-      let root_outcome;
-      let rank = [];
-      let titles = [];
-      let top_rank;
-      if (outcome.depth > 0) {
-        const state_outcomeoutcome_section = state.outcomeoutcome;
-        const root_info = findRootOutcome(
-          state_outcomeoutcome_section,
-          outcome.id,
-          []
-        );
-        rank = root_info.rank.map((x) => null);
-        titles = rank.map((x) => null);
-        for (let j = 0; j < state_section.length; j++) {
-          if (state_section[j].id === root_info.id)
-            root_outcome = state_section[j];
-          for (let k = 0; k < root_info.rank.length; k++) {
-            if (root_info.rank[k].parent === state_section[j].id) {
-              titles[k] = state_section[j].title;
-              if (rank[k])
-                continue;
-              if (state_section[j].code) {
-                if (k > 0)
-                  rank[k - 1] = state_section[j].code;
-                else
-                  top_rank = state_section[j].code;
-              }
-              rank[k] = state_section[j].child_outcome_links.indexOf(
-                root_info.rank[k].through
-              ) + 1;
-            }
-          }
-        }
-      } else {
-        root_outcome = outcome;
-        if (outcome.code)
-          top_rank = outcome.code;
-      }
-      if (!top_rank)
-        top_rank = findTopRank(state, root_outcome);
-      titles.push(outcome.title);
-      rank.unshift(top_rank);
-      const hovertext = rank.map((rank_i, i2) => rank_i + ". " + titles[i2]).join(" -> ");
-      const prefix2 = rank.join(".");
-      return {
-        data: outcome,
-        hovertext,
-        prefix: prefix2,
-        object_sets: state.objectset,
-        workflow_id: state.workflow.id
-      };
+  const stateSection = state.outcome;
+  for (const i in stateSection) {
+    const outcome = stateSection[i];
+    if (outcome.id !== id)
+      continue;
+    if (outcome.is_dropped === void 0) {
+      outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
     }
+    let rootOutcome = outcome;
+    let rank = [];
+    let titles = [];
+    let topRank = outcome.code || null;
+    if (outcome.depth > 0) {
+      const stateOutcomeSection = state.outcomeoutcome;
+      const rootInfo = findRootOutcome(stateOutcomeSection, outcome.id, []);
+      rank = rootInfo.rank.map(() => null);
+      titles = [...rank];
+      stateSection.forEach((sectionItem, j) => {
+        if (sectionItem.id === rootInfo.id)
+          rootOutcome = sectionItem;
+        rootInfo.rank.forEach((rankItem, k) => {
+          if (rankItem.parent !== sectionItem.id)
+            return;
+          titles[k] = sectionItem.title;
+          if (!rank[k]) {
+            if (sectionItem.code) {
+              if (k > 0)
+                rank[k - 1] = sectionItem.code;
+              else
+                topRank = sectionItem.code;
+            }
+            rank[k] = sectionItem.child_outcome_links.indexOf(rankItem.through) + 1;
+          }
+        });
+      });
+    } else {
+      topRank = topRank || findTopRank(state, rootOutcome);
+    }
+    titles.push(outcome.title);
+    rank.unshift(topRank);
+    const hovertext = rank.map((rankItem, i2) => `${rankItem}. ${titles[i2]}`).join(" -> ");
+    const prefix2 = rank.join(".");
+    return {
+      data: outcome,
+      hovertext,
+      prefix: prefix2,
+      object_sets: state.objectset,
+      workflow_id: state.workflow.id
+    };
   }
-  console.log("failed to find outcome");
 };
 const getChildWorkflowByID = (state, id) => {
   for (const i in state.child_workflow) {
@@ -81677,18 +81667,15 @@ class AutoLink extends reactExports.Component {
     }
   }
   findAutoTarget() {
+    let target = null;
     const ns = this.source_node.closest(".node-week");
     const next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
-    let target;
     if (next_ns.length > 0) {
       target = next_ns.find(".node").attr("id");
     } else {
-      const sw = ns.closest(".week-workflow");
-      let next_sw = sw.next();
-      while (next_sw.length > 0) {
-        target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
-        if (target)
-          break;
+      let next_sw = ns.closest(".week-workflow").next();
+      while (next_sw.length > 0 && !target) {
+        target = next_sw.find(".node-week:not(.ui-sortable-placeholder) .node").attr("id");
         next_sw = next_sw.next();
       }
     }
@@ -81756,9 +81743,9 @@ class AutoLink extends reactExports.Component {
           hovered: node_hovered,
           node_selected,
           source_port_handle: this.source_port_handle,
-          source_port: "2",
+          source_port: 2,
           target_port_handle: this.target_port_handle,
-          target_port: "0",
+          target_port: 0,
           source_dimensions: source_dims,
           target_dimensions: target_dims
         }
@@ -83309,6 +83296,7 @@ class RestoreBarItem extends ComponentWithToggleDrop {
 class RestoreBarUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "objectType");
     this.objectType = CfObjectType.WORKFLOW;
   }
   /*******************************************************
@@ -83410,6 +83398,7 @@ const RestoreBar = connect(mapRestoreBarStateToProps, null)(RestoreBarUnconnecte
 class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    __publicField(this, "objectType");
     this.objectType = CfObjectType.OUTCOMEOUTCOME;
   }
   /*******************************************************
@@ -83842,17 +83831,12 @@ const ParentOutcomeBar = connect(
   null
 )(ParentOutcomeBarUnconnected);
 class ComparisonViewBar extends reactExports.Component {
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  toggleHidden(id) {
-    this.props.toggleObjectSet(id);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
+  constructor() {
+    super(...arguments);
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Sets", () => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.objectSets.sort((a, b) => {
       const x = a.term;
       const y = b.term;
       if (x < y)
@@ -83860,7 +83844,7 @@ class ComparisonViewBar extends reactExports.Component {
       if (x > y)
         return 1;
       return 0;
-    }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+    }).map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "input",
         {
@@ -83872,10 +83856,21 @@ class ComparisonViewBar extends reactExports.Component {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
-    ] })) });
+    ] }, index)) }));
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  toggleHidden(id) {
+    this.props.toggleObjectSet(id);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") + ":" }),
-      sets
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Sets, {})
     ] });
   }
 }
@@ -83934,6 +83929,13 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
     );
   }
 }
+const mapColumnStateToProps$1 = (state, ownProps) => {
+  return getColumnByID(state, ownProps.objectID);
+};
+const NodeBarColumn = connect(
+  mapColumnStateToProps$1,
+  null
+)(NodeBarColumnUnconnected);
 class NodeBarColumnCreator extends NodeBarColumnUnconnected {
   /*******************************************************
    * LIFECYCLE
@@ -83950,7 +83952,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
    *******************************************************/
   render() {
     const choice = this.props.columnChoices.find(
-      (choice2) => choice2.type === this.props.columnType
+      (columnChoice) => columnChoice.type === this.props.columnType
     );
     const title = choice ? `New ${choice.name}` : "New";
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83963,14 +83965,15 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     );
   }
 }
-const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
-const NodeBarColumn = connect(
-  mapColumnStateToProps$1,
-  null
-)(NodeBarColumnUnconnected);
 class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
   /*******************************************************
    * RENDER
+   *******************************************************/
+  /*******************************************************
+   * NodeBarColumn, NodeBarColumnCreator
+   * are these same component, but with or without redux
+   * don't understand point yet
+   *
    *******************************************************/
   render() {
     if (this.props.data)
@@ -83981,9 +83984,7 @@ class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBarColumn,
           {
-            objectID: this.props.data.column,
-            throughParentID: this.props.data.id,
-            parentID: this.props.parentID
+            objectID: this.props.data.column
           }
         ) })
       );
@@ -84083,6 +84084,8 @@ const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected);
 class NodeBarUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
+    console.log("this.props.columnChoices in nodebar/index");
+    console.log(this.props.columnChoices);
   }
   /*******************************************************
    * RENDER
@@ -84229,8 +84232,7 @@ class RightSideBar extends reactExports.Component {
         ComparisonViewBar,
         {
           toggleObjectSet: this.props.toggleObjectSet,
-          object_sets: this.props.object_sets,
-          renderer: this.props.renderer
+          objectSets: this.props.object_sets
         }
       );
     }
@@ -86095,6 +86097,7 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
    * RENDER
    *******************************************************/
   render() {
+    var _a, _b;
     const data2 = this.props.data;
     const is_dropped = this.getIsDropped();
     let dropIcon;
@@ -86142,7 +86145,7 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
         ]
       }
     ) });
-    const outcome_row = this.props.outcome_tree.outcomenodes.map(
+    const outcome_row = (_b = (_a = this.props.outcome_tree) == null ? void 0 : _a.outcomenodes) == null ? void 0 : _b.map(
       (outcomenodegroup) => {
         const group_row = outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           TableCell,

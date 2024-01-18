@@ -1,4 +1,4 @@
-import {Discipline} from "@cfModule/types/common";
+import { Discipline } from '@cfModule/types/common'
 
 export type WorkflowDetailViewDTO = {
   public_view: boolean
@@ -74,4 +74,3 @@ export type ObjectPermission = {
 //   type: string
 //   workflowproject_set: number[]
 // }
-

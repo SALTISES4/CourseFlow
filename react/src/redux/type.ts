@@ -46,9 +46,9 @@ export type Outcome = {
   id: number
   deleted: boolean
   deleted_on: Date | string
-  title: null
-  code: null
-  description: null
+  title: string
+  code: string
+  description: string
   child_outcome_links: number[]
   outcome_horizontal_links: any[]
   outcome_horizontal_links_unique: any[]
@@ -213,6 +213,7 @@ export type ObjectSet = {
   title: string
   hidden?: boolean // not sure if this is the same objectset
   id?: number // not sure if this is the same objectset
+  term?: any // not sure if this is the same objectset
 }
 
 export type ParentWorkflow = any

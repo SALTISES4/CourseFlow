@@ -25,11 +25,22 @@ export type StrategyByIDType = {
  *  Redux state directly
  *
  *******************************************************/
+export type GetColumnByIDType = {
+  data: {
+   column_type_display: any
+  }
+  sibling_count: any
+  columnworkflows: any
+  column_order: any
+}
 
-export const getColumnByID = (state: AppState, id: number) => {
+export const getColumnByID = (
+  state: AppState,
+  id: number
+): GetColumnByIDType => {
   for (const i in state.column) {
     const column = state.column[i]
-    if (column.id == id)
+    if (column.id == id) {
       return {
         data: column,
         sibling_count: state.workflow.columnworkflow_set.length,
@@ -39,6 +50,7 @@ export const getColumnByID = (state: AppState, id: number) => {
             getColumnWorkflowByID(state, columnworkflow_id).data.column
         )
       }
+    }
   }
 }
 
@@ -259,7 +271,11 @@ export const getStrategyByID = (
  * @param state
  * @returns {*|{rank: *, id: *}}
  */
-function findRootOutcome(state, id, rank) {
+function findRootOutcome(
+  state: string | any[],
+  id: number,
+  rank: { parent: any; through: any }[]
+): any | { rank: any; id: any } {
   for (let i = 0; i < state.length; i++) {
     if (state[i].child === id) {
       rank.unshift({ parent: state[i].parent, through: state[i].id })
@@ -310,66 +326,124 @@ export const getOutcomeByID = (
   state: AppState,
   id: number
 ): GetOutcomeByIDType => {
-  const state_section = state.outcome
-  for (const i in state_section) {
-    const outcome = state_section[i]
+  const stateSection = state.outcome
+  for (const i in stateSection) {
+    const outcome = stateSection[i]
 
-    if (outcome.id === id) {
-      if (outcome.is_dropped === undefined) {
-        outcome.is_dropped = getDropped(id, 'outcome', outcome.depth)
-      }
-      let root_outcome
-      let rank = []
-      let titles = []
-      let top_rank
-      if (outcome.depth > 0) {
-        const state_outcomeoutcome_section = state.outcomeoutcome
-        const root_info = findRootOutcome(
-          state_outcomeoutcome_section,
-          outcome.id,
-          []
-        )
-        rank = root_info.rank.map((x) => null)
-        titles = rank.map((x) => null)
-        for (let j = 0; j < state_section.length; j++) {
-          if (state_section[j].id === root_info.id)
-            root_outcome = state_section[j]
-          for (let k = 0; k < root_info.rank.length; k++) {
-            if (root_info.rank[k].parent === state_section[j].id) {
-              titles[k] = state_section[j].title
-              if (rank[k]) continue
-              if (state_section[j].code) {
-                if (k > 0) rank[k - 1] = state_section[j].code
-                else top_rank = state_section[j].code
-              }
-              rank[k] =
-                state_section[j].child_outcome_links.indexOf(
-                  root_info.rank[k].through
-                ) + 1
+    if (outcome.id !== id) continue
+
+    if (outcome.is_dropped === undefined) {
+      outcome.is_dropped = getDropped(id, 'outcome', outcome.depth)
+    }
+
+    let rootOutcome = outcome
+    let rank = []
+    let titles = []
+    let topRank = outcome.code || null
+
+    if (outcome.depth > 0) {
+      const stateOutcomeSection = state.outcomeoutcome
+      const rootInfo = findRootOutcome(stateOutcomeSection, outcome.id, [])
+      rank = rootInfo.rank.map(() => null)
+      titles = [...rank]
+
+      stateSection.forEach((sectionItem, j) => {
+        if (sectionItem.id === rootInfo.id) rootOutcome = sectionItem
+
+        rootInfo.rank.forEach((rankItem, k) => {
+          if (rankItem.parent !== sectionItem.id) return
+
+          titles[k] = sectionItem.title
+          if (!rank[k]) {
+            if (sectionItem.code) {
+              if (k > 0) rank[k - 1] = sectionItem.code
+              else topRank = sectionItem.code
             }
+            rank[k] =
+              sectionItem.child_outcome_links.indexOf(rankItem.through) + 1
           }
-        }
-      } else {
-        root_outcome = outcome
-        if (outcome.code) top_rank = outcome.code
-      }
-      if (!top_rank) top_rank = findTopRank(state, root_outcome)
-      titles.push(outcome.title)
-      rank.unshift(top_rank)
-      const hovertext = rank
-        .map((rank_i, i) => rank_i + '. ' + titles[i])
-        .join(' -> ')
-      const prefix = rank.join('.')
-      return {
-        data: outcome,
-        hovertext: hovertext,
-        prefix: prefix,
-        object_sets: state.objectset,
-        workflow_id: state.workflow.id
-      }
+        })
+      })
+    } else {
+      topRank = topRank || findTopRank(state, rootOutcome)
+    }
+
+    titles.push(outcome.title)
+    rank.unshift(topRank)
+
+    const hovertext = rank
+      .map((rankItem, i) => `${rankItem}. ${titles[i]}`)
+      .join(' -> ')
+    const prefix = rank.join('.')
+
+    return {
+      data: outcome,
+      hovertext: hovertext,
+      prefix: prefix,
+      object_sets: state.objectset,
+      workflow_id: state.workflow.id
     }
   }
-  console.log('failed to find outcome')
+  // const state_section = state.outcome
+  // for (const i in state_section) {
+  //   const outcome = state_section[i]
+  //
+  //   if (outcome.id === id) {
+  //     if (outcome.is_dropped === undefined) {
+  //       outcome.is_dropped = getDropped(id, 'outcome', outcome.depth)
+  //     }
+  //     let root_outcome
+  //     let rank = []
+  //     let titles = []
+  //     let top_rank
+  //     if (outcome.depth > 0) {
+  //       const state_outcomeoutcome_section = state.outcomeoutcome
+  //       const root_info = findRootOutcome(
+  //         state_outcomeoutcome_section,
+  //         outcome.id,
+  //         []
+  //       )
+  //       rank = root_info.rank.map((x) => null)
+  //       titles = rank.map((x) => null)
+  //       for (let j = 0; j < state_section.length; j++) {
+  //         if (state_section[j].id === root_info.id)
+  //           root_outcome = state_section[j]
+  //         for (let k = 0; k < root_info.rank.length; k++) {
+  //           if (root_info.rank[k].parent === state_section[j].id) {
+  //             titles[k] = state_section[j].title
+  //             if (rank[k]) continue
+  //             if (state_section[j].code) {
+  //               if (k > 0) rank[k - 1] = state_section[j].code
+  //               else top_rank = state_section[j].code
+  //             }
+  //             rank[k] =
+  //               state_section[j].child_outcome_links.indexOf(
+  //                 root_info.rank[k].through
+  //               ) + 1
+  //           }
+  //         }
+  //       }
+  //     } else {
+  //       root_outcome = outcome
+  //       if (outcome.code) top_rank = outcome.code
+  //     }
+  //     if (!top_rank) top_rank = findTopRank(state, root_outcome)
+  //     titles.push(outcome.title)
+  //     rank.unshift(top_rank)
+  //     const hovertext = rank
+  //       .map((rank_i, i) => rank_i + '. ' + titles[i])
+  //       .join(' -> ')
+  //     const prefix = rank.join('.')
+  //     return {
+  //       data: outcome,
+  //       hovertext: hovertext,
+  //       prefix: prefix,
+  //       object_sets: state.objectset,
+  //       workflow_id: state.workflow.id
+  //     }
+  //   }
+  // }
+  // console.log('failed to find outcome')
 }
 
 export const getChildWorkflowByID = (state: AppState, id: number) => {

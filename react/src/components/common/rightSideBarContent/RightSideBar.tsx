@@ -111,8 +111,8 @@ class RightSideBar extends React.Component<PropsType> {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
-          object_sets={this.props.object_sets}
-          renderer={this.props.renderer}
+          objectSets={this.props.object_sets}
+          // renderer={this.props.renderer}
         />
       )
     }

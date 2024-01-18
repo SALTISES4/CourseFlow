@@ -246,18 +246,18 @@ class PathGenerator {
 }
 
 export type OwnProps = {
-  style: Style
   hovered: boolean
   node_selected: boolean
-  title: null
-  text_position: number
   source_port_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   source_port: number
   target_port_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   target_port: number
   source_dimensions: Dimensions
   target_dimensions: Dimensions
-  clickFunction: (evt: React.MouseEvent) => void
+  text_position?: number
+  style?: Style
+  clickFunction?: (evt: React.MouseEvent) => void
+  title?: string | null
   selected?: boolean
   lock?: ObjectLock
 }

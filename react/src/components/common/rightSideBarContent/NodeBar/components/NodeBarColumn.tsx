@@ -1,23 +1,37 @@
-// @ts-nocheck
 import * as React from 'react'
-
 import { connect } from 'react-redux'
-import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
-import { getColumnByID } from '@cfFindState'
+import { getColumnByID, GetColumnByIDType } from '@cfFindState'
+import { AppState } from '@cfRedux/type'
 // import $ from 'jquery'
+
+type ConnectedProps = GetColumnByIDType
+type OwnProps = {
+  // parentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
+  // throughParentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
+  columnChoices?: any
+  columnType?: any
+} & ComponentWithToggleProps
+export type NodeBarColumnUnconnectedType = OwnProps
 
 /**
  * Can be dragged and dropped into the workflow space to create
  * a node of the corresponding column. The actual dropping functionality
  * is handled in the Week component, not here.
  */
-class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
+export class NodeBarColumnUnconnected<
+  P extends OwnProps
+> extends ComponentWithToggleDrop<P> {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
+    // @todo dataDraggable undefined
+    // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = {
       column: this.props.data.id,
       column_type: null
@@ -31,7 +45,7 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
     const draggable_selector = 'node-week'
     const draggable_type = 'nodeweek'
     $(this.mainDiv?.current).draggable({
-      helper: (_e, _item) => {
+      helper: (_e: any, _item: any) => {
         const helper = $(document.createElement('div'))
         helper.addClass('node-ghost')
         helper.appendTo(document.body)
@@ -72,48 +86,15 @@ class NodeBarColumnUnconnected extends ComponentWithToggleDrop {
   }
 }
 
-/**
- * As the NodeBarColumn component, but creates a new column.
- * @todo having a component class that is both connected and unconnected being extended from is too complicated
- * to type properly
- * simplify this
- */
-export class NodeBarColumnCreator extends NodeBarColumnUnconnected {
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    this.makeDraggable()
-    $(this.mainDiv.current)[0].dataDraggable = {
-      column: null,
-      column_type: this.props.columnType
-    }
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const choice = this.props.columnChoices.find(
-      (choice) => choice.type === this.props.columnType
-    )
-    const title = choice ? `New ${choice.name}` : 'New'
-
-    return (
-      <div
-        className="new-node new-column node-bar-column node-bar-sortable"
-        ref={this.mainDiv}
-      >
-        {title}
-      </div>
-    )
-  }
+const mapColumnStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetColumnByIDType => {
+  return getColumnByID(state, ownProps.objectID)
 }
-
-const mapColumnStateToProps = (state, own_props) =>
-  getColumnByID(state, own_props.objectID)
-
-export const NodeBarColumn = connect(
+const NodeBarColumn = connect<ConnectedProps, object, OwnProps, AppState>(
   mapColumnStateToProps,
   null
 )(NodeBarColumnUnconnected)
+
+export default NodeBarColumn

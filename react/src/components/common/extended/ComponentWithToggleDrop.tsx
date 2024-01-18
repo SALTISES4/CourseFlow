@@ -14,8 +14,11 @@ export type ComponentWithToggleProps = {
   objectID?: number
   dispatch?: Dispatch<Action>
   data?: {
+    id?: number
     is_dropped?: boolean
     depth?: number
+    column_type_display?: number
+    title?: any
   }
 }
 

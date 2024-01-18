@@ -1,9 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
-import {
-  ProjectViewDTO
-} from '@cfPages/Library/ProjectDetail/types'
+import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline } from '@cfModule/types/common'
 import { Project } from '../../Workflow/Workflow/types'
 

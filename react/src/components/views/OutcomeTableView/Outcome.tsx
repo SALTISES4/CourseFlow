@@ -2,7 +2,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
-import { Component } from '@cfParentComponents'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import ComponentWithToggleDrop, {
@@ -262,7 +261,7 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
       </div>
     )
 
-    const outcome_row = this.props.outcome_tree.outcomenodes.map(
+    const outcome_row = this.props.outcome_tree?.outcomenodes?.map(
       (outcomenodegroup) => {
         const group_row = outcomenodegroup.map((outcomenode) => (
           <TableCell
