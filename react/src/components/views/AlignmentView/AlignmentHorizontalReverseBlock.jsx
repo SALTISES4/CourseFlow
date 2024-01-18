@@ -30,7 +30,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
         <AlignmentHorizontalReverseWeek
           week_rank={week_rank}
           objectID={week}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           restriction_set={this.props.restriction_set}
         />
       )

@@ -5,7 +5,6 @@ import ActionButton from '@cfUIComponents/ActionButton'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType,
-  LegacyRendererProps
 } from '@cfParentComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
 import CommentBox from '@cfViews/GridView/components/CommentBox'

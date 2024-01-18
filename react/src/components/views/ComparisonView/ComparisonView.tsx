@@ -27,7 +27,7 @@ type StateType = {
   workflows: number[]
 }
 type PropsType = {
-  view_type: any
+  view_type: ViewType
   // turn this into config object
   renderer: any
   data: any

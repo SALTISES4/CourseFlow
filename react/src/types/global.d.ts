@@ -10,6 +10,7 @@ declare global {
     gettext: (str: string) => string
     fail_function: (action?: string) => void
     getCsrfToken: () => string
+    cf_nonce: string
   }
   interface Document {
     lastUpdateCall: {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
@@ -35,7 +34,7 @@ import {
   getWorkflowParentDataQuery
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/global'
-import { WorkFlowConfigProvider } from '@cfModule/context/workFlowConfigContext'
+import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 const cache = createCache({
@@ -51,6 +50,7 @@ enum DATA_TYPE {
   WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'
 }
 
+// @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 /****************************************
@@ -83,7 +83,7 @@ class Workflow {
   show_assignments: boolean
   private is_teacher: boolean
   selection_manager: SelectionManager
-  private child_data_completed: boolean
+  private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
   private getWorkflowData: (
@@ -107,8 +107,11 @@ class Workflow {
   // NOTE: this is not yet a react component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
   unread_comments: any
-  container: any;
-  view_type: any;
+  container: any
+  view_type: any
+  private workflowRender: OmitThisParameter<(container, view_type?: string) => void>;
+  private locks: {};
+  private silent_connect_fail: any;
 
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
@@ -307,23 +310,9 @@ class Workflow {
     reactDom.render(<WorkflowLoader />, container[0])
 
     this.container = container // @todo where is view_type set?
-    this.selection_manager.renderer = this // @todo explicit props
+    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
 
-    // const rendererContextObject = {
-    //   task_choices: this.task_choices,
-    //   time_choices: this.time_choices,
-    //   read_only: this.read_only,
-    //   context_choices: this.props.renderer.context_choices,
-    //   outcome_type_choices: this.props.renderer.outcome_type_choices,
-    //   strategy_classification_choices:
-    //     this.props.renderer.strategy_classification_choices,
-    //   change_field: this.props.renderer.change_field,
-    //   workflowID: this.props.renderer.workflowID,
-    //   unread_comments: this.props.renderer.unread_comments,
-    //   add_comments: this.props.renderer.add_comments,
-    //   view_comments: this.props.renderer.view_comments,
-    //   selection_manager: this.props.renderer.selection_manager
-    // }
+
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
@@ -333,13 +322,13 @@ class Workflow {
         )
         reactDom.render(
           <Provider store={this.store}>
-            <WorkFlowConfigProvider>
+            <WorkFlowConfigProvider initialValue={this}>
               <WorkflowBaseView
                 view_type={view_type}
-                renderer={this}
-                legacyRenderer={this}
+                // renderer={this}
+                // legacyRenderer={this}
                 parentRender={this.workflowRender}
-                readOnly={this.read_only}
+                // readOnly={this.read_only}
               />
             </WorkFlowConfigProvider>
           </Provider>,
@@ -353,11 +342,11 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkFlowConfigProvider>
+                <WorkFlowConfigProvider initialValue={this}>
                   <WorkflowBaseView
                     view_type={view_type}
-                    renderer={this}
-                    legacyRenderer={this}
+                    // renderer={this}
+                    // legacyRenderer={this}
                     parentRender={this.workflowRender}
                   />
                 </WorkFlowConfigProvider>

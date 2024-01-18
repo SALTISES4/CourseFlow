@@ -35,7 +35,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
               <AlignmentHorizontalReverseParentOutcome
                 child_outcome={this.props.objectID}
                 outcomenode={this.props.outcomenodes[i]}
-                renderer={this.props.renderer}
+                // renderer={this.props.renderer}
               />
             )
           }
@@ -72,14 +72,14 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
             objectID={data.id}
             comments={true}
             edit={true}
-            renderer={this.props.renderer}
+            // renderer={this.props.renderer}
           />
         </div>
         <div className="half-width alignment-column">
           {parent_outcomes}
           <div className="alignment-row">
             <OutcomeAdder
-              renderer={this.props.renderer}
+              // renderer={this.props.renderer}
               outcome_set={outcome_restriction}
               addFunction={updateOutcomehorizontallinkDegree.bind(
                 this,

@@ -1,11 +1,14 @@
+// @ts-nocheck
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { newNodeLink } from '@XMLHTTP/API/node'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 //The ports used to connect links for the nodes
-export class Index extends React.Component {
+export class NodePorts extends React.Component {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props) {
     super(props)
     this.state = {}
@@ -17,7 +20,7 @@ export class Index extends React.Component {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.props.renderer.read_only)
+    if (!this.context.read_only)
       d3.selectAll(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
@@ -142,4 +145,4 @@ export class Index extends React.Component {
   }
 }
 
-export default Index
+export default NodePorts

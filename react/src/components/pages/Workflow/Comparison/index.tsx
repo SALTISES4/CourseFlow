@@ -39,7 +39,7 @@ export class WorkflowComparison {
   }
 
   // @todo as with Workflow component, calling this render function from a child component of
-  // ComparisonView is an anti-patterm
+  // ComparisonView is an anti-pattern
   // render ComparisonView
   //  -- then pass a 'view type' state handler to the child
   //  -- not sure why there's a loader at level since we don't make a query here, but it can probably go

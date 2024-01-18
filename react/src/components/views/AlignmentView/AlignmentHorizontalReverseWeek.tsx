@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
@@ -36,7 +35,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
       return (
         <AlignmentHorizontalReverseNode
           objectID={nodeweek.node}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           restriction_set={this.props.restriction_set}
         />
       )

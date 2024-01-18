@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
@@ -29,7 +28,6 @@ import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfParentComponents/EditableComponent'
-import { ComponentWithToggleProps } from '@cfParentComponents/ComponentWithToggleDrop'
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
@@ -86,7 +84,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   PropsType,
   StateType
 > {
-  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   private allowed_tabs: number[]
   private readOnly: any
   private public_view: any
@@ -96,7 +94,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private selection_manager: any
   private renderMethod: (container, view_type: ViewType) => void
   private container: any
-  private view_type: any
   private websocket: any
   private always_static: boolean
   private user_id: any
@@ -104,32 +101,33 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private object_sets: any
   private workflowId: any
   private is_student: boolean
+  private view_type: any;
   constructor(props: PropsType) {
     super(props)
 
     this.objectType = CfObjectType.WORKFLOW
     this.allowed_tabs = [0, 1, 2, 3, 4]
 
-    this.readOnly = this.props.renderer.read_only
-    this.public_view = this.props.renderer.public_view
-    this.can_view = this.props.renderer.can_view
-    this.can_view = this.props.renderer.is_student
+    this.readOnly = this.context.read_only
+    this.public_view = this.context.public_view
+    this.can_view = this.context.can_view
+    this.can_view = this.context.is_student
     this.data = this.props.data
-    this.project = this.props.renderer.project
-    this.selection_manager = this.props.renderer.selection_manager
+    this.project = this.context.project
+    this.selection_manager = this.context.selection_manager
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
     this.renderMethod = this.props.parentRender
 
-    this.container = this.props.renderer.container
-    this.view_type = this.props.renderer.view_type
-    this.websocket = this.props.renderer.websocket
-    this.always_static = this.props.renderer.always_static
-    this.user_id = this.props.renderer.user_id
-    this.project_permission = this.props.renderer.project_permission
+    this.container = this.context.container
+    this.view_type = this.context.view_type
+    this.websocket = this.context.websocket
+    this.always_static = this.context.always_static
+    this.user_id = this.context.user_id
+    this.project_permission = this.context.project_permission
     this.object_sets = this.props.object_sets
-    this.workflowId = this.props.renderer.workflowID
+    this.workflowId = this.context.workflowID
 
     this.state = {
       users: null,
@@ -146,8 +144,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.getUserData()
     this.updateTabs()
     // @ts-ignore
-    const { setValue } = this.context
-    setValue(this.props.renderer)
     COURSEFLOW_APP.makeDropdown('#jump-to')
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
   }
@@ -183,10 +179,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
-        window.location = COURSEFLOW_APP.config.update_path['project'].replace(
-          0,
-          this.project.id
+        const newPath = COURSEFLOW_APP.config.update_path['project'].replace(
+          '0',
+          this.project.id.toString()
         )
+        window.location.href = newPath
       })
     }
   }
@@ -221,7 +218,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // @todo what are all the view types?
   changeView(type: ViewType) {
-    // this.props.renderer.render(this.container, type)
+    // this.context.render(this.container, type)
     this.renderMethod(this.container, type)
   }
 
@@ -390,7 +387,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           className="hover-shade no-underline"
           id="project-return"
           href={COURSEFLOW_APP.config.update_path['project'].replace(
-            0,
+            String(0),
             this.project.id
           )}
         >
@@ -412,7 +409,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           className="hover-shade no-underline"
           id="project-return"
           href={COURSEFLOW_APP.config.update_path['project'].replace(
-            0,
+            String(0),
             this.project.id
           )}
         >
@@ -449,7 +446,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       }
     } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
       workflow_content = (
-        <AlignmentView/* renderer={renderer}*/ view_type={this.view_type} />
+        <AlignmentView /* renderer={renderer}*/ view_type={this.view_type} />
       )
       this.allowed_tabs = [3]
     } else if (this.view_type == ViewType.GRID) {
@@ -648,7 +645,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <ConnectionBar
           user_id={renderer.user_id}
           websocket={this.websocket}
-          // connection_update_receive={this.props.renderer.connection_update_received}
+          // connection_update_receive={this.context.connection_update_received}
           // renderer={renderer}
         />
       )
@@ -1001,7 +998,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
             </div>
             <RightSideBar
               context="workflow"
-              legacyRenderer={this.props.legacyRenderer}
+              // legacyRenderer={this.props.legacyRenderer}
               data={this.props.data}
               parentRender={this.renderMethod}
             />
