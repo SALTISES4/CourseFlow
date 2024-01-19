@@ -10,7 +10,6 @@ import ConnectionBar from '@cfModule/ConnectionBar'
 
 import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
-import { AlignmentView } from '../AlignmentView/index.js'
 import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
@@ -35,6 +34,7 @@ import { getTargetProjectMenu } from '@XMLHTTP/API/project'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import AlignmentView from '@cfViews/AlignmentView/AlignmentView'
 
 type ConnectedProps = {
   data: AppState['workflow']

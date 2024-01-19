@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeByID } from '@cfFindState'
-import { OutcomeUnconnected as TableOutcomeUnconnected } from '../OutcomeTableView'
+import { OutcomeUnconnected as TableOutcomeUnconnected } from '@cfViews/OutcomeTableView/Outcome'
 
 /**
  * The block for an outcome in the competency matrix
@@ -24,7 +24,7 @@ class OutcomeUnconnected extends TableOutcomeUnconnected {
         outcomes_type={this.props.outcomes_type}
         objectID={child.id}
         outcome_tree={child}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     )
   }
