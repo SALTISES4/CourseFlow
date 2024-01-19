@@ -109,44 +109,6 @@ export class NodeTitle extends React.Component {
   }
 }
 
-//Title text for an assignment
-export class AssignmentTitle extends React.Component {
-  render() {
-    const data = this.props.data
-    let text
-    if (data.task.represents_workflow && data.task.linked_workflow_data) {
-      text = data.task.linked_workflow_data.title
-      if (data.task.linked_workflow_data.code)
-        text = data.task.linked_workflow_data.code + ' - ' + text
-    } else text = data.task.title
-
-    if (text == null || text == '') {
-      text = window.gettext('Untitled')
-    }
-    if (this.props.user_role == Constants.role_keys.teacher) {
-      return (
-        <a
-          href={COURSEFLOW_APP.config.update_path.liveassignment.replace(
-            '0',
-            data.id
-          )}
-          className="workflow-title hover-shade"
-          title={text}
-          dangerouslySetInnerHTML={{ __html: text }}
-        />
-      )
-    } else {
-      return (
-        <span
-          className="workflow-title"
-          title={text}
-          dangerouslySetInnerHTML={{ __html: text }}
-        />
-      )
-    }
-  }
-}
-
 //Title for an outcome
 export class OutcomeTitle extends React.Component {
   render() {

@@ -125,24 +125,6 @@ const Sidebar = () => {
               </ListItem>
             </>
           ) : null}
-          {!apiData.is_anonymous ? (
-            <ListItem disablePadding dense>
-              <ListItemButton
-                component="a"
-                data-test-id="panel-my-live-projects"
-                href={COURSEFLOW_APP.config.my_liveprojects_path}
-                selected={
-                  window.location.pathname ===
-                  COURSEFLOW_APP.config.my_liveprojects_path
-                }
-              >
-                <ListItemIcon>
-                  <CalendarMonthIcon />
-                </ListItemIcon>
-                <ListItemText primary={COURSEFLOW_APP.strings.my_classrooms} />
-              </ListItemButton>
-            </ListItem>
-          ) : null}
         </MainMenuWrap>
 
         {apiData.is_teacher && apiData.favourites.length ? (

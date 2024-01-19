@@ -8,7 +8,6 @@ import { getNodeByID, GetNodeByIDType } from '@cfFindState'
 import { ActionButton, NodeTitle, TitleText } from '@cfUIComponents'
 import { EditableComponentWithActions } from '@cfParentComponents'
 import NodeLink from './NodeLink'
-import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode'
 import NodePorts from '@cfCommonComponents/workflow/Node/NodePorts'
 import AutoLink from '@cfCommonComponents/components/AutoLink'
@@ -31,7 +30,6 @@ type OwnProps = {
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
-  show_assignments: boolean
   hovered: boolean
 } & EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
@@ -198,35 +196,6 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         })
       }
     })
-  }
-
-  addShowAssignment(data) {
-    return [
-      <ActionButton
-        key={0}
-        buttonIcon="assignment.svg"
-        buttonClass="assignment-button"
-        titleText={window.gettext('Show Assignment Info')}
-        handleClick={this.showAssignment.bind(this)}
-      />,
-      <AssignmentBox
-        key={1}
-        show={this.state.show_assignments}
-        has_assignment={this.props.data.has_assignment}
-        parent={this}
-        renderer={this.context}
-        node_id={data.id}
-        dispatch={this.props.dispatch.bind(this)}
-      />
-    ]
-  }
-
-  showAssignment(evt) {
-    const props = this.props
-    evt.stopPropagation()
-    if (!this.state.show_assignments) {
-      this.setState({ show_assignments: true })
-    } else this.setState({ show_assignments: false })
   }
 
   /*******************************************************

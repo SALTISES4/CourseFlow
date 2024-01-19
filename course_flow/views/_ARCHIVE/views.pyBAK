@@ -22,7 +22,6 @@ from rest_framework.renderers import JSONRenderer
 from course_flow import export_functions
 from course_flow.decorators import (
     ajax_login_required,
-    check_object_enrollment,
     check_object_permission,
 )
 from course_flow.forms import RegistrationForm

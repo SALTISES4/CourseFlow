@@ -1,17 +1,32 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID } from '@cfFindState'
+import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '@cfViews/OutcomeTableView/Outcome'
+import { AppState } from '@cfRedux/type'
 
+type ConnectedProps = GetOutcomeByIDType
+type OwnProps = {
+  objectID: number
+  outcomes_type: any
+}
+type StateProps = {
+  is_dropped: boolean
+}
+type PropsType = ConnectedProps & OwnProps
 /**
  * The block for an outcome in the competency matrix
  */
-class OutcomeUnconnected extends TableOutcomeUnconnected {
+class OutcomeUnconnected extends TableOutcomeUnconnected<
+  PropsType,
+  StateProps
+> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  toggleDrop() {
-    this.setState({ is_dropped: !this.state.is_dropped })
+  toggleDrop = () => {
+    this.setState({
+      is_dropped: !this.state.is_dropped
+    })
   }
 
   getIsDropped() {
@@ -30,12 +45,18 @@ class OutcomeUnconnected extends TableOutcomeUnconnected {
   }
 }
 
-const mapOutcomeStateToProps = (state, own_props) => {
-  return getOutcomeByID(state, own_props.objectID)
+const mapOutcomeStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetOutcomeByIDType => {
+  return getOutcomeByID(state, ownProps.objectID)
 }
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const Outcome = connect(mapOutcomeStateToProps, null)(OutcomeUnconnected)
+const Outcome = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapOutcomeStateToProps,
+  null
+)(OutcomeUnconnected)
 
 export default Outcome

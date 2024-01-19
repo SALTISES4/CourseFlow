@@ -6,11 +6,7 @@ from django.db.models import ProtectedError, Q
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 
-from course_flow.decorators import (
-    user_can_delete,
-    user_can_edit,
-    user_enrolled_as_teacher,
-)
+from course_flow.decorators import user_can_delete, user_can_edit
 from course_flow.models import Node, Outcome
 from course_flow.models.relations import (
     ColumnWorkflow,
@@ -454,22 +450,6 @@ def json_api_post_delete_self_soft(request: HttpRequest) -> JsonResponse:
             actions.dispatch_child_updated(
                 parent_workflow, model.get_workflow()
             )
-    return JsonResponse({"action": "posted"})
-
-
-# Delete self for live project objects
-@user_enrolled_as_teacher(False)
-def json_api_post_delete_self_live(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-
-        with transaction.atomic():
-            model.delete()
-
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 
 

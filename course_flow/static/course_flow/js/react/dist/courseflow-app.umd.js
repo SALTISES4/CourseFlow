@@ -47640,17 +47640,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     })(createSvgIcon);
     return createSvgIcon;
   }
-  var _interopRequireDefault$b = interopRequireDefaultExports;
+  var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$b = MoreHoriz.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+  var default_1$a = MoreHoriz.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$b = MoreHoriz.default = _default$b;
+  default_1$a = MoreHoriz.default = _default$a;
   const OuterContentWrap = styled$1(Box$1, {
     shouldForwardProp: (prop) => prop !== "narrow"
   })(
@@ -48007,7 +48007,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -54713,55 +54713,43 @@ Please use another name.` : formatMuiErrorMessage(18));
     ] });
   };
   var Home = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
+  var _interopRequireDefault$9 = interopRequireDefaultExports;
   Object.defineProperty(Home, "__esModule", {
     value: true
   });
-  var default_1$a = Home.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+  var default_1$9 = Home.default = void 0;
+  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+  var _jsxRuntime$9 = jsxRuntimeExports;
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
     d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
   }), "Home");
-  default_1$a = Home.default = _default$a;
+  default_1$9 = Home.default = _default$9;
   var FolderCopy = {};
-  var _interopRequireDefault$9 = interopRequireDefaultExports;
+  var _interopRequireDefault$8 = interopRequireDefaultExports;
   Object.defineProperty(FolderCopy, "__esModule", {
     value: true
   });
-  var default_1$9 = FolderCopy.default = void 0;
-  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-  var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  var default_1$8 = FolderCopy.default = void 0;
+  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+  var _jsxRuntime$8 = jsxRuntimeExports;
+  var _default$8 = (0, _createSvgIcon$8.default)([/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
     d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-  }, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  }, "0"), /* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
     d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
   }, "1")], "FolderCopy");
-  default_1$9 = FolderCopy.default = _default$9;
+  default_1$8 = FolderCopy.default = _default$8;
   var Search = {};
-  var _interopRequireDefault$8 = interopRequireDefaultExports;
+  var _interopRequireDefault$7 = interopRequireDefaultExports;
   Object.defineProperty(Search, "__esModule", {
     value: true
   });
-  var default_1$8 = Search.default = void 0;
-  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-  var _jsxRuntime$8 = jsxRuntimeExports;
-  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-  }), "Search");
-  default_1$8 = Search.default = _default$8;
-  var CalendarMonth = {};
-  var _interopRequireDefault$7 = interopRequireDefaultExports;
-  Object.defineProperty(CalendarMonth, "__esModule", {
-    value: true
-  });
-  var default_1$7 = CalendarMonth.default = void 0;
+  var default_1$7 = Search.default = void 0;
   var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
   var _jsxRuntime$7 = jsxRuntimeExports;
   var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-    d: "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"
-  }), "CalendarMonth");
-  default_1$7 = CalendarMonth.default = _default$7;
+    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+  }), "Search");
+  default_1$7 = Search.default = _default$7;
   var HelpRounded = {};
   var _interopRequireDefault$6 = interopRequireDefaultExports;
   Object.defineProperty(HelpRounded, "__esModule", {
@@ -55188,7 +55176,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               href: COURSEFLOW_APP.config.home_path,
               selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.home })
               ]
             }
@@ -55202,7 +55190,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 href: COURSEFLOW_APP.config.my_library_path,
                 selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_library })
                 ]
               }
@@ -55215,25 +55203,12 @@ Please use another name.` : formatMuiErrorMessage(18));
                 href: COURSEFLOW_APP.config.explore_path,
                 selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.explore })
                 ]
               }
             ) })
-          ] }) : null,
-          !apiData.is_anonymous ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            ListItemButton$1,
-            {
-              component: "a",
-              "data-test-id": "panel-my-live-projects",
-              href: COURSEFLOW_APP.config.my_liveprojects_path,
-              selected: window.location.pathname === COURSEFLOW_APP.config.my_liveprojects_path,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_classrooms })
-              ]
-            }
-          ) }) : null
+          ] }) : null
         ] }),
         apiData.is_teacher && apiData.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
@@ -56663,44 +56638,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  class AssignmentTitle extends reactExports.Component {
-    render() {
-      const data2 = this.props.data;
-      let text;
-      if (data2.task.represents_workflow && data2.task.linked_workflow_data) {
-        text = data2.task.linked_workflow_data.title;
-        if (data2.task.linked_workflow_data.code)
-          text = data2.task.linked_workflow_data.code + " - " + text;
-      } else
-        text = data2.task.title;
-      if (text == null || text == "") {
-        text = window.gettext("Untitled");
-      }
-      if (this.props.user_role == role_keys.teacher) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            href: COURSEFLOW_APP.config.update_path.liveassignment.replace(
-              "0",
-              data2.id
-            ),
-            className: "workflow-title hover-shade",
-            title: text,
-            dangerouslySetInnerHTML: { __html: text }
-          }
-        );
-      } else {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "span",
-          {
-            className: "workflow-title",
-            title: text,
-            dangerouslySetInnerHTML: { __html: text }
-          }
-        );
-      }
-    }
-  }
   class OutcomeTitle extends reactExports.Component {
     render() {
       const data2 = this.props.data;
@@ -57101,9 +57038,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         ] });
       });
       __publicField(this, "Visible", () => {
-        const isTeacher = this.props.userRole === role_keys.teacher;
         const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
-        if (!this.props.readOnly && isTeacher && isEligibleType) {
+        if (!this.props.readOnly && isEligibleType) {
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
@@ -59540,9 +59476,9 @@ ${latestSubscriptionCallbackError.current.stack}
       ] }) });
     }
   }
-  const mapStateToProps$o = (state) => ({ data_package: state });
+  const mapStateToProps$m = (state) => ({ data_package: state });
   const WorkflowGridMenu = connect(
-    mapStateToProps$o,
+    mapStateToProps$m,
     null
   )(WorkflowGridMenuUnconnected);
   var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
@@ -61041,13 +60977,13 @@ ${latestSubscriptionCallbackError.current.stack}
   /*******************************************************
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
-  __publicField(ActionCreator, "createLockAction", (object_id, object_type, lock, user_id2, user_colour) => {
+  __publicField(ActionCreator, "createLockAction", (object_id, object_type, lock, user_id, user_colour) => {
     if (lock)
       return {
         type: object_type + "/createLock",
         payload: {
           id: object_id,
-          lock: { user_id: user_id2, user_colour }
+          lock: { user_id, user_colour }
         }
       };
     else
@@ -61453,7 +61389,7 @@ ${latestSubscriptionCallbackError.current.stack}
               disabled: readOnly,
               value: data2.task_classification,
               onChange: this.inputChanged.bind(this, "task_classification"),
-              children: this.context.task_choices.filter(
+              children: this.props.renderer.task_choices.filter(
                 (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
               ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
             }
@@ -61485,7 +61421,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 className: "half-width",
                 value: data2.time_units,
                 onChange: this.inputChanged.bind(this, "time_units"),
-                children: this.context.time_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+                children: this.props.renderer.time_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
               }
             )
           ] })
@@ -61538,7 +61474,7 @@ ${latestSubscriptionCallbackError.current.stack}
               maxlength: 500,
               textChangeFunction: this.valueChanged.bind(this, "description"),
               placeholder: "Insert description here",
-              readOnly: this.context.read_only
+              readOnly: this.props.renderer.read_only
             }
           )
         ] });
@@ -61553,7 +61489,7 @@ ${latestSubscriptionCallbackError.current.stack}
               disabled: readOnly,
               value: data2.context_classification,
               onChange: this.inputChanged.bind(this, "context_classification"),
-              children: this.context.context_choices.filter(
+              children: this.props.renderer.context_choices.filter(
                 (choice) => Math.floor(choice.type / 100) == data2.node_type || choice.type == 0
               ).map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
             }
@@ -61640,7 +61576,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 name: "outcomes_type",
                 value: data2.outcomes_type,
                 onChange: this.inputChanged.bind(this, "outcomes_type"),
-                children: this.context.context_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+                children: this.props.renderer.outcome_type_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
               }
             )
           ] }),
@@ -61793,7 +61729,7 @@ ${latestSubscriptionCallbackError.current.stack}
               disabled: readOnly,
               value: data2.strategy_classification,
               onChange: this.inputChanged.bind(this, "strategy_classification"),
-              children: this.context.context_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
+              children: this.props.renderer.strategy_classification_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: choice.type, children: choice.name }))
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -61817,7 +61753,7 @@ ${latestSubscriptionCallbackError.current.stack}
       });
       __publicField(this, "EditForm", ({ data: data2, noDelete }) => {
         let sets;
-        const read_only = this.context.read_only;
+        const read_only = this.props.renderer.read_only;
         const title = unescapeCharacters(data2.title || "");
         const type = object_dictionary[this.objectType];
         const override = data2.represents_workflow ? true : false;
@@ -61931,7 +61867,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     checkboxChanged(field, evt) {
-      this.context.change_field(
+      this.props.renderer.change_field(
         this.props.data.id,
         object_dictionary[this.objectType],
         field,
@@ -61939,7 +61875,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     valueChanged(field, new_value) {
-      this.context.change_field(
+      this.props.renderer.change_field(
         this.props.data.id,
         object_dictionary[this.objectType],
         field,
@@ -61965,7 +61901,7 @@ ${latestSubscriptionCallbackError.current.stack}
         value = parseInt(value.replace("#", ""), 16);
       if (evt.target.type == "number" && value == "")
         value = 0;
-      this.context.change_field(
+      this.props.renderer.change_field(
         this.props.data.id,
         object_dictionary[this.objectType],
         field,
@@ -62088,12 +62024,12 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
-  function setUserPermission(user_id2, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
+  function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
         objectID: JSON.stringify(objectID),
         objectType: JSON.stringify(objectType),
-        permission_user: JSON.stringify(user_id2),
+        permission_user: JSON.stringify(user_id),
         permission_type: JSON.stringify(permission_type)
       }).done(function(data2) {
         if (data2.action === DATA_ACTIONS.POSTED)
@@ -62438,10 +62374,11 @@ ${latestSubscriptionCallbackError.current.stack}
             show: this.state.show_comments,
             comments: this.props.data.comments,
             parent: this,
-            workflowID: this.context.workflowID,
-            unread_comments: this.context.unread_comments,
-            read_only: this.context.read_only,
-            add_comments: this.context.add_comments
+            renderer: this.props.renderer,
+            workflowID: this.props.renderer.workflowID,
+            unread_comments: this.props.renderer.unread_comments,
+            read_only: this.props.renderer.read_only,
+            add_comments: this.props.renderer.add_comments
           }
         )
       ] });
@@ -62571,8 +62508,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     deleteSelf(data2) {
-      if (this.context) {
-        this.context.selection_manager.deleted(this);
+      if (this.props.renderer) {
+        this.props.renderer.selection_manager.deleted(this);
       }
       if ((this.objectType === "week" || this.objectType === "column") && this.props.sibling_count < 2) {
         alert(window.gettext("You cannot delete the last ") + this.objectType);
@@ -62744,15 +62681,14 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     makeSortableNode(sortable_block, parent_id, draggable_type, draggable_selector, axis = false, grid = false, restrictTo = null, handle = false, containment = ".workflow-container") {
-      if (this.context.read_only) {
+      if (this.props.renderer.read_only)
         return;
-      }
       let cursorAt = {};
       if (draggable_type == "weekworkflow")
         cursorAt = { top: 20 };
       if (draggable_type == "nodeweek")
         cursorAt = { top: 20, left: 50 };
-      this.props;
+      const props = this.props;
       sortable_block.draggable({
         containment,
         // @ts-ignore
@@ -62788,7 +62724,7 @@ ${latestSubscriptionCallbackError.current.stack}
           drag_item.attr("data-restrict-to", restrictTo);
           const old_index = drag_item.prevAll().length;
           drag_item.attr("data-old-index", old_index);
-          this.context.selection_manager.changeSelection(null, null);
+          props.renderer.selection_manager.changeSelection(null, null);
           this.startSortFunction(
             parseInt(drag_item.attr("data-child-id")),
             draggable_type
@@ -62906,7 +62842,7 @@ ${latestSubscriptionCallbackError.current.stack}
         object_type = "outcome";
       if (through_type == "outcomeworkflow")
         object_type = "outcome";
-      this.context.lock_update(
+      this.props.renderer.lock_update(
         { object_id: id, object_type },
         lock_times.move,
         lock
@@ -62916,7 +62852,7 @@ ${latestSubscriptionCallbackError.current.stack}
   const getColumnByID = (state, id) => {
     for (const i2 in state.column) {
       const column2 = state.column[i2];
-      if (column2.id == id) {
+      if (column2.id == id)
         return {
           data: column2,
           sibling_count: state.workflow.columnworkflow_set.length,
@@ -62925,7 +62861,6 @@ ${latestSubscriptionCallbackError.current.stack}
             (columnworkflow_id) => getColumnWorkflowByID(state, columnworkflow_id).data.column
           )
         };
-      }
     }
   };
   const getWeekByID = (state, id) => {
@@ -63081,56 +63016,67 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   const getOutcomeByID = (state, id) => {
-    const stateSection = state.outcome;
-    for (const i2 in stateSection) {
-      const outcome = stateSection[i2];
-      if (outcome.id !== id)
-        continue;
-      if (outcome.is_dropped === void 0) {
-        outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
-      }
-      let rootOutcome = outcome;
-      let rank = [];
-      let titles = [];
-      let topRank = outcome.code || null;
-      if (outcome.depth > 0) {
-        const stateOutcomeSection = state.outcomeoutcome;
-        const rootInfo = findRootOutcome(stateOutcomeSection, outcome.id, []);
-        rank = rootInfo.rank.map(() => null);
-        titles = [...rank];
-        stateSection.forEach((sectionItem, j) => {
-          if (sectionItem.id === rootInfo.id)
-            rootOutcome = sectionItem;
-          rootInfo.rank.forEach((rankItem, k) => {
-            if (rankItem.parent !== sectionItem.id)
-              return;
-            titles[k] = sectionItem.title;
-            if (!rank[k]) {
-              if (sectionItem.code) {
-                if (k > 0)
-                  rank[k - 1] = sectionItem.code;
-                else
-                  topRank = sectionItem.code;
+    const state_section = state.outcome;
+    for (const i2 in state_section) {
+      const outcome = state_section[i2];
+      if (outcome.id === id) {
+        if (outcome.is_dropped === void 0) {
+          outcome.is_dropped = getDropped(id, "outcome", outcome.depth);
+        }
+        let root_outcome;
+        let rank = [];
+        let titles = [];
+        let top_rank;
+        if (outcome.depth > 0) {
+          const state_outcomeoutcome_section = state.outcomeoutcome;
+          const root_info = findRootOutcome(
+            state_outcomeoutcome_section,
+            outcome.id,
+            []
+          );
+          rank = root_info.rank.map((x) => null);
+          titles = rank.map((x) => null);
+          for (let j = 0; j < state_section.length; j++) {
+            if (state_section[j].id === root_info.id)
+              root_outcome = state_section[j];
+            for (let k = 0; k < root_info.rank.length; k++) {
+              if (root_info.rank[k].parent === state_section[j].id) {
+                titles[k] = state_section[j].title;
+                if (rank[k])
+                  continue;
+                if (state_section[j].code) {
+                  if (k > 0)
+                    rank[k - 1] = state_section[j].code;
+                  else
+                    top_rank = state_section[j].code;
+                }
+                rank[k] = state_section[j].child_outcome_links.indexOf(
+                  root_info.rank[k].through
+                ) + 1;
               }
-              rank[k] = sectionItem.child_outcome_links.indexOf(rankItem.through) + 1;
             }
-          });
-        });
-      } else {
-        topRank = topRank || findTopRank(state, rootOutcome);
+          }
+        } else {
+          root_outcome = outcome;
+          if (outcome.code)
+            top_rank = outcome.code;
+        }
+        if (!top_rank)
+          top_rank = findTopRank(state, root_outcome);
+        titles.push(outcome.title);
+        rank.unshift(top_rank);
+        const hovertext = rank.map((rank_i, i22) => rank_i + ". " + titles[i22]).join(" -> ");
+        const prefix2 = rank.join(".");
+        return {
+          data: outcome,
+          hovertext,
+          prefix: prefix2,
+          object_sets: state.objectset,
+          workflow_id: state.workflow.id
+        };
       }
-      titles.push(outcome.title);
-      rank.unshift(topRank);
-      const hovertext = rank.map((rankItem, i22) => `${rankItem}. ${titles[i22]}`).join(" -> ");
-      const prefix2 = rank.join(".");
-      return {
-        data: outcome,
-        hovertext,
-        prefix: prefix2,
-        object_sets: state.objectset,
-        workflow_id: state.workflow.id
-      };
     }
+    console.log("failed to find outcome");
   };
   const getChildWorkflowByID = (state, id) => {
     for (const i2 in state.child_workflow) {
@@ -65687,43 +65633,6 @@ ${latestSubscriptionCallbackError.current.stack}
   if (typeof window !== "undefined") {
     window.flatpickr = flatpickr;
   }
-  class DatePicker extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "input");
-      __publicField(this, "flatpickrInstance");
-      this.input = reactExports.createRef();
-    }
-    componentDidMount() {
-      if (this.input.current) {
-        this.flatpickrInstance = flatpickr(this.input.current, {
-          enableTime: true,
-          dateFormat: "Z",
-          altInput: true,
-          altFormat: "D M J, Y - H:i",
-          onChange: (selectedDates, dateStr) => {
-            this.props.onChange(dateStr);
-          }
-        });
-      }
-    }
-    componentWillUnmount() {
-      if (this.flatpickrInstance) {
-        this.flatpickrInstance.destroy();
-      }
-    }
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          disabled: this.props.disabled || false,
-          ref: this.input,
-          id: this.props.id,
-          defaultValue: this.props.default_value
-        }
-      );
-    }
-  }
   class CollapsibleText extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -65850,17 +65759,16 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$n = (state, ownProps) => {
+  const mapStateToProps$l = (state, ownProps) => {
     return getOutcomeOutcomeByID(state, ownProps.objectID);
   };
   const OutcomeOutcome = connect(
-    mapStateToProps$n,
+    mapStateToProps$l,
     null
   )(OutcomeOutcomeUnconnected);
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      __publicField(this, "objectType");
       this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
@@ -65885,72 +65793,17 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data2 = this.props.data;
-      return (
-        /*<div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined */
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: String(data2.id), children: this.getChildType() })
-      );
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", id: data2.id, ref: this.mainDiv, children: this.getChildType() });
     }
   }
-  const mapStateToProps$m = (state, ownProps) => {
-    return getOutcomeOutcomeByID(state, ownProps.objectID);
-  };
+  const mapOutcomeOutcomeStateToProps$1 = (state, own_props) => getOutcomeOutcomeByID(state, own_props.objectID);
   const SimpleOutcomeOutcome = connect(
-    mapStateToProps$m,
+    mapOutcomeOutcomeStateToProps$1,
     null
   )(SimpleOutcomeOutcomeUnconnected);
-  const WorkFlowConfigContext = React.createContext({});
-  class WorkFlowConfigProvider extends React.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "setValue", (newValue) => {
-        const formattedValue = {
-          task_choices: newValue.task_choices,
-          time_choices: newValue.time_choices,
-          read_only: newValue.read_only,
-          context_choices: newValue.context_choices,
-          outcome_type_choices: newValue.context_choices,
-          strategy_classification_choices: newValue.strategy_classification_choices,
-          change_field: newValue.change_field,
-          workflowID: newValue.workflowID,
-          unread_comments: newValue.unread_comments,
-          add_comments: newValue.add_comments,
-          view_comments: newValue.view_comments,
-          selection_manager: newValue.selection_manager,
-          lock_update: newValue.lock_update,
-          micro_update: newValue.micro_update,
-          is_strategy: newValue.is_strategy,
-          show_assignments: newValue.show_assignments,
-          column_choices: newValue.column_choices
-        };
-        this.setState({ value: formattedValue });
-      });
-      this.state = {
-        value: {},
-        // The initial context value
-        setValue: this.setValue
-        // Method to update the context
-      };
-    }
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkFlowConfigContext.Provider,
-        {
-          value: this.state,
-          children: this.props.children
-        }
-      );
-    }
-  }
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
-      __publicField(this, "children_block");
-      /*******************************************************
-       * FUNCTIONS
-       *******************************************************/
-      __publicField(this, "toggleDrop", (_evt) => {
-        this.setState({ is_dropped: !this.state.is_dropped });
-      });
       this.objectType = CfObjectType.OUTCOME;
       this.children_block = reactExports.createRef();
       this.state = { is_dropped: false };
@@ -65966,12 +65819,20 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.checkHidden)
         this.props.checkHidden();
     }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    toggleDrop() {
+      this.setState({ is_dropped: !this.state.is_dropped });
+    }
     getChildType(outcomeoutcome) {
+      const data2 = this.props.data;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         SimpleOutcomeOutcome,
         {
           objectID: outcomeoutcome,
-          parentID: this.props.data.id,
+          parentID: data2.id,
+          renderer: this.props.renderer,
           comments: this.props.comments,
           edit: this.props.edit
         },
@@ -65983,75 +65844,79 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data2 = this.props.data;
+      let children;
+      let dropIcon;
+      let droptext;
+      let comments;
+      let edit;
+      let onClick;
       if (checkSetHidden(data2, this.props.object_sets))
         return null;
-      const children = this.state.is_dropped ? data2.child_outcome_links.map(
-        (outcomeoutcome) => this.getChildType(outcomeoutcome)
-      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      const dropIcon = this.state.is_dropped ? "droptriangleup" : "droptriangledown";
-      const droptext = this.state.is_dropped ? window.gettext("hide") : window.gettext("show ") + data2.child_outcome_links.length + " " + window.ngettext(
-        "descendant",
-        "descendants",
-        data2.child_outcome_links.length
+      if (this.state.is_dropped) {
+        children = data2.child_outcome_links.map(
+          (outcomeoutcome) => this.getChildType(outcomeoutcome)
+        );
+      }
+      if (this.state.is_dropped)
+        dropIcon = "droptriangleup";
+      else
+        dropIcon = "droptriangledown";
+      if (this.state.is_dropped)
+        droptext = window.gettext("hide");
+      else
+        droptext = window.gettext("show ") + data2.child_outcome_links.length + " " + window.gettext(
+          "descendant",
+          "descendants",
+          data2.child_outcome_links.length
+        );
+      if (this.props.renderer.view_comments)
+        comments = this.addCommenting();
+      if (this.props.edit)
+        edit = this.addEditable(data2, true);
+      onClick = (evt) => this.props.renderer.selection_manager.changeSelection(evt, this);
+      let css_class = "outcome outcome-" + data2.id;
+      if (this.state.is_dropped)
+        css_class += " dropped";
+      if (data2.lock)
+        css_class += " locked locked-" + data2.lock.user_id;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: css_class,
+          style: this.get_border_style(),
+          ref: this.mainDiv,
+          onClick,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              OutcomeTitle,
+              {
+                data: data2,
+                prefix: this.props.prefix,
+                hovertext: this.props.hovertext
+              }
+            ) }),
+            data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
+            ] }),
+            data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: "children-block",
+                id: this.props.objectID + "-children-block",
+                ref: this.children_block,
+                children
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) }),
+            edit
+          ]
+        }
       );
-      const comments = this.context.view_comments ? this.addCommenting() : null;
-      const editPortal = this.props.edit ? this.addEditable(data2, true) : null;
-      const onClick = (evt) => {
-        return this.context.selection_manager.changeSelection(evt, this);
-      };
-      const cssClass = [
-        "outcome outcome-" + data2.id,
-        this.state.is_dropped ? " dropped" : "",
-        data2.lock ? "locked locked-" + data2.lock.user_id : ""
-      ].join(" ");
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        editPortal,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: cssClass,
-            style: this.get_border_style(),
-            ref: this.mainDiv,
-            onClick,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                OutcomeTitle,
-                {
-                  data: data2,
-                  prefix: this.props.prefix,
-                  hovertext: this.props.hovertext
-                }
-              ) }),
-              data2.depth < 2 && data2.child_outcome_links.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-drop", onClick: this.toggleDrop.bind(this), children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-img", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "img",
-                  {
-                    src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg"
-                  }
-                ) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-drop-text", children: droptext })
-              ] }),
-              data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "children-block",
-                  id: this.props.objectID + "-children-block",
-                  ref: this.children_block,
-                  children
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: comments }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "side-actions", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-indicator-container" }) })
-            ]
-          }
-        )
-      ] });
     }
   }
-  __publicField(SimpleOutcomeUnconnected, "contextType", WorkFlowConfigContext);
-  const mapOutcomeStateToProps$3 = (state, ownProps) => {
-    return getOutcomeByID(state, ownProps.objectID);
-  };
+  const mapOutcomeStateToProps$3 = (state, own_props) => getOutcomeByID(state, own_props.objectID);
   const SimpleOutcome = connect(
     mapOutcomeStateToProps$3,
     null
@@ -66180,10 +66045,11 @@ ${latestSubscriptionCallbackError.current.stack}
           id: data2.id,
           ref: this.mainDiv,
           children: [
-            !this.context.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
+            !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SimpleOutcome$1,
               {
+                renderer: this.props.renderer,
                 checkHidden: this.checkHidden.bind(this),
                 objectID: data2.parent_outcome,
                 parentID: this.props.parentID,
@@ -66195,7 +66061,6 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  __publicField(OutcomeHorizontalLinkUnconnected, "contextType", WorkFlowConfigContext);
   const mapOutcomeHorizontalLinkStateToProps = (state, own_props) => getOutcomeHorizontalLinkByID(state, own_props.objectID);
   const OutcomeHorizontalLink = connect(
     mapOutcomeHorizontalLinkStateToProps,
@@ -66236,11 +66101,11 @@ ${latestSubscriptionCallbackError.current.stack}
         this.makeDroppable();
     }
     sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-      this.context.micro_update(
+      this.props.renderer.micro_update(
         ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
       );
       insertedAt(
-        this.context,
+        this.props.renderer,
         child_id,
         "outcome",
         new_parent,
@@ -66258,7 +66123,7 @@ ${latestSubscriptionCallbackError.current.stack}
         )
       )) {
         insertedAt(
-          this.context,
+          this.props.renderer,
           null,
           "outcome",
           new_parent,
@@ -66342,6 +66207,7 @@ ${latestSubscriptionCallbackError.current.stack}
           {
             objectID: outcomeoutcome,
             parentID: data2.id,
+            renderer: this.props.renderer,
             show_horizontal: this.props.show_horizontal,
             parent_depth: this.props.data.depth
           },
@@ -66358,7 +66224,8 @@ ${latestSubscriptionCallbackError.current.stack}
             children: data2.outcome_horizontal_links_unique.map((horizontal_link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
               OutcomeHorizontalLink,
               {
-                objectID: horizontal_link
+                objectID: horizontal_link,
+                renderer: this.props.renderer
               },
               horizontal_link
             ))
@@ -66381,14 +66248,14 @@ ${latestSubscriptionCallbackError.current.stack}
           ] })
         );
       }
-      if (!this.context.read_only) {
+      if (!this.props.renderer.read_only) {
         mouseover_actions.push(this.addInsertSibling(data2));
         mouseover_actions.push(this.addDuplicateSelf(data2));
         mouseover_actions.push(this.addDeleteSelf(data2));
         if (data2.depth < 2)
           mouseover_actions.push(this.addInsertChild(data2));
       }
-      if (this.context.view_comments) {
+      if (this.props.renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
       if (data2.is_dropped) {
@@ -66405,7 +66272,7 @@ ${latestSubscriptionCallbackError.current.stack}
           data2.child_outcome_links.length
         );
       }
-      if (!this.context.read_only && data2.depth < 2 && data2.child_outcome_links.length === 0 && children)
+      if (!this.props.renderer.read_only && data2.depth < 2 && data2.child_outcome_links.length === 0 && children)
         children.push(
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-outcome", style: { height: "5px" } })
         );
@@ -66423,7 +66290,7 @@ ${latestSubscriptionCallbackError.current.stack}
           style: style2,
           className: css_class,
           ref: this.mainDiv,
-          onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
+          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-title", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               OutcomeTitle,
@@ -66446,7 +66313,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 children
               }
             ),
-            !this.context.read_only && data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            !this.props.renderer.read_only && data2.depth < 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
                 className: "outcome-create-child",
@@ -66487,7 +66354,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     getAddNew(objectset) {
       let add_new_outcome;
-      if (!this.context.read_only)
+      if (!this.props.renderer.read_only)
         add_new_outcome = /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -66517,12 +66384,11 @@ ${latestSubscriptionCallbackError.current.stack}
         "outcomeworkflow",
         ".outcome-workflow"
       );
-      if (this.props.data.depth === 0) {
+      if (this.props.data.depth === 0)
         this.makeDroppable();
-      }
     }
     sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-      this.context.micro_update(
+      this.props.renderer.micro_update(
         ActionCreator.moveOutcomeWorkflow(
           id,
           new_position,
@@ -66532,7 +66398,6 @@ ${latestSubscriptionCallbackError.current.stack}
       );
       insertedAt(
         this.props.renderer,
-        // to remove
         child_id,
         "outcome",
         this.props.workflow.id,
@@ -66567,6 +66432,7 @@ ${latestSubscriptionCallbackError.current.stack}
                   {
                     objectID: outcome.id,
                     parentID: this.props.workflow.id,
+                    renderer: this.props.renderer,
                     show_horizontal: true
                   },
                   outcome.id
@@ -81140,311 +81006,13 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$l = (state, ownProps) => {
+  const mapStateToProps$k = (state, ownProps) => {
     return getNodeLinkByID(state, ownProps.objectID) || { data: void 0 };
   };
   const NodeLink$1 = connect(
-    mapStateToProps$l,
+    mapStateToProps$k,
     null
   )(NodeLink);
-  function createAssignmentQuery(nodePk, liveprojectPk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.create_live_assignment, {
-        nodePk: JSON.stringify(nodePk),
-        liveprojectPk: JSON.stringify(liveprojectPk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function setAssignmentCompletionQuery(userassignmentPk, completed, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.set_assignment_completion, {
-        userassignmentPk: JSON.stringify(userassignmentPk),
-        completed: JSON.stringify(completed)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function getAssignmentsForNode(nodePk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
-        nodePk: JSON.stringify(nodePk)
-      }).done(function(data2) {
-        if (data2.action === DATA_ACTIONS.POSTED)
-          callBackFunction(data2);
-        else
-          window.fail_function(data2.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  class AssignmentForNode extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.state = { is_dropped: false };
-      this.user_id = COURSEFLOW_APP.contextData.user_id;
-      if (props.data.user_assignment)
-        this.state.completed = props.data.user_assignment.completed;
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    toggleDrop() {
-      this.setState((state) => {
-        return { is_dropped: !state.is_dropped };
-      });
-    }
-    changeCompletion(evt) {
-      const checked = evt.target.checked;
-      this.setState({ completed: checked });
-      setAssignmentCompletionQuery(this.props.data.user_assignment.id, checked);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data2 = this.props.data;
-      const node_data = data2.task;
-      if (node_data.represents_workflow)
-        ({
-          ...node_data,
-          ...node_data.linked_workflow_data,
-          id: data2.id
-        });
-      else
-        ({ ...node_data });
-      const css_class = "assignment-in-node";
-      let completion_data;
-      if (data2.user_assignment) {
-        let disabled = true;
-        if (this.props.renderer.user_role == role_keys.teacher || data2.self_reporting && //check AssignmentView for user defined in global scope
-        data2.user_assignment.liveprojectuser.user.id === user_id)
-          disabled = false;
-        let extra_data;
-        if (data2.single_completion && data2.user_assignment.completed) {
-          extra_data = [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              window.gettext("Completed by ") + getUserDisplay(
-                data2.user_assignment.liveprojectuser.user
-              ) + window.gettext(" on "),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                DatePicker,
-                {
-                  default_value: data2.user_assignment.completed_on,
-                  disabled: true
-                }
-              )
-            ] })
-          ];
-        }
-        completion_data = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-            window.gettext("Completion"),
-            ": "
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              type: "checkbox",
-              disabled,
-              checked: this.state.completed,
-              onChange: this.changeCompletion.bind(this)
-            }
-          ),
-          extra_data
-        ] });
-      } else if (data2.completion_info) {
-        completion_data = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Completion") + ": " + data2.completion_info });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-top-row", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          AssignmentTitle,
-          {
-            user_role: this.props.renderer.user_role,
-            data: data2
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "assignment-timing", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-                window.gettext("End Date"),
-                ": "
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                DatePicker,
-                {
-                  id: "end_date",
-                  default_value: data2.end_date,
-                  disabled: true
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
-                window.gettext("Start Date"),
-                ": "
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                DatePicker,
-                {
-                  id: "start_date",
-                  default_value: data2.start_date,
-                  disabled: true
-                }
-              )
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: completion_data })
-        ] })
-      ] });
-    }
-  }
-  class AssignmentBox extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      this.input = reactExports.createRef();
-      this.state = {
-        my_assignments: [],
-        all_assignments: []
-      };
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      this.setState({
-        has_rendered: true
-      });
-    }
-    componentDidUpdate(prevProps) {
-      if (this.props.show && !prevProps.show)
-        this.reloadAssignments();
-      if (!this.props.show && prevProps.show)
-        this.setState({ my_assignments: [], all_assignments: [] });
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    reloadAssignments() {
-      const node_id = this.props.node_id;
-      const props = this.props;
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      getAssignmentsForNode(node_id, (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-        this.setState(response_data.data_package);
-        if (!this.props.has_assignment && (response_data.data_package.my_assignments.length > 0 || response_data.data_package.all_assignments.length > 0)) {
-          props.dispatch(
-            ActionCreator.reloadAssignmentsAction(props.node_id, true)
-          );
-        } else if (this.props.has_assignment && response_data.data_package.my_assignments.length == 0 && response_data.data_package.all_assignments.length == 0) {
-          props.dispatch(
-            ActionCreator.reloadAssignmentsAction(props.node_id, false)
-          );
-        }
-      });
-    }
-    createAssignment() {
-      const props = this.props;
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      createAssignmentQuery(
-        props.node_id,
-        props.renderer.project.id,
-        (response_data) => {
-          COURSEFLOW_APP.tinyLoader.endLoad();
-          this.reloadAssignments();
-        }
-      );
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      let all_assignments;
-      let assignment_indicator = null;
-      if (!this.state.has_rendered) {
-        return null;
-      }
-      if (this.props.has_assignment) {
-        assignment_indicator = reactDomExports.createPortal(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "comment-indicator hover-shade",
-              onClick: this.props.parent.showAssignment.bind(this.props.parent),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "assignment.svg" })
-            }
-          ),
-          $(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
-        );
-      }
-      if (!this.props.show) {
-        return assignment_indicator;
-      }
-      const top_contents = [];
-      top_contents.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "close-button hover-shade",
-            title: window.gettext("Close"),
-            onClick: this.props.parent.showAssignment.bind(this.props.parent),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-          }
-        )
-      );
-      if (this.props.renderer.is_teacher) {
-        top_contents.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "create-assignment hover-shade",
-              title: window.gettext("Create New"),
-              onClick: this.createAssignment.bind(this),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "add_new.svg" })
-            }
-          )
-        );
-      }
-      if (!this.props.has_assignment) {
-        top_contents.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Not yet assigned") }));
-      }
-      const my_assignments = this.state.my_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
-      if (my_assignments.length > 0)
-        my_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("My Assignments") }));
-      if (this.props.renderer.is_teacher) {
-        all_assignments = this.state.all_assignments.map((assignment) => /* @__PURE__ */ jsxRuntimeExports.jsx(AssignmentForNode, { data: assignment, renderer: this.props.renderer }));
-        if (all_assignments.length > 0)
-          all_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("All Assignments") }));
-        if (my_assignments.length > 0 && all_assignments.length > 0)
-          all_assignments.unshift(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-      }
-      return reactDomExports.createPortal(
-        [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "comment-box", onClick: (evt) => evt.stopPropagation(), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "comment-top-row", children: top_contents }),
-            my_assignments,
-            all_assignments
-          ] }),
-          assignment_indicator
-        ],
-        $(this.props.parent.mainDiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
-      );
-    }
-  }
   const CompletionImg = ({
     completionStatus,
     outcomesType
@@ -81482,6 +81050,8 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeNodeUnconnected extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
+      console.log("props");
+      console.log(props);
       this.objectType = CfObjectType.OUTCOMENODE;
     }
     /*******************************************************
@@ -81500,7 +81070,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(data2, _iconDefault) {
+    addDeleteSelf(data2) {
       const icon = "close.svg";
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         ActionButton,
@@ -81531,10 +81101,10 @@ ${latestSubscriptionCallbackError.current.stack}
       const indicator = $(this.mainDiv.current).closest(".outcome-node-indicator");
       if (indicator.length >= 0) {
         const num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
-        indicator.children(".outcome-node-indicator-number").html(String(num_outcomenodes));
-        if (num_outcomenodes === 0) {
+        indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
+        if (num_outcomenodes === 0)
           indicator.css("display", "none");
-        } else
+        else
           indicator.css("display", "");
       }
     }
@@ -81552,7 +81122,7 @@ ${latestSubscriptionCallbackError.current.stack}
           id: data2.id,
           ref: this.mainDiv,
           children: [
-            !this.props.legacyRenderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
+            !this.props.renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.addDeleteSelf(data2, "close.svg") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CompletionImg,
               {
@@ -81569,7 +81139,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 objectID: data2.outcome,
                 parentID: this.props.parentID,
                 throughParentID: data2.id,
-                legacyRenderer: this.props.legacyRenderer
+                renderer: this.props.renderer
               }
             )
           ]
@@ -81577,13 +81147,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$k = (state, ownProps) => {
-    return getOutcomeNodeByID(state, ownProps.objectID);
-  };
-  const OutcomeNode = connect(
-    mapStateToProps$k,
-    null
-  )(OutcomeNodeUnconnected);
+  const mapStateToProps$j = (state, own_props) => getOutcomeNodeByID(state, own_props.objectID);
+  const OutcomeNode = connect(mapStateToProps$j, null)(OutcomeNodeUnconnected);
   class Index extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -81717,15 +81282,18 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     findAutoTarget() {
-      let target = null;
       const ns = this.source_node.closest(".node-week");
       const next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
+      let target;
       if (next_ns.length > 0) {
         target = next_ns.find(".node").attr("id");
       } else {
-        let next_sw = ns.closest(".week-workflow").next();
-        while (next_sw.length > 0 && !target) {
-          target = next_sw.find(".node-week:not(.ui-sortable-placeholder) .node").attr("id");
+        const sw = ns.closest(".week-workflow");
+        let next_sw = sw.next();
+        while (next_sw.length > 0) {
+          target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
+          if (target)
+            break;
           next_sw = next_sw.next();
         }
       }
@@ -81793,9 +81361,9 @@ ${latestSubscriptionCallbackError.current.stack}
             hovered: node_hovered,
             node_selected,
             source_port_handle: this.source_port_handle,
-            source_port: 2,
+            source_port: "2",
             target_port_handle: this.target_port_handle,
-            target_port: 0,
+            target_port: "0",
             source_dimensions: source_dims,
             target_dimensions: target_dims
           }
@@ -81916,11 +81484,11 @@ ${latestSubscriptionCallbackError.current.stack}
         }
       });
     }
-    mouseIn(_evt) {
+    mouseIn(evt) {
       const myComponent = this;
       if ($(".workflow-canvas").hasClass("creating-node-link"))
         return;
-      if (!this.context.read_only)
+      if (!this.props.renderer.read_only)
         $(
           "circle[data-node-id='" + this.props.objectID + "'][data-port-type='source']"
         ).addClass("mouseover");
@@ -81928,51 +81496,17 @@ ${latestSubscriptionCallbackError.current.stack}
       this.setState({
         hovered: true
       });
-      $(document).on("mousemove", function(evt) {
-        if (!myComponent || !myComponent.mainDiv || mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)) {
+      $(document).on("mousemove", function(evt2) {
+        if (!myComponent || !myComponent.mainDiv || mouseOutsidePadding(evt2, $(myComponent.mainDiv.current), 20)) {
           $(
             "circle[data-node-id='" + myComponent.props.objectID + "'][data-port-type='source']"
           ).removeClass("mouseover");
-          $(document).off(evt);
+          $(document).off(evt2);
           myComponent.setState({
             hovered: false
           });
         }
       });
-    }
-    addShowAssignment(data2) {
-      return [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ActionButton,
-          {
-            buttonIcon: "assignment.svg",
-            buttonClass: "assignment-button",
-            titleText: window.gettext("Show Assignment Info"),
-            handleClick: this.showAssignment.bind(this)
-          },
-          0
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          AssignmentBox,
-          {
-            show: this.state.show_assignments,
-            has_assignment: this.props.data.has_assignment,
-            parent: this,
-            renderer: this.context,
-            node_id: data2.id,
-            dispatch: this.props.dispatch.bind(this)
-          },
-          1
-        )
-      ];
-    }
-    showAssignment(evt) {
-      this.props;
-      evt.stopPropagation();
-      if (!this.state.show_assignments) {
-        this.setState({ show_assignments: true });
-      } else
-        this.setState({ show_assignments: false });
     }
     /*******************************************************
      * RENDER
@@ -81989,8 +81523,8 @@ ${latestSubscriptionCallbackError.current.stack}
       let linkIcon;
       const mouseover_actions = [];
       const data2 = this.props.data;
-      const renderer = this.context;
-      this.context.selection_manager;
+      const renderer = this.props.renderer;
+      renderer.selection_manager;
       if (data2.represents_workflow) {
         data_override = { ...data2, ...data2.linked_workflow_data, id: data2.id };
       } else {
@@ -82034,7 +81568,7 @@ ${latestSubscriptionCallbackError.current.stack}
               OutcomeNode,
               {
                 objectID: outcomenode,
-                legacyRenderer: this.context
+                renderer
               },
               outcomenode
             ))
@@ -82129,16 +81663,13 @@ ${latestSubscriptionCallbackError.current.stack}
         css_class += " dropped";
       if (data2.lock)
         css_class += " locked locked-" + data2.lock.user_id;
-      if (!this.context.read_only) {
+      if (!this.props.renderer.read_only) {
         mouseover_actions.push(this.addInsertSibling(data2));
         mouseover_actions.push(this.addDuplicateSelf(data2));
         mouseover_actions.push(this.addDeleteSelf(data2));
       }
       if (renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
-      }
-      if (renderer.show_assignments) {
-        mouseover_actions.push(this.addShowAssignment(data2));
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         this.addEditable(data_override),
@@ -82151,10 +81682,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ref: this.mainDiv,
             "data-selected": this.state.selected,
             "data-hovered": this.state.hovered,
-            onClick: (evt) => this.context.selection_manager.changeSelection(
-              evt,
-              this
-            ),
+            onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
                 lefticon,
@@ -82177,7 +81705,7 @@ ${latestSubscriptionCallbackError.current.stack}
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-left", children: dropText }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-middle", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + dropIcon + ".svg" }) }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.context.time_choices[data_override.time_units].name }) })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-side node-drop-right", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-drop-time", children: data_override.time_required && data_override.time_required + " " + this.props.renderer.time_choices[data_override.time_units].name }) })
                   ]
                 }
               ),
@@ -82196,11 +81724,11 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   };
-  const mapStateToProps$j = (state, ownProps) => {
+  const mapStateToProps$i = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
   const Node$2 = connect(
-    mapStateToProps$j,
+    mapStateToProps$i,
     null
   )(Node$1);
   class NodeWeekUnconnected extends reactExports.Component {
@@ -82220,6 +81748,7 @@ ${latestSubscriptionCallbackError.current.stack}
             objectID: data2.node,
             parentID: this.props.parentID,
             throughParentID: data2.id,
+            renderer: this.props.renderer,
             column_order: this.props.column_order
           }
         );
@@ -82247,11 +81776,11 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$i = (state, ownProps) => {
+  const mapStateToProps$h = (state, ownProps) => {
     return getNodeWeekByID(state, ownProps.objectID);
   };
   const NodeWeek = connect(
-    mapStateToProps$i,
+    mapStateToProps$h,
     null
   )(NodeWeekUnconnected);
   class WeekUnconnected extends EditableComponentWithSorting {
@@ -82527,6 +82056,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 {
                   objectID: nodeweek,
                   parentID: data2.id,
+                  renderer: this.props.renderer,
                   column_order: this.props.column_order
                 },
                 nodeweek
@@ -82567,12 +82097,12 @@ ${latestSubscriptionCallbackError.current.stack}
       };
       const dropIcon = data2.is_dropped ? "droptriangleup" : "droptriangledown";
       const mouseover_actions = [];
-      if (!this.context.read_only) {
+      if (!this.props.renderer.read_only) {
         mouseover_actions.push(this.addInsertSibling(data2));
         mouseover_actions.push(this.addDuplicateSelf(data2));
         mouseover_actions.push(this.addDeleteSelf(data2));
       }
-      if (this.context.view_comments) {
+      if (this.props.renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
@@ -82583,7 +82113,7 @@ ${latestSubscriptionCallbackError.current.stack}
             style: style2,
             className: cssClasses,
             ref: this.mainDiv,
-            onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
+            onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-container-bypass", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mouseover-actions", children: mouseover_actions }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -82620,11 +82150,11 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$h = (state, ownProps) => {
+  const mapStateToProps$g = (state, ownProps) => {
     return getTermByID(state, ownProps.objectID);
   };
   const Term$1 = connect(
-    mapStateToProps$h,
+    mapStateToProps$g,
     null
   )(Term);
   class WeekWorkflowUnconnected extends ComponentWithToggleDrop {
@@ -82642,6 +82172,7 @@ ${latestSubscriptionCallbackError.current.stack}
               objectID: data2.week,
               rank: this.props.order.indexOf(data2.id),
               parentID: this.props.parentID,
+              renderer: this.props.renderer,
               throughParentID: data2.id
             }
           );
@@ -82652,6 +82183,7 @@ ${latestSubscriptionCallbackError.current.stack}
             objectID: data2.week,
             rank: this.props.order.indexOf(data2.id),
             parentID: this.props.parentID,
+            renderer: this.props.renderer,
             throughParentID: data2.id
           }
         );
@@ -82739,7 +82271,7 @@ ${latestSubscriptionCallbackError.current.stack}
               OutcomeNode,
               {
                 objectID: outcomenode,
-                legacyRenderer: this.props.legacyRenderer
+                renderer
               },
               outcomenode
             ))
@@ -82812,6 +82344,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ref: this.mainDiv,
             onClick: (evt) => {
               console.log("clicked");
+              console.log("clicked");
               return () => selection_manager.changeSelection(evt, this);
             },
             children: [
@@ -82835,11 +82368,11 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$g = (state, ownProps) => {
+  const mapStateToProps$f = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
   const NodeComparison = connect(
-    mapStateToProps$g,
+    mapStateToProps$f,
     null
   )(NodeComparisonUnconnected);
   class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
@@ -82853,6 +82386,8 @@ ${latestSubscriptionCallbackError.current.stack}
         {
           objectID: data2.node,
           parentID: this.props.parentID,
+          throughParentID: data2.id,
+          renderer: this.props.renderer,
           column_order: this.props.column_order
         }
       );
@@ -82934,6 +82469,7 @@ ${latestSubscriptionCallbackError.current.stack}
         {
           objectID: nodeweek,
           parentID: this.props.data.id,
+          renderer: this.props.renderer,
           column_order: this.props.column_order
         },
         nodeweek
@@ -82998,7 +82534,8 @@ ${latestSubscriptionCallbackError.current.stack}
           objectID: data2.week,
           rank: this.props.order.indexOf(data2.id),
           parentID: this.props.parentID,
-          throughParentID: data2.id
+          throughParentID: data2.id,
+          renderer: this.props.renderer
         }
       );
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83165,11 +82702,11 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$f = (state) => ({
+  const mapStateToProps$e = (state) => ({
     data: state.workflow,
     object_sets: state.objectset
   });
-  const WorkflowBase = connect(mapStateToProps$f, null)(WorkflowBaseUnconnected);
+  const WorkflowBase = connect(mapStateToProps$e, null)(WorkflowBaseUnconnected);
   class ViewBarUnconnected extends reactExports.Component {
     /*******************************************************
      * FUNCTIONS
@@ -83197,31 +82734,23 @@ ${latestSubscriptionCallbackError.current.stack}
     render() {
       const data2 = this.props.data;
       let sort_block;
-      if (
-        // @ts-ignore
-        this.context.view_type === "outcometable" || // @ts-ignore
-        this.context.view_type === "horizontaloutcometable"
-      ) {
+      if (this.props.renderer.view_type === "outcometable" || this.props.renderer.view_type === "horizontaloutcometable") {
         const table_type_value = data2.table_type || 0;
-        const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-          className: "node-bar-sort-block",
-          // @ts-ignore
-          children: this.context.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                disabled: table_type_value === 1 || data2.type === "program" && choice.type > 1,
-                type: "radio",
-                id: "sort_type_choice" + choice.type,
-                name: "sort_type_choice" + choice.type,
-                value: choice.type,
-                checked: data2.outcomes_sort === choice.type,
-                onChange: this.changeSort.bind(this)
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
-          ] }))
-        });
+        const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.renderer.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              disabled: table_type_value === 1 || data2.type === "program" && choice.type > 1,
+              type: "radio",
+              id: "sort_type_choice" + choice.type,
+              name: "sort_type_choice" + choice.type,
+              value: choice.type,
+              checked: data2.outcomes_sort === choice.type,
+              onChange: this.changeSort.bind(this)
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
+        ] })) });
         const table_type = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-bar-sort-block", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83295,11 +82824,11 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$e = (state) => ({
+  const mapStateToProps$d = (state) => ({
     object_sets: state.objectset
   });
   const ViewBar = connect(
-    mapStateToProps$e,
+    mapStateToProps$d,
     null
   )(ViewBarUnconnected);
   class RestoreBarItem extends ComponentWithToggleDrop {
@@ -83348,7 +82877,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class RestoreBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      __publicField(this, "objectType");
       this.objectType = CfObjectType.WORKFLOW;
     }
     /*******************************************************
@@ -83378,7 +82906,8 @@ ${latestSubscriptionCallbackError.current.stack}
         RestoreBarItem,
         {
           objectType: "column",
-          data: column2
+          data: column2,
+          renderer: this.props.renderer
         },
         column2.id
       ));
@@ -83386,7 +82915,8 @@ ${latestSubscriptionCallbackError.current.stack}
         RestoreBarItem,
         {
           objectType: "week",
-          data: week
+          data: week,
+          renderer: this.props.renderer
         },
         week.id
       ));
@@ -83394,7 +82924,8 @@ ${latestSubscriptionCallbackError.current.stack}
         RestoreBarItem,
         {
           objectType: "node",
-          data: node2
+          data: node2,
+          renderer: this.props.renderer
         },
         node2.id
       ));
@@ -83402,7 +82933,8 @@ ${latestSubscriptionCallbackError.current.stack}
         RestoreBarItem,
         {
           objectType: "outcome",
-          data: outcome
+          data: outcome,
+          renderer: this.props.renderer
         },
         outcome.id
       ));
@@ -83410,7 +82942,8 @@ ${latestSubscriptionCallbackError.current.stack}
         RestoreBarItem,
         {
           objectType: "nodelink",
-          data: nodelink
+          data: nodelink,
+          renderer: this.props.renderer
         },
         nodelink.id
       ));
@@ -83445,7 +82978,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class OutcomeBarOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      __publicField(this, "objectType");
       this.objectType = CfObjectType.OUTCOMEOUTCOME;
     }
     /*******************************************************
@@ -83700,7 +83232,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$d = (state) => ({
+  const mapStateToProps$c = (state) => ({
     data: getSortedOutcomesFromOutcomeWorkflowSet(
       state,
       state.workflow.outcomeworkflow_set
@@ -83708,7 +83240,7 @@ ${latestSubscriptionCallbackError.current.stack}
     workflow_type: state.workflow.type
   });
   const OutcomeBarConnected = connect(
-    mapStateToProps$d,
+    mapStateToProps$c,
     null
   )(OutcomeBarUnconnected);
   class ParentOutcomeOutcomeUnconnected extends reactExports.Component {
@@ -83838,8 +83370,8 @@ ${latestSubscriptionCallbackError.current.stack}
                 ParentOutcome,
                 {
                   objectID: outcomeItem.id,
-                  parentID: this.context.parentID,
-                  readOnly: this.context.read_only,
+                  parentID: this.props.renderer.parentID,
+                  readOnly: this.props.renderer.readOnly,
                   throughParentID: this.props.data.id
                 },
                 outcomeItem.id
@@ -83866,7 +83398,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$c = (state) => {
+  const mapStateToProps$b = (state) => {
     return {
       data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
       workflow: state.workflow,
@@ -83874,16 +83406,21 @@ ${latestSubscriptionCallbackError.current.stack}
     };
   };
   const ParentOutcomeBar = connect(
-    mapStateToProps$c,
+    mapStateToProps$b,
     null
   )(ParentOutcomeBarUnconnected);
   class ComparisonViewBar extends reactExports.Component {
-    constructor() {
-      super(...arguments);
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      __publicField(this, "Sets", () => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.objectSets.sort((a, b) => {
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    toggleHidden(id) {
+      this.props.toggleObjectSet(id);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const sets = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.props.object_sets.sort((a, b) => {
         const x = a.term;
         const y = b.term;
         if (x < y)
@@ -83891,7 +83428,7 @@ ${latestSubscriptionCallbackError.current.stack}
         if (x > y)
           return 1;
         return 0;
-      }).map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
@@ -83903,21 +83440,10 @@ ${latestSubscriptionCallbackError.current.stack}
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
-      ] }, index)) }));
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    toggleHidden(id) {
-      this.props.toggleObjectSet(id);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
+      ] })) });
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Object Sets") + ":" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Sets, {})
+        sets
       ] });
     }
   }
@@ -83976,13 +83502,6 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapColumnStateToProps = (state, ownProps) => {
-    return getColumnByID(state, ownProps.objectID);
-  };
-  const NodeBarColumn = connect(
-    mapColumnStateToProps,
-    null
-  )(NodeBarColumnUnconnected);
   class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     /*******************************************************
      * LIFECYCLE
@@ -83998,9 +83517,8 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b;
-      const choice = (_b = (_a = this.props) == null ? void 0 : _a.columnChoices) == null ? void 0 : _b.find(
-        (columnChoice) => columnChoice.type === this.props.columnType
+      const choice = this.props.columnChoices.find(
+        (choice2) => choice2.type === this.props.columnType
       );
       const title = choice ? `New ${choice.name}` : "New";
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84013,15 +83531,14 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  const mapColumnStateToProps$1 = (state, own_props) => getColumnByID(state, own_props.objectID);
+  const NodeBarColumn = connect(
+    mapColumnStateToProps$1,
+    null
+  )(NodeBarColumnUnconnected);
   class NodeBarColumnWorkflowUnconnected extends reactExports.Component {
     /*******************************************************
      * RENDER
-     *******************************************************/
-    /*******************************************************
-     * NodeBarColumn, NodeBarColumnCreator
-     * are these same component, but with or without redux
-     * don't understand point yet
-     *
      *******************************************************/
     render() {
       if (this.props.data)
@@ -84032,7 +83549,9 @@ ${latestSubscriptionCallbackError.current.stack}
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-column-workflow", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
             NodeBarColumn,
             {
-              objectID: this.props.data.column
+              objectID: this.props.data.column,
+              throughParentID: this.props.data.id,
+              parentID: this.props.parentID
             }
           ) })
         );
@@ -84051,11 +83570,11 @@ ${latestSubscriptionCallbackError.current.stack}
         );
     }
   }
-  const mapStateToProps$b = (state, ownProps) => {
+  const mapStateToProps$a = (state, ownProps) => {
     return getColumnWorkflowByID(state, ownProps.objectID);
   };
   const NodeBarColumnWorkflow = connect(
-    mapStateToProps$b,
+    mapStateToProps$a,
     null
   )(NodeBarColumnWorkflowUnconnected);
   class StrategyUnconnected extends ComponentWithToggleDrop {
@@ -84132,8 +83651,6 @@ ${latestSubscriptionCallbackError.current.stack}
   class NodeBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
-      console.log("this.props.columnChoices in nodebar/index");
-      console.log(this.props.columnChoices);
     }
     /*******************************************************
      * RENDER
@@ -84193,14 +83710,14 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  const mapStateToProps$a = (state) => ({
+  const mapStateToProps$9 = (state) => ({
     data: state.workflow,
     columns: state.column,
     available_strategies: state.strategy
     // saltise_strategies: state.saltise_strategy
   });
   const NodeBar = connect(
-    mapStateToProps$a,
+    mapStateToProps$9,
     null
   )(NodeBarUnconnected);
   class RightSideBar extends reactExports.Component {
@@ -84249,18 +83766,19 @@ ${latestSubscriptionCallbackError.current.stack}
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBar,
           {
-            readOnly: this.context.read_only,
-            columnChoices: this.context.column_choices
+            readOnly: this.props.renderer.read_only,
+            columnChoices: this.props.renderer.column_choices
           }
         );
       return null;
     }
     getOutcomeBar() {
+      const renderer = this.props.renderer;
       if (this.props.context === WFContext.COMPARISON) {
         return null;
       }
-      if (this.props.context.view_type === ViewType.OUTCOME_EDIT) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, {});
+      if (renderer.view_type === ViewType.OUTCOME_EDIT) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ParentOutcomeBar, { renderer });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         OutcomeBarConnected,
@@ -84272,14 +83790,15 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     getViewBar() {
       if (this.props.context === WFContext.WORKFLOW) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ViewBar, { data: this.props.data, renderer: this.props.renderer });
       }
       if (this.props.context === WFContext.COMPARISON) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           ComparisonViewBar,
           {
             toggleObjectSet: this.props.toggleObjectSet,
-            objectSets: this.props.object_sets
+            object_sets: this.props.object_sets,
+            renderer: this.props.renderer
           }
         );
       }
@@ -84287,7 +83806,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     getRestoreBar() {
       if (this.props.context === WFContext.WORKFLOW)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, {});
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(RestoreBar, { renderer: this.props.renderer });
       return null;
     }
     /*******************************************************
@@ -84295,6 +83814,7 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     // @todo why are these anchor links?
     render() {
+      const renderer = this.props.renderer;
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "sidebar", className: "side-bar hide-print", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#edit-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -84313,7 +83833,7 @@ ${latestSubscriptionCallbackError.current.stack}
               children: "add_circle"
             }
           ) }) }),
-          !this.context.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          !renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "hover-shade", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#outcome-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
@@ -84342,11 +83862,11 @@ ${latestSubscriptionCallbackError.current.stack}
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "edit-menu", className: "right-panel-container" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "node-bar", className: "right-panel-container", children: this.getNodeBar() }),
-        !this.context.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        !this.props.renderer.is_strategy && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "outcome-bar", className: "right-panel-container", children: this.getOutcomeBar() }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "view-bar", className: "right-panel-container", children: this.getViewBar() })
         ] }),
-        !this.context.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
+        !renderer.read_only && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "restore-bar", className: "right-panel-container", children: this.getRestoreBar() }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "window-close-button", id: "side-bar-close-button", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded green", children: "arrow_forward" }) })
       ] });
     }
@@ -84507,17 +84027,16 @@ ${latestSubscriptionCallbackError.current.stack}
       if (data2.lock) {
         style2.border = "2px solid " + data2.lock.user_colour;
       }
-      const cssClass = [
-        "column",
-        data2.lock ? "locked locked-" + data2.lock.user_id : ""
-      ].join(" ");
+      let css_class = "column";
+      if (data2.lock)
+        css_class += " locked locked-" + data2.lock.user_id;
       const mouseover_actions = [];
-      if (!this.context.read_only) {
+      if (!this.props.renderer.read_only) {
         mouseover_actions.push(this.addInsertSibling(data2));
         mouseover_actions.push(this.addDuplicateSelf(data2));
         mouseover_actions.push(this.addDeleteSelf(data2));
       }
-      if (this.context.view_comments) {
+      if (this.props.renderer.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -84525,8 +84044,8 @@ ${latestSubscriptionCallbackError.current.stack}
         {
           ref: this.mainDiv,
           style: style2,
-          className: cssClass,
-          onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
+          className: css_class,
+          onClick: (evt) => this.props.renderer.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "column-line", children: [
               this.getIcon(),
@@ -84539,13 +84058,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  const mapStateToProps$9 = (state, ownProps) => {
-    return getColumnByID(state, ownProps.objectID);
-  };
-  const Column$1 = connect(
-    mapStateToProps$9,
-    null
-  )(Column);
+  const mapColumnStateToProps = (state, own_props) => getColumnByID(state, own_props.objectID);
+  const Column$1 = connect(mapColumnStateToProps, null)(Column);
   class ColumnWorkflow extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -84639,21 +84153,21 @@ ${latestSubscriptionCallbackError.current.stack}
         LegendLine,
         {
           icon: context_keys[value],
-          text: this.context.context_choices.find((obj) => obj.type == value).name
+          text: this.props.renderer.context_choices.find((obj) => obj.type == value).name
         }
       ));
       const tasks = this.props.tasks.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         LegendLine,
         {
           icon: task_keys[value],
-          text: this.context.task_choices.find((obj) => obj.type == value).name
+          text: this.props.renderer.task_choices.find((obj) => obj.type == value).name
         }
       ));
       const strategies = this.props.strategies.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         LegendLine,
         {
           icon: strategy_keys[value],
-          text: this.context.strategy_classification_choices.find(
+          text: this.props.renderer.strategy_classification_choices.find(
             (obj) => obj.type == value
           ).name
         }
@@ -84748,11 +84262,11 @@ ${latestSubscriptionCallbackError.current.stack}
     }
     sortableMovedFunction(id, new_position, type, new_parent, child_id) {
       if (type === "columnworkflow") {
-        this.context.micro_update(
+        this.props.renderer.micro_update(
           ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
         );
         insertedAt(
-          this.context,
+          this.props.renderer,
           child_id,
           "column",
           new_parent,
@@ -84762,11 +84276,11 @@ ${latestSubscriptionCallbackError.current.stack}
         );
       }
       if (type === "weekworkflow") {
-        this.context.micro_update(
+        this.props.renderer.micro_update(
           ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
         );
         insertedAt(
-          this.context,
+          this.props.renderer,
           child_id,
           "week",
           new_parent,
@@ -84781,12 +84295,14 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     render() {
       const data2 = this.props.data;
+      const renderer = this.props.renderer;
       const columnworkflows = data2.columnworkflow_set.map(
         (columnworkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           ColumnWorkflow$1,
           {
             objectID: columnworkflow,
-            parentID: data2.id
+            parentID: data2.id,
+            renderer
           },
           `columnworkflow-${index}`
         )
@@ -84796,7 +84312,8 @@ ${latestSubscriptionCallbackError.current.stack}
         {
           condensed: data2.condensed,
           objectID: weekworkflow,
-          parentID: data2.id
+          parentID: data2.id,
+          renderer
         },
         `weekworkflow-${index}`
       ));
@@ -84804,7 +84321,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (data2.condensed)
         css_class += " condensed";
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: css_class, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLegend, { renderer }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "column-row", id: data2.id + "-column-block", children: columnworkflows }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "week-block", id: data2.id + "-week-block", children: weekworkflows }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "workflow-canvas", width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -85828,7 +85345,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * LIFECYCLE
      *******************************************************/
     componentDidMount() {
-      if (this.context.public_view) {
+      if (this.props.renderer.public_view) {
         getPublicParentWorkflowInfo(
           this.props.workflow_id,
           (response_data) => this.setState({
@@ -86146,7 +85663,6 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b;
       const data2 = this.props.data;
       const is_dropped = this.getIsDropped();
       let dropIcon;
@@ -86194,7 +85710,7 @@ ${latestSubscriptionCallbackError.current.stack}
           ]
         }
       ) });
-      const outcome_row = (_b = (_a = this.props.outcome_tree) == null ? void 0 : _a.outcomenodes) == null ? void 0 : _b.map(
+      const outcome_row = this.props.outcome_tree.outcomenodes.map(
         (outcomenodegroup) => {
           const group_row = outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             TableCell,
@@ -94354,38 +93870,15 @@ ${latestSubscriptionCallbackError.current.stack}
   class WorkflowBaseViewUnconnected extends EditableComponent {
     constructor(props) {
       super(props);
-      __publicField(this, "allowed_tabs");
-      __publicField(this, "readOnly");
-      __publicField(this, "public_view");
-      __publicField(this, "can_view");
-      __publicField(this, "data");
-      __publicField(this, "project");
-      __publicField(this, "selection_manager");
-      __publicField(this, "renderMethod");
-      __publicField(this, "container");
-      __publicField(this, "view_type");
-      __publicField(this, "websocket");
-      __publicField(this, "always_static");
-      __publicField(this, "user_id");
-      __publicField(this, "project_permission");
-      __publicField(this, "object_sets");
-      __publicField(this, "workflowId");
-      __publicField(this, "is_student");
       /*******************************************************
        * COMPONENTS
        *******************************************************/
-      __publicField(this, "TypeIndicator", () => {
-        const data2 = this.props.data;
-        let type_text = window.gettext(data2.type);
-        if (data2.is_strategy)
-          type_text += window.gettext(" strategy");
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data2.type, children: type_text });
-      });
       __publicField(this, "Header", () => {
         const data2 = this.props.data;
-        const style2 = {
-          border: data2.lock ? "2px solid " + data2.lock.user_colour : "inherit"
-        };
+        const style2 = {};
+        if (data2.lock) {
+          style2.border = "2px solid " + data2.lock.user_colour;
+        }
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -94402,7 +93895,7 @@ ${latestSubscriptionCallbackError.current.stack}
                     class_name: "project-title"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
+                this.getTypeIndicator()
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
@@ -94432,22 +93925,22 @@ ${latestSubscriptionCallbackError.current.stack}
             WorkflowTableView,
             {
               data: this.data,
+              renderer,
               view_type: this.view_type
             }
           );
           this.allowed_tabs = [3];
         } else if (this.view_type == ViewType.OUTCOME_EDIT) {
-          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, {});
-          if (this.data.type == "program") {
+          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, { renderer });
+          if (this.data.type == "program")
             this.allowed_tabs = [3];
-          } else {
+          else
             this.allowed_tabs = [2, 3];
-          }
         } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
-          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { view_type: this.view_type });
+          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { renderer, view_type: this.view_type });
           this.allowed_tabs = [3];
         } else if (this.view_type == ViewType.GRID) {
-          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView, { view_type: this.view_type });
+          workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView, { renderer, view_type: this.view_type });
           this.allowed_tabs = [3];
         } else {
           workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, { renderer });
@@ -94919,8 +94412,6 @@ ${latestSubscriptionCallbackError.current.stack}
     componentDidMount() {
       this.getUserData();
       this.updateTabs();
-      const { setValue } = this.context;
-      setValue(this.props.renderer);
       COURSEFLOW_APP.makeDropdown("#jump-to");
       COURSEFLOW_APP.makeDropdown("#expand-collapse-all");
     }
@@ -95010,6 +94501,13 @@ ${latestSubscriptionCallbackError.current.stack}
           closeMessageBox();
         }
       );
+    }
+    getTypeIndicator() {
+      const data2 = this.props.data;
+      let type_text = window.gettext(data2.type);
+      if (data2.is_strategy)
+        type_text += window.gettext(" strategy");
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + data2.type, children: type_text });
     }
     getUsers() {
       if (!this.state.users)
@@ -95178,8 +94676,6 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      console.log("this.context");
-      console.log(this.context);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         this.addEditable(this.props.data),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
@@ -95200,6 +94696,7 @@ ${latestSubscriptionCallbackError.current.stack}
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ParentWorkflowIndicator,
                 {
+                  renderer: this.props.renderer,
                   workflow_id: this.workflowId
                 }
               )
@@ -95208,7 +94705,7 @@ ${latestSubscriptionCallbackError.current.stack}
               RightSideBar,
               {
                 context: "workflow",
-                legacyRenderer: this.props.legacyRenderer,
+                renderer: this.props.renderer,
                 data: this.props.data,
                 parentRender: this.renderMethod
               }
@@ -95221,7 +94718,6 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
-  __publicField(WorkflowBaseViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps = (state) => {
     return {
       data: state.workflow,
@@ -95241,22 +94737,23 @@ ${latestSubscriptionCallbackError.current.stack}
   });
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   class Workflow {
+    // NOTE: this is not yet a react component, so its misleading to use the same
+    // 'props' value in the constructor since they behave differently
     constructor(propsConfig) {
       __publicField(this, "message_queue");
       __publicField(this, "messages_queued");
       __publicField(this, "public_view");
       __publicField(this, "workflowID");
-      __publicField(this, "column_choices");
-      __publicField(this, "context_choices");
-      __publicField(this, "task_choices");
-      __publicField(this, "time_choices");
-      __publicField(this, "outcome_type_choices");
-      __publicField(this, "outcome_sort_choices");
-      __publicField(this, "strategy_classification_choices");
+      // private column_choices: Choice[]
+      // private context_choices: Choice[]
+      // private task_choices: Choice[]
+      // private time_choices: Choice[]
+      // private outcome_type_choices: Choice[]
+      // private outcome_sort_choices: Choice[]
+      // private strategy_classification_choices: Choice[]
       __publicField(this, "is_strategy");
       __publicField(this, "project");
       __publicField(this, "user_permission");
-      __publicField(this, "user_role");
       __publicField(this, "user_id");
       __publicField(this, "read_only");
       __publicField(this, "always_static");
@@ -95266,7 +94763,6 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "view_comments");
       __publicField(this, "add_comments");
       __publicField(this, "is_student");
-      __publicField(this, "show_assignments");
       __publicField(this, "is_teacher");
       __publicField(this, "selection_manager");
       __publicField(this, "child_data_completed");
@@ -95280,11 +94776,6 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "has_rendered");
       __publicField(this, "is_static");
       __publicField(this, "store");
-      // NOTE: this is not yet a react component, so its misleading to use the same
-      // 'props' value in the constructor since they behave differently
-      __publicField(this, "unread_comments");
-      __publicField(this, "container");
-      __publicField(this, "view_type");
       const {
         column_choices,
         context_choices,
@@ -95310,7 +94801,6 @@ ${latestSubscriptionCallbackError.current.stack}
       this.is_strategy = is_strategy;
       this.project = project;
       this.user_permission = propsConfig.user_permission;
-      this.user_role = propsConfig.user_role ?? role_keys["none"];
       this.user_id = propsConfig.user_id;
       this.read_only = true;
       this.workflowRender = this.render.bind(this);
@@ -95334,18 +94824,6 @@ ${latestSubscriptionCallbackError.current.stack}
           this.view_comments = true;
           this.add_comments = true;
           this.can_view = true;
-          break;
-      }
-      switch (propsConfig.user_role) {
-        case role_keys["none"]:
-          break;
-        case role_keys["student"]:
-          this.is_student = true;
-          this.show_assignments = true;
-          break;
-        case role_keys["teacher"]:
-          this.is_teacher = true;
-          this.show_assignments = true;
           break;
       }
       this.getWorkflowData = this.public_view ? getPublicWorkflowDataQuery : getWorkflowDataQuery;
@@ -95431,16 +94909,15 @@ ${latestSubscriptionCallbackError.current.stack}
             ActionCreator.refreshStoreData(response.data_package)
           );
           reactDomExports.render(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               WorkflowBaseView,
               {
                 view_type,
                 renderer: this,
-                legacyRenderer: this,
                 parentRender: this.workflowRender,
                 readOnly: this.read_only
               }
-            ) }) }),
+            ) }),
             container[0]
           );
         });
@@ -95448,15 +94925,14 @@ ${latestSubscriptionCallbackError.current.stack}
         setTimeout(() => {
           const theme2 = createTheme({});
           reactDomExports.render(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               WorkflowBaseView,
               {
                 view_type,
                 renderer: this,
-                legacyRenderer: this,
                 parentRender: this.workflowRender
               }
-            ) }) }) }) }),
+            ) }) }) }),
             container[0]
           );
         }, 50);
@@ -95641,9 +95117,10 @@ ${latestSubscriptionCallbackError.current.stack}
     }
   }
   class WorkflowComparison extends Workflow {
-    constructor(workflowID, data_package, container, selection_manager, view_type, initial_object_sets) {
+    constructor(workflowID, data_package, container, selection_manager, tiny_loader, view_type, initial_object_sets) {
       super(workflowID, data_package);
       this.selection_manager = selection_manager;
+      this.tiny_loader = tiny_loader;
       this.container = container;
       this.view_type = view_type;
       this.initial_object_sets = initial_object_sets;
@@ -95742,139 +95219,6 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "filterDOM");
       __publicField(this, "searchDOM");
       __publicField(this, "sortDOM");
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      __publicField(this, "Filter", () => {
-        const activeFilter = this.filters[this.state.activeFilter];
-        const filters = this.filters.map((filter, i2) => {
-          let css_class = "filter-option";
-          if (this.state.activeFilter === i2)
-            css_class += " active";
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: css_class,
-              onClick: () => this.setState({
-                ...this.state,
-                activeFilter: i2
-              }),
-              children: filter.display
-            }
-          );
-        });
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
-        ] });
-      });
-      __publicField(this, "Sort", () => {
-        const activeSort = this.sorts[this.state.activeSort];
-        const sorts = this.sorts.map((sort, i2) => {
-          const cssClasses = [
-            "filter-option",
-            this.state.activeSort === i2 ? "active" : ""
-          ].join(" ");
-          const SortDir = () => {
-            if (this.state.activeSort !== i2) {
-              return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-            }
-            if (this.state.reversed) {
-              return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
-            }
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
-          };
-          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: cssClasses,
-              onClick: (evt) => {
-                evt.stopPropagation();
-                this.sortChange(i2);
-                $(this.sortDOM.current).children(".create-dropdown").addClass("active");
-              },
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(SortDir, {}),
-                sort.display
-              ]
-            }
-          );
-        });
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
-        ] });
-      });
-      __publicField(this, "WorkflowCards", () => {
-        if (!this.state.workflows)
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
-        const sortedAndFilteredWorkflows = this.sortWorkflows(
-          this.filterWorkflows(this.state.workflows)
-        );
-        return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            workflowData: workflow,
-            updateWorkflow: this.props.updateWorkflow,
-            userRole: this.props.user_role,
-            readOnly: this.props.read_only,
-            projectData: this.props.project_data
-          },
-          workflow.type + workflow.id
-        ));
-      });
-      __publicField(this, "SearchResults", () => {
-        const { searchResults, searchFilter } = this.state;
-        const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCardCondensed,
-          {
-            workflowData: workflow,
-            context: this.props.context
-          },
-          workflow.type + workflow.id
-        ));
-        if (searchFilter && !searchResults.length) {
-          results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
-        } else if (results.length === 10) {
-          results.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
-          );
-        }
-        return results;
-      });
-      __publicField(this, "SearchFilterLock", () => {
-        if (!this.state.searchFilterLock)
-          return null;
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              onClick: this.clearSearchLock.bind(this),
-              className: "material-symbols-rounded hover-shade",
-              children: "close"
-            }
-          ),
-          window.gettext("Search: " + this.state.searchFilterLock)
-        ] });
-      });
       this.state = {
         workflows: props.workflows,
         activeFilter: 0,
@@ -95927,15 +95271,86 @@ ${latestSubscriptionCallbackError.current.stack}
           workflows: this.props.workflows
         });
     }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
     getPlaceholder() {
       if (this.props.context === "project") {
         return window.gettext("Search the project");
       } else {
         return window.gettext("Search the library");
       }
+    }
+    getFilter() {
+      const activeFilter = this.filters[this.state.activeFilter];
+      const filters = this.filters.map((filter, i2) => {
+        let css_class = "filter-option";
+        if (this.state.activeFilter === i2)
+          css_class += " active";
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: css_class,
+            onClick: () => this.setState({
+              ...this.state,
+              activeFilter: i2
+            }),
+            children: filter.display
+          }
+        );
+      });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-filter", ref: this.filterDOM, className: "hover-shade", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "workflow-sort-indicator hover-shade item-" + this.state.activeFilter,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "filter_alt" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeFilter.display })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: filters })
+      ] });
+    }
+    getSort() {
+      const activeSort = this.sorts[this.state.activeSort];
+      const sorts = this.sorts.map((sort, i2) => {
+        let sort_dir;
+        let css_class = "filter-option";
+        if (this.state.activeSort === i2) {
+          css_class += " active";
+          if (this.state.reversed)
+            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "north" });
+          else
+            sort_dir = /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "south" });
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: css_class,
+            onClick: (evt) => {
+              evt.stopPropagation();
+              this.sortChange(i2);
+              $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+            },
+            children: [
+              sort_dir,
+              sort.display
+            ]
+          }
+        );
+      });
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-sort", ref: this.sortDOM, className: "hover-shade", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "workflow-sort-indicator hover-shade item-" + this.state.activeSort,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "sort" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: activeSort.display })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: sorts })
+      ] });
     }
     sortWorkflows(workflows) {
       const sort = this.sorts[this.state.activeSort].name;
@@ -96059,8 +95474,59 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * RENDER
      *******************************************************/
+    renderWorkflowCards() {
+      if (!this.state.workflows)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {});
+      const sortedAndFilteredWorkflows = this.sortWorkflows(
+        this.filterWorkflows(this.state.workflows)
+      );
+      return sortedAndFilteredWorkflows.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCard,
+        {
+          workflowData: workflow,
+          updateWorkflow: this.props.updateWorkflow,
+          readOnly: this.props.read_only,
+          projectData: this.props.project_data
+        },
+        workflow.type + workflow.id
+      ));
+    }
+    renderSearchResults() {
+      const { searchResults, searchFilter } = this.state;
+      const results = searchResults.map((workflow) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCardCondensed,
+        {
+          workflowData: workflow,
+          context: this.props.context
+        },
+        workflow.type + workflow.id
+      ));
+      if (searchFilter && !searchResults.length) {
+        results.push(/* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("No results found") }));
+      } else if (results.length === 10) {
+        results.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.seeAll, children: window.gettext("+ See all") })
+        );
+      }
+      return results;
+    }
+    renderSearchFilterLock() {
+      if (!this.state.searchFilterLock)
+        return null;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "search-filter-lock", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            onClick: this.clearSearchLock.bind(this),
+            className: "material-symbols-rounded hover-shade",
+            children: "close"
+          }
+        ),
+        window.gettext("Search: " + this.state.searchFilterLock)
+      ] });
+    }
     render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      return [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -96074,64 +95540,77 @@ ${latestSubscriptionCallbackError.current.stack}
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "search" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.SearchResults, {}) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.SearchFilterLock, {})
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: this.renderSearchResults() }),
+            this.renderSearchFilterLock()
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-sort", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Filter, {}),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Sort, {})
+            this.getFilter(),
+            this.getSort()
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, {}) })
-      ] });
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: this.renderWorkflowCards() })
+      ];
     }
   }
   const Users = ({ users, readOnly, openShareDialog }) => {
+    let users_group = [];
     if (!users)
       return null;
     const { author, editors, commentors, viewers, published } = users;
     if (!author)
       return null;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      published && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-        " ",
-        window.gettext("All CourseFlow")
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "users-group", children: [
+    if (published) {
+      users_group.push(
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("author"),
-          getUserDisplay(author)
-        ] }),
-        editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("edit"),
-          getUserDisplay(user)
-        ] }, user.id)),
-        commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("comment"),
-          getUserDisplay(user)
-        ] }, user.id)),
-        viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
           getUserTag("view"),
-          getUserDisplay(user)
-        ] }, user.id))
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+          " ",
+          window.gettext("All CourseFlow")
+        ] })
+      );
+    }
+    users_group.push([
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("author"),
+        getUserDisplay(author)
       ] }),
-      viewers.length + commentors.length + editors.length > 4 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-        "+",
-        viewers.length + commentors.length + editors.length - 4,
-        " ",
-        window.gettext("more")
-      ] }),
-      !readOnly && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "user-name collapsed-text-show-more",
-          onClick: openShareDialog,
-          children: window.gettext("Modify")
-        }
-      )
-    ] });
+      editors.filter((user) => user.id != author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("edit"),
+        getUserDisplay(user)
+      ] })),
+      commentors.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("comment"),
+        getUserDisplay(user)
+      ] })),
+      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+        getUserTag("view"),
+        getUserDisplay(user)
+      ] }))
+    ]);
+    users_group = users_group.flat(2);
+    const usersBlocks = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+    if (users_group.length > 4) {
+      usersBlocks.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+          "+",
+          users_group.length - 4,
+          " ",
+          window.gettext("more")
+        ] })
+      );
+    }
+    if (!readOnly)
+      usersBlocks.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "user-name collapsed-text-show-more",
+            onClick: openShareDialog,
+            children: window.gettext("Modify")
+          }
+        )
+      );
+    return usersBlocks;
   };
   const Header = ({
     allDisciplines,
@@ -96500,17 +95979,10 @@ ${latestSubscriptionCallbackError.current.stack}
         if (!this.state.data.deleted) {
           return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
         }
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        return [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "hover-shade",
-              onClick: this.deleteProjectHard.bind(this),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") })
-            }
-          )
-        ] });
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProjectHard.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
+        ];
       });
       __publicField(this, "ExportButton", () => {
         if (this.props.userId) {
@@ -96555,35 +96027,19 @@ ${latestSubscriptionCallbackError.current.stack}
         return null;
       });
       __publicField(this, "OverflowLinks", () => {
-        const { data: data2 } = this.state;
-        const { userId } = this.props;
-        const isAuthor = data2.author_id === userId;
-        const liveProjectLink = isAuthor ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            id: "live-project",
-            className: "hover-shade",
-            href: data2.liveproject ? COURSEFLOW_APP.config.update_path.liveproject.replace(
-              "0",
-              String(data2.id)
-            ) : "#",
-            onClick: !data2.liveproject ? this.makeLive.bind(this) : void 0,
-            children: window.gettext(
-              data2.liveproject ? "View Classroom" : "Create Classroom"
-            )
-          }
-        ) : null;
-        const overflowLinks = [
-          liveProjectLink,
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {})
-        ];
-        if (isAuthor) {
-          overflowLinks.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}), /* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
+        const data2 = this.state.data;
+        const overflow_links = [];
+        overflow_links.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+        );
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
+        if (data2.author_id === this.props.userId) {
+          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
         }
-        return overflowLinks.filter((link) => link !== null);
+        return overflow_links;
       });
       /*******************************************************
        * VISIBLE BUTTONS
@@ -96674,28 +96130,9 @@ ${latestSubscriptionCallbackError.current.stack}
        *
        *******************************************************/
       __publicField(this, "Content", () => {
-        const return_val = [];
-        if (this.state.data.liveproject && this.props.userRole === role_keys.teacher)
-          return_val.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: this.viewButtons.map((item) => {
-              let view_class = "hover-shade";
-              if (item.type === this.state.view_type)
-                view_class += " active";
-              return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "a",
-                {
-                  id: "button_" + item.type,
-                  className: view_class,
-                  onClick: this.changeView.bind(this, item.type),
-                  children: item.name
-                }
-              );
-            }) })
-          );
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowFilter,
           {
-            user_role: this.props.userRole,
             read_only: this.props.readOnly,
             project_data: this.state.data,
             workflows: this.state.workflow_data,
@@ -96729,8 +96166,7 @@ ${latestSubscriptionCallbackError.current.stack}
             type: "project_edit_menu",
             data: {
               ...this.state.data,
-              all_disciplines: this.props.allDisciplines,
-              user_role: this.props.userRole
+              all_disciplines: this.props.allDisciplines
               // renderer: this.props.renderer
             },
             actionFunction: this.updateFunction,
@@ -96879,18 +96315,14 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     updateFunction(new_data) {
-      if (new_data.liveproject) {
-        console.log("liveproject updated");
-      } else {
-        this.setState({
-          ...this.state,
-          data: {
-            ...this.state.data,
-            ...new_data
-          },
-          openEditDialog: false
-        });
-      }
+      this.setState({
+        ...this.state,
+        data: {
+          ...this.state.data,
+          ...new_data
+        },
+        openEditDialog: false
+      });
     }
     /*******************************************************
      * RENDER
@@ -96931,13 +96363,11 @@ ${latestSubscriptionCallbackError.current.stack}
       __publicField(this, "readOnly");
       __publicField(this, "projectData");
       __publicField(this, "allDisciplines");
-      __publicField(this, "userRole");
       __publicField(this, "userId");
       __publicField(this, "projectPaths");
       this.readOnly = true;
       this.projectData = this.props.project_data;
       this.allDisciplines = this.props.disciplines;
-      this.userRole = this.props.user_role;
       this.userId = this.props.user_id;
       this.projectPaths = this.props.create_path_this_project;
       if (this.projectData.object_permission && this.projectData.object_permission.permission_type === permission_keys["edit"]) {
@@ -96950,7 +96380,6 @@ ${latestSubscriptionCallbackError.current.stack}
         {
           projectPaths: this.projectPaths,
           allDisciplines: this.allDisciplines,
-          userRole: this.userRole,
           readOnly: this.readOnly,
           data: this.projectData,
           userId: this.userId
@@ -96974,7 +96403,7 @@ ${latestSubscriptionCallbackError.current.stack}
             title: window.gettext("Create project or strategy"),
             ref: this.createDiv,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled green", children: "add_circle" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "a",
@@ -97049,6 +96478,7 @@ ${latestSubscriptionCallbackError.current.stack}
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowFilter,
           {
+            renderer: this,
             workflows: this.state.project_data,
             context: "library"
           }
@@ -97068,6 +96498,8 @@ ${latestSubscriptionCallbackError.current.stack}
      *******************************************************/
     componentDidMount() {
       getFavouritesQuery((data2) => {
+        console.log("data");
+        console.log(data2);
         this.setState({
           project_data: data2.data_package
         });
@@ -97093,28 +96525,6 @@ ${latestSubscriptionCallbackError.current.stack}
     constructor(props) {
       super(props);
       __publicField(this, "isTeacher");
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      __publicField(this, "WorkflowCards", ({
-        workflows,
-        keyPrefix
-      }) => {
-        return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
-      });
-      __publicField(this, "Home", ({
-        title,
-        content,
-        path
-      }) => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
-        ] });
-      });
       this.state = {
         projects: [],
         favourites: []
@@ -97135,29 +96545,38 @@ ${latestSubscriptionCallbackError.current.stack}
     /*******************************************************
      * Render
      *******************************************************/
+    renderWorkflowCards(workflows, keyPrefix) {
+      return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
+    }
+    renderHomeItem(title, content, path) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
+      ] });
+    }
     render() {
       const { projects, favourites } = this.state;
-      const projectsContent = /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, { workflows: projects, keyPrefix: "project" });
-      const favouritesContent = /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, { workflows: favourites, keyPrefix: "favourite" });
+      const projectsContent = this.renderWorkflowCards(projects, "project");
+      const favouritesContent = this.renderWorkflowCards(favourites, "favourite");
       const projectTitle = this.isTeacher ? "Recent projects" : "Recent classrooms";
       const projectPath = this.isTeacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
       const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
-      const projectBox = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        this.Home,
-        {
-          title: projectTitle,
-          content: projectsContent,
-          path: projectPath
-        }
+      const projectBox = this.renderHomeItem(
+        projectTitle,
+        projectsContent,
+        projectPath
       );
-      const favouriteBox = this.isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-        this.Home,
-        {
-          title: "Favourites",
-          content: favouritesContent,
-          path: favouritePath
-        }
-      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      let favouriteBox;
+      if (this.isTeacher) {
+        favouriteBox = this.renderHomeItem(
+          "Favourites",
+          favouritesContent,
+          favouritePath
+        );
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-menu-container", children: [
         projectBox,
         favouriteBox
@@ -97599,15 +97018,13 @@ ${latestSubscriptionCallbackError.current.stack}
   class ExplorePage extends reactExports.Component {
     constructor(props) {
       super(props);
-      __publicField(this, "createDiv");
       this.createDiv = reactExports.createRef();
     }
     componentDidMount() {
       getLibraryQuery((data2) => {
-        this.setState({
-          project_data: data2.data_package
-        });
+        this.setState({ project_data: data2.data_package });
       });
+      COURSEFLOW_APP.makeDropdown(this.createDiv.current);
       COURSEFLOW_APP.makeDropdown(this.createDiv.current);
     }
     render() {
@@ -97617,7 +97034,8 @@ ${latestSubscriptionCallbackError.current.stack}
           disciplines: this.props.disciplines,
           workflows: this.props.initial_workflows,
           pages: this.props.initial_pages,
-          context: "library"
+          context: "library",
+          sadfasdf: true
         }
       ) });
     }
@@ -97697,8 +97115,6 @@ ${latestSubscriptionCallbackError.current.stack}
         workflowWrapper.init();
         return null;
       }
-      case "my_live_projects":
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowGrid, { ...window.contextData });
     }
     return null;
   };

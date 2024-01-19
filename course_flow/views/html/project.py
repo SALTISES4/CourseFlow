@@ -11,12 +11,14 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.models import Project
 from course_flow.models.discipline import Discipline
-from course_flow.models.relations.liveProjectUser import LiveProjectUser
+from course_flow.models.liveprojectmodels.liveProjectUser import (
+    LiveProjectUser,
+)
 from course_flow.serializers import (
     DisciplineSerializer,
     ProjectSerializerShallow,
 )
-from course_flow.utils import get_user_permission, get_user_role
+from course_flow.utils import get_user_permission
 from course_flow.view_utils import get_my_projects
 from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
 from course_flow.views.mixins import UserCanViewMixin
@@ -38,11 +40,6 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             project, context={"user": self.request.user}
         ).data
 
-        if hasattr(project, "liveproject") and project.liveproject is not None:
-            user_role = get_user_role(project.liveproject, self.request.user)
-        else:
-            user_role = LiveProjectUser.ROLE_NONE
-
         user_permission = get_user_permission(project, self.request.user)
         title = project.title
 
@@ -52,7 +49,6 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
         context_data = {
             "project_data": project_data,
-            "user_role": user_role,
             "user_permission": user_permission,
             "disciplines": disciplines,
             "user_id": current_user.id if current_user else 0,
@@ -81,7 +77,6 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
         project = self.object
         user_permission = get_user_permission(project, current_user)
-        user_role = get_user_role(project, current_user)
 
         context_data = {
             "project_data": ProjectSerializerShallow(
@@ -89,7 +84,6 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             ).data,
             "is_strategy": is_strategy,
             "user_permission": user_permission,
-            "user_role": user_role,
             "public_view": public_view,
             "user_name": current_user.username,
             "user_id": current_user.id if current_user else 0,

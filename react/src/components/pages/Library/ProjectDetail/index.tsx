@@ -9,7 +9,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
   private readonly readOnly: boolean
   private readonly projectData: Project
   private readonly allDisciplines: Discipline[]
-  private readonly userRole: number
   private readonly userId: number
   private readonly projectPaths: {
     activity: string
@@ -23,7 +22,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
     this.readOnly = true
     this.projectData = this.props.project_data
     this.allDisciplines = this.props.disciplines
-    this.userRole = this.props.user_role
     this.userId = this.props.user_id
     this.projectPaths = this.props.create_path_this_project
 
@@ -42,7 +40,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
       <ProjectMenu
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
-        userRole={this.userRole}
         readOnly={this.readOnly}
         data={this.projectData}
         userId={this.userId}

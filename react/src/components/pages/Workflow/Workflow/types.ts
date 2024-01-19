@@ -4,7 +4,6 @@ export type WorkflowDetailViewDTO = {
   public_view: boolean
   user_id: number
   user_name: string
-  user_role: number
   user_permission: number
   workflow_data_package: WorkflowDataPackage
   workflow_type: string

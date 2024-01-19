@@ -1,5 +1,4 @@
 from .activity import *
-from .assignment import *
 from .course import *
 from .discipline import *
 from .explore import *
@@ -7,7 +6,6 @@ from .favorites import *
 from .home import *
 from .importer import *
 from .library import *
-from .live_project import *
 from .program import *
 from .project import *
 from .SALTISE_admin import *

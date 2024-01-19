@@ -13,7 +13,6 @@ import { searchAllObjectsQuery } from '@XMLHTTP/API/pages'
 type PropsType = {
   workflows: Workflow[]
   context: string
-  user_role?: number
   read_only?: any
   project_data?: any
   updateWorkflow?: any
@@ -363,7 +362,6 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
         key={workflow.type + workflow.id}
         workflowData={workflow}
         updateWorkflow={this.props.updateWorkflow}
-        userRole={this.props.user_role} // from renderer
         readOnly={this.props.read_only} // from renderer
         projectData={this.props.project_data} // from renderer
       />

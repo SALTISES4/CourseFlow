@@ -32,13 +32,13 @@ class Migration(migrations.Migration):
                 (
                     "start_date",
                     models.DateTimeField(
-                        default=course_flow.models.liveAssignment.default_start_date
+                        default=course_flow.models.liveprojectmodels.liveAssignment.default_start_date
                     ),
                 ),
                 (
                     "end_date",
                     models.DateTimeField(
-                        default=course_flow.models.liveAssignment.default_due_date
+                        default=course_flow.models.liveprojectmodels.liveAssignment.default_due_date
                     ),
                 ),
                 (

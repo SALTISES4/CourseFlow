@@ -1,3 +1,7 @@
+# This model is part of a now-decomissioned Live Project mode.
+# The tables are kept for backwards compatibility, in case
+# the feature is once again needed.
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
