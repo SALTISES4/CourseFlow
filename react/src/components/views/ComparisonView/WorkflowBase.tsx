@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponent } from '@cfParentComponents'
@@ -9,10 +8,23 @@ import Workflow from './Workflow'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/type'
+import { EditableComponentStateType } from '@cfParentComponents/EditableComponent'
 // import $ from 'jquery'
 
+type ConnectedProps = {
+  data: any
+  object_sets: any
+}
+type OwnProps = {
+  rank?: number
+  // dispatch: any
+  view_type: ViewType
+}
+type StateProps = EditableComponentStateType
+type PropsType = ConnectedProps & OwnProps
+
 //Container for common elements for workflows
-class WorkflowBaseUnconnected extends EditableComponent {
+class WorkflowBaseUnconnected extends EditableComponent<PropsType, StateProps> {
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -22,7 +34,9 @@ class WorkflowBaseUnconnected extends EditableComponent {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    this.props.renderer.silent_connect_fail = true
+    // not sure
+    // @ts-ignore @todo is this defined should it not be on websockets object?
+    this.context.silent_connect_fail = true
     this.alignAllHeaders()
     this.addObjectSetTrigger()
   }
@@ -35,13 +49,14 @@ class WorkflowBaseUnconnected extends EditableComponent {
    * FUNCTIONS
    *******************************************************/
   openEdit(evt) {
-    this.props.renderer.selection_manager.changeSelection(evt, this)
+    this.context.selection_manager.changeSelection(evt, this)
   }
 
   addObjectSetTrigger() {
     const props = this.props
     $(document).off('object_set_toggled.' + this.props.data.id)
     $(document).on('object_set_toggled.' + this.props.data.id, (evt, data) => {
+      // @ts-ignore @todo where is dispatch defined
       props.dispatch(ActionCreator.toggleObjectSet(data.id, data.hidden))
     })
   }
@@ -62,13 +77,10 @@ class WorkflowBaseUnconnected extends EditableComponent {
    *******************************************************/
 
   Content = () => {
-    const data = this.props.data
-    const renderer = this.props.renderer
-
-    if (renderer.view_type === ViewType.OUTCOME_EDIT) {
-      return <OutcomeEdit renderer={renderer} objectID={data.id} />
+    if (this.context.view_type === ViewType.OUTCOME_EDIT) {
+      return <OutcomeEdit objectID={this.props.data.id} />
     }
-    return <Workflow renderer={renderer} objectID={data.id} />
+    return <Workflow objectID={this.props.data.id} />
   }
 
   /*******************************************************
@@ -100,11 +112,16 @@ class WorkflowBaseUnconnected extends EditableComponent {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  data: state.workflow,
-  object_sets: state.objectset
-})
+const mapStateToProps = (state: AppState): ConnectedProps => {
+  return {
+    data: state.workflow,
+    object_sets: state.objectset
+  }
+}
 
-const WorkflowBase = connect(mapStateToProps, null)(WorkflowBaseUnconnected)
+const WorkflowBase = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(WorkflowBaseUnconnected)
 
 export default WorkflowBase

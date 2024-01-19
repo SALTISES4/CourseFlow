@@ -2,24 +2,24 @@ import ChildWorkflow from '@cfRedux/reducers/childWorkflow'
 import { WorkflowType } from '@cfModule/types/enum'
 
 export type AppState = {
-  workflow: Workflow
-  outcomeworkflow: Columnworkflow[]
-  columnworkflow: Columnworkflow[]
-  column: Column[]
-  weekworkflow: Weekworkflow[]
-  week: Week[]
-  nodeweek: Nodeweek[]
-  node: NodeType[]
-  outcomenode: Outcomenode[]
-  nodelink: Nodelink[]
+  workflow: TWorkflow
+  outcomeworkflow: TColumnworkflow[]
+  columnworkflow: TColumnworkflow[]
+  column: TColumn[]
+  weekworkflow: WeekworkflowType[]
+  week: TWeek[]
+  nodeweek: TNodeweek[]
+  node: TNode[]
+  outcomenode: TOutcomenode[]
+  nodelink: TNodelink[]
   parent_workflow: ParentWorkflow[]
   parent_node: ParentNode[]
-  outcomehorizontallink: OutcomeHorizontalLink[]
-  child_workflow: ChildWorkflow[]
-  strategy: Strategy[]
+  outcomehorizontallink: TOutcomeHorizontalLink[]
+  child_workflow: TChildWorkflow[]
+  strategy: TStrategy[]
   objectset: ObjectSet[]
-  outcomeoutcome: OutcomeOutcome[]
-  outcome: Outcome[]
+  outcomeoutcome: TOutcomeOutcome[]
+  outcome: TOutcome[]
 }
 
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
@@ -27,7 +27,7 @@ export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
 /*******************************************************
  * INDIVIDUALL REDUCER TYPES
  *******************************************************/
-export type Outcomenode = {
+export type TOutcomenode = {
   node: number
   outcome: number
   rank: number
@@ -35,14 +35,14 @@ export type Outcomenode = {
   degree: number
 }
 
-export type OutcomeOutcome = {
+export type TOutcomeOutcome = {
   parent: number
   child: number
   rank: number
   id: number
 }
 
-export type Outcome = {
+export type TOutcome = {
   id: number
   deleted: boolean
   deleted_on: Date | string
@@ -60,7 +60,7 @@ export type Outcome = {
   is_dropped: boolean
 }
 
-export type Column = {
+export type TColumn = {
   deleted: boolean
   deleted_on: string
   id: number
@@ -73,7 +73,7 @@ export type Column = {
   comments: any[]
 }
 
-export type Columnworkflow = {
+export type TColumnworkflow = {
   workflow: number
   rank: number
   id: number
@@ -82,7 +82,7 @@ export type Columnworkflow = {
   no_drag?: boolean
 }
 
-export type NodeType = {
+export type TNode = {
   deleted: boolean
   deleted_on: string
   id: number
@@ -99,22 +99,22 @@ export type NodeType = {
   node_type_display: NodeTypeDisplay
   has_autolink: boolean
   time_units: number
-  time_required: null
+  time_required: any | null
   ponderation_theory: number
   ponderation_practical: number
   ponderation_individual: number
   time_general_hours: number
   time_specific_hours: number
   represents_workflow: boolean
-  linked_workflow: null
-  linked_workflow_data: null
+  linked_workflow: any
+  linked_workflow_data: any
   comments: any[]
   sets: any[]
   has_assignment: boolean
   is_dropped?: boolean
 }
 
-export type Nodeweek = {
+export type TNodeweek = {
   added_on: Date
   week: number
   node: number
@@ -122,7 +122,7 @@ export type Nodeweek = {
   id: number
 }
 
-export type Week = {
+export type TWeek = {
   id: number
   deleted: boolean
   deleted_on: string
@@ -138,7 +138,7 @@ export type Week = {
   is_dropped: boolean
 }
 
-export type Weekworkflow = {
+export type WeekworkflowType = {
   id: number
   workflow: number
   week: number
@@ -154,7 +154,7 @@ export type OutcomeWorkflow = {
   id: number
 }
 
-export type Workflow = {
+export type TWorkflow = {
   id: number
   deleted: boolean
   deleted_on: string
@@ -195,7 +195,7 @@ export type Workflow = {
 /*******************************************************
  * NEED TYPING
  *******************************************************/
-export type Nodelink = {
+export type TNodelink = {
   deleted: boolean
   deleted_on: string
   id: number
@@ -217,9 +217,9 @@ export type ObjectSet = {
 }
 
 export type ParentWorkflow = any
-export type Strategy = any
-export type ChildWorkflow = any
-export type OutcomeHorizontalLink = any
+export type TStrategy = any
+export type TChildWorkflow = any
+export type TOutcomeHorizontalLink = any
 
 // ENUM
 export enum NodeTypeDisplay {

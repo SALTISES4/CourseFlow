@@ -1,4 +1,3 @@
-import { DATA_ACTIONS } from './common'
 // import $ from 'jquery'
 
 /*
@@ -12,6 +11,9 @@ All functions for API calls.
 // Returns a Promise that can be then chained upon/consumed
 // Rejects if the 'action' in JSON response hasn't 'posted'
 // which can be caught and acted upon for error handling
+
+import { VERB } from '@cfModule/types/common'
+
 export function API_POST(url = '', data = {}) {
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
@@ -31,7 +33,7 @@ export function API_POST(url = '', data = {}) {
       .then((response) => response.json())
       .then((data) => {
         // and if the action successfully posted, resolve the initial promise
-        if (data.action === DATA_ACTIONS.POSTED) {
+        if (data.action === VERB.POSTED) {
           res(data)
         } else {
           // otherwise reject with some potentially helpful info

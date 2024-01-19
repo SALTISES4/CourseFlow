@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
@@ -63,8 +62,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     } else {
       data_override = { ...data }
     }
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column)
@@ -92,7 +90,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
             <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
-              legacyRenderer={this.props.legacyRenderer}
+              //legacyRenderer={this.props.legacyRenderer}
             />
           ))}
         </div>
@@ -121,7 +119,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
       lefticon = (
         <img
           title={
-            renderer.context_choices.find(
+            this.context.context_choices.find(
               (obj) => obj.type == data.context_classification
             ).name
           }
@@ -138,7 +136,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
       righticon = (
         <img
           title={
-            renderer.task_choices.find(
+            this.context.task_choices.find(
               (obj) => obj.type == data.task_classification
             ).name
           }
@@ -163,12 +161,12 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     const mouseover_actions = []
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) {
+    if (this.context.view_comments) {
       mouseover_actions.push(this.addCommenting())
     }
 

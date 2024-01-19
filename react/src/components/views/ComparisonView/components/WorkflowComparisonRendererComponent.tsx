@@ -1,11 +1,11 @@
 import * as React from 'react'
-import * as Utility from '@cfModule/utility/utilityFunctions'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
 import { getWorkflowContext } from '@XMLHTTP/API/workflow'
 import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
-import {CfObjectType} from "@cfModule/types/enum";
+import { CfObjectType } from '@cfModule/types/enum'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
 type OwnProps = {
   workflowID: any
@@ -30,7 +30,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    const loader = new Utility.Loader('body')
+    const loader = new UtilityLoader('body')
 
     const querystring = window.location.search
     const url_params = new URLSearchParams(querystring)

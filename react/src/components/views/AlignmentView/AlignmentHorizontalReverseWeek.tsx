@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithComments } from '@cfParentComponents'
@@ -7,16 +6,33 @@ import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 import { CfObjectType } from '@cfModule/types/enum.js'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { AppState } from '@cfRedux/type'
+import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
+
+type ConnectedProps = {
+  data: any
+  nodeweeks: any
+}
+type OwnProps = {
+  objectID: number
+  week_rank: any
+  restriction_set: any
+}
+type StateProps = EditableComponentWithCommentsStateType
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The representation of a week in the alignment view.
  */
-class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
+class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
+  PropsType,
+  StateProps
+> {
   declare context: React.ContextType<typeof WorkFlowConfigContext>
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEK
-    this.state = {}
+    this.state = {} as StateProps
   }
 
   /*******************************************************
@@ -28,7 +44,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
     const default_text =
       data.week_type_display + ' ' + (this.props.week_rank + 1)
 
-    const nodeweeks = this.props.nodeweeks.map((nodeweek) => {
+    const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
       if (
         this.props.restriction_set &&
         this.props.restriction_set.nodes &&
@@ -37,14 +53,14 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
         return null
       return (
         <AlignmentHorizontalReverseNode
+          key={index}
           objectID={nodeweek.node}
           restriction_set={this.props.restriction_set}
         />
       )
     })
 
-    let comments
-    if (this.context.view_comments) comments = this.addCommenting()
+    const comments = this.context.view_comments ? this.addCommenting() : null
 
     return (
       <div
@@ -67,15 +83,21 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments {
   }
 }
 
-const mapAlignmentHorizontalReverseWeekStateToProps = (state, own_props) => {
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
   for (let i = 0; i < state.week.length; i++) {
-    if (state.week[i].id == own_props.objectID) {
+    if (state.week[i].id == ownProps.objectID) {
       const week = state.week[i]
       const nodeweeks = Utility.filterThenSortByID(
         state.nodeweek,
         week.nodeweek_set
       )
-      return { data: week, nodeweeks: nodeweeks }
+      return {
+        data: week,
+        nodeweeks: nodeweeks
+      }
     }
   }
 }
@@ -83,7 +105,7 @@ const mapAlignmentHorizontalReverseWeekStateToProps = (state, own_props) => {
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-export default connect(
-  mapAlignmentHorizontalReverseWeekStateToProps,
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(AlignmentHorizontalReverseWeek)

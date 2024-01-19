@@ -1,4 +1,4 @@
-import { Week } from '@cfRedux/type'
+import { TWeek } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
@@ -9,9 +9,9 @@ import {
 } from '@cfRedux/enumActions'
 
 export default function weekReducer(
-  state: Week[] = [],
+  state: TWeek[] = [],
   action: AnyAction
-): Week[] {
+): TWeek[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.week || state

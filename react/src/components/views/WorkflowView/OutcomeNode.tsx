@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeNodeByID, OutcomeNodeByIDType } from '@cfFindState'
@@ -11,7 +10,7 @@ import ComponentWithToggleDrop, {
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/type'
 import { ActionButton } from '@cfUIComponents'
-import { SimpleOutcomeUnconnectedPropsType } from '@cfViews/OutcomeEditView/SimpleOutcome'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = OutcomeNodeByIDType
@@ -19,8 +18,6 @@ type OwnProps = {
   parentID?: number // is this required:
   outcomes_type?: any
   deleteSelfOverride?: any
-  // renderer: any
-  legacyRenderer: SimpleOutcomeUnconnectedPropsType['legacyRenderer']
 } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
 /**
@@ -31,6 +28,7 @@ type PropsType = ConnectedProps & OwnProps
  *
  */
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMENODE
@@ -119,7 +117,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.props.legacyRenderer.read_only && (
+        {!this.context.read_only && (
           <div>{this.addDeleteSelf(data, 'close.svg')}</div>
         )}
 
@@ -136,7 +134,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
           parentID={this.props.parentID}
           throughParentID={data.id}
           // renderer={this.props.renderer}
-          legacyRenderer={this.props.legacyRenderer}
+          // legacyRenderer={this.props.legacyRenderer}
         />
       </div>
     )

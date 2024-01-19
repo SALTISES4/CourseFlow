@@ -8,6 +8,7 @@ type ConnectedProps = GetOutcomeByIDType
 type OwnProps = {
   objectID: number
   outcomes_type: any
+  outcome_tree?: any
 }
 type StateProps = {
   is_dropped: boolean
@@ -38,6 +39,7 @@ class OutcomeUnconnected extends TableOutcomeUnconnected<
       <Outcome
         outcomes_type={this.props.outcomes_type}
         objectID={child.id}
+        // @this is weird
         outcome_tree={child}
         // renderer={this.props.renderer}
       />

@@ -1,5 +1,5 @@
 // @todo can this be removed ?
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+import { VERB } from '@cfModule/types/common'
 import { ToDefine } from '@cfModule/types/common'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 
@@ -15,7 +15,7 @@ export function getLiveProjectDataStudentQuery(
     }).done(function (data) {
       console.log('getLiveProjectDataStudentQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -36,7 +36,7 @@ export function updateLiveProjectValueQuery(
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -70,7 +70,7 @@ export function getTargetProjectMenu<T>(
 }
 
 function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
+  if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'target_project_menu', updateFunction)
   } else {
     alert('Failed to find potential projects.')
@@ -89,7 +89,7 @@ export function makeProjectLiveQuery(
     }).done(function (data) {
       console.log('makeProjectLiveQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -112,7 +112,7 @@ export function getLiveProjectDataQuery(
       console.log('getLiveProjectDataQuery data')
       console.log(data)
 
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -133,7 +133,7 @@ export function setLiveProjectRole(
       permission_user: JSON.stringify(user_id),
       role_type: JSON.stringify(permission_type)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.error)
     })
   } catch (err) {

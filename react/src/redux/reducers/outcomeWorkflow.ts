@@ -4,13 +4,13 @@ import {
   OutcomeBaseActions,
   OutcomeWorkflowActions
 } from '@cfRedux/enumActions'
-import { Columnworkflow } from '@cfRedux/type'
+import { TColumnworkflow } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 function outcomeworkflowReducer(
-  state: Columnworkflow[] = [],
+  state: TColumnworkflow[] = [],
   action: AnyAction
-): Columnworkflow[] {
+): TColumnworkflow[] {
   switch (action.type) {
     case CommonActions.REFRESH_STOREDATA: {
       // Check if 'outcomeworkflow' is available in the payload

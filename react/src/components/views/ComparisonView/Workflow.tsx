@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithSorting } from '@cfParentComponents'
@@ -8,14 +7,28 @@ import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType } from '@cfModule/types/enum'
 import WeekWorkflowComparison from '@cfViews/ComparisonView/WeekWorkflowComparison'
+import { AppState } from '@cfRedux/type'
+import { EditableComponentWithSortingState } from '@cfParentComponents/EditableComponentWithSorting'
 // import $ from 'jquery'
 
+type ConnectedProps = {
+  data: any
+  object_sets: any
+}
+type OwnProps = {
+  objectID: number
+}
+type StateProps = EditableComponentWithSortingState
+type PropsType = ConnectedProps & OwnProps
+
 //Basic component representing the workflow
-class WorkflowUnconnected extends EditableComponentWithSorting {
-  constructor(props) {
+class WorkflowUnconnected extends EditableComponentWithSorting<
+  PropsType,
+  StateProps
+> {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
-    this.state = {}
   }
 
   /*******************************************************
@@ -52,11 +65,11 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === 'weekworkflow') {
-      this.props.renderer.micro_update(
+      this.context.micro_update(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.props.renderer,
+        this.context, // dragaction
         child_id,
         'week',
         new_parent,
@@ -72,14 +85,13 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
    *******************************************************/
   render() {
     const data = this.props.data
-    const renderer = this.props.renderer
     const weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
       <WeekWorkflowComparison
         condensed={data.condensed}
         key={weekworkflow}
         objectID={weekworkflow}
         parentID={data.id}
-        renderer={renderer}
+        // renderer={renderer}
       />
     ))
 
@@ -93,11 +105,16 @@ class WorkflowUnconnected extends EditableComponentWithSorting {
   }
 }
 
-const mapWorkflowStateToProps = (state) => ({
-  data: state.workflow,
-  object_sets: state.objectset
-})
+const mapWorkflowStateToProps = (state: AppState): ConnectedProps => {
+  return {
+    data: state.workflow,
+    object_sets: state.objectset
+  }
+}
 
-const Workflow = connect(mapWorkflowStateToProps, null)(WorkflowUnconnected)
+const Workflow = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapWorkflowStateToProps,
+  null
+)(WorkflowUnconnected)
 
 export default Workflow

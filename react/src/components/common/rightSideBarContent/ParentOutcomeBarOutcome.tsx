@@ -12,7 +12,7 @@ import {
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
 import { OutcomeTitle } from '@cfUIComponents/Titles'
-import { AppState, OutcomeOutcome } from '@cfRedux/type'
+import { AppState, TOutcomeOutcome } from '@cfRedux/type'
 
 /**
  * Used for the parent outcome bar.

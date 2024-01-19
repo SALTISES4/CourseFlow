@@ -6,7 +6,7 @@ import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode'
 
 import * as Utility from '@cfUtility'
-import { AppState, Nodeweek } from '@cfRedux/type'
+import { AppState, TNodeweek } from '@cfRedux/type'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
@@ -100,7 +100,7 @@ const mapStateToProps = (
 ): ConnectedProps => {
   const data = ownProps.data
 
-  const node_weeks = Utility.filterThenSortByID<Nodeweek>(
+  const node_weeks = Utility.filterThenSortByID<TNodeweek>(
     state.nodeweek,
     data.nodeweek_set
   )

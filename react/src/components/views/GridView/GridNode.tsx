@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { NodeTitle } from '@cfUIComponents'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
-import { AppState, Column } from '@cfModule/redux/type'
+import { AppState, TColumn } from '@cfModule/redux/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
 import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
@@ -13,7 +13,7 @@ type OwnProps = {
   data: any
 }
 type ConnectedProps = {
-  column: Column
+  column: TColumn
 }
 type PropsType = OwnProps & ConnectedProps
 type StateProps = EditableComponentWithCommentsStateType

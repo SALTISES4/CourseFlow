@@ -19,16 +19,17 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type ConnectedProps = GetOutcomeByIDType
 type OwnProps = {
-  comments: boolean
-  edit: boolean
   objectID: number
   parentID: number
+  throughParentID?: number
+  checkHidden?: () => void
+  comments?: boolean
+  edit?: boolean
   // throughParentID: number
   // legacyRenderer: EditableComponentWithCommentsType['legacyRenderer'] & {
   //   view_comments: any
   //   selection_manager: any
   // }
-  checkHidden: () => void
 } & EditableComponentWithCommentsType
 
 export type SimpleOutcomeUnconnectedPropsType = OwnProps

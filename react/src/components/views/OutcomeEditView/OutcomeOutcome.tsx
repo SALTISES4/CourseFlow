@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
@@ -13,12 +12,13 @@ type ConnectedProps = OutcomeOutcomeByIDType
 type OwnProps = {
   parentID: number
   objectID: number
-  renderer: any
+  // renderer: any
   show_horizontal: any
   parent_depth: any
 }
 type PropsType = OwnProps & ConnectedProps
 class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
+  private objectType: CfObjectType // @todo is it used?
   constructor(props) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
@@ -44,7 +44,7 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
           objectID={data.child}
           parentID={this.props.parentID}
           throughParentID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />
       </li>

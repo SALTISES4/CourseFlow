@@ -1,12 +1,21 @@
 import * as React from 'react'
-import { getWeekWorkflowByID } from '@cfFindState'
+import { GetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
 import { connect } from 'react-redux'
 import JumpToWeekView from '@cfViews/WorkflowBaseView/JumpToWeekView'
+import { AppState } from '@cfRedux/type'
+
+type ConnectedProps = GetWeekWorkflowByID
+type OwnProps = {
+  objectID: number
+  parentID?: number
+  order?: any // @this is conflict with the redux props map, is it an intentional ovveride?
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The weekworkflow representation for the "jump to" menu
  */
-class JumpToWeekWorkflowUnconnected extends React.Component {
+class JumpToWeekWorkflowUnconnected extends React.Component<PropsType> {
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -18,16 +27,20 @@ class JumpToWeekWorkflowUnconnected extends React.Component {
         rank={this.props.order.indexOf(data.id)}
         parentID={this.props.parentID}
         throughParentID={data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     )
   }
 }
-const mapWeekWorkflowStateToProps = (state, own_props) =>
-  getWeekWorkflowByID(state, own_props.objectID)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): GetWeekWorkflowByID => {
+  return getWeekWorkflowByID(state, ownProps.objectID)
+}
 
-const JumpToWeekWorkflow = connect(
-  mapWeekWorkflowStateToProps,
+const JumpToWeekWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(JumpToWeekWorkflowUnconnected)
 

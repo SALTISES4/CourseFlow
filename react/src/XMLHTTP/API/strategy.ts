@@ -1,5 +1,5 @@
 import { ToggleStrategyQueryResp } from '@XMLHTTP/types/query'
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+import { VERB } from '@cfModule/types/common'
 import { AddStrategyQueryResp } from '@XMLHTTP/types'
 
 /**
@@ -21,7 +21,7 @@ export function toggleStrategyQuery(
     }).done(function (data: ToggleStrategyQueryResp) {
       console.log('toggleStrategyQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -43,7 +43,7 @@ export function addStrategyQuery(
       objectID: JSON.stringify(strategyPk),
       objectType: JSON.stringify('workflow')
     }).done(function (data: AddStrategyQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) {
+      if (data.action === VERB.POSTED) {
         callBackFunction(data)
       } else {
         window.fail_function(data.action)

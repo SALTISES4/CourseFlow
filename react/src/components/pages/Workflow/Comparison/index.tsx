@@ -20,6 +20,7 @@ type ParamsType = {
     changeFieldID: number
   }
 }
+
 export class WorkflowComparison {
   private selection_manager: SelectionManager
   private readOnly: boolean

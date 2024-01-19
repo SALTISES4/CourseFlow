@@ -46,7 +46,7 @@ const OutcomeAdderOption = connect<ConnectedProps, object, OwnProps, AppState>(
  */
 
 type OutcomeAdderProps = {
-  renderer: any
+  // renderer: any
   outcome_set: any
   addFunction: any
 }

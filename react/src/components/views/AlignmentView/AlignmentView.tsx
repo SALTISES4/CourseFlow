@@ -12,7 +12,11 @@ import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import { AppState } from '@cfRedux/type'
 
-type ConnectedProps = any
+type ConnectedProps = {
+  data: any
+  outcomes: any
+  terms: any
+}
 type OwnProps = {
   view_type: ViewType
 }
@@ -129,17 +133,17 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
       outcomes_block = (
         <AlignmentOutcomesBlock
           workflow_type={data.type}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={outcome_data}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
       alignment_reverse_block = (
         <AlignmentHorizontalReverseBlock
           sort="outcome"
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={outcome_data}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
     }
@@ -148,10 +152,10 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
       alignment_reverse_block = (
         <AlignmentHorizontalReverseBlock
           sort="week"
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={this.props.terms[this.state.active]}
           base_outcomes={this.props.outcomes}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
     }
@@ -172,7 +176,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
     )
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppState): ConnectedProps => {
   const outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set

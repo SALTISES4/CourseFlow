@@ -4,13 +4,13 @@ import {
   OutcomeBaseActions,
   OutcomeOutcomeActions
 } from '@cfRedux/enumActions'
-import { OutcomeOutcome } from '@cfRedux/type'
+import { TOutcomeOutcome } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 function outcomeOutcomeReducer(
-  state: OutcomeOutcome[] = [],
+  state: TOutcomeOutcome[] = [],
   action: AnyAction
-): OutcomeOutcome[] {
+): TOutcomeOutcome[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.outcomeoutcome || state

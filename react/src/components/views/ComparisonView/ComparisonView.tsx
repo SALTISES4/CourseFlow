@@ -10,7 +10,7 @@ import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
-import { AppState, Workflow } from '@cfRedux/type'
+import { AppState, TWorkflow } from '@cfRedux/type'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { GetWorkflowSelectMenuResp } from '@XMLHTTP/types/query'
 // import $ from 'jquery'

@@ -1,5 +1,5 @@
 import { AnyAction } from '@reduxjs/toolkit'
-import { Workflow } from '@cfRedux/type'
+import { TWorkflow } from '@cfRedux/type'
 import {
   ColumnActions,
   ColumnWorkflowActions,
@@ -15,9 +15,9 @@ import {
 } from '@cfRedux/enumActions'
 
 function workflowReducer(
-  state: Workflow = {} as Workflow,
+  state: TWorkflow = {} as TWorkflow,
   action: AnyAction
-): Workflow {
+): TWorkflow {
   switch (action.type) {
     /*******************************************************
      * COMMON

@@ -1,4 +1,4 @@
-import { Nodelink } from '@cfRedux/type'
+import { TNodelink } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
@@ -8,9 +8,9 @@ import {
 } from '@cfRedux/enumActions'
 
 export default function nodelinkReducer(
-  state: Nodelink[] = [],
+  state: TNodelink[] = [],
   action: AnyAction
-): Nodelink[] {
+): TNodelink[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       if (action.payload.nodelink) return action.payload.nodelink

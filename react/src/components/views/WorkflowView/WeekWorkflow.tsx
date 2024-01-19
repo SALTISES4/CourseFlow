@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import Week from './Week'
 import Term from './Term'
 import { GetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/type'
@@ -8,7 +7,7 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { CfObjectType } from '@cfModule/types/enum'
-import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import Week from './Week'
 // import $ from 'jquery'
 
 type ConnectedProps = GetWeekWorkflowByID
@@ -24,7 +23,6 @@ type PropsType = ConnectedProps & OwnProps
  * The week-workflow throughmodel representation
  */
 class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
-
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEKWORKFLOW
@@ -69,6 +67,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
       data.no_drag ? 'no-drag' : '',
       $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
     ].join(' ')
+
     // let my_class = 'week-workflow'
     // if (data.no_drag) my_class += ' no-drag'
     // if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'

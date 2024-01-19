@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -8,7 +7,7 @@ import NodeWeek from './NodeWeek'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/type'
-import { WeekUnconnected } from '@cfViews/WorkflowView/Week'
+import {WeekUnconnected, WeekUnconnectedPropsType} from '@cfViews/WorkflowView/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
@@ -16,10 +15,9 @@ type ConnectedProps = GetWeekByIDType
 type OwnProps = {
   // renderer: any
   objectID: number
-  rank?: number
   parentID?: number
   throughParentID: number
-}
+} & WeekUnconnectedPropsType
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -53,10 +51,13 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.props.renderer.micro_update(
+    this.context.micro_update(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
+
+    // @todo same issue with rendere / drag action
     insertedAt(
+      // @ts-ignore dragaction
       this.props.renderer,
       child_id,
       'node',
@@ -76,6 +77,8 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       )
     ) {
       insertedAt(
+            // @todo same issue with rendere / drag action
+        // @ts-ignore dragaction
         this.props.renderer,
         null,
         'node',
@@ -141,7 +144,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       'nodeweek',
       '.node-week',
       false,
-      [200, 1],
+      [200, 1], // @todo // grid is not used
       '#workflow-' + this.props.workflow_id,
       '.node',
       '.workflow-array'

@@ -1,7 +1,7 @@
 /*******************************************************
  * OUTCOME
  *******************************************************/
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+import { VERB } from '@cfModule/types/common'
 import { SuccessPost } from '@XMLHTTP/types'
 import { ToDefine } from '@cfModule/types/common'
 
@@ -26,7 +26,7 @@ export function newOutcomeQuery(
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
     }).done(function (data: SuccessPost) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -51,7 +51,7 @@ export function updateOutcomehorizontallinkDegree(
         degree: JSON.stringify(degree)
       }
     ).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

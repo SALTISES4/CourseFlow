@@ -44,7 +44,7 @@ class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
           objectID={data.outcome}
           parentID={this.props.parentID}
           throughParentID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />
       </div>

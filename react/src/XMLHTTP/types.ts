@@ -6,12 +6,12 @@ import {
 } from '@cfModule/types/common'
 
 import {
-  Nodelink,
-  NodeType,
-  Nodeweek,
-  Outcome,
-  Outcomenode,
-  OutcomeOutcome,
+  TNodelink,
+  TNode,
+  TNodeweek,
+  TOutcome,
+  TOutcomenode,
+  TOutcomeOutcome,
   OutcomeWorkflow
 } from '@cfRedux/type'
 
@@ -114,14 +114,14 @@ export type DataPackage = {
   column: Column[]
   weekworkflow: Weekworkflow[]
   week: Week[]
-  nodeweek: Nodeweek[]
-  nodelink: Nodelink[]
-  node: NodeType[]
+  nodeweek: TNodeweek[]
+  nodelink: TNodelink[]
+  node: TNode[]
   outcomeworkflow: OutcomeWorkflow[]
-  outcome: Outcome[]
-  outcomenode: Outcomenode[]
+  outcome: TOutcome[]
+  outcomenode: TOutcomenode[]
   saltise_strategy: WorkflowDetailed[]
-  outcomeoutcome: OutcomeOutcome[]
+  outcomeoutcome: TOutcomeOutcome[]
   // @todo still missing types
   objectset: any[]
   strategy: any[]

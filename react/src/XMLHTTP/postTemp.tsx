@@ -1,14 +1,14 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
-import { DATA_ACTIONS } from './common'
 import { dragAction } from '@XMLHTTP/API/global'
+import { VERB } from '@cfModule/types/common'
 // import $ from 'jquery'
 
 /**
  *
  */
 function openLinkedWorkflowMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
+  if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
   } else {
     alert('Failed to find the parent project. Is this workflow in a project?')
@@ -16,7 +16,7 @@ function openLinkedWorkflowMenu(response, updateFunction) {
 }
 
 function openAddedWorkflowMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
+  if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'added_workflow_menu', updateFunction)
   } else {
     alert('Failed to find your workflows.')
@@ -24,7 +24,7 @@ function openAddedWorkflowMenu(response, updateFunction) {
 }
 
 export function openWorkflowSelectMenu(response, updateFunction) {
-  if (response.action === DATA_ACTIONS.POSTED) {
+  if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'workflow_select_menu', updateFunction)
   } else {
     alert('Failed to find your workflows.')
@@ -77,6 +77,7 @@ export function columnChanged(renderer, objectID, columnID) {
 }
 
 //Called when an object in a list is reordered
+// @todo context has replaced renderer and so 'drag action' is not available
 export function insertedAt(
   renderer,
   objectID,

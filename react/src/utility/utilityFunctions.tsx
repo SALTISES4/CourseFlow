@@ -1,5 +1,6 @@
-// @ts-nocheck
 import * as React from 'react'
+import { isObject } from 'mathjs'
+import {hasId, MaybeWithId} from "@cfModule/types/typeGuards";
 
 export function permission_translate() {
   return {
@@ -18,44 +19,6 @@ export function getUserTag(user_type) {
       {permission_translate()[user_type]}
     </span>
   )
-}
-
-/**
- *  this has been refactored to remove jquery
- */
-export class Loader {
-  constructor(identifier) {
-    // Create a new div element
-    this.load_screen = document.createElement('div')
-    this.load_screen.className = 'load-screen'
-
-    // Prevent default click behavior
-    this.load_screen.addEventListener('click', (evt) => {
-      evt.preventDefault()
-    })
-
-    let parentElement
-    if (identifier instanceof jQuery) {
-      // Use the first element in the jQuery object
-      parentElement = identifier.get(0)
-    } else {
-      // Use querySelector to find the element
-      parentElement = document.querySelector(identifier)
-    }
-
-    if (parentElement) {
-      parentElement.appendChild(this.load_screen)
-    } else {
-      console.error(`Element with identifier "${identifier}" not found.`)
-    }
-  }
-
-  endLoad() {
-    // Remove the load screen from its parent
-    if (this.load_screen && this.load_screen.parentNode) {
-      this.load_screen.parentNode.removeChild(this.load_screen)
-    }
-  }
 }
 
 //Check if an object (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
@@ -101,9 +64,14 @@ export function cantorPairing(k1, k2) {
 }
 
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
-export function filterThenSortByID<P>(object_list: P[], id_list): P[] {
+export function filterThenSortByID<T extends object>(
+  object_list: MaybeWithId<T>[],
+  id_list: any[]
+): T[] {
   return object_list
-    .filter((obj) => id_list.includes(obj.id))
+    .filter(
+      (obj): obj is T & { id: any } => hasId(obj) && id_list.includes(obj.id)
+    )
     .sort((a, b) => id_list.indexOf(a.id) - id_list.indexOf(b.id))
 }
 
@@ -180,7 +148,7 @@ export function Enum(baseEnum) {
   return new Proxy(baseEnum, {
     get(target, name) {
       if (!baseEnum.hasOwnProperty(name)) {
-        throw new Error(`"${name}" value does not exist in the enum`)
+        throw new Error(`"${String(name)}" value does not exist in the enum`)
       }
       return baseEnum[name]
     },

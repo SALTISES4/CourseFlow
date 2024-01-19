@@ -4,7 +4,7 @@ import {
   DuplicateSelfQueryResp,
   RestoreSelfQueryResp
 } from '@XMLHTTP/types'
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+import { VERB } from '@cfModule/types/common'
 import { ToDefine } from '@cfModule/types/common'
 
 //Causes the specified object to delete itself
@@ -19,7 +19,7 @@ export function deleteSelfLive(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -44,7 +44,7 @@ export function deleteSelfQuery(
     }).done(function (data: DeleteSelfQueryResp) {
       console.log('deleteSelfQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -69,7 +69,7 @@ export function duplicateSelfQuery(
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
     }).done(function (data: DuplicateSelfQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -93,7 +93,7 @@ export function restoreSelfQuery(
     }).done(function (data: RestoreSelfQueryResp) {
       console.log('restoreSelfQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

@@ -1,17 +1,28 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import { getOutcomeOutcomeByID } from '@cfFindState'
+import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/type'
+
+type ConnectedProps = OutcomeOutcomeByIDType
+type OwnProps = {
+  objectID: number
+  parentID: any
+  nodecategory: any
+  updateParentCompletion: any
+  completion_status_from_parents: any
+  outcomes_type: any
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * Outcome to child outcome link in the table view.
  * Not currently used
  */
-class TableOutcomeOutcomeUnconnected extends React.Component {
-  constructor(props) {
+class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
+  private objectType: CfObjectType
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME
   }
@@ -23,9 +34,10 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
     const data = this.props.data
 
     return (
-      <div className="outcome-outcome" id={data.id} ref={this.mainDiv}>
+      // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined
+      <div className="outcome-outcome" id={String(data.id)}>
         <Outcome
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           objectID={data.child}
           parentID={this.props.parentID}
           throughParentID={data.id}
@@ -40,11 +52,14 @@ class TableOutcomeOutcomeUnconnected extends React.Component {
     )
   }
 }
-const mapStateToProps = (state: AppState, ownProps) => {
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): OutcomeOutcomeByIDType => {
   return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 
-const TableOutcomeOutcome = connect(
+const TableOutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(TableOutcomeOutcomeUnconnected)

@@ -5,13 +5,13 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/enumActions'
-import { Nodeweek } from '@cfRedux/type'
+import { TNodeweek } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function nodeweekReducer(
-  state: Nodeweek[] = [],
+  state: TNodeweek[] = [],
   action: AnyAction
-): Nodeweek[] {
+): TNodeweek[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       if (action.payload.nodeweek) return action.payload.nodeweek

@@ -1,5 +1,4 @@
 //Get the data from all child workflows
-import { DATA_ACTIONS } from '@XMLHTTP/common'
 import {
   GetWorkflowSelectMenuResp,
   LinkedWorkflowMenuQueryResp,
@@ -9,9 +8,9 @@ import {
   WorkflowDataQueryResp,
   WorkflowsForProjectQueryResp
 } from '@XMLHTTP/types'
-import { ToDefine } from '@cfModule/types/common'
+import {ToDefine, VERB} from '@cfModule/types/common'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import { CfObjectType } from '@cfModule/types/enum'
+import {CfObjectType} from "@cfModule/types/enum";
 
 /*******************************************************
  * WORKFLOWS
@@ -52,7 +51,7 @@ export function setLinkedWorkflow(
     nodePk: node_id,
     workflowPk: workflow_id
   }).done(function (data) {
-    if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+    if (data.action === VERB.POSTED) callBackFunction(data)
     else window.fail_function(data.action)
   })
 }
@@ -66,7 +65,7 @@ export function getWorkflowContext(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -83,7 +82,7 @@ export function getWorkflowChildDataQuery(
     }).done(function (data) {
       console.log('getWorkflowChildData')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -102,7 +101,7 @@ export function getWorkflowParentDataQuery(
     }).done(function (data) {
       console.log('getWorkflowParentData')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -124,7 +123,7 @@ export function getPublicWorkflowDataQuery(
     ).done(function (data) {
       console.log('getPublicWorkflowData')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -146,7 +145,7 @@ export function getPublicWorkflowParentDataQuery(
     ).done(function (data) {
       console.log('getPublicWorkflowParentData')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -168,7 +167,7 @@ export function getPublicWorkflowChildDataQuery(
     ).done(function (data) {
       console.log('getPublicWorkflowChildData data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -224,7 +223,7 @@ export function getWorkflowDataQuery(
       // @todo this is mostly typed now
       // console.log('getWorkflowDataQuery data')
       // console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -252,7 +251,7 @@ export function getParentWorkflowInfoQuery(
       workflowPk: JSON.stringify(workflowPk)
     })
       .done(function (data: ParentWorkflowInfoQueryResp) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+        if (data.action === VERB.POSTED) callBackFunction(data)
         else window.fail_function(data.action)
       })
       .catch((err) => {
@@ -282,7 +281,7 @@ export function setWorkflowVisibilityQuery(
       console.log('setWorkflowVisibilityQuery data')
       console.log(data)
 
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -302,7 +301,7 @@ export function getPublicParentWorkflowInfo(
         workflowPk
       )
     ).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -334,7 +333,7 @@ export function getWorkflowSelectMenuQuery(
     // }
   )
     .done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
     .catch((err) => {

@@ -1,11 +1,11 @@
-import { Strategy } from '@cfRedux/type'
+import { TStrategy } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import { StrategyActions } from '@cfRedux/enumActions'
 
 export default function strategyReducer(
-  state: Strategy[] = [],
+  state: TStrategy[] = [],
   action: AnyAction
-): Strategy[] {
+): TStrategy[] {
   switch (action.type) {
     case StrategyActions.TOGGLE_STRATEGY:
       return action.payload.is_strategy

@@ -1,5 +1,5 @@
 import { ObjectPermission, VERB } from '@cfModule/types/common'
-import { Workflow } from '@cfRedux/type'
+import { TWorkflow } from '@cfRedux/type'
 
 /*******************************************************
  * LinkedWorkflowMenuQueryResp
@@ -17,7 +17,7 @@ export type LinkedWorkDataPackage = {
 
 export type ParentWorkflowInfoQueryResp = {
   action: VERB
-  parent_workflows: Workflow[]
+  parent_workflows: TWorkflow[]
 }
 
 export type AllPublished = {

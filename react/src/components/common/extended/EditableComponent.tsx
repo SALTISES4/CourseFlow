@@ -11,6 +11,7 @@ import { updateObjectSet } from '@XMLHTTP/API/global'
 import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -491,7 +492,7 @@ class EditableComponent<
           disabled={readOnly}
           id="toggle-strategy-editor"
           onClick={() => {
-            const loader = new Utility.Loader('body')
+            const loader = new UtilityLoader('body')
             toggleStrategyQuery(data.id, data.is_strategy, (response_data) => {
               loader.endLoad()
             })

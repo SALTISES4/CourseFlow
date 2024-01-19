@@ -2,12 +2,16 @@ import * as React from 'react'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 
+type PropsType = {
+  outcomenode: any
+  child_outcome: any
+}
 /**
  * Display the parent outcome tagged to a child workflow's outcome in the
  * alignment view.
  */
 
-export default class extends React.Component {
+class AlignmentHorizontalReverseParentOutcome extends React.Component<PropsType> {
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -18,7 +22,7 @@ export default class extends React.Component {
       <div className="alignment-row">
         <OutcomeNode
           objectID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           deleteSelfOverride={() => {
             COURSEFLOW_APP.tinyLoader.startLoad()
             updateOutcomehorizontallinkDegree(
@@ -35,3 +39,5 @@ export default class extends React.Component {
     )
   }
 }
+
+export default AlignmentHorizontalReverseParentOutcome

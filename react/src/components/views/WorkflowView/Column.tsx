@@ -10,7 +10,8 @@ import { EditableComponentWithActionsState } from '@cfParentComponents/EditableC
 type ConnectedProps = GetColumnByIDType
 type OwnProps = {
   objectID: number
-  data: any
+  parentID?: number
+  throughParentID?: number
 }
 type StateProps = EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
@@ -23,6 +24,9 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     super(props)
     this.objectType = CfObjectType.COLUMN
     this.objectClass = '.column'
+
+    console.log('EditableComponentWithActions props')
+    console.log(props)
   }
 
   /*******************************************************
@@ -50,28 +54,27 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let title = data.title
-    if (!title) title = data.column_type_display
+    const title = data.title ?? data.column_type_display
 
     const style: React.CSSProperties = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
+
     const cssClass = [
       'column',
       data.lock ? 'locked locked-' + data.lock.user_id : ''
     ].join(' ')
-    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    const mouseover_actions = []
+    const mouseoverActions = []
+
     if (!this.context.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
+      mouseoverActions.push(this.addInsertSibling(data))
+      mouseoverActions.push(this.addDuplicateSelf(data))
+      mouseoverActions.push(this.addDeleteSelf(data))
     }
     if (this.context.view_comments) {
-      // mouseover_actions.push(this.addCommenting(data))
-      mouseover_actions.push(this.addCommenting())
+      mouseoverActions.push(this.addCommenting())
     }
 
     return (
@@ -88,7 +91,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}
-        <div className="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseoverActions}</div>
       </div>
     )
   }

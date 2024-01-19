@@ -3,15 +3,15 @@ import * as Constants from '../constants'
 import * as Utility from '@cfUtility'
 import {
   AppState,
-  Columnworkflow,
-  Nodelink,
-  NodeType,
+  TColumnworkflow,
+  TNodelink,
+  TNode,
   ObjectSet,
-  Outcome,
-  OutcomeOutcome,
-  Week
+  TOutcome,
+  TOutcomeOutcome,
+  TWeek
 } from '@cfRedux/type'
-import OutcomeNode from "@cfViews/WorkflowView/OutcomeNode";
+import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 
 /*******************************************************
  * TYPES
@@ -27,9 +27,7 @@ export type StrategyByIDType = {
  *
  *******************************************************/
 export type GetColumnByIDType = {
-  data: {
-   column_type_display: any
-  }
+  data: any
   sibling_count: any
   columnworkflows: any
   column_order: any
@@ -99,7 +97,7 @@ export const getTermByID = (state: AppState, id: number): TermByIDType => {
 
       const nodeweeks = week.nodeweek_set
 
-      const column_order = Utility.filterThenSortByID<Week['nodeweek_set']>(
+      const column_order = Utility.filterThenSortByID<TWeek['nodeweek_set']>(
         state.columnworkflow,
         state.workflow.columnworkflow_set
       ).map((columnworkflow) => columnworkflow.column)
@@ -167,7 +165,7 @@ export const getOutcomeWorkflowByID = (
 // }
 
 export type GetNodeByIDType = {
-  data: NodeType
+  data: TNode
   column: any
   object_sets: any
 }
@@ -211,7 +209,7 @@ export const getNodeWeekByID = (
 }
 
 export type GetNodeLinkByIDType = {
-  data: Nodelink
+  data: TNodelink
 }
 export const getNodeLinkByID = (
   state: AppState,
@@ -230,7 +228,7 @@ export const getNodeLinkByID = (
 }
 
 export type ColumnWorkflowByIDType = {
-  data?: Columnworkflow
+  data?: TColumnworkflow
   order?: number[]
 }
 
@@ -317,7 +315,7 @@ function findTopRank(state: AppState, outcome) {
 }
 
 export type GetOutcomeByIDType = {
-  data: Outcome
+  data: TOutcome
   hovertext: string
   prefix: string
   object_sets: ObjectSet
@@ -457,7 +455,7 @@ export const getChildWorkflowByID = (state: AppState, id: number) => {
 }
 
 export type OutcomeOutcomeByIDType = {
-  data?: OutcomeOutcome
+  data?: TOutcomeOutcome
 }
 export const getOutcomeOutcomeByID = (
   state: AppState,
@@ -478,7 +476,10 @@ export const getOutcomeOutcomeByID = (
 export type OutcomeNodeByIDType = {
   data: OutcomeNode
 }
-export const getOutcomeNodeByID = (state: AppState, id: number): OutcomeNodeByIDType  => {
+export const getOutcomeNodeByID = (
+  state: AppState,
+  id: number
+): OutcomeNodeByIDType => {
   const outcomeNode = state.outcomenode.find((node) => node.id === id)
   if (outcomeNode) {
     return {
@@ -488,7 +489,13 @@ export const getOutcomeNodeByID = (state: AppState, id: number): OutcomeNodeByID
   console.log('Failed to find outcomenode with ID:', id)
 }
 
-export const getOutcomeHorizontalLinkByID = (state: AppState, id: number) => {
+export type OutcomeHorizontalLinkByIDType = {
+  data: any
+}
+export const getOutcomeHorizontalLinkByID = (
+  state: AppState,
+  id: number
+): OutcomeHorizontalLinkByIDType => {
   for (const i in state.outcomehorizontallink) {
     const outcomeHorizontalLink = state.outcomehorizontallink[i]
     if (outcomeHorizontalLink.id == id) {
@@ -553,7 +560,7 @@ export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export type SortedOutcomesFromOutcomeWorkflowSetType = {
   objectset: ObjectSet
-  outcomes: Outcome[]
+  outcomes: TOutcome[]
 }[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
@@ -568,7 +575,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   )
 
   // @todo clean up
-  const outcomes = Utility.filterThenSortByID<Outcome>(
+  const outcomes = Utility.filterThenSortByID<TOutcome>(
     state.outcome,
     outcome_ids
   )
@@ -623,18 +630,19 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
 }
 
 //Used in the Alignment View
-export const getDescendantOutcomes = (state, outcome, outcomes) => {
-  if (outcome.depth >= 2) return
-  const children = outcome.child_outcome_links
-    .map((id) => getOutcomeOutcomeByID(state, id))
-    .map(
-      (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-    )
-  for (let i = 0; i < children.length; i++) {
-    outcomes.push(children[i].id)
-    getDescendantOutcomes(state, children[i], outcomes)
-  }
-}
+// returns nothing
+// export const getDescendantOutcomes = (state, outcome, outcomes) => {
+//   if (outcome.depth >= 2) return
+//   const children = outcome.child_outcome_links
+//     .map((id) => getOutcomeOutcomeByID(state, id))
+//     .map(
+//       (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
+//     )
+//   for (let i = 0; i < children.length; i++) {
+//     outcomes.push(children[i].id)
+//     getDescendantOutcomes(state, children[i], outcomes)
+//   }
+// }
 /*******************************************************
  * HELPER FUNCTIONS FOR FOR STATE QUERIES
  *******************************************************/

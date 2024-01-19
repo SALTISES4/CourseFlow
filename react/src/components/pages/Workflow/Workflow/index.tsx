@@ -85,7 +85,7 @@ class Workflow {
   private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
-  private getWorkflowData: (
+  protected getWorkflowData: (
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
@@ -101,9 +101,9 @@ class Workflow {
   private has_disconnected: boolean
   private has_rendered: boolean
   private is_static: boolean
-  private store: Store<EmptyObject & AppState, AnyAction>
+  protected store: Store<EmptyObject & AppState, AnyAction>
 
-  // NOTE: this is not yet a react component, so its misleading to use the same
+  // NOTE: this is not yet a React component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
   unread_comments: any
   container: any
@@ -111,7 +111,7 @@ class Workflow {
   private workflowRender: OmitThisParameter<
     (container, view_type?: ViewType) => void
   >
-  private locks: {}
+  private locks: any
   private silent_connect_fail: any
 
   constructor(propsConfig: WorkflowDetailViewDTO) {

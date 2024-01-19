@@ -4,13 +4,13 @@ import {
   NodeActions,
   StrategyActions
 } from '@cfRedux/enumActions'
-import { Column } from '@cfRedux/type'
+import { TColumn } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function columnReducer(
-  state: Column[] = [],
+  state: TColumn[] = [],
   action: AnyAction
-): Column[] {
+): TColumn[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.column || state

@@ -8,12 +8,12 @@ import {
   OutcomeOutcomeActions,
   WeekActions
 } from '@cfRedux/enumActions'
-import { Outcomenode } from '@cfRedux/type'
+import { TOutcomenode } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 export default function outcomeNodeReducer(
-  state: Outcomenode[] = [],
+  state: TOutcomenode[] = [],
   action: AnyAction
-): Outcomenode[] {
+): TOutcomenode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {
       return action.payload.outcomenode || state

@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
+import { ViewType } from '@cfModule/types/enum'
 
 export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
   {} as ChildRenderer
@@ -22,11 +23,18 @@ type ChildRenderer = {
   lock_update: any
   micro_update?: any
   is_strategy?: any
-  show_assignments?: any
+  // show_assignments?: any
   column_choices: any
 
-  // news
+  // new
   user_id: number
+  view_type: ViewType
+
+  // new new
+  public_view: any
+
+  // should be removed
+  container: any
 }
 const initialWorkFlowConfig: ChildRenderer = {
   // Initialize all required fields
@@ -62,20 +70,29 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       outcome_type_choices: workflowInstance.context_choices,
       strategy_classification_choices:
         workflowInstance.strategy_classification_choices,
-      change_field: workflowInstance.change_field,
+
       workflowID: workflowInstance.workflowID,
       unread_comments: workflowInstance.unread_comments,
       add_comments: workflowInstance.add_comments,
       view_comments: workflowInstance.view_comments,
-      selection_manager: workflowInstance.selection_manager,
 
-      lock_update: workflowInstance.lock_update,
-      micro_update: workflowInstance.micro_update,
       is_strategy: workflowInstance.is_strategy,
-      show_assignments: workflowInstance.show_assignments,
+      // show_assignments: workflowInstance.show_assignments,
       column_choices: workflowInstance.column_choices,
 
-      user_id: workflowInstance.user_id
+      // functions
+      lock_update: workflowInstance.lock_update,
+      micro_update: workflowInstance.micro_update,
+      change_field: workflowInstance.change_field,
+      selection_manager: workflowInstance.selection_manager,
+
+      //new
+      user_id: workflowInstance.user_id,
+      view_type: workflowInstance.view_type,
+      public_view: workflowInstance.public_view,
+
+      // to remove
+      container: workflowInstance.container
     }
     return formattedValue
   }

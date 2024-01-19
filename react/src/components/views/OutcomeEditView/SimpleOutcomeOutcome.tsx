@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import SimpleOutcome from './SimpleOutcome'
@@ -39,7 +38,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component<PropsType> 
         throughParentID={data.id}
         comments={this.props.comments}
         edit={this.props.edit}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     )
   }

@@ -260,7 +260,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
               key={outcomenode}
               objectID={outcomenode}
               // renderer={renderer}
-              legacyRenderer={this.context}
+              // legacyRenderer={this.context}
             />
           ))}
         </div>
@@ -393,9 +393,10 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(this.addCommenting())
     }
-    if (this.context.show_assignments) {
-      mouseover_actions.push(this.addShowAssignment(data))
-    }
+
+    // if (this.context.show_assignments) {
+    //   mouseover_actions.push(this.addShowAssignment(data))
+    // }
 
     return (
       <>

@@ -1,4 +1,4 @@
-//Extends the react component to add a few features that are used in a large number of components
+import * as React from 'react'
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
@@ -9,13 +9,16 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type OwnProps = {
-  objectID: number
+  objectID?: number
 } & EditableComponentWithActionsProps
 export type EditableComponentWithSortingProps = OwnProps
 
 type StateType = EditableComponentWithActionsState
 export type EditableComponentWithSortingState = StateType
 
+/**
+ * Extends the React component to add a few features that are used in a large number of components
+ */
 class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
@@ -28,7 +31,7 @@ class EditableComponentWithSorting<
 
   // @todo this is an 'abstract like' placholder
   // this needs to be untangled
-  sortableColumnChangedFunction(id, delta_x, old_column) {
+  sortableColumnChangedFunction(_id, _delta_x, _old_column) {
     console.log('column change not sent')
   }
 
@@ -65,9 +68,9 @@ class EditableComponentWithSorting<
     draggable_type: string,
     draggable_selector: string,
     axis = false,
-    grid = false,
+    grid: boolean | number[] = false, // @todo grid is not used
     restrictTo = null,
-    handle = false,
+    handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
     if (this.context.read_only) {

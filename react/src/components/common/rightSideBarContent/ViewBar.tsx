@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { ViewType } from '@cfModule/types/enum'
 
 type ConnectedProps = {
   object_sets: any
@@ -52,36 +53,34 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      // @ts-ignore
-      this.context.view_type === 'outcometable' ||
-      // @ts-ignore
-      this.context.view_type === 'horizontaloutcometable'
+      this.context.view_type === ViewType.OUTCOMETABLE ||
+      this.context.view_type === ViewType.HORIZONTALOUTCOMETABLE
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-
           {
             // @ts-ignore
             this.context.outcome_sort_choices.map((choice) => (
-            <div>
-              <input
-                disabled={
-                  table_type_value === 1 ||
-                  (data.type === 'program' && choice.type > 1)
-                }
-                type="radio"
-                id={'sort_type_choice' + choice.type}
-                name={'sort_type_choice' + choice.type}
-                value={choice.type}
-                checked={data.outcomes_sort === choice.type}
-                onChange={this.changeSort.bind(this)}
-              />
-              <label htmlFor={'sort_type_choice' + choice.type}>
-                {choice.name}
-              </label>
-            </div>
-          ))}
+              <div>
+                <input
+                  disabled={
+                    table_type_value === 1 ||
+                    (data.type === 'program' && choice.type > 1)
+                  }
+                  type="radio"
+                  id={'sort_type_choice' + choice.type}
+                  name={'sort_type_choice' + choice.type}
+                  value={choice.type}
+                  checked={data.outcomes_sort === choice.type}
+                  onChange={this.changeSort.bind(this)}
+                />
+                <label htmlFor={'sort_type_choice' + choice.type}>
+                  {choice.name}
+                </label>
+              </div>
+            ))
+          }
         </div>
       )
       const table_type = (

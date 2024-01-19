@@ -10,7 +10,6 @@ import ConnectionBar from '@cfModule/ConnectionBar'
 
 import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
-import { GridView } from '../GridView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
@@ -35,6 +34,8 @@ import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import AlignmentView from '@cfViews/AlignmentView/AlignmentView'
+import GridView from '../GridView/GridView.js'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -129,9 +130,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.user_id = this.context.user_id
     this.public_view = this.context.public_view
 
-    // used in assignmentbox
-    this.project = this.context.project
-
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
@@ -167,7 +165,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
   }
 
-  componentDidUpdate(prev_props) {}
+  componentDidUpdate(_prev_props) {}
 
   /*******************************************************
    * FUNCTIONS
@@ -215,21 +213,37 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
     this.selection_manager.changeSelection(null, null)
     const disabled_tabs = []
-    for (let i = 0; i <= 4; i++)
-      if (this.allowed_tabs.indexOf(i) < 0) disabled_tabs.push(i)
+
+    for (let i = 0; i <= 4; i++) {
+      if (this.allowed_tabs.indexOf(i) < 0) {
+        disabled_tabs.push(i)
+      }
+    }
 
     /*******************************************************
      * JQUERY
      *******************************************************/
     $('#sidebar').tabs({ disabled: false })
     const current_tab = $('#sidebar').tabs('option', 'active')
+
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0) $('#sidebar').tabs({ active: false })
-      else $('#sidebar').tabs({ active: this.allowed_tabs[0] })
+      if (this.allowed_tabs.length == 0)
+        $('#sidebar').tabs({
+          active: false
+        })
+      else
+        $('#sidebar').tabs({
+          active: this.allowed_tabs[0]
+        })
     }
+
     // @todo remove renderer
-    if (this.readOnly) disabled_tabs.push(5)
-    $('#sidebar').tabs({ disabled: disabled_tabs })
+    if (this.readOnly) {
+      disabled_tabs.push(5)
+    }
+    $('#sidebar').tabs({
+      disabled: disabled_tabs
+    })
     /*******************************************************
      * // JQUERY
      *******************************************************/
@@ -353,6 +367,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           {Utility.getUserDisplay(author)}
         </div>
       )
+
     users_group.push([
       editors
         .filter((user) => user.id !== author.id)
@@ -376,6 +391,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       ))
     ])
     users_group = users_group.flat(2)
+
     const users = [<div className="users-group">{users_group}</div>]
     if (users_group.length > 4) {
       users.push(
@@ -770,7 +786,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           } else {
             getTargetProjectMenu<{ parentID: number }>(-1, (response_data) => {
               if (response_data.parentID != null) {
-                const utilLoader = new Utility.Loader('body')
+                const utilLoader = new UtilityLoader('body')
                 duplicateBaseItemQuery(
                   this.data.id,
                   this.data.type,
