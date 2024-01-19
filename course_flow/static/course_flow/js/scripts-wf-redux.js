@@ -562,6 +562,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
         let loader = new Constants.Loader(this.container[0]);
         this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
+            this.unread_comments=data_flat.unread_comments;
             if(this.initial_object_sets)data_flat={...data_flat,objectset:this.initial_object_sets};
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render(this.view_type);
