@@ -23,7 +23,6 @@ class Favourites extends React.Component<JSX.IntrinsicAttributes, StateType> {
    *******************************************************/
   componentDidMount() {
     getFavouritesQuery((data) => {
-
       this.setState({
         project_data: data.data_package
       })

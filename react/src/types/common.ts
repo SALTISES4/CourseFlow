@@ -53,3 +53,8 @@ export type ColumnChoice = {
   type: number | string
   name: string
 }
+
+export type Lock = {
+  user_colour: string
+  user_id: string
+}

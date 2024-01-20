@@ -11,7 +11,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { CfObjectType } from '@cfModule/types/enum'
-import {WorkFlowConfigContext} from "@cfModule/context/workFlowConfigContext";
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = GetNodeLinkByIDType
@@ -109,7 +109,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       // eslint-disable-next-line no-undef
       this.source_port_handle = d3.select(cssSourcePortSelector)
       this.target_port_handle = d3.select(cssSourceTargetSelector)
-
     }
 
     console.log('g port')

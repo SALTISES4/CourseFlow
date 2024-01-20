@@ -1,6 +1,9 @@
 //Create a nodelink from the source to the target, at the given ports
 import { VERB } from '@cfModule/types/enum'
-import { NewNodeQueryResp, UpdateOutcomenodeDegreeResp } from '@XMLHTTP/types/query'
+import {
+  NewNodeQueryResp,
+  UpdateOutcomenodeDegreeResp
+} from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
 
 /*******************************************************

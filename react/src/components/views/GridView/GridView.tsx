@@ -24,7 +24,7 @@ type StateType = {
 }
 type PropsType = OwnProps & ConnectedProps
 class GridViewUnconnected extends React.Component<PropsType, StateType> {
-  private objectType: CfObjectType;
+  private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW // @todo check addEditable

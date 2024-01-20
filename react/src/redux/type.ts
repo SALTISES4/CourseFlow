@@ -8,11 +8,13 @@ import {
   EOutcome,
   EOutcomenode,
   EOutcomeOutcome,
-  EOutcomeWorkflow, EUser,
+  EOutcomeWorkflow,
+  EUser,
   EWeek,
   EWeekworkflow,
   EWorkflow
 } from '@XMLHTTP/types/entity'
+import { Lock } from '@cfModule/types/common'
 
 export type AppState = {
   workflow: TWorkflow
@@ -46,11 +48,12 @@ export type TOutcomeOutcome = EOutcomeOutcome
 
 export type TOutcome = EOutcome
 
-export type TColumn = EColumn
+export type TColumn = EColumn & {
+  lock?: Lock
+}
 
 export type TNode = ENode
 export type TUser = EUser
-
 
 export type TColumnworkflow = EColumnworkflow & {
   outcome?: number
@@ -60,7 +63,7 @@ export type TColumnworkflow = EColumnworkflow & {
 export type TNodeweek = ENodeweek
 
 export type TWeek = EWeek & {
-  is_dropped: boolean
+  is_dropped?: boolean
 }
 
 export type TWeekworkflow = EWeekworkflow & {

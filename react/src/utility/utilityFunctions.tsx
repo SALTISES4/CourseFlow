@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { isObject } from 'mathjs'
-import {hasId, MaybeWithId} from "@cfModule/types/typeGuards";
+import { hasId, MaybeWithId } from '@cfModule/types/typeGuards'
 
 export function permission_translate() {
   return {

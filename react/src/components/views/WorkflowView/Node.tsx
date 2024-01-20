@@ -409,10 +409,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.context.selection_manager.changeSelection(
-              evt,
-              this
-            )
+            this.context.selection_manager.changeSelection(evt, this)
           }
         >
           <div className="node-top-row">
@@ -440,9 +437,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
                 {data_override.time_required &&
                   data_override.time_required +
                     ' ' +
-                    this.context.time_choices[
-                      data_override.time_units
-                    ].name}
+                    this.context.time_choices[data_override.time_units].name}
               </div>
             </div>
           </div>

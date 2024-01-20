@@ -5,7 +5,7 @@ import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
 import { AppState } from '@cfRedux/type'
 import CompletionImg from '@cfUIComponents/CompletionImg'
-import {WorkFlowConfigContext} from "@cfModule/context/workFlowConfigContext";
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
@@ -22,7 +22,7 @@ type SelfProps = {
 }
 type PropsType = SelfProps & ConnectedProps
 class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
-    declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {
     super(props)

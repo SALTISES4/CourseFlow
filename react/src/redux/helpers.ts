@@ -1,4 +1,4 @@
-import {CfObjectType, ViewType} from '@cfModule/types/enum'
+import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import * as Constants from '../constants'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { Action } from 'redux'

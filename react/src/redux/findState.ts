@@ -9,9 +9,9 @@ import {
   TObjectSet,
   TOutcome,
   TOutcomeOutcome,
-  TWeek, TColumn
+  TWeek,
+  TColumn
 } from '@cfRedux/type'
-import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 
 /*******************************************************
  * TYPES
@@ -19,7 +19,6 @@ import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 export type StrategyByIDType = {
   data: any // don't have type for strategy
 }
-
 /*******************************************************
  *
  *  This file contains selectors to encapsulate accessing the

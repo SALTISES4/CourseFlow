@@ -7,7 +7,7 @@ export type EColumn = {
   column_type_display: string
   comments: any[]
   deleted: boolean
-  deleted_on: Date
+  deleted_on: TDate
   icon: string | null
   id: number
   title: null
@@ -16,7 +16,7 @@ export type EColumn = {
 
 export type EWeek = {
   deleted: boolean
-  deleted_on: Date
+  deleted_on: TDate
   id: number
   title: null
   description: null
@@ -32,7 +32,7 @@ export type EWeek = {
 export type EOutcome = {
   id: number
   deleted: boolean
-  deleted_on: Date
+  deleted_on: TDate
   title: string
   code: string
   description: string
@@ -60,16 +60,16 @@ export type EWorkflow = {
   code: null
   columnworkflow_set: number[]
   condensed: boolean
-  created_on: Date
+  created_on: TDate
   deleted: boolean
-  deleted_on: Date
+  deleted_on: TDate
   description: null | string
   favourite: boolean
   id: number
   importing: boolean
   is_original: boolean
   is_strategy: boolean
-  last_modified: Date
+  last_modified: TDate
   outcomes_sort: number
   outcomes_type: number
   outcomeworkflow_set: any[]
@@ -86,6 +86,8 @@ export type EWorkflow = {
   title: string
   url: string
   weekworkflow_set: number[]
+  // @todo check where this is defined
+  edit_count?: number
 }
 
 export type EWeekworkflow = {
@@ -99,7 +101,7 @@ export type EWeekworkflow = {
 export type ENewItem = {
   deleted: boolean
   id: number
-  created_on: string
+  created_on: TDate
   last_modified: string
   type: string
   favourite: boolean
@@ -127,7 +129,7 @@ export type EUser = {
 
 export type ENode = {
   deleted: boolean
-  deleted_on: string
+  deleted_on: TDate
   id: number
   title: null
   description: null
@@ -159,7 +161,7 @@ export type ENode = {
 
 export type ENodelink = {
   deleted: boolean
-  deleted_on: string
+  deleted_on: TDate
   id: number
   title: null
   source_node: number
@@ -178,7 +180,7 @@ export type EOutcomeWorkflow = {
 }
 
 export type ENodeweek = {
-  added_on: Date
+  added_on: TDate
   week: number
   node: number
   rank: number
@@ -210,8 +212,8 @@ export type ESection = {
 export type ESectionObject = {
   deleted: boolean
   id: number
-  created_on: string
-  last_modified: string
+  created_on: TDate
+  last_modified: TDate
   type: string
   favourite: boolean
   is_owned: boolean
@@ -227,3 +229,5 @@ export type ESectionObject = {
   is_linked: boolean
   is_visible: boolean
 }
+
+export type TDate = string

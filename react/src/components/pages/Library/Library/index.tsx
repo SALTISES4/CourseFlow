@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { LibraryQueryResp } from '@XMLHTTP/types.js'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { Workflow } from '@cfModule/types/common'
+import { LibraryQueryResp } from '@cfModule/XMLHTTP/types/query'
 
 type PropsType = Record<string, never>
 type StateType = {

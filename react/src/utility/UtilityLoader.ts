@@ -2,7 +2,7 @@
  *  this has been refactored to remove jquery
  */
 export class UtilityLoader {
-  private load_screen: HTMLDivElement;
+  private load_screen: HTMLDivElement
   constructor(identifier) {
     // Create a new div element
     this.load_screen = document.createElement('div')

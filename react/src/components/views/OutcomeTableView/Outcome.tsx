@@ -237,7 +237,7 @@ export class OutcomeUnconnected<
           }}
         >
           {/*<div className="outcome-title" style={style}> @todo style is not defined */}
-          <div className="outcome-title" >
+          <div className="outcome-title">
             <OutcomeTitle
               data={this.props.data}
               prefix={this.props.prefix}

@@ -349,7 +349,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    *
    *******************************************************/
   Content = () => {
-
     return (
       <WorkflowFilter
         read_only={this.props.readOnly}
@@ -433,7 +432,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           type={'project_edit_menu'}
           data={{
             ...this.state.data,
-            all_disciplines: this.props.allDisciplines,
+            all_disciplines: this.props.allDisciplines
             // renderer: this.props.renderer
           }}
           actionFunction={this.updateFunction}

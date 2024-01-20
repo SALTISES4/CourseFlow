@@ -37,7 +37,7 @@ type OwnProps = any
 
 type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
-  private objectType: CfObjectType;
+  private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW // @todo check addEditable

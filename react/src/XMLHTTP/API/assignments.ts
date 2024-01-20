@@ -1,5 +1,6 @@
 //get assignment data
-import {ToDefine, VERB} from '@cfModule/types/common'
+import { ToDefine } from '@cfModule/types/common'
+import { VERB } from '@cfModule/types/enum'
 
 export function getAssignmentDataQuery(
   liveassignmentPk,

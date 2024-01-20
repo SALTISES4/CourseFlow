@@ -7,7 +7,10 @@ import NodeWeek from './NodeWeek'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/type'
-import {WeekUnconnected, WeekUnconnectedPropsType} from '@cfViews/WorkflowView/Week'
+import {
+  WeekUnconnected,
+  WeekUnconnectedPropsType
+} from '@cfViews/WorkflowView/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
@@ -77,7 +80,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       )
     ) {
       insertedAt(
-            // @todo same issue with rendere / drag action
+        // @todo same issue with rendere / drag action
         // @ts-ignore dragaction
         this.props.renderer,
         null,
