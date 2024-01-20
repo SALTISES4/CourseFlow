@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { NodeTitle } from '@cfUIComponents'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
-import { AppState, TColumn } from '@cfModule/redux/type'
+import { AppState, TColumn } from '@cfRedux/types/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
 import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
@@ -100,12 +100,7 @@ const mapStateToProps = (
 ): ConnectedProps => ({
   column: state.column.find((column) => column.id == ownProps.data.column)
 })
-export default connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+export default connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(GridNodeUnconnected)

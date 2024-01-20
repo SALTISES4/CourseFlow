@@ -1,5 +1,5 @@
-import { ObjectSetActions } from '@cfRedux/enumActions'
-import { TObjectSet } from '@cfRedux/type'
+import { ObjectSetActions } from '@cfRedux/types/enumActions'
+import { TObjectSet } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function objectSetReducer(

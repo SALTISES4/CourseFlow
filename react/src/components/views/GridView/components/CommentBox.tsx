@@ -14,7 +14,7 @@ import {
   removeComment
 } from '@cfModule/XMLHTTP/API/comment'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
-import { TUser } from '@cfRedux/type'
+import { TUser } from '@cfRedux/types/type'
 
 /*******************************************************
  * @CommentBox

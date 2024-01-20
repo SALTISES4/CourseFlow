@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Term from './Term'
-import { GetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
@@ -10,7 +10,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 import Week from './Week'
 // import $ from 'jquery'
 
-type ConnectedProps = GetWeekWorkflowByID
+type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = {
   condensed: boolean
   objectID: number
@@ -87,7 +87,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapWeekWorkflowStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetWeekWorkflowByID => {
+): TGetWeekWorkflowByID => {
   return getWeekWorkflowByID(state, ownProps.objectID)
 }
 

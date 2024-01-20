@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { connect } from 'react-redux'
 
-import { ColumnWorkflowByIDType, getColumnWorkflowByID } from '@cfFindState'
+import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
 import NodeBarColumn from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumn'
 import NodeBarColumnCreator from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnCreator'
 import { ColumnChoice } from '@cfModule/types/common'
@@ -19,7 +19,7 @@ type SelfProps = {
   columnType?: number | string
   columnChoices: ColumnChoice[] // was from renderer, need to check this, look at column type as well in relation to  NodeBarColumnCreator
 }
-type ConnectedProps = ColumnWorkflowByIDType
+type ConnectedProps = TColumnWorkflowByID
 type PropsType = SelfProps & ConnectedProps
 export type NodeBarColumnWorkflowUnconnectedPropsType = PropsType
 
@@ -66,7 +66,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: SelfProps
-): ColumnWorkflowByIDType => {
+): TColumnWorkflowByID => {
   return getColumnWorkflowByID(state, ownProps.objectID)
 }
 

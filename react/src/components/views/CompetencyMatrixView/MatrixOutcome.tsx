@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '@cfViews/OutcomeTableView/Outcome'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   objectID: number
   outcomes_type: any
@@ -50,7 +50,7 @@ class OutcomeUnconnected extends TableOutcomeUnconnected<
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 /*******************************************************

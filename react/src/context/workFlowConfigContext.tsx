@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
 import { ViewType } from '@cfModule/types/enum'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 
 export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
   {} as ChildRenderer
@@ -18,7 +19,7 @@ type ChildRenderer = {
   unread_comments: any
   add_comments: any
   view_comments?: any
-  selection_manager: any
+  selection_manager: SelectionManager
 
   lock_update: any
   micro_update?: any

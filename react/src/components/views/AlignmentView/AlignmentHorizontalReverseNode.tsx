@@ -12,7 +12,7 @@ import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
   workflow: any

@@ -1,12 +1,5 @@
-import { CfObjectType, ViewType } from '@cfModule/types/enum'
-import * as Constants from '../constants'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { Action } from 'redux'
-import { Dispatch } from '@reduxjs/toolkit'
 import React from 'react'
-// import * as $ from 'jquery';
-// import 'jquery';
-// import 'jquery-ui';
+import { EventUnion } from '@cfModule/types/common'
 
 /**
  * Manages the current selection
@@ -68,10 +61,7 @@ export class SelectionManager {
    * @param evt - The event that triggered the selection change.
    * @param newSelection - The new selection object.
    */
-  changeSelection(
-    evt?: JQuery.Event,
-    newSelection?: React.Component<any>
-  ): void {
+  changeSelection(evt?: EventUnion, newSelection?: React.Component<any>): void {
     if (evt) {
       evt.stopPropagation()
     }
@@ -240,44 +230,3 @@ export class SelectionManager {
 //     }
 //   }
 // }
-
-/**
- *
- *  @toggleDrop
- *
- *  Toggles whether an object is dropped. No longer sent to database.
- * @param objectID
- * @param objectType
- * @param is_dropped
- * @param dispatch
- * @param depth
- */
-export function toggleDropReduxAction(
-  objectID: number,
-  objectType: CfObjectType, //i thibnk this is CfObjectType
-  is_dropped: string | boolean,
-  dispatch: Dispatch<Action>,
-  depth = 1
-) {
-  try {
-    const default_drop = Constants.get_default_drop_state(
-      objectID,
-      objectType,
-      depth
-    )
-    if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, String(is_dropped))
-    else window.localStorage.removeItem(objectType + objectID)
-  } catch (err) {
-    const error = err as Error
-    if (
-      error.name === 'QuotaExceededError' ||
-      error.name === 'NS_ERROR_DOM_QUOTA_REACHED'
-    ) {
-      window.localStorage.clear()
-    }
-  }
-  dispatch(
-    ActionCreator.changeField(objectID, objectType, { is_dropped: is_dropped })
-  )
-}

@@ -6,7 +6,7 @@ import {
   getParentWorkflowInfoQuery,
   getPublicParentWorkflowInfo
 } from '@XMLHTTP/API/workflow'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
@@ -33,12 +33,19 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   constructor(props: PropsType) {
     super(props)
     this.state = {} as StateProps
+    console.log('ParentWorkflow')
+    console.log(props)
   }
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
+    if (!this.props.workflow_id) {
+      console.log('not defined')
+      return
+    }
+
     if (this.context.public_view) {
       getPublicParentWorkflowInfo(this.props.workflow_id, (response_data) =>
         this.setState({
@@ -61,9 +68,13 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
    *******************************************************/
   getTypeIndicator(data) {
     const type = data.type
-    let type_text = window.gettext(type)
-    if (data.is_strategy) type_text += window.gettext(' strategy')
-    return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
+
+    let text = window.gettext(type)
+
+    if (data.is_strategy) {
+      text += window.gettext(' strategy')
+    }
+    return <div className={'workflow-type-indicator ' + type}>{text}</div>
   }
 
   /*******************************************************
@@ -79,19 +90,19 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
       }
 
       const parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow, index) => (
+        (childWorkflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleParent-${index}`}
-            data={parent_workflow}
+            data={childWorkflow}
             test_id="panel-favourite"
           />
         )
       )
       const child_workflows = this.props.child_workflows.map(
-        (child_workflow, index) => (
+        (childWorkflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleChild-${index}`}
-            data={child_workflow}
+            data={childWorkflow}
             test_id="panel-favourite"
           />
         )
@@ -132,13 +143,9 @@ const mapStateToProps = (state: AppState) => {
       .map((node) => {
         return {
           id: node.linked_workflow,
-          // @ts-ignore
           title: node?.linked_workflow_data?.title || '',
-          // @ts-ignore
           description: node?.linked_workflow_data?.description || '',
-          // @ts-ignore
           url: node?.linked_workflow_data?.url || '',
-          // @ts-ignore
           deleted: node?.linked_workflow_data?.deleted || false
         }
       })

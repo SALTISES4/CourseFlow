@@ -7,7 +7,7 @@ import OutcomeEdit from './OutcomeEdit'
 import Workflow from './Workflow'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { EditableComponentStateType } from '@cfParentComponents/EditableComponent'
 // import $ from 'jquery'
 

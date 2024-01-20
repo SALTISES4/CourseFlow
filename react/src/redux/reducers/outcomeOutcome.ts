@@ -3,8 +3,8 @@ import {
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeOutcomeActions
-} from '@cfRedux/enumActions'
-import { TOutcomeOutcome } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TOutcomeOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 function outcomeOutcomeReducer(

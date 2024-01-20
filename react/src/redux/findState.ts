@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as Constants from '../constants'
-import * as Utility from '@cfUtility'
+import * as Utility from '@cfModule/utility/utilityFunctions'
 import {
   AppState,
   TColumnworkflow,
@@ -11,12 +11,12 @@ import {
   TOutcomeOutcome,
   TWeek,
   TColumn
-} from '@cfRedux/type'
+} from '@cfRedux/types/type'
 
 /*******************************************************
  * TYPES
  *******************************************************/
-export type StrategyByIDType = {
+export type TStrategyByID = {
   data: any // don't have type for strategy
 }
 /*******************************************************
@@ -25,17 +25,14 @@ export type StrategyByIDType = {
  *  Redux state directly
  *
  *******************************************************/
-export type GetColumnByIDType = {
+export type TGetColumnByID = {
   data: TColumn
   sibling_count: number
   columnworkflows: Pick<AppState['workflow'], 'columnworkflow_set'>
   column_order: Pick<AppState['workflow'], 'columnworkflow_set'>
 }
 
-export const getColumnByID = (
-  state: AppState,
-  id: number
-): GetColumnByIDType => {
+export const getColumnByID = (state: AppState, id: number): TGetColumnByID => {
   for (const i in state.column) {
     const column = state.column[i]
     if (column.id == id) {
@@ -52,14 +49,14 @@ export const getColumnByID = (
   }
 }
 
-export type GetWeekByIDType = {
+export type TGetWeekByIDType = {
   data: any
   column_order: any
   sibling_count?: any
   nodeweeks: any
   workflow_id?: any
 }
-export const getWeekByID = (state: AppState, id: number): GetWeekByIDType => {
+export const getWeekByID = (state: AppState, id: number): TGetWeekByIDType => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -80,13 +77,13 @@ export const getWeekByID = (state: AppState, id: number): GetWeekByIDType => {
   }
 }
 
-export type TermByIDType = {
+export type TTermByID = {
   data: any
   column_order: any
   nodes_by_column: any
   nodeweeks: any
 }
-export const getTermByID = (state: AppState, id: number): TermByIDType => {
+export const getTermByID = (state: AppState, id: number): TTermByID => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -121,14 +118,14 @@ export const getTermByID = (state: AppState, id: number): TermByIDType => {
   }
 }
 
-export type GetWeekWorkflowByID = {
+export type TGetWeekWorkflowByID = {
   data: weekworkflow
   order: state.workflow.weekworkflow_set
 }
 export const getWeekWorkflowByID = (
   state: AppState,
   id: number
-): GetWeekWorkflowByID => {
+): TGetWeekWorkflowByID => {
   for (const i in state.weekworkflow) {
     const weekworkflow = state.weekworkflow[i]
     if (weekworkflow.id == id)
@@ -136,14 +133,14 @@ export const getWeekWorkflowByID = (
   }
 }
 
-export type GetOutcomeWorkflowByIDType = {
+export type TGetOutcomeWorkflowByID = {
   data: any
   order: any
 }
 export const getOutcomeWorkflowByID = (
   state: AppState,
   id: number
-): GetOutcomeWorkflowByIDType => {
+): TGetOutcomeWorkflowByID => {
   for (const i in state.outcomeworkflow) {
     const outcomeworkflow = state.outcomeworkflow[i]
     if (outcomeworkflow.id == id)
@@ -163,12 +160,12 @@ export const getOutcomeWorkflowByID = (
 //   console.log('failed to find parent workflow')
 // }
 
-export type GetNodeByIDType = {
+export type TGetNodeByID = {
   data: TNode
   column: any
   object_sets: any
 }
-export const getNodeByID = (state: AppState, id: number): GetNodeByIDType => {
+export const getNodeByID = (state: AppState, id: number): TGetNodeByID => {
   for (const i in state.node) {
     var node = state.node[i]
     if (node.id === id) {
@@ -185,7 +182,7 @@ export const getNodeByID = (state: AppState, id: number): GetNodeByIDType => {
   console.log('failed to find node')
 }
 
-export type GetNodeWeekByIDType = {
+export type TGetNodeWeekByID = {
   data: any
   order: any
   column: any
@@ -193,7 +190,7 @@ export type GetNodeWeekByIDType = {
 export const getNodeWeekByID = (
   state: AppState,
   id: number
-): GetNodeWeekByIDType => {
+): TGetNodeWeekByID => {
   for (const i in state.nodeweek) {
     const nodeweek = state.nodeweek[i]
     if (nodeweek.id === id) {
@@ -207,13 +204,13 @@ export const getNodeWeekByID = (
   }
 }
 
-export type GetNodeLinkByIDType = {
+export type TGetNodeLinkByID = {
   data: TNodelink
 }
 export const getNodeLinkByID = (
   state: AppState,
   id: number
-): GetNodeLinkByIDType => {
+): TGetNodeLinkByID => {
   //  console.log(id)
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
@@ -223,7 +220,7 @@ export const getNodeLinkByID = (
   }
 }
 
-export type ColumnWorkflowByIDType = {
+export type TColumnWorkflowByID = {
   data?: TColumnworkflow
   order?: number[]
 }
@@ -231,7 +228,7 @@ export type ColumnWorkflowByIDType = {
 export const getColumnWorkflowByID = (
   state: AppState,
   id: number
-): ColumnWorkflowByIDType => {
+): TColumnWorkflowByID => {
   for (const i in state.columnworkflow) {
     const columnWorkflow = state.columnworkflow[i]
     if (columnWorkflow.id === id) {
@@ -247,10 +244,7 @@ export const getColumnWorkflowByID = (
   }
 }
 
-export const getStrategyByID = (
-  state: AppState,
-  id: number
-): StrategyByIDType => {
+export const getStrategyByID = (state: AppState, id: number): TStrategyByID => {
   const strategies = Object.values(state.strategy)
   const foundStrategy = strategies.find((strategy) => strategy.id === id)
   return foundStrategy ? { data: foundStrategy } : { data: undefined }
@@ -310,7 +304,7 @@ function findTopRank(state: AppState, outcome) {
   }
 }
 
-export type GetOutcomeByIDType = {
+export type TGetOutcomeByID = {
   data: TOutcome
   hovertext: string
   prefix: string
@@ -320,7 +314,7 @@ export type GetOutcomeByIDType = {
 export const getOutcomeByID = (
   state: AppState,
   id: number
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   const stateSection = state.outcome
   for (const i in stateSection) {
     const outcome = stateSection[i]
@@ -450,13 +444,13 @@ export const getChildWorkflowByID = (state: AppState, id: number) => {
   return -1
 }
 
-export type OutcomeOutcomeByIDType = {
+export type TOutcomeOutcomeByID = {
   data?: TOutcomeOutcome
 }
 export const getOutcomeOutcomeByID = (
   state: AppState,
   id: number
-): OutcomeOutcomeByIDType => {
+): TOutcomeOutcomeByID => {
   const state_section = state.outcomeoutcome
   for (const i in state_section) {
     const outcomeOutcome = state_section[i]
@@ -469,13 +463,13 @@ export const getOutcomeOutcomeByID = (
   console.log('failed to find outcomeoutcome')
 }
 
-export type OutcomeNodeByIDType = {
-  data: OutcomeNode
+export type TOutcomeNodeByID = {
+  data: TOutcomeNode
 }
 export const getOutcomeNodeByID = (
   state: AppState,
   id: number
-): OutcomeNodeByIDType => {
+): TOutcomeNodeByID => {
   const outcomeNode = state.outcomenode.find((node) => node.id === id)
   if (outcomeNode) {
     return {
@@ -485,13 +479,13 @@ export const getOutcomeNodeByID = (
   console.log('Failed to find outcomenode with ID:', id)
 }
 
-export type OutcomeHorizontalLinkByIDType = {
+export type TOutcomeHorizontalLinkByID = {
   data: any
 }
 export const getOutcomeHorizontalLinkByID = (
   state: AppState,
   id: number
-): OutcomeHorizontalLinkByIDType => {
+): TOutcomeHorizontalLinkByID => {
   for (const i in state.outcomehorizontallink) {
     const outcomeHorizontalLink = state.outcomehorizontallink[i]
     if (outcomeHorizontalLink.id == id) {
@@ -554,14 +548,14 @@ export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
 }
 
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
-export type SortedOutcomesFromOutcomeWorkflowSetType = {
+export type TSortedOutcomesFromOutcomeWorkflowSet = {
   objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflow_set: number[]
-): SortedOutcomesFromOutcomeWorkflowSetType => {
+): TSortedOutcomesFromOutcomeWorkflowSet => {
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
     outcomeworkflow_set

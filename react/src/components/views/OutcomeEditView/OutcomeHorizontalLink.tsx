@@ -9,13 +9,13 @@ import { ActionButton } from '@cfUIComponents'
 import SimpleOutcome from '@cfViews/OutcomeEditView/SimpleOutcome'
 import {
   getOutcomeHorizontalLinkByID,
-  OutcomeHorizontalLinkByIDType
+  TOutcomeHorizontalLinkByID
 } from '@cfFindState'
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
-type ConnectedProps = OutcomeHorizontalLinkByIDType
+type ConnectedProps = TOutcomeHorizontalLinkByID
 type OwnProps = { parentID?: number } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
 
@@ -156,7 +156,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
 const mapOutcomeHorizontalLinkStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeHorizontalLinkByIDType => {
+): TOutcomeHorizontalLinkByID => {
   return getOutcomeHorizontalLinkByID(state, ownProps.objectID)
 }
 

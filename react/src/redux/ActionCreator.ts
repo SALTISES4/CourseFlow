@@ -10,7 +10,7 @@ import {
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
   WeekWorkflowActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 /**
  *  local action creators

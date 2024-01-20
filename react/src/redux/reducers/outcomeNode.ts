@@ -7,8 +7,8 @@ import {
   OutcomeNodeActions,
   OutcomeOutcomeActions,
   WeekActions
-} from '@cfRedux/enumActions'
-import { TOutcomenode } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TOutcomenode } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 export default function outcomeNodeReducer(
   state: TOutcomenode[] = [],

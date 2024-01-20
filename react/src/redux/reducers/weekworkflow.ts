@@ -1,11 +1,11 @@
-import { TWeekworkflow } from '@cfRedux/type'
+import { TWeekworkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
   StrategyActions,
   WeekActions,
   WeekWorkflowActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 export default function weekworkflowReducer(
   state: TWeekworkflow[] = [] as TWeekworkflow[],

@@ -1,14 +1,14 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getOutcomeOutcomeByID, TOutcomeOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The link between an outcome and its children
  */
-type ConnectedProps = OutcomeOutcomeByIDType
+type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
   parentID: number
   objectID: number
@@ -55,16 +55,11 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeOutcomeByIDType => {
+): TOutcomeOutcomeByID => {
   return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 
-const OutcomeOutcome = connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+const OutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeOutcomeUnconnected)

@@ -7,7 +7,7 @@ import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType } from '@cfModule/types/enum'
 import WeekWorkflowComparison from '@cfViews/ComparisonView/WeekWorkflowComparison'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { EditableComponentWithSortingState } from '@cfParentComponents/EditableComponentWithSorting'
 // import $ from 'jquery'
 

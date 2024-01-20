@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { OutcomeTitle } from '@cfUIComponents'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import OutcomeOutcome from './OutcomeOutcome'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 
 import * as Utility from '@cfUtility'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
@@ -12,7 +12,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
 import { insertedAtInstant } from '@XMLHTTP/API/global'
 import { CfObjectType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
@@ -20,7 +20,7 @@ import {
 import OutcomeHorizontalLink from '@cfViews/OutcomeEditView/OutcomeHorizontalLink'
 // import $ from 'jquery'
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   throughParentID?: number
   show_horizontal?: boolean
@@ -359,7 +359,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 

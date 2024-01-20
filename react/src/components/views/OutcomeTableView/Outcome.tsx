@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'
 
 type TableCellPropsType = {
@@ -154,7 +154,7 @@ class TableCell extends React.Component<TableCellPropsType> {
   }
 }
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 
 // @todo no idea what's required props here
 type OwnProps = {
@@ -321,7 +321,7 @@ export class OutcomeUnconnected<
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 /*******************************************************

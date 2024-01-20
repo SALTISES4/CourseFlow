@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 // import { getDescendantOutcomes } from '@cfFindState'
 import AlignmentHorizontalReverseWeek from './AlignmentHorizontalReverseWeek'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = ConnectedType
 type OwnProps = {

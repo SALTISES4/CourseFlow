@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
-import { getColumnByID, GetColumnByIDType } from '@cfFindState'
+import { getColumnByID, TGetColumnByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { CfObjectType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { EditableComponentWithActionsState } from '@cfParentComponents/EditableComponentWithActions'
 
-type ConnectedProps = GetColumnByIDType
+type ConnectedProps = TGetColumnByID
 type OwnProps = {
   objectID: number
   parentID?: number
@@ -24,9 +24,6 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     super(props)
     this.objectType = CfObjectType.COLUMN
     this.objectClass = '.column'
-
-    console.log('EditableComponentWithActions props')
-    console.log(props)
   }
 
   /*******************************************************
@@ -99,7 +96,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetColumnByIDType => {
+): TGetColumnByID => {
   return getColumnByID(state, ownProps.objectID)
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

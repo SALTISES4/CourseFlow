@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getNodeByID, GetNodeByIDType } from '@cfFindState'
+import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum.js'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
-type ConnectedProps = GetNodeByIDType
+type ConnectedProps = TGetNodeByID
 type OwnProps = {
   objectID: number
 }
@@ -73,10 +73,7 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
     )
   }
 }
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): GetNodeByIDType => {
+const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 

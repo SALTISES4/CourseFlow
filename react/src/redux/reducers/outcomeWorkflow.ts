@@ -3,8 +3,8 @@ import {
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeWorkflowActions
-} from '@cfRedux/enumActions'
-import { TColumnworkflow } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TColumnworkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 function outcomeworkflowReducer(

@@ -3,8 +3,8 @@ import {
   CommonActions,
   NodeActions,
   StrategyActions
-} from '@cfRedux/enumActions'
-import { TColumn } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TColumn } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function columnReducer(

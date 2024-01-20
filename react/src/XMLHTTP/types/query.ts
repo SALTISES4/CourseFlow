@@ -1,6 +1,6 @@
 import { QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
-import { TWorkflow } from '@cfRedux/type'
+import { TWorkflow } from '@cfRedux/types/type'
 import { DataPackage } from '@XMLHTTP/types'
 import { ENewItem, ESection, EUser } from '@XMLHTTP/types/entity'
 

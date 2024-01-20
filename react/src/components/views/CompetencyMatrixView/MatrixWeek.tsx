@@ -7,7 +7,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
   data: any

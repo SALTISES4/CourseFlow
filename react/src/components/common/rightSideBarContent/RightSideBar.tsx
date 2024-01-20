@@ -76,7 +76,7 @@ class RightSideBar extends React.Component<PropsType> {
    * COMPONENTS
    *******************************************************/
   getNodeBar() {
-    if (this.props.context === 'workflow')
+    if (this.props.context === WFContext.WORKFLOW)
       return (
         <NodeBar
           // view_type={this.props.renderer.view_type}

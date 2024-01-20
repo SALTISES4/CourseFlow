@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { getNodeByID, GetNodeByIDType } from '@cfFindState'
+import { getNodeByID, TGetNodeByID } from '@cfFindState'
 
 import { ActionButton, NodeTitle, TitleText } from '@cfUIComponents'
 import { EditableComponentWithActions } from '@cfParentComponents'
@@ -11,7 +11,7 @@ import NodeLink from './NodeLink'
 import OutcomeNode from './OutcomeNode'
 import NodePorts from '@cfCommonComponents/workflow/Node/NodePorts'
 import AutoLink from '@cfCommonComponents/components/AutoLink'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
@@ -22,7 +22,7 @@ import ReactDOM from 'react-dom'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = GetNodeByIDType
+type ConnectedProps = TGetNodeByID
 type OwnProps = {
   objectID: number
   column_order: any
@@ -456,10 +456,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 }
 
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): GetNodeByIDType => {
+const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 

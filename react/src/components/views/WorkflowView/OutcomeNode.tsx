@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeNodeByID, OutcomeNodeByIDType } from '@cfFindState'
+import { getOutcomeNodeByID, TOutcomeNodeByID } from '@cfFindState'
 import { SimpleOutcome } from '../OutcomeEditView'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
@@ -8,12 +8,12 @@ import CompletionImg from '@cfUIComponents/CompletionImg'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { ActionButton } from '@cfUIComponents'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = OutcomeNodeByIDType
+type ConnectedProps = TOutcomeNodeByID
 type OwnProps = {
   parentID?: number // is this required:
   outcomes_type?: any
@@ -143,7 +143,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeNodeByIDType => {
+): TOutcomeNodeByID => {
   return getOutcomeNodeByID(state, ownProps.objectID)
 }
 

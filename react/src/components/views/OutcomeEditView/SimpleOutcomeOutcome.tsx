@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import SimpleOutcome from './SimpleOutcome'
-import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
+import { getOutcomeOutcomeByID, TOutcomeOutcomeByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type OwnProps = {
   objectID: number
@@ -12,7 +12,7 @@ type OwnProps = {
   parentID: any
 }
 
-type ConnectedProps = OutcomeOutcomeByIDType
+type ConnectedProps = TOutcomeOutcomeByID
 type PropsType = OwnProps & ConnectedProps
 
 /**
@@ -61,7 +61,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component<PropsType> 
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeOutcomeByIDType => {
+): TOutcomeOutcomeByID => {
   return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 const SimpleOutcomeOutcome = connect(

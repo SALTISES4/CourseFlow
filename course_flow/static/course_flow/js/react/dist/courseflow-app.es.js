@@ -61091,110 +61091,6 @@ __publicField(ActionCreator, "toggleObjectSet", (id, hidden) => {
     payload: { id, hidden }
   };
 });
-class SelectionManager {
-  constructor(readOnly) {
-    __publicField(this, "mouseClicked");
-    __publicField(this, "readOnly");
-    __publicField(this, "lastSidebarTab");
-    __publicField(this, "currentSelection");
-    this.currentSelection = null;
-    this.mouseClicked = false;
-    this.readOnly = readOnly;
-    this.setupEventListeners();
-    this.lastSidebarTab = this.getActiveTab();
-  }
-  setupEventListeners() {
-    $(document).on("mousedown", () => {
-      this.mouseClicked = true;
-      setTimeout(() => {
-        this.mouseClicked = false;
-      }, 500);
-    });
-    $(document).on("mousemove", () => {
-      this.mouseClicked = false;
-    });
-    $(document).on("mouseup", (evt) => {
-      if (this.mouseClicked) {
-        this.changeSelection(evt);
-      }
-    });
-  }
-  getActiveTab() {
-    return $("#sidebar").tabs("option", "active");
-  }
-  setActiveTab(tabIndex) {
-    $("#sidebar").tabs("option", "active", tabIndex);
-  }
-  enableTab(tabIndex) {
-    $("#sidebar").tabs("enable", tabIndex);
-  }
-  disableTab(tabIndex) {
-    $("#sidebar").tabs("disable", tabIndex);
-  }
-  /**
-   * Changes the current selection to the new selection.
-   * @param evt - The event that triggered the selection change.
-   * @param newSelection - The new selection object.
-   */
-  changeSelection(evt, newSelection) {
-    var _a, _b;
-    if (evt) {
-      evt.stopPropagation();
-    }
-    if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
-      return;
-    }
-    if (this.currentSelection) {
-      this.deselectCurrentSelection();
-    }
-    console.log("newSelection");
-    console.log(newSelection);
-    this.currentSelection = newSelection;
-    if (this.currentSelection) {
-      this.selectCurrentSelection();
-    } else {
-      this.resetSidebarTab();
-    }
-  }
-  deselectCurrentSelection() {
-    this.currentSelection.setState({ selected: false });
-    if (!this.readOnly) {
-      this.unlockCurrentSelection();
-    }
-  }
-  selectCurrentSelection() {
-    if (!this.readOnly) {
-      this.lockCurrentSelection();
-    }
-    const SIDEBAR_FIRST_TAB_INDEX = 0;
-    if (this.getActiveTab() !== SIDEBAR_FIRST_TAB_INDEX) {
-      this.lastSidebarTab = this.getActiveTab();
-    }
-    this.enableTab(SIDEBAR_FIRST_TAB_INDEX);
-    this.setActiveTab(SIDEBAR_FIRST_TAB_INDEX);
-    this.currentSelection.setState({ selected: true });
-  }
-  resetSidebarTab() {
-    const SIDEBAR_FIRST_TAB_INDEX = 0;
-    if (this.getActiveTab() === SIDEBAR_FIRST_TAB_INDEX) {
-      this.setActiveTab(this.lastSidebarTab);
-    }
-    this.disableTab(SIDEBAR_FIRST_TAB_INDEX);
-  }
-  lockCurrentSelection() {
-  }
-  unlockCurrentSelection() {
-  }
-  /**
-   * Handles the deletion of a selection.
-   * @param selection - The selection to be deleted.
-   */
-  deleted(selection) {
-    if (selection === this.currentSelection) {
-      this.changeSelection(null);
-    }
-  }
-}
 function toggleDropReduxAction(objectID, objectType, is_dropped, dispatch, depth = 1) {
   try {
     const default_drop = get_default_drop_state(
@@ -81729,10 +81625,7 @@ let Node$1 = class Node2 extends EditableComponentWithActions {
           ref: this.mainDiv,
           "data-selected": this.state.selected,
           "data-hovered": this.state.hovered,
-          onClick: (evt) => this.context.selection_manager.changeSelection(
-            evt,
-            this
-          ),
+          onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               lefticon,
@@ -84066,8 +83959,6 @@ class Column extends EditableComponentWithActions {
     super(props);
     this.objectType = CfObjectType.COLUMN;
     this.objectClass = ".column";
-    console.log("EditableComponentWithActions props");
-    console.log(props);
   }
   /*******************************************************
    * FUNCTIONS
@@ -84501,11 +84392,17 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    console.log("ParentWorkflow");
+    console.log(props);
   }
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
+    if (!this.props.workflow_id) {
+      console.log("not defined");
+      return;
+    }
     if (this.context.public_view) {
       getPublicParentWorkflowInfo(
         this.props.workflow_id,
@@ -84529,10 +84426,11 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
    *******************************************************/
   getTypeIndicator(data) {
     const type = data.type;
-    let type_text = window.gettext(type);
-    if (data.is_strategy)
-      type_text += window.gettext(" strategy");
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: type_text });
+    let text = window.gettext(type);
+    if (data.is_strategy) {
+      text += window.gettext(" strategy");
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: text });
   }
   /*******************************************************
    * RENDER
@@ -84543,20 +84441,20 @@ class ParentWorkflowIndicatorUnconnected extends reactExports.Component {
         return null;
       }
       const parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        (childWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
           {
-            data: parent_workflow,
+            data: childWorkflow,
             test_id: "panel-favourite"
           },
           `WorkflowTitleParent-${index}`
         )
       );
       const child_workflows = this.props.child_workflows.map(
-        (child_workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        (childWorkflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           WorkflowTitle,
           {
-            data: child_workflow,
+            data: childWorkflow,
             test_id: "panel-favourite"
           },
           `WorkflowTitleChild-${index}`
@@ -84591,13 +84489,9 @@ const mapStateToProps$e = (state) => {
       var _a, _b, _c, _d;
       return {
         id: node2.linked_workflow,
-        // @ts-ignore
         title: ((_a = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _a.title) || "",
-        // @ts-ignore
         description: ((_b = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _b.description) || "",
-        // @ts-ignore
         url: ((_c = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _c.url) || "",
-        // @ts-ignore
         deleted: ((_d = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _d.deleted) || false
       };
     })
@@ -93958,8 +93852,8 @@ const GridView = connect(
   null
 )(GridViewUnconnected);
 class WorkflowBaseViewUnconnected extends EditableComponent {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     // Constants
     __publicField(this, "objectType", CfObjectType.WORKFLOW);
     __publicField(this, "allowed_tabs", [0, 1, 2, 3, 4]);
@@ -94492,8 +94386,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         )
       ] }) });
     });
+    this.context = context;
     this.data = this.props.data;
-    this.object_sets = this.props.object_sets;
     this.renderMethod = this.props.parentRender;
     this.can_view = this.props.config.canView;
     this.can_view = this.props.config.isStudent;
@@ -94505,11 +94399,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
       openExportDialog: false,
       openImportDialog: false
     };
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
+    console.log("this.context.workflowID");
+    console.log(this.context.workflowID);
     this.readOnly = this.context.read_only;
     this.workflowId = this.context.workflowID;
     this.selection_manager = this.context.selection_manager;
@@ -94517,6 +94408,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     this.view_type = this.context.view_type;
     this.user_id = this.context.user_id;
     this.public_view = this.context.public_view;
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
     this.getUserData();
     this.updateTabs();
     COURSEFLOW_APP.makeDropdown("#jump-to");
@@ -94528,8 +94424,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    if (this.public_view || this.props.config.isStudent)
+    if (this.public_view || this.props.config.isStudent) {
       return null;
+    }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data });
     });
@@ -94572,14 +94469,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     $("#sidebar").tabs({ disabled: false });
     const current_tab = $("#sidebar").tabs("option", "active");
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0)
+      if (this.allowed_tabs.length == 0) {
         $("#sidebar").tabs({
           active: false
         });
-      else
+      } else {
         $("#sidebar").tabs({
           active: this.allowed_tabs[0]
         });
+      }
     }
     if (this.readOnly) {
       disabled_tabs.push(5);
@@ -94793,8 +94691,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
    * RENDER
    *******************************************************/
   render() {
-    console.log("this.context");
-    console.log(this.context);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(this.props.data),
       this.getReturnLinks(),
@@ -94835,6 +94731,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     ] });
   }
 }
+__publicField(WorkflowBaseViewUnconnected, "contextType", WorkFlowConfigContext);
 const mapStateToProps = (state) => {
   return {
     data: state.workflow,
@@ -94848,6 +94745,110 @@ const WorkflowBaseView = connect(
   mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected);
+class SelectionManager {
+  constructor(readOnly) {
+    __publicField(this, "mouseClicked");
+    __publicField(this, "readOnly");
+    __publicField(this, "lastSidebarTab");
+    __publicField(this, "currentSelection");
+    this.currentSelection = null;
+    this.mouseClicked = false;
+    this.readOnly = readOnly;
+    this.setupEventListeners();
+    this.lastSidebarTab = this.getActiveTab();
+  }
+  setupEventListeners() {
+    $(document).on("mousedown", () => {
+      this.mouseClicked = true;
+      setTimeout(() => {
+        this.mouseClicked = false;
+      }, 500);
+    });
+    $(document).on("mousemove", () => {
+      this.mouseClicked = false;
+    });
+    $(document).on("mouseup", (evt) => {
+      if (this.mouseClicked) {
+        this.changeSelection(evt);
+      }
+    });
+  }
+  getActiveTab() {
+    return $("#sidebar").tabs("option", "active");
+  }
+  setActiveTab(tabIndex) {
+    $("#sidebar").tabs("option", "active", tabIndex);
+  }
+  enableTab(tabIndex) {
+    $("#sidebar").tabs("enable", tabIndex);
+  }
+  disableTab(tabIndex) {
+    $("#sidebar").tabs("disable", tabIndex);
+  }
+  /**
+   * Changes the current selection to the new selection.
+   * @param evt - The event that triggered the selection change.
+   * @param newSelection - The new selection object.
+   */
+  changeSelection(evt, newSelection) {
+    var _a, _b;
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
+      return;
+    }
+    if (this.currentSelection) {
+      this.deselectCurrentSelection();
+    }
+    console.log("newSelection");
+    console.log(newSelection);
+    this.currentSelection = newSelection;
+    if (this.currentSelection) {
+      this.selectCurrentSelection();
+    } else {
+      this.resetSidebarTab();
+    }
+  }
+  deselectCurrentSelection() {
+    this.currentSelection.setState({ selected: false });
+    if (!this.readOnly) {
+      this.unlockCurrentSelection();
+    }
+  }
+  selectCurrentSelection() {
+    if (!this.readOnly) {
+      this.lockCurrentSelection();
+    }
+    const SIDEBAR_FIRST_TAB_INDEX = 0;
+    if (this.getActiveTab() !== SIDEBAR_FIRST_TAB_INDEX) {
+      this.lastSidebarTab = this.getActiveTab();
+    }
+    this.enableTab(SIDEBAR_FIRST_TAB_INDEX);
+    this.setActiveTab(SIDEBAR_FIRST_TAB_INDEX);
+    this.currentSelection.setState({ selected: true });
+  }
+  resetSidebarTab() {
+    const SIDEBAR_FIRST_TAB_INDEX = 0;
+    if (this.getActiveTab() === SIDEBAR_FIRST_TAB_INDEX) {
+      this.setActiveTab(this.lastSidebarTab);
+    }
+    this.disableTab(SIDEBAR_FIRST_TAB_INDEX);
+  }
+  lockCurrentSelection() {
+  }
+  unlockCurrentSelection() {
+  }
+  /**
+   * Handles the deletion of a selection.
+   * @param selection - The selection to be deleted.
+   */
+  deleted(selection) {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null);
+    }
+  }
+}
 const cache$1 = createCache({
   key: "emotion",
   nonce: window.cf_nonce

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import CompletionImg from '@cfUIComponents/CompletionImg'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
@@ -99,12 +99,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     parent_nodes: state.parent_node
   }
 }
-export default connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  SelfProps,
-  AppState
->(
+export default connect<ConnectedProps, object, SelfProps, AppState>(
   mapStateToProps,
   null
 )(ParentOutcomeBarUnconnected)

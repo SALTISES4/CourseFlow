@@ -1,13 +1,10 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import {
-  getOutcomeWorkflowByID,
-  GetOutcomeWorkflowByIDType
-} from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getOutcomeWorkflowByID, TGetOutcomeWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 
-type ConnectedProps = GetOutcomeWorkflowByIDType
+type ConnectedProps = TGetOutcomeWorkflowByID
 type OwnProps = {
   objectID: number
   nodecategory: any
@@ -39,7 +36,7 @@ class TableOutcomeWorkflowUnconnected extends React.Component<PropsType> {
 const mapOutcomeWorkflowStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeWorkflowByIDType => {
+): TGetOutcomeWorkflowByID => {
   return getOutcomeWorkflowByID(state, ownProps.objectID)
 }
 const TableOutcomeWorkflow = connect<

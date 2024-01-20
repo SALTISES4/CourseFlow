@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TObjectSet } from '@cfRedux/type'
+import { TObjectSet } from '@cfRedux/types/type'
 
 /**
  * The view tab for the right side bar is a bit

@@ -6,7 +6,7 @@ import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode'
 
 import * as Utility from '@cfUtility'
-import { AppState, TNodeweek } from '@cfRedux/type'
+import { AppState, TNodeweek } from '@cfRedux/types/type'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType

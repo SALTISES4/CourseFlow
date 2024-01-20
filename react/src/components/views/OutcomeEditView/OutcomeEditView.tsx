@@ -9,7 +9,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { newOutcomeQuery } from '@XMLHTTP/API/outcome'
 import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState

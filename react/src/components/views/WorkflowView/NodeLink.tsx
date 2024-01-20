@@ -2,10 +2,10 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
-import { getNodeLinkByID, GetNodeLinkByIDType } from '@cfFindState'
+import { getNodeLinkByID, TGetNodeLinkByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
@@ -14,7 +14,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = GetNodeLinkByIDType
+type ConnectedProps = TGetNodeLinkByID
 type OwnProps = {
   objectID: number
   node_div: React.RefObject<HTMLDivElement>
@@ -186,7 +186,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetNodeLinkByIDType => {
+): TGetNodeLinkByID => {
   return getNodeLinkByID(state, ownProps.objectID) || { data: undefined }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

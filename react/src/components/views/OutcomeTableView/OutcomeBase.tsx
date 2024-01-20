@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { default as MatrixOutcome } from '@cfViews/CompetencyMatrixView/CompetencyMatrixView'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import { createOutcomeNodeBranch } from '@cfModule/utility/createOutcomeNodeBranch'
 import { default as TableOutcome } from '@cfViews/OutcomeTableView/Outcome'

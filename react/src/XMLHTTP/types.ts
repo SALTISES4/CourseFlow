@@ -1,4 +1,4 @@
-import { TOutcomeOutcome } from '@cfRedux/type'
+import { TOutcomeOutcome } from '@cfRedux/types/type'
 import {
   EColumn,
   EColumnworkflow,

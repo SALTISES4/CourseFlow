@@ -11,7 +11,7 @@ import {
   TNodeweek,
   TWeek,
   TWeekworkflow
-} from '@cfRedux/type'
+} from '@cfRedux/types/type'
 import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
 import { CfObjectType } from '@cfModule/types/enum'

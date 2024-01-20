@@ -10,7 +10,7 @@ import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
   data: any

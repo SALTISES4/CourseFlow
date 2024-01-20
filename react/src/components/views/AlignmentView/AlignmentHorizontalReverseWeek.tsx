@@ -6,7 +6,7 @@ import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 import { CfObjectType } from '@cfModule/types/enum.js'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
 
 type ConnectedProps = {

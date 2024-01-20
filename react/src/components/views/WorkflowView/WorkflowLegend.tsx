@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { Slider, LegendLine } from '@cfUIComponents'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type StateType = {

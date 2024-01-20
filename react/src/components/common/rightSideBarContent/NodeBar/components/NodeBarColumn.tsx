@@ -4,11 +4,11 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
-import { getColumnByID, GetColumnByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getColumnByID, TGetColumnByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'
 
-type ConnectedProps = GetColumnByIDType
+type ConnectedProps = TGetColumnByID
 type OwnProps = {
   // parentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
   // throughParentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
@@ -44,6 +44,7 @@ export class NodeBarColumnUnconnected<
   makeDraggable() {
     const draggable_selector = 'node-week'
     const draggable_type = 'nodeweek'
+
     $(this.mainDiv?.current).draggable({
       helper: (_e: any, _item: any) => {
         const helper = $(document.createElement('div'))
@@ -89,7 +90,7 @@ export class NodeBarColumnUnconnected<
 const mapColumnStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetColumnByIDType => {
+): TGetColumnByID => {
   return getColumnByID(state, ownProps.objectID)
 }
 const NodeBarColumn = connect<ConnectedProps, object, OwnProps, AppState>(

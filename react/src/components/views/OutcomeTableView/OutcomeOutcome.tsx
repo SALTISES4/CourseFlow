@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
+import { getOutcomeOutcomeByID, TOutcomeOutcomeByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum.js'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
-type ConnectedProps = OutcomeOutcomeByIDType
+type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
   objectID: number
   parentID: any
@@ -55,7 +55,7 @@ class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeOutcomeByIDType => {
+): TOutcomeOutcomeByID => {
   return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 

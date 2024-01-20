@@ -9,7 +9,6 @@ import {
   EmptyObject,
   Store
 } from '@reduxjs/toolkit'
-import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
@@ -22,7 +21,7 @@ import { WorkflowDataQueryResp } from '@XMLHTTP/types/query'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
 import {
@@ -35,6 +34,7 @@ import {
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/global'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 // import $ from 'jquery'
 
 const cache = createCache({

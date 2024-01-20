@@ -11,7 +11,6 @@ import ConnectionBar from '@cfModule/ConnectionBar'
 import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import { OutcomeEditView } from '../OutcomeEditView/index.js'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import { toggleDropReduxAction } from '@cfRedux/helpers'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/WorkflowBaseView/ParentWorkflowIndicator'
 import WorkflowTableView from '@cfViews/WorkflowBaseView/WorkflowTableView'
@@ -21,7 +20,7 @@ import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 import { WorkflowTitle } from '@cfUIComponents'
 import CollapsibleText from '@cfUIComponents/CollapsibleText'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
@@ -36,6 +35,9 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import AlignmentView from '@cfViews/AlignmentView/AlignmentView'
 import GridView from '../GridView/GridView.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
+import { EventUnion } from '@cfModule/types/common'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -56,7 +58,7 @@ type ConnectedProps = {
 
  */
 
-type SelfProps = {
+type OwnProps = {
   view_type: ViewType // doese this live in context or do we pass it?
   parentRender: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
   config: {
@@ -68,7 +70,7 @@ type SelfProps = {
   websocket: WebSocket
 } & EditableComponentProps
 
-type PropsType = ConnectedProps & SelfProps
+type PropsType = ConnectedProps & OwnProps
 type StateType = {
   users: any
   openShareDialog: boolean
@@ -90,7 +92,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   PropsType,
   StateType
 > {
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkFlowConfigContext
 
   // Constants
   protected objectType = CfObjectType.WORKFLOW
@@ -98,9 +100,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   private readOnly: any
   private public_view: any
-  private data: any
+  private data: ConnectedProps['data']
   private project: any
-  private selection_manager: any
+  private selection_manager: SelectionManager
   private renderMethod: (container, view_type: ViewType) => void
   private container: any
   private websocket: any
@@ -112,11 +114,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private view_type: any
   private can_view: boolean
 
-  constructor(props: PropsType) {
-    super(props)
+  constructor(props: PropsType, context) {
+    // @ts-ignore
+    super(props, context)
 
+    this.context = context
     this.data = this.props.data
-    this.object_sets = this.props.object_sets
 
     // used in parentworkflowindicator
 
@@ -140,12 +143,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-  }
 
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
+    console.log('this.context.workflowID')
+    console.log(this.context.workflowID)
+
     this.readOnly = this.context.read_only
     this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager
@@ -157,7 +158,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.view_type = this.context.view_type
     this.user_id = this.context.user_id
     this.public_view = this.context.public_view
+  }
 
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
     this.getUserData()
     this.updateTabs()
     // @ts-ignore
@@ -171,7 +177,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    if (this.public_view || this.props.config.isStudent) return null
+    if (this.public_view || this.props.config.isStudent) {
+      return null
+    }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data })
     })
@@ -227,14 +235,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const current_tab = $('#sidebar').tabs('option', 'active')
 
     if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0)
+      if (this.allowed_tabs.length == 0) {
         $('#sidebar').tabs({
           active: false
         })
-      else
+      } else {
         $('#sidebar').tabs({
           active: this.allowed_tabs[0]
         })
+      }
     }
 
     // @todo remove renderer
@@ -255,7 +264,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.renderMethod(this.container, type)
   }
 
-  openEditMenu(evt) {
+  openEditMenu(evt: EventUnion) {
     this.selection_manager.changeSelection(evt, this)
   }
 
@@ -313,6 +322,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       <div
         className="project-header"
         style={style}
+        // @ts-ignore
         onClick={(evt) => this.selection_manager.changeSelection(evt, this)}
       >
         <div className="project-header-top-line">
@@ -1015,8 +1025,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    console.log('this.context')
-    console.log(this.context)
     return (
       <>
         {this.addEditable(this.props.data)}
@@ -1072,8 +1080,8 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
 
 export const WorkflowBaseView = connect<
   ConnectedProps,
-  NonNullable<unknown>,
-  SelfProps,
+  object,
+  OwnProps,
   AppState
 >(
   mapStateToProps,

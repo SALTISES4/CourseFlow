@@ -1,11 +1,11 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
-import { SelectionManager } from '@cfRedux/helpers'
 import * as Constants from '@cfConstants'
 import { ViewType } from '@cfModule/types/enum.js'
 import ComparisonView from '@cfViews/ComparisonView/ComparisonView'
 import { Project } from '@cfPages/Workflow/Workflow/types'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 
 type ParamsType = {
   data: {

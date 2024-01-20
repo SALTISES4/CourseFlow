@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { OutcomeTitle } from '@cfUIComponents'
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
 import { CfObjectType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
@@ -17,7 +17,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
  */
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   objectID: number
   parentID: number
@@ -186,7 +186,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 /*******************************************************

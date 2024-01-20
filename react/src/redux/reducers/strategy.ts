@@ -1,6 +1,6 @@
-import { TStrategy } from '@cfRedux/type'
+import { TStrategy } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
-import { StrategyActions } from '@cfRedux/enumActions'
+import { StrategyActions } from '@cfRedux/types/enumActions'
 
 export default function strategyReducer(
   state: TStrategy[] = [],

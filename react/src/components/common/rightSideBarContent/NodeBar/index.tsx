@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import NodeBarColumnWorkflow from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
 import Strategy from '@cfCommonComponents/rightSideBarContent/NodeBar/components/Strategy'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { ColumnChoice } from '@cfModule/types/common'
 
 /**

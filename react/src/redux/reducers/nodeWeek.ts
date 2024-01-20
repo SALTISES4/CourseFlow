@@ -4,8 +4,8 @@ import {
   NodeWeekActions,
   StrategyActions,
   WeekActions
-} from '@cfRedux/enumActions'
-import { TNodeweek } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TNodeweek } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function nodeweekReducer(

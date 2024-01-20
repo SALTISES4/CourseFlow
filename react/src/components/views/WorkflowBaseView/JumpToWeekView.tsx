@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { TitleText } from '@cfUIComponents'
-import { getWeekByID, GetWeekByIDType } from '@cfFindState'
+import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import { connect } from 'react-redux'
 import { CfObjectType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = GetWeekByIDType
+type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
   objectID: number
   rank: number
@@ -78,7 +78,7 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
 const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetWeekByIDType => {
+): TGetWeekByIDType => {
   return getWeekByID(state, ownProps.objectID)
 }
 

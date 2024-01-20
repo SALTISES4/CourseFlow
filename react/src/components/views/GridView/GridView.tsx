@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
 import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
-import { AppState, TWorkflow } from '@cfRedux/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import GridWeek from '@cfViews/GridView/GridWeek'
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
 

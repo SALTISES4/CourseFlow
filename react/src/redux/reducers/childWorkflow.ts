@@ -2,7 +2,7 @@ import {
   CommonActions,
   OutcomeActions,
   OutcomeBaseActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 import { AnyAction } from '@reduxjs/toolkit'
 
 function childWorkflowReducer(state = [], action: AnyAction) {

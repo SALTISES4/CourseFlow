@@ -1,5 +1,5 @@
-import { CommonActions } from '@cfRedux/enumActions'
-import { TParentWorkflow } from '@cfRedux/type'
+import { CommonActions } from '@cfRedux/types/enumActions'
+import { TParentWorkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function parentWorkflowReducer(

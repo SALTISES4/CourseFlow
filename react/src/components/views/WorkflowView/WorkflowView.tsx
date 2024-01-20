@@ -7,7 +7,7 @@ import * as Utility from '@cfUtility'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState

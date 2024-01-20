@@ -10,8 +10,8 @@ import {
   OutcomeOutcomeActions,
   StrategyActions,
   WeekActions
-} from '@cfRedux/enumActions'
-import { TNode } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TNode } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 // import $ from 'jquery'
 

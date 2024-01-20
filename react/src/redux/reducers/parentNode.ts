@@ -3,7 +3,7 @@ import {
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeNodeActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 export default function parentNodeReducer(state = [], action) {
   switch (action.type) {

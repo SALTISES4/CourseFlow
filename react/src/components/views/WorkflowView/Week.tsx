@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
-import { getWeekByID, GetWeekByIDType } from '@cfFindState'
+import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
@@ -13,12 +13,12 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { addStrategyQuery } from '@XMLHTTP/API/strategy'
 import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
-type ConnectedProps = GetWeekByIDType
+type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
   throughParentID?: number
   rank?: number

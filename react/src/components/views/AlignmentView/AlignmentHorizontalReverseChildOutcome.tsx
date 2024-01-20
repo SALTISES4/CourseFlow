@@ -5,7 +5,7 @@ import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
   data: any

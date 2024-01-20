@@ -2,10 +2,10 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
 import { NodeTitle, TitleText } from '@cfUIComponents'
-import { getNodeByID, GetNodeByIDType } from '@cfFindState'
+import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
@@ -13,7 +13,7 @@ import {
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 import { CfObjectType } from '@cfModule/types/enum'
 
-type ConnectedProps = GetNodeByIDType
+type ConnectedProps = TGetNodeByID
 type OwnProps = {
   objectID: number
 } & EditableComponentWithActionsProps
@@ -201,10 +201,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     )
   }
 }
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): GetNodeByIDType => {
+const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 

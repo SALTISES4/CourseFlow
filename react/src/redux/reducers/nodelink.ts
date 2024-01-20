@@ -1,11 +1,11 @@
-import { TNodelink } from '@cfRedux/type'
+import { TNodelink } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
   NodeLinkActions,
   StrategyActions,
   WeekActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 export default function nodelinkReducer(
   state: TNodelink[] = [],

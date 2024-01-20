@@ -1,4 +1,4 @@
-import { TWeek } from '@cfRedux/type'
+import { TWeek } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
@@ -6,7 +6,7 @@ import {
   NodeWeekActions,
   StrategyActions,
   WeekActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 export default function weekReducer(
   state: TWeek[] = [],

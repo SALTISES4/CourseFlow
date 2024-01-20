@@ -8,7 +8,7 @@ import MatrixWeek from './MatrixWeek'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
 import NodeOutcomeView from '@cfCommonComponents/workflow/Node/NodeOutcomeView'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 const GrandTotals = ({ totals }) => {

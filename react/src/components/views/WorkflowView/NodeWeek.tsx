@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Node from './Node'
-import { getNodeWeekByID, GetNodeWeekByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
 
-type ConnectedProps = GetNodeWeekByIDType
+type ConnectedProps = TGetNodeWeekByID
 type OwnProps = {
   objectID: number
   parentID: number
@@ -70,7 +70,7 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetNodeWeekByIDType => {
+): TGetNodeWeekByID => {
   return getNodeWeekByID(state, ownProps.objectID)
 }
 const NodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(

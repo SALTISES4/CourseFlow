@@ -4,8 +4,8 @@ import {
   OutcomeBaseActions,
   OutcomeHorizontalLinkActions,
   OutcomeOutcomeActions
-} from '@cfRedux/enumActions'
-import { TOutcome } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 /*******************************************************

@@ -1,4 +1,5 @@
 import { WorkflowType } from '@cfModule/types/enum'
+import * as React from 'react'
 
 export type ToDefine = any
 
@@ -58,3 +59,8 @@ export type Lock = {
   user_colour: string
   user_id: string
 }
+
+export type EventUnion =
+  | React.MouseEvent<HTMLDivElement, MouseEvent>
+  | JQuery.Event
+  | React.MouseEvent<Element, MouseEvent>

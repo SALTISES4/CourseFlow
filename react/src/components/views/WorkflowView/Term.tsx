@@ -3,15 +3,15 @@ import { connect } from 'react-redux'
 import { TitleText } from '@cfUIComponents'
 import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
 import NodeWeek from './NodeWeek'
-import { getTermByID, TermByIDType } from '@cfFindState'
+import { getTermByID, TTermByID } from '@cfFindState'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type OwnProps = {
   objectID: number
   throughParentID?: any
 } & WeekUnconnectedPropsType
-type ConnectedProps = TermByIDType
+type ConnectedProps = TTermByID
 type PropsType = OwnProps & ConnectedProps
 
 /**

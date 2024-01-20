@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
-import { getWeekByID, GetWeekByIDType } from '@cfFindState'
+import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 // @components
 import NodeWeek from './NodeWeek'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
@@ -14,7 +14,7 @@ import {
 import { insertedAtInstant } from '@XMLHTTP/API/global'
 // import $ from 'jquery'
 
-type ConnectedProps = GetWeekByIDType
+type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
   // renderer: any
   objectID: number
@@ -159,7 +159,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
 const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetWeekByIDType => {
+): TGetWeekByIDType => {
   return getWeekByID(state, ownProps.objectID)
 }
 

@@ -1,5 +1,5 @@
 import { ObjectPermission } from '@cfModule/types/common'
-import { NodeTypeDisplay } from '@cfRedux/type'
+import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 export type EColumn = {
   colour: null
