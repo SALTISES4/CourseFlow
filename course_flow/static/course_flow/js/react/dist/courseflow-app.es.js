@@ -81624,8 +81624,6 @@ let Node$1 = (_a = class extends EditableComponentWithActions {
     if (this.context.view_comments) {
       mouseover_actions.push(this.addCommenting());
     }
-    console.log("this.context");
-    console.log(this.context);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(data_override),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -81637,11 +81635,7 @@ let Node$1 = (_a = class extends EditableComponentWithActions {
           ref: this.mainDiv,
           "data-selected": this.state.selected,
           "data-hovered": this.state.hovered,
-          onClick: (evt) => {
-            console.log("this.context");
-            console.log(this.context);
-            this.context.selection_manager.changeSelection(evt, this);
-          },
+          onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               lefticon,

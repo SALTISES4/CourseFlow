@@ -395,11 +395,6 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       mouseover_actions.push(this.addCommenting())
     }
 
-    // if (this.context.show_assignments) {
-    //   mouseover_actions.push(this.addShowAssignment(data))
-    // }
-    console.log('this.context')
-    console.log(this.context)
     return (
       <>
         {this.addEditable(data_override)}
@@ -410,11 +405,9 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-          onClick={(evt) => {
-            console.log('this.context')
-            console.log(this.context)
+          onClick={(evt) =>
             this.context.selection_manager.changeSelection(evt, this)
-          }}
+          }
         >
           <div className="node-top-row">
             {lefticon}
