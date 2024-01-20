@@ -4,9 +4,9 @@ import {
   InsertChildQueryResp,
   InsertSiblingQueryResp,
   UpdateValueInstantQueryResp
-} from '@XMLHTTP/types'
-import {ToDefine, VERB} from '@cfModule/types/common'
-import {OBJECT_TYPE} from "@cfModule/types/enum";
+} from '@XMLHTTP/types/query'
+import {ToDefine } from '@cfModule/types/common'
+import {OBJECT_TYPE, VERB} from "@cfModule/types/enum";
 
 /**
  *

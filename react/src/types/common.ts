@@ -42,11 +42,6 @@ export type Discipline = {
   title: string
 }
 
-export enum VERB {
-  POSTED = 'posted',
-  ERROR = 'error'
-}
-
 export type ObjectLock = {
   user_id: number
   user_colour: string

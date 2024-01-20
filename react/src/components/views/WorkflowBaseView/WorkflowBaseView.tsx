@@ -118,18 +118,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.data = this.props.data
     this.object_sets = this.props.object_sets
 
-    this.readOnly = this.context.read_only
-    this.workflowId = this.context.workflowID
-    this.selection_manager = this.context.selection_manager
-
-    // this should be a state type, but leave in context for now
-    this.container = this.context.container
-
-    // to be added
-    this.view_type = this.context.view_type
-    this.user_id = this.context.user_id
-    this.public_view = this.context.public_view
-
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
@@ -158,6 +146,18 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
+    this.readOnly = this.context.read_only
+    this.workflowId = this.context.workflowID
+    this.selection_manager = this.context.selection_manager
+
+    // this should be a state type, but leave in context for now
+    this.container = this.context.container
+
+    // to be added
+    this.view_type = this.context.view_type
+    this.user_id = this.context.user_id
+    this.public_view = this.context.public_view
+
     this.getUserData()
     this.updateTabs()
     // @ts-ignore

@@ -10,7 +10,7 @@ import {
   TNode,
   TNodeweek,
   TWeek,
-  WeekworkflowType
+  TWeekworkflow
 } from '@cfRedux/type'
 import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
@@ -57,7 +57,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   }
 
   getNodecategory() {
-    const week_order = Utility.filterThenSortByID<WeekworkflowType>(
+    const week_order = Utility.filterThenSortByID<TWeekworkflow>(
       this.props.weekworkflow,
       this.props.workflow.weekworkflow_set
     ).map((weekworkflow) => weekworkflow.week)

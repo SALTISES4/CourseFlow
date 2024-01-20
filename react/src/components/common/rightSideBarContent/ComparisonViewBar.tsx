@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ObjectSet } from '@cfRedux/type'
+import { TObjectSet } from '@cfRedux/type'
 
 /**
  * The view tab for the right side bar is a bit
@@ -8,7 +8,7 @@ import { ObjectSet } from '@cfRedux/type'
  */
 
 type PropsType = {
-  objectSets: ObjectSet[] // not sure of this type
+  objectSets: TObjectSet[] // not sure of this type
   toggleObjectSet: (id: number) => void
 }
 class ComparisonViewBar extends React.Component<PropsType> {

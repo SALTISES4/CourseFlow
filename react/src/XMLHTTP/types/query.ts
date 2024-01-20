@@ -1,5 +1,8 @@
-import { ObjectPermission, VERB } from '@cfModule/types/common'
+import { QueryPages, Workflow } from '@cfModule/types/common'
+import { VERB } from '@cfModule/types/enum'
 import { TWorkflow } from '@cfRedux/type'
+import { DataPackage } from '@XMLHTTP/types'
+import { ENewItem, ESection, EUser } from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * LinkedWorkflowMenuQueryResp
@@ -19,39 +22,104 @@ export type ParentWorkflowInfoQueryResp = {
   action: VERB
   parent_workflows: TWorkflow[]
 }
+export type LibraryQueryResp = {
+  data_package: Workflow[]
+}
+
+export type SearchAllObjectsQueryResp = {
+  action: VERB
+  workflow_list: Workflow[]
+  pages: QueryPages
+}
+
+export type HomeQueryResp = {
+  favourites: Workflow[]
+  projects: Workflow[]
+}
+
+export type WorkflowsForProjectQueryResp = {
+  data_package: Workflow[]
+}
+
+export type UsersForObjectQueryResp = {
+  action: VERB
+  author: EUser
+  viewers: EUser[]
+  commentors: EUser[]
+  editors: EUser[]
+  students: EUser[]
+  published: boolean
+  public_view: boolean
+  cannot_change: number[]
+}
+
+export type DuplicateBaseItemQueryResp = {
+  action: VERB
+  new_item: ENewItem
+  type: string
+}
+
+export type AddTerminologyQueryResp = {
+  action: VERB
+  new_dict: any
+}
+
+export type UserListResp = {
+  action: VERB
+  user_list: EUser[]
+}
+export type RestoreSelfQueryResp = {
+  action: VERB
+}
+export type DeleteSelfQueryResp = {
+  action: VERB
+}
+export type DuplicateSelfQueryResp = {
+  action: VERB
+}
+export type InsertChildQueryResp = {
+  action: VERB
+}
+export type InsertSiblingQueryResp = {
+  action: VERB
+}
+
+export type NewNodeQueryResp = {
+  action: VERB
+}
+export type AddStrategyQueryResp = {
+  action: VERB
+}
+
+export type FavouritesQueryResp = {
+  action: VERB
+  data_package: any
+}
+
+export type UpdateOutcomenodeDegreeResp = {
+  action: VERB
+  data_package: any
+}
+
+export type CommentsForObjectQueryResp = any
+export type UpdateValueInstantQueryResp = any
+
+export type WorkflowDataQueryResp = {
+  action: VERB
+  data_package: DataPackage
+}
+export type SuccessPost = {
+  action: VERB
+}
+
+/*******************************************************
+ * QUERY COMPONENTS
+ *******************************************************/
 
 export type AllPublished = {
   title: string
-  sections: Section[]
+  sections: ESection[]
   emptytext: string
-}
-
-export type Section = {
-  title: string
-  object_type: string
-  is_strategy: boolean
-  objects: SectionObject[]
-}
-
-export type SectionObject = {
-  deleted: boolean
-  id: number
-  created_on: string
-  last_modified: string
-  type: string
-  favourite: boolean
-  is_owned: boolean
-  is_strategy: boolean
-  published: boolean
-  author: string
-  title: string
-  description: string
-  project_title: string
-  object_permission: ObjectPermission
-  has_liveproject: boolean
-  workflow_count: null
-  is_linked: boolean
-  is_visible: boolean
 }
 
 export type ToggleStrategyQueryResp = {

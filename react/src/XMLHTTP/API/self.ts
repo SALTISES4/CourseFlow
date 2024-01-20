@@ -3,8 +3,8 @@ import {
   DeleteSelfQueryResp,
   DuplicateSelfQueryResp,
   RestoreSelfQueryResp
-} from '@XMLHTTP/types'
-import { VERB } from '@cfModule/types/common'
+} from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 import { ToDefine } from '@cfModule/types/common'
 
 //Causes the specified object to delete itself

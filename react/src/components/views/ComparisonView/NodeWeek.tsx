@@ -2,9 +2,9 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getNodeWeekByID, GetNodeWeekByIDType } from '@cfFindState'
 // @local
-import Node from './Node'
 import { AppState } from '@cfRedux/type'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/NodeWeek'
+import ComparisonNode from '@cfViews/ComparisonView/ComparisonNode'
 
 type ConnectedProps = GetNodeWeekByIDType
 type OwnProps = any
@@ -20,7 +20,7 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected<PropsType> {
   getNode() {
     const data = this.props.data
     return (
-      <Node
+      <ComparisonNode
         objectID={data.node}
         parentID={this.props.parentID}
         // @ts-ignore

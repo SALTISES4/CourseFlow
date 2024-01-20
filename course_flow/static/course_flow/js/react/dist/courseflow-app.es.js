@@ -47662,6 +47662,51 @@ const OuterContentWrap = styled$1(Box$1, {
     }
   })
 );
+var ViewType = /* @__PURE__ */ ((ViewType2) => {
+  ViewType2["WORKFLOW"] = "workflowview";
+  ViewType2["OUTCOME_EDIT"] = "outcomeedit";
+  ViewType2["GRID"] = "grid";
+  ViewType2["OUTCOMETABLE"] = "outcometable";
+  ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
+  ViewType2["HORIZONTALOUTCOMETABLE"] = "horizontaloutcometable";
+  return ViewType2;
+})(ViewType || {});
+var WFContext = /* @__PURE__ */ ((WFContext2) => {
+  WFContext2["WORKFLOW"] = "workflow";
+  WFContext2["COMPARISON"] = "comparison";
+  return WFContext2;
+})(WFContext || {});
+var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
+  WorkflowType2["ACTIVITY"] = "activity";
+  WorkflowType2["PROJECT"] = "project";
+  WorkflowType2["PROGRAM"] = "program";
+  WorkflowType2["LIVE_PROJECT"] = "liveproject";
+  return WorkflowType2;
+})(WorkflowType || {});
+var CfObjectType = /* @__PURE__ */ ((CfObjectType2) => {
+  CfObjectType2["NODELINK"] = "nodelink";
+  CfObjectType2["NODE"] = "node";
+  CfObjectType2["WEEK"] = "week";
+  CfObjectType2["COLUMN"] = "column";
+  CfObjectType2["OUTCOME"] = "outcome";
+  CfObjectType2["WORKFLOW"] = "workflow";
+  CfObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
+  CfObjectType2["OUTCOMENODE"] = "outcomenode";
+  CfObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
+  CfObjectType2["STRATEGY"] = "strategy";
+  CfObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
+  CfObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
+  CfObjectType2["NODEWEEK"] = "nodeweek";
+  CfObjectType2["WEEKWORKFLOW"] = "weekworkflow";
+  CfObjectType2["COURSE"] = "course";
+  return CfObjectType2;
+})(CfObjectType || {});
+var OBJECT_TYPE = /* @__PURE__ */ ((OBJECT_TYPE2) => {
+  OBJECT_TYPE2["OUTCOME"] = "outcome";
+  OBJECT_TYPE2["PROJECT"] = "project";
+  OBJECT_TYPE2["STRATEGY"] = "strategy";
+  return OBJECT_TYPE2;
+})(OBJECT_TYPE || {});
 var VERB = /* @__PURE__ */ ((VERB2) => {
   VERB2["POSTED"] = "posted";
   VERB2["ERROR"] = "error";
@@ -56618,51 +56663,6 @@ function getOutcomeTitle(data, prefix2) {
   }
   return prefix2 + " - " + text;
 }
-var ViewType = /* @__PURE__ */ ((ViewType2) => {
-  ViewType2["WORKFLOW"] = "workflowview";
-  ViewType2["OUTCOME_EDIT"] = "outcomeedit";
-  ViewType2["GRID"] = "grid";
-  ViewType2["OUTCOMETABLE"] = "outcometable";
-  ViewType2["ALIGNMENTANALYSIS"] = "alignmentanalysis";
-  ViewType2["HORIZONTALOUTCOMETABLE"] = "horizontaloutcometable";
-  return ViewType2;
-})(ViewType || {});
-var WFContext = /* @__PURE__ */ ((WFContext2) => {
-  WFContext2["WORKFLOW"] = "workflow";
-  WFContext2["COMPARISON"] = "comparison";
-  return WFContext2;
-})(WFContext || {});
-var WorkflowType = /* @__PURE__ */ ((WorkflowType2) => {
-  WorkflowType2["ACTIVITY"] = "activity";
-  WorkflowType2["PROJECT"] = "project";
-  WorkflowType2["PROGRAM"] = "program";
-  WorkflowType2["LIVE_PROJECT"] = "liveproject";
-  return WorkflowType2;
-})(WorkflowType || {});
-var CfObjectType = /* @__PURE__ */ ((CfObjectType2) => {
-  CfObjectType2["NODELINK"] = "nodelink";
-  CfObjectType2["NODE"] = "node";
-  CfObjectType2["WEEK"] = "week";
-  CfObjectType2["COLUMN"] = "column";
-  CfObjectType2["OUTCOME"] = "outcome";
-  CfObjectType2["WORKFLOW"] = "workflow";
-  CfObjectType2["COLUMNWORKFLOW"] = "columnworkflow";
-  CfObjectType2["OUTCOMENODE"] = "outcomenode";
-  CfObjectType2["OUTCOMEOUTCOME"] = "outcomeoutcome";
-  CfObjectType2["STRATEGY"] = "strategy";
-  CfObjectType2["OUTCOMEHORIZONTALLINK"] = "outcomehorizontallink";
-  CfObjectType2["OUTCOMEWORKFLOW"] = "outcomeworkflow";
-  CfObjectType2["NODEWEEK"] = "nodeweek";
-  CfObjectType2["WEEKWORKFLOW"] = "weekworkflow";
-  CfObjectType2["COURSE"] = "course";
-  return CfObjectType2;
-})(CfObjectType || {});
-var OBJECT_TYPE = /* @__PURE__ */ ((OBJECT_TYPE2) => {
-  OBJECT_TYPE2["OUTCOME"] = "outcome";
-  OBJECT_TYPE2["PROJECT"] = "project";
-  OBJECT_TYPE2["STRATEGY"] = "strategy";
-  return OBJECT_TYPE2;
-})(OBJECT_TYPE || {});
 function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
@@ -82265,7 +82265,7 @@ const WeekWorkflow = connect(
   mapWeekWorkflowStateToProps$1,
   null
 )(WeekWorkflowUnconnected);
-class NodeComparisonUnconnected extends EditableComponentWithActions {
+class ComparisonNodeUnconnected extends EditableComponentWithActions {
   constructor(props) {
     super(props);
     this.objectType = CfObjectType.NODE;
@@ -82412,10 +82412,10 @@ class NodeComparisonUnconnected extends EditableComponentWithActions {
 const mapStateToProps$o = (state, ownProps) => {
   return getNodeByID(state, ownProps.objectID);
 };
-const NodeComparison = connect(
+const ComparisonNode = connect(
   mapStateToProps$o,
   null
-)(NodeComparisonUnconnected);
+)(ComparisonNodeUnconnected);
 class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
   /*******************************************************
    * FUNCTIONS
@@ -82423,7 +82423,7 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected {
   getNode() {
     const data = this.props.data;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NodeComparison,
+      ComparisonNode,
       {
         objectID: data.node,
         parentID: this.props.parentID,
@@ -83959,6 +83959,10 @@ class ConnectionBar extends reactExports.Component {
     this.myColour = COURSEFLOW_APP.contextData.user_name;
   }
   render() {
+    console.log("this.props.websocket");
+    console.log(this.props.websocket);
+    if (!this.props.websocket)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     if (this.props.websocket.readyState === 1) {
       const users = this.state.connected_users.map((user) => {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83991,6 +83995,8 @@ class ConnectionBar extends reactExports.Component {
   connection_update(connected = true) {
     const cache2 = this.connection_update.bind(this);
     clearTimeout(cache2);
+    if (!this.props.websocket)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     if (this.props.websocket.readyState === 1) {
       this.props.websocket.send(
         JSON.stringify({
@@ -85262,18 +85268,6 @@ const GrandTotals = ({ totals }) => {
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "total-cell grand-total-cell table-cell", children: totals.total_required })
   ] });
 };
-const TimeHeader = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "matrix-time-row", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Hours") }) }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("General Education") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Specific Education") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Total Hours") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Ponderation") }) }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Theory") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Practical") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Individual Work") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Total") }) }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Credits") }) })
-] });
 class CompetencyMatrixViewUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -85411,6 +85405,18 @@ class CompetencyMatrixViewUnconnected extends reactExports.Component {
   render() {
     const nodecategory = this.getNodecategory();
     const outcomes_sorted = this.getOutcomesSorted();
+    const TimeHeader = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "matrix-time-row", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Hours") }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("General Education") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Specific Education") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Total Hours") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Ponderation") }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Theory") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Practical") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Individual Work") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Total") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: window.gettext("Credits") }) })
+    ] });
     let has_nodes = false;
     for (let i = 0; i < nodecategory.length; i++) {
       if (nodecategory[i].nodes.length > 0) {
@@ -94488,13 +94494,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     });
     this.data = this.props.data;
     this.object_sets = this.props.object_sets;
-    this.readOnly = this.context.read_only;
-    this.workflowId = this.context.workflowID;
-    this.selection_manager = this.context.selection_manager;
-    this.container = this.context.container;
-    this.view_type = this.context.view_type;
-    this.user_id = this.context.user_id;
-    this.public_view = this.context.public_view;
     this.renderMethod = this.props.parentRender;
     this.can_view = this.props.config.canView;
     this.can_view = this.props.config.isStudent;
@@ -94511,6 +94510,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
+    this.readOnly = this.context.read_only;
+    this.workflowId = this.context.workflowID;
+    this.selection_manager = this.context.selection_manager;
+    this.container = this.context.container;
+    this.view_type = this.context.view_type;
+    this.user_id = this.context.user_id;
+    this.public_view = this.context.public_view;
     this.getUserData();
     this.updateTabs();
     COURSEFLOW_APP.makeDropdown("#jump-to");
@@ -95750,11 +95756,8 @@ const Header = ({
   readOnly,
   openShareDialog
 }) => {
-  console.log("discipline");
-  console.log(allDisciplines);
-  console.log(data.disciplines);
-  console.log("disciplines");
-  console.log(disciplines);
+  disciplines.length && console.log(disciplines);
+  disciplines.length && console.log("Header.tsx disciplines missing type");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowTitle,
@@ -95789,11 +95792,7 @@ const Header = ({
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-disciplines", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Disciplines") }),
-          allDisciplines.filter(
-            // @ts-ignore
-            (discipline) => disciplines.indexOf(discipline.id) >= 0
-            // @todo what is shape of 'disiplines' ?
-          ).map((discipline) => discipline.title).join(", ") || window.gettext("None")
+          allDisciplines.filter((discipline) => disciplines.indexOf(discipline.id) >= 0).map((discipline) => discipline.title).join(", ") || window.gettext("None")
         ] })
       ] })
     ] })

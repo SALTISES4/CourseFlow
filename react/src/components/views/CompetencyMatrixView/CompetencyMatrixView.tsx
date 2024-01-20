@@ -44,57 +44,6 @@ const GrandTotals = ({ totals }) => {
   )
 }
 
-const TimeHeader = (
-  <div className="matrix-time-row">
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">
-        <h4>{window.gettext('Hours')}</h4>
-      </div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('General Education')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Specific Education')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Total Hours')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">
-        <h4>{window.gettext('Ponderation')}</h4>
-      </div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Theory')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Practical')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Individual Work')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Total')}</div>
-    </div>
-    <div className="table-cell outcome-wrapper">
-      <div className="outcome-head">{window.gettext('Credits')}</div>
-    </div>
-  </div>
-)
-
-/**
- *     weekworkflows: state.weekworkflow,
- *     weeks: state.week,
- *     nodeweeks: state.nodeweek,
- *     nodes: state.node,
- *     object_sets: state.objectset,
- *     weekworkflow_order: state.workflow.weekworkflow_set,
- *     outcomes_sort: state.workflow.outcomes_sort,
- *     outcomeworkflow_order: state.workflow.outcomeworkflow_set,
- *     outcomeworkflows: state.outcomeworkflow,
- *     outcomes: state.outcome
- */
 type ConnectedProps = {
   weekworkflows: AppState['weekworkflow']
   weeks: AppState['week']
@@ -296,6 +245,51 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     // }
 
     const outcomes_sorted = this.getOutcomesSorted()
+
+    const TimeHeader = (
+      <div className="matrix-time-row">
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">
+            <h4>{window.gettext('Hours')}</h4>
+          </div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">
+            {window.gettext('General Education')}
+          </div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">
+            {window.gettext('Specific Education')}
+          </div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">{window.gettext('Total Hours')}</div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">
+            <h4>{window.gettext('Ponderation')}</h4>
+          </div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">{window.gettext('Theory')}</div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">{window.gettext('Practical')}</div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">
+            {window.gettext('Individual Work')}
+          </div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">{window.gettext('Total')}</div>
+        </div>
+        <div className="table-cell outcome-wrapper">
+          <div className="outcome-head">{window.gettext('Credits')}</div>
+        </div>
+      </div>
+    )
 
     let has_nodes = false
     for (let i = 0; i < nodecategory.length; i++) {

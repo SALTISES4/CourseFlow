@@ -1,7 +1,7 @@
 //Removes the specified comment from the object
-import { VERB } from '@cfModule/types/common'
-import { CommentsForObjectQueryResp } from '@XMLHTTP/types'
+import { CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
+import { VERB } from '@cfModule/types/enum'
 
 export function removeComment(
   objectID,

@@ -1,6 +1,6 @@
 import * as Utility from '@cfUtility'
 import * as React from 'react'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 type PropsType = {
   users: UsersForObjectQueryResp

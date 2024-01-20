@@ -41,9 +41,13 @@ export enum CfObjectType {
   COURSE = 'course'
 }
 
-
 export enum OBJECT_TYPE {
   OUTCOME = 'outcome',
   PROJECT = 'project',
   STRATEGY = 'strategy'
+}
+
+export enum VERB {
+  POSTED = 'posted',
+  ERROR = 'error'
 }

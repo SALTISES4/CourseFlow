@@ -36,7 +36,7 @@ class OutcomeUnconnected extends TableOutcomeUnconnected<
 
   getChildOutcomeView(child) {
     return (
-      <Outcome
+      <MatrixOutcome
         outcomes_type={this.props.outcomes_type}
         objectID={child.id}
         // @this is weird
@@ -56,9 +56,9 @@ const mapOutcomeStateToProps = (
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const Outcome = connect<ConnectedProps, object, OwnProps, AppState>(
+const MatrixOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapOutcomeStateToProps,
   null
 )(OutcomeUnconnected)
 
-export default Outcome
+export default MatrixOutcome

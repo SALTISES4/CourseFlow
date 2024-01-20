@@ -1,6 +1,6 @@
 import { ToggleStrategyQueryResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/common'
-import { AddStrategyQueryResp } from '@XMLHTTP/types'
+import { VERB } from '@cfModule/types/enum'
+import { AddStrategyQueryResp } from '@XMLHTTP/types/query'
 
 /**
  * Turn a week into a strategy or vice versa

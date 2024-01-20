@@ -18,7 +18,7 @@ import {
   Project,
   WorkflowDetailViewDTO
 } from '@cfPages/Workflow/Workflow/types'
-import { WorkflowDataQueryResp } from '@XMLHTTP/types'
+import { WorkflowDataQueryResp } from '@XMLHTTP/types/query'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
@@ -396,6 +396,7 @@ class Workflow {
       )
       this.render($('#container'))
 
+      // @ts-ignore
       this.clear_queue(response.data_package?.workflow.edit_count) // @todo why would there be a queue if we're not using pubsub?
 
       if (reconnect) {

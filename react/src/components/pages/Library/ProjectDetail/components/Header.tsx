@@ -2,7 +2,7 @@ import * as React from 'react'
 import { CollapsibleText, WorkflowTitle } from '@cfUIComponents/index.js'
 import { Discipline } from '@cfModule/types/common'
 import Users from '@cfPages/Library/ProjectDetail/components/Users'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 type PropsTypes = {
   allDisciplines: Discipline[]
@@ -23,12 +23,8 @@ const Header = ({
   readOnly,
   openShareDialog
 }: PropsTypes) => {
-  console.log('discipline')
-  // @todo see error below, verify data type of data.disciplines
-  console.log(allDisciplines)
-  console.log(data.disciplines)
-  console.log('disciplines')
-  console.log(disciplines)
+  disciplines.length && console.log(disciplines)
+  disciplines.length && console.log('Header.tsx disciplines missing type')
 
   return (
     <div className="project-header">
@@ -59,10 +55,8 @@ const Header = ({
           <div className="project-info-section project-disciplines">
             <h4>{window.gettext('Disciplines')}</h4>
             {allDisciplines
-              .filter(
-                // @ts-ignore
-                (discipline) => disciplines.indexOf(discipline.id) >= 0 // @todo what is shape of 'disiplines' ?
-              )
+              // @ts-ignore
+              .filter((discipline) => disciplines.indexOf(discipline.id) >= 0)
               .map((discipline) => discipline.title)
               .join(', ') || window.gettext('None')}
           </div>

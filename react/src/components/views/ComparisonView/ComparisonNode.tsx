@@ -33,7 +33,7 @@ type PropsType = ConnectedProps & OwnProps
  * renderer.task_choices
  * renderer.read_only
  */
-class NodeComparisonUnconnected extends EditableComponentWithActions<
+class ComparisonNodeUnconnected extends EditableComponentWithActions<
   PropsType,
   StateProps
 > {
@@ -208,9 +208,9 @@ const mapStateToProps = (
   return getNodeByID(state, ownProps.objectID)
 }
 
-const NodeComparison = connect<ConnectedProps, object, OwnProps, AppState>(
+const ComparisonNode = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
-)(NodeComparisonUnconnected)
+)(ComparisonNodeUnconnected)
 
-export default NodeComparison
+export default ComparisonNode

@@ -7,10 +7,10 @@ import {
 import {
   WorkflowDataQueryResp,
   WorkflowsForProjectQueryResp
-} from '@XMLHTTP/types'
-import {ToDefine, VERB} from '@cfModule/types/common'
+} from '@XMLHTTP/types/query'
+import {ToDefine } from '@cfModule/types/common'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import {CfObjectType} from "@cfModule/types/enum";
+import {CfObjectType, VERB} from "@cfModule/types/enum";
 
 /*******************************************************
  * WORKFLOWS

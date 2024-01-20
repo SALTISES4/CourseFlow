@@ -1,4 +1,4 @@
-import { WeekworkflowType } from '@cfRedux/type'
+import { TWeekworkflow } from '@cfRedux/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
@@ -8,9 +8,9 @@ import {
 } from '@cfRedux/enumActions'
 
 export default function weekworkflowReducer(
-  state: WeekworkflowType[] = [] as WeekworkflowType[],
+  state: TWeekworkflow[] = [] as TWeekworkflow[],
   action: AnyAction
-): WeekworkflowType[] {
+): TWeekworkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {
       if (action.payload.weekworkflow) {

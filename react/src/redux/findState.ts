@@ -6,10 +6,10 @@ import {
   TColumnworkflow,
   TNodelink,
   TNode,
-  ObjectSet,
+  TObjectSet,
   TOutcome,
   TOutcomeOutcome,
-  TWeek
+  TWeek, TColumn
 } from '@cfRedux/type'
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 
@@ -27,10 +27,10 @@ export type StrategyByIDType = {
  *
  *******************************************************/
 export type GetColumnByIDType = {
-  data: any
-  sibling_count: any
-  columnworkflows: any
-  column_order: any
+  data: TColumn
+  sibling_count: number
+  columnworkflows: Pick<AppState['workflow'], 'columnworkflow_set'>
+  column_order: Pick<AppState['workflow'], 'columnworkflow_set'>
 }
 
 export const getColumnByID = (
@@ -217,9 +217,6 @@ export const getNodeLinkByID = (
 ): GetNodeLinkByIDType => {
   //  console.log(id)
   for (const i in state.nodelink) {
-    // console.log(i)
-    // console.log('state.nodelink')
-    // console.log(state.nodelink)
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) {
       return { data: nodelink }
@@ -318,7 +315,7 @@ export type GetOutcomeByIDType = {
   data: TOutcome
   hovertext: string
   prefix: string
-  object_sets: ObjectSet
+  object_sets: TObjectSet
   workflow_id: number
 }
 export const getOutcomeByID = (
@@ -559,7 +556,7 @@ export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
 
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export type SortedOutcomesFromOutcomeWorkflowSetType = {
-  objectset: ObjectSet
+  objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
