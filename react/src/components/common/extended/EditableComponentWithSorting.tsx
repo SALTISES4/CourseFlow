@@ -23,6 +23,8 @@ class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponentWithActions<P, S> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   /*******************************************************

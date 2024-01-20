@@ -211,7 +211,6 @@ export const getNodeLinkByID = (
   state: AppState,
   id: number
 ): TGetNodeLinkByID => {
-  //  console.log(id)
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) {

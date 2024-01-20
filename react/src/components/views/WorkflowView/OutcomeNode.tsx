@@ -28,6 +28,8 @@ type PropsType = ConnectedProps & OwnProps
  *
  */
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: PropsType) {
     super(props)

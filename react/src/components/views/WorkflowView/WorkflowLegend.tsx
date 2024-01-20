@@ -26,6 +26,8 @@ type PropsType = ConnectedProps
 export class WorkflowLegendUnconnected<
   P extends PropsType
 > extends React.Component<P, StateType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: P) {
     super(props)

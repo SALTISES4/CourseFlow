@@ -31,6 +31,8 @@ type PropsType = {
 }
 
 class RightSideBar extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   /*******************************************************

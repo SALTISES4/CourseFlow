@@ -163,7 +163,7 @@ export type ENodelink = {
   deleted: boolean
   deleted_on: TDate
   id: number
-  title: null
+  title: string | null
   source_node: number
   target_node: number
   source_port: number

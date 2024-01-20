@@ -21,6 +21,8 @@ type PropsType = ConnectedProps & OwnProps
  * workflow that allows this.
  */
 class ViewBarUnconnected extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   /*******************************************************

@@ -13,6 +13,8 @@ type OwnProps = {
 } & ComponentWithToggleProps
 
 class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   /*******************************************************
    * FUNCTIONS

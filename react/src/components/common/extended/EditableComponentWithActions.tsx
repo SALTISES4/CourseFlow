@@ -29,6 +29,8 @@ class EditableComponentWithActions<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponentWithComments<P, S> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   //Adds a button that restores the item.

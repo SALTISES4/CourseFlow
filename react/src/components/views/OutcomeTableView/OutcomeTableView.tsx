@@ -14,7 +14,8 @@ import {
 } from '@cfRedux/types/type'
 import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
-import { CfObjectType } from '@cfModule/types/enum'
+import { CfObjectType, ViewType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  * The outcome table.
@@ -37,6 +38,10 @@ type OwnProps = any
 
 type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
@@ -197,7 +202,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
-      if (this.props.renderer.view_type === 'outcometable') {
+      if (this.context.view_type === ViewType.OUTCOMETABLE) {
         text = window.gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
@@ -276,12 +281,6 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    // workflow_type: state.workflow.type,
-    // outcomes_type: state.workflow.outcomes_type,
-    // outcomeworkflow_order: state.workflow.outcomeworkflow_set,
-    // weekworkflow_order: state.workflow.weekworkflow_set,
-    // columnworkflow_order: state.workflow.columnworkflow_set,
-    // outcomes_sort: state.workflow.outcomes_sort,
     workflow: state.workflow,
     weekworkflow: state.weekworkflow,
     week: state.week,

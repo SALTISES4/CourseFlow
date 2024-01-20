@@ -24,6 +24,8 @@ type PropsType = ConnectedProps & OwnProps
  * is tagged with other outcomes from a parent workflow
  */
 class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {

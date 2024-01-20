@@ -72,6 +72,8 @@ type PropsType = ConnectedProps & OwnProps
  * workflow.
  */
 class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   // private nodecategory_json: string
   private objectType: CfObjectType

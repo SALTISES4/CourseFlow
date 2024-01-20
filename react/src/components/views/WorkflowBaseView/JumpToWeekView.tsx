@@ -22,6 +22,8 @@ type PropsType = ConnectedProps & OwnProps
 export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
   private objectType: CfObjectType
   private objectClass: string
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {

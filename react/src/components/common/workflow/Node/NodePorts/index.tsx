@@ -16,6 +16,8 @@ type StateType = {
   node_dimensions: any
 }
 export class NodePorts extends React.Component<PropsType, StateType> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   private positioned: boolean
   constructor(props: PropsType) {

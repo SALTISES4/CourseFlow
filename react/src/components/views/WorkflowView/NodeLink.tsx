@@ -27,6 +27,8 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   private source_node: JQuery
   private target_node: JQuery
@@ -71,8 +73,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
-    console.log('NodeLink this.props.data')
-    console.log(this.props)
     const data = this.props.data
     const style: React.CSSProperties = {}
 

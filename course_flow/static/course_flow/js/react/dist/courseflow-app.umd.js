@@ -8,6 +8,7 @@ var __publicField = (obj, key, value) => {
   return value;
 };
 
+  var _a;
   function _mergeNamespaces(n, m2) {
     for (var i2 = 0; i2 < m2.length; i2++) {
       const e = m2[i2];
@@ -47792,7 +47793,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const NotificationsPage = ({ notifications, unreadCount }) => {
-    var _a;
+    var _a2;
     const [pagination, setPagination] = reactExports.useState({
       page: 0,
       countPerPage: 10
@@ -47954,7 +47955,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-label": COURSEFLOW_APP.strings.notification_options
             },
             children: [
-              ((_a = pageState.notification) == null ? void 0 : _a.unread) && !pageState.allRead && /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: onMarkAsReadClick, children: COURSEFLOW_APP.strings.mark_as_read }),
+              ((_a2 = pageState.notification) == null ? void 0 : _a2.unread) && !pageState.allRead && /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: onMarkAsReadClick, children: COURSEFLOW_APP.strings.mark_as_read }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: onDeleteClick, children: COURSEFLOW_APP.strings.delete })
             ]
           }
@@ -56543,11 +56544,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     return default_drop;
   };
   function getColumnColour(data) {
-    var _a;
+    var _a2;
     if (data.colour == null)
       return default_column_settings[data.column_type].colour;
     else
-      return "#" + ("000000" + ((_a = data.colour) == null ? void 0 : _a.toString(16))).slice(-6);
+      return "#" + ("000000" + ((_a2 = data.colour) == null ? void 0 : _a2.toString(16))).slice(-6);
   }
   function object_sets_types() {
     return {
@@ -61243,6 +61244,42 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
+  const WorkFlowConfigContext = React.createContext(
+    {}
+  );
+  const WorkFlowConfigProvider = ({ children, initialValue }) => {
+    const formatInitialValue = (workflowInstance) => {
+      const formattedValue2 = {
+        task_choices: workflowInstance.task_choices,
+        time_choices: workflowInstance.time_choices,
+        read_only: workflowInstance.read_only,
+        context_choices: workflowInstance.context_choices,
+        outcome_type_choices: workflowInstance.context_choices,
+        strategy_classification_choices: workflowInstance.strategy_classification_choices,
+        workflowID: workflowInstance.workflowID,
+        unread_comments: workflowInstance.unread_comments,
+        add_comments: workflowInstance.add_comments,
+        view_comments: workflowInstance.view_comments,
+        is_strategy: workflowInstance.is_strategy,
+        // show_assignments: workflowInstance.show_assignments,
+        column_choices: workflowInstance.column_choices,
+        // functions
+        lock_update: workflowInstance.lock_update,
+        micro_update: workflowInstance.micro_update,
+        change_field: workflowInstance.change_field,
+        selection_manager: workflowInstance.selection_manager,
+        //new
+        user_id: workflowInstance.user_id,
+        view_type: workflowInstance.view_type,
+        public_view: workflowInstance.public_view,
+        // to remove
+        container: workflowInstance.container
+      };
+      return formattedValue2;
+    };
+    const formattedValue = formatInitialValue(initialValue);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigContext.Provider, { value: formattedValue, children });
+  };
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
@@ -61321,7 +61358,7 @@ ${latestSubscriptionCallbackError.current.stack}
         ] });
       });
       __publicField(this, "Colour", ({ data, readOnly }) => {
-        var _a;
+        var _a2;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Colour") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -61332,7 +61369,7 @@ ${latestSubscriptionCallbackError.current.stack}
               id: "colour-editor",
               className: "half-width",
               type: "color",
-              value: "#" + ((_a = data.colour) == null ? void 0 : _a.toString(16)),
+              value: "#" + ((_a2 = data.colour) == null ? void 0 : _a2.toString(16)),
               maxLength: 30,
               onChange: this.inputChanged.bind(this, "colour")
             }
@@ -61830,6 +61867,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(EditableComponent, "contextType", WorkFlowConfigContext);
   class ActionButton extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -62094,17 +62132,17 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b, _c, _d;
+      var _a2, _b, _c, _d;
       let has_comments = false;
       const has_unread = this.props.comments.filter((value) => {
-        var _a2;
-        return (_a2 = this.unread_comments) == null ? void 0 : _a2.includes(value);
+        var _a3;
+        return (_a3 = this.unread_comments) == null ? void 0 : _a3.includes(value);
       }).length > 0;
       if (this.state.has_rendered) {
         has_comments = this.props.comments.length > 0;
       }
       let render_div;
-      const side_actions = $((_b = (_a = this.props.parent) == null ? void 0 : _a.mainDiv) == null ? void 0 : _b.current).children(".side-actions").children(".comment-indicator-container");
+      const side_actions = $((_b = (_a2 = this.props.parent) == null ? void 0 : _a2.mainDiv) == null ? void 0 : _b.current).children(".side-actions").children(".comment-indicator-container");
       if (side_actions.length > 0)
         render_div = side_actions[0];
       else
@@ -62304,6 +62342,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
   function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
     let path;
     if (soft)
@@ -62501,6 +62540,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(EditableComponentWithActions, "contextType", WorkFlowConfigContext);
   function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
@@ -62742,6 +62782,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(EditableComponentWithSorting, "contextType", WorkFlowConfigContext);
   const getColumnByID = (state, id) => {
     for (const i2 in state.column) {
       const column2 = state.column[i2];
@@ -63582,8 +63623,8 @@ ${latestSubscriptionCallbackError.current.stack}
       return String(date.getFullYear()).substring(2);
     }
   };
-  var createDateFormatter = function(_a) {
-    var _b = _a.config, config2 = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c, _d = _a.isMobile, isMobile = _d === void 0 ? false : _d;
+  var createDateFormatter = function(_a2) {
+    var _b = _a2.config, config2 = _b === void 0 ? defaults : _b, _c = _a2.l10n, l10n = _c === void 0 ? english : _c, _d = _a2.isMobile, isMobile = _d === void 0 ? false : _d;
     return function(dateObj, frmt, overrideLocale) {
       var locale = overrideLocale || l10n;
       if (config2.formatDate !== void 0 && !isMobile) {
@@ -63594,8 +63635,8 @@ ${latestSubscriptionCallbackError.current.stack}
       }).join("");
     };
   };
-  var createDateParser = function(_a) {
-    var _b = _a.config, config2 = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c;
+  var createDateParser = function(_a2) {
+    var _b = _a2.config, config2 = _b === void 0 ? defaults : _b, _c = _a2.l10n, l10n = _c === void 0 ? english : _c;
     return function(date, givenFormat, timeless, customLocale) {
       if (date !== 0 && !date)
         return void 0;
@@ -63635,8 +63676,8 @@ ${latestSubscriptionCallbackError.current.stack}
               regexStr += ".";
           }
           parsedDate = !config2 || !config2.noCalendar ? new Date((/* @__PURE__ */ new Date()).getFullYear(), 0, 1, 0, 0, 0, 0) : new Date((/* @__PURE__ */ new Date()).setHours(0, 0, 0, 0));
-          ops.forEach(function(_a2) {
-            var fn = _a2.fn, val = _a2.val;
+          ops.forEach(function(_a3) {
+            var fn = _a3.fn, val = _a3.val;
             return parsedDate = fn(parsedDate, val, locale) || parsedDate;
           });
           parsedDate = matched ? parsedDate : void 0;
@@ -63717,8 +63758,8 @@ ${latestSubscriptionCallbackError.current.stack}
           });
         }
       };
-      for (var _a = 0, args_1 = args; _a < args_1.length; _a++) {
-        var source = args_1[_a];
+      for (var _a2 = 0, args_1 = args; _a2 < args_1.length; _a2++) {
+        var source = args_1[_a2];
         _loop_1(source);
       }
       return target;
@@ -63813,8 +63854,8 @@ ${latestSubscriptionCallbackError.current.stack}
       triggerEvent("onReady");
     }
     function getClosestActiveElement() {
-      var _a;
-      return ((_a = self2.calendarContainer) === null || _a === void 0 ? void 0 : _a.getRootNode()).activeElement || document.activeElement;
+      var _a2;
+      return ((_a2 = self2.calendarContainer) === null || _a2 === void 0 ? void 0 : _a2.getRootNode()).activeElement || document.activeElement;
     }
     function bindToInstance(fn) {
       return fn.bind(self2);
@@ -64056,7 +64097,7 @@ ${latestSubscriptionCallbackError.current.stack}
         fragment.appendChild(buildMonthNav());
         self2.innerContainer = createElement("div", "flatpickr-innerContainer");
         if (self2.config.weekNumbers) {
-          var _a = buildWeeks(), weekWrapper = _a.weekWrapper, weekNumbers = _a.weekNumbers;
+          var _a2 = buildWeeks(), weekWrapper = _a2.weekWrapper, weekNumbers = _a2.weekNumbers;
           self2.innerContainer.appendChild(weekWrapper);
           self2.weekNumbers = weekNumbers;
           self2.weekWrapper = weekWrapper;
@@ -64461,7 +64502,7 @@ ${latestSubscriptionCallbackError.current.stack}
         self2.currentMonth = self2._initialDate.getMonth();
       }
       if (self2.config.enableTime === true) {
-        var _a = getDefaultHours(self2.config), hours = _a.hours, minutes = _a.minutes, seconds = _a.seconds;
+        var _a2 = getDefaultHours(self2.config), hours = _a2.hours, minutes = _a2.minutes, seconds = _a2.seconds;
         setHours(hours, minutes, seconds);
       }
       self2.redraw();
@@ -64593,7 +64634,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
     function isEnabled(date, timeless) {
-      var _a;
+      var _a2;
       if (timeless === void 0) {
         timeless = true;
       }
@@ -64604,7 +64645,7 @@ ${latestSubscriptionCallbackError.current.stack}
         return true;
       if (dateToCheck === void 0)
         return false;
-      var bool = !!self2.config.enable, array = (_a = self2.config.enable) !== null && _a !== void 0 ? _a : self2.config.disable;
+      var bool = !!self2.config.enable, array = (_a2 = self2.config.enable) !== null && _a2 !== void 0 ? _a2 : self2.config.disable;
       for (var i2 = 0, d = void 0; i2 < array.length; i2++) {
         d = array[i2];
         if (typeof d === "function" && d(dateToCheck))
@@ -65317,7 +65358,7 @@ ${latestSubscriptionCallbackError.current.stack}
       try {
         if (self2.input.parentNode)
           self2.input.parentNode.insertBefore(self2.mobileInput, self2.input.nextSibling);
-      } catch (_a) {
+      } catch (_a2) {
       }
       bind(self2.mobileInput, "change", function(e) {
         self2.setDate(getEventTarget(e).value, false, self2.mobileFormatStr);
@@ -65714,42 +65755,6 @@ ${latestSubscriptionCallbackError.current.stack}
     mapStateToProps$v,
     null
   )(SimpleOutcomeOutcomeUnconnected);
-  const WorkFlowConfigContext = React.createContext(
-    {}
-  );
-  const WorkFlowConfigProvider = ({ children, initialValue }) => {
-    const formatInitialValue = (workflowInstance) => {
-      const formattedValue2 = {
-        task_choices: workflowInstance.task_choices,
-        time_choices: workflowInstance.time_choices,
-        read_only: workflowInstance.read_only,
-        context_choices: workflowInstance.context_choices,
-        outcome_type_choices: workflowInstance.context_choices,
-        strategy_classification_choices: workflowInstance.strategy_classification_choices,
-        workflowID: workflowInstance.workflowID,
-        unread_comments: workflowInstance.unread_comments,
-        add_comments: workflowInstance.add_comments,
-        view_comments: workflowInstance.view_comments,
-        is_strategy: workflowInstance.is_strategy,
-        // show_assignments: workflowInstance.show_assignments,
-        column_choices: workflowInstance.column_choices,
-        // functions
-        lock_update: workflowInstance.lock_update,
-        micro_update: workflowInstance.micro_update,
-        change_field: workflowInstance.change_field,
-        selection_manager: workflowInstance.selection_manager,
-        //new
-        user_id: workflowInstance.user_id,
-        view_type: workflowInstance.view_type,
-        public_view: workflowInstance.public_view,
-        // to remove
-        container: workflowInstance.container
-      };
-      return formattedValue2;
-    };
-    const formattedValue = formatInitialValue(initialValue);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigContext.Provider, { value: formattedValue, children });
-  };
   class SimpleOutcomeUnconnected extends EditableComponentWithComments {
     constructor(props) {
       super(props);
@@ -65973,6 +65978,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(OutcomeHorizontalLinkUnconnected, "contextType", WorkFlowConfigContext);
   const mapOutcomeHorizontalLinkStateToProps = (state, ownProps) => {
     return getOutcomeHorizontalLinkByID(state, ownProps.objectID);
   };
@@ -66346,6 +66352,8 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     addNewWrapper(objectset) {
+      console.log("objectset");
+      console.log(objectset);
       newOutcomeQuery(this.props.workflow.id, objectset.id);
     }
     /*******************************************************
@@ -66397,6 +66405,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(OutcomeEditViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapEditViewStateToProps = (state) => {
     return {
       data: getSortedOutcomesFromOutcomeWorkflowSet(
@@ -71636,15 +71645,15 @@ ${latestSubscriptionCallbackError.current.stack}
         throw SyntaxError("Invalid Param");
       };
       function logHypot(a, b) {
-        var _a = Math.abs(a);
+        var _a2 = Math.abs(a);
         var _b = Math.abs(b);
         if (a === 0) {
           return Math.log(_b);
         }
         if (b === 0) {
-          return Math.log(_a);
+          return Math.log(_a2);
         }
-        if (_a < 3e3 && _b < 3e3) {
+        if (_a2 < 3e3 && _b < 3e3) {
           return Math.log(a * a + b * b) * 0.5;
         }
         a = a / 2;
@@ -80730,7 +80739,7 @@ ${latestSubscriptionCallbackError.current.stack}
     //   return path
     // }
     getStyle() {
-      var _a;
+      var _a2;
       if (this.props.hovered) {
         return {
           ...this.props.style,
@@ -80759,7 +80768,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.props.lock) {
         return {
           ...this.props.style,
-          stroke: ((_a = this.props.lock) == null ? void 0 : _a.user_colour) ?? "",
+          stroke: ((_a2 = this.props.lock) == null ? void 0 : _a2.user_colour) ?? "",
           opacity: 1
         };
       }
@@ -80873,8 +80882,6 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      console.log("NodeLink this.props.data");
-      console.log(this.props);
       const data = this.props.data;
       const style2 = {};
       if (!this.source_node || !this.source_node.outerWidth() || !this.target_node || !this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()) {
@@ -80947,6 +80954,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(NodeLink, "contextType", WorkFlowConfigContext);
   const mapStateToProps$t = (state, ownProps) => {
     return getNodeLinkByID(state, ownProps.objectID) || { data: void 0 };
   };
@@ -81085,6 +81093,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(OutcomeNodeUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$s = (state, ownProps) => {
     return getOutcomeNodeByID(state, ownProps.objectID);
   };
@@ -81216,6 +81225,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(NodePorts, "contextType", WorkFlowConfigContext);
   class AutoLink extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -81324,7 +81334,7 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: portal });
     }
   }
-  let Node$1 = class Node extends EditableComponentWithActions {
+  let Node$1 = (_a = class extends EditableComponentWithActions {
     constructor(props) {
       super(props);
       this.objectType = CfObjectType.NODE;
@@ -81618,6 +81628,8 @@ ${latestSubscriptionCallbackError.current.stack}
       if (this.context.view_comments) {
         mouseover_actions.push(this.addCommenting());
       }
+      console.log("this.context");
+      console.log(this.context);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         this.addEditable(data_override),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -81629,7 +81641,11 @@ ${latestSubscriptionCallbackError.current.stack}
             ref: this.mainDiv,
             "data-selected": this.state.selected,
             "data-hovered": this.state.hovered,
-            onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
+            onClick: (evt) => {
+              console.log("this.context");
+              console.log(this.context);
+              this.context.selection_manager.changeSelection(evt, this);
+            },
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
                 lefticon,
@@ -81670,7 +81686,7 @@ ${latestSubscriptionCallbackError.current.stack}
         )
       ] });
     }
-  };
+  }, __publicField(_a, "contextType", WorkFlowConfigContext), _a);
   const mapStateToProps$r = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
@@ -81835,9 +81851,9 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
     makeDroppable() {
-      var _a;
+      var _a2;
       this.props;
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).droppable({
+      $((_a2 = this.mainDiv) == null ? void 0 : _a2.current).droppable({
         tolerance: "pointer",
         // @ts-ignore
         droppable: ".strategy-ghost",
@@ -82136,12 +82152,12 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a;
+      var _a2;
       const data = this.props.data.id;
       const cssClasses = [
         "week-workflow",
         data.no_drag ? "no-drag" : "",
-        $((_a = this.mainDiv) == null ? void 0 : _a.current).hasClass("dragging") ? "dragging" : ""
+        $((_a2 = this.mainDiv) == null ? void 0 : _a2.current).hasClass("dragging") ? "dragging" : ""
       ].join(" ");
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
@@ -82772,6 +82788,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(ViewBarUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$m = (state) => ({
     object_sets: state.objectset
   });
@@ -82822,6 +82839,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(RestoreBarItem, "contextType", WorkFlowConfigContext);
   class RestoreBarUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -82989,12 +83007,12 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     }
     makeDraggable() {
-      var _a;
+      var _a2;
       if (this.props.readOnly)
         return;
       const draggable_selector = "outcome";
       const draggable_type = "outcome";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+      $((_a2 = this.mainDiv) == null ? void 0 : _a2.current).draggable({
         helper: (_e, _item) => {
           const helper = $(document.createElement("div"));
           helper.addClass("outcome-ghost");
@@ -83343,6 +83361,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(ParentOutcomeBarUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$k = (state) => {
     return {
       data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
@@ -83413,10 +83432,10 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     makeDraggable() {
-      var _a;
+      var _a2;
       const draggable_selector = "node-week";
       const draggable_type = "nodeweek";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+      $((_a2 = this.mainDiv) == null ? void 0 : _a2.current).draggable({
         helper: (_e, _item) => {
           const helper = $(document.createElement("div"));
           helper.addClass("node-ghost");
@@ -83475,8 +83494,8 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b;
-      const choice = (_b = (_a = this.props) == null ? void 0 : _a.columnChoices) == null ? void 0 : _b.find(
+      var _a2, _b;
+      const choice = (_b = (_a2 = this.props) == null ? void 0 : _a2.columnChoices) == null ? void 0 : _b.find(
         (columnChoice) => columnChoice.type === this.props.columnType
       );
       const title = choice ? `New ${choice.name}` : "New";
@@ -83554,10 +83573,10 @@ ${latestSubscriptionCallbackError.current.stack}
      * FUNCTIONS
      *******************************************************/
     makeDraggable() {
-      var _a;
+      var _a2;
       const draggable_selector = "week-workflow";
       const draggable_type = "weekworkflow";
-      $((_a = this.mainDiv) == null ? void 0 : _a.current).draggable({
+      $((_a2 = this.mainDiv) == null ? void 0 : _a2.current).draggable({
         helper: (_e, _item) => {
           const helper = $(document.createElement("div"));
           helper.addClass("week-ghost");
@@ -83722,7 +83741,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * COMPONENTS
      *******************************************************/
     getNodeBar() {
-      if (this.props.context === "workflow")
+      if (this.props.context === WFContext.WORKFLOW)
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodeBar,
           {
@@ -83828,6 +83847,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(RightSideBar, "contextType", WorkFlowConfigContext);
   const ConnectedUser = ({
     user_colour,
     user_name
@@ -84166,6 +84186,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(WorkflowLegendUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$g = (state) => {
     let contexts = [];
     let tasks = [];
@@ -84310,6 +84331,7 @@ ${latestSubscriptionCallbackError.current.stack}
       ] });
     }
   }
+  __publicField(WorkflowViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapWorkflowStateToProps = (state) => ({
     data: state.workflow,
     object_sets: state.objectset,
@@ -84361,6 +84383,7 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.jumpTo.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TitleText, { text: data.title, defaultText: default_text }) });
     }
   }
+  __publicField(JumpToWeekViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapWeekStateToProps = (state, ownProps) => {
     return getWeekByID(state, ownProps.objectID);
   };
@@ -84487,13 +84510,14 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     }
   }
+  __publicField(ParentWorkflowIndicatorUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$e = (state) => {
     return {
       child_workflows: state.node.filter((node2) => node2.linked_workflow_data).map((node2) => {
-        var _a, _b, _c, _d;
+        var _a2, _b, _c, _d;
         return {
           id: node2.linked_workflow,
-          title: ((_a = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _a.title) || "",
+          title: ((_a2 = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _a2.title) || "",
           description: ((_b = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _b.description) || "",
           url: ((_c = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _c.url) || "",
           deleted: ((_d = node2 == null ? void 0 : node2.linked_workflow_data) == null ? void 0 : _d.deleted) || false
@@ -84731,7 +84755,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b;
+      var _a2, _b;
       const data = this.props.data;
       const is_dropped = this.getIsDropped();
       const dropIcon = is_dropped ? "droptriangleup" : "droptriangledown";
@@ -84770,7 +84794,7 @@ ${latestSubscriptionCallbackError.current.stack}
           ]
         }
       ) });
-      const outcome_row = (_b = (_a = this.props.outcome_tree) == null ? void 0 : _a.outcomenodes) == null ? void 0 : _b.map(
+      const outcome_row = (_b = (_a2 = this.props.outcome_tree) == null ? void 0 : _a2.outcomenodes) == null ? void 0 : _b.map(
         (outcomenodegroup) => {
           const group_row = outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             TableCell,
@@ -85346,13 +85370,13 @@ ${latestSubscriptionCallbackError.current.stack}
           nodecategory2.nodes.map((node2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell nodewrapper blank-cell" }))
         ] }));
         const outcomes = outcomes_sorted.map((category) => {
-          var _a, _b;
+          var _a2, _b;
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
             className: "table-body",
             // @todo should this be set?
             // @ts-ignore
             children: [
-              ((_b = (_a = this.props) == null ? void 0 : _a.object_sets) == null ? void 0 : _b.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row outcome-category", children: [
+              ((_b = (_a2 = this.props) == null ? void 0 : _a2.object_sets) == null ? void 0 : _b.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "outcome-row outcome-category", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }) }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-cells", children: blank_line }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "table-cell blank-cell" }),
@@ -85405,6 +85429,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
   }
+  __publicField(CompetencyMatrixViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$9 = (state, ownProps) => {
     return {
       weekworkflows: state.weekworkflow,
@@ -85557,7 +85582,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       if (outcomes_sorted.length === 0 || !has_nodes) {
         let text;
-        if (this.props.renderer.view_type === "outcometable") {
+        if (this.context.view_type === ViewType.OUTCOMETABLE) {
           text = window.gettext(
             "This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started."
           );
@@ -85575,12 +85600,12 @@ ${latestSubscriptionCallbackError.current.stack}
           ))
         ] }));
         const outcomes = outcomes_sorted.map((category) => {
-          var _a, _b;
+          var _a2, _b;
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
             // @todo  should object_sets be set?
             // @ts-ignore
             children: [
-              ((_b = (_a = this.props) == null ? void 0 : _a.object_sets) == null ? void 0 : _b.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-row outcome-category", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }) }) }),
+              ((_b = (_a2 = this.props) == null ? void 0 : _a2.object_sets) == null ? void 0 : _b.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-row outcome-category", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "outcome-head", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: category.objectset.title }) }) }),
               category.outcomes.map((outcome) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                 OutcomeBase,
                 {
@@ -85614,14 +85639,9 @@ ${latestSubscriptionCallbackError.current.stack}
       }
     }
   }
+  __publicField(OutcomeTableViewUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$8 = (state) => {
     return {
-      // workflow_type: state.workflow.type,
-      // outcomes_type: state.workflow.outcomes_type,
-      // outcomeworkflow_order: state.workflow.outcomeworkflow_set,
-      // weekworkflow_order: state.workflow.weekworkflow_set,
-      // columnworkflow_order: state.workflow.columnworkflow_set,
-      // outcomes_sort: state.workflow.outcomes_sort,
       workflow: state.workflow,
       weekworkflow: state.weekworkflow,
       week: state.week,
@@ -92916,8 +92936,8 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a, _b, _c, _d, _e, _f, _g, _h;
-      const viewBar = ((_a = this.props) == null ? void 0 : _a.viewbar) ? (_b = this.props) == null ? void 0 : _b.viewbar() : null;
+      var _a2, _b, _c, _d, _e, _f, _g, _h;
+      const viewBar = ((_a2 = this.props) == null ? void 0 : _a2.viewbar) ? (_b = this.props) == null ? void 0 : _b.viewbar() : null;
       const userBar = ((_c = this.props) == null ? void 0 : _c.userbar) ? (_d = this.props) == null ? void 0 : _d.userbar() : null;
       const visibleButtons = ((_e = this.props) == null ? void 0 : _e.visibleButtons) ? (_f = this.props) == null ? void 0 : _f.visibleButtons() : null;
       const overflowLinks = ((_g = this.props) == null ? void 0 : _g.overflowLinks) ? (_h = this.props) == null ? void 0 : _h.overflowLinks() : null;
@@ -93167,7 +93187,7 @@ ${latestSubscriptionCallbackError.current.stack}
      * RENDER
      *******************************************************/
     render() {
-      var _a;
+      var _a2;
       const data = this.props.data;
       let data_override;
       if (data.represents_workflow) {
@@ -93180,8 +93200,8 @@ ${latestSubscriptionCallbackError.current.stack}
       let child_outcomes;
       if (this.props.child_outcomes != -1) {
         child_outcomes = this.props.child_outcomes.map((childOutcome, index) => {
-          var _a2, _b;
-          if (!this.state.show_all && ((_b = (_a2 = this.props.restriction_set) == null ? void 0 : _a2.child_outcomes) == null ? void 0 : _b.indexOf(childOutcome)) === -1)
+          var _a3, _b;
+          if (!this.state.show_all && ((_b = (_a3 = this.props.restriction_set) == null ? void 0 : _a3.child_outcomes) == null ? void 0 : _b.indexOf(childOutcome)) === -1)
             return null;
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             AlignmentHorizontalReverseChildOutcome,
@@ -93241,7 +93261,7 @@ ${latestSubscriptionCallbackError.current.stack}
             ]
           }
         );
-      if (data.linked_workflow && ((_a = this.props.restriction_set) == null ? void 0 : _a.child_outcomes)) {
+      if (data.linked_workflow && ((_a2 = this.props.restriction_set) == null ? void 0 : _a2.child_outcomes)) {
         if (this.state.show_all) {
           show_all = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "alignment-added-outcomes", children: [
             add_new_outcome,
@@ -93395,6 +93415,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(AlignmentHorizontalReverseWeek, "contextType", WorkFlowConfigContext);
   const mapStateToProps$6 = (state, ownProps) => {
     for (let i2 = 0; i2 < state.week.length; i2++) {
       if (state.week[i2].id == ownProps.objectID) {
@@ -93703,6 +93724,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(GridNodeUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$3 = (state, ownProps) => ({
     column: state.column.find((column2) => column2.id == ownProps.data.column)
   });
@@ -93744,6 +93766,7 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
+  __publicField(GridWeekUnconnected, "contextType", WorkFlowConfigContext);
   const mapStateToProps$2 = (state, ownProps) => {
     const data = ownProps.data;
     const node_weeks = filterThenSortByID(
@@ -94795,11 +94818,11 @@ ${latestSubscriptionCallbackError.current.stack}
      * @param newSelection - The new selection object.
      */
     changeSelection(evt, newSelection) {
-      var _a, _b;
+      var _a2, _b;
       if (evt) {
         evt.stopPropagation();
       }
-      if (!this.readOnly && ((_b = (_a = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a.data) == null ? void 0 : _b.lock)) {
+      if (!this.readOnly && ((_b = (_a2 = newSelection == null ? void 0 : newSelection.props) == null ? void 0 : _a2.data) == null ? void 0 : _b.lock)) {
         return;
       }
       if (this.currentSelection) {
@@ -95107,8 +95130,8 @@ ${latestSubscriptionCallbackError.current.stack}
     connection_opened(reconnect = false) {
       console.log("connection_opened");
       this.getWorkflowData(this.workflowID, (response) => {
-        var _a, _b;
-        this.unread_comments = (_a = response.data_package) == null ? void 0 : _a.unread_comments;
+        var _a2, _b;
+        this.unread_comments = (_a2 = response.data_package) == null ? void 0 : _a2.unread_comments;
         this.store = createStore(
           rootWorkflowReducer,
           // @ts-ignore @todo check out data_package type

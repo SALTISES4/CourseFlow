@@ -31,6 +31,8 @@ class EditableComponentWithComments<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   //Adds a button that opens/closes the comments dialogue

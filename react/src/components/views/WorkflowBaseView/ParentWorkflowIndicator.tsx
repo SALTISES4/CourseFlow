@@ -28,6 +28,8 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   PropsType,
   StateProps
 > {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {

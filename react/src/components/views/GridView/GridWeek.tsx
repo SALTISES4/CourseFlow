@@ -38,6 +38,8 @@ class GridWeekUnconnected extends EditableComponentWithComments<
   PropsType,
   EditableComponentWithCommentsStateType
 > {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {

@@ -28,6 +28,8 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
   PropsType,
   StateProps
 > {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: PropsType) {
     super(props)

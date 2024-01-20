@@ -38,6 +38,7 @@ type PropsType = ConnectedProps & OwnProps
  * Represents the node in the workflow view
  */
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
+  static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {
@@ -397,7 +398,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     // if (this.context.show_assignments) {
     //   mouseover_actions.push(this.addShowAssignment(data))
     // }
-
+    console.log('this.context')
+    console.log(this.context)
     return (
       <>
         {this.addEditable(data_override)}
@@ -408,9 +410,11 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-          onClick={(evt) =>
+          onClick={(evt) => {
+            console.log('this.context')
+            console.log(this.context)
             this.context.selection_manager.changeSelection(evt, this)
-          }
+          }}
         >
           <div className="node-top-row">
             {lefticon}

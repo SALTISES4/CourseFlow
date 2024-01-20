@@ -34,6 +34,8 @@ export class OutcomeEditViewUnconnected<
   P extends PropsType,
   S extends StateType
 > extends EditableComponentWithSorting<P, S> {
+  static contextType = WorkFlowConfigContext
+
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: P) {
     super(props)
@@ -112,7 +114,9 @@ export class OutcomeEditViewUnconnected<
     )
   }
 
-  addNewWrapper(objectset?) {
+  addNewWrapper(objectset) {
+    console.log('objectset')
+    console.log(objectset)
     newOutcomeQuery(this.props.workflow.id, objectset.id)
   }
   /*******************************************************
