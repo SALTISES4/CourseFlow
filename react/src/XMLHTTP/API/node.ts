@@ -1,6 +1,9 @@
 //Create a nodelink from the source to the target, at the given ports
-import { DATA_ACTIONS } from '@XMLHTTP/common'
-import { NewNodeQueryResp, UpdateOutcomenodeDegreeResp } from '@XMLHTTP/types'
+import { VERB } from '@cfModule/types/enum'
+import {
+  NewNodeQueryResp,
+  UpdateOutcomenodeDegreeResp
+} from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
 
 /*******************************************************
@@ -23,7 +26,7 @@ export function newNodeLink(
       sourcePort: JSON.stringify(source_port),
       targetPort: JSON.stringify(target_port)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -46,7 +49,7 @@ export function newNodeQuery(
       columnPk: JSON.stringify(column),
       columnType: JSON.stringify(column_type)
     }).done(function (data: NewNodeQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) {
+      if (data.action === VERB.POSTED) {
         callBackFunction(data)
       } else {
         window.fail_function(data.action)
@@ -66,7 +69,7 @@ export function getWorkflowNodes(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_nodes, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -88,7 +91,7 @@ export function updateOutcomenodeDegree(
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
     }).done(function (data: UpdateOutcomenodeDegreeResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

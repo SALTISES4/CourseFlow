@@ -1,11 +1,11 @@
-import { CommonActions } from '@cfRedux/enumActions'
-import { ParentWorkflow } from '@cfRedux/type'
+import { CommonActions } from '@cfRedux/types/enumActions'
+import { TParentWorkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function parentWorkflowReducer(
-  state: ParentWorkflow[] = [],
+  state: TParentWorkflow[] = [],
   action: AnyAction
-): ParentWorkflow[] {
+): TParentWorkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.parent_workflow || state

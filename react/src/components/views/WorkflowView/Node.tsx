@@ -3,16 +3,15 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { getNodeByID, GetNodeByIDType } from '@cfFindState'
+import { getNodeByID, TGetNodeByID } from '@cfFindState'
 
 import { ActionButton, NodeTitle, TitleText } from '@cfUIComponents'
 import { EditableComponentWithActions } from '@cfParentComponents'
 import NodeLink from './NodeLink'
-import AssignmentBox from './AssignmentBox'
 import OutcomeNode from './OutcomeNode'
 import NodePorts from '@cfCommonComponents/workflow/Node/NodePorts'
 import AutoLink from '@cfCommonComponents/components/AutoLink'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
@@ -20,9 +19,10 @@ import {
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
 import { CfObjectType } from '@cfModule/types/enum'
 import ReactDOM from 'react-dom'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = GetNodeByIDType
+type ConnectedProps = TGetNodeByID
 type OwnProps = {
   objectID: number
   column_order: any
@@ -30,7 +30,6 @@ type OwnProps = {
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
-  show_assignments: boolean
   hovered: boolean
 } & EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
@@ -39,6 +38,8 @@ type PropsType = ConnectedProps & OwnProps
  * Represents the node in the workflow view
  */
 class Node extends EditableComponentWithActions<PropsType, StateProps> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE
@@ -114,6 +115,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 
   makeDroppable() {
+    // @ts-ignore
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       // @ts-ignore // droppable does not exist in type DroppableOptions
@@ -161,11 +163,11 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     })
   }
 
-  mouseIn(evt) {
+  mouseIn(_evt) {
     const myComponent = this
 
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (!this.props.renderer.read_only)
+    if (!this.context.read_only)
       $(
         "circle[data-node-id='" +
           this.props.objectID +
@@ -196,35 +198,6 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     })
   }
 
-  addShowAssignment(data) {
-    return [
-      <ActionButton
-        key={0}
-        buttonIcon="assignment.svg"
-        buttonClass="assignment-button"
-        titleText={window.gettext('Show Assignment Info')}
-        handleClick={this.showAssignment.bind(this)}
-      />,
-      <AssignmentBox
-        key={1}
-        show={this.state.show_assignments}
-        has_assignment={this.props.data.has_assignment}
-        parent={this}
-        renderer={this.props.renderer}
-        node_id={data.id}
-        dispatch={this.props.dispatch.bind(this)}
-      />
-    ]
-  }
-
-  showAssignment(evt) {
-    const props = this.props
-    evt.stopPropagation()
-    if (!this.state.show_assignments) {
-      this.setState({ show_assignments: true })
-    } else this.setState({ show_assignments: false })
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -241,8 +214,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseover_actions = []
 
     const data = this.props.data
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
 
     if (data.represents_workflow) {
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
@@ -253,7 +225,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     if (!this.state.initial_render) {
       nodePorts = reactDom.createPortal(
         <NodePorts
-          renderer={renderer}
+          // renderer={renderer}
           nodeID={this.props.objectID}
           node_div={this.mainDiv}
           dispatch={this.props.dispatch}
@@ -265,7 +237,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           key={link}
           objectID={link}
           node_div={this.mainDiv}
-          renderer={renderer}
+          // renderer={renderer}
         />
       ))
       if (data.has_autolink)
@@ -287,7 +259,8 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
             <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
-              renderer={renderer}
+              // renderer={renderer}
+              // legacyRenderer={this.context}
             />
           ))}
         </div>
@@ -318,7 +291,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              renderer.context_choices.find(
+              this.context.context_choices.find(
                 (obj) => obj.type == data.context_classification
               ).name
             }
@@ -335,7 +308,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              renderer.task_choices.find(
+              this.context.task_choices.find(
                 (obj) => obj.type == data.task_classification
               ).name
             }
@@ -411,18 +384,19 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     if (data.is_dropped) css_class += ' dropped'
     if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) {
+    if (this.context.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(this.addCommenting())
     }
-    if (renderer.show_assignments) {
-      mouseover_actions.push(this.addShowAssignment(data))
-    }
+
+    // if (this.context.show_assignments) {
+    //   mouseover_actions.push(this.addShowAssignment(data))
+    // }
 
     return (
       <>
@@ -435,7 +409,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.props.renderer.selection_manager.changeSelection(evt, this)
+            this.context.selection_manager.changeSelection(evt, this)
           }
         >
           <div className="node-top-row">
@@ -463,8 +437,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
                 {data_override.time_required &&
                   data_override.time_required +
                     ' ' +
-                    this.props.renderer.time_choices[data_override.time_units]
-                      .name}
+                    this.context.time_choices[data_override.time_units].name}
               </div>
             </div>
           </div>
@@ -483,10 +456,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
   }
 }
 
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): GetNodeByIDType => {
+const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 

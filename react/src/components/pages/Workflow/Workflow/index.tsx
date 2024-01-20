@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
@@ -10,19 +9,19 @@ import {
   EmptyObject,
   Store
 } from '@reduxjs/toolkit'
-import { SelectionManager } from '@cfRedux/helpers'
 import * as Reducers from '@cfReducers'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import {
+  Choice,
   Project,
   WorkflowDetailViewDTO
 } from '@cfPages/Workflow/Workflow/types'
-import { WorkflowDataQueryResp } from '@XMLHTTP/types'
+import { WorkflowDataQueryResp } from '@XMLHTTP/types/query'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
 import {
@@ -34,6 +33,8 @@ import {
   getWorkflowParentDataQuery
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/global'
+import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 // import $ from 'jquery'
 
 const cache = createCache({
@@ -49,6 +50,7 @@ enum DATA_TYPE {
   WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'
 }
 
+// @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 /****************************************
@@ -57,34 +59,33 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 class Workflow {
   private message_queue: any[]
   private messages_queued: boolean
-  private public_view: boolean
-  private workflowID: number
-  // private column_choices: Choice[]
-  // private context_choices: Choice[]
-  // private task_choices: Choice[]
-  // private time_choices: Choice[]
-  // private outcome_type_choices: Choice[]
-  // private outcome_sort_choices: Choice[]
-  // private strategy_classification_choices: Choice[]
-  private is_strategy: boolean
-  private project: Project
+  public_view: boolean
+  workflowID: number
+  column_choices: Choice[]
+  context_choices: Choice[]
+  task_choices: Choice[]
+  time_choices: Choice[]
+  private outcome_type_choices: Choice[]
+  private outcome_sort_choices: Choice[]
+  strategy_classification_choices: Choice[]
+  is_strategy: boolean
+  project: Project
   private user_permission: number
   private user_role: number
-  private user_id: number
-  private read_only: boolean
-  private always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
-  private project_permission: number
-  private can_view: boolean
-  private view_comments: boolean
-  private add_comments: boolean
-  private is_student: boolean
-  private show_assignments: boolean
+  user_id: number
+  read_only: boolean
+  always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
+  project_permission: number
+  can_view: boolean
+  view_comments: boolean
+  add_comments: boolean
+  is_student: boolean
   private is_teacher: boolean
-  private selection_manager: SelectionManager
-  private child_data_completed: boolean
+  selection_manager: SelectionManager
+  private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
-  private getWorkflowData: (
+  protected getWorkflowData: (
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
@@ -96,14 +97,23 @@ class Workflow {
     workflowPk,
     callBackFunction?: (data: WorkflowDataQueryResp) => void
   ) => void
-  private websocket: WebSocket
+  websocket: WebSocket
   private has_disconnected: boolean
   private has_rendered: boolean
   private is_static: boolean
-  private store: Store<EmptyObject & AppState, AnyAction>
+  protected store: Store<EmptyObject & AppState, AnyAction>
 
-  // NOTE: this is not yet a react component, so its misleading to use the same
+  // NOTE: this is not yet a React component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
+  unread_comments: any
+  container: any
+  view_type: any
+  private workflowRender: OmitThisParameter<
+    (container, view_type?: ViewType) => void
+  >
+  private locks: any
+  private silent_connect_fail: any
+
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
       column_choices,
@@ -136,7 +146,6 @@ class Workflow {
     this.project = project
 
     this.user_permission = propsConfig.user_permission
-    this.user_role = propsConfig.user_role ?? Constants.role_keys['none'] // @todo make sure this option is set in view
     this.user_id = propsConfig.user_id
     this.read_only = true
     this.workflowRender = this.render.bind(this)
@@ -165,24 +174,6 @@ class Workflow {
         this.view_comments = true
         this.add_comments = true
         this.can_view = true
-        break
-
-      // No default case needed here if these are the only options
-    }
-
-    switch (propsConfig.user_role) {
-      case Constants.role_keys['none']:
-        // @todo what is happening in this option?
-        break
-
-      case Constants.role_keys['student']:
-        this.is_student = true
-        this.show_assignments = true
-        break
-
-      case Constants.role_keys['teacher']:
-        this.is_teacher = true
-        this.show_assignments = true
         break
 
       // No default case needed here if these are the only options
@@ -286,7 +277,7 @@ class Workflow {
   /*******************************************************
    * REACT TO MOVE
    *******************************************************/
-  render(container, view_type = 'workflowview') {
+  render(container, view_type: ViewType = ViewType.WORKFLOW) {
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)
@@ -301,7 +292,7 @@ class Workflow {
     reactDom.render(<WorkflowLoader />, container[0])
 
     this.container = container // @todo where is view_type set?
-    this.selection_manager.renderer = this // @todo explicit props
+    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
@@ -311,12 +302,22 @@ class Workflow {
         )
         reactDom.render(
           <Provider store={this.store}>
-            <WorkflowBaseView
-              view_type={view_type}
-              renderer={this}
-              parentRender={this.workflowRender}
-              readOnly={this.read_only}
-            />
+            <WorkFlowConfigProvider initialValue={this}>
+              <WorkflowBaseView
+                view_type={view_type}
+                // renderer={this}
+                // legacyRenderer={this}
+                parentRender={this.workflowRender}
+                // readOnly={this.read_only}
+                config={{
+                  canView: this.can_view,
+                  isStudent: this.is_student,
+                  projectPermission: this.project_permission,
+                  alwaysStatic: this.always_static
+                }}
+                websocket={this.websocket}
+              />
+            </WorkFlowConfigProvider>
           </Provider>,
           container[0]
         )
@@ -328,11 +329,21 @@ class Workflow {
           <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
               <Provider store={this.store}>
-                <WorkflowBaseView
-                  view_type={view_type}
-                  renderer={this}
-                  parentRender={this.workflowRender}
-                />
+                <WorkFlowConfigProvider initialValue={this}>
+                  <WorkflowBaseView
+                    view_type={view_type}
+                    // renderer={this}
+                    // legacyRenderer={this}
+                    parentRender={this.workflowRender}
+                    config={{
+                      canView: this.can_view,
+                      isStudent: this.is_student,
+                      projectPermission: this.project_permission,
+                      alwaysStatic: this.always_static
+                    }}
+                    websocket={this.websocket}
+                  />
+                </WorkFlowConfigProvider>
               </Provider>
             </ThemeProvider>
           </CacheProvider>,
@@ -379,14 +390,17 @@ class Workflow {
 
       this.store = createStore(
         Reducers.rootWorkflowReducer,
+        // @ts-ignore @todo check out data_package type
         response.data_package,
         composeEnhancers()
       )
       this.render($('#container'))
 
+      // @ts-ignore
       this.clear_queue(response.data_package?.workflow.edit_count) // @todo why would there be a queue if we're not using pubsub?
 
       if (reconnect) {
+        // @ts-ignore
         this.attempt_reconnect() // @todo why would we try to reconnect if we're not using pubsub?
       }
     })
@@ -431,7 +445,8 @@ class Workflow {
         this.connection_update_received(data)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
-        this.parent_workflow_updated(data.edit_count)
+        // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
+        this.parent_workflow_updated()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
         this.child_workflow_updated(data.edit_count, data.child_workflow_id)
@@ -545,6 +560,7 @@ class Workflow {
             ...obj,
             expires: Date.now() + time,
             user_id: this.user_id,
+            // @ts-ignore
             user_colour: COURSEFLOW_APP.contextData.myColour,
             lock: lock
           }

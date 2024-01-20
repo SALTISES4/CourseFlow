@@ -2,7 +2,8 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import NodeBarColumnWorkflow from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
 import Strategy from '@cfCommonComponents/rightSideBarContent/NodeBar/components/Strategy'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
+import { ColumnChoice } from '@cfModule/types/common'
 
 /**
  * The component for the right sidebar's tab in which
@@ -11,7 +12,7 @@ import { AppState } from '@cfRedux/type'
 
 type OwnProps = {
   // renderer: any
-  columnChoices: number[]
+  columnChoices: ColumnChoice[]
   readOnly: boolean
 }
 
@@ -27,6 +28,8 @@ type PropsType = OwnProps & ConnectedProps
 class NodeBarUnconnected extends React.Component<PropsType> {
   constructor(props: PropsType) {
     super(props)
+    console.log('this.props.columnChoices in nodebar/index')
+    console.log(this.props.columnChoices)
   }
   /*******************************************************
    * RENDER
@@ -51,6 +54,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         nodebarColumnWorkflows.push(
           <NodeBarColumnWorkflow
             // renderer={this.props.renderer}
+            // @todo do we need to pass in objectId ?
             columnType={data.DEFAULT_COLUMNS[i]}
             columnChoices={this.props.columnChoices}
           />
@@ -63,6 +67,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
       <NodeBarColumnWorkflow
         // @ts-ignore
         key={`NodeBarColumnWorkflow-last-${i}`}
+        // @todo do we need to pass in objectId ?
         // renderer={this.props.renderer}
         columnType={data.DEFAULT_CUSTOM_COLUMN}
         columnChoices={this.props.columnChoices}

@@ -1,16 +1,26 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
-import { getColumnByID } from '@cfFindState'
+import { getColumnByID, TGetColumnByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { CfObjectType } from '@cfModule/types/enum'
+import { AppState } from '@cfRedux/types/type'
+import { EditableComponentWithActionsState } from '@cfParentComponents/EditableComponentWithActions'
+
+type ConnectedProps = TGetColumnByID
+type OwnProps = {
+  objectID: number
+  parentID?: number
+  throughParentID?: number
+}
+type StateProps = EditableComponentWithActionsState
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The column in a workflow.
  */
-class Column extends EditableComponentWithActions {
-  constructor(props) {
+class Column extends EditableComponentWithActions<PropsType, StateProps> {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.COLUMN
     this.objectClass = '.column'
@@ -41,34 +51,36 @@ class Column extends EditableComponentWithActions {
    *******************************************************/
   render() {
     const data = this.props.data
-    let title = data.title
-    if (!title) title = data.column_type_display
+    const title = data.title ?? data.column_type_display
 
-    const style = {}
+    const style: React.CSSProperties = {}
     if (data.lock) {
       style.border = '2px solid ' + data.lock.user_colour
     }
-    let css_class = 'column'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
 
-    const mouseover_actions = []
-    if (!this.props.renderer.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
+    const cssClass = [
+      'column',
+      data.lock ? 'locked locked-' + data.lock.user_id : ''
+    ].join(' ')
+
+    const mouseoverActions = []
+
+    if (!this.context.read_only) {
+      mouseoverActions.push(this.addInsertSibling(data))
+      mouseoverActions.push(this.addDuplicateSelf(data))
+      mouseoverActions.push(this.addDeleteSelf(data))
     }
-    if (this.props.renderer.view_comments) {
-      // mouseover_actions.push(this.addCommenting(data))
-      mouseover_actions.push(this.addCommenting())
+    if (this.context.view_comments) {
+      mouseoverActions.push(this.addCommenting())
     }
 
     return (
       <div
         ref={this.mainDiv}
         style={style}
-        className={css_class}
+        className={cssClass}
         onClick={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
       >
         <div className="column-line">
@@ -76,12 +88,18 @@ class Column extends EditableComponentWithActions {
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}
-        <div className="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseoverActions}</div>
       </div>
     )
   }
 }
-const mapColumnStateToProps = (state, own_props) =>
-  getColumnByID(state, own_props.objectID)
-const mapColumnDispatchToProps = {}
-export default connect(mapColumnStateToProps, null)(Column)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): TGetColumnByID => {
+  return getColumnByID(state, ownProps.objectID)
+}
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(Column)

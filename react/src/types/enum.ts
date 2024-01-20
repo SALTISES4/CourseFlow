@@ -1,9 +1,13 @@
+import { Enum } from '@cfModule/utility/utilityFunctions'
+
 export enum ViewType {
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID = 'grid',
   OUTCOMETABLE = 'outcometable',
-  ALIGNMENTANALYSIS = 'alignmentanalysis'
+  ALIGNMENTANALYSIS = 'alignmentanalysis',
+  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable'
+  // WEEK = 'week',
 }
 
 export enum WFContext {
@@ -35,4 +39,15 @@ export enum CfObjectType {
   NODEWEEK = 'nodeweek',
   WEEKWORKFLOW = 'weekworkflow',
   COURSE = 'course'
+}
+
+export enum OBJECT_TYPE {
+  OUTCOME = 'outcome',
+  PROJECT = 'project',
+  STRATEGY = 'strategy'
+}
+
+export enum VERB {
+  POSTED = 'posted',
+  ERROR = 'error'
 }

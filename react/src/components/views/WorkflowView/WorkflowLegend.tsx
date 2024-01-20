@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { Slider, LegendLine } from '@cfUIComponents'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type StateType = {
   show_slider: boolean
@@ -16,15 +17,16 @@ type ConnectedProps = {
   strategies?: any
 }
 
-type OwnProps = {
-  renderer: any
-}
-export type WorkflowLegendUnconnectedType = OwnProps
+// type OwnProps = {
+//   renderer: any
+// }
+// export type WorkflowLegendUnconnectedType = OwnProps
 
-type PropsType = ConnectedProps & OwnProps
+type PropsType = ConnectedProps
 export class WorkflowLegendUnconnected<
   P extends PropsType
 > extends React.Component<P, StateType> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   constructor(props: P) {
     super(props)
     this.state = {
@@ -85,8 +87,7 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.context_keys[value]}
         text={
-          this.props.renderer.context_choices.find((obj) => obj.type == value)
-            .name
+          this.context.context_choices.find((obj) => obj.type == value).name
         }
       />
     ))
@@ -94,9 +95,7 @@ export class WorkflowLegendUnconnected<
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
-        text={
-          this.props.renderer.task_choices.find((obj) => obj.type == value).name
-        }
+        text={this.context.task_choices.find((obj) => obj.type == value).name}
       />
     ))
 
@@ -104,7 +103,7 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.strategy_keys[value]}
         text={
-          this.props.renderer.strategy_classification_choices.find(
+          this.context.strategy_classification_choices.find(
             (obj) => obj.type == value
           ).name
         }
@@ -179,7 +178,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-const WorkflowLegend = connect<ConnectedProps, object, OwnProps, AppState>(
+const WorkflowLegend = connect<ConnectedProps, object, object, AppState>(
   mapStateToProps,
   null
 )(WorkflowLegendUnconnected)

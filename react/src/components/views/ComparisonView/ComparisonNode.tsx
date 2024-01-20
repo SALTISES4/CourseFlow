@@ -1,12 +1,11 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
 import { NodeTitle, TitleText } from '@cfUIComponents'
-import { getNodeByID, GetNodeByIDType } from '@cfFindState'
+import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
@@ -14,7 +13,7 @@ import {
 import OutcomeNode from '@cfViews/WorkflowView/OutcomeNode'
 import { CfObjectType } from '@cfModule/types/enum'
 
-type ConnectedProps = GetNodeByIDType
+type ConnectedProps = TGetNodeByID
 type OwnProps = {
   objectID: number
 } & EditableComponentWithActionsProps
@@ -26,7 +25,15 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * Represents the node in the comparison view
  */
-class NodeComparisonUnconnected extends EditableComponentWithActions<
+
+/**
+ * renderer.selection_manager
+ * renderer.view_comments
+ * renderer.context_choices
+ * renderer.task_choices
+ * renderer.read_only
+ */
+class ComparisonNodeUnconnected extends EditableComponentWithActions<
   PropsType,
   StateProps
 > {
@@ -55,8 +62,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     } else {
       data_override = { ...data }
     }
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column)
@@ -84,7 +90,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
             <OutcomeNode
               key={outcomenode}
               objectID={outcomenode}
-              renderer={renderer}
+              //legacyRenderer={this.props.legacyRenderer}
             />
           ))}
         </div>
@@ -113,7 +119,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
       lefticon = (
         <img
           title={
-            renderer.context_choices.find(
+            this.context.context_choices.find(
               (obj) => obj.type == data.context_classification
             ).name
           }
@@ -130,7 +136,7 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
       righticon = (
         <img
           title={
-            renderer.task_choices.find(
+            this.context.task_choices.find(
               (obj) => obj.type == data.task_classification
             ).name
           }
@@ -155,12 +161,12 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     const mouseover_actions = []
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (renderer.view_comments) {
+    if (this.context.view_comments) {
       mouseover_actions.push(this.addCommenting())
     }
 
@@ -173,7 +179,6 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('clicked')
             console.log('clicked')
             return () => selection_manager.changeSelection(evt, this)
           }}
@@ -196,16 +201,13 @@ class NodeComparisonUnconnected extends EditableComponentWithActions<
     )
   }
 }
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): GetNodeByIDType => {
+const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 
-const NodeComparison = connect<ConnectedProps, object, OwnProps, AppState>(
+const ComparisonNode = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
-)(NodeComparisonUnconnected)
+)(ComparisonNodeUnconnected)
 
-export default NodeComparison
+export default ComparisonNode

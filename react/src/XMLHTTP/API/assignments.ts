@@ -1,6 +1,6 @@
 //get assignment data
-import { DATA_ACTIONS } from '@XMLHTTP/common'
 import { ToDefine } from '@cfModule/types/common'
+import { VERB } from '@cfModule/types/enum'
 
 export function getAssignmentDataQuery(
   liveassignmentPk,
@@ -14,7 +14,7 @@ export function getAssignmentDataQuery(
     }).done(function (data) {
       console.log('getAssignmentDataQuery data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -35,7 +35,7 @@ export function getAssignmentDataStudent(
     }).done(function (data) {
       console.log('getAssignmentDataStudent data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -54,7 +54,7 @@ export function createAssignmentQuery(
       nodePk: JSON.stringify(nodePk),
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -72,7 +72,7 @@ export function setAssignmentCompletionQuery(
       userassignmentPk: JSON.stringify(userassignmentPk),
       completed: JSON.stringify(completed)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -88,7 +88,7 @@ export function getAssignmentsForNode(
     $.post(COURSEFLOW_APP.config.post_paths.get_assignments_for_node, {
       nodePk: JSON.stringify(nodePk)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -109,7 +109,7 @@ export function addUsersToAssignmentQuery(
       user_list: JSON.stringify(user_list),
       add: JSON.stringify(add)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { OutcomeTitle, WeekTitle } from '@cfUIComponents'
@@ -10,14 +9,27 @@ import {
 import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
-import { CfObjectType } from '@cfModule/types/enum.js'
+import { CfObjectType, ViewType } from '@cfModule/types/enum'
+import { AppState } from '@cfRedux/types/type'
+
+type ConnectedProps = {
+  data: any
+  outcomes: any
+  terms: any
+}
+type OwnProps = {
+  view_type: ViewType
+}
+type StateProps = any
+type PropsType = ConnectedProps & OwnProps
 
 /**
  *Alignment View, also called analytics view.
  *This requires the child outcome data to be present in the redux state.
  */
-class AlignmentView extends React.Component {
-  constructor(props) {
+class AlignmentView extends React.Component<PropsType, StateProps> {
+  private objectType: CfObjectType
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
     this.state = { active: 0, active2: 0, sort: 'outcome' }
@@ -70,17 +82,19 @@ class AlignmentView extends React.Component {
       ]
     })
     //Choices of terms (weeks) to sort by
-    const view_buttons_terms = this.props.terms.map((week, i) => {
+    const view_buttons_terms = this.props.terms.map((week, index: number) => {
       let view_class = 'hover-shade'
-      if (this.state.sort == 'week' && i == this.state.active)
+      if (this.state.sort == 'week' && index == this.state.active)
         view_class += ' active'
       return (
         <div
+          key={index}
           id={'button-week-' + week.id}
           className={view_class}
-          onClick={this.changeView.bind(this, i, 'week')}
+          // @ts-ignore
+          onClick={this.changeView.bind(this, index, 'week')}
         >
-          <WeekTitle data={week} rank={i} />
+          <WeekTitle data={week} rank={index} />
         </div>
       )
     })
@@ -112,24 +126,24 @@ class AlignmentView extends React.Component {
     }
 
     if (this.state.active == -1) {
-      view_buttons_outcomes = gettext(
+      view_buttons_outcomes = window.gettext(
         'No outcomes have been added yet. Use the Edit Outcomes menu to get started'
       )
     } else if (this.state.sort == 'outcome') {
       outcomes_block = (
         <AlignmentOutcomesBlock
           workflow_type={data.type}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={outcome_data}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
       alignment_reverse_block = (
         <AlignmentHorizontalReverseBlock
           sort="outcome"
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={outcome_data}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
     }
@@ -138,10 +152,10 @@ class AlignmentView extends React.Component {
       alignment_reverse_block = (
         <AlignmentHorizontalReverseBlock
           sort="week"
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           data={this.props.terms[this.state.active]}
           base_outcomes={this.props.outcomes}
-          outcomes_type={data.outcomes_type}
+          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
     }
@@ -162,7 +176,7 @@ class AlignmentView extends React.Component {
     )
   }
 }
-const mapAlignmentStateToProps = (state) => {
+const mapStateToProps = (state: AppState): ConnectedProps => {
   const outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
@@ -178,10 +192,14 @@ const mapAlignmentStateToProps = (state) => {
     terms: Utility.filterThenSortByID(
       state.weekworkflow,
       state.workflow.weekworkflow_set
+      // @ts-ignore
     ).map((wwf) => getWeekByID(state, wwf.week).data)
   }
 }
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-export default connect(mapAlignmentStateToProps, null)(AlignmentView)
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(AlignmentView)

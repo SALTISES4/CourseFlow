@@ -5,13 +5,30 @@ import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
+import { AppState } from '@cfRedux/types/type'
+
+type ConnectedProps = {
+  data: any
+  outcomenodes: any[]
+  horizontal_links: any[]
+  all_horizontal_link_outcomes: any[]
+}
+
+type OwnProps = {
+  node_data: any
+  objectID: any
+  restriction_set: any
+}
+// type StateProps = {}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * Shows the outcome from the child workflow in the alignment view, and the outcomes
  * from the parent workflow that have been tagged to it
  */
 
-class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component {
+class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<PropsType> {
+  // StateProps
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -35,7 +52,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
               <AlignmentHorizontalReverseParentOutcome
                 child_outcome={this.props.objectID}
                 outcomenode={this.props.outcomenodes[i]}
-                renderer={this.props.renderer}
+                // renderer={this.props.renderer}
               />
             )
           }
@@ -69,17 +86,17 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
       <div className="child-outcome">
         <div className="half-width alignment-column">
           <Outcome
-            objectID={data.id}
-            comments={true}
-            edit={true}
-            renderer={this.props.renderer}
+            objectID={data?.id}
+            // comments={true} // @todo not inside component
+            // edit={true} // @todo not inside component
+            // renderer={this.props.renderer}
           />
         </div>
         <div className="half-width alignment-column">
           {parent_outcomes}
           <div className="alignment-row">
             <OutcomeAdder
-              renderer={this.props.renderer}
+              // renderer={this.props.renderer}
               outcome_set={outcome_restriction}
               addFunction={updateOutcomehorizontallinkDegree.bind(
                 this,
@@ -93,36 +110,49 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
   }
 }
 
-const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (
-  state,
-  own_props
-) => {
-  for (let i = 0; i < state.outcome.length; i++) {
-    if (state.outcome[i].id == own_props.objectID) {
-      const outcome = state.outcome[i]
-      const allowed_outcomenodes = Utility.filterThenSortByID(
-        state.outcomenode,
-        own_props.node_data.outcomenode_set
-      )
+const findOutcomeById = (outcomes, id) => {
+  return outcomes.find((outcome) => outcome.id === id)
+}
 
-      const allowed_horizontal_links = Utility.filterThenSortByID(
-        state.outcomehorizontallink,
-        outcome.outcome_horizontal_links_unique
-      )
-      const horizontal_link_outcomes = Utility.filterThenSortByID(
-        state.outcomehorizontallink,
-        outcome.outcome_horizontal_links
-      ).map((hl) => hl.parent_outcome)
-      return {
-        data: outcome,
-        outcomenodes: allowed_outcomenodes,
-        horizontal_links: allowed_horizontal_links,
-        all_horizontal_link_outcomes: horizontal_link_outcomes
-      }
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  const outcome = findOutcomeById(state.outcome, ownProps.objectID)
+
+  if (outcome) {
+    const allowedOutcomenodes = Utility.filterThenSortByID(
+      state.outcomenode,
+      ownProps.node_data.outcomenode_set
+    )
+
+    const allowedHorizontalLinks = Utility.filterThenSortByID(
+      state.outcomehorizontallink,
+      outcome.outcome_horizontal_links_unique
+    )
+
+    const horizontalLinkOutcomes = Utility.filterThenSortByID(
+      state.outcomehorizontallink,
+      outcome.outcome_horizontal_links
+    ).map((hl) => hl.parent_outcome)
+
+    return {
+      data: outcome,
+      outcomenodes: allowedOutcomenodes,
+      horizontal_links: allowedHorizontalLinks,
+      all_horizontal_link_outcomes: horizontalLinkOutcomes
     }
   }
+
+  // Handle the case where no outcome is found
+  return {
+    data: null,
+    outcomenodes: [],
+    horizontal_links: [],
+    all_horizontal_link_outcomes: []
+  }
 }
-export default connect(
-  mapAlignmentHorizontalReverseChildOutcomeStateToProps,
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(AlignmentHorizontalReverseChildOutcomeUnconnected)

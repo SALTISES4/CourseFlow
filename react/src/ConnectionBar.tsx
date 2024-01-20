@@ -67,6 +67,10 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
   }
 
   render() {
+    console.log('this.props.websocket')
+    console.log(this.props.websocket)
+
+    if (!this.props.websocket) return <></>
     if (this.props.websocket.readyState === 1) {
       const users = this.state.connected_users.map((user) => {
         return (
@@ -113,6 +117,8 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
     // @todo can't clear a timeout which hasn't been set yet, fix
     // @ts-ignore
     clearTimeout(cache)
+
+    if (!this.props.websocket) return <></>
 
     if (this.props.websocket.readyState === 1) {
       this.props.websocket.send(

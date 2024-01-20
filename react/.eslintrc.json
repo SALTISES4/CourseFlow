@@ -46,7 +46,8 @@
   "globals": {
     "$": true,
     "COURSEFLOW_APP": true,
-    "JSX": true
+    "JSX": true,
+    "makeActiveSidebar": true
   },
   "plugins": [
     "react",

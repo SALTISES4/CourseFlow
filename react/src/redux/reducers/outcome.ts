@@ -4,8 +4,8 @@ import {
   OutcomeBaseActions,
   OutcomeHorizontalLinkActions,
   OutcomeOutcomeActions
-} from '@cfRedux/enumActions'
-import { Outcome } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 /*******************************************************
@@ -52,9 +52,9 @@ const findParentIndices = (state, action) => {
  * @param action
  */
 export default function outcomeReducer(
-  state: Outcome[] = [],
+  state: TOutcome[] = [],
   action: AnyAction
-): Outcome[] {
+): TOutcome[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {
       return action.payload.outcome || state

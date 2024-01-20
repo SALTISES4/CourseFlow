@@ -3,8 +3,8 @@ import {
   HomeQueryResp,
   LibraryQueryResp,
   SearchAllObjectsQueryResp
-} from '@XMLHTTP/types'
-import { DATA_ACTIONS } from '@XMLHTTP/common'
+} from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 import { ToDefine } from '@cfModule/types/common'
 
 /*******************************************************
@@ -24,7 +24,7 @@ export function toggleFavourite(
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

@@ -11,7 +11,6 @@ from course_flow.decorators import (
     user_can_comment,
     user_can_edit,
     user_can_view,
-    user_can_view_or_enrolled_as_student,
     user_can_view_or_none,
     user_is_teacher,
 )
@@ -70,7 +69,7 @@ from course_flow.view_utils import (
 #################################################
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
@@ -83,7 +82,7 @@ def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_workflow_parent_data(
     request: HttpRequest,
 ) -> JsonResponse:
@@ -97,7 +96,7 @@ def json_api_post_get_workflow_parent_data(
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("nodePk")
+@user_can_view("nodePk")
 def json_api_post_get_workflow_child_data(
     request: HttpRequest,
 ) -> JsonResponse:
@@ -243,7 +242,7 @@ def json_api_get_public_parent_workflow_info(
     return JsonResponse({"action": "posted", "parent_workflows": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_parent_workflow_info(
     request: HttpRequest,
 ) -> JsonResponse:

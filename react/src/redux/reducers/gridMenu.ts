@@ -1,4 +1,4 @@
-import { GridMenuActions } from '@cfRedux/enumActions'
+import { GridMenuActions } from '@cfRedux/types/enumActions'
 import { AnyAction } from '@reduxjs/toolkit'
 type GridMenu = any
 

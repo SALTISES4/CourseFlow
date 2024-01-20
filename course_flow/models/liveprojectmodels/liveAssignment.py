@@ -1,9 +1,14 @@
+# This model is part of a now-decomissioned Live Project mode.
+# The tables are kept for backwards compatibility, in case
+# the feature is once again needed.
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
+from course_flow.models import Node
+
 from .liveProject import LiveProject
-from .node import Node
 
 User = get_user_model()
 

@@ -2,13 +2,25 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { newNodeLink } from '@XMLHTTP/API/node'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 //The ports used to connect links for the nodes
-export class Index extends React.Component {
-  constructor(props) {
+type PropsType = {
+  dispatch: any
+  node_div: any
+  nodeID: any
+}
+type StateType = {
+  node_offset: any
+  node_dimensions: any
+}
+export class NodePorts extends React.Component<PropsType, StateType> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  private positioned: boolean
+  constructor(props: PropsType) {
     super(props)
-    this.state = {}
+    this.state = {} as StateType
   }
 
   componentDidUpdate() {
@@ -17,35 +29,36 @@ export class Index extends React.Component {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.props.renderer.read_only)
-      d3.selectAll(
+    if (!this.context.read_only) {
+      d3.selectAll<SVGCircleElement, any>(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
         d3
-          .drag()
+          .drag<SVGCircleElement, any>()
           .on('start', function (d) {
             $('.workflow-canvas').addClass('creating-node-link')
             const canvas_offset = $('.workflow-canvas').offset()
-            d3.select('.node-link-creator').remove()
+
             d3.select('.workflow-canvas')
               .append('line')
               .attr('class', 'node-link-creator')
-              .attr('x1', event.x - canvas_offset.left)
-              .attr('y1', event.y - canvas_offset.top)
-              .attr('x2', event.x - canvas_offset.left)
-              .attr('y2', event.y - canvas_offset.top)
+              .attr('x1', d3.event.x - canvas_offset.left)
+              .attr('y1', d3.event.y - canvas_offset.top)
+              .attr('x2', d3.event.x - canvas_offset.left)
+              .attr('y2', d3.event.y - canvas_offset.top)
               .attr('stroke', 'red')
               .attr('stroke-width', '2')
           })
           .on('drag', function (d) {
             const canvas_offset = $('.workflow-canvas').offset()
             d3.select('.node-link-creator')
-              .attr('x2', event.x - canvas_offset.left)
-              .attr('y2', event.y - canvas_offset.top)
+              .attr('x2', d3.event.x - canvas_offset.left)
+              .attr('y2', d3.event.y - canvas_offset.top)
           })
           .on('end', function (d) {
             $('.workflow-canvas').removeClass('creating-node-link')
-            const target = d3.select(event.target)
+            const target = d3.select(d3.event.target)
+
             if (target.attr('data-port-type') == 'target') {
               thisComponent.nodeLinkAdded(
                 target.attr('data-node-id'),
@@ -53,10 +66,59 @@ export class Index extends React.Component {
                 target.attr('data-port')
               )
             }
+
             d3.select('.node-link-creator').remove()
           })
       )
+    }
+    // d3.selectAll(
+    //   'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
+    // ).call(
+    //   d3
+    //     .drag()
+    //     .on('start', function (d) {
+    //       $('.workflow-canvas').addClass('creating-node-link')
+    //
+    //       const canvas_offset = $('.workflow-canvas').offset()
+    //
+    //       d3.select('.node-link-creator').remove()
+    //
+    //       d3.select('.workflow-canvas')
+    //         .append('line')
+    //         .attr('class', 'node-link-creator')
+    //         .attr('x1', event.x - canvas_offset.left)
+    //         .attr('y1', event.y - canvas_offset.top)
+    //         .attr('x2', event.x - canvas_offset.left)
+    //         .attr('y2', event.y - canvas_offset.top)
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-width', '2')
+    //     })
+    //
+    //     .on('drag', function (d) {
+    //       const canvas_offset = $('.workflow-canvas').offset()
+    //       d3.select('.node-link-creator')
+    //         .attr('x2', event.x - canvas_offset.left)
+    //         .attr('y2', event.y - canvas_offset.top)
+    //     })
+    //     .on('end', function (d) {
+    //       $('.workflow-canvas').removeClass('creating-node-link')
+    //
+    //       const target = d3.select(event.target)
+    //
+    //       if (target.attr('data-port-type') == 'target') {
+    //         thisComponent.nodeLinkAdded(
+    //           target.attr('data-node-id'),
+    //           d3.select(this).attr('data-port'),
+    //           target.attr('data-port')
+    //         )
+    //       }
+    //
+    //       d3.select('.node-link-creator').remove()
+    //     })
+    // )
+
     this.updatePorts()
+
     $(this.props.node_div.current).on(
       'component-updated',
       this.updatePorts.bind(this)
@@ -65,7 +127,9 @@ export class Index extends React.Component {
   }
 
   updatePorts() {
-    if (!this.props.node_div.current) return
+    if (!this.props.node_div.current) {
+      return
+    }
     const node = $(this.props.node_div.current)
     const node_offset = Utility.getCanvasOffset(node)
     const node_dimensions = {
@@ -81,7 +145,10 @@ export class Index extends React.Component {
 
   nodeLinkAdded(target, source_port, target_port) {
     const props = this.props
-    if (target == this.props.nodeID) return
+    if (target == this.props.nodeID) {
+      return
+    }
+
     newNodeLink(
       props.nodeID,
       target,
@@ -90,14 +157,21 @@ export class Index extends React.Component {
     )
   }
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/ q
   render() {
     const ports = []
     let node_dimensions
+
     if (this.state.node_dimensions) {
       node_dimensions = this.state.node_dimensions
       this.positioned = true
-    } else node_dimensions = { width: 0, height: 0 }
-    for (const port_type in Constants.node_ports)
+    } else {
+      node_dimensions = { width: 0, height: 0 }
+    }
+
+    for (const port_type in Constants.node_ports) {
       for (const port in Constants.node_ports[port_type]) {
         ports.push(
           <circle
@@ -115,18 +189,25 @@ export class Index extends React.Component {
           />
         )
       }
+    }
+
     const style = {}
-    if ($(this.props.node_div.current).css('display') == 'none')
+    if ($(this.props.node_div.current).css('display') == 'none') {
       style['display'] = 'none'
+    }
+
     let transform
-    if (this.state.node_offset)
+    if (this.state.node_offset) {
       transform =
         'translate(' +
         this.state.node_offset.left +
         ',' +
         this.state.node_offset.top +
         ')'
-    else transform = 'translate(0,0)'
+    } else {
+      transform = 'translate(0,0)'
+    }
+
     return (
       <g
         style={style}
@@ -142,4 +223,4 @@ export class Index extends React.Component {
   }
 }
 
-export default Index
+export default NodePorts

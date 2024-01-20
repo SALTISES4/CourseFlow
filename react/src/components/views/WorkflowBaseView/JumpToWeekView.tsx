@@ -1,16 +1,30 @@
-// @ts-nocheck
 import * as React from 'react'
 import { TitleText } from '@cfUIComponents'
-import { getWeekByID } from '@cfFindState'
+import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import { connect } from 'react-redux'
 import { CfObjectType } from '@cfModule/types/enum'
+import { AppState } from '@cfRedux/types/type'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
+
+type ConnectedProps = TGetWeekByIDType
+type OwnProps = {
+  objectID: number
+  rank: number
+  parentID?: number
+  throughParentID?: number
+}
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * The week represenation for the "jump to" menu
  */
-export class JumpToWeekViewUnconnected extends React.Component {
-  constructor(props) {
+export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
+  private objectType: CfObjectType
+  private objectClass: string
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEK
     this.objectClass = '.week'
@@ -43,12 +57,17 @@ export class JumpToWeekViewUnconnected extends React.Component {
    *******************************************************/
   render() {
     const data = this.props.data
-    const renderer = this.props.renderer
     let default_text
-    if (!renderer.is_strategy)
+
+    if (!this.context.is_strategy) {
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    }
+
     let src = COURSEFLOW_APP.config.icon_path + 'plus.svg'
-    if (data.is_dropped) src = COURSEFLOW_APP.config.icon_path + 'minus.svg'
+
+    if (data.is_dropped) {
+      src = COURSEFLOW_APP.config.icon_path + 'minus.svg'
+    }
     return (
       <div className="hover-shade" onClick={this.jumpTo.bind(this)}>
         <TitleText text={data.title} defaultText={default_text} />
@@ -56,9 +75,14 @@ export class JumpToWeekViewUnconnected extends React.Component {
     )
   }
 }
-const mapWeekStateToProps = (state, own_props) =>
-  getWeekByID(state, own_props.objectID)
-const JumpToWeekView = connect(
+const mapWeekStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): TGetWeekByIDType => {
+  return getWeekByID(state, ownProps.objectID)
+}
+
+const JumpToWeekView = connect<ConnectedProps, object, OwnProps, AppState>(
   mapWeekStateToProps,
   null
 )(JumpToWeekViewUnconnected)

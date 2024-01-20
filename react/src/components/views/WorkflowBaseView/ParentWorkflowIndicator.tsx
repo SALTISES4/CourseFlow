@@ -6,24 +6,47 @@ import {
   getParentWorkflowInfoQuery,
   getPublicParentWorkflowInfo
 } from '@XMLHTTP/API/workflow'
+import { AppState } from '@cfRedux/types/type'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
+type ConnectedProps = {
+  child_workflows: any
+}
+type OwnProps = { workflow_id: number }
+type StateProps = {
+  has_loaded: boolean
+  parent_workflows: any
+}
+type PropsType = ConnectedProps & OwnProps
 /**
  * Shows the parent workflows for the current workflow, as well
  * as the workflows that have been used, for quick navigation in the
  * left-hand sidebar.
  */
-class ParentWorkflowIndicatorUnconnected extends React.Component {
-  constructor(props) {
+class ParentWorkflowIndicatorUnconnected extends React.Component<
+  PropsType,
+  StateProps
+> {
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
+  constructor(props: PropsType) {
     super(props)
-    this.state = {}
+    this.state = {} as StateProps
+    console.log('ParentWorkflow')
+    console.log(props)
   }
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.props.renderer.public_view) {
+    if (!this.props.workflow_id) {
+      console.log('not defined')
+      return
+    }
+
+    if (this.context.public_view) {
       getPublicParentWorkflowInfo(this.props.workflow_id, (response_data) =>
         this.setState({
           parent_workflows: response_data.parent_workflows,
@@ -45,9 +68,13 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
    *******************************************************/
   getTypeIndicator(data) {
     const type = data.type
-    let type_text = window.gettext(type)
-    if (data.is_strategy) type_text += window.gettext(' strategy')
-    return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
+
+    let text = window.gettext(type)
+
+    if (data.is_strategy) {
+      text += window.gettext(' strategy')
+    }
+    return <div className={'workflow-type-indicator ' + type}>{text}</div>
   }
 
   /*******************************************************
@@ -63,19 +90,19 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       }
 
       const parent_workflows = this.state.parent_workflows.map(
-        (parent_workflow, index) => (
+        (childWorkflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleParent-${index}`}
-            data={parent_workflow}
+            data={childWorkflow}
             test_id="panel-favourite"
           />
         )
       )
       const child_workflows = this.props.child_workflows.map(
-        (child_workflow, index) => (
+        (childWorkflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleChild-${index}`}
-            data={child_workflow}
+            data={childWorkflow}
             test_id="panel-favourite"
           />
         )
@@ -98,28 +125,39 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
         )
       // return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
       // @todo see https://course-flow.atlassian.net/browse/COUR-246
-      return reactDom.createPortal(
+      const portal = reactDom.createPortal(
         return_val,
         $('#react-portal-left-panel-extra')[0]
       )
+
+      return <>{portal}</>
     }
 
-    return null
+    return <></>
   }
 }
-const mapParentWorkflowIndicatorStateToProps = (state) => ({
-  child_workflows: state.node
-    .filter((node) => node.linked_workflow_data)
-    .map((node) => ({
-      id: node.linked_workflow,
-      title: node.linked_workflow_data.title,
-      description: node.linked_workflow_data.description,
-      url: node.linked_workflow_data.url,
-      deleted: node.linked_workflow_data.deleted
-    }))
-})
-const ParentWorkflowIndicator = connect(
-  mapParentWorkflowIndicatorStateToProps,
+const mapStateToProps = (state: AppState) => {
+  return {
+    child_workflows: state.node
+      .filter((node) => node.linked_workflow_data)
+      .map((node) => {
+        return {
+          id: node.linked_workflow,
+          title: node?.linked_workflow_data?.title || '',
+          description: node?.linked_workflow_data?.description || '',
+          url: node?.linked_workflow_data?.url || '',
+          deleted: node?.linked_workflow_data?.deleted || false
+        }
+      })
+  }
+}
+const ParentWorkflowIndicator = connect<
+  ConnectedProps,
+  object,
+  OwnProps,
+  AppState
+>(
+  mapStateToProps,
   null
 )(ParentWorkflowIndicatorUnconnected)
 

@@ -3,15 +3,15 @@ import { connect } from 'react-redux'
 import { TitleText } from '@cfUIComponents'
 import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
 import NodeWeek from './NodeWeek'
-import { getTermByID, TermByIDType } from '@cfFindState'
+import { getTermByID, TTermByID } from '@cfFindState'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 
 type OwnProps = {
   objectID: number
   throughParentID?: any
 } & WeekUnconnectedPropsType
-type ConnectedProps = TermByIDType
+type ConnectedProps = TTermByID
 type PropsType = OwnProps & ConnectedProps
 
 /**
@@ -57,7 +57,7 @@ class Term extends WeekUnconnected<PropsType> {
               key={nodeweek}
               objectID={nodeweek}
               parentID={data.id}
-              renderer={this.props.renderer}
+              // renderer={this.props.renderer}
               column_order={this.props.column_order}
             />
           )
@@ -99,12 +99,12 @@ class Term extends WeekUnconnected<PropsType> {
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
 
     const mouseover_actions = []
-    if (!this.props.renderer.read_only) {
+    if (!this.context.read_only) {
       mouseover_actions.push(this.addInsertSibling(data))
       mouseover_actions.push(this.addDuplicateSelf(data))
       mouseover_actions.push(this.addDeleteSelf(data))
     }
-    if (this.props.renderer.view_comments) {
+    if (this.context.view_comments) {
       mouseover_actions.push(this.addCommenting())
     }
 
@@ -117,7 +117,7 @@ class Term extends WeekUnconnected<PropsType> {
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.props.renderer.selection_manager.changeSelection(evt, this)
+            this.context.selection_manager.changeSelection(evt, this)
           }
         >
           <div className="mouseover-container-bypass">
