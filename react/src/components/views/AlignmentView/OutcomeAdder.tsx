@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeTitle } from '@cfUIComponents/Titles'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   objectID: number
 }
@@ -29,7 +29,7 @@ class OutcomeAdderOptionUnconnected extends React.Component<PropsType> {
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 
@@ -46,7 +46,7 @@ const OutcomeAdderOption = connect<ConnectedProps, object, OwnProps, AppState>(
  */
 
 type OutcomeAdderProps = {
-  renderer: any
+  // renderer: any
   outcome_set: any
   addFunction: any
 }

@@ -4,9 +4,9 @@ import {
   InsertChildQueryResp,
   InsertSiblingQueryResp,
   UpdateValueInstantQueryResp
-} from '@XMLHTTP/types'
-import { DATA_ACTIONS, OBJECT_TYPE } from '@XMLHTTP/common'
+} from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
+import { OBJECT_TYPE, VERB } from '@cfModule/types/enum'
 
 /**
  *
@@ -33,7 +33,7 @@ export function duplicateBaseItemQuery(
       console.log('duplicateBaseItemQuery response')
       console.log(response)
 
-      if (response.action === DATA_ACTIONS.POSTED) {
+      if (response.action === VERB.POSTED) {
         callBackFunction(response)
       } else {
         window.fail_function(response.action)
@@ -133,7 +133,7 @@ export function updateValueQuery(
       $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
         function (data) {
           // @ts-ignore
-          if (data.action === DATA_ACTIONS.POSTED) {
+          if (data.action === VERB.POSTED) {
             // @ts-ignore
             callBackFunction(_data)
           } else window.fail_function(data.action)
@@ -161,7 +161,7 @@ export function updateValueInstantQuery(
       data: JSON.stringify(json)
     }).done(function (data: UpdateValueInstantQueryResp) {
       // @ts-ignore
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -194,7 +194,7 @@ export function addTerminologyQuery(
     }).done(function (data: AddTerminologyQueryResp) {
       console.log('addTerminologyQuery query')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) {
+      if (data.action === VERB.POSTED) {
         callBackFunction(data)
       } else {
         window.fail_function(data.action)
@@ -222,7 +222,7 @@ export function insertSiblingQuery(
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
     }).done(function (data: InsertSiblingQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -241,7 +241,7 @@ export function insertChildQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data: InsertChildQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -259,7 +259,7 @@ export function dragAction(
     $('.ui-draggable').draggable('disable')
     $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
       function (data) {
-        if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+        if (data.action === VERB.POSTED) callBackFunction(data)
         else window.fail_function(data.action)
         $('.ui-draggable').draggable('enable')
         COURSEFLOW_APP.tinyLoader.endLoad()
@@ -334,7 +334,7 @@ export function updateObjectSet(
       objectsetPk: JSON.stringify(objectsetPk),
       add: JSON.stringify(add)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -355,7 +355,7 @@ export function getExport(
       objectType: JSON.stringify(objectType),
       exportType: JSON.stringify(exportType)
     }).done(function (data, status, xhr) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

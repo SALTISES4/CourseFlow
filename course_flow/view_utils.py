@@ -11,11 +11,7 @@ from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
-from course_flow.utils import (
-    get_model_from_str,
-    get_user_permission,
-    get_user_role,
-)
+from course_flow.utils import get_model_from_str, get_user_permission
 
 
 def get_workflow_context_data(workflow, context, user):
@@ -56,7 +52,6 @@ def get_workflow_context_data(workflow, context, user):
             project, context={"user": user}
         ).data
     user_permission = get_user_permission(workflow, user)
-    user_role = get_user_role(workflow, user)
 
     data_package["is_strategy"] = workflow.is_strategy
     data_package["column_choices"] = column_choices
@@ -77,7 +72,6 @@ def get_workflow_context_data(workflow, context, user):
 
     context["data_package"] = data_package
     context["user_permission"] = user_permission
-    context["user_role"] = user_role
 
     return context
 

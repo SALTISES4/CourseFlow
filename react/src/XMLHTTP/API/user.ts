@@ -1,6 +1,6 @@
 //set the permission for a user
-import { DATA_ACTIONS } from '@XMLHTTP/common'
-import { UserListResp, UsersForObjectQueryResp } from '@XMLHTTP/types'
+import { VERB } from '@cfModule/types/enum'
+import { UserListResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
 
 export function setUserPermission(
@@ -17,7 +17,7 @@ export function setUserPermission(
       permission_user: JSON.stringify(user_id),
       permission_type: JSON.stringify(permission_type)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.error)
     })
   } catch (err) {
@@ -34,7 +34,7 @@ export function getUsersForLiveProject(
     $.post(COURSEFLOW_APP.config.post_paths.get_users_for_liveproject, {
       liveprojectPk: JSON.stringify(liveprojectPk)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -51,7 +51,7 @@ export function getUserListQuery(
     $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
       filter: JSON.stringify(filter)
     }).done(function (data: UserListResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -81,7 +81,7 @@ export function getUsersForObjectQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data: UsersForObjectQueryResp) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

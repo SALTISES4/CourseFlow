@@ -2,22 +2,22 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { EditableComponentWithActions } from '@cfParentComponents'
-import { getNodeLinkByID, GetNodeLinkByIDType } from '@cfFindState'
+import { getNodeLinkByID, TGetNodeLinkByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
-type ConnectedProps = GetNodeLinkByIDType
+type ConnectedProps = TGetNodeLinkByID
 type OwnProps = {
   objectID: number
   node_div: React.RefObject<HTMLDivElement>
-  renderer: any
 } & EditableComponentWithActionsProps
 type StateProps = EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
@@ -27,6 +27,9 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
+  static contextType = WorkFlowConfigContext
+
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
   private source_node: JQuery
   private target_node: JQuery
   private target_port_handle: d3.Selection<
@@ -70,8 +73,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
-    console.log('NodeLink this.props.data')
-    console.log(this.props)
     const data = this.props.data
     const style: React.CSSProperties = {}
 
@@ -108,7 +109,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       // eslint-disable-next-line no-undef
       this.source_port_handle = d3.select(cssSourcePortSelector)
       this.target_port_handle = d3.select(cssSourceTargetSelector)
-
     }
 
     console.log('g port')
@@ -164,7 +164,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         target_port_handle={this.target_port_handle}
         target_port={data.target_port}
         clickFunction={(evt) =>
-          this.props.renderer.selection_manager.changeSelection(evt, this)
+          this.context.selection_manager.changeSelection(evt, this)
         }
         selected={this.state.selected}
         source_dimensions={source_dims}
@@ -186,7 +186,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetNodeLinkByIDType => {
+): TGetNodeLinkByID => {
   return getNodeLinkByID(state, ownProps.objectID) || { data: undefined }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

@@ -1,15 +1,15 @@
 import * as Utility from '@cfUtility'
-import { OutcomeHorizontalLink } from '@cfRedux/type'
+import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
   OutcomeHorizontalLinkActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 function outcomeHorizontalLinkReducer(
-  state: OutcomeHorizontalLink[] = [],
+  state: TOutcomeHorizontalLink[] = [],
   action: AnyAction
-): OutcomeHorizontalLink[] {
+): TOutcomeHorizontalLink[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {
       return action.payload.outcomehorizontallink || state

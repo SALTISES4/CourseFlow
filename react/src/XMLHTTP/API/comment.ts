@@ -1,7 +1,7 @@
 //Removes the specified comment from the object
-import { DATA_ACTIONS } from '@XMLHTTP/common'
-import { CommentsForObjectQueryResp } from '@XMLHTTP/types'
+import { CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
 import { ToDefine } from '@cfModule/types/common'
+import { VERB } from '@cfModule/types/enum'
 
 export function removeComment(
   objectID,
@@ -15,7 +15,7 @@ export function removeComment(
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -34,7 +34,7 @@ export function removeAllComments(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -55,7 +55,7 @@ export function addComment(
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
     }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -77,7 +77,7 @@ export function getCommentsForObjectQuery(
     }).done(function (data: CommentsForObjectQueryResp) {
       console.log('getCommentsForObject data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'
@@ -42,24 +41,25 @@ class AutoLink extends React.Component<PropsType> {
   }
 
   findAutoTarget() {
+    let target = null
     const ns = this.source_node.closest('.node-week')
     const next_ns = ns
       .nextAll('.node-week:not(.ui-sortable-placeholder)')
       .first()
-    let target
+
     if (next_ns.length > 0) {
       target = next_ns.find('.node').attr('id')
     } else {
-      const sw = ns.closest('.week-workflow')
-      let next_sw = sw.next()
-      while (next_sw.length > 0) {
+      let next_sw = ns.closest('.week-workflow').next()
+
+      while (next_sw.length > 0 && !target) {
         target = next_sw
-          .find('.node-week:not(ui-sortable-placeholder) .node')
+          .find('.node-week:not(.ui-sortable-placeholder) .node')
           .attr('id')
-        if (target) break
         next_sw = next_sw.next()
       }
     }
+
     this.setTarget(target)
   }
 
@@ -153,9 +153,9 @@ class AutoLink extends React.Component<PropsType> {
         hovered={node_hovered}
         node_selected={node_selected}
         source_port_handle={this.source_port_handle}
-        source_port="2"
+        source_port={2}
         target_port_handle={this.target_port_handle}
-        target_port="0"
+        target_port={0}
         source_dimensions={source_dims}
         target_dimensions={target_dims}
       />,

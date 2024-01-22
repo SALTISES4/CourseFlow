@@ -7,12 +7,13 @@ import * as Utility from '@cfUtility'
 import WorkflowLegend from './WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -33,6 +34,10 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
+  static contextType = WorkFlowConfigContext
+
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -92,11 +97,11 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     child_id: number
   ) {
     if (type === 'columnworkflow') {
-      this.props.renderer.micro_update(
+      this.context.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.props.renderer,
+        this.context,
         child_id,
         'column',
         new_parent,
@@ -106,11 +111,11 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
       )
     }
     if (type === 'weekworkflow') {
-      this.props.renderer.micro_update(
+      this.context.micro_update(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.props.renderer,
+        this.context,
         child_id,
         'week',
         new_parent,
@@ -126,14 +131,13 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const renderer = this.props.renderer
     const columnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => (
         <ColumnWorkflow
           key={`columnworkflow-${index}`}
           objectID={columnworkflow}
           parentID={data.id}
-          renderer={renderer}
+          // renderer={renderer}
         />
       )
     )
@@ -143,7 +147,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
         key={`weekworkflow-${index}`}
         objectID={weekworkflow}
         parentID={data.id}
-        renderer={renderer}
+        // renderer={renderer}
       />
     ))
 
@@ -154,7 +158,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     // the workflow for drawing node ports and links
     return (
       <div className={css_class}>
-        <WorkflowLegend renderer={renderer} />
+        <WorkflowLegend />
         <div className="column-row" id={data.id + '-column-block'}>
           {columnworkflows}
         </div>

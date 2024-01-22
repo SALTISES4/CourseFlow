@@ -11,6 +11,7 @@ import {
   restoreSelfQuery
 } from '@XMLHTTP/API/self'
 import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/global'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type OwnProps = {
   sibling_count?: any
@@ -28,6 +29,10 @@ class EditableComponentWithActions<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponentWithComments<P, S> {
+  static contextType = WorkFlowConfigContext
+
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   //Adds a button that restores the item.
   addRestoreSelf(data, alt_icon) {
     const icon = alt_icon || 'restore.svg'
@@ -68,8 +73,8 @@ class EditableComponentWithActions<
 
   deleteSelf(data) {
     //@todo Temporary confirmation; add better confirmation dialogue later
-    if (this.props.renderer) {
-      this.props.renderer.selection_manager.deleted(this)
+    if (this.context) {
+      this.context.selection_manager.deleted(this)
     }
 
     if (

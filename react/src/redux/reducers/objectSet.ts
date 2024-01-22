@@ -1,11 +1,11 @@
-import { ObjectSetActions } from '@cfRedux/enumActions'
-import { ObjectSet } from '@cfRedux/type'
+import { ObjectSetActions } from '@cfRedux/types/enumActions'
+import { TObjectSet } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
 export default function objectSetReducer(
-  state: ObjectSet[] = [],
+  state: TObjectSet[] = [],
   action: AnyAction
-): ObjectSet[] {
+): TObjectSet[] {
   switch (action.type) {
     case ObjectSetActions.TOGGLE_OBJECT_SET:
       return state.map((item) =>

@@ -245,13 +245,6 @@ def check_possible_parent(workflow, parent_workflow, same_project):
     return False
 
 
-def get_classrooms_for_student(user):
-    return course_flow.models.project.Project.objects.filter(
-        liveproject__liveprojectuser__user=user,
-        deleted=False,
-    )
-
-
 def get_user_permission(obj, user):
     if obj.type in ["workflow", "course", "activity", "program"]:
         obj = models.Workflow.objects.get(pk=obj.pk)
@@ -270,47 +263,14 @@ def get_user_permission(obj, user):
     return permissions.first().permission_type
 
 
-def get_user_role(obj, user):
-    if user is None or not user.is_authenticated:
-        return models.relations.LiveProjectUser.ROLE_NONE
-    if obj.type == "liveproject":
-        liveproject = obj
-    elif obj.type == "project":
-        try:
-            liveproject = obj.liveproject
-        except AttributeError:
-            return models.relations.LiveProjectUser.ROLE_NONE
-    elif obj.is_strategy:
-        liveproject = None
-    else:
-        try:
-            project = obj.get_project()
-            liveproject = project.liveproject
-        except AttributeError:
-            return models.relations.LiveProjectUser.ROLE_NONE
-    if liveproject is None:
-        return models.relations.LiveProjectUser.ROLE_NONE
-    if hasattr(obj, "author") and obj.author == user:
-        return models.relations.LiveProjectUser.ROLE_TEACHER
-    permissions = models.relations.LiveProjectUser.objects.filter(
-        user=user, liveproject=liveproject
-    )
-    if permissions.count() == 0:
-        return models.relations.LiveProjectUser.ROLE_NONE
-    return permissions.first().role_type
-
-
 def user_workflow_url(workflow, user):
     user_permission = get_user_permission(workflow, user)
-    user_role = get_user_role(workflow, user)
     can_view = False
     is_public = workflow.public_view
     if user is not None and user.is_authenticated and workflow.published:
         if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
             can_view = True
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
-        can_view = True
-    if user_role != models.relations.LiveProjectUser.ROLE_NONE:
         can_view = True
     if can_view:
         return reverse(
@@ -327,13 +287,9 @@ def user_workflow_url(workflow, user):
 
 def user_project_url(project, user):
     user_permission = get_user_permission(project, user)
-    user_role = get_user_role(project, user)
     if not user.is_authenticated:
         return "noaccess"
-    if (
-        user_permission != models.ObjectPermission.PERMISSION_NONE
-        or user_role == models.relations.LiveProjectUser.ROLE_TEACHER
-    ):
+    if user_permission != models.ObjectPermission.PERMISSION_NONE:
         return reverse("course_flow:project-update", kwargs={"pk": project.pk})
     return reverse(
         "course_flow:live-project-update", kwargs={"pk": project.pk}

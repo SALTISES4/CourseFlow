@@ -1,17 +1,16 @@
-// @ts-nocheck
 import * as React from 'react'
 import {
   getOutcomeByID,
-  GetOutcomeByIDType,
+  TGetOutcomeByID,
   getOutcomeOutcomeByID,
-  OutcomeOutcomeByIDType
+  TOutcomeOutcomeByID
 } from '@cfFindState'
 import { connect } from 'react-redux'
 import { OutcomeTitle } from '@cfUIComponents/Titles'
 import * as Utility from '@cfUtility'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import { ChangeEvent } from 'react'
 import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
@@ -29,11 +28,12 @@ type OutcomeBarOutcomeOutcomeOwnProps = {
   parentID: number
   readOnly: boolean
 }
-type OutcomeBarOutcomeOutcomeConnectedProps = OutcomeOutcomeByIDType
+type OutcomeBarOutcomeOutcomeConnectedProps = TOutcomeOutcomeByID
 type OutcomeBarOutcomeOutcomePropsType = OutcomeBarOutcomeOutcomeOwnProps &
   OutcomeBarOutcomeOutcomeConnectedProps
 
 class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutcomeOutcomePropsType> {
+  private objectType: CfObjectType
   constructor(props: OutcomeBarOutcomeOutcomePropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
@@ -94,7 +94,7 @@ type OwnProps = {
 }
 export type OutcomeBarOutcomePropsType = OwnProps
 
-type ConnectedProps = GetOutcomeByIDType & {
+type ConnectedProps = TGetOutcomeByID & {
   nodes: number[]
   horizontaloutcomes: any[]
 }
@@ -306,12 +306,7 @@ const mapOutcomeBarOutcomeStateToProps = (
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const OutcomeBarOutcome = connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+const OutcomeBarOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapOutcomeBarOutcomeStateToProps,
   null
 )(OutcomeBarOutcomeUnconnected)

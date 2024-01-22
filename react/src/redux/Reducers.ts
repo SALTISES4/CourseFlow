@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Redux from 'redux'
 import parentNodeReducer from '@cfRedux/reducers/parentNode'
 import outcomeReducer from '@cfRedux/reducers/outcome'

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { default as MatrixOutcome } from '@cfViews/CompetencyMatrixView/CompetencyMatrixView'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import { createOutcomeNodeBranch } from '@cfModule/utility/createOutcomeNodeBranch'
 import { default as TableOutcome } from '@cfViews/OutcomeTableView/Outcome'
@@ -22,7 +22,7 @@ type OwnProps = {
   type: string
   nodecategory: any
   objectID: number
-  renderer: any
+  // renderer: any
   outcome_type: any
 }
 type PropsType = OwnProps & ConnectedProps
@@ -40,7 +40,7 @@ class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
           // outcome_tree={this.outcome_tree}
           objectID={outcomeTree.id}
           outcome_tree={outcomeTree}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
         />
       )
     }
@@ -50,8 +50,8 @@ class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
         //objectID={this.outcome_tree.id} @todo these were the original vars, but they don't exist
         // outcome_tree={this.outcome_tree}
         objectID={outcomeTree.id}
-        outcome_tree={outcomeTree}
-        renderer={this.props.renderer}
+        // outcome_tree={outcomeTree} // defined as prop but not used in component
+        // renderer={this.props.renderer}
       />
     )
   }
