@@ -81,6 +81,7 @@ const Home = ({ is_teacher }: PropsType) => {
           subtitle={window.gettext(
             'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
           )}
+          hideIfCookie="home-howto-template"
         />
         <GridWrap>{workflowCards(projects, 'templates')}</GridWrap>
       </Section>

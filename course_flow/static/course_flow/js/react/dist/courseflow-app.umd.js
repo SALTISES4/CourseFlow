@@ -434,9 +434,9 @@ var __publicField = (obj, key, value) => {
                 case REACT_LAZY_TYPE: {
                   var lazyComponent = type;
                   var payload = lazyComponent._payload;
-                  var init = lazyComponent._init;
+                  var init2 = lazyComponent._init;
                   try {
-                    return getComponentNameFromType(init(payload));
+                    return getComponentNameFromType(init2(payload));
                   } catch (x) {
                     return null;
                   }
@@ -679,7 +679,7 @@ var __publicField = (obj, key, value) => {
           }
           var SEPARATOR = ".";
           var SUBSEPARATOR = ":";
-          function escape(key) {
+          function escape2(key) {
             var escapeRegex = /[=:]/g;
             var escaperLookup = {
               "=": "=0",
@@ -700,7 +700,7 @@ var __publicField = (obj, key, value) => {
               {
                 checkKeyStringCoercion(element.key);
               }
-              return escape("" + element.key);
+              return escape2("" + element.key);
             }
             return index.toString(36);
           }
@@ -1136,9 +1136,9 @@ var __publicField = (obj, key, value) => {
             var dispatcher = resolveDispatcher();
             return dispatcher.useState(initialState);
           }
-          function useReducer(reducer2, initialArg, init) {
+          function useReducer(reducer2, initialArg, init2) {
             var dispatcher = resolveDispatcher();
-            return dispatcher.useReducer(reducer2, initialArg, init);
+            return dispatcher.useReducer(reducer2, initialArg, init2);
           }
           function useRef(initialValue) {
             var dispatcher = resolveDispatcher();
@@ -1428,9 +1428,9 @@ var __publicField = (obj, key, value) => {
                 case REACT_LAZY_TYPE: {
                   var lazyComponent = type;
                   var payload = lazyComponent._payload;
-                  var init = lazyComponent._init;
+                  var init2 = lazyComponent._init;
                   try {
-                    return describeUnknownElementTypeFrameInDEV(init(payload), source, ownerFn);
+                    return describeUnknownElementTypeFrameInDEV(init2(payload), source, ownerFn);
                   } catch (x) {
                   }
                 }
@@ -2027,7 +2027,7 @@ var __publicField = (obj, key, value) => {
     function O(a) {
       return "object" === typeof a && null !== a && a.$$typeof === l;
     }
-    function escape(a) {
+    function escape2(a) {
       var b = { "=": "=0", ":": "=2" };
       return "$" + a.replace(/[=:]/g, function(a2) {
         return b[a2];
@@ -2035,7 +2035,7 @@ var __publicField = (obj, key, value) => {
     }
     var P2 = /\/+/g;
     function Q(a, b) {
-      return "object" === typeof a && null !== a && null != a.key ? escape("" + a.key) : b.toString(36);
+      return "object" === typeof a && null !== a && null != a.key ? escape2("" + a.key) : b.toString(36);
     }
     function R(a, b, e, d, c) {
       var k = typeof a;
@@ -2400,9 +2400,9 @@ var __publicField = (obj, key, value) => {
               case REACT_LAZY_TYPE: {
                 var lazyComponent = type;
                 var payload = lazyComponent._payload;
-                var init = lazyComponent._init;
+                var init2 = lazyComponent._init;
                 try {
-                  return getComponentNameFromType(init(payload));
+                  return getComponentNameFromType(init2(payload));
                 } catch (x) {
                   return null;
                 }
@@ -2650,9 +2650,9 @@ var __publicField = (obj, key, value) => {
               case REACT_LAZY_TYPE: {
                 var lazyComponent = type;
                 var payload = lazyComponent._payload;
-                var init = lazyComponent._init;
+                var init2 = lazyComponent._init;
                 try {
-                  return describeUnknownElementTypeFrameInDEV(init(payload), source, ownerFn);
+                  return describeUnknownElementTypeFrameInDEV(init2(payload), source, ownerFn);
                 } catch (x) {
                 }
               }
@@ -5182,7 +5182,7 @@ var __publicField = (obj, key, value) => {
   var LAYER = "@layer";
   var abs$2 = Math.abs;
   var from = String.fromCharCode;
-  var assign = Object.assign;
+  var assign$1 = Object.assign;
   function hash(value, length2) {
     return charat(value, 0) ^ 45 ? (((length2 << 2 ^ charat(value, 0)) << 2 ^ charat(value, 1)) << 2 ^ charat(value, 2)) << 2 ^ charat(value, 3) : 0;
   }
@@ -5226,7 +5226,7 @@ var __publicField = (obj, key, value) => {
     return { value, root, parent, type, props, children, line, column: column$1, length: length2, return: "" };
   }
   function copy(root, props) {
-    return assign(node("", null, null, "", null, null, 0), root, { length: -root.length }, props);
+    return assign$1(node("", null, null, "", null, null, 0), root, { length: -root.length }, props);
   }
   function char() {
     return character;
@@ -11941,9 +11941,9 @@ Please use another name.` : formatMuiErrorMessage(18));
               case REACT_LAZY_TYPE: {
                 var lazyComponent = type;
                 var payload = lazyComponent._payload;
-                var init = lazyComponent._init;
+                var init2 = lazyComponent._init;
                 try {
-                  return describeUnknownElementTypeFrameInDEV(init(payload), source, ownerFn);
+                  return describeUnknownElementTypeFrameInDEV(init2(payload), source, ownerFn);
                 } catch (x) {
                 }
               }
@@ -12047,9 +12047,9 @@ Please use another name.` : formatMuiErrorMessage(18));
               case REACT_LAZY_TYPE: {
                 var lazyComponent = type;
                 var payload = lazyComponent._payload;
-                var init = lazyComponent._init;
+                var init2 = lazyComponent._init;
                 try {
-                  return getComponentNameFromType(init(payload));
+                  return getComponentNameFromType(init2(payload));
                 } catch (x) {
                   return null;
                 }
@@ -21639,8 +21639,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
         function resolveLazy(lazyType) {
           var payload = lazyType._payload;
-          var init = lazyType._init;
-          return init(payload);
+          var init2 = lazyType._init;
+          return init2(payload);
         }
         function ChildReconciler(shouldTrackSideEffects) {
           function deleteChild(returnFiber, childToDelete) {
@@ -21792,8 +21792,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 }
                 case REACT_LAZY_TYPE: {
                   var payload = newChild._payload;
-                  var init = newChild._init;
-                  return createChild(returnFiber, init(payload), lanes);
+                  var init2 = newChild._init;
+                  return createChild(returnFiber, init2(payload), lanes);
                 }
               }
               if (isArray2(newChild) || getIteratorFn(newChild)) {
@@ -21836,8 +21836,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 }
                 case REACT_LAZY_TYPE: {
                   var payload = newChild._payload;
-                  var init = newChild._init;
-                  return updateSlot(returnFiber, oldFiber, init(payload), lanes);
+                  var init2 = newChild._init;
+                  return updateSlot(returnFiber, oldFiber, init2(payload), lanes);
                 }
               }
               if (isArray2(newChild) || getIteratorFn(newChild)) {
@@ -21872,8 +21872,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 }
                 case REACT_LAZY_TYPE:
                   var payload = newChild._payload;
-                  var init = newChild._init;
-                  return updateFromMap(existingChildren, returnFiber, newIdx, init(payload), lanes);
+                  var init2 = newChild._init;
+                  return updateFromMap(existingChildren, returnFiber, newIdx, init2(payload), lanes);
               }
               if (isArray2(newChild) || getIteratorFn(newChild)) {
                 var _matchedFiber3 = existingChildren.get(newIdx) || null;
@@ -21914,8 +21914,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                   break;
                 case REACT_LAZY_TYPE:
                   var payload = child._payload;
-                  var init = child._init;
-                  warnOnInvalidKey(init(payload), knownKeys, returnFiber);
+                  var init2 = child._init;
+                  warnOnInvalidKey(init2(payload), knownKeys, returnFiber);
                   break;
               }
             }
@@ -22246,8 +22246,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                   return placeSingleChild(reconcileSinglePortal(returnFiber, currentFirstChild, newChild, lanes));
                 case REACT_LAZY_TYPE:
                   var payload = newChild._payload;
-                  var init = newChild._init;
-                  return reconcileChildFibers2(returnFiber, currentFirstChild, init(payload), lanes);
+                  var init2 = newChild._init;
+                  return reconcileChildFibers2(returnFiber, currentFirstChild, init2(payload), lanes);
               }
               if (isArray2(newChild)) {
                 return reconcileChildrenArray(returnFiber, currentFirstChild, newChild, lanes);
@@ -22731,11 +22731,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         function basicStateReducer(state, action) {
           return typeof action === "function" ? action(state) : action;
         }
-        function mountReducer(reducer2, initialArg, init) {
+        function mountReducer(reducer2, initialArg, init2) {
           var hook = mountWorkInProgressHook();
           var initialState;
-          if (init !== void 0) {
-            initialState = init(initialArg);
+          if (init2 !== void 0) {
+            initialState = init2(initialArg);
           } else {
             initialState = initialArg;
           }
@@ -22752,7 +22752,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           var dispatch = queue.dispatch = dispatchReducerAction.bind(null, currentlyRenderingFiber$1, queue);
           return [hook.memoizedState, dispatch];
         }
-        function updateReducer(reducer2, initialArg, init) {
+        function updateReducer(reducer2, initialArg, init2) {
           var hook = updateWorkInProgressHook();
           var queue = hook.queue;
           if (queue === null) {
@@ -22853,7 +22853,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           var dispatch = queue.dispatch;
           return [hook.memoizedState, dispatch];
         }
-        function rerenderReducer(reducer2, initialArg, init) {
+        function rerenderReducer(reducer2, initialArg, init2) {
           var hook = updateWorkInProgressHook();
           var queue = hook.queue;
           if (queue === null) {
@@ -23549,13 +23549,13 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               mountHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
               try {
-                return mountReducer(reducer2, initialArg, init);
+                return mountReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -23653,13 +23653,13 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               updateHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
               try {
-                return mountReducer(reducer2, initialArg, init);
+                return mountReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -23757,13 +23757,13 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               updateHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
               try {
-                return updateReducer(reducer2, initialArg, init);
+                return updateReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -23861,13 +23861,13 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               updateHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnRerenderInDEV;
               try {
-                return rerenderReducer(reducer2, initialArg, init);
+                return rerenderReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -23973,14 +23973,14 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               warnInvalidHookAccess();
               mountHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnMountInDEV;
               try {
-                return mountReducer(reducer2, initialArg, init);
+                return mountReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -24094,14 +24094,14 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               warnInvalidHookAccess();
               updateHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
               try {
-                return updateReducer(reducer2, initialArg, init);
+                return updateReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -24215,14 +24215,14 @@ Please use another name.` : formatMuiErrorMessage(18));
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
             },
-            useReducer: function(reducer2, initialArg, init) {
+            useReducer: function(reducer2, initialArg, init2) {
               currentHookNameInDev = "useReducer";
               warnInvalidHookAccess();
               updateHookTypesDev();
               var prevDispatcher = ReactCurrentDispatcher$1.current;
               ReactCurrentDispatcher$1.current = InvalidNestedHooksDispatcherOnUpdateInDEV;
               try {
-                return rerenderReducer(reducer2, initialArg, init);
+                return rerenderReducer(reducer2, initialArg, init2);
               } finally {
                 ReactCurrentDispatcher$1.current = prevDispatcher;
               }
@@ -24826,9 +24826,9 @@ Please use another name.` : formatMuiErrorMessage(18));
               if (outerMemoType.$$typeof === REACT_LAZY_TYPE) {
                 var lazyComponent = outerMemoType;
                 var payload = lazyComponent._payload;
-                var init = lazyComponent._init;
+                var init2 = lazyComponent._init;
                 try {
-                  outerMemoType = init(payload);
+                  outerMemoType = init2(payload);
                 } catch (x) {
                   outerMemoType = null;
                 }
@@ -25217,8 +25217,8 @@ Please use another name.` : formatMuiErrorMessage(18));
           var props = workInProgress2.pendingProps;
           var lazyComponent = elementType;
           var payload = lazyComponent._payload;
-          var init = lazyComponent._init;
-          var Component = init(payload);
+          var init2 = lazyComponent._init;
+          var Component = init2(payload);
           workInProgress2.type = Component;
           var resolvedTag = workInProgress2.tag = resolveLazyComponentTag(Component);
           var resolvedProps = resolveDefaultProps(Component, props);
@@ -63909,7 +63909,7 @@ ${latestSubscriptionCallbackError.current.stack}
         }
       };
     }
-    function init() {
+    function init2() {
       self2.element = self2.input = element;
       self2.isOpen = false;
       parseConfig();
@@ -65559,7 +65559,7 @@ ${latestSubscriptionCallbackError.current.stack}
         input.value = pad(newValue);
       }
     }
-    init();
+    init2();
     return self2;
   }
   function _flatpickr(nodeList, config2) {
@@ -86144,8 +86144,8 @@ ${latestSubscriptionCallbackError.current.stack}
           // For use in libraries implementing .is()
           // We use this for POS matching in `select`
           needsContext: new RegExp("^" + whitespace2 + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace2 + "*((?:-\\d)?\\d*)" + whitespace2 + "*\\)|)(?=[^-]|$)", "i")
-        }, rinputs = /^(?:input|select|textarea|button)$/i, rheader = /^h\d$/i, rquickExpr2 = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/, rsibling = /[+~]/, runescape = new RegExp("\\\\[\\da-fA-F]{1,6}" + whitespace2 + "?|\\\\([^\\r\\n\\f])", "g"), funescape = function(escape, nonHex) {
-          var high = "0x" + escape.slice(1) - 65536;
+        }, rinputs = /^(?:input|select|textarea|button)$/i, rheader = /^h\d$/i, rquickExpr2 = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/, rsibling = /[+~]/, runescape = new RegExp("\\\\[\\da-fA-F]{1,6}" + whitespace2 + "?|\\\\([^\\r\\n\\f])", "g"), funescape = function(escape2, nonHex) {
+          var high = "0x" + escape2.slice(1) - 65536;
           if (nonHex) {
             return nonHex;
           }
@@ -87354,7 +87354,7 @@ ${latestSubscriptionCallbackError.current.stack}
           ).length;
         }
       });
-      var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery2.fn.init = function(selector, context, root) {
+      var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init2 = jQuery2.fn.init = function(selector, context, root) {
         var match2, elem;
         if (!selector) {
           return this;
@@ -87409,7 +87409,7 @@ ${latestSubscriptionCallbackError.current.stack}
         }
         return jQuery2.makeArray(selector, this);
       };
-      init.prototype = jQuery2.fn;
+      init2.prototype = jQuery2.fn;
       rootjQuery = jQuery2(document2);
       var rparentsprev = /^(?:parents|prev(?:Until|All))/, guaranteedUnique = {
         children: true,
@@ -96845,11 +96845,126 @@ ${latestSubscriptionCallbackError.current.stack}
     ] }),
     children
   ] });
+  /*! js-cookie v3.0.5 | MIT */
+  function assign(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = arguments[i2];
+      for (var key in source) {
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  var defaultConverter = {
+    read: function(value) {
+      if (value[0] === '"') {
+        value = value.slice(1, -1);
+      }
+      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
+    },
+    write: function(value) {
+      return encodeURIComponent(value).replace(
+        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
+        decodeURIComponent
+      );
+    }
+  };
+  function init(converter, defaultAttributes) {
+    function set(name2, value, attributes) {
+      if (typeof document === "undefined") {
+        return;
+      }
+      attributes = assign({}, defaultAttributes, attributes);
+      if (typeof attributes.expires === "number") {
+        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+      }
+      if (attributes.expires) {
+        attributes.expires = attributes.expires.toUTCString();
+      }
+      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+      var stringifiedAttributes = "";
+      for (var attributeName in attributes) {
+        if (!attributes[attributeName]) {
+          continue;
+        }
+        stringifiedAttributes += "; " + attributeName;
+        if (attributes[attributeName] === true) {
+          continue;
+        }
+        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
+      }
+      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
+    }
+    function get(name2) {
+      if (typeof document === "undefined" || arguments.length && !name2) {
+        return;
+      }
+      var cookies = document.cookie ? document.cookie.split("; ") : [];
+      var jar = {};
+      for (var i2 = 0; i2 < cookies.length; i2++) {
+        var parts = cookies[i2].split("=");
+        var value = parts.slice(1).join("=");
+        try {
+          var found = decodeURIComponent(parts[0]);
+          jar[found] = converter.read(value, found);
+          if (name2 === found) {
+            break;
+          }
+        } catch (e) {
+        }
+      }
+      return name2 ? jar[name2] : jar;
+    }
+    return Object.create(
+      {
+        set,
+        get,
+        remove: function(name2, attributes) {
+          set(
+            name2,
+            "",
+            assign({}, attributes, {
+              expires: -1
+            })
+          );
+        },
+        withAttributes: function(attributes) {
+          return init(this.converter, assign({}, this.attributes, attributes));
+        },
+        withConverter: function(converter2) {
+          return init(assign({}, this.converter, converter2), this.attributes);
+        }
+      },
+      {
+        attributes: { value: Object.freeze(defaultAttributes) },
+        converter: { value: Object.freeze(converter) }
+      }
+    );
+  }
+  var api = init(defaultConverter, { path: "/" });
   const StyledTitle = styled$1(AlertTitle$1)({
     fontWeight: 600
   });
-  const CFAlert = ({ severity, title, subtitle, sx }) => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert$1, { severity, sx, children: [
+  const CFAlert = ({
+    severity,
+    title,
+    subtitle,
+    onClose,
+    hideIfCookie,
+    sx
+  }) => {
+    const [hide, setHide] = reactExports.useState(
+      hideIfCookie ? !!api.get(hideIfCookie) : false
+    );
+    function handleClose() {
+      onClose && onClose();
+      api.set(hideIfCookie, "true", { expires: 7 });
+      setHide(true);
+    }
+    if (hide) {
+      return null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert$1, { severity, sx, onClose: hideIfCookie && handleClose, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
       subtitle
     ] });
@@ -96908,7 +97023,8 @@ ${latestSubscriptionCallbackError.current.stack}
                 title: window.gettext("How to use templates"),
                 subtitle: window.gettext(
                   "Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!"
-                )
+                ),
+                hideIfCookie: "home-howto-template"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(projects, "templates") })
