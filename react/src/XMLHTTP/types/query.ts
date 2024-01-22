@@ -5,6 +5,28 @@ import { DataPackage } from '@XMLHTTP/types'
 import { ENewItem, ESection, EUser } from '@XMLHTTP/types/entity'
 
 /*******************************************************
+ * EmptyPostResp
+ * Used for all queries that do not export
+ * a response beyond confirmation that the
+ * POST has been sucessfully recieved and 
+ * processed
+ *******************************************************/
+export type EmptyPostResp = {
+  action: VERB
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************
  * LinkedWorkflowMenuQueryResp
  *******************************************************/
 export type LinkedWorkflowMenuQueryResp = {
@@ -83,7 +105,6 @@ export type InsertChildQueryResp = {
 export type InsertSiblingQueryResp = {
   action: VERB
 }
-
 export type NewNodeQueryResp = {
   action: VERB
 }

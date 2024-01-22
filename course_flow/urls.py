@@ -374,7 +374,7 @@ def course_flow_patterns():
         ),
         path(
             "comments/get/",
-            views.json_api.workflow.json_api_post_get_comments_for_object,
+            views.json_api.comment.json_api_post_get_comments_for_object,
             name="json-api-post-get-comments-for-object",
         ),
         path(
