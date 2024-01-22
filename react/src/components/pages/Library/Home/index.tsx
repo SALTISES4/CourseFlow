@@ -83,22 +83,8 @@ const Home = ({ is_teacher }: PropsType) => {
           )}
           hideIfCookie="home-howto-template"
         />
-        <GridWrap>{workflowCards(projects, 'templates')}</GridWrap>
+        <GridWrap>{workflowCards(favourites, 'templates')}</GridWrap>
       </Section>
-
-      {is_teacher && (
-        <Section
-          header={{
-            title: 'Favourites',
-            seeAll: {
-              text: 'See all favourites',
-              href: COURSEFLOW_APP.config.my_favourites_path
-            }
-          }}
-        >
-          <GridWrap>{workflowCards(favourites, 'favourite')}</GridWrap>
-        </Section>
-      )}
     </OuterContentWrap>
   )
 }

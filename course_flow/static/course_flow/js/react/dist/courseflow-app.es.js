@@ -97023,21 +97023,8 @@ const Home = ({ is_teacher }) => {
               hideIfCookie: "home-howto-template"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(projects, "templates") })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(favourites, "templates") })
         ]
-      }
-    ),
-    is_teacher && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Section,
-      {
-        header: {
-          title: "Favourites",
-          seeAll: {
-            text: "See all favourites",
-            href: COURSEFLOW_APP.config.my_favourites_path
-          }
-        },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(favourites, "favourite") })
       }
     )
   ] });
