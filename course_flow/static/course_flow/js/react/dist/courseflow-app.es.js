@@ -7346,7 +7346,7 @@ const internal_processStyles = (tag2, processor) => {
     tag2.__emotion_styles = processor(tag2.__emotion_styles);
   }
 };
-const _excluded$1a = ["values", "unit", "step"];
+const _excluded$1b = ["values", "unit", "step"];
 const sortBreakpointsValues = (values2) => {
   const breakpointsAsArray = Object.keys(values2).map((key) => ({
     key,
@@ -7377,7 +7377,7 @@ function createBreakpoints(breakpoints) {
     },
     unit = "px",
     step = 5
-  } = breakpoints, other = _objectWithoutPropertiesLoose$1(breakpoints, _excluded$1a);
+  } = breakpoints, other = _objectWithoutPropertiesLoose$1(breakpoints, _excluded$1b);
   const sortedValues = sortBreakpointsValues(values2);
   const keys = Object.keys(sortedValues);
   function up(key) {
@@ -8399,14 +8399,14 @@ function unstable_createStyleFunctionSx() {
 const styleFunctionSx = unstable_createStyleFunctionSx();
 styleFunctionSx.filterProps = ["sx"];
 const styleFunctionSx$1 = styleFunctionSx;
-const _excluded$19 = ["breakpoints", "palette", "spacing", "shape"];
+const _excluded$1a = ["breakpoints", "palette", "spacing", "shape"];
 function createTheme$1(options = {}, ...args) {
   const {
     breakpoints: breakpointsInput = {},
     palette: paletteInput = {},
     spacing: spacingInput,
     shape: shapeInput = {}
-  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$19);
+  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$1a);
   const breakpoints = createBreakpoints(breakpointsInput);
   const spacing = createSpacing(spacingInput);
   let muiTheme = deepmerge({
@@ -8470,7 +8470,7 @@ process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
    */
   themeId: PropTypes.string
 } : void 0;
-const _excluded$18 = ["sx"];
+const _excluded$19 = ["sx"];
 const splitProps = (props) => {
   var _props$theme$unstable, _props$theme;
   const result = {
@@ -8490,7 +8490,7 @@ const splitProps = (props) => {
 function extendSxProp(props) {
   const {
     sx: inSx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$18);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$19);
   const {
     systemProps,
     otherProps
@@ -8513,7 +8513,7 @@ function extendSxProp(props) {
     sx: finalSx
   });
 }
-const _excluded$17 = ["className", "component"];
+const _excluded$18 = ["className", "component"];
 function createBox(options = {}) {
   const {
     themeId,
@@ -8529,7 +8529,7 @@ function createBox(options = {}) {
     const _extendSxProp = extendSxProp(inProps), {
       className,
       component = "div"
-    } = _extendSxProp, other = _objectWithoutPropertiesLoose$1(_extendSxProp, _excluded$17);
+    } = _extendSxProp, other = _objectWithoutPropertiesLoose$1(_extendSxProp, _excluded$18);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$2({
       as: component,
       ref,
@@ -8539,14 +8539,14 @@ function createBox(options = {}) {
   });
   return Box2;
 }
-const _excluded$16 = ["variant"];
+const _excluded$17 = ["variant"];
 function isEmpty$3(string) {
   return string.length === 0;
 }
 function propsToClassKey(props) {
   const {
     variant
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$16);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$17);
   let classKey = variant || "";
   Object.keys(other).sort().forEach((key) => {
     if (key === "color") {
@@ -8557,7 +8557,7 @@ function propsToClassKey(props) {
   });
   return classKey;
 }
-const _excluded$15 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+const _excluded$16 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
 function isEmpty$2(obj) {
   return Object.keys(obj).length === 0;
 }
@@ -8687,7 +8687,7 @@ function createStyled2(input = {}) {
       // TODO v6: remove `lowercaseFirstLetter()` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
       overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-    } = inputOptions, options = _objectWithoutPropertiesLoose$1(inputOptions, _excluded$15);
+    } = inputOptions, options = _objectWithoutPropertiesLoose$1(inputOptions, _excluded$16);
     const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
       // TODO v6: remove `Root` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
@@ -9137,7 +9137,7 @@ process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
 }
-const _excluded$14 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+const _excluded$15 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
 const defaultTheme$3 = createTheme$1();
 const defaultCreateStyledComponent = systemStyled("div", {
   name: "MuiStack",
@@ -9260,7 +9260,7 @@ function createStack(options = {}) {
       children,
       className,
       useFlexGap = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$14);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$15);
     const ownerState = {
       direction,
       spacing,
@@ -9424,7 +9424,7 @@ const green = {
   A700: "#00c853"
 };
 const green$1 = green;
-const _excluded$13 = ["mode", "contrastThreshold", "tonalOffset"];
+const _excluded$14 = ["mode", "contrastThreshold", "tonalOffset"];
 const light = {
   // The colors used to style the text.
   text: {
@@ -9592,7 +9592,7 @@ function createPalette(palette) {
     mode = "light",
     contrastThreshold = 3,
     tonalOffset = 0.2
-  } = palette, other = _objectWithoutPropertiesLoose$1(palette, _excluded$13);
+  } = palette, other = _objectWithoutPropertiesLoose$1(palette, _excluded$14);
   const primary = palette.primary || getDefaultPrimary(mode);
   const secondary = palette.secondary || getDefaultSecondary(mode);
   const error = palette.error || getDefaultError(mode);
@@ -9711,7 +9711,7 @@ const theme2 = createTheme({ palette: {
   }, modes[mode]), other);
   return paletteOutput;
 }
-const _excluded$12 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+const _excluded$13 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
 function round$1(value) {
   return Math.round(value * 1e5) / 1e5;
 }
@@ -9735,7 +9735,7 @@ function createTypography(palette, typography) {
     // Apply the CSS properties to all the variants.
     allVariants,
     pxToRem: pxToRem2
-  } = _ref, other = _objectWithoutPropertiesLoose$1(_ref, _excluded$12);
+  } = _ref, other = _objectWithoutPropertiesLoose$1(_ref, _excluded$13);
   if (process.env.NODE_ENV !== "production") {
     if (typeof fontSize !== "number") {
       console.error("MUI: `fontSize` is required to be a number.");
@@ -9800,7 +9800,7 @@ function createShadow(...px) {
 }
 const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
 const shadows$1 = shadows;
-const _excluded$11 = ["duration", "easing", "delay"];
+const _excluded$12 = ["duration", "easing", "delay"];
 const easing = {
   // This is the most common easing curve.
   easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -9843,7 +9843,7 @@ function createTransitions(inputTransitions) {
       duration: durationOption = mergedDuration.standard,
       easing: easingOption = mergedEasing.easeInOut,
       delay = 0
-    } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$11);
+    } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$12);
     if (process.env.NODE_ENV !== "production") {
       const isString2 = (value) => typeof value === "string";
       const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -9887,14 +9887,14 @@ const zIndex = {
   tooltip: 1500
 };
 const zIndex$1 = zIndex;
-const _excluded$10 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+const _excluded$11 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
 function createTheme(options = {}, ...args) {
   const {
     mixins: mixinsInput = {},
     palette: paletteInput = {},
     transitions: transitionsInput = {},
     typography: typographyInput = {}
-  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$10);
+  } = options, other = _objectWithoutPropertiesLoose$1(options, _excluded$11);
   if (options.vars) {
     throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -10028,8 +10028,8 @@ function getScopedCssBaselineUtilityClass(slot) {
   return generateUtilityClass("MuiScopedCssBaseline", slot);
 }
 generateUtilityClasses("MuiScopedCssBaseline", ["root"]);
-const _excluded$$ = ["className", "component", "enableColorScheme"];
-const useUtilityClasses$P = (ownerState) => {
+const _excluded$10 = ["className", "component", "enableColorScheme"];
+const useUtilityClasses$Q = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -10072,11 +10072,11 @@ const ScopedCssBaseline = /* @__PURE__ */ reactExports.forwardRef(function Scope
   const {
     className,
     component = "div"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$$);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$10);
   const ownerState = _extends$2({}, props, {
     component
   });
-  const classes = useUtilityClasses$P(ownerState);
+  const classes = useUtilityClasses$Q(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ScopedCssBaselineRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -38937,11 +38937,11 @@ function useTheme() {
   }
   return theme2[THEME_ID] || theme2;
 }
-const _excluded$_ = ["theme"];
+const _excluded$$ = ["theme"];
 function ThemeProvider(_ref) {
   let {
     theme: themeInput
-  } = _ref, props = _objectWithoutPropertiesLoose$1(_ref, _excluded$_);
+  } = _ref, props = _objectWithoutPropertiesLoose$1(_ref, _excluded$$);
   const scopedTheme = themeInput[THEME_ID];
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$2({}, props, {
     themeId: scopedTheme ? THEME_ID : void 0,
@@ -39135,7 +39135,7 @@ function mergeSlotProps(parameters) {
     internalRef: internalSlotProps.ref
   };
 }
-const _excluded$Z = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+const _excluded$_ = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
 function useSlotProps(parameters) {
   var _parameters$additiona;
   const {
@@ -39143,7 +39143,7 @@ function useSlotProps(parameters) {
     externalSlotProps,
     ownerState,
     skipResolvingSlotProps = false
-  } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$Z);
+  } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$_);
   const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
   const {
     props: mergedProps,
@@ -40073,7 +40073,7 @@ function useSnackbar(parameters = {}) {
     onClickAway: handleClickAway
   };
 }
-const _excluded$Y = ["onChange", "maxRows", "minRows", "style", "value"];
+const _excluded$Z = ["onChange", "maxRows", "minRows", "style", "value"];
 function getStyleValue(value) {
   return parseInt(value, 10) || 0;
 }
@@ -40102,7 +40102,7 @@ const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function Textar
     minRows = 1,
     style: style2,
     value
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Y);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Z);
   const {
     current: isControlled
   } = reactExports.useRef(value != null);
@@ -40321,10 +40321,10 @@ const badgeClasses = generateUtilityClasses("MuiBadge", [
   "anchorOriginBottomRightRectangular"
 ]);
 const badgeClasses$1 = badgeClasses;
-const _excluded$X = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+const _excluded$Y = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
 const RADIUS_STANDARD = 10;
 const RADIUS_DOT = 4;
-const useUtilityClasses$O = (ownerState) => {
+const useUtilityClasses$P = (ownerState) => {
   const {
     color: color2,
     anchorOrigin,
@@ -40488,7 +40488,7 @@ const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, r
     slotProps,
     showZero = false,
     variant: variantProp = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$X);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Y);
   const {
     badgeContent,
     invisible: invisibleFromHook,
@@ -40526,7 +40526,7 @@ const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, r
     overlap,
     variant
   });
-  const classes = useUtilityClasses$O(ownerState);
+  const classes = useUtilityClasses$P(ownerState);
   const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
   const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
   const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -40675,8 +40675,8 @@ function getTypographyUtilityClass(slot) {
   return generateUtilityClass("MuiTypography", slot);
 }
 generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-const _excluded$W = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-const useUtilityClasses$N = (ownerState) => {
+const _excluded$X = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+const useUtilityClasses$O = (ownerState) => {
   const {
     align,
     gutterBottom,
@@ -40759,7 +40759,7 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     paragraph = false,
     variant = "body1",
     variantMapping = defaultVariantMapping
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$X);
   const ownerState = _extends$2({}, props, {
     align,
     color: color2,
@@ -40772,7 +40772,7 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     variantMapping
   });
   const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-  const classes = useUtilityClasses$N(ownerState);
+  const classes = useUtilityClasses$O(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$2({
     as: Component,
     ref,
@@ -40884,8 +40884,8 @@ const getTextDecoration = ({
   return alpha(color2, 0.4);
 };
 const getTextDecoration$1 = getTextDecoration;
-const _excluded$V = ["className", "color", "component", "onBlur", "onFocus", "TypographyClasses", "underline", "variant", "sx"];
-const useUtilityClasses$M = (ownerState) => {
+const _excluded$W = ["className", "color", "component", "onBlur", "onFocus", "TypographyClasses", "underline", "variant", "sx"];
+const useUtilityClasses$N = (ownerState) => {
   const {
     classes,
     component,
@@ -40972,7 +40972,7 @@ const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref
     underline = "always",
     variant = "inherit",
     sx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
   const {
     isFocusVisibleRef,
     onBlur: handleBlurVisible,
@@ -41006,7 +41006,7 @@ const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref
     underline,
     variant
   });
-  const classes = useUtilityClasses$M(ownerState);
+  const classes = useUtilityClasses$N(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(LinkRoot, _extends$2({
     color: color2,
     className: clsx(classes.root, className),
@@ -41086,8 +41086,8 @@ function getListUtilityClass(slot) {
   return generateUtilityClass("MuiList", slot);
 }
 generateUtilityClasses("MuiList", ["root", "padding", "dense", "subheader"]);
-const _excluded$U = ["children", "className", "component", "dense", "disablePadding", "subheader"];
-const useUtilityClasses$L = (ownerState) => {
+const _excluded$V = ["children", "className", "component", "dense", "disablePadding", "subheader"];
+const useUtilityClasses$M = (ownerState) => {
   const {
     classes,
     disablePadding,
@@ -41133,7 +41133,7 @@ const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref
     dense = false,
     disablePadding = false,
     subheader
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
   const context = reactExports.useMemo(() => ({
     dense
   }), [dense]);
@@ -41142,7 +41142,7 @@ const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref
     dense,
     disablePadding
   });
-  const classes = useUtilityClasses$L(ownerState);
+  const classes = useUtilityClasses$M(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: context,
     children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListRoot, _extends$2({
@@ -41974,7 +41974,7 @@ process.env.NODE_ENV !== "production" ? Ripple.propTypes = {
 } : void 0;
 const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
 const touchRippleClasses$1 = touchRippleClasses;
-const _excluded$T = ["center", "classes", "className"];
+const _excluded$U = ["center", "classes", "className"];
 let _ = (t) => t, _t, _t2, _t3, _t4;
 const DURATION = 550;
 const DELAY_RIPPLE = 80;
@@ -42089,7 +42089,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
     center: centerProp = false,
     classes = {},
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
   const [ripples, setRipples] = reactExports.useState([]);
   const nextKey = reactExports.useRef(0);
   const rippleCallback = reactExports.useRef(null);
@@ -42272,8 +42272,8 @@ function getButtonBaseUtilityClass(slot) {
 }
 const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
 const buttonBaseClasses$1 = buttonBaseClasses;
-const _excluded$S = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-const useUtilityClasses$K = (ownerState) => {
+const _excluded$T = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+const useUtilityClasses$L = (ownerState) => {
   const {
     disabled,
     focusVisible,
@@ -42367,7 +42367,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     TouchRippleProps,
     touchRippleRef,
     type
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
   const buttonRef = reactExports.useRef(null);
   const rippleRef = reactExports.useRef(null);
   const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -42521,7 +42521,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     tabIndex,
     focusVisible
   });
-  const classes = useUtilityClasses$K(ownerState);
+  const classes = useUtilityClasses$L(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$2({
     as: ComponentProp,
     className: clsx(classes.root, className),
@@ -42721,14 +42721,14 @@ function getListItemButtonUtilityClass(slot) {
 }
 const listItemButtonClasses = generateUtilityClasses("MuiListItemButton", ["root", "focusVisible", "dense", "alignItemsFlexStart", "disabled", "divider", "gutters", "selected"]);
 const listItemButtonClasses$1 = listItemButtonClasses;
-const _excluded$R = ["alignItems", "autoFocus", "component", "children", "dense", "disableGutters", "divider", "focusVisibleClassName", "selected", "className"];
+const _excluded$S = ["alignItems", "autoFocus", "component", "children", "dense", "disableGutters", "divider", "focusVisibleClassName", "selected", "className"];
 const overridesResolver$3 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
 };
-const useUtilityClasses$J = (ownerState) => {
+const useUtilityClasses$K = (ownerState) => {
   const {
     alignItems,
     classes,
@@ -42822,7 +42822,7 @@ const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItem
     focusVisibleClassName,
     selected = false,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -42846,7 +42846,7 @@ const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItem
     divider,
     selected
   });
-  const classes = useUtilityClasses$J(ownerState);
+  const classes = useUtilityClasses$K(ownerState);
   const handleRef = useForkRef(listItemRef, ref);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListContext$1.Provider, {
     value: childContext,
@@ -42946,8 +42946,8 @@ function getListItemSecondaryActionClassesUtilityClass(slot) {
   return generateUtilityClass("MuiListItemSecondaryAction", slot);
 }
 generateUtilityClasses("MuiListItemSecondaryAction", ["root", "disableGutters"]);
-const _excluded$Q = ["className"];
-const useUtilityClasses$I = (ownerState) => {
+const _excluded$R = ["className"];
+const useUtilityClasses$J = (ownerState) => {
   const {
     disableGutters,
     classes
@@ -42983,12 +42983,12 @@ const ListItemSecondaryAction = /* @__PURE__ */ reactExports.forwardRef(function
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     disableGutters: context.disableGutters
   });
-  const classes = useUtilityClasses$I(ownerState);
+  const classes = useUtilityClasses$J(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemSecondaryActionRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -43019,14 +43019,14 @@ process.env.NODE_ENV !== "production" ? ListItemSecondaryAction.propTypes = {
 } : void 0;
 ListItemSecondaryAction.muiName = "ListItemSecondaryAction";
 const ListItemSecondaryAction$1 = ListItemSecondaryAction;
-const _excluded$P = ["className"], _excluded2$4 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
+const _excluded$Q = ["className"], _excluded2$4 = ["alignItems", "autoFocus", "button", "children", "className", "component", "components", "componentsProps", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "disablePadding", "divider", "focusVisibleClassName", "secondaryAction", "selected", "slotProps", "slots"];
 const overridesResolver$2 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.alignItems === "flex-start" && styles2.alignItemsFlexStart, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters, !ownerState.disablePadding && styles2.padding, ownerState.button && styles2.button, ownerState.hasSecondaryAction && styles2.secondaryAction];
 };
-const useUtilityClasses$H = (ownerState) => {
+const useUtilityClasses$I = (ownerState) => {
   const {
     alignItems,
     button,
@@ -43155,7 +43155,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     selected = false,
     slotProps = {},
     slots = {}
-  } = props, ContainerProps = _objectWithoutPropertiesLoose$1(props.ContainerProps, _excluded$P), other = _objectWithoutPropertiesLoose$1(props, _excluded2$4);
+  } = props, ContainerProps = _objectWithoutPropertiesLoose$1(props.ContainerProps, _excluded$Q), other = _objectWithoutPropertiesLoose$1(props, _excluded2$4);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -43186,7 +43186,7 @@ const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inPr
     hasSecondaryAction,
     selected
   });
-  const classes = useUtilityClasses$H(ownerState);
+  const classes = useUtilityClasses$I(ownerState);
   const handleRef = useForkRef(listItemRef, ref);
   const Root = slots.root || components.Root || ListItemRoot;
   const rootProps = slotProps.root || componentsProps.root || {};
@@ -43404,8 +43404,8 @@ function getListItemTextUtilityClass(slot) {
 }
 const listItemTextClasses = generateUtilityClasses("MuiListItemText", ["root", "multiline", "dense", "inset", "primary", "secondary"]);
 const listItemTextClasses$1 = listItemTextClasses;
-const _excluded$O = ["children", "className", "disableTypography", "inset", "primary", "primaryTypographyProps", "secondary", "secondaryTypographyProps"];
-const useUtilityClasses$G = (ownerState) => {
+const _excluded$P = ["children", "className", "disableTypography", "inset", "primary", "primaryTypographyProps", "secondary", "secondaryTypographyProps"];
+const useUtilityClasses$H = (ownerState) => {
   const {
     classes,
     inset,
@@ -43460,7 +43460,7 @@ const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemTe
     primaryTypographyProps,
     secondary: secondaryProp,
     secondaryTypographyProps
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
   const {
     dense
   } = reactExports.useContext(ListContext$1);
@@ -43473,7 +43473,7 @@ const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemTe
     secondary: !!secondary,
     dense
   });
-  const classes = useUtilityClasses$G(ownerState);
+  const classes = useUtilityClasses$H(ownerState);
   if (primary != null && primary.type !== Typography$1 && !disableTypography) {
     primary = /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, _extends$2({
       variant: dense ? "body2" : "body1",
@@ -43561,8 +43561,8 @@ function getListItemAvatarUtilityClass(slot) {
   return generateUtilityClass("MuiListItemAvatar", slot);
 }
 generateUtilityClasses("MuiListItemAvatar", ["root", "alignItemsFlexStart"]);
-const _excluded$N = ["className"];
-const useUtilityClasses$F = (ownerState) => {
+const _excluded$O = ["className"];
+const useUtilityClasses$G = (ownerState) => {
   const {
     alignItems,
     classes
@@ -43596,12 +43596,12 @@ const ListItemAvatar = /* @__PURE__ */ reactExports.forwardRef(function ListItem
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$N);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     alignItems: context.alignItems
   });
-  const classes = useUtilityClasses$F(ownerState);
+  const classes = useUtilityClasses$G(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatarRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -43635,7 +43635,7 @@ function getPaginationUtilityClass(slot) {
   return generateUtilityClass("MuiPagination", slot);
 }
 generateUtilityClasses("MuiPagination", ["root", "ul", "outlined", "text"]);
-const _excluded$M = ["boundaryCount", "componentName", "count", "defaultPage", "disabled", "hideNextButton", "hidePrevButton", "onChange", "page", "showFirstButton", "showLastButton", "siblingCount"];
+const _excluded$N = ["boundaryCount", "componentName", "count", "defaultPage", "disabled", "hideNextButton", "hidePrevButton", "onChange", "page", "showFirstButton", "showLastButton", "siblingCount"];
 function usePagination(props = {}) {
   const {
     boundaryCount = 1,
@@ -43650,7 +43650,7 @@ function usePagination(props = {}) {
     showFirstButton = false,
     showLastButton = false,
     siblingCount = 1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$N);
   const [page, setPageState] = useControlled({
     controlled: pageProp,
     default: defaultPage,
@@ -43756,8 +43756,8 @@ function getSvgIconUtilityClass(slot) {
   return generateUtilityClass("MuiSvgIcon", slot);
 }
 generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-const _excluded$L = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-const useUtilityClasses$E = (ownerState) => {
+const _excluded$M = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+const useUtilityClasses$F = (ownerState) => {
   const {
     color: color2,
     fontSize,
@@ -43823,7 +43823,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
     inheritViewBox = false,
     titleAccess,
     viewBox = "0 0 24 24"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
   const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
   const ownerState = _extends$2({}, props, {
     color: color2,
@@ -43838,7 +43838,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
   if (!inheritViewBox) {
     more.viewBox = viewBox;
   }
-  const classes = useUtilityClasses$E(ownerState);
+  const classes = useUtilityClasses$F(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -43955,14 +43955,14 @@ const NavigateBeforeIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx
 const NavigateNextIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
 }), "NavigateNext");
-const _excluded$K = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
+const _excluded$L = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
 const overridesResolver$1 = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.variant === "text" && styles2[`text${capitalize(ownerState.color)}`], ownerState.variant === "outlined" && styles2[`outlined${capitalize(ownerState.color)}`], ownerState.shape === "rounded" && styles2.rounded, ownerState.type === "page" && styles2.page, (ownerState.type === "start-ellipsis" || ownerState.type === "end-ellipsis") && styles2.ellipsis, (ownerState.type === "previous" || ownerState.type === "next") && styles2.previousNext, (ownerState.type === "first" || ownerState.type === "last") && styles2.firstLast];
 };
-const useUtilityClasses$D = (ownerState) => {
+const useUtilityClasses$E = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -44159,7 +44159,7 @@ const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function Paginati
     slots = {},
     type = "page",
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
   const ownerState = _extends$2({}, props, {
     color: color2,
     disabled,
@@ -44170,7 +44170,7 @@ const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function Paginati
     variant
   });
   const theme2 = useTheme();
-  const classes = useUtilityClasses$D(ownerState);
+  const classes = useUtilityClasses$E(ownerState);
   const normalizedIcons = theme2.direction === "rtl" ? {
     previous: slots.next || components.next || NavigateNextIcon,
     next: slots.previous || components.previous || NavigateBeforeIcon,
@@ -44298,8 +44298,8 @@ process.env.NODE_ENV !== "production" ? PaginationItem.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["outlined", "text"]), PropTypes.string])
 } : void 0;
 const PaginationItem$1 = PaginationItem;
-const _excluded$J = ["boundaryCount", "className", "color", "count", "defaultPage", "disabled", "getItemAriaLabel", "hideNextButton", "hidePrevButton", "onChange", "page", "renderItem", "shape", "showFirstButton", "showLastButton", "siblingCount", "size", "variant"];
-const useUtilityClasses$C = (ownerState) => {
+const _excluded$K = ["boundaryCount", "className", "color", "count", "defaultPage", "disabled", "getItemAriaLabel", "hideNextButton", "hidePrevButton", "onChange", "page", "renderItem", "shape", "showFirstButton", "showLastButton", "siblingCount", "size", "variant"];
+const useUtilityClasses$D = (ownerState) => {
   const {
     classes,
     variant
@@ -44360,7 +44360,7 @@ const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(
     siblingCount = 1,
     size: size2 = "medium",
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
   const {
     items
   } = usePagination(_extends$2({}, props, {
@@ -44383,7 +44383,7 @@ const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$C(ownerState);
+  const classes = useUtilityClasses$D(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(PaginationRoot, _extends$2({
     "aria-label": "pagination navigation",
     className: clsx(classes.root, className),
@@ -44527,8 +44527,8 @@ function getAvatarUtilityClass(slot) {
   return generateUtilityClass("MuiAvatar", slot);
 }
 generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-const _excluded$I = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-const useUtilityClasses$B = (ownerState) => {
+const _excluded$J = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+const useUtilityClasses$C = (ownerState) => {
   const {
     classes,
     variant,
@@ -44654,7 +44654,7 @@ const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps,
     src,
     srcSet,
     variant = "circular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
   let children = null;
   const loaded = useLoaded(_extends$2({}, imgProps, {
     src,
@@ -44667,7 +44667,7 @@ const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps,
     component,
     variant
   });
-  const classes = useUtilityClasses$B(ownerState);
+  const classes = useUtilityClasses$C(ownerState);
   if (hasImgNotFailing) {
     children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$2({
       alt,
@@ -44758,8 +44758,8 @@ function getIconButtonUtilityClass(slot) {
 }
 const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
 const iconButtonClasses$1 = iconButtonClasses;
-const _excluded$H = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-const useUtilityClasses$A = (ownerState) => {
+const _excluded$I = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+const useUtilityClasses$B = (ownerState) => {
   const {
     classes,
     disabled,
@@ -44853,7 +44853,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disabled = false,
     disableFocusRipple = false,
     size: size2 = "medium"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
   const ownerState = _extends$2({}, props, {
     edge,
     color: color2,
@@ -44861,7 +44861,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disableFocusRipple,
     size: size2
   });
-  const classes = useUtilityClasses$A(ownerState);
+  const classes = useUtilityClasses$B(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$2({
     className: clsx(classes.root, className),
     centerRipple: true,
@@ -44941,7 +44941,7 @@ process.env.NODE_ENV !== "production" ? IconButton.propTypes = {
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
 const IconButton$1 = IconButton;
-const _excluded$G = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
+const _excluded$H = ["actions", "autoFocus", "autoFocusItem", "children", "className", "disabledItemsFocusable", "disableListWrap", "onKeyDown", "variant"];
 function nextItem(list, item, disableListWrap) {
   if (list === item) {
     return list.firstChild;
@@ -45010,7 +45010,7 @@ const MenuList = /* @__PURE__ */ reactExports.forwardRef(function MenuList2(prop
     disableListWrap = false,
     onKeyDown,
     variant = "selectedMenu"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
   const listRef = reactExports.useRef(null);
   const textCriteriaRef = reactExports.useRef({
     keys: [],
@@ -45190,7 +45190,7 @@ function getTransitionProps(props, options) {
     delay: style2.transitionDelay
   };
 }
-const _excluded$F = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+const _excluded$G = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
 function getScale(value) {
   return `scale(${value}, ${value ** 2})`;
 }
@@ -45222,7 +45222,7 @@ const Grow = /* @__PURE__ */ reactExports.forwardRef(function Grow2(props, ref) 
     timeout: timeout2 = "auto",
     // eslint-disable-next-line react/prop-types
     TransitionComponent = Transition$1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
   const timer = reactExports.useRef();
   const autoTimeout = reactExports.useRef();
   const theme2 = useTheme();
@@ -45421,7 +45421,7 @@ process.env.NODE_ENV !== "production" ? Grow.propTypes = {
 } : void 0;
 Grow.muiSupportAuto = true;
 const Grow$1 = Grow;
-const _excluded$E = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+const _excluded$F = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
 const styles = {
   entering: {
     opacity: 1
@@ -45452,7 +45452,7 @@ const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) 
     timeout: timeout2 = defaultTimeout,
     // eslint-disable-next-line react/prop-types
     TransitionComponent = Transition$1
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$E);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
   const nodeRef = reactExports.useRef(null);
   const handleRef = useForkRef(nodeRef, children.ref, ref);
   const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -45607,8 +45607,8 @@ function getBackdropUtilityClass(slot) {
   return generateUtilityClass("MuiBackdrop", slot);
 }
 generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-const _excluded$D = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-const useUtilityClasses$z = (ownerState) => {
+const _excluded$E = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+const useUtilityClasses$A = (ownerState) => {
   const {
     classes,
     invisible
@@ -45661,12 +45661,12 @@ const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inPr
     slots = {},
     TransitionComponent = Fade$1,
     transitionDuration
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$D);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$E);
   const ownerState = _extends$2({}, props, {
     component,
     invisible
   });
-  const classes = useUtilityClasses$z(ownerState);
+  const classes = useUtilityClasses$A(ownerState);
   const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$2({
     in: open,
@@ -45785,8 +45785,8 @@ function getModalUtilityClass(slot) {
   return generateUtilityClass("MuiModal", slot);
 }
 generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
-const _excluded$C = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
-const useUtilityClasses$y = (ownerState) => {
+const _excluded$D = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
+const useUtilityClasses$z = (ownerState) => {
   const {
     open,
     exited,
@@ -45858,7 +45858,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
     slotProps,
     slots
     // eslint-disable-next-line react/prop-types
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$C);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$D);
   const propsWithDefaults = _extends$2({}, props, {
     closeAfterTransition,
     disableAutoFocus,
@@ -45884,7 +45884,7 @@ const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, r
   const ownerState = _extends$2({}, propsWithDefaults, {
     exited
   });
-  const classes = useUtilityClasses$y(ownerState);
+  const classes = useUtilityClasses$z(ownerState);
   const childProps = {};
   if (children.props.tabIndex === void 0) {
     childProps.tabIndex = "-1";
@@ -46134,8 +46134,8 @@ function getPaperUtilityClass(slot) {
   return generateUtilityClass("MuiPaper", slot);
 }
 generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-const _excluded$B = ["className", "component", "elevation", "square", "variant"];
-const useUtilityClasses$x = (ownerState) => {
+const _excluded$C = ["className", "component", "elevation", "square", "variant"];
+const useUtilityClasses$y = (ownerState) => {
   const {
     square,
     elevation,
@@ -46188,14 +46188,14 @@ const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, r
     elevation = 1,
     square = false,
     variant = "elevation"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$B);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$C);
   const ownerState = _extends$2({}, props, {
     component,
     elevation,
     square,
     variant
   });
-  const classes = useUtilityClasses$x(ownerState);
+  const classes = useUtilityClasses$y(ownerState);
   if (process.env.NODE_ENV !== "production") {
     const theme2 = useTheme();
     if (theme2.shadows[elevation] === void 0) {
@@ -46266,7 +46266,7 @@ function getPopoverUtilityClass(slot) {
   return generateUtilityClass("MuiPopover", slot);
 }
 generateUtilityClasses("MuiPopover", ["root", "paper"]);
-const _excluded$A = ["onEntering"], _excluded2$3 = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3 = ["slotProps"];
+const _excluded$B = ["onEntering"], _excluded2$3 = ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "className", "container", "elevation", "marginThreshold", "open", "PaperProps", "slots", "slotProps", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps", "disableScrollLock"], _excluded3 = ["slotProps"];
 function getOffsetTop(rect, vertical) {
   let offset = 0;
   if (typeof vertical === "number") {
@@ -46295,7 +46295,7 @@ function getTransformOriginValue(transformOrigin) {
 function resolveAnchorEl(anchorEl) {
   return typeof anchorEl === "function" ? anchorEl() : anchorEl;
 }
-const useUtilityClasses$w = (ownerState) => {
+const useUtilityClasses$x = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -46361,7 +46361,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
       onEntering
     } = {},
     disableScrollLock = false
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$A), other = _objectWithoutPropertiesLoose$1(props, _excluded2$3);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$B), other = _objectWithoutPropertiesLoose$1(props, _excluded2$3);
   const externalPaperSlotProps = (_slotProps$paper = slotProps == null ? void 0 : slotProps.paper) != null ? _slotProps$paper : PaperPropsProp;
   const paperRef = reactExports.useRef();
   const handlePaperRef = useForkRef(paperRef, externalPaperSlotProps.ref);
@@ -46376,7 +46376,7 @@ const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProp
     transitionDuration: transitionDurationProp,
     TransitionProps
   });
-  const classes = useUtilityClasses$w(ownerState);
+  const classes = useUtilityClasses$x(ownerState);
   const getAnchorOffset = reactExports.useCallback(() => {
     if (anchorReference === "anchorPosition") {
       if (process.env.NODE_ENV !== "production") {
@@ -46750,7 +46750,7 @@ function getMenuUtilityClass(slot) {
   return generateUtilityClass("MuiMenu", slot);
 }
 generateUtilityClasses("MuiMenu", ["root", "paper", "list"]);
-const _excluded$z = ["onEntering"], _excluded2$2 = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
+const _excluded$A = ["onEntering"], _excluded2$2 = ["autoFocus", "children", "className", "disableAutoFocusItem", "MenuListProps", "onClose", "open", "PaperProps", "PopoverClasses", "transitionDuration", "TransitionProps", "variant", "slots", "slotProps"];
 const RTL_ORIGIN = {
   vertical: "top",
   horizontal: "right"
@@ -46759,7 +46759,7 @@ const LTR_ORIGIN = {
   vertical: "top",
   horizontal: "left"
 };
-const useUtilityClasses$v = (ownerState) => {
+const useUtilityClasses$w = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -46819,7 +46819,7 @@ const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu(inProps, re
     variant = "selectedMenu",
     slots = {},
     slotProps = {}
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$z), other = _objectWithoutPropertiesLoose$1(props, _excluded2$2);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$A), other = _objectWithoutPropertiesLoose$1(props, _excluded2$2);
   const theme2 = useTheme();
   const isRtl = theme2.direction === "rtl";
   const ownerState = _extends$2({}, props, {
@@ -46832,7 +46832,7 @@ const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu(inProps, re
     TransitionProps,
     variant
   });
-  const classes = useUtilityClasses$v(ownerState);
+  const classes = useUtilityClasses$w(ownerState);
   const autoFocusItem = autoFocus && !disableAutoFocusItem && open;
   const menuListActionsRef = reactExports.useRef(null);
   const handleEntering = (element, isAppearing) => {
@@ -47031,8 +47031,8 @@ function getDividerUtilityClass(slot) {
 }
 const dividerClasses = generateUtilityClasses("MuiDivider", ["root", "absolute", "fullWidth", "inset", "middle", "flexItem", "light", "vertical", "withChildren", "withChildrenVertical", "textAlignRight", "textAlignLeft", "wrapper", "wrapperVertical"]);
 const dividerClasses$1 = dividerClasses;
-const _excluded$y = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
-const useUtilityClasses$u = (ownerState) => {
+const _excluded$z = ["absolute", "children", "className", "component", "flexItem", "light", "orientation", "role", "textAlign", "variant"];
+const useUtilityClasses$v = (ownerState) => {
   const {
     absolute,
     children,
@@ -47172,7 +47172,7 @@ const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProp
     role = component !== "hr" ? "separator" : void 0,
     textAlign = "center",
     variant = "fullWidth"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$y);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$z);
   const ownerState = _extends$2({}, props, {
     absolute,
     component,
@@ -47183,7 +47183,7 @@ const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProp
     textAlign,
     variant
   });
-  const classes = useUtilityClasses$u(ownerState);
+  const classes = useUtilityClasses$v(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(DividerRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -47267,8 +47267,8 @@ function getListItemIconUtilityClass(slot) {
 }
 const listItemIconClasses = generateUtilityClasses("MuiListItemIcon", ["root", "alignItemsFlexStart"]);
 const listItemIconClasses$1 = listItemIconClasses;
-const _excluded$x = ["className"];
-const useUtilityClasses$t = (ownerState) => {
+const _excluded$y = ["className"];
+const useUtilityClasses$u = (ownerState) => {
   const {
     alignItems,
     classes
@@ -47305,12 +47305,12 @@ const ListItemIcon = /* @__PURE__ */ reactExports.forwardRef(function ListItemIc
   });
   const {
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$x);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$y);
   const context = reactExports.useContext(ListContext$1);
   const ownerState = _extends$2({}, props, {
     alignItems: context.alignItems
   });
-  const classes = useUtilityClasses$t(ownerState);
+  const classes = useUtilityClasses$u(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIconRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -47346,14 +47346,14 @@ function getMenuItemUtilityClass(slot) {
 }
 const menuItemClasses = generateUtilityClasses("MuiMenuItem", ["root", "focusVisible", "dense", "disabled", "divider", "gutters", "selected"]);
 const menuItemClasses$1 = menuItemClasses;
-const _excluded$w = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
+const _excluded$x = ["autoFocus", "component", "dense", "divider", "disableGutters", "focusVisibleClassName", "role", "tabIndex", "className"];
 const overridesResolver = (props, styles2) => {
   const {
     ownerState
   } = props;
   return [styles2.root, ownerState.dense && styles2.dense, ownerState.divider && styles2.divider, !ownerState.disableGutters && styles2.gutters];
 };
-const useUtilityClasses$s = (ownerState) => {
+const useUtilityClasses$t = (ownerState) => {
   const {
     disabled,
     dense,
@@ -47467,7 +47467,7 @@ const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inPr
     role = "menuitem",
     tabIndex: tabIndexProp,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$w);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$x);
   const context = reactExports.useContext(ListContext$1);
   const childContext = reactExports.useMemo(() => ({
     dense: dense || context.dense || false,
@@ -47488,7 +47488,7 @@ const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inPr
     divider,
     disableGutters
   });
-  const classes = useUtilityClasses$s(props);
+  const classes = useUtilityClasses$t(props);
   const handleRef = useForkRef(menuItemRef, ref);
   let tabIndex;
   if (!props.disabled) {
@@ -47670,6 +47670,11 @@ const OuterContentWrap = styled$1(Box$1, {
     paddingLeft: theme2.spacing(2),
     paddingRight: theme2.spacing(2)
   }
+}));
+const GridWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: theme2.spacing(3)
 }));
 var ViewType = /* @__PURE__ */ ((ViewType2) => {
   ViewType2["WORKFLOW"] = "workflowview";
@@ -48007,8 +48012,8 @@ function formControlState({
     return acc;
   }, {});
 }
-const _excluded$v = ["className", "row"];
-const useUtilityClasses$r = (ownerState) => {
+const _excluded$w = ["className", "row"];
+const useUtilityClasses$s = (ownerState) => {
   const {
     classes,
     row,
@@ -48045,7 +48050,7 @@ const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(in
   const {
     className,
     row = false
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$v);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$w);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -48056,7 +48061,7 @@ const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(in
     row,
     error: fcs.error
   });
-  const classes = useUtilityClasses$r(ownerState);
+  const classes = useUtilityClasses$s(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroupRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -48104,8 +48109,8 @@ function getFormControlUtilityClasses(slot) {
   return generateUtilityClass("MuiFormControl", slot);
 }
 generateUtilityClasses("MuiFormControl", ["root", "marginNone", "marginNormal", "marginDense", "fullWidth", "disabled"]);
-const _excluded$u = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
-const useUtilityClasses$q = (ownerState) => {
+const _excluded$v = ["children", "className", "color", "component", "disabled", "error", "focused", "fullWidth", "hiddenLabel", "margin", "required", "size", "variant"];
+const useUtilityClasses$r = (ownerState) => {
   const {
     classes,
     margin: margin2,
@@ -48164,7 +48169,7 @@ const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl
     required = false,
     size: size2 = "medium",
     variant = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$u);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$v);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -48177,7 +48182,7 @@ const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$q(ownerState);
+  const classes = useUtilityClasses$r(ownerState);
   const [adornedStart, setAdornedStart] = reactExports.useState(() => {
     let initialAdornedStart = false;
     if (children) {
@@ -48408,8 +48413,8 @@ function getFormControlLabelUtilityClasses(slot) {
 }
 const formControlLabelClasses = generateUtilityClasses("MuiFormControlLabel", ["root", "labelPlacementStart", "labelPlacementTop", "labelPlacementBottom", "disabled", "label", "error", "required", "asterisk"]);
 const formControlLabelClasses$1 = formControlLabelClasses;
-const _excluded$t = ["checked", "className", "componentsProps", "control", "disabled", "disableTypography", "inputRef", "label", "labelPlacement", "name", "onChange", "required", "slotProps", "value"];
-const useUtilityClasses$p = (ownerState) => {
+const _excluded$u = ["checked", "className", "componentsProps", "control", "disabled", "disableTypography", "inputRef", "label", "labelPlacement", "name", "onChange", "required", "slotProps", "value"];
+const useUtilityClasses$q = (ownerState) => {
   const {
     classes,
     disabled,
@@ -48496,7 +48501,7 @@ const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormCo
     labelPlacement = "end",
     required: requiredProp,
     slotProps = {}
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$t);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$u);
   const muiFormControl = useFormControl();
   const disabled = (_ref = disabledProp != null ? disabledProp : control.props.disabled) != null ? _ref : muiFormControl == null ? void 0 : muiFormControl.disabled;
   const required = requiredProp != null ? requiredProp : control.props.required;
@@ -48520,7 +48525,7 @@ const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormCo
     required,
     error: fcs.error
   });
-  const classes = useUtilityClasses$p(ownerState);
+  const classes = useUtilityClasses$q(ownerState);
   const typographySlotProps = (_slotProps$typography = slotProps.typography) != null ? _slotProps$typography : componentsProps.typography;
   let label = labelProp;
   if (label != null && label.type !== Typography$1 && !disableTypography) {
@@ -48633,8 +48638,8 @@ function getSwitchBaseUtilityClass(slot) {
   return generateUtilityClass("PrivateSwitchBase", slot);
 }
 generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-const _excluded$s = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-const useUtilityClasses$o = (ownerState) => {
+const _excluded$t = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+const useUtilityClasses$p = (ownerState) => {
   const {
     classes,
     checked,
@@ -48692,7 +48697,7 @@ const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(
     tabIndex,
     type,
     value
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$s);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$t);
   const [checked, setCheckedState] = useControlled({
     controlled: checkedProp,
     default: Boolean(defaultChecked),
@@ -48739,7 +48744,7 @@ const SwitchBase = /* @__PURE__ */ reactExports.forwardRef(function SwitchBase2(
     disableFocusRipple,
     edge
   });
-  const classes = useUtilityClasses$o(ownerState);
+  const classes = useUtilityClasses$p(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$2({
     component: "span",
     className: clsx(classes.root, className),
@@ -48883,8 +48888,8 @@ function getSwitchUtilityClass(slot) {
 }
 const switchClasses = generateUtilityClasses("MuiSwitch", ["root", "edgeStart", "edgeEnd", "switchBase", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium", "checked", "disabled", "input", "thumb", "track"]);
 const switchClasses$1 = switchClasses;
-const _excluded$r = ["className", "color", "edge", "size", "sx"];
-const useUtilityClasses$n = (ownerState) => {
+const _excluded$s = ["className", "color", "edge", "size", "sx"];
+const useUtilityClasses$o = (ownerState) => {
   const {
     classes,
     edge,
@@ -49057,13 +49062,13 @@ const Switch = /* @__PURE__ */ reactExports.forwardRef(function Switch2(inProps,
     edge = false,
     size: size2 = "medium",
     sx
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$r);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$s);
   const ownerState = _extends$2({}, props, {
     color: color2,
     edge,
     size: size2
   });
-  const classes = useUtilityClasses$n(ownerState);
+  const classes = useUtilityClasses$o(ownerState);
   const icon = /* @__PURE__ */ jsxRuntimeExports.jsx(SwitchThumb, {
     className: classes.thumb,
     ownerState
@@ -49258,8 +49263,8 @@ const InfoOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("
 const ClearIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
-const _excluded$q = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-const useUtilityClasses$m = (ownerState) => {
+const _excluded$r = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+const useUtilityClasses$n = (ownerState) => {
   const {
     variant,
     color: color2,
@@ -49387,13 +49392,13 @@ const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, r
     slotProps = {},
     slots = {},
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$q);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$r);
   const ownerState = _extends$2({}, props, {
     color: color2,
     severity,
     variant
   });
-  const classes = useUtilityClasses$m(ownerState);
+  const classes = useUtilityClasses$n(ownerState);
   const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
   const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
   const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -49567,8 +49572,8 @@ function getFormHelperTextUtilityClasses(slot) {
 const formHelperTextClasses = generateUtilityClasses("MuiFormHelperText", ["root", "error", "disabled", "sizeSmall", "sizeMedium", "contained", "focused", "filled", "required"]);
 const formHelperTextClasses$1 = formHelperTextClasses;
 var _span$2;
-const _excluded$p = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
-const useUtilityClasses$l = (ownerState) => {
+const _excluded$q = ["children", "className", "component", "disabled", "error", "filled", "focused", "margin", "required", "variant"];
+const useUtilityClasses$m = (ownerState) => {
   const {
     classes,
     contained,
@@ -49625,7 +49630,7 @@ const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelp
     children,
     className,
     component = "p"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$p);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$q);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -49643,7 +49648,7 @@ const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelp
     focused: fcs.focused,
     required: fcs.required
   });
-  const classes = useUtilityClasses$l(ownerState);
+  const classes = useUtilityClasses$m(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FormHelperTextRoot, _extends$2({
     as: component,
     ownerState,
@@ -49723,7 +49728,7 @@ function getInputBaseUtilityClass(slot) {
 }
 const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
 const inputBaseClasses$1 = inputBaseClasses;
-const _excluded$o = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+const _excluded$p = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
 const rootOverridesResolver = (props, styles2) => {
   const {
     ownerState
@@ -49736,7 +49741,7 @@ const inputOverridesResolver = (props, styles2) => {
   } = props;
   return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
 };
-const useUtilityClasses$k = (ownerState) => {
+const useUtilityClasses$l = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -49947,7 +49952,7 @@ const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(in
     startAdornment,
     type = "text",
     value: valueProp
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$o);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$p);
   const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
   const {
     current: isControlled
@@ -50108,7 +50113,7 @@ const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(in
     startAdornment,
     type
   });
-  const classes = useUtilityClasses$k(ownerState);
+  const classes = useUtilityClasses$l(ownerState);
   const Root = slots.root || components.Root || InputBaseRoot;
   const rootProps = slotProps.root || componentsProps.root || {};
   const Input3 = slots.input || components.Input || InputBaseComponent;
@@ -50394,8 +50399,8 @@ function getInputUtilityClass(slot) {
 }
 const inputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiInput", ["root", "underline", "input"]));
 const inputClasses$1 = inputClasses;
-const _excluded$n = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
-const useUtilityClasses$j = (ownerState) => {
+const _excluded$o = ["disableUnderline", "components", "componentsProps", "fullWidth", "inputComponent", "multiline", "slotProps", "slots", "type"];
+const useUtilityClasses$k = (ownerState) => {
   const {
     classes,
     disableUnderline
@@ -50506,8 +50511,8 @@ const Input = /* @__PURE__ */ reactExports.forwardRef(function Input2(inProps, r
     slotProps,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$n);
-  const classes = useUtilityClasses$j(props);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$o);
+  const classes = useUtilityClasses$k(props);
   const ownerState = {
     disableUnderline
   };
@@ -50727,8 +50732,8 @@ function getFilledInputUtilityClass(slot) {
 }
 const filledInputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiFilledInput", ["root", "underline", "input"]));
 const filledInputClasses$1 = filledInputClasses;
-const _excluded$m = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
-const useUtilityClasses$i = (ownerState) => {
+const _excluded$n = ["disableUnderline", "components", "componentsProps", "fullWidth", "hiddenLabel", "inputComponent", "multiline", "slotProps", "slots", "type"];
+const useUtilityClasses$j = (ownerState) => {
   const {
     classes,
     disableUnderline
@@ -50910,14 +50915,14 @@ const FilledInput = /* @__PURE__ */ reactExports.forwardRef(function FilledInput
     slotProps,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$m);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$n);
   const ownerState = _extends$2({}, props, {
     fullWidth,
     inputComponent,
     multiline,
     type
   });
-  const classes = useUtilityClasses$i(props);
+  const classes = useUtilityClasses$j(props);
   const filledInputComponentsProps = {
     root: {
       ownerState
@@ -51140,7 +51145,7 @@ process.env.NODE_ENV !== "production" ? FilledInput.propTypes = {
 FilledInput.muiName = "Input";
 const FilledInput$1 = FilledInput;
 var _span$1;
-const _excluded$l = ["children", "classes", "className", "label", "notched"];
+const _excluded$m = ["children", "classes", "className", "label", "notched"];
 const NotchedOutlineRoot$1 = styled$1("fieldset")({
   textAlign: "left",
   position: "absolute",
@@ -51208,7 +51213,7 @@ function NotchedOutline(props) {
     className,
     label,
     notched
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$l);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$m);
   const withLabel = label != null && label !== "";
   const ownerState = _extends$2({}, props, {
     notched,
@@ -51265,8 +51270,8 @@ function getOutlinedInputUtilityClass(slot) {
 }
 const outlinedInputClasses = _extends$2({}, inputBaseClasses$1, generateUtilityClasses("MuiOutlinedInput", ["root", "notchedOutline", "input"]));
 const outlinedInputClasses$1 = outlinedInputClasses;
-const _excluded$k = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
-const useUtilityClasses$h = (ownerState) => {
+const _excluded$l = ["components", "fullWidth", "inputComponent", "label", "multiline", "notched", "slots", "type"];
+const useUtilityClasses$i = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -51383,8 +51388,8 @@ const OutlinedInput = /* @__PURE__ */ reactExports.forwardRef(function OutlinedI
     notched,
     slots = {},
     type = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$k);
-  const classes = useUtilityClasses$h(props);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$l);
+  const classes = useUtilityClasses$i(props);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -51602,8 +51607,8 @@ function getFormLabelUtilityClasses(slot) {
 }
 const formLabelClasses = generateUtilityClasses("MuiFormLabel", ["root", "colorSecondary", "focused", "disabled", "error", "filled", "required", "asterisk"]);
 const formLabelClasses$1 = formLabelClasses;
-const _excluded$j = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
-const useUtilityClasses$g = (ownerState) => {
+const _excluded$k = ["children", "className", "color", "component", "disabled", "error", "filled", "focused", "required"];
+const useUtilityClasses$h = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -51666,7 +51671,7 @@ const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(in
     children,
     className,
     component = "label"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$j);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$k);
   const muiFormControl = useFormControl();
   const fcs = formControlState({
     props,
@@ -51682,7 +51687,7 @@ const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(in
     focused: fcs.focused,
     required: fcs.required
   });
-  const classes = useUtilityClasses$g(ownerState);
+  const classes = useUtilityClasses$h(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(FormLabelRoot, _extends$2({
     as: component,
     ownerState,
@@ -51755,8 +51760,8 @@ function getInputLabelUtilityClasses(slot) {
   return generateUtilityClass("MuiInputLabel", slot);
 }
 generateUtilityClasses("MuiInputLabel", ["root", "focused", "disabled", "error", "required", "asterisk", "formControl", "sizeSmall", "shrink", "animated", "standard", "filled", "outlined"]);
-const _excluded$i = ["disableAnimation", "margin", "shrink", "variant", "className"];
-const useUtilityClasses$f = (ownerState) => {
+const _excluded$j = ["disableAnimation", "margin", "shrink", "variant", "className"];
+const useUtilityClasses$g = (ownerState) => {
   const {
     classes,
     formControl,
@@ -51856,7 +51861,7 @@ const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(
     disableAnimation = false,
     shrink: shrinkProp,
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$i);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$j);
   const muiFormControl = useFormControl();
   let shrink = shrinkProp;
   if (typeof shrink === "undefined" && muiFormControl) {
@@ -51875,7 +51880,7 @@ const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(
     variant: fcs.variant,
     required: fcs.required
   });
-  const classes = useUtilityClasses$f(ownerState);
+  const classes = useUtilityClasses$g(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabelRoot, _extends$2({
     "data-shrink": shrink,
     ownerState,
@@ -51958,8 +51963,8 @@ function getNativeSelectUtilityClasses(slot) {
 }
 const nativeSelectClasses = generateUtilityClasses("MuiNativeSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
 const nativeSelectClasses$1 = nativeSelectClasses;
-const _excluded$h = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
-const useUtilityClasses$e = (ownerState) => {
+const _excluded$i = ["className", "disabled", "error", "IconComponent", "inputRef", "variant"];
+const useUtilityClasses$f = (ownerState) => {
   const {
     classes,
     variant,
@@ -52083,13 +52088,13 @@ const NativeSelectInput = /* @__PURE__ */ reactExports.forwardRef(function Nativ
     IconComponent,
     inputRef,
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$h);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$i);
   const ownerState = _extends$2({}, props, {
     disabled,
     variant,
     error
   });
-  const classes = useUtilityClasses$e(ownerState);
+  const classes = useUtilityClasses$f(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
     children: [/* @__PURE__ */ jsxRuntimeExports.jsx(NativeSelectSelect, _extends$2({
       ownerState,
@@ -52166,7 +52171,7 @@ function getSelectUtilityClasses(slot) {
 const selectClasses = generateUtilityClasses("MuiSelect", ["root", "select", "multiple", "filled", "outlined", "standard", "disabled", "focused", "icon", "iconOpen", "iconFilled", "iconOutlined", "iconStandard", "nativeInput", "error"]);
 const selectClasses$1 = selectClasses;
 var _span;
-const _excluded$g = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
+const _excluded$h = ["aria-describedby", "aria-label", "autoFocus", "autoWidth", "children", "className", "defaultOpen", "defaultValue", "disabled", "displayEmpty", "error", "IconComponent", "inputRef", "labelId", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value", "variant"];
 const SelectSelect = styled$1("div", {
   name: "MuiSelect",
   slot: "Select",
@@ -52235,7 +52240,7 @@ function areEqualValues$1(a, b) {
 function isEmpty(display) {
   return display == null || typeof display === "string" && !display.trim();
 }
-const useUtilityClasses$d = (ownerState) => {
+const useUtilityClasses$e = (ownerState) => {
   const {
     classes,
     variant,
@@ -52283,7 +52288,7 @@ const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput
     tabIndex: tabIndexProp,
     value: valueProp,
     variant = "standard"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$g);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$h);
   const [value, setValueState] = useControlled({
     controlled: valueProp,
     default: defaultValue,
@@ -52550,7 +52555,7 @@ const SelectInput = /* @__PURE__ */ reactExports.forwardRef(function SelectInput
     open,
     error
   });
-  const classes = useUtilityClasses$d(ownerState);
+  const classes = useUtilityClasses$e(ownerState);
   const paperProps = _extends$2({}, MenuProps.PaperProps, (_MenuProps$slotProps = MenuProps.slotProps) == null ? void 0 : _MenuProps$slotProps.paper);
   const listboxId = useId();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
@@ -52777,8 +52782,8 @@ const SelectInput$1 = SelectInput;
 const ArrowDropDownIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M7 10l5 5 5-5z"
 }), "ArrowDropDown");
-const _excluded$f = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$1 = ["root"];
-const useUtilityClasses$c = (ownerState) => {
+const _excluded$g = ["autoWidth", "children", "classes", "className", "defaultOpen", "displayEmpty", "IconComponent", "id", "input", "inputProps", "label", "labelId", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps", "variant"], _excluded2$1 = ["root"];
+const useUtilityClasses$d = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -52820,7 +52825,7 @@ const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps,
     renderValue,
     SelectDisplayProps,
     variant: variantProp = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$f);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$g);
   const inputComponent = native ? NativeSelectInput$1 : SelectInput$1;
   const muiFormControl = useFormControl();
   const fcs = formControlState({
@@ -52833,7 +52838,7 @@ const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps,
     variant,
     classes: classesProp
   });
-  const classes = useUtilityClasses$c(ownerState);
+  const classes = useUtilityClasses$d(ownerState);
   const restOfClasses = _objectWithoutPropertiesLoose$1(classes, _excluded2$1);
   const InputComponent = input || {
     standard: /* @__PURE__ */ jsxRuntimeExports.jsx(StyledInput, {
@@ -53042,13 +53047,13 @@ function getTextFieldUtilityClass(slot) {
   return generateUtilityClass("MuiTextField", slot);
 }
 generateUtilityClasses("MuiTextField", ["root"]);
-const _excluded$e = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
+const _excluded$f = ["autoComplete", "autoFocus", "children", "className", "color", "defaultValue", "disabled", "error", "FormHelperTextProps", "fullWidth", "helperText", "id", "InputLabelProps", "inputProps", "InputProps", "inputRef", "label", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onFocus", "placeholder", "required", "rows", "select", "SelectProps", "type", "value", "variant"];
 const variantComponent = {
   standard: Input$1,
   filled: FilledInput$1,
   outlined: OutlinedInput$1
 };
-const useUtilityClasses$b = (ownerState) => {
+const useUtilityClasses$c = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -53100,7 +53105,7 @@ const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(in
     type,
     value,
     variant = "outlined"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$e);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$f);
   const ownerState = _extends$2({}, props, {
     autoFocus,
     color: color2,
@@ -53112,7 +53117,7 @@ const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(in
     select,
     variant
   });
-  const classes = useUtilityClasses$b(ownerState);
+  const classes = useUtilityClasses$c(ownerState);
   if (process.env.NODE_ENV !== "production") {
     if (select && !children) {
       console.error("MUI: `children` must be passed when using the `TextField` component with `select`.");
@@ -53366,7 +53371,7 @@ if (process.env.NODE_ENV !== "production") {
   RadioGroupContext.displayName = "RadioGroupContext";
 }
 const RadioGroupContext$1 = RadioGroupContext;
-const _excluded$d = ["actions", "children", "defaultValue", "name", "onChange", "value"];
+const _excluded$e = ["actions", "children", "defaultValue", "name", "onChange", "value"];
 const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(props, ref) {
   const {
     // private
@@ -53377,7 +53382,7 @@ const RadioGroup = /* @__PURE__ */ reactExports.forwardRef(function RadioGroup2(
     name: nameProp,
     onChange,
     value: valueProp
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$d);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$e);
   const rootRef = reactExports.useRef(null);
   const [value, setValueState] = useControlled({
     controlled: valueProp,
@@ -53528,8 +53533,8 @@ function getRadioUtilityClass(slot) {
 }
 const radioClasses = generateUtilityClasses("MuiRadio", ["root", "checked", "disabled", "colorPrimary", "colorSecondary", "sizeSmall"]);
 const radioClasses$1 = radioClasses;
-const _excluded$c = ["checked", "checkedIcon", "color", "icon", "name", "onChange", "size", "className"];
-const useUtilityClasses$a = (ownerState) => {
+const _excluded$d = ["checked", "checkedIcon", "color", "icon", "name", "onChange", "size", "className"];
+const useUtilityClasses$b = (ownerState) => {
   const {
     classes,
     color: color2,
@@ -53597,12 +53602,12 @@ const Radio = /* @__PURE__ */ reactExports.forwardRef(function Radio2(inProps, r
     onChange: onChangeProp,
     size: size2 = "medium",
     className
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$c);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$d);
   const ownerState = _extends$2({}, props, {
     color: color2,
     size: size2
   });
-  const classes = useUtilityClasses$a(ownerState);
+  const classes = useUtilityClasses$b(ownerState);
   const radioGroup = useRadioGroup();
   let checked = checkedProp;
   const onChange = createChainedFunction(onChangeProp, radioGroup && radioGroup.onChange);
@@ -53735,8 +53740,8 @@ if (process.env.NODE_ENV !== "production") {
   ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
 }
 const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-const _excluded$b = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-const useUtilityClasses$9 = (ownerState) => {
+const _excluded$c = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+const useUtilityClasses$a = (ownerState) => {
   const {
     color: color2,
     disableElevation,
@@ -53961,7 +53966,7 @@ const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps,
     startIcon: startIconProp,
     type,
     variant = "text"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$b);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$c);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -53973,7 +53978,7 @@ const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps,
     type,
     variant
   });
-  const classes = useUtilityClasses$9(ownerState);
+  const classes = useUtilityClasses$a(ownerState);
   const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
     className: classes.startIcon,
     ownerState,
@@ -54098,8 +54103,8 @@ function getSnackbarContentUtilityClass(slot) {
   return generateUtilityClass("MuiSnackbarContent", slot);
 }
 generateUtilityClasses("MuiSnackbarContent", ["root", "message", "action"]);
-const _excluded$a = ["action", "className", "message", "role"];
-const useUtilityClasses$8 = (ownerState) => {
+const _excluded$b = ["action", "className", "message", "role"];
+const useUtilityClasses$9 = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -54162,9 +54167,9 @@ const SnackbarContent = /* @__PURE__ */ reactExports.forwardRef(function Snackba
     className,
     message,
     role = "alert"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$a);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$b);
   const ownerState = props;
-  const classes = useUtilityClasses$8(ownerState);
+  const classes = useUtilityClasses$9(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SnackbarContentRoot, _extends$2({
     role,
     square: true,
@@ -54220,8 +54225,8 @@ function getSnackbarUtilityClass(slot) {
   return generateUtilityClass("MuiSnackbar", slot);
 }
 generateUtilityClasses("MuiSnackbar", ["root", "anchorOriginTopCenter", "anchorOriginBottomCenter", "anchorOriginTopRight", "anchorOriginBottomRight", "anchorOriginTopLeft", "anchorOriginBottomLeft"]);
-const _excluded$9 = ["onEnter", "onExited"], _excluded2 = ["action", "anchorOrigin", "autoHideDuration", "children", "className", "ClickAwayListenerProps", "ContentProps", "disableWindowBlurListener", "message", "onBlur", "onClose", "onFocus", "onMouseEnter", "onMouseLeave", "open", "resumeHideDuration", "TransitionComponent", "transitionDuration", "TransitionProps"];
-const useUtilityClasses$7 = (ownerState) => {
+const _excluded$a = ["onEnter", "onExited"], _excluded2 = ["action", "anchorOrigin", "autoHideDuration", "children", "className", "ClickAwayListenerProps", "ContentProps", "disableWindowBlurListener", "message", "onBlur", "onClose", "onFocus", "onMouseEnter", "onMouseLeave", "open", "resumeHideDuration", "TransitionComponent", "transitionDuration", "TransitionProps"];
+const useUtilityClasses$8 = (ownerState) => {
   const {
     classes,
     anchorOrigin
@@ -54312,7 +54317,7 @@ const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inPr
       onEnter,
       onExited
     } = {}
-  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$9), other = _objectWithoutPropertiesLoose$1(props, _excluded2);
+  } = props, TransitionProps = _objectWithoutPropertiesLoose$1(props.TransitionProps, _excluded$a), other = _objectWithoutPropertiesLoose$1(props, _excluded2);
   const ownerState = _extends$2({}, props, {
     anchorOrigin: {
       vertical,
@@ -54323,7 +54328,7 @@ const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inPr
     TransitionComponent,
     transitionDuration
   });
-  const classes = useUtilityClasses$7(ownerState);
+  const classes = useUtilityClasses$8(ownerState);
   const {
     getRootProps,
     onClickAway
@@ -54731,8 +54736,8 @@ function getFabUtilityClass(slot) {
 }
 const fabClasses = generateUtilityClasses("MuiFab", ["root", "primary", "secondary", "extended", "circular", "focusVisible", "disabled", "colorInherit", "sizeSmall", "sizeMedium", "sizeLarge", "info", "error", "warning", "success"]);
 const fabClasses$1 = fabClasses;
-const _excluded$8 = ["children", "className", "color", "component", "disabled", "disableFocusRipple", "focusVisibleClassName", "size", "variant"];
-const useUtilityClasses$6 = (ownerState) => {
+const _excluded$9 = ["children", "className", "color", "component", "disabled", "disableFocusRipple", "focusVisibleClassName", "size", "variant"];
+const useUtilityClasses$7 = (ownerState) => {
   const {
     color: color2,
     variant,
@@ -54853,7 +54858,7 @@ const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) 
     focusVisibleClassName,
     size: size2 = "large",
     variant = "circular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$8);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$9);
   const ownerState = _extends$2({}, props, {
     color: color2,
     component,
@@ -54862,7 +54867,7 @@ const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) 
     size: size2,
     variant
   });
-  const classes = useUtilityClasses$6(ownerState);
+  const classes = useUtilityClasses$7(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(FabRoot, _extends$2({
     className: clsx(classes.root, className),
     component,
@@ -55243,8 +55248,8 @@ function getAppBarUtilityClass(slot) {
   return generateUtilityClass("MuiAppBar", slot);
 }
 generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-const _excluded$7 = ["className", "color", "enableColorOnDark", "position"];
-const useUtilityClasses$5 = (ownerState) => {
+const _excluded$8 = ["className", "color", "enableColorOnDark", "position"];
+const useUtilityClasses$6 = (ownerState) => {
   const {
     color: color2,
     position: position2,
@@ -55345,13 +55350,13 @@ const AppBar = /* @__PURE__ */ reactExports.forwardRef(function AppBar2(inProps,
     color: color2 = "primary",
     enableColorOnDark = false,
     position: position2 = "fixed"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$7);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$8);
   const ownerState = _extends$2({}, props, {
     color: color2,
     position: position2,
     enableColorOnDark
   });
-  const classes = useUtilityClasses$5(ownerState);
+  const classes = useUtilityClasses$6(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$2({
     square: true,
     component: "header",
@@ -55407,8 +55412,8 @@ function getToolbarUtilityClass(slot) {
   return generateUtilityClass("MuiToolbar", slot);
 }
 generateUtilityClasses("MuiToolbar", ["root", "gutters", "regular", "dense"]);
-const _excluded$6 = ["className", "component", "disableGutters", "variant"];
-const useUtilityClasses$4 = (ownerState) => {
+const _excluded$7 = ["className", "component", "disableGutters", "variant"];
+const useUtilityClasses$5 = (ownerState) => {
   const {
     classes,
     disableGutters,
@@ -55458,13 +55463,13 @@ const Toolbar = /* @__PURE__ */ reactExports.forwardRef(function Toolbar2(inProp
     component = "div",
     disableGutters = false,
     variant = "regular"
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$6);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$7);
   const ownerState = _extends$2({}, props, {
     component,
     disableGutters,
     variant
   });
-  const classes = useUtilityClasses$4(ownerState);
+  const classes = useUtilityClasses$5(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ToolbarRoot, _extends$2({
     as: component,
     className: clsx(classes.root, className),
@@ -55569,7 +55574,7 @@ if (process.env.NODE_ENV !== "production") {
   DialogContext.displayName = "DialogContext";
 }
 const DialogContext$1 = DialogContext;
-const _excluded$5 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+const _excluded$6 = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
 const DialogBackdrop = styled$1(Backdrop$1, {
   name: "MuiDialog",
   slot: "Backdrop",
@@ -55578,7 +55583,7 @@ const DialogBackdrop = styled$1(Backdrop$1, {
   // Improve scrollable dialog support.
   zIndex: -1
 });
-const useUtilityClasses$3 = (ownerState) => {
+const useUtilityClasses$4 = (ownerState) => {
   const {
     classes,
     scroll,
@@ -55727,7 +55732,7 @@ const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps,
     TransitionComponent = Fade$1,
     transitionDuration = defaultTransitionDuration,
     TransitionProps
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$6);
   const ownerState = _extends$2({}, props, {
     disableEscapeKeyDown,
     fullScreen,
@@ -55735,7 +55740,7 @@ const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps,
     maxWidth: maxWidth2,
     scroll
   });
-  const classes = useUtilityClasses$3(ownerState);
+  const classes = useUtilityClasses$4(ownerState);
   const backdropClick = reactExports.useRef();
   const handleMouseDown = (event) => {
     backdropClick.current = event.target === event.currentTarget;
@@ -55939,8 +55944,8 @@ function getDialogTitleUtilityClass(slot) {
 }
 const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
 const dialogTitleClasses$1 = dialogTitleClasses;
-const _excluded$4 = ["className", "id"];
-const useUtilityClasses$2 = (ownerState) => {
+const _excluded$5 = ["className", "id"];
+const useUtilityClasses$3 = (ownerState) => {
   const {
     classes
   } = ownerState;
@@ -55965,9 +55970,9 @@ const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle
   const {
     className,
     id: idProp
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$5);
   const ownerState = props;
-  const classes = useUtilityClasses$2(ownerState);
+  const classes = useUtilityClasses$3(ownerState);
   const {
     titleId = idProp
   } = reactExports.useContext(DialogContext$1);
@@ -56011,8 +56016,8 @@ function getDialogContentUtilityClass(slot) {
   return generateUtilityClass("MuiDialogContent", slot);
 }
 generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
-const _excluded$3 = ["className", "dividers"];
-const useUtilityClasses$1 = (ownerState) => {
+const _excluded$4 = ["className", "dividers"];
+const useUtilityClasses$2 = (ownerState) => {
   const {
     classes,
     dividers
@@ -56057,11 +56062,11 @@ const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogCon
   const {
     className,
     dividers = false
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$3);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$4);
   const ownerState = _extends$2({}, props, {
     dividers
   });
-  const classes = useUtilityClasses$1(ownerState);
+  const classes = useUtilityClasses$2(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -56100,8 +56105,8 @@ function getDialogActionsUtilityClass(slot) {
   return generateUtilityClass("MuiDialogActions", slot);
 }
 generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-const _excluded$2 = ["className", "disableSpacing"];
-const useUtilityClasses = (ownerState) => {
+const _excluded$3 = ["className", "disableSpacing"];
+const useUtilityClasses$1 = (ownerState) => {
   const {
     classes,
     disableSpacing
@@ -56141,11 +56146,11 @@ const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogAct
   const {
     className,
     disableSpacing = false
-  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$2);
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$3);
   const ownerState = _extends$2({}, props, {
     disableSpacing
   });
-  const classes = useUtilityClasses(ownerState);
+  const classes = useUtilityClasses$1(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$2({
     className: clsx(classes.root, className),
     ownerState,
@@ -57750,6 +57755,73 @@ class WorkflowsMenu extends reactExports.Component {
     ] });
   }
 }
+function getAlertTitleUtilityClass(slot) {
+  return generateUtilityClass("MuiAlertTitle", slot);
+}
+generateUtilityClasses("MuiAlertTitle", ["root"]);
+const _excluded$2 = ["className"];
+const useUtilityClasses = (ownerState) => {
+  const {
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root"]
+  };
+  return composeClasses(slots, getAlertTitleUtilityClass, classes);
+};
+const AlertTitleRoot = styled$1(Typography$1, {
+  name: "MuiAlertTitle",
+  slot: "Root",
+  overridesResolver: (props, styles2) => styles2.root
+})(({
+  theme: theme2
+}) => {
+  return {
+    fontWeight: theme2.typography.fontWeightMedium,
+    marginTop: -2
+  };
+});
+const AlertTitle = /* @__PURE__ */ reactExports.forwardRef(function AlertTitle2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiAlertTitle"
+  });
+  const {
+    className
+  } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$2);
+  const ownerState = props;
+  const classes = useUtilityClasses(ownerState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$2({
+    gutterBottom: true,
+    component: "div",
+    ownerState,
+    ref,
+    className: clsx(classes.root, className)
+  }, other));
+});
+process.env.NODE_ENV !== "production" ? AlertTitle.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+const AlertTitle$1 = AlertTitle;
 class MessageBox extends reactExports.Component {
   constructor() {
     super(...arguments);
@@ -96762,18 +96834,22 @@ const SectionHeader = styled$1("header")(({ theme: theme2 }) => ({
     marginLeft: "auto"
   }
 }));
-const SectionGrid = styled$1(Box$1)(({ theme: theme2 }) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
-  gap: theme2.spacing(3)
-}));
-const Section = ({ header, content }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionWrap, { children: [
+const Section = ({ header, children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionWrap, { children: [
   header && /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionHeader, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: window.gettext(header.title) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: header.seeAll.href, children: window.gettext(header.seeAll.text || "See all") })
+    header.seeAll && /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: header.seeAll.href, children: window.gettext(header.seeAll.text || "See all") })
   ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx(SectionGrid, { children: content })
+  children
 ] });
+const StyledTitle = styled$1(AlertTitle$1)({
+  fontWeight: 600
+});
+const CFAlert = ({ severity, title, subtitle, sx }) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert$1, { severity, sx, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
+    subtitle
+  ] });
+};
 const Home = ({ is_teacher }) => {
   const [state, setState] = reactExports.useState({
     loading: true,
@@ -96810,7 +96886,29 @@ const Home = ({ is_teacher }) => {
             href: COURSEFLOW_APP.config.my_liveprojects_path
           }
         },
-        content: workflowCards(projects, "project")
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(projects, "project") })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Section,
+      {
+        header: {
+          title: "Explore templates"
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CFAlert,
+            {
+              sx: { mb: 3 },
+              severity: "info",
+              title: window.gettext("How to use templates"),
+              subtitle: window.gettext(
+                "Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!"
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(projects, "templates") })
+        ]
       }
     ),
     is_teacher && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -96823,7 +96921,7 @@ const Home = ({ is_teacher }) => {
             href: COURSEFLOW_APP.config.my_favourites_path
           }
         },
-        content: workflowCards(favourites, "favourite")
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(favourites, "favourite") })
       }
     )
   ] });

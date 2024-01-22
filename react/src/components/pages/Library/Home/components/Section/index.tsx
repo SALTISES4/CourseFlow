@@ -20,12 +20,6 @@ const SectionHeader = styled('header')(({ theme }) => ({
   }
 }))
 
-const SectionGrid = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: theme.spacing(3)
-}))
-
 type PropsType = {
   header: {
     title: string
@@ -34,20 +28,22 @@ type PropsType = {
       href: string
     }
   }
-  content: ReactNode
+  children: ReactNode
 }
 
-const Section = ({ header, content }: PropsType) => (
+const Section = ({ header, children }: PropsType) => (
   <SectionWrap>
     {header && (
       <SectionHeader>
         <Typography variant="h5">{window.gettext(header.title)}</Typography>
-        <Link href={header.seeAll.href}>
-          {window.gettext(header.seeAll.text || 'See all')}
-        </Link>
+        {header.seeAll && (
+          <Link href={header.seeAll.href}>
+            {window.gettext(header.seeAll.text || 'See all')}
+          </Link>
+        )}
       </SectionHeader>
     )}
-    <SectionGrid>{content}</SectionGrid>
+    {children}
   </SectionWrap>
 )
 

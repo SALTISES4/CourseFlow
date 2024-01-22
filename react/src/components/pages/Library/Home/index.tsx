@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import Welcome from './components/Welcome'
 import Section from './components/Section'
+import Alert from '@cfCommonComponents/components/Alert'
 import { Workflow } from '@cfModule/types/common'
 import { getHomeQuery } from '@XMLHTTP/API/pages'
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
 
 type PropsType = {
   is_teacher: boolean
@@ -63,9 +64,26 @@ const Home = ({ is_teacher }: PropsType) => {
                   }
                 }
           }
-          content={workflowCards(projects, 'project')}
-        />
+        >
+          <GridWrap>{workflowCards(projects, 'project')}</GridWrap>
+        </Section>
       )}
+
+      <Section
+        header={{
+          title: 'Explore templates'
+        }}
+      >
+        <Alert
+          sx={{ mb: 3 }}
+          severity="info"
+          title={window.gettext('How to use templates')}
+          subtitle={window.gettext(
+            'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
+          )}
+        />
+        <GridWrap>{workflowCards(projects, 'templates')}</GridWrap>
+      </Section>
 
       {is_teacher && (
         <Section
@@ -76,8 +94,9 @@ const Home = ({ is_teacher }: PropsType) => {
               href: COURSEFLOW_APP.config.my_favourites_path
             }
           }}
-          content={workflowCards(favourites, 'favourite')}
-        />
+        >
+          <GridWrap>{workflowCards(favourites, 'favourite')}</GridWrap>
+        </Section>
       )}
     </OuterContentWrap>
   )

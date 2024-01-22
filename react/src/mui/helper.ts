@@ -14,3 +14,9 @@ export const OuterContentWrap = styled(Box, {
     paddingRight: theme.spacing(2)
   })
 }))
+
+export const GridWrap = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: theme.spacing(3)
+}))
