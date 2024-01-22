@@ -97105,6 +97105,32 @@ ${latestSubscriptionCallbackError.current.stack}
       ] })
     ] });
   };
+  const SectionWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    marginBottom: theme2.spacing(6)
+  }));
+  const SectionHeader = styled$1("header")(({ theme: theme2 }) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme2.spacing(3),
+    ".MuiTypography-h5": {
+      color: "currentColor"
+    },
+    ".MuiLink-root": {
+      marginLeft: "auto"
+    }
+  }));
+  const SectionGrid = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: theme2.spacing(3)
+  }));
+  const Section = ({ header, content }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionWrap, { children: [
+    header && /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionHeader, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: window.gettext(header.title) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: header.seeAll.href, children: window.gettext(header.seeAll.text || "See all") })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(SectionGrid, { children: content })
+  ] });
   const Home = ({ is_teacher }) => {
     const [state, setState] = reactExports.useState({
       loading: true,
@@ -97116,44 +97142,47 @@ ${latestSubscriptionCallbackError.current.stack}
         setState({ ...data2, loading: false });
       });
     }, []);
-    function renderWorkflowCards(workflows, keyPrefix) {
+    function workflowCards(workflows, keyPrefix) {
       return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
-    }
-    function renderHomeItem(title, content, path) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-item", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-title-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "home-item-title", children: window.gettext(title) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "collapsed-text-show-more", href: path, children: window.gettext("See all") })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: content })
-      ] });
     }
     if (state.loading) {
       return null;
     }
     const { projects, favourites } = state;
-    const projectsContent = renderWorkflowCards(projects, "project");
-    const favouritesContent = renderWorkflowCards(favourites, "favourite");
-    const projectTitle = is_teacher ? window.gettext("Recent projects") : window.gettext("Recent classrooms");
-    const projectPath = is_teacher ? COURSEFLOW_APP.config.my_library_path : COURSEFLOW_APP.config.my_liveprojects_path;
-    const favouritePath = COURSEFLOW_APP.config.my_favourites_path;
-    const projectsSection = renderHomeItem(
-      projectTitle,
-      projectsContent,
-      projectPath
-    );
-    let favouritesSection = null;
-    if (is_teacher) {
-      favouritesSection = renderHomeItem(
-        "Favourites",
-        favouritesContent,
-        favouritePath
-      );
-    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!state.projects.length }),
-      projectsSection,
-      favouritesSection
+      state.projects.length && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Section,
+        {
+          header: is_teacher ? {
+            title: window.gettext("Recent projects"),
+            seeAll: {
+              text: "View all projects",
+              href: COURSEFLOW_APP.config.my_library_path
+            }
+          } : {
+            title: window.gettext("Recent classrooms"),
+            seeAll: {
+              text: "View all classrooms",
+              href: COURSEFLOW_APP.config.my_liveprojects_path
+            }
+          },
+          content: workflowCards(projects, "project")
+        }
+      ),
+      is_teacher && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Section,
+        {
+          header: {
+            title: "Favourites",
+            seeAll: {
+              text: "See all favourites",
+              href: COURSEFLOW_APP.config.my_favourites_path
+            }
+          },
+          content: workflowCards(favourites, "favourite")
+        }
+      )
     ] });
   };
   class ExploreFilter extends reactExports.Component {
