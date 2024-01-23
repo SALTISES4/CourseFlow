@@ -44,7 +44,6 @@ import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 
 // @WORKFLOW
-import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'

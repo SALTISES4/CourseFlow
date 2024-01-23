@@ -1,6 +1,5 @@
 import {
   FavouritesQueryResp,
-  HomeQueryResp,
   LibraryQueryResp,
   SearchAllObjectsQueryResp
 } from '@XMLHTTP/types/query'
@@ -51,24 +50,6 @@ export function searchAllObjectsQuery(
       additional_data: JSON.stringify(data)
     }).done(function (_data: SearchAllObjectsQueryResp) {
       callBackFunction(_data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-/**
- * Get the home projects
- * @param callBackFunction
- */
-export function getHomeQuery(
-  callBackFunction = (_data: HomeQueryResp) => console.log('success')
-) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function (
-      data: HomeQueryResp
-    ) {
-      callBackFunction(data)
     })
   } catch (err) {
     window.fail_function()

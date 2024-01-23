@@ -32,11 +32,6 @@ export type SearchAllObjectsQueryResp = {
   pages: QueryPages
 }
 
-export type HomeQueryResp = {
-  favourites: Workflow[]
-  projects: Workflow[]
-}
-
 export type WorkflowsForProjectQueryResp = {
   data_package: Workflow[]
 }

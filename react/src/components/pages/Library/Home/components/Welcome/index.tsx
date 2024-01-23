@@ -13,6 +13,7 @@ import {
 const Wrap = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: `${theme.spacing(6)} ${theme.spacing(4)}`,
+  marginBottom: theme.spacing(4),
   border: `1px solid ${theme.palette.divider}`,
   textAlign: 'center'
 }))

@@ -56709,15 +56709,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
   function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
     try {
       $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
@@ -58134,1071 +58125,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       )
     ] });
   };
-  var shim = { exports: {} };
-  var useSyncExternalStoreShim_development = {};
-  /**
-   * @license React
-   * use-sync-external-store-shim.development.js
-   *
-   * Copyright (c) Facebook, Inc. and its affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   */
-  var hasRequiredUseSyncExternalStoreShim_development;
-  function requireUseSyncExternalStoreShim_development() {
-    if (hasRequiredUseSyncExternalStoreShim_development)
-      return useSyncExternalStoreShim_development;
-    hasRequiredUseSyncExternalStoreShim_development = 1;
-    if (process.env.NODE_ENV !== "production") {
-      (function() {
-        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
-          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
-        }
-        var React2 = reactExports;
-        var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-        function error(format2) {
-          {
-            {
-              for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                args[_key2 - 1] = arguments[_key2];
-              }
-              printWarning("error", format2, args);
-            }
-          }
-        }
-        function printWarning(level, format2, args) {
-          {
-            var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
-            var stack = ReactDebugCurrentFrame.getStackAddendum();
-            if (stack !== "") {
-              format2 += "%s";
-              args = args.concat([stack]);
-            }
-            var argsWithFormat = args.map(function(item) {
-              return String(item);
-            });
-            argsWithFormat.unshift("Warning: " + format2);
-            Function.prototype.apply.call(console[level], console, argsWithFormat);
-          }
-        }
-        function is2(x, y) {
-          return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
-        }
-        var objectIs = typeof Object.is === "function" ? Object.is : is2;
-        var useState = React2.useState, useEffect = React2.useEffect, useLayoutEffect = React2.useLayoutEffect, useDebugValue = React2.useDebugValue;
-        var didWarnOld18Alpha = false;
-        var didWarnUncachedGetSnapshot = false;
-        function useSyncExternalStore2(subscribe, getSnapshot, getServerSnapshot) {
-          {
-            if (!didWarnOld18Alpha) {
-              if (React2.startTransition !== void 0) {
-                didWarnOld18Alpha = true;
-                error("You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release.");
-              }
-            }
-          }
-          var value = getSnapshot();
-          {
-            if (!didWarnUncachedGetSnapshot) {
-              var cachedValue = getSnapshot();
-              if (!objectIs(value, cachedValue)) {
-                error("The result of getSnapshot should be cached to avoid an infinite loop");
-                didWarnUncachedGetSnapshot = true;
-              }
-            }
-          }
-          var _useState = useState({
-            inst: {
-              value,
-              getSnapshot
-            }
-          }), inst = _useState[0].inst, forceUpdate = _useState[1];
-          useLayoutEffect(function() {
-            inst.value = value;
-            inst.getSnapshot = getSnapshot;
-            if (checkIfSnapshotChanged(inst)) {
-              forceUpdate({
-                inst
-              });
-            }
-          }, [subscribe, value, getSnapshot]);
-          useEffect(function() {
-            if (checkIfSnapshotChanged(inst)) {
-              forceUpdate({
-                inst
-              });
-            }
-            var handleStoreChange = function() {
-              if (checkIfSnapshotChanged(inst)) {
-                forceUpdate({
-                  inst
-                });
-              }
-            };
-            return subscribe(handleStoreChange);
-          }, [subscribe]);
-          useDebugValue(value);
-          return value;
-        }
-        function checkIfSnapshotChanged(inst) {
-          var latestGetSnapshot = inst.getSnapshot;
-          var prevValue = inst.value;
-          try {
-            var nextValue = latestGetSnapshot();
-            return !objectIs(prevValue, nextValue);
-          } catch (error2) {
-            return true;
-          }
-        }
-        function useSyncExternalStore$1(subscribe, getSnapshot, getServerSnapshot) {
-          return getSnapshot();
-        }
-        var canUseDOM2 = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
-        var isServerEnvironment = !canUseDOM2;
-        var shim2 = isServerEnvironment ? useSyncExternalStore$1 : useSyncExternalStore2;
-        var useSyncExternalStore$2 = React2.useSyncExternalStore !== void 0 ? React2.useSyncExternalStore : shim2;
-        useSyncExternalStoreShim_development.useSyncExternalStore = useSyncExternalStore$2;
-        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
-          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
-        }
-      })();
-    }
-    return useSyncExternalStoreShim_development;
-  }
-  var useSyncExternalStoreShim_production_min = {};
-  /**
-   * @license React
-   * use-sync-external-store-shim.production.min.js
-   *
-   * Copyright (c) Facebook, Inc. and its affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   */
-  var hasRequiredUseSyncExternalStoreShim_production_min;
-  function requireUseSyncExternalStoreShim_production_min() {
-    if (hasRequiredUseSyncExternalStoreShim_production_min)
-      return useSyncExternalStoreShim_production_min;
-    hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = reactExports;
-    function h(a, b) {
-      return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
-    }
-    var k = "function" === typeof Object.is ? Object.is : h, l = e.useState, m2 = e.useEffect, n = e.useLayoutEffect, p = e.useDebugValue;
-    function q(a, b) {
-      var d = b(), f = l({ inst: { value: d, getSnapshot: b } }), c = f[0].inst, g = f[1];
-      n(function() {
-        c.value = d;
-        c.getSnapshot = b;
-        r2(c) && g({ inst: c });
-      }, [a, d, b]);
-      m2(function() {
-        r2(c) && g({ inst: c });
-        return a(function() {
-          r2(c) && g({ inst: c });
-        });
-      }, [a]);
-      p(d);
-      return d;
-    }
-    function r2(a) {
-      var b = a.getSnapshot;
-      a = a.value;
-      try {
-        var d = b();
-        return !k(a, d);
-      } catch (f) {
-        return true;
-      }
-    }
-    function t(a, b) {
-      return b();
-    }
-    var u = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? t : q;
-    useSyncExternalStoreShim_production_min.useSyncExternalStore = void 0 !== e.useSyncExternalStore ? e.useSyncExternalStore : u;
-    return useSyncExternalStoreShim_production_min;
-  }
-  if (process.env.NODE_ENV === "production") {
-    shim.exports = requireUseSyncExternalStoreShim_production_min();
-  } else {
-    shim.exports = requireUseSyncExternalStoreShim_development();
-  }
-  var shimExports = shim.exports;
-  var withSelector_development = {};
-  /**
-   * @license React
-   * use-sync-external-store-shim/with-selector.development.js
-   *
-   * Copyright (c) Facebook, Inc. and its affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   */
-  var hasRequiredWithSelector_development;
-  function requireWithSelector_development() {
-    if (hasRequiredWithSelector_development)
-      return withSelector_development;
-    hasRequiredWithSelector_development = 1;
-    if (process.env.NODE_ENV !== "production") {
-      (function() {
-        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
-          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
-        }
-        var React2 = reactExports;
-        var shim2 = shimExports;
-        function is2(x, y) {
-          return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
-        }
-        var objectIs = typeof Object.is === "function" ? Object.is : is2;
-        var useSyncExternalStore2 = shim2.useSyncExternalStore;
-        var useRef = React2.useRef, useEffect = React2.useEffect, useMemo = React2.useMemo, useDebugValue = React2.useDebugValue;
-        function useSyncExternalStoreWithSelector(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
-          var instRef = useRef(null);
-          var inst;
-          if (instRef.current === null) {
-            inst = {
-              hasValue: false,
-              value: null
-            };
-            instRef.current = inst;
-          } else {
-            inst = instRef.current;
-          }
-          var _useMemo = useMemo(function() {
-            var hasMemo = false;
-            var memoizedSnapshot;
-            var memoizedSelection;
-            var memoizedSelector = function(nextSnapshot) {
-              if (!hasMemo) {
-                hasMemo = true;
-                memoizedSnapshot = nextSnapshot;
-                var _nextSelection = selector(nextSnapshot);
-                if (isEqual !== void 0) {
-                  if (inst.hasValue) {
-                    var currentSelection = inst.value;
-                    if (isEqual(currentSelection, _nextSelection)) {
-                      memoizedSelection = currentSelection;
-                      return currentSelection;
-                    }
-                  }
-                }
-                memoizedSelection = _nextSelection;
-                return _nextSelection;
-              }
-              var prevSnapshot = memoizedSnapshot;
-              var prevSelection = memoizedSelection;
-              if (objectIs(prevSnapshot, nextSnapshot)) {
-                return prevSelection;
-              }
-              var nextSelection = selector(nextSnapshot);
-              if (isEqual !== void 0 && isEqual(prevSelection, nextSelection)) {
-                return prevSelection;
-              }
-              memoizedSnapshot = nextSnapshot;
-              memoizedSelection = nextSelection;
-              return nextSelection;
-            };
-            var maybeGetServerSnapshot = getServerSnapshot === void 0 ? null : getServerSnapshot;
-            var getSnapshotWithSelector = function() {
-              return memoizedSelector(getSnapshot());
-            };
-            var getServerSnapshotWithSelector = maybeGetServerSnapshot === null ? void 0 : function() {
-              return memoizedSelector(maybeGetServerSnapshot());
-            };
-            return [getSnapshotWithSelector, getServerSnapshotWithSelector];
-          }, [getSnapshot, getServerSnapshot, selector, isEqual]), getSelection2 = _useMemo[0], getServerSelection = _useMemo[1];
-          var value = useSyncExternalStore2(subscribe, getSelection2, getServerSelection);
-          useEffect(function() {
-            inst.hasValue = true;
-            inst.value = value;
-          }, [value]);
-          useDebugValue(value);
-          return value;
-        }
-        withSelector_development.useSyncExternalStoreWithSelector = useSyncExternalStoreWithSelector;
-        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
-          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
-        }
-      })();
-    }
-    return withSelector_development;
-  }
-  var withSelector_production_min = {};
-  /**
-   * @license React
-   * use-sync-external-store-shim/with-selector.production.min.js
-   *
-   * Copyright (c) Facebook, Inc. and its affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   */
-  var hasRequiredWithSelector_production_min;
-  function requireWithSelector_production_min() {
-    if (hasRequiredWithSelector_production_min)
-      return withSelector_production_min;
-    hasRequiredWithSelector_production_min = 1;
-    var h = reactExports, n = shimExports;
-    function p(a, b) {
-      return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
-    }
-    var q = "function" === typeof Object.is ? Object.is : p, r2 = n.useSyncExternalStore, t = h.useRef, u = h.useEffect, v = h.useMemo, w = h.useDebugValue;
-    withSelector_production_min.useSyncExternalStoreWithSelector = function(a, b, e, l, g) {
-      var c = t(null);
-      if (null === c.current) {
-        var f = { hasValue: false, value: null };
-        c.current = f;
-      } else
-        f = c.current;
-      c = v(function() {
-        function a2(a3) {
-          if (!c2) {
-            c2 = true;
-            d2 = a3;
-            a3 = l(a3);
-            if (void 0 !== g && f.hasValue) {
-              var b2 = f.value;
-              if (g(b2, a3))
-                return k = b2;
-            }
-            return k = a3;
-          }
-          b2 = k;
-          if (q(d2, a3))
-            return b2;
-          var e2 = l(a3);
-          if (void 0 !== g && g(b2, e2))
-            return b2;
-          d2 = a3;
-          return k = e2;
-        }
-        var c2 = false, d2, k, m2 = void 0 === e ? null : e;
-        return [function() {
-          return a2(b());
-        }, null === m2 ? void 0 : function() {
-          return a2(m2());
-        }];
-      }, [b, e, l, g]);
-      var d = r2(a, c[0], c[1]);
-      u(function() {
-        f.hasValue = true;
-        f.value = d;
-      }, [d]);
-      w(d);
-      return d;
-    };
-    return withSelector_production_min;
-  }
-  if (process.env.NODE_ENV === "production") {
-    requireWithSelector_production_min();
-  } else {
-    requireWithSelector_development();
-  }
-  function defaultNoopBatch(callback) {
-    callback();
-  }
-  let batch = defaultNoopBatch;
-  const setBatch = (newBatch) => batch = newBatch;
-  const getBatch = () => batch;
-  const ContextKey = Symbol.for(`react-redux-context`);
-  const gT = typeof globalThis !== "undefined" ? globalThis : (
-    /* fall back to a per-module scope (pre-8.1 behaviour) if `globalThis` is not available */
-    {}
-  );
-  function getContext() {
-    var _gT$ContextKey;
-    if (!reactExports.createContext)
-      return {};
-    const contextMap = (_gT$ContextKey = gT[ContextKey]) != null ? _gT$ContextKey : gT[ContextKey] = /* @__PURE__ */ new Map();
-    let realContext = contextMap.get(reactExports.createContext);
-    if (!realContext) {
-      realContext = reactExports.createContext(null);
-      if (process.env.NODE_ENV !== "production") {
-        realContext.displayName = "ReactRedux";
-      }
-      contextMap.set(reactExports.createContext, realContext);
-    }
-    return realContext;
-  }
-  const ReactReduxContext = /* @__PURE__ */ getContext();
-  const notInitialized = () => {
-    throw new Error("uSES not initialized!");
+  const WorkflowLoader = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
   };
-  function _extends$1() {
-    _extends$1 = Object.assign ? Object.assign.bind() : function(target) {
-      for (var i2 = 1; i2 < arguments.length; i2++) {
-        var source = arguments[i2];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-      return target;
-    };
-    return _extends$1.apply(this, arguments);
-  }
-  function _objectWithoutPropertiesLoose(source, excluded) {
-    if (source == null)
-      return {};
-    var target = {};
-    var sourceKeys = Object.keys(source);
-    var key, i2;
-    for (i2 = 0; i2 < sourceKeys.length; i2++) {
-      key = sourceKeys[i2];
-      if (excluded.indexOf(key) >= 0)
-        continue;
-      target[key] = source[key];
-    }
-    return target;
-  }
-  function warning$1(message) {
-    if (typeof console !== "undefined" && typeof console.error === "function") {
-      console.error(message);
-    }
-    try {
-      throw new Error(message);
-    } catch (e) {
-    }
-  }
-  function verify(selector, methodName) {
-    if (!selector) {
-      throw new Error(`Unexpected value for ${methodName} in connect.`);
-    } else if (methodName === "mapStateToProps" || methodName === "mapDispatchToProps") {
-      if (!Object.prototype.hasOwnProperty.call(selector, "dependsOnOwnProps")) {
-        warning$1(`The selector for ${methodName} of connect did not specify a value for dependsOnOwnProps.`);
-      }
-    }
-  }
-  function verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps) {
-    verify(mapStateToProps2, "mapStateToProps");
-    verify(mapDispatchToProps, "mapDispatchToProps");
-    verify(mergeProps, "mergeProps");
-  }
-  const _excluded$1 = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
-  function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
-    areStatesEqual,
-    areOwnPropsEqual,
-    areStatePropsEqual
-  }) {
-    let hasRunAtLeastOnce = false;
-    let state;
-    let ownProps;
-    let stateProps;
-    let dispatchProps;
-    let mergedProps;
-    function handleFirstCall(firstState, firstOwnProps) {
-      state = firstState;
-      ownProps = firstOwnProps;
-      stateProps = mapStateToProps2(state, ownProps);
-      dispatchProps = mapDispatchToProps(dispatch, ownProps);
-      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
-      hasRunAtLeastOnce = true;
-      return mergedProps;
-    }
-    function handleNewPropsAndNewState() {
-      stateProps = mapStateToProps2(state, ownProps);
-      if (mapDispatchToProps.dependsOnOwnProps)
-        dispatchProps = mapDispatchToProps(dispatch, ownProps);
-      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
-      return mergedProps;
-    }
-    function handleNewProps() {
-      if (mapStateToProps2.dependsOnOwnProps)
-        stateProps = mapStateToProps2(state, ownProps);
-      if (mapDispatchToProps.dependsOnOwnProps)
-        dispatchProps = mapDispatchToProps(dispatch, ownProps);
-      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
-      return mergedProps;
-    }
-    function handleNewState() {
-      const nextStateProps = mapStateToProps2(state, ownProps);
-      const statePropsChanged = !areStatePropsEqual(nextStateProps, stateProps);
-      stateProps = nextStateProps;
-      if (statePropsChanged)
-        mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
-      return mergedProps;
-    }
-    function handleSubsequentCalls(nextState, nextOwnProps) {
-      const propsChanged = !areOwnPropsEqual(nextOwnProps, ownProps);
-      const stateChanged = !areStatesEqual(nextState, state, nextOwnProps, ownProps);
-      state = nextState;
-      ownProps = nextOwnProps;
-      if (propsChanged && stateChanged)
-        return handleNewPropsAndNewState();
-      if (propsChanged)
-        return handleNewProps();
-      if (stateChanged)
-        return handleNewState();
-      return mergedProps;
-    }
-    return function pureFinalPropsSelector(nextState, nextOwnProps) {
-      return hasRunAtLeastOnce ? handleSubsequentCalls(nextState, nextOwnProps) : handleFirstCall(nextState, nextOwnProps);
-    };
-  }
-  function finalPropsSelectorFactory(dispatch, _ref) {
-    let {
-      initMapStateToProps,
-      initMapDispatchToProps,
-      initMergeProps
-    } = _ref, options = _objectWithoutPropertiesLoose(_ref, _excluded$1);
-    const mapStateToProps2 = initMapStateToProps(dispatch, options);
-    const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
-    const mergeProps = initMergeProps(dispatch, options);
-    if (process.env.NODE_ENV !== "production") {
-      verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps);
-    }
-    return pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, options);
-  }
-  function bindActionCreators(actionCreators, dispatch) {
-    const boundActionCreators = {};
-    for (const key in actionCreators) {
-      const actionCreator = actionCreators[key];
-      if (typeof actionCreator === "function") {
-        boundActionCreators[key] = (...args) => dispatch(actionCreator(...args));
-      }
-    }
-    return boundActionCreators;
-  }
-  function isPlainObject$2(obj) {
-    if (typeof obj !== "object" || obj === null)
-      return false;
-    let proto = Object.getPrototypeOf(obj);
-    if (proto === null)
-      return true;
-    let baseProto = proto;
-    while (Object.getPrototypeOf(baseProto) !== null) {
-      baseProto = Object.getPrototypeOf(baseProto);
-    }
-    return proto === baseProto;
-  }
-  function verifyPlainObject(value, displayName, methodName) {
-    if (!isPlainObject$2(value)) {
-      warning$1(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
-    }
-  }
-  function wrapMapToPropsConstant(getConstant) {
-    return function initConstantSelector(dispatch) {
-      const constant = getConstant(dispatch);
-      function constantSelector() {
-        return constant;
-      }
-      constantSelector.dependsOnOwnProps = false;
-      return constantSelector;
-    };
-  }
-  function getDependsOnOwnProps(mapToProps) {
-    return mapToProps.dependsOnOwnProps ? Boolean(mapToProps.dependsOnOwnProps) : mapToProps.length !== 1;
-  }
-  function wrapMapToPropsFunc(mapToProps, methodName) {
-    return function initProxySelector(dispatch, {
-      displayName
-    }) {
-      const proxy = function mapToPropsProxy(stateOrDispatch, ownProps) {
-        return proxy.dependsOnOwnProps ? proxy.mapToProps(stateOrDispatch, ownProps) : proxy.mapToProps(stateOrDispatch, void 0);
-      };
-      proxy.dependsOnOwnProps = true;
-      proxy.mapToProps = function detectFactoryAndVerify(stateOrDispatch, ownProps) {
-        proxy.mapToProps = mapToProps;
-        proxy.dependsOnOwnProps = getDependsOnOwnProps(mapToProps);
-        let props = proxy(stateOrDispatch, ownProps);
-        if (typeof props === "function") {
-          proxy.mapToProps = props;
-          proxy.dependsOnOwnProps = getDependsOnOwnProps(props);
-          props = proxy(stateOrDispatch, ownProps);
-        }
-        if (process.env.NODE_ENV !== "production")
-          verifyPlainObject(props, displayName, methodName);
-        return props;
-      };
-      return proxy;
-    };
-  }
-  function createInvalidArgFactory(arg, name2) {
-    return (dispatch, options) => {
-      throw new Error(`Invalid value of type ${typeof arg} for ${name2} argument when connecting component ${options.wrappedComponentName}.`);
-    };
-  }
-  function mapDispatchToPropsFactory(mapDispatchToProps) {
-    return mapDispatchToProps && typeof mapDispatchToProps === "object" ? wrapMapToPropsConstant((dispatch) => (
-      // @ts-ignore
-      bindActionCreators(mapDispatchToProps, dispatch)
-    )) : !mapDispatchToProps ? wrapMapToPropsConstant((dispatch) => ({
-      dispatch
-    })) : typeof mapDispatchToProps === "function" ? (
-      // @ts-ignore
-      wrapMapToPropsFunc(mapDispatchToProps, "mapDispatchToProps")
-    ) : createInvalidArgFactory(mapDispatchToProps, "mapDispatchToProps");
-  }
-  function mapStateToPropsFactory(mapStateToProps2) {
-    return !mapStateToProps2 ? wrapMapToPropsConstant(() => ({})) : typeof mapStateToProps2 === "function" ? (
-      // @ts-ignore
-      wrapMapToPropsFunc(mapStateToProps2, "mapStateToProps")
-    ) : createInvalidArgFactory(mapStateToProps2, "mapStateToProps");
-  }
-  function defaultMergeProps(stateProps, dispatchProps, ownProps) {
-    return _extends$1({}, ownProps, stateProps, dispatchProps);
-  }
-  function wrapMergePropsFunc(mergeProps) {
-    return function initMergePropsProxy(dispatch, {
-      displayName,
-      areMergedPropsEqual
-    }) {
-      let hasRunOnce = false;
-      let mergedProps;
-      return function mergePropsProxy(stateProps, dispatchProps, ownProps) {
-        const nextMergedProps = mergeProps(stateProps, dispatchProps, ownProps);
-        if (hasRunOnce) {
-          if (!areMergedPropsEqual(nextMergedProps, mergedProps))
-            mergedProps = nextMergedProps;
-        } else {
-          hasRunOnce = true;
-          mergedProps = nextMergedProps;
-          if (process.env.NODE_ENV !== "production")
-            verifyPlainObject(mergedProps, displayName, "mergeProps");
-        }
-        return mergedProps;
-      };
-    };
-  }
-  function mergePropsFactory(mergeProps) {
-    return !mergeProps ? () => defaultMergeProps : typeof mergeProps === "function" ? wrapMergePropsFunc(mergeProps) : createInvalidArgFactory(mergeProps, "mergeProps");
-  }
-  function createListenerCollection() {
-    const batch2 = getBatch();
-    let first = null;
-    let last = null;
-    return {
-      clear() {
-        first = null;
-        last = null;
-      },
-      notify() {
-        batch2(() => {
-          let listener = first;
-          while (listener) {
-            listener.callback();
-            listener = listener.next;
-          }
-        });
-      },
-      get() {
-        let listeners = [];
-        let listener = first;
-        while (listener) {
-          listeners.push(listener);
-          listener = listener.next;
-        }
-        return listeners;
-      },
-      subscribe(callback) {
-        let isSubscribed = true;
-        let listener = last = {
-          callback,
-          next: null,
-          prev: last
-        };
-        if (listener.prev) {
-          listener.prev.next = listener;
-        } else {
-          first = listener;
-        }
-        return function unsubscribe() {
-          if (!isSubscribed || first === null)
-            return;
-          isSubscribed = false;
-          if (listener.next) {
-            listener.next.prev = listener.prev;
-          } else {
-            last = listener.prev;
-          }
-          if (listener.prev) {
-            listener.prev.next = listener.next;
-          } else {
-            first = listener.next;
-          }
-        };
-      }
-    };
-  }
-  const nullListeners = {
-    notify() {
-    },
-    get: () => []
-  };
-  function createSubscription(store, parentSub) {
-    let unsubscribe;
-    let listeners = nullListeners;
-    function addNestedSub(listener) {
-      trySubscribe();
-      return listeners.subscribe(listener);
-    }
-    function notifyNestedSubs() {
-      listeners.notify();
-    }
-    function handleChangeWrapper() {
-      if (subscription.onStateChange) {
-        subscription.onStateChange();
-      }
-    }
-    function isSubscribed() {
-      return Boolean(unsubscribe);
-    }
-    function trySubscribe() {
-      if (!unsubscribe) {
-        unsubscribe = parentSub ? parentSub.addNestedSub(handleChangeWrapper) : store.subscribe(handleChangeWrapper);
-        listeners = createListenerCollection();
-      }
-    }
-    function tryUnsubscribe() {
-      if (unsubscribe) {
-        unsubscribe();
-        unsubscribe = void 0;
-        listeners.clear();
-        listeners = nullListeners;
-      }
-    }
-    const subscription = {
-      addNestedSub,
-      notifyNestedSubs,
-      handleChangeWrapper,
-      isSubscribed,
-      trySubscribe,
-      tryUnsubscribe,
-      getListeners: () => listeners
-    };
-    return subscription;
-  }
-  const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
-  const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
-  function is(x, y) {
-    if (x === y) {
-      return x !== 0 || y !== 0 || 1 / x === 1 / y;
-    } else {
-      return x !== x && y !== y;
-    }
-  }
-  function shallowEqual(objA, objB) {
-    if (is(objA, objB))
-      return true;
-    if (typeof objA !== "object" || objA === null || typeof objB !== "object" || objB === null) {
-      return false;
-    }
-    const keysA = Object.keys(objA);
-    const keysB = Object.keys(objB);
-    if (keysA.length !== keysB.length)
-      return false;
-    for (let i2 = 0; i2 < keysA.length; i2++) {
-      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is(objA[keysA[i2]], objB[keysA[i2]])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  const _excluded = ["reactReduxForwardedRef"];
-  let useSyncExternalStore = notInitialized;
-  const initializeConnect = (fn) => {
-    useSyncExternalStore = fn;
-  };
-  const NO_SUBSCRIPTION_ARRAY = [null, null];
-  const stringifyComponent = (Comp) => {
-    try {
-      return JSON.stringify(Comp);
-    } catch (err) {
-      return String(Comp);
-    }
-  };
-  function useIsomorphicLayoutEffectWithArgs(effectFunc, effectArgs, dependencies2) {
-    useIsomorphicLayoutEffect(() => effectFunc(...effectArgs), dependencies2);
-  }
-  function captureWrapperProps(lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, childPropsFromStoreUpdate, notifyNestedSubs) {
-    lastWrapperProps.current = wrapperProps;
-    renderIsScheduled.current = false;
-    if (childPropsFromStoreUpdate.current) {
-      childPropsFromStoreUpdate.current = null;
-      notifyNestedSubs();
-    }
-  }
-  function subscribeUpdates(shouldHandleStateChanges, store, subscription, childPropsSelector, lastWrapperProps, lastChildProps, renderIsScheduled, isMounted, childPropsFromStoreUpdate, notifyNestedSubs, additionalSubscribeListener) {
-    if (!shouldHandleStateChanges)
-      return () => {
-      };
-    let didUnsubscribe = false;
-    let lastThrownError = null;
-    const checkForUpdates = () => {
-      if (didUnsubscribe || !isMounted.current) {
-        return;
-      }
-      const latestStoreState = store.getState();
-      let newChildProps, error;
-      try {
-        newChildProps = childPropsSelector(latestStoreState, lastWrapperProps.current);
-      } catch (e) {
-        error = e;
-        lastThrownError = e;
-      }
-      if (!error) {
-        lastThrownError = null;
-      }
-      if (newChildProps === lastChildProps.current) {
-        if (!renderIsScheduled.current) {
-          notifyNestedSubs();
-        }
-      } else {
-        lastChildProps.current = newChildProps;
-        childPropsFromStoreUpdate.current = newChildProps;
-        renderIsScheduled.current = true;
-        additionalSubscribeListener();
-      }
-    };
-    subscription.onStateChange = checkForUpdates;
-    subscription.trySubscribe();
-    checkForUpdates();
-    const unsubscribeWrapper = () => {
-      didUnsubscribe = true;
-      subscription.tryUnsubscribe();
-      subscription.onStateChange = null;
-      if (lastThrownError) {
-        throw lastThrownError;
-      }
-    };
-    return unsubscribeWrapper;
-  }
-  function strictEqual(a, b) {
-    return a === b;
-  }
-  let hasWarnedAboutDeprecatedPureOption = false;
-  function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
-    // The `pure` option has been removed, so TS doesn't like us destructuring this to check its existence.
-    // @ts-ignore
-    pure,
-    areStatesEqual = strictEqual,
-    areOwnPropsEqual = shallowEqual,
-    areStatePropsEqual = shallowEqual,
-    areMergedPropsEqual = shallowEqual,
-    // use React's forwardRef to expose a ref of the wrapped component
-    forwardRef = false,
-    // the context consumer to use
-    context = ReactReduxContext
-  } = {}) {
-    if (process.env.NODE_ENV !== "production") {
-      if (pure !== void 0 && !hasWarnedAboutDeprecatedPureOption) {
-        hasWarnedAboutDeprecatedPureOption = true;
-        warning$1('The `pure` option has been removed. `connect` is now always a "pure/memoized" component');
-      }
-    }
-    const Context = context;
-    const initMapStateToProps = mapStateToPropsFactory(mapStateToProps2);
-    const initMapDispatchToProps = mapDispatchToPropsFactory(mapDispatchToProps);
-    const initMergeProps = mergePropsFactory(mergeProps);
-    const shouldHandleStateChanges = Boolean(mapStateToProps2);
-    const wrapWithConnect = (WrappedComponent) => {
-      if (process.env.NODE_ENV !== "production" && !reactIsExports$1.isValidElementType(WrappedComponent)) {
-        throw new Error(`You must pass a component to the function returned by connect. Instead received ${stringifyComponent(WrappedComponent)}`);
-      }
-      const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || "Component";
-      const displayName = `Connect(${wrappedComponentName})`;
-      const selectorFactoryOptions = {
-        shouldHandleStateChanges,
-        displayName,
-        wrappedComponentName,
-        WrappedComponent,
-        // @ts-ignore
-        initMapStateToProps,
-        // @ts-ignore
-        initMapDispatchToProps,
-        initMergeProps,
-        areStatesEqual,
-        areStatePropsEqual,
-        areOwnPropsEqual,
-        areMergedPropsEqual
-      };
-      function ConnectFunction(props) {
-        const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
-          const {
-            reactReduxForwardedRef: reactReduxForwardedRef2
-          } = props, wrapperProps2 = _objectWithoutPropertiesLoose(props, _excluded);
-          return [props.context, reactReduxForwardedRef2, wrapperProps2];
-        }, [props]);
-        const ContextToUse = reactExports.useMemo(() => {
-          return propsContext && propsContext.Consumer && // @ts-ignore
-          reactIsExports$1.isContextConsumer(/* @__PURE__ */ reactExports.createElement(propsContext.Consumer, null)) ? propsContext : Context;
-        }, [propsContext, Context]);
-        const contextValue = reactExports.useContext(ContextToUse);
-        const didStoreComeFromProps = Boolean(props.store) && Boolean(props.store.getState) && Boolean(props.store.dispatch);
-        const didStoreComeFromContext = Boolean(contextValue) && Boolean(contextValue.store);
-        if (process.env.NODE_ENV !== "production" && !didStoreComeFromProps && !didStoreComeFromContext) {
-          throw new Error(`Could not find "store" in the context of "${displayName}". Either wrap the root component in a <Provider>, or pass a custom React context provider to <Provider> and the corresponding React context consumer to ${displayName} in connect options.`);
-        }
-        const store = didStoreComeFromProps ? props.store : contextValue.store;
-        const getServerState = didStoreComeFromContext ? contextValue.getServerState : store.getState;
-        const childPropsSelector = reactExports.useMemo(() => {
-          return finalPropsSelectorFactory(store.dispatch, selectorFactoryOptions);
-        }, [store]);
-        const [subscription, notifyNestedSubs] = reactExports.useMemo(() => {
-          if (!shouldHandleStateChanges)
-            return NO_SUBSCRIPTION_ARRAY;
-          const subscription2 = createSubscription(store, didStoreComeFromProps ? void 0 : contextValue.subscription);
-          const notifyNestedSubs2 = subscription2.notifyNestedSubs.bind(subscription2);
-          return [subscription2, notifyNestedSubs2];
-        }, [store, didStoreComeFromProps, contextValue]);
-        const overriddenContextValue = reactExports.useMemo(() => {
-          if (didStoreComeFromProps) {
-            return contextValue;
-          }
-          return _extends$1({}, contextValue, {
-            subscription
-          });
-        }, [didStoreComeFromProps, contextValue, subscription]);
-        const lastChildProps = reactExports.useRef();
-        const lastWrapperProps = reactExports.useRef(wrapperProps);
-        const childPropsFromStoreUpdate = reactExports.useRef();
-        const renderIsScheduled = reactExports.useRef(false);
-        reactExports.useRef(false);
-        const isMounted = reactExports.useRef(false);
-        const latestSubscriptionCallbackError = reactExports.useRef();
-        useIsomorphicLayoutEffect(() => {
-          isMounted.current = true;
-          return () => {
-            isMounted.current = false;
-          };
-        }, []);
-        const actualChildPropsSelector = reactExports.useMemo(() => {
-          const selector = () => {
-            if (childPropsFromStoreUpdate.current && wrapperProps === lastWrapperProps.current) {
-              return childPropsFromStoreUpdate.current;
-            }
-            return childPropsSelector(store.getState(), wrapperProps);
-          };
-          return selector;
-        }, [store, wrapperProps]);
-        const subscribeForReact = reactExports.useMemo(() => {
-          const subscribe = (reactListener) => {
-            if (!subscription) {
-              return () => {
-              };
-            }
-            return subscribeUpdates(
-              shouldHandleStateChanges,
-              store,
-              subscription,
-              // @ts-ignore
-              childPropsSelector,
-              lastWrapperProps,
-              lastChildProps,
-              renderIsScheduled,
-              isMounted,
-              childPropsFromStoreUpdate,
-              notifyNestedSubs,
-              reactListener
-            );
-          };
-          return subscribe;
-        }, [subscription]);
-        useIsomorphicLayoutEffectWithArgs(captureWrapperProps, [lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, childPropsFromStoreUpdate, notifyNestedSubs]);
-        let actualChildProps;
-        try {
-          actualChildProps = useSyncExternalStore(
-            // TODO We're passing through a big wrapper that does a bunch of extra side effects besides subscribing
-            subscribeForReact,
-            // TODO This is incredibly hacky. We've already processed the store update and calculated new child props,
-            // TODO and we're just passing that through so it triggers a re-render for us rather than relying on `uSES`.
-            actualChildPropsSelector,
-            getServerState ? () => childPropsSelector(getServerState(), wrapperProps) : actualChildPropsSelector
-          );
-        } catch (err) {
-          if (latestSubscriptionCallbackError.current) {
-            err.message += `
-The error may be correlated with this previous error:
-${latestSubscriptionCallbackError.current.stack}
-
-`;
-          }
-          throw err;
-        }
-        useIsomorphicLayoutEffect(() => {
-          latestSubscriptionCallbackError.current = void 0;
-          childPropsFromStoreUpdate.current = void 0;
-          lastChildProps.current = actualChildProps;
-        });
-        const renderedWrappedComponent = reactExports.useMemo(() => {
-          return (
-            // @ts-ignore
-            /* @__PURE__ */ reactExports.createElement(WrappedComponent, _extends$1({}, actualChildProps, {
-              ref: reactReduxForwardedRef
-            }))
-          );
-        }, [reactReduxForwardedRef, WrappedComponent, actualChildProps]);
-        const renderedChild = reactExports.useMemo(() => {
-          if (shouldHandleStateChanges) {
-            return /* @__PURE__ */ reactExports.createElement(ContextToUse.Provider, {
-              value: overriddenContextValue
-            }, renderedWrappedComponent);
-          }
-          return renderedWrappedComponent;
-        }, [ContextToUse, renderedWrappedComponent, overriddenContextValue]);
-        return renderedChild;
-      }
-      const _Connect = reactExports.memo(ConnectFunction);
-      const Connect = _Connect;
-      Connect.WrappedComponent = WrappedComponent;
-      Connect.displayName = ConnectFunction.displayName = displayName;
-      if (forwardRef) {
-        const _forwarded = reactExports.forwardRef(function forwardConnectRef(props, ref) {
-          return /* @__PURE__ */ reactExports.createElement(Connect, _extends$1({}, props, {
-            reactReduxForwardedRef: ref
-          }));
-        });
-        const forwarded = _forwarded;
-        forwarded.displayName = displayName;
-        forwarded.WrappedComponent = WrappedComponent;
-        return hoistStatics(forwarded, WrappedComponent);
-      }
-      return hoistStatics(Connect, WrappedComponent);
-    };
-    return wrapWithConnect;
-  }
-  function Provider({
-    store,
-    context,
-    children,
-    serverState,
-    stabilityCheck = "once",
-    noopCheck = "once"
-  }) {
-    const contextValue = reactExports.useMemo(() => {
-      const subscription = createSubscription(store);
-      return {
-        store,
-        subscription,
-        getServerState: serverState ? () => serverState : void 0,
-        stabilityCheck,
-        noopCheck
-      };
-    }, [store, serverState, stabilityCheck, noopCheck]);
-    const previousState = reactExports.useMemo(() => store.getState(), [store]);
-    useIsomorphicLayoutEffect(() => {
-      const {
-        subscription
-      } = contextValue;
-      subscription.onStateChange = subscription.notifyNestedSubs;
-      subscription.trySubscribe();
-      if (previousState !== store.getState()) {
-        subscription.notifyNestedSubs();
-      }
-      return () => {
-        subscription.tryUnsubscribe();
-        subscription.onStateChange = void 0;
-      };
-    }, [contextValue, previousState]);
-    const Context = context || ReactReduxContext;
-    return /* @__PURE__ */ reactExports.createElement(Context.Provider, {
-      value: contextValue
-    }, children);
-  }
-  initializeConnect(shimExports.useSyncExternalStore);
-  setBatch(reactDomExports.unstable_batchedUpdates);
   function formatProdErrorMessage(code) {
     return "Minified Redux error #" + code + "; visit https://redux.js.org/Errors?code=" + code + " for the full message or use the non-minified dev environment for full errors. ";
   }
@@ -59215,7 +58144,7 @@ ${latestSubscriptionCallbackError.current.stack}
       return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
     }
   };
-  function isPlainObject$1(obj) {
+  function isPlainObject$2(obj) {
     if (typeof obj !== "object" || obj === null)
       return false;
     var proto = obj;
@@ -59334,7 +58263,7 @@ ${latestSubscriptionCallbackError.current.stack}
       };
     }
     function dispatch(action) {
-      if (!isPlainObject$1(action)) {
+      if (!isPlainObject$2(action)) {
         throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(7) : "Actions must be plain objects. Instead, the actual type was: '" + kindOf(action) + "'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.");
       }
       if (typeof action.type === "undefined") {
@@ -59406,7 +58335,7 @@ ${latestSubscriptionCallbackError.current.stack}
       replaceReducer
     }, _ref2[$$observable] = observable, _ref2;
   }
-  function warning(message) {
+  function warning$1(message) {
     if (typeof console !== "undefined" && typeof console.error === "function") {
       console.error(message);
     }
@@ -59421,7 +58350,7 @@ ${latestSubscriptionCallbackError.current.stack}
     if (reducerKeys.length === 0) {
       return "Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.";
     }
-    if (!isPlainObject$1(inputState)) {
+    if (!isPlainObject$2(inputState)) {
       return "The " + argumentName + ' has unexpected type of "' + kindOf(inputState) + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
     }
     var unexpectedKeys = Object.keys(inputState).filter(function(key) {
@@ -59459,7 +58388,7 @@ ${latestSubscriptionCallbackError.current.stack}
       var key = reducerKeys[i2];
       if (process.env.NODE_ENV !== "production") {
         if (typeof reducers[key] === "undefined") {
-          warning('No reducer provided for key "' + key + '"');
+          warning$1('No reducer provided for key "' + key + '"');
         }
       }
       if (typeof reducers[key] === "function") {
@@ -59487,7 +58416,7 @@ ${latestSubscriptionCallbackError.current.stack}
       if (process.env.NODE_ENV !== "production") {
         var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache);
         if (warningMessage) {
-          warning(warningMessage);
+          warning$1(warningMessage);
         }
       }
       var hasChanged = false;
@@ -59526,39 +58455,6 @@ ${latestSubscriptionCallbackError.current.stack}
       };
     });
   }
-  class WorkflowGridMenuUnconnected extends reactExports.Component {
-    render() {
-      const tabs = [];
-      const tab_li = [];
-      let i2 = 0;
-      for (const prop in this.props.data_package) {
-        tab_li.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i2, children: this.props.data_package[prop].title }) })
-        );
-        tabs.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            MenuTab,
-            {
-              data: this.props.data_package[prop],
-              dispatch: this.props.dispatch,
-              type: "gridmenu",
-              identifier: i2
-            }
-          )
-        );
-        i2++;
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "home-tabs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
-        tabs
-      ] }) });
-    }
-  }
-  const mapStateToProps$x = (state) => ({ data_package: state });
-  const WorkflowGridMenu = connect(
-    mapStateToProps$x,
-    null
-  )(WorkflowGridMenuUnconnected);
   var CommonActions = /* @__PURE__ */ ((CommonActions2) => {
     CommonActions2["REPLACE_STOREDATA"] = "replaceStoreData";
     CommonActions2["REFRESH_STOREDATA"] = "refreshStoreData";
@@ -59685,39 +58581,6 @@ ${latestSubscriptionCallbackError.current.stack}
     OutcomeHorizontalLinkActions2["UPDATE_DEGREE"] = "outcomehorizontallink/updateDegree";
     return OutcomeHorizontalLinkActions2;
   })(OutcomeHorizontalLinkActions || {});
-  function gridMenuReducer(state = {}, action) {
-    switch (action.type) {
-      case GridMenuActions.ITEM_ADDED:
-        const new_state = {
-          ...state,
-          owned_strategies: { ...state.owned_strategies },
-          owned_projects: { ...state.owned_projects }
-        };
-        const target = action.payload.type === "project" ? "owned_projects" : "owned_strategies";
-        new_state[target].sections = new_state[target].sections.map(
-          (section) => ({
-            ...section,
-            objects: section.object_type === action.payload.type ? [...section.objects, action.payload.new_item] : [...section.objects]
-          })
-        );
-        return new_state;
-      default:
-        return state;
-    }
-  }
-  class WorkflowGrid extends React.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "store");
-      this.store = createStore(gridMenuReducer, this.props.data_package);
-    }
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowGridMenu, {}) });
-    }
-  }
-  const WorkflowLoader = () => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "load-screen" });
-  };
   function parentNodeReducer(state = [], action) {
     switch (action.type) {
       case CommonActions.REPLACE_STOREDATA:
@@ -61050,6 +59913,1071 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const rootWorkflowReducer = combineReducers(rootWorkflowReducers);
   combineReducers(rootOutcomeReducers);
+  var shim = { exports: {} };
+  var useSyncExternalStoreShim_development = {};
+  /**
+   * @license React
+   * use-sync-external-store-shim.development.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  var hasRequiredUseSyncExternalStoreShim_development;
+  function requireUseSyncExternalStoreShim_development() {
+    if (hasRequiredUseSyncExternalStoreShim_development)
+      return useSyncExternalStoreShim_development;
+    hasRequiredUseSyncExternalStoreShim_development = 1;
+    if (process.env.NODE_ENV !== "production") {
+      (function() {
+        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+        }
+        var React2 = reactExports;
+        var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+        function error(format2) {
+          {
+            {
+              for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+              }
+              printWarning("error", format2, args);
+            }
+          }
+        }
+        function printWarning(level, format2, args) {
+          {
+            var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+            var stack = ReactDebugCurrentFrame.getStackAddendum();
+            if (stack !== "") {
+              format2 += "%s";
+              args = args.concat([stack]);
+            }
+            var argsWithFormat = args.map(function(item) {
+              return String(item);
+            });
+            argsWithFormat.unshift("Warning: " + format2);
+            Function.prototype.apply.call(console[level], console, argsWithFormat);
+          }
+        }
+        function is2(x, y) {
+          return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+        }
+        var objectIs = typeof Object.is === "function" ? Object.is : is2;
+        var useState = React2.useState, useEffect = React2.useEffect, useLayoutEffect = React2.useLayoutEffect, useDebugValue = React2.useDebugValue;
+        var didWarnOld18Alpha = false;
+        var didWarnUncachedGetSnapshot = false;
+        function useSyncExternalStore2(subscribe, getSnapshot, getServerSnapshot) {
+          {
+            if (!didWarnOld18Alpha) {
+              if (React2.startTransition !== void 0) {
+                didWarnOld18Alpha = true;
+                error("You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release.");
+              }
+            }
+          }
+          var value = getSnapshot();
+          {
+            if (!didWarnUncachedGetSnapshot) {
+              var cachedValue = getSnapshot();
+              if (!objectIs(value, cachedValue)) {
+                error("The result of getSnapshot should be cached to avoid an infinite loop");
+                didWarnUncachedGetSnapshot = true;
+              }
+            }
+          }
+          var _useState = useState({
+            inst: {
+              value,
+              getSnapshot
+            }
+          }), inst = _useState[0].inst, forceUpdate = _useState[1];
+          useLayoutEffect(function() {
+            inst.value = value;
+            inst.getSnapshot = getSnapshot;
+            if (checkIfSnapshotChanged(inst)) {
+              forceUpdate({
+                inst
+              });
+            }
+          }, [subscribe, value, getSnapshot]);
+          useEffect(function() {
+            if (checkIfSnapshotChanged(inst)) {
+              forceUpdate({
+                inst
+              });
+            }
+            var handleStoreChange = function() {
+              if (checkIfSnapshotChanged(inst)) {
+                forceUpdate({
+                  inst
+                });
+              }
+            };
+            return subscribe(handleStoreChange);
+          }, [subscribe]);
+          useDebugValue(value);
+          return value;
+        }
+        function checkIfSnapshotChanged(inst) {
+          var latestGetSnapshot = inst.getSnapshot;
+          var prevValue = inst.value;
+          try {
+            var nextValue = latestGetSnapshot();
+            return !objectIs(prevValue, nextValue);
+          } catch (error2) {
+            return true;
+          }
+        }
+        function useSyncExternalStore$1(subscribe, getSnapshot, getServerSnapshot) {
+          return getSnapshot();
+        }
+        var canUseDOM2 = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
+        var isServerEnvironment = !canUseDOM2;
+        var shim2 = isServerEnvironment ? useSyncExternalStore$1 : useSyncExternalStore2;
+        var useSyncExternalStore$2 = React2.useSyncExternalStore !== void 0 ? React2.useSyncExternalStore : shim2;
+        useSyncExternalStoreShim_development.useSyncExternalStore = useSyncExternalStore$2;
+        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+        }
+      })();
+    }
+    return useSyncExternalStoreShim_development;
+  }
+  var useSyncExternalStoreShim_production_min = {};
+  /**
+   * @license React
+   * use-sync-external-store-shim.production.min.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  var hasRequiredUseSyncExternalStoreShim_production_min;
+  function requireUseSyncExternalStoreShim_production_min() {
+    if (hasRequiredUseSyncExternalStoreShim_production_min)
+      return useSyncExternalStoreShim_production_min;
+    hasRequiredUseSyncExternalStoreShim_production_min = 1;
+    var e = reactExports;
+    function h(a, b) {
+      return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
+    }
+    var k = "function" === typeof Object.is ? Object.is : h, l = e.useState, m2 = e.useEffect, n = e.useLayoutEffect, p = e.useDebugValue;
+    function q(a, b) {
+      var d = b(), f = l({ inst: { value: d, getSnapshot: b } }), c = f[0].inst, g = f[1];
+      n(function() {
+        c.value = d;
+        c.getSnapshot = b;
+        r2(c) && g({ inst: c });
+      }, [a, d, b]);
+      m2(function() {
+        r2(c) && g({ inst: c });
+        return a(function() {
+          r2(c) && g({ inst: c });
+        });
+      }, [a]);
+      p(d);
+      return d;
+    }
+    function r2(a) {
+      var b = a.getSnapshot;
+      a = a.value;
+      try {
+        var d = b();
+        return !k(a, d);
+      } catch (f) {
+        return true;
+      }
+    }
+    function t(a, b) {
+      return b();
+    }
+    var u = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? t : q;
+    useSyncExternalStoreShim_production_min.useSyncExternalStore = void 0 !== e.useSyncExternalStore ? e.useSyncExternalStore : u;
+    return useSyncExternalStoreShim_production_min;
+  }
+  if (process.env.NODE_ENV === "production") {
+    shim.exports = requireUseSyncExternalStoreShim_production_min();
+  } else {
+    shim.exports = requireUseSyncExternalStoreShim_development();
+  }
+  var shimExports = shim.exports;
+  var withSelector_development = {};
+  /**
+   * @license React
+   * use-sync-external-store-shim/with-selector.development.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  var hasRequiredWithSelector_development;
+  function requireWithSelector_development() {
+    if (hasRequiredWithSelector_development)
+      return withSelector_development;
+    hasRequiredWithSelector_development = 1;
+    if (process.env.NODE_ENV !== "production") {
+      (function() {
+        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+        }
+        var React2 = reactExports;
+        var shim2 = shimExports;
+        function is2(x, y) {
+          return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+        }
+        var objectIs = typeof Object.is === "function" ? Object.is : is2;
+        var useSyncExternalStore2 = shim2.useSyncExternalStore;
+        var useRef = React2.useRef, useEffect = React2.useEffect, useMemo = React2.useMemo, useDebugValue = React2.useDebugValue;
+        function useSyncExternalStoreWithSelector(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
+          var instRef = useRef(null);
+          var inst;
+          if (instRef.current === null) {
+            inst = {
+              hasValue: false,
+              value: null
+            };
+            instRef.current = inst;
+          } else {
+            inst = instRef.current;
+          }
+          var _useMemo = useMemo(function() {
+            var hasMemo = false;
+            var memoizedSnapshot;
+            var memoizedSelection;
+            var memoizedSelector = function(nextSnapshot) {
+              if (!hasMemo) {
+                hasMemo = true;
+                memoizedSnapshot = nextSnapshot;
+                var _nextSelection = selector(nextSnapshot);
+                if (isEqual !== void 0) {
+                  if (inst.hasValue) {
+                    var currentSelection = inst.value;
+                    if (isEqual(currentSelection, _nextSelection)) {
+                      memoizedSelection = currentSelection;
+                      return currentSelection;
+                    }
+                  }
+                }
+                memoizedSelection = _nextSelection;
+                return _nextSelection;
+              }
+              var prevSnapshot = memoizedSnapshot;
+              var prevSelection = memoizedSelection;
+              if (objectIs(prevSnapshot, nextSnapshot)) {
+                return prevSelection;
+              }
+              var nextSelection = selector(nextSnapshot);
+              if (isEqual !== void 0 && isEqual(prevSelection, nextSelection)) {
+                return prevSelection;
+              }
+              memoizedSnapshot = nextSnapshot;
+              memoizedSelection = nextSelection;
+              return nextSelection;
+            };
+            var maybeGetServerSnapshot = getServerSnapshot === void 0 ? null : getServerSnapshot;
+            var getSnapshotWithSelector = function() {
+              return memoizedSelector(getSnapshot());
+            };
+            var getServerSnapshotWithSelector = maybeGetServerSnapshot === null ? void 0 : function() {
+              return memoizedSelector(maybeGetServerSnapshot());
+            };
+            return [getSnapshotWithSelector, getServerSnapshotWithSelector];
+          }, [getSnapshot, getServerSnapshot, selector, isEqual]), getSelection2 = _useMemo[0], getServerSelection = _useMemo[1];
+          var value = useSyncExternalStore2(subscribe, getSelection2, getServerSelection);
+          useEffect(function() {
+            inst.hasValue = true;
+            inst.value = value;
+          }, [value]);
+          useDebugValue(value);
+          return value;
+        }
+        withSelector_development.useSyncExternalStoreWithSelector = useSyncExternalStoreWithSelector;
+        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+          __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+        }
+      })();
+    }
+    return withSelector_development;
+  }
+  var withSelector_production_min = {};
+  /**
+   * @license React
+   * use-sync-external-store-shim/with-selector.production.min.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  var hasRequiredWithSelector_production_min;
+  function requireWithSelector_production_min() {
+    if (hasRequiredWithSelector_production_min)
+      return withSelector_production_min;
+    hasRequiredWithSelector_production_min = 1;
+    var h = reactExports, n = shimExports;
+    function p(a, b) {
+      return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
+    }
+    var q = "function" === typeof Object.is ? Object.is : p, r2 = n.useSyncExternalStore, t = h.useRef, u = h.useEffect, v = h.useMemo, w = h.useDebugValue;
+    withSelector_production_min.useSyncExternalStoreWithSelector = function(a, b, e, l, g) {
+      var c = t(null);
+      if (null === c.current) {
+        var f = { hasValue: false, value: null };
+        c.current = f;
+      } else
+        f = c.current;
+      c = v(function() {
+        function a2(a3) {
+          if (!c2) {
+            c2 = true;
+            d2 = a3;
+            a3 = l(a3);
+            if (void 0 !== g && f.hasValue) {
+              var b2 = f.value;
+              if (g(b2, a3))
+                return k = b2;
+            }
+            return k = a3;
+          }
+          b2 = k;
+          if (q(d2, a3))
+            return b2;
+          var e2 = l(a3);
+          if (void 0 !== g && g(b2, e2))
+            return b2;
+          d2 = a3;
+          return k = e2;
+        }
+        var c2 = false, d2, k, m2 = void 0 === e ? null : e;
+        return [function() {
+          return a2(b());
+        }, null === m2 ? void 0 : function() {
+          return a2(m2());
+        }];
+      }, [b, e, l, g]);
+      var d = r2(a, c[0], c[1]);
+      u(function() {
+        f.hasValue = true;
+        f.value = d;
+      }, [d]);
+      w(d);
+      return d;
+    };
+    return withSelector_production_min;
+  }
+  if (process.env.NODE_ENV === "production") {
+    requireWithSelector_production_min();
+  } else {
+    requireWithSelector_development();
+  }
+  function defaultNoopBatch(callback) {
+    callback();
+  }
+  let batch = defaultNoopBatch;
+  const setBatch = (newBatch) => batch = newBatch;
+  const getBatch = () => batch;
+  const ContextKey = Symbol.for(`react-redux-context`);
+  const gT = typeof globalThis !== "undefined" ? globalThis : (
+    /* fall back to a per-module scope (pre-8.1 behaviour) if `globalThis` is not available */
+    {}
+  );
+  function getContext() {
+    var _gT$ContextKey;
+    if (!reactExports.createContext)
+      return {};
+    const contextMap = (_gT$ContextKey = gT[ContextKey]) != null ? _gT$ContextKey : gT[ContextKey] = /* @__PURE__ */ new Map();
+    let realContext = contextMap.get(reactExports.createContext);
+    if (!realContext) {
+      realContext = reactExports.createContext(null);
+      if (process.env.NODE_ENV !== "production") {
+        realContext.displayName = "ReactRedux";
+      }
+      contextMap.set(reactExports.createContext, realContext);
+    }
+    return realContext;
+  }
+  const ReactReduxContext = /* @__PURE__ */ getContext();
+  const notInitialized = () => {
+    throw new Error("uSES not initialized!");
+  };
+  function _extends$1() {
+    _extends$1 = Object.assign ? Object.assign.bind() : function(target) {
+      for (var i2 = 1; i2 < arguments.length; i2++) {
+        var source = arguments[i2];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+    return _extends$1.apply(this, arguments);
+  }
+  function _objectWithoutPropertiesLoose(source, excluded) {
+    if (source == null)
+      return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key, i2;
+    for (i2 = 0; i2 < sourceKeys.length; i2++) {
+      key = sourceKeys[i2];
+      if (excluded.indexOf(key) >= 0)
+        continue;
+      target[key] = source[key];
+    }
+    return target;
+  }
+  function warning(message) {
+    if (typeof console !== "undefined" && typeof console.error === "function") {
+      console.error(message);
+    }
+    try {
+      throw new Error(message);
+    } catch (e) {
+    }
+  }
+  function verify(selector, methodName) {
+    if (!selector) {
+      throw new Error(`Unexpected value for ${methodName} in connect.`);
+    } else if (methodName === "mapStateToProps" || methodName === "mapDispatchToProps") {
+      if (!Object.prototype.hasOwnProperty.call(selector, "dependsOnOwnProps")) {
+        warning(`The selector for ${methodName} of connect did not specify a value for dependsOnOwnProps.`);
+      }
+    }
+  }
+  function verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps) {
+    verify(mapStateToProps2, "mapStateToProps");
+    verify(mapDispatchToProps, "mapDispatchToProps");
+    verify(mergeProps, "mergeProps");
+  }
+  const _excluded$1 = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+  function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
+    areStatesEqual,
+    areOwnPropsEqual,
+    areStatePropsEqual
+  }) {
+    let hasRunAtLeastOnce = false;
+    let state;
+    let ownProps;
+    let stateProps;
+    let dispatchProps;
+    let mergedProps;
+    function handleFirstCall(firstState, firstOwnProps) {
+      state = firstState;
+      ownProps = firstOwnProps;
+      stateProps = mapStateToProps2(state, ownProps);
+      dispatchProps = mapDispatchToProps(dispatch, ownProps);
+      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
+      hasRunAtLeastOnce = true;
+      return mergedProps;
+    }
+    function handleNewPropsAndNewState() {
+      stateProps = mapStateToProps2(state, ownProps);
+      if (mapDispatchToProps.dependsOnOwnProps)
+        dispatchProps = mapDispatchToProps(dispatch, ownProps);
+      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
+      return mergedProps;
+    }
+    function handleNewProps() {
+      if (mapStateToProps2.dependsOnOwnProps)
+        stateProps = mapStateToProps2(state, ownProps);
+      if (mapDispatchToProps.dependsOnOwnProps)
+        dispatchProps = mapDispatchToProps(dispatch, ownProps);
+      mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
+      return mergedProps;
+    }
+    function handleNewState() {
+      const nextStateProps = mapStateToProps2(state, ownProps);
+      const statePropsChanged = !areStatePropsEqual(nextStateProps, stateProps);
+      stateProps = nextStateProps;
+      if (statePropsChanged)
+        mergedProps = mergeProps(stateProps, dispatchProps, ownProps);
+      return mergedProps;
+    }
+    function handleSubsequentCalls(nextState, nextOwnProps) {
+      const propsChanged = !areOwnPropsEqual(nextOwnProps, ownProps);
+      const stateChanged = !areStatesEqual(nextState, state, nextOwnProps, ownProps);
+      state = nextState;
+      ownProps = nextOwnProps;
+      if (propsChanged && stateChanged)
+        return handleNewPropsAndNewState();
+      if (propsChanged)
+        return handleNewProps();
+      if (stateChanged)
+        return handleNewState();
+      return mergedProps;
+    }
+    return function pureFinalPropsSelector(nextState, nextOwnProps) {
+      return hasRunAtLeastOnce ? handleSubsequentCalls(nextState, nextOwnProps) : handleFirstCall(nextState, nextOwnProps);
+    };
+  }
+  function finalPropsSelectorFactory(dispatch, _ref) {
+    let {
+      initMapStateToProps,
+      initMapDispatchToProps,
+      initMergeProps
+    } = _ref, options = _objectWithoutPropertiesLoose(_ref, _excluded$1);
+    const mapStateToProps2 = initMapStateToProps(dispatch, options);
+    const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
+    const mergeProps = initMergeProps(dispatch, options);
+    if (process.env.NODE_ENV !== "production") {
+      verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps);
+    }
+    return pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, options);
+  }
+  function bindActionCreators(actionCreators, dispatch) {
+    const boundActionCreators = {};
+    for (const key in actionCreators) {
+      const actionCreator = actionCreators[key];
+      if (typeof actionCreator === "function") {
+        boundActionCreators[key] = (...args) => dispatch(actionCreator(...args));
+      }
+    }
+    return boundActionCreators;
+  }
+  function isPlainObject$1(obj) {
+    if (typeof obj !== "object" || obj === null)
+      return false;
+    let proto = Object.getPrototypeOf(obj);
+    if (proto === null)
+      return true;
+    let baseProto = proto;
+    while (Object.getPrototypeOf(baseProto) !== null) {
+      baseProto = Object.getPrototypeOf(baseProto);
+    }
+    return proto === baseProto;
+  }
+  function verifyPlainObject(value, displayName, methodName) {
+    if (!isPlainObject$1(value)) {
+      warning(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
+    }
+  }
+  function wrapMapToPropsConstant(getConstant) {
+    return function initConstantSelector(dispatch) {
+      const constant = getConstant(dispatch);
+      function constantSelector() {
+        return constant;
+      }
+      constantSelector.dependsOnOwnProps = false;
+      return constantSelector;
+    };
+  }
+  function getDependsOnOwnProps(mapToProps) {
+    return mapToProps.dependsOnOwnProps ? Boolean(mapToProps.dependsOnOwnProps) : mapToProps.length !== 1;
+  }
+  function wrapMapToPropsFunc(mapToProps, methodName) {
+    return function initProxySelector(dispatch, {
+      displayName
+    }) {
+      const proxy = function mapToPropsProxy(stateOrDispatch, ownProps) {
+        return proxy.dependsOnOwnProps ? proxy.mapToProps(stateOrDispatch, ownProps) : proxy.mapToProps(stateOrDispatch, void 0);
+      };
+      proxy.dependsOnOwnProps = true;
+      proxy.mapToProps = function detectFactoryAndVerify(stateOrDispatch, ownProps) {
+        proxy.mapToProps = mapToProps;
+        proxy.dependsOnOwnProps = getDependsOnOwnProps(mapToProps);
+        let props = proxy(stateOrDispatch, ownProps);
+        if (typeof props === "function") {
+          proxy.mapToProps = props;
+          proxy.dependsOnOwnProps = getDependsOnOwnProps(props);
+          props = proxy(stateOrDispatch, ownProps);
+        }
+        if (process.env.NODE_ENV !== "production")
+          verifyPlainObject(props, displayName, methodName);
+        return props;
+      };
+      return proxy;
+    };
+  }
+  function createInvalidArgFactory(arg, name2) {
+    return (dispatch, options) => {
+      throw new Error(`Invalid value of type ${typeof arg} for ${name2} argument when connecting component ${options.wrappedComponentName}.`);
+    };
+  }
+  function mapDispatchToPropsFactory(mapDispatchToProps) {
+    return mapDispatchToProps && typeof mapDispatchToProps === "object" ? wrapMapToPropsConstant((dispatch) => (
+      // @ts-ignore
+      bindActionCreators(mapDispatchToProps, dispatch)
+    )) : !mapDispatchToProps ? wrapMapToPropsConstant((dispatch) => ({
+      dispatch
+    })) : typeof mapDispatchToProps === "function" ? (
+      // @ts-ignore
+      wrapMapToPropsFunc(mapDispatchToProps, "mapDispatchToProps")
+    ) : createInvalidArgFactory(mapDispatchToProps, "mapDispatchToProps");
+  }
+  function mapStateToPropsFactory(mapStateToProps2) {
+    return !mapStateToProps2 ? wrapMapToPropsConstant(() => ({})) : typeof mapStateToProps2 === "function" ? (
+      // @ts-ignore
+      wrapMapToPropsFunc(mapStateToProps2, "mapStateToProps")
+    ) : createInvalidArgFactory(mapStateToProps2, "mapStateToProps");
+  }
+  function defaultMergeProps(stateProps, dispatchProps, ownProps) {
+    return _extends$1({}, ownProps, stateProps, dispatchProps);
+  }
+  function wrapMergePropsFunc(mergeProps) {
+    return function initMergePropsProxy(dispatch, {
+      displayName,
+      areMergedPropsEqual
+    }) {
+      let hasRunOnce = false;
+      let mergedProps;
+      return function mergePropsProxy(stateProps, dispatchProps, ownProps) {
+        const nextMergedProps = mergeProps(stateProps, dispatchProps, ownProps);
+        if (hasRunOnce) {
+          if (!areMergedPropsEqual(nextMergedProps, mergedProps))
+            mergedProps = nextMergedProps;
+        } else {
+          hasRunOnce = true;
+          mergedProps = nextMergedProps;
+          if (process.env.NODE_ENV !== "production")
+            verifyPlainObject(mergedProps, displayName, "mergeProps");
+        }
+        return mergedProps;
+      };
+    };
+  }
+  function mergePropsFactory(mergeProps) {
+    return !mergeProps ? () => defaultMergeProps : typeof mergeProps === "function" ? wrapMergePropsFunc(mergeProps) : createInvalidArgFactory(mergeProps, "mergeProps");
+  }
+  function createListenerCollection() {
+    const batch2 = getBatch();
+    let first = null;
+    let last = null;
+    return {
+      clear() {
+        first = null;
+        last = null;
+      },
+      notify() {
+        batch2(() => {
+          let listener = first;
+          while (listener) {
+            listener.callback();
+            listener = listener.next;
+          }
+        });
+      },
+      get() {
+        let listeners = [];
+        let listener = first;
+        while (listener) {
+          listeners.push(listener);
+          listener = listener.next;
+        }
+        return listeners;
+      },
+      subscribe(callback) {
+        let isSubscribed = true;
+        let listener = last = {
+          callback,
+          next: null,
+          prev: last
+        };
+        if (listener.prev) {
+          listener.prev.next = listener;
+        } else {
+          first = listener;
+        }
+        return function unsubscribe() {
+          if (!isSubscribed || first === null)
+            return;
+          isSubscribed = false;
+          if (listener.next) {
+            listener.next.prev = listener.prev;
+          } else {
+            last = listener.prev;
+          }
+          if (listener.prev) {
+            listener.prev.next = listener.next;
+          } else {
+            first = listener.next;
+          }
+        };
+      }
+    };
+  }
+  const nullListeners = {
+    notify() {
+    },
+    get: () => []
+  };
+  function createSubscription(store, parentSub) {
+    let unsubscribe;
+    let listeners = nullListeners;
+    function addNestedSub(listener) {
+      trySubscribe();
+      return listeners.subscribe(listener);
+    }
+    function notifyNestedSubs() {
+      listeners.notify();
+    }
+    function handleChangeWrapper() {
+      if (subscription.onStateChange) {
+        subscription.onStateChange();
+      }
+    }
+    function isSubscribed() {
+      return Boolean(unsubscribe);
+    }
+    function trySubscribe() {
+      if (!unsubscribe) {
+        unsubscribe = parentSub ? parentSub.addNestedSub(handleChangeWrapper) : store.subscribe(handleChangeWrapper);
+        listeners = createListenerCollection();
+      }
+    }
+    function tryUnsubscribe() {
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = void 0;
+        listeners.clear();
+        listeners = nullListeners;
+      }
+    }
+    const subscription = {
+      addNestedSub,
+      notifyNestedSubs,
+      handleChangeWrapper,
+      isSubscribed,
+      trySubscribe,
+      tryUnsubscribe,
+      getListeners: () => listeners
+    };
+    return subscription;
+  }
+  const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
+  const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
+  function is(x, y) {
+    if (x === y) {
+      return x !== 0 || y !== 0 || 1 / x === 1 / y;
+    } else {
+      return x !== x && y !== y;
+    }
+  }
+  function shallowEqual(objA, objB) {
+    if (is(objA, objB))
+      return true;
+    if (typeof objA !== "object" || objA === null || typeof objB !== "object" || objB === null) {
+      return false;
+    }
+    const keysA = Object.keys(objA);
+    const keysB = Object.keys(objB);
+    if (keysA.length !== keysB.length)
+      return false;
+    for (let i2 = 0; i2 < keysA.length; i2++) {
+      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is(objA[keysA[i2]], objB[keysA[i2]])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  const _excluded = ["reactReduxForwardedRef"];
+  let useSyncExternalStore = notInitialized;
+  const initializeConnect = (fn) => {
+    useSyncExternalStore = fn;
+  };
+  const NO_SUBSCRIPTION_ARRAY = [null, null];
+  const stringifyComponent = (Comp) => {
+    try {
+      return JSON.stringify(Comp);
+    } catch (err) {
+      return String(Comp);
+    }
+  };
+  function useIsomorphicLayoutEffectWithArgs(effectFunc, effectArgs, dependencies2) {
+    useIsomorphicLayoutEffect(() => effectFunc(...effectArgs), dependencies2);
+  }
+  function captureWrapperProps(lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, childPropsFromStoreUpdate, notifyNestedSubs) {
+    lastWrapperProps.current = wrapperProps;
+    renderIsScheduled.current = false;
+    if (childPropsFromStoreUpdate.current) {
+      childPropsFromStoreUpdate.current = null;
+      notifyNestedSubs();
+    }
+  }
+  function subscribeUpdates(shouldHandleStateChanges, store, subscription, childPropsSelector, lastWrapperProps, lastChildProps, renderIsScheduled, isMounted, childPropsFromStoreUpdate, notifyNestedSubs, additionalSubscribeListener) {
+    if (!shouldHandleStateChanges)
+      return () => {
+      };
+    let didUnsubscribe = false;
+    let lastThrownError = null;
+    const checkForUpdates = () => {
+      if (didUnsubscribe || !isMounted.current) {
+        return;
+      }
+      const latestStoreState = store.getState();
+      let newChildProps, error;
+      try {
+        newChildProps = childPropsSelector(latestStoreState, lastWrapperProps.current);
+      } catch (e) {
+        error = e;
+        lastThrownError = e;
+      }
+      if (!error) {
+        lastThrownError = null;
+      }
+      if (newChildProps === lastChildProps.current) {
+        if (!renderIsScheduled.current) {
+          notifyNestedSubs();
+        }
+      } else {
+        lastChildProps.current = newChildProps;
+        childPropsFromStoreUpdate.current = newChildProps;
+        renderIsScheduled.current = true;
+        additionalSubscribeListener();
+      }
+    };
+    subscription.onStateChange = checkForUpdates;
+    subscription.trySubscribe();
+    checkForUpdates();
+    const unsubscribeWrapper = () => {
+      didUnsubscribe = true;
+      subscription.tryUnsubscribe();
+      subscription.onStateChange = null;
+      if (lastThrownError) {
+        throw lastThrownError;
+      }
+    };
+    return unsubscribeWrapper;
+  }
+  function strictEqual(a, b) {
+    return a === b;
+  }
+  let hasWarnedAboutDeprecatedPureOption = false;
+  function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
+    // The `pure` option has been removed, so TS doesn't like us destructuring this to check its existence.
+    // @ts-ignore
+    pure,
+    areStatesEqual = strictEqual,
+    areOwnPropsEqual = shallowEqual,
+    areStatePropsEqual = shallowEqual,
+    areMergedPropsEqual = shallowEqual,
+    // use React's forwardRef to expose a ref of the wrapped component
+    forwardRef = false,
+    // the context consumer to use
+    context = ReactReduxContext
+  } = {}) {
+    if (process.env.NODE_ENV !== "production") {
+      if (pure !== void 0 && !hasWarnedAboutDeprecatedPureOption) {
+        hasWarnedAboutDeprecatedPureOption = true;
+        warning('The `pure` option has been removed. `connect` is now always a "pure/memoized" component');
+      }
+    }
+    const Context = context;
+    const initMapStateToProps = mapStateToPropsFactory(mapStateToProps2);
+    const initMapDispatchToProps = mapDispatchToPropsFactory(mapDispatchToProps);
+    const initMergeProps = mergePropsFactory(mergeProps);
+    const shouldHandleStateChanges = Boolean(mapStateToProps2);
+    const wrapWithConnect = (WrappedComponent) => {
+      if (process.env.NODE_ENV !== "production" && !reactIsExports$1.isValidElementType(WrappedComponent)) {
+        throw new Error(`You must pass a component to the function returned by connect. Instead received ${stringifyComponent(WrappedComponent)}`);
+      }
+      const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || "Component";
+      const displayName = `Connect(${wrappedComponentName})`;
+      const selectorFactoryOptions = {
+        shouldHandleStateChanges,
+        displayName,
+        wrappedComponentName,
+        WrappedComponent,
+        // @ts-ignore
+        initMapStateToProps,
+        // @ts-ignore
+        initMapDispatchToProps,
+        initMergeProps,
+        areStatesEqual,
+        areStatePropsEqual,
+        areOwnPropsEqual,
+        areMergedPropsEqual
+      };
+      function ConnectFunction(props) {
+        const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
+          const {
+            reactReduxForwardedRef: reactReduxForwardedRef2
+          } = props, wrapperProps2 = _objectWithoutPropertiesLoose(props, _excluded);
+          return [props.context, reactReduxForwardedRef2, wrapperProps2];
+        }, [props]);
+        const ContextToUse = reactExports.useMemo(() => {
+          return propsContext && propsContext.Consumer && // @ts-ignore
+          reactIsExports$1.isContextConsumer(/* @__PURE__ */ reactExports.createElement(propsContext.Consumer, null)) ? propsContext : Context;
+        }, [propsContext, Context]);
+        const contextValue = reactExports.useContext(ContextToUse);
+        const didStoreComeFromProps = Boolean(props.store) && Boolean(props.store.getState) && Boolean(props.store.dispatch);
+        const didStoreComeFromContext = Boolean(contextValue) && Boolean(contextValue.store);
+        if (process.env.NODE_ENV !== "production" && !didStoreComeFromProps && !didStoreComeFromContext) {
+          throw new Error(`Could not find "store" in the context of "${displayName}". Either wrap the root component in a <Provider>, or pass a custom React context provider to <Provider> and the corresponding React context consumer to ${displayName} in connect options.`);
+        }
+        const store = didStoreComeFromProps ? props.store : contextValue.store;
+        const getServerState = didStoreComeFromContext ? contextValue.getServerState : store.getState;
+        const childPropsSelector = reactExports.useMemo(() => {
+          return finalPropsSelectorFactory(store.dispatch, selectorFactoryOptions);
+        }, [store]);
+        const [subscription, notifyNestedSubs] = reactExports.useMemo(() => {
+          if (!shouldHandleStateChanges)
+            return NO_SUBSCRIPTION_ARRAY;
+          const subscription2 = createSubscription(store, didStoreComeFromProps ? void 0 : contextValue.subscription);
+          const notifyNestedSubs2 = subscription2.notifyNestedSubs.bind(subscription2);
+          return [subscription2, notifyNestedSubs2];
+        }, [store, didStoreComeFromProps, contextValue]);
+        const overriddenContextValue = reactExports.useMemo(() => {
+          if (didStoreComeFromProps) {
+            return contextValue;
+          }
+          return _extends$1({}, contextValue, {
+            subscription
+          });
+        }, [didStoreComeFromProps, contextValue, subscription]);
+        const lastChildProps = reactExports.useRef();
+        const lastWrapperProps = reactExports.useRef(wrapperProps);
+        const childPropsFromStoreUpdate = reactExports.useRef();
+        const renderIsScheduled = reactExports.useRef(false);
+        reactExports.useRef(false);
+        const isMounted = reactExports.useRef(false);
+        const latestSubscriptionCallbackError = reactExports.useRef();
+        useIsomorphicLayoutEffect(() => {
+          isMounted.current = true;
+          return () => {
+            isMounted.current = false;
+          };
+        }, []);
+        const actualChildPropsSelector = reactExports.useMemo(() => {
+          const selector = () => {
+            if (childPropsFromStoreUpdate.current && wrapperProps === lastWrapperProps.current) {
+              return childPropsFromStoreUpdate.current;
+            }
+            return childPropsSelector(store.getState(), wrapperProps);
+          };
+          return selector;
+        }, [store, wrapperProps]);
+        const subscribeForReact = reactExports.useMemo(() => {
+          const subscribe = (reactListener) => {
+            if (!subscription) {
+              return () => {
+              };
+            }
+            return subscribeUpdates(
+              shouldHandleStateChanges,
+              store,
+              subscription,
+              // @ts-ignore
+              childPropsSelector,
+              lastWrapperProps,
+              lastChildProps,
+              renderIsScheduled,
+              isMounted,
+              childPropsFromStoreUpdate,
+              notifyNestedSubs,
+              reactListener
+            );
+          };
+          return subscribe;
+        }, [subscription]);
+        useIsomorphicLayoutEffectWithArgs(captureWrapperProps, [lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, childPropsFromStoreUpdate, notifyNestedSubs]);
+        let actualChildProps;
+        try {
+          actualChildProps = useSyncExternalStore(
+            // TODO We're passing through a big wrapper that does a bunch of extra side effects besides subscribing
+            subscribeForReact,
+            // TODO This is incredibly hacky. We've already processed the store update and calculated new child props,
+            // TODO and we're just passing that through so it triggers a re-render for us rather than relying on `uSES`.
+            actualChildPropsSelector,
+            getServerState ? () => childPropsSelector(getServerState(), wrapperProps) : actualChildPropsSelector
+          );
+        } catch (err) {
+          if (latestSubscriptionCallbackError.current) {
+            err.message += `
+The error may be correlated with this previous error:
+${latestSubscriptionCallbackError.current.stack}
+
+`;
+          }
+          throw err;
+        }
+        useIsomorphicLayoutEffect(() => {
+          latestSubscriptionCallbackError.current = void 0;
+          childPropsFromStoreUpdate.current = void 0;
+          lastChildProps.current = actualChildProps;
+        });
+        const renderedWrappedComponent = reactExports.useMemo(() => {
+          return (
+            // @ts-ignore
+            /* @__PURE__ */ reactExports.createElement(WrappedComponent, _extends$1({}, actualChildProps, {
+              ref: reactReduxForwardedRef
+            }))
+          );
+        }, [reactReduxForwardedRef, WrappedComponent, actualChildProps]);
+        const renderedChild = reactExports.useMemo(() => {
+          if (shouldHandleStateChanges) {
+            return /* @__PURE__ */ reactExports.createElement(ContextToUse.Provider, {
+              value: overriddenContextValue
+            }, renderedWrappedComponent);
+          }
+          return renderedWrappedComponent;
+        }, [ContextToUse, renderedWrappedComponent, overriddenContextValue]);
+        return renderedChild;
+      }
+      const _Connect = reactExports.memo(ConnectFunction);
+      const Connect = _Connect;
+      Connect.WrappedComponent = WrappedComponent;
+      Connect.displayName = ConnectFunction.displayName = displayName;
+      if (forwardRef) {
+        const _forwarded = reactExports.forwardRef(function forwardConnectRef(props, ref) {
+          return /* @__PURE__ */ reactExports.createElement(Connect, _extends$1({}, props, {
+            reactReduxForwardedRef: ref
+          }));
+        });
+        const forwarded = _forwarded;
+        forwarded.displayName = displayName;
+        forwarded.WrappedComponent = WrappedComponent;
+        return hoistStatics(forwarded, WrappedComponent);
+      }
+      return hoistStatics(Connect, WrappedComponent);
+    };
+    return wrapWithConnect;
+  }
+  function Provider({
+    store,
+    context,
+    children,
+    serverState,
+    stabilityCheck = "once",
+    noopCheck = "once"
+  }) {
+    const contextValue = reactExports.useMemo(() => {
+      const subscription = createSubscription(store);
+      return {
+        store,
+        subscription,
+        getServerState: serverState ? () => serverState : void 0,
+        stabilityCheck,
+        noopCheck
+      };
+    }, [store, serverState, stabilityCheck, noopCheck]);
+    const previousState = reactExports.useMemo(() => store.getState(), [store]);
+    useIsomorphicLayoutEffect(() => {
+      const {
+        subscription
+      } = contextValue;
+      subscription.onStateChange = subscription.notifyNestedSubs;
+      subscription.trySubscribe();
+      if (previousState !== store.getState()) {
+        subscription.notifyNestedSubs();
+      }
+      return () => {
+        subscription.tryUnsubscribe();
+        subscription.onStateChange = void 0;
+      };
+    }, [contextValue, previousState]);
+    const Context = context || ReactReduxContext;
+    return /* @__PURE__ */ reactExports.createElement(Context.Provider, {
+      value: contextValue
+    }, children);
+  }
+  initializeConnect(shimExports.useSyncExternalStore);
+  setBatch(reactDomExports.unstable_batchedUpdates);
   class ActionCreator {
   }
   /*******************************************************
@@ -96770,6 +96698,7 @@ ${latestSubscriptionCallbackError.current.stack}
   const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     position: "relative",
     padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
+    marginBottom: theme2.spacing(4),
     border: `1px solid ${theme2.palette.divider}`,
     textAlign: "center"
   }));
@@ -96973,27 +96902,13 @@ ${latestSubscriptionCallbackError.current.stack}
       subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
     ] });
   };
-  const Home = ({ is_teacher }) => {
-    const [state, setState] = reactExports.useState({
-      loading: true,
-      projects: [],
-      favourites: []
-    });
-    reactExports.useEffect(() => {
-      getHomeQuery((data) => {
-        setState({ ...data, loading: false });
-      });
-    }, []);
-    if (state.loading) {
-      return null;
-    }
-    const { projects, favourites } = state;
+  const Home = ({ isTeacher, projects, templates }) => {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!state.projects.length }),
-      state.projects.length && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!projects.length }),
+      !!projects.length && /* @__PURE__ */ jsxRuntimeExports.jsx(
         Section,
         {
-          header: is_teacher ? {
+          header: isTeacher ? {
             title: window.gettext("Recent projects"),
             seeAll: {
               text: "View all projects",
@@ -97013,7 +96928,7 @@ ${latestSubscriptionCallbackError.current.stack}
         Section,
         {
           header: {
-            title: state.projects.length ? window.gettext("Explore templates") : window.gettext("Get started with templates")
+            title: projects.length ? window.gettext("Explore templates") : window.gettext("Get started with templates")
           },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -97028,7 +96943,7 @@ ${latestSubscriptionCallbackError.current.stack}
                 hideIfCookie: "home-howto-template"
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: favourites.map((project, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: project }, `template-${index}`)) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: template }, `template-${index}`)) })
           ]
         }
       )
