@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from 'react'
 import Alert, { AlertProps } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
+import Typography from '@mui/material/Typography'
 import { styled, SxProps } from '@mui/material/styles'
 import Cookies from 'js-cookie'
 
@@ -14,8 +15,13 @@ type PropsType = {
 }
 
 const StyledTitle = styled(AlertTitle)({
-  fontWeight: 600
+  fontWeight: 600,
+  '&:last-child': {
+    marginBottom: 0
+  }
 })
+
+const StyledSubtitle = styled(Typography)({})
 
 /**
  * Custom Alert wrapper for the MUI Alert component
@@ -48,7 +54,7 @@ const CFAlert = ({
   return (
     <Alert severity={severity} sx={sx} onClose={hideIfCookie && handleClose}>
       <StyledTitle>{title}</StyledTitle>
-      {subtitle}
+      {subtitle && <StyledSubtitle variant="body2">{subtitle}</StyledSubtitle>}
     </Alert>
   )
 }

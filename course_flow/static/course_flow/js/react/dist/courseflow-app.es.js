@@ -96939,8 +96939,12 @@ function init(converter, defaultAttributes) {
 }
 var api = init(defaultConverter, { path: "/" });
 const StyledTitle = styled$1(AlertTitle$1)({
-  fontWeight: 600
+  fontWeight: 600,
+  "&:last-child": {
+    marginBottom: 0
+  }
 });
+const StyledSubtitle = styled$1(Typography$1)({});
 const CFAlert = ({
   severity,
   title,
@@ -96962,7 +96966,7 @@ const CFAlert = ({
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert$1, { severity, sx, onClose: hideIfCookie && handleClose, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
-    subtitle
+    subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
   ] });
 };
 const Home = ({ is_teacher }) => {
@@ -96976,9 +96980,6 @@ const Home = ({ is_teacher }) => {
       setState({ ...data, loading: false });
     });
   }, []);
-  function workflowCards(workflows, keyPrefix) {
-    return workflows.map((workflow, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: workflow }, `${keyPrefix}-${index}`));
-  }
   if (state.loading) {
     return null;
   }
@@ -97001,14 +97002,14 @@ const Home = ({ is_teacher }) => {
             href: COURSEFLOW_APP.config.my_liveprojects_path
           }
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(projects, "project") })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: projects.map((project, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: project }, `project-${index}`)) })
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       Section,
       {
         header: {
-          title: "Explore templates"
+          title: state.projects.length ? window.gettext("Explore templates") : window.gettext("Get started with templates")
         },
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -97023,7 +97024,7 @@ const Home = ({ is_teacher }) => {
               hideIfCookie: "home-howto-template"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflowCards(favourites, "templates") })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: favourites.map((project, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: project }, `template-${index}`)) })
         ]
       }
     )

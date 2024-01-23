@@ -30,12 +30,6 @@ const Home = ({ is_teacher }: PropsType) => {
     })
   }, [])
 
-  function workflowCards(workflows: Workflow[], keyPrefix: string) {
-    return workflows.map((workflow, index) => (
-      <WorkflowCard key={`${keyPrefix}-${index}`} workflowData={workflow} />
-    ))
-  }
-
   if (state.loading) {
     return null
   }
@@ -65,13 +59,19 @@ const Home = ({ is_teacher }: PropsType) => {
                 }
           }
         >
-          <GridWrap>{workflowCards(projects, 'project')}</GridWrap>
+          <GridWrap>
+            {projects.map((project, index) => (
+              <WorkflowCard key={`project-${index}`} workflowData={project} />
+            ))}
+          </GridWrap>
         </Section>
       )}
 
       <Section
         header={{
-          title: 'Explore templates'
+          title: state.projects.length
+            ? window.gettext('Explore templates')
+            : window.gettext('Get started with templates')
         }}
       >
         <Alert
@@ -83,7 +83,11 @@ const Home = ({ is_teacher }: PropsType) => {
           )}
           hideIfCookie="home-howto-template"
         />
-        <GridWrap>{workflowCards(favourites, 'templates')}</GridWrap>
+        <GridWrap>
+          {favourites.map((project, index) => (
+            <WorkflowCard key={`template-${index}`} workflowData={project} />
+          ))}
+        </GridWrap>
       </Section>
     </OuterContentWrap>
   )
