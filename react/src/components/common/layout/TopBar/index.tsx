@@ -28,7 +28,7 @@ import {
   NotificationsHeader,
   NotificationsList
 } from './styles'
-import { getTargetProjectMenu } from '@XMLHTTP/API/project'
+import { getTargetProjectMenu } from '@XMLHTTP/API/workflow'
 
 type TopBarAPIResponse = {
   is_teacher: boolean

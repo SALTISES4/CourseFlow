@@ -1,3 +1,4 @@
+from .comment import *
 from .create import *
 from .delete import *
 from .duplication import *

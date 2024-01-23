@@ -1,16 +1,22 @@
 //Get the data from all child workflows
 import {
-  GetWorkflowSelectMenuResp,
+  EmptyPostResp,
+  GetWorkflowSelectQueryResp,
   LinkedWorkflowMenuQueryResp,
   ParentWorkflowInfoQueryResp
 } from '@XMLHTTP/types/query'
 import {
   WorkflowDataQueryResp,
-  WorkflowsForProjectQueryResp
+  WorkflowParentDataQueryResp,
+  WorkflowChildDataQueryResp,
+  WorkflowsForProjectQueryResp,
+  WorkflowContextQueryResp,
+  TargetProjectQueryResp,
 } from '@XMLHTTP/types/query'
-import { ToDefine } from '@cfModule/types/common'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
+
 
 /*******************************************************
  * Bulk data API for workflows.
@@ -49,12 +55,12 @@ export function getWorkflowDataQuery(
 //Get the data from all parent workflows
 export function getWorkflowParentDataQuery(
   workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data) {
+    }).done(function (data: WorkflowParentDataQueryResp) {
       console.log('getWorkflowParentData')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -67,12 +73,12 @@ export function getWorkflowParentDataQuery(
 
 export function getWorkflowChildDataQuery(
   nodePk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
-    }).done(function (data) {
+    }).done(function (data: WorkflowChildDataQueryResp) {
       console.log('getWorkflowChildData')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -86,7 +92,7 @@ export function getWorkflowChildDataQuery(
 //Get the public data from the workflow
 export function getPublicWorkflowDataQuery(
   workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
 ) {
   try {
     $.get(
@@ -94,7 +100,7 @@ export function getPublicWorkflowDataQuery(
         '0',
         workflowPk
       )
-    ).done(function (data) {
+    ).done(function (data: WorkflowDataQueryResp) {
       console.log('getPublicWorkflowData')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -108,7 +114,7 @@ export function getPublicWorkflowDataQuery(
 //Get the public data from all parent workflows
 export function getPublicWorkflowParentDataQuery(
   workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
 ) {
   try {
     $.get(
@@ -116,7 +122,7 @@ export function getPublicWorkflowParentDataQuery(
         '0',
         workflowPk
       )
-    ).done(function (data) {
+    ).done(function (data: WorkflowParentDataQueryResp) {
       console.log('getPublicWorkflowParentData')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -130,7 +136,7 @@ export function getPublicWorkflowParentDataQuery(
 //Get the public data from all child workflows
 export function getPublicWorkflowChildDataQuery(
   nodePk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
 ) {
   try {
     $.get(
@@ -138,7 +144,7 @@ export function getPublicWorkflowChildDataQuery(
         '0',
         nodePk
       )
-    ).done(function (data) {
+    ).done(function (data: WorkflowChildDataQueryResp) {
       console.log('getPublicWorkflowChildData data')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -158,12 +164,12 @@ export function getPublicWorkflowChildDataQuery(
 //get the workflow's context data
 export function getWorkflowContext(
   workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data) {
+    }).done(function (data: WorkflowContextQueryResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -182,14 +188,14 @@ export function getWorkflowContext(
 export function getTargetProjectMenu<T>(
   workflowPk: number,
   updateFunction: (response: T) => void,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: TargetProjectQueryResp) => console.log('success')
 ) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_target_projects,
     {
       workflowPk: JSON.stringify(workflowPk)
     },
-    (data) => {
+    (data: TargetProjectQueryResp) => {
       // @ts-ignore
       callBackFunction()
       // @TODO call to react render
@@ -209,7 +215,7 @@ function openTargetProjectMenu(response, updateFunction) {
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(
   workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: ParentWorkflowInfoQueryResp) => console.log('success')
 ) {
   try {
     $.get(
@@ -217,7 +223,7 @@ export function getPublicParentWorkflowInfo(
         '0',
         workflowPk
       )
-    ).done(function (data) {
+    ).done(function (data: ParentWorkflowInfoQueryResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -320,7 +326,7 @@ export function getWorkflowSelectMenuQuery(
   type_filter: CfObjectType,
   get_strategies: boolean,
   self_only: boolean,
-  callBackFunction: (_data: GetWorkflowSelectMenuResp) => void
+  callBackFunction: (_data: GetWorkflowSelectQueryResp) => void
   // updateFunction,
   //  receiptFunction
 ) {
@@ -337,7 +343,7 @@ export function getWorkflowSelectMenuQuery(
     //   receiptFunction(data)
     // }
   )
-    .done(function (data) {
+    .done(function (data: GetWorkflowSelectQueryResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

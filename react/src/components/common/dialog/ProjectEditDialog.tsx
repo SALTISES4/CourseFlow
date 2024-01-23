@@ -1,11 +1,9 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { deleteSelfQuery } from '@XMLHTTP/API/self'
-import {
-  addTerminologyQuery,
-  updateValueInstantQuery
-} from '@XMLHTTP/API/global'
+import { deleteSelfQuery } from '@XMLHTTP/API/delete'
+import { addTerminologyQuery } from '@XMLHTTP/API/create'
+import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 
 // import $ from 'jquery'
 

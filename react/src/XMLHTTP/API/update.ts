@@ -1,3 +1,5 @@
+import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 
 //
 /**
@@ -17,7 +19,7 @@ export function updateValueQuery(
   objectType: any,
   json: any,
   changeField = false,
-  callBackFunction = () => console.log('success')
+  callBackFunction = (data: EmptyPostResp) => console.log('success')
 ) {
   const t = 1000
   const previousCall = document.lastUpdateCall
@@ -56,7 +58,7 @@ export function updateValueQuery(
   document.lastUpdateCallFunction = () => {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function (data) {
+        function (data: EmptyPostResp) {
           // @ts-ignore
           if (data.action === VERB.POSTED) {
             // @ts-ignore
@@ -76,7 +78,7 @@ export function updateValueInstantQuery(
   objectID: number,
   objectType: any,
   json: any,
-  callBackFunction = (_data: UpdateValueInstantQueryResp) =>
+  callBackFunction = (_data: EmptyPostResp) =>
     console.log('success')
 ) {
   try {
@@ -84,7 +86,7 @@ export function updateValueInstantQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       data: JSON.stringify(json)
-    }).done(function (data: UpdateValueInstantQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       // @ts-ignore
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
@@ -98,13 +100,13 @@ export function updateValueInstantQuery(
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
   action_data,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     COURSEFLOW_APP.tinyLoader.startLoad()
     $('.ui-draggable').draggable('disable')
     $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function (data) {
+      function (data: EmptyPostResp) {
         if (data.action === VERB.POSTED) callBackFunction(data)
         else window.fail_function(data.action)
         $('.ui-draggable').draggable('enable')
@@ -125,7 +127,7 @@ export function insertedAtInstant(
   parentType,
   newPosition,
   throughType,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     COURSEFLOW_APP.tinyLoader.startLoad()
@@ -139,7 +141,7 @@ export function insertedAtInstant(
       throughType: JSON.stringify(throughType),
       inserted: JSON.stringify(true),
       allowDifferent: JSON.stringify(true)
-    }).done(function (data) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === 'posted') callBackFunction(data)
       else window.fail_function(data.action)
       $('.ui-draggable').draggable('enable')
@@ -156,7 +158,7 @@ export function updateOutcomenodeDegree(
   nodeID: number,
   outcomeID: number,
   value,
-  callBackFunction = (_data: UpdateOutcomenodeDegreeResp) =>
+  callBackFunction = (_data: EmptyPostResp) =>
     console.log('success')
 ) {
   try {
@@ -164,7 +166,7 @@ export function updateOutcomenodeDegree(
       nodePk: JSON.stringify(nodeID),
       outcomePk: JSON.stringify(outcomeID),
       degree: JSON.stringify(value)
-    }).done(function (data: UpdateOutcomenodeDegreeResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -178,7 +180,7 @@ export function updateOutcomehorizontallinkDegree(
   outcomePk,
   outcome2Pk,
   degree,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(
@@ -189,7 +191,7 @@ export function updateOutcomehorizontallinkDegree(
         objectType: JSON.stringify('outcome'),
         degree: JSON.stringify(degree)
       }
-    ).done(function (data) {
+    ).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -203,12 +205,12 @@ export function updateOutcomehorizontallinkDegree(
 export function setLinkedWorkflow(
   node_id,
   workflow_id,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
-  }).done(function (data) {
+  }).done(function (data: EmptyPostResp) {
     if (data.action === VERB.POSTED) callBackFunction(data)
     else window.fail_function(data.action)
   })
@@ -225,13 +227,13 @@ export function setLinkedWorkflow(
 export function toggleStrategyQuery(
   weekPk: number,
   is_strategy: boolean,
-  callBackFunction = (_data: ToggleStrategyQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
       weekPk: JSON.stringify(weekPk),
       is_strategy: JSON.stringify(is_strategy)
-    }).done(function (data: ToggleStrategyQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       console.log('toggleStrategyQuery data')
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
@@ -247,7 +249,7 @@ export function updateObjectSet(
   objectType,
   objectsetPk,
   add,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
@@ -255,7 +257,7 @@ export function updateObjectSet(
       objectType: JSON.stringify(objectType),
       objectsetPk: JSON.stringify(objectsetPk),
       add: JSON.stringify(add)
-    }).done(function (data) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -269,14 +271,14 @@ export function toggleFavourite(
   objectID,
   objectType,
   favourite,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       favourite: JSON.stringify(favourite)
-    }).done(function (data) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

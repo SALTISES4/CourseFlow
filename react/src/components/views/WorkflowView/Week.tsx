@@ -14,7 +14,7 @@ import {
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
 import { AppState } from '@cfRedux/types/type'
-import { addStrategyQuery } from '@XMLHTTP/API/strategy'
+import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 

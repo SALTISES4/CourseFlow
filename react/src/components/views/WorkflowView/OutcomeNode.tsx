@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeNodeByID, TOutcomeNodeByID } from '@cfFindState'
 import { SimpleOutcome } from '../OutcomeEditView'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import CompletionImg from '@cfUIComponents/CompletionImg'
 import ComponentWithToggleDrop, {

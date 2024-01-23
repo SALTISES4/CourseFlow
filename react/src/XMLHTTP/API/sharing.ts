@@ -1,10 +1,12 @@
+import { EmptyPostResp, UsersForObjectQueryResp, UserListResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 
 export function setUserPermission(
   user_id,
   objectID,
   objectType,
   permission_type,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
@@ -12,7 +14,7 @@ export function setUserPermission(
       objectType: JSON.stringify(objectType),
       permission_user: JSON.stringify(user_id),
       permission_type: JSON.stringify(permission_type)
-    }).done(function (data) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.error)
     })

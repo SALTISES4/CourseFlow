@@ -6,11 +6,13 @@ import EditableComponentWithComments, {
   EditableComponentWithCommentsType
 } from './EditableComponentWithComments'
 import {
-  deleteSelfQuery,
   duplicateSelfQuery,
+} from '@XMLHTTP/API/duplication'
+import {
+  deleteSelfQuery,
   restoreSelfQuery
-} from '@XMLHTTP/API/self'
-import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/global'
+} from '@XMLHTTP/API/delete'
+import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type OwnProps = {

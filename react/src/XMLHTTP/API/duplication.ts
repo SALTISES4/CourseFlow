@@ -1,3 +1,5 @@
+import { EmptyPostResp, DuplicateBaseItemQueryResp } from '@XMLHTTP/types/query'
+import { VERB, OBJECT_TYPE } from '@cfModule/types/enum'
 
 /**
  *
@@ -64,7 +66,7 @@ export function duplicateSelfQuery(
   parentID: number,
   parentType: any,
   throughType: any,
-  callBackFunction = (_data: DuplicateSelfQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
@@ -73,7 +75,7 @@ export function duplicateSelfQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
-    }).done(function (data: DuplicateSelfQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

@@ -11,7 +11,7 @@ import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/Week'
-import { insertedAtInstant } from '@XMLHTTP/API/global'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType

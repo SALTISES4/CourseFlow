@@ -1,8 +1,8 @@
 import { QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
 import { TWorkflow } from '@cfRedux/types/type'
-import { DataPackage } from '@XMLHTTP/types'
-import { ENewItem, ESection, EUser } from '@XMLHTTP/types/entity'
+import { WorkflowDataPackage, WorkflowParentDataPackage, WorkflowChildDataPackage, WorkflowContextData} from '@XMLHTTP/types'
+import { ENewItem, ESection, EUser, EComment, EObjectSet, ESectionGroup } from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * EmptyPostResp
@@ -13,40 +13,68 @@ import { ENewItem, ESection, EUser } from '@XMLHTTP/types/entity'
  *******************************************************/
 export type EmptyPostResp = {
   action: VERB
+  error?: string
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /*******************************************************
- * LinkedWorkflowMenuQueryResp
+ * comment.ts
  *******************************************************/
-export type LinkedWorkflowMenuQueryResp = {
+
+export type CommentsForObjectQueryResp = {
   action: VERB
-  data_package: LinkedWorkDataPackage
-  node_id: number
+  data_package: EComment[]
 }
 
-export type LinkedWorkDataPackage = {
-  current_project: AllPublished
-  all_published: AllPublished
+/*******************************************************
+ * create.ts
+ *******************************************************/
+
+export type AddTerminologyQueryResp = {
+  action: VERB
+  new_dict: EObjectSet[]
 }
 
-export type ParentWorkflowInfoQueryResp = {
+/*******************************************************
+ * delete.ts
+ *******************************************************/
+
+/*******************************************************
+ * duplication.ts
+ *******************************************************/
+
+export type DuplicateBaseItemQueryResp = {
   action: VERB
-  parent_workflows: TWorkflow[]
+  new_item: ENewItem
+  type: string
 }
+
+/*******************************************************
+ * export_import.ts
+ *******************************************************/
+
+/*******************************************************
+ * menu.ts
+ *******************************************************/
+
+export type HomeQueryResp = {
+  favourites: Workflow[]
+  projects: Workflow[]
+}
+
 export type LibraryQueryResp = {
   data_package: Workflow[]
 }
+
+export type FavouritesQueryResp = {
+  action: VERB
+  data_package: Workflow[]
+}
+
+
+/*******************************************************
+ * search.ts
+ *******************************************************/
 
 export type SearchAllObjectsQueryResp = {
   action: VERB
@@ -54,14 +82,9 @@ export type SearchAllObjectsQueryResp = {
   pages: QueryPages
 }
 
-export type HomeQueryResp = {
-  favourites: Workflow[]
-  projects: Workflow[]
-}
-
-export type WorkflowsForProjectQueryResp = {
-  data_package: Workflow[]
-}
+/*******************************************************
+ * sharing.ts
+ *******************************************************/
 
 export type UsersForObjectQueryResp = {
   action: VERB
@@ -75,78 +98,82 @@ export type UsersForObjectQueryResp = {
   cannot_change: number[]
 }
 
-export type DuplicateBaseItemQueryResp = {
-  action: VERB
-  new_item: ENewItem
-  type: string
-}
-
-export type AddTerminologyQueryResp = {
-  action: VERB
-  new_dict: any
-}
-
 export type UserListResp = {
   action: VERB
   user_list: EUser[]
 }
-export type RestoreSelfQueryResp = {
-  action: VERB
-}
-export type DeleteSelfQueryResp = {
-  action: VERB
-}
-export type DuplicateSelfQueryResp = {
-  action: VERB
-}
-export type InsertChildQueryResp = {
-  action: VERB
-}
-export type InsertSiblingQueryResp = {
-  action: VERB
-}
-export type NewNodeQueryResp = {
-  action: VERB
-}
-export type AddStrategyQueryResp = {
-  action: VERB
-}
 
-export type FavouritesQueryResp = {
-  action: VERB
-  data_package: any
-}
+/*******************************************************
+ * update.ts
+ *******************************************************/
 
-export type UpdateOutcomenodeDegreeResp = {
-  action: VERB
-  data_package: any
-}
-
-export type CommentsForObjectQueryResp = any
-export type UpdateValueInstantQueryResp = any
+/*******************************************************
+ * workflow.ts
+ *******************************************************/
 
 export type WorkflowDataQueryResp = {
   action: VERB
-  data_package: DataPackage
+  data_package: WorkflowDataPackage
 }
-export type SuccessPost = {
+
+export type WorkflowParentDataQueryResp = {
   action: VERB
+  data_package: WorkflowParentDataPackage
 }
 
-/*******************************************************
- * QUERY COMPONENTS
- *******************************************************/
-
-export type AllPublished = {
-  title: string
-  sections: ESection[]
-  emptytext: string
-}
-
-export type ToggleStrategyQueryResp = {
+export type WorkflowChildDataQueryResp = {
   action: VERB
+  data_package: WorkflowChildDataPackage
+}
+
+export type WorkflowContextQueryResp = {
+  action: VERB
+  data_package: WorkflowContextData
+  workflow_id: number
+}
+
+export type TargetProjectQueryResp = {
+  action: VERB
+  data_package: {
+    owned_projects: ESectionGroup
+    edit_projects: ESectionGroup
+    deleted_projects?: ESectionGroup
+  }
+  workflow_id: number
+}
+
+export type ParentWorkflowInfoQueryResp = {
+  action: VERB
+  parent_workflows: Workflow[]
+}
+
+export type WorkflowsForProjectQueryResp = {
+  data_package: Workflow[]
+}
+
+export type LinkedWorkflowMenuQueryResp = {
+  action: VERB
+  data_package: WorkflowGroupsDataPackage
+  node_id: number
+}
+
+export type GetWorkflowSelectQueryResp = {
+  action: VERB
+  data_package: WorkflowGroupsDataPackage
+  project_id: number
 }
 
 export type GetWorkflowSelectMenuResp = {
   workflowID: number
 }
+
+
+/*******************************************************
+ * QUERY COMPONENTS
+ *******************************************************/
+
+export type WorkflowGroupsDataPackage = {
+  current_project: ESectionGroup
+  all_published: ESectionGroup
+}
+

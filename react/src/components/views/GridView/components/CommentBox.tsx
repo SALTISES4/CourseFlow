@@ -13,7 +13,7 @@ import {
   removeAllComments,
   removeComment
 } from '@cfModule/XMLHTTP/API/comment'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { TUser } from '@cfRedux/types/type'
 
 /*******************************************************

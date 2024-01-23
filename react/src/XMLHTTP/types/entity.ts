@@ -1,6 +1,18 @@
 import { ObjectPermission } from '@cfModule/types/common'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
+export type EDiscipline = {
+  id: number
+  title: string
+}
+
+export type EComment = {
+  id: number
+  user: EUser
+  created_on: TDate
+  text: string
+}
+
 export type EColumn = {
   colour: null
   column_type: number
@@ -21,7 +33,7 @@ export type EWeek = {
   title: null
   description: null
   default: boolean
-  nodeweek_set: any[]
+  nodeweek_set: number[]
   week_type: number
   week_type_display: string
   is_strategy: boolean
@@ -37,12 +49,12 @@ export type EOutcome = {
   code: string
   description: string
   child_outcome_links: number[]
-  outcome_horizontal_links: any[]
-  outcome_horizontal_links_unique: any[]
+  outcome_horizontal_links: number[]
+  outcome_horizontal_links_unique: number[]
   depth: number
   type: string
   comments: any[]
-  sets: any[]
+  sets: number[]
   outcomeworkflow: number
   is_dropped: boolean
 }
@@ -88,6 +100,23 @@ export type EWorkflow = {
   weekworkflow_set: number[]
   // @todo check where this is defined
   edit_count?: number
+}
+
+export type EProject = {
+  author: string
+  author_id: number | null
+  workflowproject_set: number[]
+  created_on: TDate
+  deleted: boolean
+  deleted_on: TDate
+  description: null | string
+  favourite: boolean
+  id: number
+  last_modified: TDate
+  object_sets: EObjectSet[]
+  object_permission: number
+  published: boolean
+  title: string
 }
 
 export type EWeekworkflow = {
@@ -195,11 +224,27 @@ export type EOutcomenode = {
   degree: number
 }
 
+export type EOutcomeHorizontalLink = {
+  outcome: number
+  parent_outcome: number
+  rank: number
+  id: number
+  degree: number
+}
+
 export type EOutcomeOutcome = {
   parent: number
   child: number
   rank: number
   id: number
+}
+
+export type ESectionGroup = {
+  title: string 
+  sections: ESection[]
+  add: boolean
+  duplicate: string
+  emptytext: string
 }
 
 export type ESection = {
@@ -228,6 +273,13 @@ export type ESectionObject = {
   workflow_count: null
   is_linked: boolean
   is_visible: boolean
+}
+
+export type EObjectSet = {
+  id: number
+  title: string
+  translation_plural: string
+  term: string
 }
 
 export type TDate = string

@@ -1,3 +1,5 @@
+import { EmptyPostResp, AddTerminologyQueryResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 
 //Add a new node to a week
 export function newNodeQuery(
@@ -5,7 +7,7 @@ export function newNodeQuery(
   position = -1,
   column = -1,
   column_type = -1,
-  callBackFunction = (_data: NewNodeQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_node, {
@@ -13,7 +15,7 @@ export function newNodeQuery(
       position: JSON.stringify(position),
       columnPk: JSON.stringify(column),
       columnType: JSON.stringify(column_type)
-    }).done(function (data: NewNodeQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) {
         callBackFunction(data)
       } else {
@@ -40,13 +42,13 @@ export function newNodeQuery(
 export function newOutcomeQuery(
   workflowPk: number,
   object_set_id: number,
-  callBackFunction = (_data: SuccessPost) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
       workflowPk: JSON.stringify(workflowPk),
       objectsetPk: JSON.stringify(object_set_id)
-    }).done(function (data: SuccessPost) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -61,7 +63,7 @@ export function addStrategyQuery(
   workflowPk: number,
   position = -1,
   strategyPk = -1,
-  callBackFunction = (_data: AddStrategyQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
@@ -69,7 +71,7 @@ export function addStrategyQuery(
       position: JSON.stringify(position),
       objectID: JSON.stringify(strategyPk),
       objectType: JSON.stringify('workflow')
-    }).done(function (data: AddStrategyQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) {
         callBackFunction(data)
       } else {
@@ -86,7 +88,7 @@ export function newNodeLink(
   target_node,
   source_port,
   target_port,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
@@ -95,7 +97,7 @@ export function newNodeLink(
       objectType: JSON.stringify('node'),
       sourcePort: JSON.stringify(source_port),
       targetPort: JSON.stringify(target_port)
-    }).done(function (data) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -109,13 +111,13 @@ export function newNodeLink(
 export function insertChildQuery(
   objectID: number,
   objectType: any,
-  callBackFunction = (_data: InsertChildQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function (data: InsertChildQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -132,7 +134,7 @@ export function insertSiblingQuery(
   parentID: number,
   parentType: any,
   throughType: any,
-  callBackFunction = (_data: InsertSiblingQueryResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
@@ -141,7 +143,7 @@ export function insertSiblingQuery(
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       throughType: JSON.stringify(throughType)
-    }).done(function (data: InsertSiblingQueryResp) {
+    }).done(function (data: EmptyPostResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

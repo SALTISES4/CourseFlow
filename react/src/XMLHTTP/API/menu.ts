@@ -1,3 +1,6 @@
+import { EmptyPostResp, HomeQueryResp, LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
+import { EDiscipline } from '@XMLHTTP/types/entity'
 
 /**
  * Get the home projects
@@ -55,11 +58,11 @@ export function getFavouritesQuery(
 
 //Get the list of possible disciplines
 export function getDisciplines(
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EDiscipline[]) => console.log('success')
 ) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_disciplines).done(
-      function (data) {
+      function (data: EDiscipline[]) {
         callBackFunction(data)
       }
     )

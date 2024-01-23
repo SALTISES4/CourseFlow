@@ -17,7 +17,7 @@ import {
   Project,
   WorkflowDetailViewDTO
 } from '@cfPages/Workflow/Workflow/types'
-import { WorkflowDataQueryResp } from '@XMLHTTP/types/query'
+import { WorkflowDataQueryResp, WorkflowChildDataQueryResp, WorkflowParentDataQueryResp } from '@XMLHTTP/types/query'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
@@ -32,7 +32,7 @@ import {
   getWorkflowDataQuery,
   getWorkflowParentDataQuery
 } from '@XMLHTTP/API/workflow'
-import { updateValueQuery } from '@XMLHTTP/API/global'
+import { updateValueQuery } from '@XMLHTTP/API/update'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 // import $ from 'jquery'
@@ -91,11 +91,11 @@ class Workflow {
   ) => void
   protected getWorkflowParentData: (
     workflowPk,
-    callBackFunction?: (data: WorkflowDataQueryResp) => void
+    callBackFunction?: (data: WorkflowParentDataQueryResp) => void
   ) => void
   private getWorkflowChildData: (
     workflowPk,
-    callBackFunction?: (data: WorkflowDataQueryResp) => void
+    callBackFunction?: (data: WorkflowChildDataQueryResp) => void
   ) => void
   websocket: WebSocket
   private has_disconnected: boolean
