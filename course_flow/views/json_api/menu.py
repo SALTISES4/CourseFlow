@@ -118,38 +118,6 @@ def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
 
 
 @login_required
-def json_api_get_home(request: HttpRequest) -> JsonResponse:
-    user = request.user
-    if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
-        projects_serialized = []
-        favourites_serialized = []
-    else:
-        projects = [
-            op.content_object
-            for op in ObjectPermission.objects.filter(
-                project__deleted=False, user=user
-            ).order_by("-last_viewed")[:2]
-        ]
-        projects_serialized = InfoBoxSerializer(
-            projects, many=True, context={"user": user}
-        ).data
-        favourites = [
-            fav.content_object
-            for fav in Favourite.objects.filter(user=user).filter(
-                Q(workflow__deleted=False, workflow__project__deleted=False)
-                | Q(project__deleted=False)
-                | Q(workflow__deleted=False, workflow__is_strategy=True)
-            )
-        ]
-        favourites_serialized = InfoBoxSerializer(
-            favourites, many=True, context={"user": user}
-        ).data
-    return JsonResponse(
-        {"projects": projects_serialized, "favourites": favourites_serialized}
-    )
-
-
-@login_required
 def json_api_get_library(request: HttpRequest) -> JsonResponse:
     user = request.user
     all_projects = list(Project.objects.filter(user_permissions__user=user))
