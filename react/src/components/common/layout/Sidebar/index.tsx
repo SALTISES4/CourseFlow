@@ -9,11 +9,10 @@ import Typography from '@mui/material/Typography'
 import HomeIcon from '@mui/icons-material/Home'
 import FolderCopyIcon from '@mui/icons-material/FolderCopy'
 import SearchIcon from '@mui/icons-material/Search'
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
-import useApi from '@cfModule/hooks/useApi'
+import { useQuery } from '@tanstack/react-query'
 
 import {
   LogoWrap,
@@ -41,9 +40,17 @@ const Sidebar = () => {
     !!sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const [apiData, loading, error] = useApi<SidebarAPIResponse>(
-    COURSEFLOW_APP.config.json_api_paths.get_sidebar
-  )
+  const { isPending, isError, data } = useQuery({
+    queryKey: ['sidebar'],
+    queryFn: async (): Promise<SidebarAPIResponse> => {
+      const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar)
+      return resp.json()
+    }
+  })
+
+  if (isPending || isError) {
+    return null
+  }
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -89,7 +96,7 @@ const Sidebar = () => {
               <ListItemText primary={COURSEFLOW_APP.strings.home} />
             </ListItemButton>
           </ListItem>
-          {apiData.is_teacher ? (
+          {data.is_teacher ? (
             <>
               <ListItem disablePadding dense>
                 <ListItemButton
@@ -127,7 +134,7 @@ const Sidebar = () => {
           ) : null}
         </MainMenuWrap>
 
-        {apiData.is_teacher && apiData.favourites.length ? (
+        {data.is_teacher && data.favourites.length ? (
           <>
             <Divider />
             <FavouritesWrap>
@@ -135,7 +142,7 @@ const Sidebar = () => {
                 {COURSEFLOW_APP.strings.favourites}
               </FavouritesLabel>
               <List>
-                {apiData.favourites.map((favourite, id) => (
+                {data.favourites.map((favourite, id) => (
                   <ListItem disablePadding dense key={id}>
                     <ListItemButton
                       component="a"
@@ -148,7 +155,7 @@ const Sidebar = () => {
                   </ListItem>
                 ))}
 
-                {apiData.favourites.length >= 5 ? (
+                {data.favourites.length >= 5 ? (
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
                       component="a"

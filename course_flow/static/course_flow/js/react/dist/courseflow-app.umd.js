@@ -38,7 +38,7 @@ var __privateMethod = (obj, member, method) => {
   return method;
 };
 
-  var _focused, _cleanup, _setup, _a, _online, _cleanup2, _setup2, _b, _gcTimeout, _c, _initialState, _revertState, _cache, _promise, _retryer, _observers, _defaultOptions, _abortSignalConsumed, _setOptions, setOptions_fn, _dispatch, dispatch_fn, _d, _queries, _e, _observers2, _defaultOptions2, _mutationCache, _retryer2, _dispatch2, dispatch_fn2, _f, _mutations, _mutationId, _resuming, _g, _queryCache, _mutationCache2, _defaultOptions3, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _h, _i;
+  var _focused, _cleanup, _setup, _a, _online, _cleanup2, _setup2, _b, _gcTimeout, _c, _initialState, _revertState, _cache, _promise, _retryer, _observers, _defaultOptions, _abortSignalConsumed, _setOptions, setOptions_fn, _dispatch, dispatch_fn, _d, _queries, _e, _observers2, _defaultOptions2, _mutationCache, _retryer2, _dispatch2, dispatch_fn2, _f, _mutations, _mutationId, _resuming, _g, _queryCache, _mutationCache2, _defaultOptions3, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _h, _client, _currentQuery, _currentQueryInitialState, _currentResult, _currentResultState, _currentResultOptions, _selectError, _selectFn, _selectResult, _lastQueryWithDefinedData, _staleTimeoutId, _refetchIntervalId, _currentRefetchInterval, _trackedProps, _executeFetch, executeFetch_fn, _updateStaleTimeout, updateStaleTimeout_fn, _computeRefetchInterval, computeRefetchInterval_fn, _updateRefetchInterval, updateRefetchInterval_fn, _updateTimers, updateTimers_fn, _clearStaleTimeout, clearStaleTimeout_fn, _clearRefetchInterval, clearRefetchInterval_fn, _updateQuery, updateQuery_fn, _notify, notify_fn, _i, _j;
   function _mergeNamespaces(n, m2) {
     for (var i2 = 0; i2 < m2.length; i2++) {
       const e = m2[i2];
@@ -25493,7 +25493,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         function updateSuspenseComponent(current2, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           {
-            if (shouldSuspend(workInProgress2)) {
+            if (shouldSuspend2(workInProgress2)) {
               workInProgress2.flags |= DidCapture;
             }
           }
@@ -31289,7 +31289,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         var shouldSuspendImpl = function(fiber) {
           return false;
         };
-        function shouldSuspend(fiber) {
+        function shouldSuspend2(fiber) {
           return shouldSuspendImpl(fiber);
         }
         var overrideHookState = null;
@@ -39184,6 +39184,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return b;
   }
+  function shallowEqualObjects(a, b) {
+    if (a && !b || b && !a) {
+      return false;
+    }
+    for (const key in a) {
+      if (a[key] !== b[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
   function isPlainArray(value) {
     return Array.isArray(value) && value.length === Object.keys(value).length;
   }
@@ -40083,7 +40094,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       this.execute(this.state.variables);
     }
     async execute(variables) {
-      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t5;
+      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j2, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t5;
       const executeMutation = () => {
         __privateSet(this, _retryer2, createRetryer({
           fn: () => {
@@ -40134,7 +40145,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           this
         ));
         await ((_h2 = (_g2 = this.options).onSuccess) == null ? void 0 : _h2.call(_g2, data, variables, this.state.context));
-        await ((_j = (_i2 = __privateGet(this, _mutationCache).config).onSettled) == null ? void 0 : _j.call(
+        await ((_j2 = (_i2 = __privateGet(this, _mutationCache).config).onSettled) == null ? void 0 : _j2.call(
           _i2,
           data,
           null,
@@ -40699,9 +40710,434 @@ Please use another name.` : formatMuiErrorMessage(18));
       __privateGet(this, _mutationCache2).clear();
     }
   }, _queryCache = new WeakMap(), _mutationCache2 = new WeakMap(), _defaultOptions3 = new WeakMap(), _queryDefaults = new WeakMap(), _mutationDefaults = new WeakMap(), _mountCount = new WeakMap(), _unsubscribeFocus = new WeakMap(), _unsubscribeOnline = new WeakMap(), _h);
+  var QueryObserver = (_i = class extends Subscribable {
+    constructor(client, options) {
+      super();
+      __privateAdd(this, _executeFetch);
+      __privateAdd(this, _updateStaleTimeout);
+      __privateAdd(this, _computeRefetchInterval);
+      __privateAdd(this, _updateRefetchInterval);
+      __privateAdd(this, _updateTimers);
+      __privateAdd(this, _clearStaleTimeout);
+      __privateAdd(this, _clearRefetchInterval);
+      __privateAdd(this, _updateQuery);
+      __privateAdd(this, _notify);
+      __privateAdd(this, _client, void 0);
+      __privateAdd(this, _currentQuery, void 0);
+      __privateAdd(this, _currentQueryInitialState, void 0);
+      __privateAdd(this, _currentResult, void 0);
+      __privateAdd(this, _currentResultState, void 0);
+      __privateAdd(this, _currentResultOptions, void 0);
+      __privateAdd(this, _selectError, void 0);
+      __privateAdd(this, _selectFn, void 0);
+      __privateAdd(this, _selectResult, void 0);
+      // This property keeps track of the last query with defined data.
+      // It will be used to pass the previous data and query to the placeholder function between renders.
+      __privateAdd(this, _lastQueryWithDefinedData, void 0);
+      __privateAdd(this, _staleTimeoutId, void 0);
+      __privateAdd(this, _refetchIntervalId, void 0);
+      __privateAdd(this, _currentRefetchInterval, void 0);
+      __privateAdd(this, _trackedProps, /* @__PURE__ */ new Set());
+      this.options = options;
+      __privateSet(this, _client, client);
+      __privateSet(this, _selectError, null);
+      this.bindMethods();
+      this.setOptions(options);
+    }
+    bindMethods() {
+      this.refetch = this.refetch.bind(this);
+    }
+    onSubscribe() {
+      if (this.listeners.size === 1) {
+        __privateGet(this, _currentQuery).addObserver(this);
+        if (shouldFetchOnMount(__privateGet(this, _currentQuery), this.options)) {
+          __privateMethod(this, _executeFetch, executeFetch_fn).call(this);
+        } else {
+          this.updateResult();
+        }
+        __privateMethod(this, _updateTimers, updateTimers_fn).call(this);
+      }
+    }
+    onUnsubscribe() {
+      if (!this.hasListeners()) {
+        this.destroy();
+      }
+    }
+    shouldFetchOnReconnect() {
+      return shouldFetchOn(
+        __privateGet(this, _currentQuery),
+        this.options,
+        this.options.refetchOnReconnect
+      );
+    }
+    shouldFetchOnWindowFocus() {
+      return shouldFetchOn(
+        __privateGet(this, _currentQuery),
+        this.options,
+        this.options.refetchOnWindowFocus
+      );
+    }
+    destroy() {
+      this.listeners = /* @__PURE__ */ new Set();
+      __privateMethod(this, _clearStaleTimeout, clearStaleTimeout_fn).call(this);
+      __privateMethod(this, _clearRefetchInterval, clearRefetchInterval_fn).call(this);
+      __privateGet(this, _currentQuery).removeObserver(this);
+    }
+    setOptions(options, notifyOptions) {
+      const prevOptions = this.options;
+      const prevQuery = __privateGet(this, _currentQuery);
+      this.options = __privateGet(this, _client).defaultQueryOptions(options);
+      if (!shallowEqualObjects(prevOptions, this.options)) {
+        __privateGet(this, _client).getQueryCache().notify({
+          type: "observerOptionsUpdated",
+          query: __privateGet(this, _currentQuery),
+          observer: this
+        });
+      }
+      if (typeof this.options.enabled !== "undefined" && typeof this.options.enabled !== "boolean") {
+        throw new Error("Expected enabled to be a boolean");
+      }
+      if (!this.options.queryKey) {
+        this.options.queryKey = prevOptions.queryKey;
+      }
+      __privateMethod(this, _updateQuery, updateQuery_fn).call(this);
+      const mounted = this.hasListeners();
+      if (mounted && shouldFetchOptionally(
+        __privateGet(this, _currentQuery),
+        prevQuery,
+        this.options,
+        prevOptions
+      )) {
+        __privateMethod(this, _executeFetch, executeFetch_fn).call(this);
+      }
+      this.updateResult(notifyOptions);
+      if (mounted && (__privateGet(this, _currentQuery) !== prevQuery || this.options.enabled !== prevOptions.enabled || this.options.staleTime !== prevOptions.staleTime)) {
+        __privateMethod(this, _updateStaleTimeout, updateStaleTimeout_fn).call(this);
+      }
+      const nextRefetchInterval = __privateMethod(this, _computeRefetchInterval, computeRefetchInterval_fn).call(this);
+      if (mounted && (__privateGet(this, _currentQuery) !== prevQuery || this.options.enabled !== prevOptions.enabled || nextRefetchInterval !== __privateGet(this, _currentRefetchInterval))) {
+        __privateMethod(this, _updateRefetchInterval, updateRefetchInterval_fn).call(this, nextRefetchInterval);
+      }
+    }
+    getOptimisticResult(options) {
+      const query = __privateGet(this, _client).getQueryCache().build(__privateGet(this, _client), options);
+      const result = this.createResult(query, options);
+      if (shouldAssignObserverCurrentProperties(this, result)) {
+        __privateSet(this, _currentResult, result);
+        __privateSet(this, _currentResultOptions, this.options);
+        __privateSet(this, _currentResultState, __privateGet(this, _currentQuery).state);
+      }
+      return result;
+    }
+    getCurrentResult() {
+      return __privateGet(this, _currentResult);
+    }
+    trackResult(result) {
+      const trackedResult = {};
+      Object.keys(result).forEach((key) => {
+        Object.defineProperty(trackedResult, key, {
+          configurable: false,
+          enumerable: true,
+          get: () => {
+            __privateGet(this, _trackedProps).add(key);
+            return result[key];
+          }
+        });
+      });
+      return trackedResult;
+    }
+    getCurrentQuery() {
+      return __privateGet(this, _currentQuery);
+    }
+    refetch({ ...options } = {}) {
+      return this.fetch({
+        ...options
+      });
+    }
+    fetchOptimistic(options) {
+      const defaultedOptions = __privateGet(this, _client).defaultQueryOptions(options);
+      const query = __privateGet(this, _client).getQueryCache().build(__privateGet(this, _client), defaultedOptions);
+      query.isFetchingOptimistic = true;
+      return query.fetch().then(() => this.createResult(query, defaultedOptions));
+    }
+    fetch(fetchOptions) {
+      return __privateMethod(this, _executeFetch, executeFetch_fn).call(this, {
+        ...fetchOptions,
+        cancelRefetch: fetchOptions.cancelRefetch ?? true
+      }).then(() => {
+        this.updateResult();
+        return __privateGet(this, _currentResult);
+      });
+    }
+    createResult(query, options) {
+      var _a2;
+      const prevQuery = __privateGet(this, _currentQuery);
+      const prevOptions = this.options;
+      const prevResult = __privateGet(this, _currentResult);
+      const prevResultState = __privateGet(this, _currentResultState);
+      const prevResultOptions = __privateGet(this, _currentResultOptions);
+      const queryChange = query !== prevQuery;
+      const queryInitialState = queryChange ? query.state : __privateGet(this, _currentQueryInitialState);
+      const { state } = query;
+      let { error, errorUpdatedAt, fetchStatus, status } = state;
+      let isPlaceholderData = false;
+      let data;
+      if (options._optimisticResults) {
+        const mounted = this.hasListeners();
+        const fetchOnMount = !mounted && shouldFetchOnMount(query, options);
+        const fetchOptionally = mounted && shouldFetchOptionally(query, prevQuery, options, prevOptions);
+        if (fetchOnMount || fetchOptionally) {
+          fetchStatus = canFetch(query.options.networkMode) ? "fetching" : "paused";
+          if (!state.dataUpdatedAt) {
+            status = "pending";
+          }
+        }
+        if (options._optimisticResults === "isRestoring") {
+          fetchStatus = "idle";
+        }
+      }
+      if (options.select && typeof state.data !== "undefined") {
+        if (prevResult && state.data === (prevResultState == null ? void 0 : prevResultState.data) && options.select === __privateGet(this, _selectFn)) {
+          data = __privateGet(this, _selectResult);
+        } else {
+          try {
+            __privateSet(this, _selectFn, options.select);
+            data = options.select(state.data);
+            data = replaceData(prevResult == null ? void 0 : prevResult.data, data, options);
+            __privateSet(this, _selectResult, data);
+            __privateSet(this, _selectError, null);
+          } catch (selectError) {
+            __privateSet(this, _selectError, selectError);
+          }
+        }
+      } else {
+        data = state.data;
+      }
+      if (typeof options.placeholderData !== "undefined" && typeof data === "undefined" && status === "pending") {
+        let placeholderData;
+        if ((prevResult == null ? void 0 : prevResult.isPlaceholderData) && options.placeholderData === (prevResultOptions == null ? void 0 : prevResultOptions.placeholderData)) {
+          placeholderData = prevResult.data;
+        } else {
+          placeholderData = typeof options.placeholderData === "function" ? options.placeholderData(
+            (_a2 = __privateGet(this, _lastQueryWithDefinedData)) == null ? void 0 : _a2.state.data,
+            __privateGet(this, _lastQueryWithDefinedData)
+          ) : options.placeholderData;
+          if (options.select && typeof placeholderData !== "undefined") {
+            try {
+              placeholderData = options.select(placeholderData);
+              __privateSet(this, _selectError, null);
+            } catch (selectError) {
+              __privateSet(this, _selectError, selectError);
+            }
+          }
+        }
+        if (typeof placeholderData !== "undefined") {
+          status = "success";
+          data = replaceData(
+            prevResult == null ? void 0 : prevResult.data,
+            placeholderData,
+            options
+          );
+          isPlaceholderData = true;
+        }
+      }
+      if (__privateGet(this, _selectError)) {
+        error = __privateGet(this, _selectError);
+        data = __privateGet(this, _selectResult);
+        errorUpdatedAt = Date.now();
+        status = "error";
+      }
+      const isFetching = fetchStatus === "fetching";
+      const isPending = status === "pending";
+      const isError2 = status === "error";
+      const isLoading = isPending && isFetching;
+      const result = {
+        status,
+        fetchStatus,
+        isPending,
+        isSuccess: status === "success",
+        isError: isError2,
+        isInitialLoading: isLoading,
+        isLoading,
+        data,
+        dataUpdatedAt: state.dataUpdatedAt,
+        error,
+        errorUpdatedAt,
+        failureCount: state.fetchFailureCount,
+        failureReason: state.fetchFailureReason,
+        errorUpdateCount: state.errorUpdateCount,
+        isFetched: state.dataUpdateCount > 0 || state.errorUpdateCount > 0,
+        isFetchedAfterMount: state.dataUpdateCount > queryInitialState.dataUpdateCount || state.errorUpdateCount > queryInitialState.errorUpdateCount,
+        isFetching,
+        isRefetching: isFetching && !isPending,
+        isLoadingError: isError2 && state.dataUpdatedAt === 0,
+        isPaused: fetchStatus === "paused",
+        isPlaceholderData,
+        isRefetchError: isError2 && state.dataUpdatedAt !== 0,
+        isStale: isStale(query, options),
+        refetch: this.refetch
+      };
+      return result;
+    }
+    updateResult(notifyOptions) {
+      const prevResult = __privateGet(this, _currentResult);
+      const nextResult = this.createResult(__privateGet(this, _currentQuery), this.options);
+      __privateSet(this, _currentResultState, __privateGet(this, _currentQuery).state);
+      __privateSet(this, _currentResultOptions, this.options);
+      if (__privateGet(this, _currentResultState).data !== void 0) {
+        __privateSet(this, _lastQueryWithDefinedData, __privateGet(this, _currentQuery));
+      }
+      if (shallowEqualObjects(nextResult, prevResult)) {
+        return;
+      }
+      __privateSet(this, _currentResult, nextResult);
+      const defaultNotifyOptions = {};
+      const shouldNotifyListeners = () => {
+        if (!prevResult) {
+          return true;
+        }
+        const { notifyOnChangeProps } = this.options;
+        const notifyOnChangePropsValue = typeof notifyOnChangeProps === "function" ? notifyOnChangeProps() : notifyOnChangeProps;
+        if (notifyOnChangePropsValue === "all" || !notifyOnChangePropsValue && !__privateGet(this, _trackedProps).size) {
+          return true;
+        }
+        const includedProps = new Set(
+          notifyOnChangePropsValue ?? __privateGet(this, _trackedProps)
+        );
+        if (this.options.throwOnError) {
+          includedProps.add("error");
+        }
+        return Object.keys(__privateGet(this, _currentResult)).some((key) => {
+          const typedKey = key;
+          const changed = __privateGet(this, _currentResult)[typedKey] !== prevResult[typedKey];
+          return changed && includedProps.has(typedKey);
+        });
+      };
+      if ((notifyOptions == null ? void 0 : notifyOptions.listeners) !== false && shouldNotifyListeners()) {
+        defaultNotifyOptions.listeners = true;
+      }
+      __privateMethod(this, _notify, notify_fn).call(this, { ...defaultNotifyOptions, ...notifyOptions });
+    }
+    onQueryUpdate() {
+      this.updateResult();
+      if (this.hasListeners()) {
+        __privateMethod(this, _updateTimers, updateTimers_fn).call(this);
+      }
+    }
+  }, _client = new WeakMap(), _currentQuery = new WeakMap(), _currentQueryInitialState = new WeakMap(), _currentResult = new WeakMap(), _currentResultState = new WeakMap(), _currentResultOptions = new WeakMap(), _selectError = new WeakMap(), _selectFn = new WeakMap(), _selectResult = new WeakMap(), _lastQueryWithDefinedData = new WeakMap(), _staleTimeoutId = new WeakMap(), _refetchIntervalId = new WeakMap(), _currentRefetchInterval = new WeakMap(), _trackedProps = new WeakMap(), _executeFetch = new WeakSet(), executeFetch_fn = function(fetchOptions) {
+    __privateMethod(this, _updateQuery, updateQuery_fn).call(this);
+    let promise = __privateGet(this, _currentQuery).fetch(
+      this.options,
+      fetchOptions
+    );
+    if (!(fetchOptions == null ? void 0 : fetchOptions.throwOnError)) {
+      promise = promise.catch(noop$1);
+    }
+    return promise;
+  }, _updateStaleTimeout = new WeakSet(), updateStaleTimeout_fn = function() {
+    __privateMethod(this, _clearStaleTimeout, clearStaleTimeout_fn).call(this);
+    if (isServer || __privateGet(this, _currentResult).isStale || !isValidTimeout(this.options.staleTime)) {
+      return;
+    }
+    const time = timeUntilStale(
+      __privateGet(this, _currentResult).dataUpdatedAt,
+      this.options.staleTime
+    );
+    const timeout = time + 1;
+    __privateSet(this, _staleTimeoutId, setTimeout(() => {
+      if (!__privateGet(this, _currentResult).isStale) {
+        this.updateResult();
+      }
+    }, timeout));
+  }, _computeRefetchInterval = new WeakSet(), computeRefetchInterval_fn = function() {
+    return (typeof this.options.refetchInterval === "function" ? this.options.refetchInterval(__privateGet(this, _currentQuery)) : this.options.refetchInterval) ?? false;
+  }, _updateRefetchInterval = new WeakSet(), updateRefetchInterval_fn = function(nextInterval) {
+    __privateMethod(this, _clearRefetchInterval, clearRefetchInterval_fn).call(this);
+    __privateSet(this, _currentRefetchInterval, nextInterval);
+    if (isServer || this.options.enabled === false || !isValidTimeout(__privateGet(this, _currentRefetchInterval)) || __privateGet(this, _currentRefetchInterval) === 0) {
+      return;
+    }
+    __privateSet(this, _refetchIntervalId, setInterval(() => {
+      if (this.options.refetchIntervalInBackground || focusManager.isFocused()) {
+        __privateMethod(this, _executeFetch, executeFetch_fn).call(this);
+      }
+    }, __privateGet(this, _currentRefetchInterval)));
+  }, _updateTimers = new WeakSet(), updateTimers_fn = function() {
+    __privateMethod(this, _updateStaleTimeout, updateStaleTimeout_fn).call(this);
+    __privateMethod(this, _updateRefetchInterval, updateRefetchInterval_fn).call(this, __privateMethod(this, _computeRefetchInterval, computeRefetchInterval_fn).call(this));
+  }, _clearStaleTimeout = new WeakSet(), clearStaleTimeout_fn = function() {
+    if (__privateGet(this, _staleTimeoutId)) {
+      clearTimeout(__privateGet(this, _staleTimeoutId));
+      __privateSet(this, _staleTimeoutId, void 0);
+    }
+  }, _clearRefetchInterval = new WeakSet(), clearRefetchInterval_fn = function() {
+    if (__privateGet(this, _refetchIntervalId)) {
+      clearInterval(__privateGet(this, _refetchIntervalId));
+      __privateSet(this, _refetchIntervalId, void 0);
+    }
+  }, _updateQuery = new WeakSet(), updateQuery_fn = function() {
+    const query = __privateGet(this, _client).getQueryCache().build(__privateGet(this, _client), this.options);
+    if (query === __privateGet(this, _currentQuery)) {
+      return;
+    }
+    const prevQuery = __privateGet(this, _currentQuery);
+    __privateSet(this, _currentQuery, query);
+    __privateSet(this, _currentQueryInitialState, query.state);
+    if (this.hasListeners()) {
+      prevQuery == null ? void 0 : prevQuery.removeObserver(this);
+      query.addObserver(this);
+    }
+  }, _notify = new WeakSet(), notify_fn = function(notifyOptions) {
+    notifyManager.batch(() => {
+      if (notifyOptions.listeners) {
+        this.listeners.forEach((listener) => {
+          listener(__privateGet(this, _currentResult));
+        });
+      }
+      __privateGet(this, _client).getQueryCache().notify({
+        query: __privateGet(this, _currentQuery),
+        type: "observerResultsUpdated"
+      });
+    });
+  }, _i);
+  function shouldLoadOnMount(query, options) {
+    return options.enabled !== false && !query.state.dataUpdatedAt && !(query.state.status === "error" && options.retryOnMount === false);
+  }
+  function shouldFetchOnMount(query, options) {
+    return shouldLoadOnMount(query, options) || query.state.dataUpdatedAt > 0 && shouldFetchOn(query, options, options.refetchOnMount);
+  }
+  function shouldFetchOn(query, options, field) {
+    if (options.enabled !== false) {
+      const value = typeof field === "function" ? field(query) : field;
+      return value === "always" || value !== false && isStale(query, options);
+    }
+    return false;
+  }
+  function shouldFetchOptionally(query, prevQuery, options, prevOptions) {
+    return options.enabled !== false && (query !== prevQuery || prevOptions.enabled === false) && (!options.suspense || query.state.status !== "error") && isStale(query, options);
+  }
+  function isStale(query, options) {
+    return query.isStaleByTime(options.staleTime);
+  }
+  function shouldAssignObserverCurrentProperties(observer, optimisticResult) {
+    if (!shallowEqualObjects(observer.getCurrentResult(), optimisticResult)) {
+      return true;
+    }
+    return false;
+  }
   var QueryClientContext = reactExports.createContext(
     void 0
   );
+  var useQueryClient = (queryClient) => {
+    const client = reactExports.useContext(QueryClientContext);
+    if (queryClient) {
+      return queryClient;
+    }
+    if (!client) {
+      throw new Error("No QueryClient set, use QueryClientProvider to set one");
+    }
+    return client;
+  };
   var QueryClientProvider = ({
     client,
     children
@@ -40714,6 +41150,116 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, [client]);
     return /* @__PURE__ */ reactExports.createElement(QueryClientContext.Provider, { value: client }, children);
   };
+  var IsRestoringContext = reactExports.createContext(false);
+  var useIsRestoring = () => reactExports.useContext(IsRestoringContext);
+  IsRestoringContext.Provider;
+  function createValue() {
+    let isReset = false;
+    return {
+      clearReset: () => {
+        isReset = false;
+      },
+      reset: () => {
+        isReset = true;
+      },
+      isReset: () => {
+        return isReset;
+      }
+    };
+  }
+  var QueryErrorResetBoundaryContext = reactExports.createContext(createValue());
+  var useQueryErrorResetBoundary = () => reactExports.useContext(QueryErrorResetBoundaryContext);
+  function shouldThrowError(throwError, params) {
+    if (typeof throwError === "function") {
+      return throwError(...params);
+    }
+    return !!throwError;
+  }
+  var ensurePreventErrorBoundaryRetry = (options, errorResetBoundary) => {
+    if (options.suspense || options.throwOnError) {
+      if (!errorResetBoundary.isReset()) {
+        options.retryOnMount = false;
+      }
+    }
+  };
+  var useClearResetErrorBoundary = (errorResetBoundary) => {
+    reactExports.useEffect(() => {
+      errorResetBoundary.clearReset();
+    }, [errorResetBoundary]);
+  };
+  var getHasError = ({
+    result,
+    errorResetBoundary,
+    throwOnError,
+    query
+  }) => {
+    return result.isError && !errorResetBoundary.isReset() && !result.isFetching && query && shouldThrowError(throwOnError, [result.error, query]);
+  };
+  var ensureStaleTime = (defaultedOptions) => {
+    if (defaultedOptions.suspense) {
+      if (typeof defaultedOptions.staleTime !== "number") {
+        defaultedOptions.staleTime = 1e3;
+      }
+    }
+  };
+  var shouldSuspend = (defaultedOptions, result) => (defaultedOptions == null ? void 0 : defaultedOptions.suspense) && result.isPending;
+  var fetchOptimistic = (defaultedOptions, observer, errorResetBoundary) => observer.fetchOptimistic(defaultedOptions).catch(() => {
+    errorResetBoundary.clearReset();
+  });
+  function useBaseQuery(options, Observer, queryClient) {
+    if (process.env.NODE_ENV !== "production") {
+      if (typeof options !== "object" || Array.isArray(options)) {
+        throw new Error(
+          'Bad argument type. Starting with v5, only the "Object" form is allowed when calling query related functions. Please use the error stack to find the culprit call. More info here: https://tanstack.com/query/latest/docs/react/guides/migrating-to-v5#supports-a-single-signature-one-object'
+        );
+      }
+    }
+    const client = useQueryClient(queryClient);
+    const isRestoring = useIsRestoring();
+    const errorResetBoundary = useQueryErrorResetBoundary();
+    const defaultedOptions = client.defaultQueryOptions(options);
+    defaultedOptions._optimisticResults = isRestoring ? "isRestoring" : "optimistic";
+    ensureStaleTime(defaultedOptions);
+    ensurePreventErrorBoundaryRetry(defaultedOptions, errorResetBoundary);
+    useClearResetErrorBoundary(errorResetBoundary);
+    const [observer] = reactExports.useState(
+      () => new Observer(
+        client,
+        defaultedOptions
+      )
+    );
+    const result = observer.getOptimisticResult(defaultedOptions);
+    reactExports.useSyncExternalStore(
+      reactExports.useCallback(
+        (onStoreChange) => {
+          const unsubscribe = isRestoring ? () => void 0 : observer.subscribe(notifyManager.batchCalls(onStoreChange));
+          observer.updateResult();
+          return unsubscribe;
+        },
+        [observer, isRestoring]
+      ),
+      () => observer.getCurrentResult(),
+      () => observer.getCurrentResult()
+    );
+    reactExports.useEffect(() => {
+      observer.setOptions(defaultedOptions, { listeners: false });
+    }, [defaultedOptions, observer]);
+    if (shouldSuspend(defaultedOptions, result)) {
+      throw fetchOptimistic(defaultedOptions, observer, errorResetBoundary);
+    }
+    if (getHasError({
+      result,
+      errorResetBoundary,
+      throwOnError: defaultedOptions.throwOnError,
+      query: client.getQueryCache().get(defaultedOptions.queryHash)
+    })) {
+      throw result.error;
+    }
+    return !defaultedOptions.notifyOnChangeProps ? observer.trackResult(result) : result;
+  }
+  function useQuery(options, queryClient) {
+    return useBaseQuery(options, QueryObserver, queryClient);
+  }
   const defaultTheme = createTheme();
   const Box = createBox({
     themeId: THEME_ID,
@@ -56409,39 +56955,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
   }), "Menu");
   default_1$5 = Menu.default = _default$5;
-  function useApi(url, debug = false) {
-    const [state, setState] = reactExports.useState({
-      loading: true,
-      data: {},
-      error: null
-    });
-    reactExports.useEffect(() => {
-      debug && console.log(`API fetching from: ${url}`);
-      fetch(url).then((response) => {
-        if (response.ok) {
-          response.json().then((data) => {
-            debug && console.log(data);
-            setState({
-              loading: false,
-              error: null,
-              data
-            });
-          });
-        } else {
-          debug && console.log("Error", response);
-          setState({
-            loading: false,
-            data: null,
-            error: {
-              response,
-              message: `Error fetching from API URL: ${url}`
-            }
-          });
-        }
-      });
-    }, [url, debug]);
-    return [{ ...state.data }, state.loading, state.error];
-  }
   function getFabUtilityClass(slot) {
     return generateUtilityClass("MuiFab", slot);
   }
@@ -56762,9 +57275,16 @@ Please use another name.` : formatMuiErrorMessage(18));
     const [collapsed, setCollapsed] = reactExports.useState(
       !!sessionStorage.getItem("collapsed_sidebar")
     );
-    const [apiData, loading, error] = useApi(
-      COURSEFLOW_APP.config.json_api_paths.get_sidebar
-    );
+    const { isPending, isError: isError2, data } = useQuery({
+      queryKey: ["sidebar"],
+      queryFn: async () => {
+        const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar);
+        return resp.json();
+      }
+    });
+    if (isPending || isError2) {
+      return null;
+    }
     function toggleCollapse() {
       if (!collapsed) {
         sessionStorage.setItem("collapsed_sidebar", "true");
@@ -56804,7 +57324,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               ]
             }
           ) }),
-          apiData.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
               ListItemButton$1,
               {
@@ -56833,12 +57353,12 @@ Please use another name.` : formatMuiErrorMessage(18));
             ) })
           ] }) : null
         ] }),
-        apiData.is_teacher && apiData.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        data.is_teacher && data.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(FavouritesWrap, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesLabel, { variant: "body1", children: COURSEFLOW_APP.strings.favourites }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(List$1, { children: [
-              apiData.favourites.map((favourite, id) => /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              data.favourites.map((favourite, id) => /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ListItemButton$1,
                 {
                   component: "a",
@@ -56848,7 +57368,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: favourite.title })
                 }
               ) }, id)),
-              apiData.favourites.length >= 5 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, sx: { mt: 1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              data.favourites.length >= 5 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, sx: { mt: 1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ListItemButton$1,
                 {
                   component: "a",
@@ -57275,6 +57795,39 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
   default_1$1 = AddCircle.default = _default$1;
+  function useApi(url, debug = false) {
+    const [state, setState] = reactExports.useState({
+      loading: true,
+      data: {},
+      error: null
+    });
+    reactExports.useEffect(() => {
+      debug && console.log(`API fetching from: ${url}`);
+      fetch(url).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            debug && console.log(data);
+            setState({
+              loading: false,
+              error: null,
+              data
+            });
+          });
+        } else {
+          debug && console.log("Error", response);
+          setState({
+            loading: false,
+            data: null,
+            error: {
+              response,
+              message: `Error fetching from API URL: ${url}`
+            }
+          });
+        }
+      });
+    }, [url, debug]);
+    return [{ ...state.data }, state.loading, state.error];
+  }
   function getDialogUtilityClass(slot) {
     return generateUtilityClass("MuiDialog", slot);
   }
@@ -76333,10 +76886,10 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       for (var h = 0; h < values2.length; h++) {
         var _i3 = rowIndex[h];
-        var _j = colIndex[h];
+        var _j2 = colIndex[h];
         var v = values2[h];
-        var k = _getValueIndex(_i3, m2._ptr[_j], m2._ptr[_j + 1], m2._index);
-        _insert(k, _i3, _j, v, m2._values, m2._index, m2._ptr);
+        var k = _getValueIndex(_i3, m2._ptr[_j2], m2._ptr[_j2 + 1], m2._index);
+        _insert(k, _i3, _j2, v, m2._values, m2._index, m2._ptr);
       }
       return m2;
     };
@@ -79601,8 +80154,8 @@ ${latestSubscriptionCallbackError.current.stack}
           } else if (k === 0) {
             var bNew = [...b];
             bNew[i2] = 1;
-            for (var _j = i2 - 1; _j >= 0; _j--) {
-              bNew[_j] = subtract2(bNew[_j], M[_j][i2]);
+            for (var _j2 = i2 - 1; _j2 >= 0; _j2--) {
+              bNew[_j2] = subtract2(bNew[_j2], M[_j2][i2]);
             }
             B.push(bNew);
           }
@@ -81019,12 +81572,12 @@ ${latestSubscriptionCallbackError.current.stack}
             if (condition) {
               last = false;
               var g = divideScalar2(1, f);
-              for (var _j = 0; _j < N; _j++) {
-                if (i2 === _j) {
+              for (var _j2 = 0; _j2 < N; _j2++) {
+                if (i2 === _j2) {
                   continue;
                 }
-                arr[i2][_j] = multiplyScalar2(arr[i2][_j], f);
-                arr[_j][i2] = multiplyScalar2(arr[_j][i2], g);
+                arr[i2][_j2] = multiplyScalar2(arr[i2][_j2], f);
+                arr[_j2][i2] = multiplyScalar2(arr[_j2][i2], g);
               }
               if (findVectors) {
                 Rdiag[i2] = multiplyScalar2(Rdiag[i2], f);
@@ -81769,16 +82322,16 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       if (hasComplex) {
         for (var _i2 = 0; _i2 < N; _i2++) {
-          for (var _j = 0; _j < N; _j++) {
-            arr[_i2][_j] = complex2(arr[_i2][_j]);
+          for (var _j2 = 0; _j2 < N; _j2++) {
+            arr[_i2][_j2] = complex2(arr[_i2][_j2]);
           }
         }
         return "Complex";
       }
       if (hasBig) {
         for (var _i22 = 0; _i22 < N; _i22++) {
-          for (var _j2 = 0; _j2 < N; _j2++) {
-            arr[_i22][_j2] = bignumber2(arr[_i22][_j2]);
+          for (var _j22 = 0; _j22 < N; _j22++) {
+            arr[_i22][_j22] = bignumber2(arr[_i22][_j22]);
           }
         }
         return "BigNumber";
@@ -83049,7 +83602,7 @@ ${latestSubscriptionCallbackError.current.stack}
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: portal });
     }
   }
-  let Node$1 = (_i = class extends EditableComponentWithActions {
+  let Node$1 = (_j = class extends EditableComponentWithActions {
     constructor(props) {
       super(props);
       this.objectType = CfObjectType.NODE;
@@ -83395,7 +83948,7 @@ ${latestSubscriptionCallbackError.current.stack}
         )
       ] });
     }
-  }, __publicField(_i, "contextType", WorkFlowConfigContext), _i);
+  }, __publicField(_j, "contextType", WorkFlowConfigContext), _j);
   const mapStateToProps$r = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
