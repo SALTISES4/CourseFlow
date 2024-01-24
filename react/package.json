@@ -38,6 +38,7 @@
     "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.14",
     "@reduxjs/toolkit": "^1.9.6",
+    "@tanstack/react-query": "^5.17.19",
     "@types/d3": "5",
     "@types/jquery": "^3.5.29",
     "@types/jqueryui": "^1.12.21",
