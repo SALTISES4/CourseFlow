@@ -29,6 +29,8 @@ import theme from './mui/theme'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 // pages/views/templates
 import NotificationsPage from '@cfModule/components/pages/Notifications'
 import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
@@ -68,6 +70,8 @@ const cache = createCache({
 // with an accompanying theme provider/css baseline since we're
 // progressively adding partials into the existing templates
 function renderComponents(components) {
+  const reactQueryClient = new QueryClient()
+
   components.forEach((c) => {
     // hackish check for now since we run this on each page load, but don't necessairly have a component
     // to load into #container
@@ -78,11 +82,13 @@ function renderComponents(components) {
     if (target) {
       const componentRoot = createRoot(target)
       componentRoot.render(
-        <CacheProvider value={cache}>
-          <ThemeProvider theme={theme}>
-            <ScopedCssBaseline sx={c.styles}>{c.component}</ScopedCssBaseline>
-          </ThemeProvider>
-        </CacheProvider>
+        <QueryClientProvider client={reactQueryClient}>
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <ScopedCssBaseline sx={c.styles}>{c.component}</ScopedCssBaseline>
+            </ThemeProvider>
+          </CacheProvider>
+        </QueryClientProvider>
       )
     }
   })
