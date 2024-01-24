@@ -8,7 +8,6 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.decorators import (
     public_model_access,
-    user_can_comment,
     user_can_edit,
     user_can_view,
     user_can_view_or_none,
@@ -33,7 +32,6 @@ from course_flow.models.relations import (
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
-    CommentSerializer,
     InfoBoxSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
@@ -52,7 +50,6 @@ from course_flow.serializers import (
 )
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
-    get_model_from_str,
     get_parent_nodes_for_workflow,
 )
 from course_flow.view_utils import (
@@ -201,28 +198,6 @@ def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
             "workflow_id": workflow_id,
         }
     )
-
-
-@user_can_comment(False)
-def json_api_post_get_comments_for_object(
-    request: HttpRequest,
-) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    try:
-        comments = (
-            get_model_from_str(object_type)
-            .objects.get(id=object_id)
-            .comments.all()
-            .order_by("created_on")
-        )
-        Notification.objects.filter(
-            comment__in=comments, user=request.user
-        ).update(is_unread=False)
-        data_package = CommentSerializer(comments, many=True).data
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
 
 
 @public_model_access("workflow")

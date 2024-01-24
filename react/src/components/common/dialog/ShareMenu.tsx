@@ -4,8 +4,8 @@ import { WorkflowTitle } from '@cfUIComponents'
 // import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
-import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/user'
-import { updateValueInstantQuery } from '@XMLHTTP/API/global'
+import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
+import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 
 type PropsType = {
   data: any

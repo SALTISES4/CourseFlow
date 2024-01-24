@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import { insertedAtInstant } from '@XMLHTTP/API/global'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { AppState } from '@cfRedux/types/type'
 import {
   OutcomeEditViewProps,

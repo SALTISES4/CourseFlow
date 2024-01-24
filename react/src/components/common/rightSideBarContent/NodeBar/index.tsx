@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import NodeBarColumnWorkflow from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
 import Strategy from '@cfCommonComponents/rightSideBarContent/NodeBar/components/Strategy'
 import { AppState } from '@cfRedux/types/type'
-import { ColumnChoice } from '@cfModule/types/common'
+import { FieldChoice } from '@cfModule/types/common'
 
 /**
  * The component for the right sidebar's tab in which
@@ -12,7 +12,7 @@ import { ColumnChoice } from '@cfModule/types/common'
 
 type OwnProps = {
   // renderer: any
-  columnChoices: ColumnChoice[]
+  columnChoices: FieldChoice[]
   readOnly: boolean
 }
 

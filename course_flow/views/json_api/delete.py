@@ -451,35 +451,3 @@ def json_api_post_delete_self_soft(request: HttpRequest) -> JsonResponse:
                 parent_workflow, model.get_workflow()
             )
     return JsonResponse({"action": "posted"})
-
-
-@user_can_edit(False)
-def json_api_post_remove_comment(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    comment_id = json.loads(request.POST.get("commentPk"))
-
-    try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        comment = model.comments.get(id=comment_id)
-        comment.delete()
-
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-@user_can_edit(False)
-def json_api_post_remove_all_comments(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-
-    try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        model.comments.all().delete()
-
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})

@@ -3,7 +3,7 @@ import ComponentWithToggleDrop, {
 } from '@cfParentComponents/ComponentWithToggleDrop'
 // import $ from 'jquery'
 import * as React from 'react'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type OwnProps = {

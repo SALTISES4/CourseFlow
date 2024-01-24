@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import { newNodeLink } from '@XMLHTTP/API/node'
+import { newNodeLink } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 

@@ -11,10 +11,9 @@ import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
-import { makeProjectLiveQuery } from '@XMLHTTP/API/project'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { Project } from '@cfPages/Workflow/Workflow/types'
 // import $ from 'jquery'
@@ -133,20 +132,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     })
   }
 
-  //@todo can this be removed now?
-  makeLive() {
-    if (
-      window.confirm(
-        window.gettext(
-          'Are you sure you want to create a live classroom for this project?'
-        )
-      )
-    ) {
-      makeProjectLiveQuery(this.props.data.id, (data) => {
-        location.reload()
-      })
-    }
-  }
 
   /*******************************************************
    * MODAL HANDLERS
