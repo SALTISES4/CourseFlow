@@ -141,14 +141,19 @@ const getAppComponent = () => {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
         myColour:
-          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ', 50%, 50%)',
+          'hsl(' +
+          (((COURSEFLOW_APP.contextData.user_id * 5) % 360) + 1) +
+          ', 50%, 50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments
-      return <WorkflowComparison {...thisContextData} />
+      // return <WorkflowComparison {...thisContextData} />
+      // return <WorkflowComparison {...thisContextData} />
+      const workflowComparisonWrapper = new WorkflowComparison(thisContextData)
+      workflowComparisonWrapper.init()
+      return null
     }
     case 'workflowDetailView': {
-      // not sure yet because the render method is taking arguments
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
       workflowWrapper.init()
       return null

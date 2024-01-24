@@ -274,85 +274,6 @@ class Workflow {
    * // WEBSOCKET MANAGER
    *******************************************************/
 
-  /*******************************************************
-   * REACT TO MOVE
-   *******************************************************/
-  render(container, view_type: ViewType = ViewType.WORKFLOW) {
-    this.locks = {}
-
-    this.selection_manager = new SelectionManager(this.read_only)
-
-    // In case we need to get child workflows
-    this.child_data_needed = []
-    this.child_data_completed = -1
-    this.fetching_child_data = false
-
-    this.view_type = view_type // @todo where is view_type set?
-
-    reactDom.render(<WorkflowLoader />, container[0])
-
-    this.container = container // @todo where is view_type set?
-    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
-
-    if (view_type === ViewType.OUTCOME_EDIT) {
-      // get additional data about parent workflow prior to render
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
-        )
-        reactDom.render(
-          <Provider store={this.store}>
-            <WorkFlowConfigProvider initialValue={this}>
-              <WorkflowBaseView
-                view_type={view_type}
-                // renderer={this}
-                // legacyRenderer={this}
-                parentRender={this.workflowRender}
-                // readOnly={this.read_only}
-                config={{
-                  canView: this.can_view,
-                  isStudent: this.is_student,
-                  projectPermission: this.project_permission,
-                  alwaysStatic: this.always_static
-                }}
-                websocket={this.websocket}
-              />
-            </WorkFlowConfigProvider>
-          </Provider>,
-          container[0]
-        )
-      })
-    } else {
-      setTimeout(() => {
-        const theme = createTheme({})
-        reactDom.render(
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <Provider store={this.store}>
-                <WorkFlowConfigProvider initialValue={this}>
-                  <WorkflowBaseView
-                    view_type={view_type}
-                    // renderer={this}
-                    // legacyRenderer={this}
-                    parentRender={this.workflowRender}
-                    config={{
-                      canView: this.can_view,
-                      isStudent: this.is_student,
-                      projectPermission: this.project_permission,
-                      alwaysStatic: this.always_static
-                    }}
-                    websocket={this.websocket}
-                  />
-                </WorkFlowConfigProvider>
-              </Provider>
-            </ThemeProvider>
-          </CacheProvider>,
-          container[0]
-        )
-      }, 50)
-    }
-  }
-
   // Fetches the data for the given child workflow
   getDataForChildWorkflow() {
     if (this.child_data_completed === this.child_data_needed.length - 1) {
@@ -566,6 +487,85 @@ class Workflow {
           }
         })
       )
+    }
+  }
+
+  /*******************************************************
+   * REACT TO MOVE
+   *******************************************************/
+  render(container, view_type: ViewType = ViewType.WORKFLOW) {
+    this.locks = {}
+
+    this.selection_manager = new SelectionManager(this.read_only)
+
+    // In case we need to get child workflows
+    this.child_data_needed = []
+    this.child_data_completed = -1
+    this.fetching_child_data = false
+
+    this.view_type = view_type // @todo where is view_type set?
+
+    reactDom.render(<WorkflowLoader />, container[0])
+
+    this.container = container // @todo where is view_type set?
+    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
+
+    if (view_type === ViewType.OUTCOME_EDIT) {
+      // get additional data about parent workflow prior to render
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
+        reactDom.render(
+          <Provider store={this.store}>
+            <WorkFlowConfigProvider initialValue={this}>
+              <WorkflowBaseView
+                view_type={view_type}
+                // renderer={this}
+                // legacyRenderer={this}
+                parentRender={this.workflowRender}
+                // readOnly={this.read_only}
+                config={{
+                  canView: this.can_view,
+                  isStudent: this.is_student,
+                  projectPermission: this.project_permission,
+                  alwaysStatic: this.always_static
+                }}
+                websocket={this.websocket}
+              />
+            </WorkFlowConfigProvider>
+          </Provider>,
+          container[0]
+        )
+      })
+    } else {
+      setTimeout(() => {
+        const theme = createTheme({})
+        reactDom.render(
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <Provider store={this.store}>
+                <WorkFlowConfigProvider initialValue={this}>
+                  <WorkflowBaseView
+                    view_type={view_type}
+                    // renderer={this}
+                    // legacyRenderer={this}
+                    parentRender={this.workflowRender}
+                    config={{
+                      canView: this.can_view,
+                      isStudent: this.is_student,
+                      projectPermission: this.project_permission,
+                      alwaysStatic: this.always_static
+                    }}
+                    websocket={this.websocket}
+                  />
+                </WorkFlowConfigProvider>
+              </Provider>
+            </ThemeProvider>
+          </CacheProvider>,
+          container[0]
+        )
+      }, 50)
     }
   }
 }

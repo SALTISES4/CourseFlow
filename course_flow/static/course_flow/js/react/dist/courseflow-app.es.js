@@ -54952,45 +54952,45 @@ const LogoWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     marginRight: theme2.spacing(2)
   }
 }));
-const Collapse = styled$1(Fab$1)(
-  ({ theme: theme2, collapsed }) => ({
-    position: "absolute",
-    right: 0,
-    top: "60px",
-    transform: "translateX(50%)",
-    transition: "opacity 0.15s ease, visibility 0.15s ease",
-    color: theme2.palette.common.white,
-    ...collapsed && {
-      backgroundColor: "transparent",
-      color: theme2.palette.primary.main,
-      boxShadow: "none",
-      transform: "translate(4em, -58px)",
-      transition: "color 0.3s ease, background-color 0.3s ease",
-      "&:hover": {
-        color: theme2.palette.common.white
-        // backgroundColor: theme.palette.common.light
-      }
+const Collapse = styled$1(Fab$1, {
+  shouldForwardProp: (prop) => prop !== "collapsed"
+})(({ theme: theme2, collapsed }) => ({
+  position: "absolute",
+  right: 0,
+  top: "60px",
+  transform: "translateX(50%)",
+  transition: "opacity 0.15s ease, visibility 0.15s ease",
+  color: theme2.palette.common.white,
+  ...collapsed && {
+    backgroundColor: "transparent",
+    color: theme2.palette.primary.main,
+    boxShadow: "none",
+    transform: "translate(4em, -58px)",
+    transition: "color 0.3s ease, background-color 0.3s ease",
+    "&:hover": {
+      color: theme2.palette.common.white
+      // backgroundColor: theme.palette.common.light
     }
-  })
-);
-const SidebarWrap = styled$1(Box$1)(
-  ({ theme: theme2, collapsed }) => ({
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    ...collapsed && {
-      [`& .MuiPaper-root`]: {
-        display: "none"
-      }
-    },
-    ...!collapsed && {
-      "&:not(:hover) .MuiFab-root": {
-        opacity: 0,
-        visibility: "hidden"
-      }
+  }
+}));
+const SidebarWrap = styled$1(Box$1, {
+  shouldForwardProp: (prop) => prop !== "collapsed"
+})(({ theme: theme2, collapsed }) => ({
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  ...collapsed && {
+    [`& .MuiPaper-root`]: {
+      display: "none"
     }
-  })
-);
+  },
+  ...!collapsed && {
+    "&:not(:hover) .MuiFab-root": {
+      opacity: 0,
+      visibility: "hidden"
+    }
+  }
+}));
 const SidebarInner = styled$1(Paper$1)({
   display: "flex",
   flexDirection: "column",
@@ -93948,38 +93948,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
         }
       );
     });
-    __publicField(this, "Content", () => {
-      let workflow_content;
-      if (this.view_type == ViewType.OUTCOMETABLE) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowTableView,
-          {
-            data: this.data,
-            view_type: this.view_type
-          }
-        );
-        this.allowed_tabs = [3];
-      } else if (this.view_type == ViewType.OUTCOME_EDIT) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, {});
-        if (this.data.type == "program") {
-          this.allowed_tabs = [3];
-        } else {
-          this.allowed_tabs = [2, 3];
-        }
-      } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { view_type: this.view_type });
-        this.allowed_tabs = [3];
-      } else if (this.view_type == ViewType.GRID) {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(GridView, { view_type: this.view_type });
-        this.allowed_tabs = [3];
-      } else {
-        workflow_content = /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, {});
-        this.allowed_tabs = [1, 2, 3, 4];
-        if (this.context.read_only)
-          this.allowed_tabs = [2, 3];
-      }
-      if (this.data.is_strategy)
-        return workflow_content;
+    __publicField(this, "ViewButtons", () => {
       const view_buttons = [
         {
           type: ViewType.WORKFLOW,
@@ -94041,9 +94010,51 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
           }
         )
       );
+      return view_buttons_sorted;
+    });
+    __publicField(this, "WorkflowContent", () => {
+      switch (this.view_type) {
+        case ViewType.OUTCOMETABLE: {
+          this.allowed_tabs = [3];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowTableView,
+            {
+              data: this.data,
+              view_type: this.view_type
+            }
+          );
+        }
+        case ViewType.OUTCOME_EDIT: {
+          if (this.data.type == "program") {
+            this.allowed_tabs = [3];
+          } else {
+            this.allowed_tabs = [2, 3];
+          }
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(OutcomeEditView, {});
+        }
+        case ViewType.ALIGNMENTANALYSIS: {
+          this.allowed_tabs = [3];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(AlignmentView$1, { view_type: this.view_type });
+        }
+        case ViewType.GRID: {
+          this.allowed_tabs = [3];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(GridView, { view_type: this.view_type });
+        }
+        default: {
+          this.allowed_tabs = [1, 2, 3, 4];
+          if (this.context.read_only)
+            this.allowed_tabs = [2, 3];
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowView, {});
+        }
+      }
+    });
+    __publicField(this, "Content", () => {
+      if (this.data.is_strategy) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowContent, {});
+      }
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: view_buttons_sorted }),
-        workflow_content
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.ViewButtons, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowContent, {})
       ] });
     });
     /*******************************************************
@@ -95038,64 +95049,6 @@ class Workflow {
   /*******************************************************
    * // WEBSOCKET MANAGER
    *******************************************************/
-  /*******************************************************
-   * REACT TO MOVE
-   *******************************************************/
-  render(container, view_type = ViewType.WORKFLOW) {
-    this.locks = {};
-    this.selection_manager = new SelectionManager(this.read_only);
-    this.child_data_needed = [];
-    this.child_data_completed = -1;
-    this.fetching_child_data = false;
-    this.view_type = view_type;
-    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container[0]);
-    this.container = container;
-    if (view_type === ViewType.OUTCOME_EDIT) {
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
-        );
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowBaseView,
-            {
-              view_type,
-              parentRender: this.workflowRender,
-              config: {
-                canView: this.can_view,
-                isStudent: this.is_student,
-                projectPermission: this.project_permission,
-                alwaysStatic: this.always_static
-              },
-              websocket: this.websocket
-            }
-          ) }) }),
-          container[0]
-        );
-      });
-    } else {
-      setTimeout(() => {
-        const theme2 = createTheme({});
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowBaseView,
-            {
-              view_type,
-              parentRender: this.workflowRender,
-              config: {
-                canView: this.can_view,
-                isStudent: this.is_student,
-                projectPermission: this.project_permission,
-                alwaysStatic: this.always_static
-              },
-              websocket: this.websocket
-            }
-          ) }) }) }) }),
-          container[0]
-        );
-      }, 50);
-    }
-  }
   // Fetches the data for the given child workflow
   getDataForChildWorkflow() {
     if (this.child_data_completed === this.child_data_needed.length - 1) {
@@ -95275,6 +95228,64 @@ class Workflow {
       );
     }
   }
+  /*******************************************************
+   * REACT TO MOVE
+   *******************************************************/
+  render(container, view_type = ViewType.WORKFLOW) {
+    this.locks = {};
+    this.selection_manager = new SelectionManager(this.read_only);
+    this.child_data_needed = [];
+    this.child_data_completed = -1;
+    this.fetching_child_data = false;
+    this.view_type = view_type;
+    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container[0]);
+    this.container = container;
+    if (view_type === ViewType.OUTCOME_EDIT) {
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        );
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowBaseView,
+            {
+              view_type,
+              parentRender: this.workflowRender,
+              config: {
+                canView: this.can_view,
+                isStudent: this.is_student,
+                projectPermission: this.project_permission,
+                alwaysStatic: this.always_static
+              },
+              websocket: this.websocket
+            }
+          ) }) }),
+          container[0]
+        );
+      });
+    } else {
+      setTimeout(() => {
+        const theme2 = createTheme({});
+        reactDomExports.render(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$1, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkflowBaseView,
+            {
+              view_type,
+              parentRender: this.workflowRender,
+              config: {
+                canView: this.can_view,
+                isStudent: this.is_student,
+                projectPermission: this.project_permission,
+                alwaysStatic: this.always_static
+              },
+              websocket: this.websocket
+            }
+          ) }) }) }) }),
+          container[0]
+        );
+      }, 50);
+    }
+  }
 }
 class WorkflowComparison extends Workflow {
   constructor(workflowID, data_package, container, selection_manager, view_type, initial_object_sets) {
@@ -95286,6 +95297,9 @@ class WorkflowComparison extends Workflow {
     this.container = container;
     this.view_type = view_type;
     this.initial_object_sets = initial_object_sets;
+  }
+  init() {
+    this.render($("#container"));
   }
   render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type;
@@ -97275,10 +97289,12 @@ const getAppComponent = () => {
     case "projectComparison": {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        myColour: "hsl(" + (DTOcontextData.user_id * 5 % 360 + 1) + ", 50%, 50%)",
+        myColour: "hsl(" + (COURSEFLOW_APP.contextData.user_id * 5 % 360 + 1) + ", 50%, 50%)",
         changeFieldID: Math.floor(Math.random() * 1e4)
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowComparison, { ...thisContextData });
+      const workflowComparisonWrapper = new WorkflowComparison(thisContextData);
+      workflowComparisonWrapper.init();
+      return null;
     }
     case "workflowDetailView": {
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData);

@@ -102,7 +102,9 @@ const mapStateToProps = (
 ): ConnectedProps => ({
   column: state.column.find((column) => column.id == ownProps.data.column)
 })
-export default connect<ConnectedProps, object, OwnProps, AppState>(
+const GridNode =  connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(GridNodeUnconnected)
+
+export default GridNode
