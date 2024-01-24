@@ -57795,39 +57795,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
   default_1$1 = AddCircle.default = _default$1;
-  function useApi(url, debug = false) {
-    const [state, setState] = reactExports.useState({
-      loading: true,
-      data: {},
-      error: null
-    });
-    reactExports.useEffect(() => {
-      debug && console.log(`API fetching from: ${url}`);
-      fetch(url).then((response) => {
-        if (response.ok) {
-          response.json().then((data) => {
-            debug && console.log(data);
-            setState({
-              loading: false,
-              error: null,
-              data
-            });
-          });
-        } else {
-          debug && console.log("Error", response);
-          setState({
-            loading: false,
-            data: null,
-            error: {
-              response,
-              message: `Error fetching from API URL: ${url}`
-            }
-          });
-        }
-      });
-    }, [url, debug]);
-    return [{ ...state.data }, state.loading, state.error];
-  }
   function getDialogUtilityClass(slot) {
     return generateUtilityClass("MuiDialog", slot);
   }
@@ -60177,10 +60144,14 @@ Please use another name.` : formatMuiErrorMessage(18));
     const isAddMenuOpen = Boolean(addMenuAnchorEl);
     const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
     const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
-    const [apiData, loading, error] = useApi(
-      COURSEFLOW_APP.config.json_api_paths.get_top_bar
-    );
-    if (loading || error) {
+    const { isPending, isError: isError2, data } = useQuery({
+      queryKey: ["topbar"],
+      queryFn: async () => {
+        const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar);
+        return resp.json();
+      }
+    });
+    if (isPending || isError2) {
       return null;
     }
     const handleMenuOpen = (event) => {
@@ -60221,7 +60192,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         open: isAddMenuOpen,
         onClose: closeAllMenus,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: apiData.menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("program"), children: COURSEFLOW_APP.strings.program }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("course"), children: COURSEFLOW_APP.strings.course }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("activity"), children: COURSEFLOW_APP.strings.activity })
@@ -60247,9 +60218,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: apiData.notifications.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: data.notifications.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: apiData.notifications.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: data.notifications.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             ListItem$1,
             {
               alignItems: "flex-start",
@@ -60299,20 +60270,20 @@ Please use another name.` : formatMuiErrorMessage(18));
         open: isMenuOpen,
         onClose: closeAllMenus,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: apiData.menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => setResetPassword(true), children: COURSEFLOW_APP.strings.password_reset }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             MenuItem$1,
             {
               component: "a",
-              href: apiData.menus.account.notificationsSettingsUrls,
+              href: data.menus.account.notificationsSettingsUrls,
               children: COURSEFLOW_APP.strings.notification_settings
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: apiData.menus.account.daliteUrl, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: data.menus.account.daliteUrl, children: [
             "Go to ",
-            apiData.menus.account.daliteText
+            data.menus.account.daliteText
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$3, {}),
@@ -60326,7 +60297,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
-          apiData.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               size: "large",
@@ -60342,14 +60313,14 @@ Please use another name.` : formatMuiErrorMessage(18));
             IconButton$1,
             {
               size: "large",
-              "aria-label": apiData.notifications.unread >= 1 ? `show ${apiData.notifications.unread} new notifications` : "no new notifications",
+              "aria-label": data.notifications.unread >= 1 ? `show ${data.notifications.unread} new notifications` : "no new notifications",
               "aria-controls": "notifications-menu",
               "aria-haspopup": "true",
               onClick: handleNotificationsMenuOpen,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                 Badge$1,
                 {
-                  badgeContent: apiData.notifications.unread,
+                  badgeContent: data.notifications.unread,
                   color: "primary",
                   children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {})
                 }
@@ -60370,7 +60341,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           )
         ] })
       ] }) }),
-      apiData.is_teacher && addMenu,
+      data.is_teacher && addMenu,
       notificationsMenu,
       accountMenu,
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -60380,7 +60351,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           handleClose: () => {
             setResetPassword(false);
           },
-          handleContinue: () => window.location.href = apiData.menus.account.resetPasswordUrl
+          handleContinue: () => window.location.href = data.menus.account.resetPasswordUrl
         }
       )
     ] });

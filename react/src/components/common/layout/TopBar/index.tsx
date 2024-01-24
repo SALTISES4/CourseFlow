@@ -17,7 +17,7 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
-import useApi from '@cfModule/hooks/useApi'
+import { useQuery } from '@tanstack/react-query'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -94,11 +94,15 @@ const TopBar = () => {
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
-  const [apiData, loading, error] = useApi<TopBarAPIResponse>(
-    COURSEFLOW_APP.config.json_api_paths.get_top_bar
-  )
+  const { isPending, isError, data } = useQuery({
+    queryKey: ['topbar'],
+    queryFn: async (): Promise<TopBarAPIResponse> => {
+      const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar)
+      return resp.json()
+    }
+  })
 
-  if (loading || error) {
+  if (isPending || isError) {
     return null
   }
 
@@ -145,7 +149,7 @@ const TopBar = () => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={apiData.menus.add.projectUrl}>
+      <MenuItem component="a" href={data.menus.add.projectUrl}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick('program')}>
@@ -180,13 +184,13 @@ const TopBar = () => {
         <Typography variant="h5">
           {COURSEFLOW_APP.strings.notifications}
         </Typography>
-        <Link href={apiData.notifications.url} underline="always">
+        <Link href={data.notifications.url} underline="always">
           {COURSEFLOW_APP.strings.see_all}
         </Link>
       </NotificationsHeader>
 
       <NotificationsList>
-        {apiData.notifications.items.map((n, idx) => (
+        {data.notifications.items.map((n, idx) => (
           <ListItem
             key={idx}
             alignItems="flex-start"
@@ -239,7 +243,7 @@ const TopBar = () => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={apiData.menus.account.profileUrl}>
+      <MenuItem component="a" href={data.menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
       <MenuItem onClick={() => setResetPassword(true)}>
@@ -247,13 +251,13 @@ const TopBar = () => {
       </MenuItem>
       <MenuItem
         component="a"
-        href={apiData.menus.account.notificationsSettingsUrls}
+        href={data.menus.account.notificationsSettingsUrls}
       >
         {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem component="a" href={apiData.menus.account.daliteUrl}>
-        Go to {apiData.menus.account.daliteText}
+      <MenuItem component="a" href={data.menus.account.daliteUrl}>
+        Go to {data.menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
         <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
@@ -267,7 +271,7 @@ const TopBar = () => {
         <Toolbar variant="dense">
           <Box sx={{ flexGrow: 1 }} className="title" />
           <Box sx={{ display: 'flex' }}>
-            {apiData.is_teacher ? (
+            {data.is_teacher ? (
               <IconButton
                 size="large"
                 aria-label="add menu"
@@ -283,8 +287,8 @@ const TopBar = () => {
             <IconButton
               size="large"
               aria-label={
-                apiData.notifications.unread >= 1
-                  ? `show ${apiData.notifications.unread} new notifications`
+                data.notifications.unread >= 1
+                  ? `show ${data.notifications.unread} new notifications`
                   : 'no new notifications'
               }
               aria-controls="notifications-menu"
@@ -292,7 +296,7 @@ const TopBar = () => {
               onClick={handleNotificationsMenuOpen}
             >
               <Badge
-                badgeContent={apiData.notifications.unread}
+                badgeContent={data.notifications.unread}
                 color="primary"
               >
                 <NotificationsIcon />
@@ -312,7 +316,7 @@ const TopBar = () => {
           </Box>
         </Toolbar>
       </AppBar>
-      {apiData.is_teacher && addMenu}
+      {data.is_teacher && addMenu}
       {notificationsMenu}
       {accountMenu}
 
@@ -322,7 +326,7 @@ const TopBar = () => {
           setResetPassword(false)
         }}
         handleContinue={() =>
-          (window.location.href = apiData.menus.account.resetPasswordUrl)
+          (window.location.href = data.menus.account.resetPasswordUrl)
         }
       />
     </TopBarWrap>
