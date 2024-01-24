@@ -4,7 +4,7 @@ import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from './EditableComponentWithActions'
-import { newNodeQuery } from '@XMLHTTP/API/node'
+import { newNodeQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 

@@ -1,10 +1,10 @@
 import React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
-import Welcome from './components/Welcome'
-import Section from './components/Section'
 import Alert from '@cfCommonComponents/components/Alert'
 import { Workflow } from '@cfModule/types/common'
 import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
+import Welcome from './components/Welcome'
+import Section from './components/Section'
 
 type PropsType = {
   projects: Workflow[]

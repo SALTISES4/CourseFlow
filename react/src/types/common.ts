@@ -50,7 +50,7 @@ export type ObjectLock = {
 
 export type NumTuple = [number, number]
 
-export type ColumnChoice = {
+export type FieldChoice = {
   type: number | string
   name: string
 }

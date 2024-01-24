@@ -1,207 +1,25 @@
 //Get the data from all child workflows
 import {
-  GetWorkflowSelectMenuResp,
+  GetWorkflowSelectQueryResp,
   LinkedWorkflowMenuQueryResp,
   ParentWorkflowInfoQueryResp
 } from '@XMLHTTP/types/query'
 import {
   WorkflowDataQueryResp,
-  WorkflowsForProjectQueryResp
+  WorkflowParentDataQueryResp,
+  WorkflowChildDataQueryResp,
+  WorkflowsForProjectQueryResp,
+  WorkflowContextQueryResp,
+  TargetProjectQueryResp
 } from '@XMLHTTP/types/query'
-import { ToDefine } from '@cfModule/types/common'
-import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 
 /*******************************************************
- * WORKFLOWS
+ * Bulk data API for workflows.
+ * For loading all the base JSON that is placed into the
+ * redux state.
  *******************************************************/
-
-/**
- * @getWorkflowsForProjectQuery
- *
- *
- *
- * Get the workflows for a project
- * @param projectPk
- * @param callBackFunction
- */
-export function getWorkflowsForProjectQuery(
-  projectPk,
-  callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
-    console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk: projectPk
-    }).done(function (_data: WorkflowsForProjectQueryResp) {
-      callBackFunction(_data)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Set the linked workflow for the node
-export function setLinkedWorkflow(
-  node_id,
-  workflow_id,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
-    nodePk: node_id,
-    workflowPk: workflow_id
-  }).done(function (data) {
-    if (data.action === VERB.POSTED) callBackFunction(data)
-    else window.fail_function(data.action)
-  })
-}
-
-//get the workflow's context data
-export function getWorkflowContext(
-  workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-export function getWorkflowChildDataQuery(
-  nodePk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
-      nodePk: JSON.stringify(nodePk)
-    }).done(function (data) {
-      console.log('getWorkflowChildData')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the data from all parent workflows
-export function getWorkflowParentDataQuery(
-  workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function (data) {
-      console.log('getWorkflowParentData')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the public data from the workflow
-export function getPublicWorkflowDataQuery(
-  workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (data) {
-      console.log('getPublicWorkflowData')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the public data from all parent workflows
-export function getPublicWorkflowParentDataQuery(
-  workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (data) {
-      console.log('getPublicWorkflowParentData')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-//Get the public data from all child workflows
-export function getPublicWorkflowChildDataQuery(
-  nodePk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
-        '0',
-        nodePk
-      )
-    ).done(function (data) {
-      console.log('getPublicWorkflowChildData data')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-/**
- * Get the list of workflows we can link to a node
- *
- * endpoint: workflow/get-possible-linked-workflows
- *
- * @param nodeData
- * @param updateFunction
- * @param callBackFunction
- */
-export function getLinkedWorkflowMenuQuery(
-  nodeData,
-  updateFunction,
-  callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
-    console.log('success')
-) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (_data: LinkedWorkflowMenuQueryResp) => {
-      callBackFunction()
-      // @TODO call to react render
-      //  openLinkedWorkflowMenu(_data, updateFunction)
-    }
-  )
-}
 
 /**
  * @getWorkflowDataQuery
@@ -223,6 +41,186 @@ export function getWorkflowDataQuery(
       // @todo this is mostly typed now
       // console.log('getWorkflowDataQuery data')
       // console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get the data from all parent workflows
+export function getWorkflowParentDataQuery(
+  workflowPk,
+  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function (data: WorkflowParentDataQueryResp) {
+      console.log('getWorkflowParentData')
+      console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+export function getWorkflowChildDataQuery(
+  nodePk,
+  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+      nodePk: JSON.stringify(nodePk)
+    }).done(function (data: WorkflowChildDataQueryResp) {
+      console.log('getWorkflowChildData')
+      console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get the public data from the workflow
+export function getPublicWorkflowDataQuery(
+  workflowPk,
+  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
+) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
+        '0',
+        workflowPk
+      )
+    ).done(function (data: WorkflowDataQueryResp) {
+      console.log('getPublicWorkflowData')
+      console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get the public data from all parent workflows
+export function getPublicWorkflowParentDataQuery(
+  workflowPk,
+  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
+) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
+        '0',
+        workflowPk
+      )
+    ).done(function (data: WorkflowParentDataQueryResp) {
+      console.log('getPublicWorkflowParentData')
+      console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+//Get the public data from all child workflows
+export function getPublicWorkflowChildDataQuery(
+  nodePk,
+  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
+) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
+        '0',
+        nodePk
+      )
+    ).done(function (data: WorkflowChildDataQueryResp) {
+      console.log('getPublicWorkflowChildData data')
+      console.log(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+
+/*******************************************************
+ * Methods for getting groups of workflows or context
+ * for workflows.
+ *******************************************************/
+
+//get the workflow's context data
+export function getWorkflowContext(
+  workflowPk,
+  callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
+) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function (data: WorkflowContextQueryResp) {
+      if (data.action === VERB.POSTED) callBackFunction(data)
+      else window.fail_function(data.action)
+    })
+  } catch (err) {
+    window.fail_function()
+  }
+}
+
+
+/**
+ * Get possible projects that can be a target for the workflow to be duplicated into
+ * @param workflowPk
+ * @param updateFunction
+ * @param callBackFunction
+ */
+export function getTargetProjectMenu<T>(
+  workflowPk: number,
+  updateFunction: (response: T) => void,
+  callBackFunction = (_data: TargetProjectQueryResp) => console.log('success')
+) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_target_projects,
+    {
+      workflowPk: JSON.stringify(workflowPk)
+    },
+    (data: TargetProjectQueryResp) => {
+      // @ts-ignore
+      callBackFunction()
+      // @TODO call to react render
+      openTargetProjectMenu(data, updateFunction)
+    }
+  )
+}
+
+function openTargetProjectMenu(response, updateFunction) {
+  if (response.action === VERB.POSTED) {
+    renderMessageBox(response, 'target_project_menu', updateFunction)
+  } else {
+    alert('Failed to find potential projects.')
+  }
+}
+
+//Get the public data from the workflow
+export function getPublicParentWorkflowInfo(
+  workflowPk,
+  callBackFunction = (_data: ParentWorkflowInfoQueryResp) => console.log('success')
+) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
+        '0',
+        workflowPk
+      )
+    ).done(function (data: ParentWorkflowInfoQueryResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -264,50 +262,60 @@ export function getParentWorkflowInfoQuery(
   }
 }
 
-//set visibility of workflow
-// @todo can this be removed ?
-export function setWorkflowVisibilityQuery(
-  liveprojectPk,
-  workflowPk,
-  visible,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+
+/**
+ * @getWorkflowsForProjectQuery
+ *
+ *
+ *
+ * Get the workflows for a project
+ * @param projectPk
+ * @param callBackFunction
+ */
+export function getWorkflowsForProjectQuery(
+  projectPk,
+  callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
+    console.log('success')
 ) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
-      liveprojectPk: JSON.stringify(liveprojectPk),
-      workflowPk: JSON.stringify(workflowPk),
-      visible: JSON.stringify(visible)
-    }).done(function (data) {
-      console.log('setWorkflowVisibilityQuery data')
-      console.log(data)
-
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-} //set visibility of workflow
-
-//Get the public data from the workflow
-export function getPublicParentWorkflowInfo(
-  workflowPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (data) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk: projectPk
+    }).done(function (_data: WorkflowsForProjectQueryResp) {
+      callBackFunction(_data)
     })
   } catch (err) {
     window.fail_function()
   }
 }
+
+/**
+ * Get the list of workflows we can link to a node
+ *
+ * endpoint: workflow/get-possible-linked-workflows
+ *
+ * @param nodeData
+ * @param updateFunction
+ * @param callBackFunction
+ */
+export function getLinkedWorkflowMenuQuery(
+  nodeData,
+  updateFunction,
+  callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
+    console.log('success')
+) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (_data: LinkedWorkflowMenuQueryResp) => {
+      callBackFunction()
+      // @TODO call to react render
+      //  openLinkedWorkflowMenu(_data, updateFunction)
+    }
+  )
+}
+
 
 //Get the workflows that can be selected for the project, shaped for a menu
 export function getWorkflowSelectMenuQuery(
@@ -315,7 +323,7 @@ export function getWorkflowSelectMenuQuery(
   type_filter: CfObjectType,
   get_strategies: boolean,
   self_only: boolean,
-  callBackFunction: (_data: GetWorkflowSelectMenuResp) => void
+  callBackFunction: (_data: GetWorkflowSelectQueryResp) => void
   // updateFunction,
   //  receiptFunction
 ) {
@@ -332,7 +340,7 @@ export function getWorkflowSelectMenuQuery(
     //   receiptFunction(data)
     // }
   )
-    .done(function (data) {
+    .done(function (data: GetWorkflowSelectQueryResp) {
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })

@@ -53,55 +53,11 @@ from course_flow.serializers import (
     serializer_lookups_shallow,
 )
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import get_model_from_str, make_user_notification
+from course_flow.utils import get_model_from_str
 
 ###############################################
 # JSON API to create workflow objects
 ###############################################
-
-
-@user_can_comment(False)
-def json_api_post_add_comment(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    text = bleach.clean(json.loads(request.POST.get("text")))
-    try:
-        obj = get_model_from_str(object_type).objects.get(id=object_id)
-
-        # check if we are notifying any users
-        usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
-        target_users = []
-        if len(usernames) > 0:
-            content_object = obj.get_workflow()
-            for username in usernames:
-                try:
-                    target_user = User.objects.get(username=username[1:])
-                    if check_object_permission(
-                        content_object,
-                        target_user,
-                        ObjectPermission.PERMISSION_COMMENT,
-                    ):
-                        target_users += [target_user]
-                    else:
-                        raise ObjectDoesNotExist
-                except ObjectDoesNotExist:
-                    text = text.replace(username, username[1:])
-
-        # create the comment
-        comment = obj.comments.create(text=text, user=request.user)
-        for target_user in target_users:
-            make_user_notification(
-                source_user=request.user,
-                target_user=target_user,
-                notification_type=Notification.TYPE_COMMENT,
-                content_object=content_object,
-                extra_text=text,
-                comment=comment,
-            )
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted"})
 
 
 @user_can_edit("weekPk")

@@ -16,7 +16,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfParentComponents/EditableComponentWithActions'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import ReactDOM from 'react-dom'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
