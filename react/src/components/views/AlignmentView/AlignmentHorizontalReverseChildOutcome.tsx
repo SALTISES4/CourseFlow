@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Outcome } from '../OutcomeEditView'
+import Outcome from '@cfViews/OutcomeEditView/Outcome'
 import * as Utility from '@cfUtility'
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'

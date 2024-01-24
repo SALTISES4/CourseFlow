@@ -83208,17 +83208,17 @@ ${latestSubscriptionCallbackError.current.stack}
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 CompletionImg,
                 {
-                  outcomesType: outcomeItem.degree,
-                  completionStatus: 1
+                  outcomesType: 1,
+                  completionStatus: outcomeItem.degree
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ParentOutcome,
                 {
                   objectID: outcomeItem.id,
-                  parentID: this.context.parentID,
+                  parentID: null,
                   readOnly: this.context.read_only,
-                  throughParentID: this.props.data.id
+                  throughParentID: null
                 },
                 outcomeItem.id
               )

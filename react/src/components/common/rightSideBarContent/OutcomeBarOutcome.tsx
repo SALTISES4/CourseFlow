@@ -96,7 +96,7 @@ export type OutcomeBarOutcomePropsType = OwnProps
 
 type ConnectedProps = TGetOutcomeByID & {
   nodes: number[]
-  horizontaloutcomes: any[]
+  horizontaloutcomes: number[]
 }
 type PropsType = OwnProps & ConnectedProps
 

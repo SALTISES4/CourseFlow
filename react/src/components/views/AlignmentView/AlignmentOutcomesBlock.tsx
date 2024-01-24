@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Outcome } from '../OutcomeEditView'
+import Outcome from '@cfViews/OutcomeEditView/Outcome'
 import * as Utility from '@cfUtility'
 
 type PropsType = {

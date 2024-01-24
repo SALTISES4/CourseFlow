@@ -5,13 +5,12 @@ import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import { getUserListQuery } from '@XMLHTTP/API/sharing'
 
 type StateProps = {
-  selected: boolean
+  selected: number
 }
 
 type PropsType = {
-  share_info: any
-  permissionChange: any
-  data?: any
+  share_info: string
+  permissionChange: (permission_type: number, user: number) => any
 }
 
 class UserAdd extends React.Component<PropsType, StateProps> {
