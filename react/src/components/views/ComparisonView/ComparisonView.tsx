@@ -12,7 +12,7 @@ import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/compone
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import { GetWorkflowSelectMenuResp } from '@XMLHTTP/types/query'
+import { GetWorkflowSelectQueryResp, GetWorkflowSelectMenuResp } from '@XMLHTTP/types/query'
 // import $ from 'jquery'
 
 /**
@@ -197,9 +197,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       CfObjectType.WORKFLOW,
       false,
       true,
-      (data) => {
+      (data: GetWorkflowSelectQueryResp) => {
         // @todo move this to dialog
-        openWorkflowSelectMenu(data, () => this.updateFunction(data))
+        openWorkflowSelectMenu(data, (_data:GetWorkflowSelectMenuResp) => this.updateFunction(_data))
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )

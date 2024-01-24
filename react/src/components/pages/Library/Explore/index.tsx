@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ExploreViewContextDataDTO } from '@cfPages/Library/Explore/types'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
-import { getLibraryQuery } from '@XMLHTTP/API/pages'
+import { getLibraryQuery } from '@XMLHTTP/API/menu'
 
 /*******************************************************
  * @ExploreRenderer

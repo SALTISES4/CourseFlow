@@ -125,7 +125,7 @@ def course_flow_patterns():
         ),
         path(
             "comments/add/",
-            views.json_api.create.json_api_post_add_comment,
+            views.json_api.comment.json_api_post_add_comment,
             name="json-api-post-add-comment",
         ),
         path(
@@ -181,12 +181,12 @@ def course_flow_patterns():
         ),
         path(
             "comments/remove/",
-            views.json_api.delete.json_api_post_remove_comment,
+            views.json_api.comment.json_api_post_remove_comment,
             name="json-api-post-remove-comment",
         ),
         path(
             "comments/removeall/",
-            views.json_api.delete.json_api_post_remove_all_comments,
+            views.json_api.comment.json_api_post_remove_all_comments,
             name="json-api-post-remove-all-comments",
         ),
         # Register Duplication JSON routes
@@ -374,7 +374,7 @@ def course_flow_patterns():
         ),
         path(
             "comments/get/",
-            views.json_api.workflow.json_api_post_get_comments_for_object,
+            views.json_api.comment.json_api_post_get_comments_for_object,
             name="json-api-post-get-comments-for-object",
         ),
         path(

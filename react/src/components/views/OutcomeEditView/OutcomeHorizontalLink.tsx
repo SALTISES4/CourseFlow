@@ -4,7 +4,7 @@ import ComponentWithToggleDrop, {
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { CfObjectType } from '@cfModule/types/enum'
 import * as Constants from '@cfModule/constants'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/outcome'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import { ActionButton } from '@cfUIComponents'
 import SimpleOutcome from '@cfViews/OutcomeEditView/SimpleOutcome'
 import {

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
 import NodeBarColumn from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumn'
 import NodeBarColumnCreator from '@cfCommonComponents/rightSideBarContent/NodeBar/components/NodeBarColumnCreator'
-import { ColumnChoice } from '@cfModule/types/common'
+import { FieldChoice } from '@cfModule/types/common'
 
 /**
  * More or less a dummy container which renders
@@ -17,7 +17,7 @@ type SelfProps = {
   objectID?: number
   // parentID?: number / @todo does not seem to be used
   columnType?: number | string
-  columnChoices: ColumnChoice[] // was from renderer, need to check this, look at column type as well in relation to  NodeBarColumnCreator
+  columnChoices: FieldChoice[] // was from renderer, need to check this, look at column type as well in relation to  NodeBarColumnCreator
 }
 type ConnectedProps = TColumnWorkflowByID
 type PropsType = SelfProps & ConnectedProps

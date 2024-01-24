@@ -1,6 +1,6 @@
 import * as React from 'react'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
-import { getFavouritesQuery } from '@XMLHTTP/API/pages'
+import { getFavouritesQuery } from '@XMLHTTP/API/menu'
 
 type StateType = {
   project_data: any

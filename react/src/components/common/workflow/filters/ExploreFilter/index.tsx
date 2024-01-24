@@ -3,7 +3,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 // import $ from 'jquery'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
-import { searchAllObjectsQuery } from '@XMLHTTP/API/pages'
+import { searchAllObjectsQuery } from '@XMLHTTP/API/search'
 
 type Filter = {
   name: string

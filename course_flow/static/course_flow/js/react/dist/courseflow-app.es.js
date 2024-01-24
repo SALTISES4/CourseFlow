@@ -1447,7 +1447,7 @@ function requireReact_development() {
             }
           }
         }
-        function checkPropTypes(typeSpecs, values2, location2, componentName, element) {
+        function checkPropTypes(typeSpecs, values2, location, componentName, element) {
           {
             var has2 = Function.call.bind(hasOwnProperty2);
             for (var typeSpecName in typeSpecs) {
@@ -1455,23 +1455,23 @@ function requireReact_development() {
                 var error$1 = void 0;
                 try {
                   if (typeof typeSpecs[typeSpecName] !== "function") {
-                    var err = Error((componentName || "React class") + ": " + location2 + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                    var err = Error((componentName || "React class") + ": " + location + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
                     err.name = "Invariant Violation";
                     throw err;
                   }
-                  error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location2, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+                  error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
                 } catch (ex) {
                   error$1 = ex;
                 }
                 if (error$1 && !(error$1 instanceof Error)) {
                   setCurrentlyValidatingElement(element);
-                  error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location2, typeSpecName, typeof error$1);
+                  error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location, typeSpecName, typeof error$1);
                   setCurrentlyValidatingElement(null);
                 }
                 if (error$1 instanceof Error && !(error$1.message in loggedTypeFailures)) {
                   loggedTypeFailures[error$1.message] = true;
                   setCurrentlyValidatingElement(element);
-                  error("Failed %s type: %s", location2, error$1.message);
+                  error("Failed %s type: %s", location, error$1.message);
                   setCurrentlyValidatingElement(null);
                 }
               }
@@ -2670,7 +2670,7 @@ function requireReactJsxRuntime_development() {
           }
         }
       }
-      function checkPropTypes(typeSpecs, values2, location2, componentName, element) {
+      function checkPropTypes(typeSpecs, values2, location, componentName, element) {
         {
           var has2 = Function.call.bind(hasOwnProperty2);
           for (var typeSpecName in typeSpecs) {
@@ -2678,23 +2678,23 @@ function requireReactJsxRuntime_development() {
               var error$1 = void 0;
               try {
                 if (typeof typeSpecs[typeSpecName] !== "function") {
-                  var err = Error((componentName || "React class") + ": " + location2 + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                  var err = Error((componentName || "React class") + ": " + location + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
                   err.name = "Invariant Violation";
                   throw err;
                 }
-                error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location2, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+                error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
               } catch (ex) {
                 error$1 = ex;
               }
               if (error$1 && !(error$1 instanceof Error)) {
                 setCurrentlyValidatingElement(element);
-                error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location2, typeSpecName, typeof error$1);
+                error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location, typeSpecName, typeof error$1);
                 setCurrentlyValidatingElement(null);
               }
               if (error$1 instanceof Error && !(error$1.message in loggedTypeFailures)) {
                 loggedTypeFailures[error$1.message] = true;
                 setCurrentlyValidatingElement(element);
-                error("Failed %s type: %s", location2, error$1.message);
+                error("Failed %s type: %s", location, error$1.message);
                 setCurrentlyValidatingElement(null);
               }
             }
@@ -3219,7 +3219,7 @@ function requireFactoryWithThrowingShims() {
   }
   emptyFunctionWithReset.resetWarningCache = emptyFunction;
   factoryWithThrowingShims = function() {
-    function shim2(props, propName, componentName, location2, propFullName, secret) {
+    function shim2(props, propName, componentName, location, propFullName, secret) {
       if (secret === ReactPropTypesSecret) {
         return;
       }
@@ -3649,7 +3649,7 @@ function requireCheckPropTypes() {
       }
     };
   }
-  function checkPropTypes(typeSpecs, values2, location2, componentName, getStack) {
+  function checkPropTypes(typeSpecs, values2, location, componentName, getStack) {
     if (process.env.NODE_ENV !== "production") {
       for (var typeSpecName in typeSpecs) {
         if (has2(typeSpecs, typeSpecName)) {
@@ -3657,25 +3657,25 @@ function requireCheckPropTypes() {
           try {
             if (typeof typeSpecs[typeSpecName] !== "function") {
               var err = Error(
-                (componentName || "React class") + ": " + location2 + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`."
+                (componentName || "React class") + ": " + location + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`."
               );
               err.name = "Invariant Violation";
               throw err;
             }
-            error = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location2, null, ReactPropTypesSecret);
+            error = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location, null, ReactPropTypesSecret);
           } catch (ex) {
             error = ex;
           }
           if (error && !(error instanceof Error)) {
             printWarning(
-              (componentName || "React class") + ": type specification of " + location2 + " `" + typeSpecName + "` is invalid; the type checker function must return `null` or an `Error` but returned a " + typeof error + ". You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument)."
+              (componentName || "React class") + ": type specification of " + location + " `" + typeSpecName + "` is invalid; the type checker function must return `null` or an `Error` but returned a " + typeof error + ". You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument)."
             );
           }
           if (error instanceof Error && !(error.message in loggedTypeFailures)) {
             loggedTypeFailures[error.message] = true;
             var stack = getStack ? getStack() : "";
             printWarning(
-              "Failed " + location2 + " type: " + error.message + (stack != null ? stack : "")
+              "Failed " + location + " type: " + error.message + (stack != null ? stack : "")
             );
           }
         }
@@ -3767,7 +3767,7 @@ function requireFactoryWithTypeCheckers() {
         var manualPropTypeCallCache = {};
         var manualPropTypeWarningCount = 0;
       }
-      function checkType(isRequired, props, propName, componentName, location2, propFullName, secret) {
+      function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
         componentName = componentName || ANONYMOUS;
         propFullName = propFullName || propName;
         if (secret !== ReactPropTypesSecret) {
@@ -3792,13 +3792,13 @@ function requireFactoryWithTypeCheckers() {
         if (props[propName] == null) {
           if (isRequired) {
             if (props[propName] === null) {
-              return new PropTypeError("The " + location2 + " `" + propFullName + "` is marked as required " + ("in `" + componentName + "`, but its value is `null`."));
+              return new PropTypeError("The " + location + " `" + propFullName + "` is marked as required " + ("in `" + componentName + "`, but its value is `null`."));
             }
-            return new PropTypeError("The " + location2 + " `" + propFullName + "` is marked as required in " + ("`" + componentName + "`, but its value is `undefined`."));
+            return new PropTypeError("The " + location + " `" + propFullName + "` is marked as required in " + ("`" + componentName + "`, but its value is `undefined`."));
           }
           return null;
         } else {
-          return validate2(props, propName, componentName, location2, propFullName);
+          return validate2(props, propName, componentName, location, propFullName);
         }
       }
       var chainedCheckType = checkType.bind(null, false);
@@ -3806,13 +3806,13 @@ function requireFactoryWithTypeCheckers() {
       return chainedCheckType;
     }
     function createPrimitiveTypeChecker(expectedType) {
-      function validate2(props, propName, componentName, location2, propFullName, secret) {
+      function validate2(props, propName, componentName, location, propFullName, secret) {
         var propValue = props[propName];
         var propType = getPropType(propValue);
         if (propType !== expectedType) {
           var preciseType = getPreciseType(propValue);
           return new PropTypeError(
-            "Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + preciseType + "` supplied to `" + componentName + "`, expected ") + ("`" + expectedType + "`."),
+            "Invalid " + location + " `" + propFullName + "` of type " + ("`" + preciseType + "` supplied to `" + componentName + "`, expected ") + ("`" + expectedType + "`."),
             { expectedType }
           );
         }
@@ -3824,17 +3824,17 @@ function requireFactoryWithTypeCheckers() {
       return createChainableTypeChecker(emptyFunctionThatReturnsNull);
     }
     function createArrayOfTypeChecker(typeChecker) {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         if (typeof typeChecker !== "function") {
           return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside arrayOf.");
         }
         var propValue = props[propName];
         if (!Array.isArray(propValue)) {
           var propType = getPropType(propValue);
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an array."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an array."));
         }
         for (var i = 0; i < propValue.length; i++) {
-          var error = typeChecker(propValue, i, componentName, location2, propFullName + "[" + i + "]", ReactPropTypesSecret);
+          var error = typeChecker(propValue, i, componentName, location, propFullName + "[" + i + "]", ReactPropTypesSecret);
           if (error instanceof Error) {
             return error;
           }
@@ -3844,33 +3844,33 @@ function requireFactoryWithTypeCheckers() {
       return createChainableTypeChecker(validate2);
     }
     function createElementTypeChecker() {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var propValue = props[propName];
         if (!isValidElement(propValue)) {
           var propType = getPropType(propValue);
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement."));
         }
         return null;
       }
       return createChainableTypeChecker(validate2);
     }
     function createElementTypeTypeChecker() {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var propValue = props[propName];
         if (!ReactIs.isValidElementType(propValue)) {
           var propType = getPropType(propValue);
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement type."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected a single ReactElement type."));
         }
         return null;
       }
       return createChainableTypeChecker(validate2);
     }
     function createInstanceTypeChecker(expectedClass) {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         if (!(props[propName] instanceof expectedClass)) {
           var expectedClassName = expectedClass.name || ANONYMOUS;
           var actualClassName = getClassName(props[propName]);
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + actualClassName + "` supplied to `" + componentName + "`, expected ") + ("instance of `" + expectedClassName + "`."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + actualClassName + "` supplied to `" + componentName + "`, expected ") + ("instance of `" + expectedClassName + "`."));
         }
         return null;
       }
@@ -3889,7 +3889,7 @@ function requireFactoryWithTypeCheckers() {
         }
         return emptyFunctionThatReturnsNull;
       }
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var propValue = props[propName];
         for (var i = 0; i < expectedValues.length; i++) {
           if (is2(propValue, expectedValues[i])) {
@@ -3903,23 +3903,23 @@ function requireFactoryWithTypeCheckers() {
           }
           return value;
         });
-        return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of value `" + String(propValue) + "` " + ("supplied to `" + componentName + "`, expected one of " + valuesString + "."));
+        return new PropTypeError("Invalid " + location + " `" + propFullName + "` of value `" + String(propValue) + "` " + ("supplied to `" + componentName + "`, expected one of " + valuesString + "."));
       }
       return createChainableTypeChecker(validate2);
     }
     function createObjectOfTypeChecker(typeChecker) {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         if (typeof typeChecker !== "function") {
           return new PropTypeError("Property `" + propFullName + "` of component `" + componentName + "` has invalid PropType notation inside objectOf.");
         }
         var propValue = props[propName];
         var propType = getPropType(propValue);
         if (propType !== "object") {
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an object."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type " + ("`" + propType + "` supplied to `" + componentName + "`, expected an object."));
         }
         for (var key in propValue) {
           if (has2(propValue, key)) {
-            var error = typeChecker(propValue, key, componentName, location2, propFullName + "." + key, ReactPropTypesSecret);
+            var error = typeChecker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
             if (error instanceof Error) {
               return error;
             }
@@ -3943,11 +3943,11 @@ function requireFactoryWithTypeCheckers() {
           return emptyFunctionThatReturnsNull;
         }
       }
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var expectedTypes = [];
         for (var i2 = 0; i2 < arrayOfTypeCheckers.length; i2++) {
           var checker2 = arrayOfTypeCheckers[i2];
-          var checkerResult = checker2(props, propName, componentName, location2, propFullName, ReactPropTypesSecret);
+          var checkerResult = checker2(props, propName, componentName, location, propFullName, ReactPropTypesSecret);
           if (checkerResult == null) {
             return null;
           }
@@ -3956,37 +3956,37 @@ function requireFactoryWithTypeCheckers() {
           }
         }
         var expectedTypesMessage = expectedTypes.length > 0 ? ", expected one of type [" + expectedTypes.join(", ") + "]" : "";
-        return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` supplied to " + ("`" + componentName + "`" + expectedTypesMessage + "."));
+        return new PropTypeError("Invalid " + location + " `" + propFullName + "` supplied to " + ("`" + componentName + "`" + expectedTypesMessage + "."));
       }
       return createChainableTypeChecker(validate2);
     }
     function createNodeChecker() {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         if (!isNode2(props[propName])) {
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` supplied to " + ("`" + componentName + "`, expected a ReactNode."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` supplied to " + ("`" + componentName + "`, expected a ReactNode."));
         }
         return null;
       }
       return createChainableTypeChecker(validate2);
     }
-    function invalidValidatorError(componentName, location2, propFullName, key, type) {
+    function invalidValidatorError(componentName, location, propFullName, key, type) {
       return new PropTypeError(
-        (componentName || "React class") + ": " + location2 + " type `" + propFullName + "." + key + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + type + "`."
+        (componentName || "React class") + ": " + location + " type `" + propFullName + "." + key + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + type + "`."
       );
     }
     function createShapeTypeChecker(shapeTypes) {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var propValue = props[propName];
         var propType = getPropType(propValue);
         if (propType !== "object") {
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
         }
         for (var key in shapeTypes) {
           var checker = shapeTypes[key];
           if (typeof checker !== "function") {
-            return invalidValidatorError(componentName, location2, propFullName, key, getPreciseType(checker));
+            return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
           }
-          var error = checker(propValue, key, componentName, location2, propFullName + "." + key, ReactPropTypesSecret);
+          var error = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
           if (error) {
             return error;
           }
@@ -3996,24 +3996,24 @@ function requireFactoryWithTypeCheckers() {
       return createChainableTypeChecker(validate2);
     }
     function createStrictShapeTypeChecker(shapeTypes) {
-      function validate2(props, propName, componentName, location2, propFullName) {
+      function validate2(props, propName, componentName, location, propFullName) {
         var propValue = props[propName];
         var propType = getPropType(propValue);
         if (propType !== "object") {
-          return new PropTypeError("Invalid " + location2 + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
+          return new PropTypeError("Invalid " + location + " `" + propFullName + "` of type `" + propType + "` " + ("supplied to `" + componentName + "`, expected `object`."));
         }
         var allKeys = assign2({}, props[propName], shapeTypes);
         for (var key in allKeys) {
           var checker = shapeTypes[key];
           if (has2(shapeTypes, key) && typeof checker !== "function") {
-            return invalidValidatorError(componentName, location2, propFullName, key, getPreciseType(checker));
+            return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
           }
           if (!checker) {
             return new PropTypeError(
-              "Invalid " + location2 + " `" + propFullName + "` key `" + key + "` supplied to `" + componentName + "`.\nBad object: " + JSON.stringify(props[propName], null, "  ") + "\nValid keys: " + JSON.stringify(Object.keys(shapeTypes), null, "  ")
+              "Invalid " + location + " `" + propFullName + "` key `" + key + "` supplied to `" + componentName + "`.\nBad object: " + JSON.stringify(props[propName], null, "  ") + "\nValid keys: " + JSON.stringify(Object.keys(shapeTypes), null, "  ")
             );
           }
-          var error = checker(propValue, key, componentName, location2, propFullName + "." + key, ReactPropTypesSecret);
+          var error = checker(propValue, key, componentName, location, propFullName + "." + key, ReactPropTypesSecret);
           if (error) {
             return error;
           }
@@ -4208,7 +4208,7 @@ function isClassComponent$1(elementType) {
   } = elementType;
   return Boolean(prototype.isReactComponent);
 }
-function acceptingRef(props, propName, componentName, location2, propFullName) {
+function acceptingRef(props, propName, componentName, location, propFullName) {
   const element = props[propName];
   const safePropName = propFullName || propName;
   if (element == null || // When server-side rendering React doesn't warn either.
@@ -4224,7 +4224,7 @@ function acceptingRef(props, propName, componentName, location2, propFullName) {
     warningHint = "Did you accidentally use a plain function component for an element instead?";
   }
   if (warningHint !== void 0) {
-    return new Error(`Invalid ${location2} \`${safePropName}\` supplied to \`${componentName}\`. Expected an element that can hold a ref. ${warningHint} For more information see https://mui.com/r/caveat-with-refs-guide`);
+    return new Error(`Invalid ${location} \`${safePropName}\` supplied to \`${componentName}\`. Expected an element that can hold a ref. ${warningHint} For more information see https://mui.com/r/caveat-with-refs-guide`);
   }
   return null;
 }
@@ -4237,7 +4237,7 @@ function isClassComponent(elementType) {
   } = elementType;
   return Boolean(prototype.isReactComponent);
 }
-function elementTypeAcceptingRef(props, propName, componentName, location2, propFullName) {
+function elementTypeAcceptingRef(props, propName, componentName, location, propFullName) {
   const propValue = props[propName];
   const safePropName = propFullName || propName;
   if (propValue == null || // When server-side rendering React doesn't warn either.
@@ -4252,7 +4252,7 @@ function elementTypeAcceptingRef(props, propName, componentName, location2, prop
     warningHint = "Did you accidentally provide a plain function component instead?";
   }
   if (warningHint !== void 0) {
-    return new Error(`Invalid ${location2} \`${safePropName}\` supplied to \`${componentName}\`. Expected an element type that can hold a ref. ${warningHint} For more information see https://mui.com/r/caveat-with-refs-guide`);
+    return new Error(`Invalid ${location} \`${safePropName}\` supplied to \`${componentName}\`. Expected an element type that can hold a ref. ${warningHint} For more information see https://mui.com/r/caveat-with-refs-guide`);
   }
   return null;
 }
@@ -4619,7 +4619,7 @@ function getDisplayName(Component) {
   }
   return void 0;
 }
-function HTMLElementType(props, propName, componentName, location2, propFullName) {
+function HTMLElementType(props, propName, componentName, location, propFullName) {
   if (process.env.NODE_ENV === "production") {
     return null;
   }
@@ -4629,7 +4629,7 @@ function HTMLElementType(props, propName, componentName, location2, propFullName
     return null;
   }
   if (propValue && propValue.nodeType !== 1) {
-    return new Error(`Invalid ${location2} \`${safePropName}\` supplied to \`${componentName}\`. Expected an HTMLElement.`);
+    return new Error(`Invalid ${location} \`${safePropName}\` supplied to \`${componentName}\`. Expected an HTMLElement.`);
   }
   return null;
 }
@@ -4671,11 +4671,11 @@ function deprecatedPropType(validator2, reason) {
   if (process.env.NODE_ENV === "production") {
     return () => null;
   }
-  return (props, propName, componentName, location2, propFullName) => {
+  return (props, propName, componentName, location, propFullName) => {
     const componentNameSafe = componentName || "<<anonymous>>";
     const propFullNameSafe = propFullName || propName;
     if (typeof props[propName] !== "undefined") {
-      return new Error(`The ${location2} \`${propFullNameSafe}\` of \`${componentNameSafe}\` is deprecated. ${reason}`);
+      return new Error(`The ${location} \`${propFullNameSafe}\` of \`${componentNameSafe}\` is deprecated. ${reason}`);
     }
     return null;
   };
@@ -4701,11 +4701,11 @@ function requirePropFactory(componentNameInError, Component) {
     return () => null;
   }
   const prevPropTypes = Component ? _extends$2({}, Component.propTypes) : null;
-  const requireProp = (requiredProp) => (props, propName, componentName, location2, propFullName, ...args) => {
+  const requireProp = (requiredProp) => (props, propName, componentName, location, propFullName, ...args) => {
     const propFullNameSafe = propFullName || propName;
     const defaultTypeChecker = prevPropTypes == null ? void 0 : prevPropTypes[propFullNameSafe];
     if (defaultTypeChecker) {
-      const typeCheckerResult = defaultTypeChecker(props, propName, componentName, location2, propFullName, ...args);
+      const typeCheckerResult = defaultTypeChecker(props, propName, componentName, location, propFullName, ...args);
       if (typeCheckerResult) {
         return typeCheckerResult;
       }
@@ -4746,7 +4746,7 @@ function useId(idOverride) {
   }
   return useGlobalId(idOverride);
 }
-function unsupportedProp(props, propName, componentName, location2, propFullName) {
+function unsupportedProp(props, propName, componentName, location, propFullName) {
   if (process.env.NODE_ENV === "production") {
     return null;
   }
@@ -4951,11 +4951,11 @@ function ponyfillIsInteger(x) {
   return typeof x === "number" && isFinite(x) && Math.floor(x) === x;
 }
 const isInteger$2 = Number.isInteger || ponyfillIsInteger;
-function requiredInteger(props, propName, componentName, location2) {
+function requiredInteger(props, propName, componentName, location) {
   const propValue = props[propName];
   if (propValue == null || !isInteger$2(propValue)) {
     const propType = getTypeByValue(propValue);
-    return new RangeError(`Invalid ${location2} \`${propName}\` of type \`${propType}\` supplied to \`${componentName}\`, expected \`integer\`.`);
+    return new RangeError(`Invalid ${location} \`${propName}\` of type \`${propType}\` supplied to \`${componentName}\`, expected \`integer\`.`);
   }
   return null;
 }
@@ -19270,7 +19270,7 @@ function requireReactDom_development() {
           }
         }
       }
-      function checkPropTypes(typeSpecs, values2, location2, componentName, element) {
+      function checkPropTypes(typeSpecs, values2, location, componentName, element) {
         {
           var has3 = Function.call.bind(hasOwnProperty2);
           for (var typeSpecName in typeSpecs) {
@@ -19278,23 +19278,23 @@ function requireReactDom_development() {
               var error$1 = void 0;
               try {
                 if (typeof typeSpecs[typeSpecName] !== "function") {
-                  var err = Error((componentName || "React class") + ": " + location2 + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                  var err = Error((componentName || "React class") + ": " + location + " type `" + typeSpecName + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof typeSpecs[typeSpecName] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
                   err.name = "Invariant Violation";
                   throw err;
                 }
-                error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location2, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+                error$1 = typeSpecs[typeSpecName](values2, typeSpecName, componentName, location, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
               } catch (ex) {
                 error$1 = ex;
               }
               if (error$1 && !(error$1 instanceof Error)) {
                 setCurrentlyValidatingElement(element);
-                error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location2, typeSpecName, typeof error$1);
+                error("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", componentName || "React class", location, typeSpecName, typeof error$1);
                 setCurrentlyValidatingElement(null);
               }
               if (error$1 instanceof Error && !(error$1.message in loggedTypeFailures)) {
                 loggedTypeFailures[error$1.message] = true;
                 setCurrentlyValidatingElement(element);
-                error("Failed %s type: %s", location2, error$1.message);
+                error("Failed %s type: %s", location, error$1.message);
                 setCurrentlyValidatingElement(null);
               }
             }
@@ -41470,9 +41470,9 @@ Transition.propTypes = process.env.NODE_ENV !== "production" ? {
    *     [test/CSSTransition-test.js](https://github.com/reactjs/react-transition-group/blob/13435f897b3ab71f6e19d724f145596f5910581c/test/CSSTransition-test.js#L362-L437)).
    */
   nodeRef: PropTypes.shape({
-    current: typeof Element === "undefined" ? PropTypes.any : function(propValue, key, componentName, location2, propFullName, secret) {
+    current: typeof Element === "undefined" ? PropTypes.any : function(propValue, key, componentName, location, propFullName, secret) {
       var value = propValue[key];
-      return PropTypes.instanceOf(value && "ownerDocument" in value ? value.ownerDocument.defaultView.Element : Element)(propValue, key, componentName, location2, propFullName, secret);
+      return PropTypes.instanceOf(value && "ownerDocument" in value ? value.ownerDocument.defaultView.Element : Element)(propValue, key, componentName, location, propFullName, secret);
     }
   }),
   /**
@@ -56664,12 +56664,53 @@ function getOutcomeTitle(data, prefix2) {
   }
   return prefix2 + " - " + text;
 }
-function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data) {
+          if (data.action === VERB.POSTED) {
+            callBackFunction(_data);
+          } else
+            window.fail_function(data.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
+      data: JSON.stringify(json)
     }).done(function(data) {
       if (data.action === VERB.POSTED)
         callBackFunction(data);
@@ -56680,51 +56721,82 @@ function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_d
     window.fail_function();
   }
 }
-function searchAllObjectsQuery(filter, data, callBackFunction = (_data2) => console.log("success")) {
+function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(_data2) {
-      callBackFunction(_data2);
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
+      function(data) {
+        if (data.action === VERB.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+        $(".ui-draggable").draggable("enable");
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      newPosition: JSON.stringify(newPosition),
+      throughType: JSON.stringify(throughType),
+      inserted: JSON.stringify(true),
+      allowDifferent: JSON.stringify(true)
+    }).done(function(data) {
+      if (data.action === "posted")
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+      $(".ui-draggable").draggable("enable");
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    });
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+      nodePk: JSON.stringify(nodeID),
+      outcomePk: JSON.stringify(outcomeID),
+      degree: JSON.stringify(value)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
     });
   } catch (err) {
     window.fail_function();
   }
 }
-function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
+function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(_data2) {
-      callBackFunction(_data2);
+    $.post(
+      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
+      {
+        outcomePk: JSON.stringify(outcomePk),
+        objectID: JSON.stringify(outcome2Pk),
+        objectType: JSON.stringify("outcome"),
+        degree: JSON.stringify(degree)
+      }
+    ).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
     });
   } catch (err) {
     window.fail_function();
@@ -56741,12 +56813,13 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => 
       window.fail_function(data.action);
   });
 }
-function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
-      nodePk: JSON.stringify(nodePk)
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
     }).done(function(data) {
-      console.log("getWorkflowChildData");
+      console.log("toggleStrategyQuery data");
       console.log(data);
       if (data.action === VERB.POSTED)
         callBackFunction(data);
@@ -56757,94 +56830,13 @@ function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => consol
     window.fail_function();
   }
 }
-function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
-      workflowPk: JSON.stringify(workflowPk)
-    }).done(function(data) {
-      console.log("getWorkflowParentData");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
-        "0",
-        workflowPk
-      )
-    ).done(function(data) {
-      console.log("getPublicWorkflowData");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
-        "0",
-        workflowPk
-      )
-    ).done(function(data) {
-      console.log("getPublicWorkflowParentData");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
-        "0",
-        nodePk
-      )
-    ).done(function(data) {
-      console.log("getPublicWorkflowChildData data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: JSON.stringify(nodeData.id)
-    },
-    (_data2) => {
-      callBackFunction();
-    }
-  );
-}
-function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-      workflowPk: JSON.stringify(workflowPk)
+    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      objectsetPk: JSON.stringify(objectsetPk),
+      add: JSON.stringify(add2)
     }).done(function(data) {
       if (data.action === VERB.POSTED)
         callBackFunction(data);
@@ -56855,50 +56847,13 @@ function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console
     window.fail_function();
   }
 }
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-      workflowPk: JSON.stringify(workflowPk)
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      favourite: JSON.stringify(favourite)
     }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    }).catch((err) => {
-      console.log(err);
-    });
-  } catch (err) {
-    console.log("getParentWorkflowInfoQuery error in try/catc");
-    console.log(err);
-    window.fail_function();
-  }
-}
-function setWorkflowVisibilityQuery(liveprojectPk, workflowPk, visible, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_workflow_visibility, {
-      liveprojectPk: JSON.stringify(liveprojectPk),
-      workflowPk: JSON.stringify(workflowPk),
-      visible: JSON.stringify(visible)
-    }).done(function(data) {
-      console.log("setWorkflowVisibilityQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
-        "0",
-        workflowPk
-      )
-    ).done(function(data) {
       if (data.action === VERB.POSTED)
         callBackFunction(data);
       else
@@ -57005,31 +56960,6 @@ class WorkflowCard extends reactExports.Component {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
       ] });
     });
-    __publicField(this, "Visible", () => {
-      const isEligibleType = this.workflow.type !== WorkflowType.PROJECT && this.workflow.type !== WorkflowType.LIVE_PROJECT;
-      if (!this.props.readOnly && isEligibleType) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "permission-select",
-            onClick: (evt) => evt.stopPropagation(),
-            onMouseDown: (evt) => evt.stopPropagation(),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "select",
-              {
-                value: String(this.workflow.is_visible),
-                onChange: (evt) => this.visibilityFunction(this.workflow.id, evt.target.value),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "false", children: window.gettext("Not Visible") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "true", children: window.gettext("Visible") })
-                ]
-              }
-            )
-          }
-        );
-      }
-      return null;
-    });
     this.state = {
       favourite: props.workflowData.favourite
     };
@@ -57045,13 +56975,6 @@ class WorkflowCard extends reactExports.Component {
     } else {
       window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
     }
-  }
-  visibilityFunction(id, is_visible) {
-    const isVisibleBool = is_visible === "true";
-    this.props.updateWorkflow(id, {
-      is_visible: isVisibleBool
-    });
-    setWorkflowVisibilityQuery(this.props.projectData.id, id, isVisibleBool);
   }
   /*******************************************************
    * RENDER
@@ -57098,7 +57021,6 @@ class WorkflowCard extends reactExports.Component {
                 data: this.workflow
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Visible, {}),
             /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
@@ -57107,217 +57029,6 @@ class WorkflowCard extends reactExports.Component {
         ]
       }
     );
-  }
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-  const sendPostRequest = (url, data) => {
-    $.post(url, data).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === VERB.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    });
-  };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.OUTCOME) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_outcome_ajax, {
-        outcomePk: itemPkString,
-        projectPk: projectPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = () => console.log("success")) {
-  const t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
-  }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
-    changeFieldID: 0
-  };
-  if (changeField) {
-    post_object.changeFieldID = // @ts-ignore
-    COURSEFLOW_APP.contextData.changeFieldID;
-  }
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === VERB.POSTED) {
-            callBackFunction(_data);
-          } else
-            window.fail_function(data.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-      projectPk: JSON.stringify(projectPk),
-      term: JSON.stringify(term),
-      title: JSON.stringify(title),
-      translation_plural: JSON.stringify(translation_plural)
-    }).done(function(data) {
-      console.log("addTerminologyQuery query");
-      console.log(data);
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true),
-      allowDifferent: JSON.stringify(true)
-    }).done(function(data) {
-      if (data.action === "posted")
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-      $(".ui-draggable").draggable("enable");
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      objectsetPk: JSON.stringify(objectsetPk),
-      add: JSON.stringify(add2)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
   }
 }
 function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
@@ -57374,6 +57085,58 @@ function insertedAt(renderer, objectID, objectType, parentID, parentType, newPos
       renderer.dragAction[throughType] = null;
       $(document).off(throughType + "-dropped");
     });
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === VERB.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
 }
 class UtilityLoader {
   constructor(identifier2) {
@@ -57781,6 +57544,109 @@ function renderMessageBox(data, type, updateFunction) {
     $("#popup-container")[0]
   );
 }
+function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data) {
+      console.log("getWorkflowParentData");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+      nodePk: JSON.stringify(nodePk)
+    }).done(function(data) {
+      console.log("getWorkflowChildData");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
+        "0",
+        workflowPk
+      )
+    ).done(function(data) {
+      console.log("getPublicWorkflowData");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
+        "0",
+        workflowPk
+      )
+    ).done(function(data) {
+      console.log("getPublicWorkflowParentData");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
+        "0",
+        nodePk
+      )
+    ).done(function(data) {
+      console.log("getPublicWorkflowChildData data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
 function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data2) => console.log("success")) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_target_projects,
@@ -57800,13 +57666,14 @@ function openTargetProjectMenu(response, updateFunction) {
     alert("Failed to find potential projects.");
   }
 }
-function makeProjectLiveQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
+function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.make_project_live, {
-      projectPk: JSON.stringify(projectPk)
-    }).done(function(data) {
-      console.log("makeProjectLiveQuery data");
-      console.log(data);
+    $.get(
+      COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
+        "0",
+        workflowPk
+      )
+    ).done(function(data) {
       if (data.action === VERB.POSTED)
         callBackFunction(data);
       else
@@ -57815,6 +57682,46 @@ function makeProjectLiveQuery(projectPk, callBackFunction = (_data2) => console.
   } catch (err) {
     window.fail_function();
   }
+}
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+      workflowPk: JSON.stringify(workflowPk)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).catch((err) => {
+      console.log(err);
+    });
+  } catch (err) {
+    console.log("getParentWorkflowInfoQuery error in try/catc");
+    console.log(err);
+    window.fail_function();
+  }
+}
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(_data2) {
+      callBackFunction(_data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
+    {
+      nodePk: JSON.stringify(nodeData.id)
+    },
+    (_data2) => {
+      callBackFunction();
+    }
+  );
 }
 function openCreateActionModal(type) {
   const createUrl = COURSEFLOW_APP.config.create_path[type];
@@ -61205,41 +61112,6 @@ class QuillDiv extends reactExports.Component {
     });
   }
 }
-function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data) {
-      console.log("toggleStrategyQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-      workflowPk: JSON.stringify(workflowPk),
-      position: JSON.stringify(position2),
-      objectID: JSON.stringify(strategyPk),
-      objectType: JSON.stringify("workflow")
-    }).done(function(data) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 const WorkFlowConfigContext = React.createContext(
   {}
 );
@@ -61968,20 +61840,6 @@ function setUserPermission(user_id, objectID, objectType, permission_type, callB
     window.fail_function();
   }
 }
-function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
@@ -61998,6 +61856,20 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2
   } catch (err) {
     console.log("err");
     console.log(err);
+    window.fail_function();
+  }
+}
+function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+      filter: JSON.stringify(filter)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
     window.fail_function();
   }
 }
@@ -62361,9 +62233,110 @@ function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = 
     window.fail_function();
   }
 }
-function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      console.log("restoreSelfQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
+      weekPk: JSON.stringify(weekPk),
+      position: JSON.stringify(position2),
+      columnPk: JSON.stringify(column2),
+      columnType: JSON.stringify(column_type)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(data);
+      } else {
+        window.fail_function(data.action);
+      }
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+      workflowPk: JSON.stringify(workflowPk),
+      position: JSON.stringify(position2),
+      objectID: JSON.stringify(strategyPk),
+      objectType: JSON.stringify("workflow")
+    }).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(data);
+      } else {
+        window.fail_function(data.action);
+      }
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+      nodePk: JSON.stringify(source_node),
+      objectID: JSON.stringify(target_node),
+      objectType: JSON.stringify("node"),
+      sourcePort: JSON.stringify(source_port),
+      targetPort: JSON.stringify(target_port)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
       parentID: JSON.stringify(parentID),
       parentType: JSON.stringify(parentType),
       objectID: JSON.stringify(objectID),
@@ -62379,18 +62352,21 @@ function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughT
     window.fail_function();
   }
 }
-function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
+    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+      projectPk: JSON.stringify(projectPk),
+      term: JSON.stringify(term),
+      title: JSON.stringify(title),
+      translation_plural: JSON.stringify(translation_plural)
     }).done(function(data) {
-      console.log("restoreSelfQuery data");
+      console.log("addTerminologyQuery query");
       console.log(data);
-      if (data.action === VERB.POSTED)
+      if (data.action === VERB.POSTED) {
         callBackFunction(data);
-      else
+      } else {
         window.fail_function(data.action);
+      }
     });
   } catch (err) {
     window.fail_function();
@@ -62537,58 +62513,6 @@ class EditableComponentWithActions extends EditableComponentWithComments {
   }
 }
 __publicField(EditableComponentWithActions, "contextType", WorkFlowConfigContext);
-function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-      nodePk: JSON.stringify(source_node),
-      objectID: JSON.stringify(target_node),
-      objectType: JSON.stringify("node"),
-      sourcePort: JSON.stringify(source_port),
-      targetPort: JSON.stringify(target_port)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-      weekPk: JSON.stringify(weekPk),
-      position: JSON.stringify(position2),
-      columnPk: JSON.stringify(column2),
-      columnType: JSON.stringify(column_type)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-      nodePk: JSON.stringify(nodeID),
-      outcomePk: JSON.stringify(outcomeID),
-      degree: JSON.stringify(value)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 class EditableComponentWithSorting extends EditableComponentWithActions {
   /*******************************************************
    * PLACHOLDERS
@@ -65676,41 +65600,6 @@ const OutcomeOutcome = connect(
   mapStateToProps$w,
   null
 )(OutcomeOutcomeUnconnected);
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-      {
-        outcomePk: JSON.stringify(outcomePk),
-        objectID: JSON.stringify(outcome2Pk),
-        objectType: JSON.stringify("outcome"),
-        degree: JSON.stringify(degree)
-      }
-    ).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -81624,8 +81513,6 @@ let Node$1 = (_a = class extends EditableComponentWithActions {
     if (this.context.view_comments) {
       mouseover_actions.push(this.addCommenting());
     }
-    console.log("this.context");
-    console.log(this.context);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(data_override),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -81637,11 +81524,7 @@ let Node$1 = (_a = class extends EditableComponentWithActions {
           ref: this.mainDiv,
           "data-selected": this.state.selected,
           "data-hovered": this.state.hovered,
-          onClick: (evt) => {
-            console.log("this.context");
-            console.log(this.context);
-            this.context.selection_manager.changeSelection(evt, this);
-          },
+          onClick: (evt) => this.context.selection_manager.changeSelection(evt, this),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-top-row", children: [
               lefticon,
@@ -90712,7 +90595,7 @@ var jquery = { exports: {} };
         };
       }
     });
-    var location2 = window2.location;
+    var location = window2.location;
     var nonce = { guid: Date.now() };
     var rquery = /\?/;
     jQuery2.parseXML = function(data) {
@@ -90914,7 +90797,7 @@ var jquery = { exports: {} };
       }
     });
     var r20 = /%20/g, rhash = /#.*$/, rantiCache = /([?&])_=[^&]*/, rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg, rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/, rnoContent = /^(?:GET|HEAD)$/, rprotocol = /^\/\//, prefilters = {}, transports = {}, allTypes = "*/".concat("*"), originAnchor = document2.createElement("a");
-    originAnchor.href = location2.href;
+    originAnchor.href = location.href;
     function addToPrefiltersOrTransports(structure) {
       return function(dataTypeExpression, func) {
         if (typeof dataTypeExpression !== "string") {
@@ -91067,9 +90950,9 @@ var jquery = { exports: {} };
       lastModified: {},
       etag: {},
       ajaxSettings: {
-        url: location2.href,
+        url: location.href,
         type: "GET",
-        isLocal: rlocalProtocol.test(location2.protocol),
+        isLocal: rlocalProtocol.test(location.protocol),
         global: true,
         processData: true,
         async: true,
@@ -91204,7 +91087,7 @@ var jquery = { exports: {} };
           }
         };
         deferred.promise(jqXHR);
-        s.url = ((url || s.url || location2.href) + "").replace(rprotocol, location2.protocol + "//");
+        s.url = ((url || s.url || location.href) + "").replace(rprotocol, location.protocol + "//");
         s.type = options.method || options.type || s.method || s.type;
         s.dataTypes = (s.dataType || "*").toLowerCase().match(rnothtmlwhite) || [""];
         if (s.crossDomain == null) {
@@ -95387,6 +95270,18 @@ class WorkflowCardCondensed extends WorkflowCard {
     );
   }
 }
+function searchAllObjectsQuery(filter, data, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data)
+    }).done(function(_data2) {
+      callBackFunction(_data2);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
 class WorkflowFilter extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -96429,18 +96324,6 @@ class ProjectMenu extends reactExports.Component {
       this.setState({ data: { ...this.props.data, deleted: false } });
     });
   }
-  //@todo can this be removed now?
-  makeLive() {
-    if (window.confirm(
-      window.gettext(
-        "Are you sure you want to create a live classroom for this project?"
-      )
-    )) {
-      makeProjectLiveQuery(this.props.data.id, (data) => {
-        location.reload();
-      });
-    }
-  }
   /*******************************************************
    * MODAL HANDLERS
    *******************************************************/
@@ -96558,6 +96441,33 @@ class ProjectPage extends reactExports.Component {
         userId: this.userId
       }
     );
+  }
+}
+function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
+      callBackFunction(data);
+    });
+  } catch (err) {
+    window.fail_function();
   }
 }
 class LibraryPage extends reactExports.Component {
