@@ -100,12 +100,12 @@ class Term extends WeekUnconnected<PropsType> {
 
     const mouseover_actions = []
     if (!this.context.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
+      mouseover_actions.push(<this.AddInsertSibling data={data} />)
+      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
+      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
     if (this.context.view_comments) {
-      mouseover_actions.push(this.addCommenting())
+      mouseover_actions.push(<this.AddCommenting />)
     }
 
     return (

@@ -78,8 +78,7 @@ export function updateValueInstantQuery(
   objectID: number,
   objectType: any,
   json: any,
-  callBackFunction = (_data: EmptyPostResp) =>
-    console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.update_value, {
@@ -95,7 +94,6 @@ export function updateValueInstantQuery(
     window.fail_function()
   }
 }
-
 
 //When the drag is complete, this is called to actually update the back-end
 export function dragAction(
@@ -158,8 +156,7 @@ export function updateOutcomenodeDegree(
   nodeID: number,
   outcomeID: number,
   value,
-  callBackFunction = (_data: EmptyPostResp) =>
-    console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
@@ -200,7 +197,6 @@ export function updateOutcomehorizontallinkDegree(
   }
 }
 
-
 //Set the linked workflow for the node
 export function setLinkedWorkflow(
   node_id,
@@ -215,7 +211,6 @@ export function setLinkedWorkflow(
     else window.fail_function(data.action)
   })
 }
-
 
 /**
  * Turn a week into a strategy or vice versa

@@ -71,11 +71,11 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   getTypeIndicator(data) {
     const type = data.type
 
-    let text = window.gettext(type)
+    const text = [
+      window.gettext(type),
+      data.is_strategy ? window.gettext(' strategy') : ''
+    ].join('')
 
-    if (data.is_strategy) {
-      text += window.gettext(' strategy')
-    }
     return <div className={'workflow-type-indicator ' + type}>{text}</div>
   }
 

@@ -1,8 +1,10 @@
 import { Discipline } from '@cfModule/types/common'
-import { Project } from '../../Workflow/Workflow/types'
+import ts from 'typescript'
+import Project = ts.server.Project
+import { EProject } from '@XMLHTTP/types/entity'
 
 export type ProjectViewDTO = {
-  project_data: Project
+  project_data: EProject
   user_permission: number
   disciplines: Discipline[]
   user_id: number
@@ -23,7 +25,7 @@ export type ObjectPermission = {
  *******************************************************/
 
 export type ProjectMenuProps = {
-  data: Project
+  data: EProject
   userId: number
   projectPaths
   allDisciplines
@@ -31,7 +33,7 @@ export type ProjectMenuProps = {
 }
 
 export type RenderProps = {
-  project_data: Project
+  project_data: EProject
   user_permission: number
   disciplines: Discipline[]
   user_id: number

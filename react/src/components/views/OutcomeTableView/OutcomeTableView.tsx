@@ -39,7 +39,6 @@ type OwnProps = any
 type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   private objectType: CfObjectType

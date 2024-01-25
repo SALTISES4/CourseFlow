@@ -74,7 +74,10 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
     this.setState({ is_dropped: !this.state.is_dropped })
   }
 
-  getChildType(outcomeoutcome) {
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  ChildType = ({ outcomeoutcome }) => {
     return (
       <SimpleOutcomeOutcome
         key={outcomeoutcome}
@@ -97,9 +100,9 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
 
     const children = this.state.is_dropped ? (
-      data.child_outcome_links.map((outcomeoutcome) =>
-        this.getChildType(outcomeoutcome)
-      )
+      data.child_outcome_links.map((outcomeoutcome) => (
+        <this.ChildType outcomeoutcome={outcomeoutcome} />
+      ))
     ) : (
       <></>
     )
@@ -119,7 +122,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
           data.child_outcome_links.length
         )
 
-    const comments = this.context.view_comments ? this.addCommenting() : null
+    const comments = this.context.view_comments ? <this.AddCommenting /> : null
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
     const onClick = (evt) => {
@@ -137,7 +140,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
         {editPortal}
         <div
           className={cssClass}
-          style={this.get_border_style()}
+          style={this.getBorderStyle()}
           ref={this.mainDiv}
           onClick={onClick}
         >

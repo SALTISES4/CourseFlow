@@ -2,7 +2,7 @@ import * as React from 'react'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfModule/components/common/extended/ComponentWithToggleDrop'
-import { getWorkflowContext } from '@XMLHTTP/API/workflow'
+import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
 import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
 import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
@@ -20,7 +20,7 @@ type OwnProps = {
  * WorkflowBaseView for the comparison
  */
 class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnProps> {
-  private renderer: any
+  private workflowComparison: WorkflowComparison
   constructor(props: OwnProps) {
     super(props)
     this.mainDiv = React.createRef()
@@ -53,31 +53,34 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       }
     }
 
-    getWorkflowContext(this.props.workflowID, (context_response_data) => {
+    getWorkflowContextQuery(this.props.workflowID, (context_response_data) => {
       const context_data = context_response_data.data_package
 
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
-      // this needs to be imported directly but that would cuase Circ D.
-      this.renderer = new WorkflowComparison(
-        this.props.workflowID,
-        JSON.parse(context_data.data_package),
-        '#workflow-inner-wrapper',
-        this.props.selection_manager,
-        this.props.view_type,
-        this.props.object_sets
-      )
+      // this needs to be imported directly but that would cause   Circ D.
+      this.workflowComparison = new WorkflowComparison({
+        workflowID: this.props.workflowID,
+        selectionManager: this.props.selection_manager,
+        // container: '#workflow-inner-wrapper',
+        // @ts-ignore
+        container: $(this.mainDiv.current),
+        viewType: this.props.view_type,
+        initial_object_sets: this.props.object_sets,
+        dataPackage: context_data.data_package
+      })
 
-      this.renderer.silent_connect_fail = true
-      this.renderer.init()
+      this.workflowComparison.silent_connect_fail = true
+      this.workflowComparison.init()
 
       loader.endLoad()
     })
   }
 
-  componentDidUpdate(prev_props) {
-    if (prev_props.view_type != this.props.view_type)
-      this.renderer.render(this.props.view_type)
+  componentDidUpdate(prevProps: OwnProps) {
+    if (prevProps.view_type != this.props.view_type)
+      // @ts-ignore
+      this.workflowComparison.render(this.props.view_type)
   }
 
   componentWillUnmount() {
@@ -115,7 +118,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
         className="workflow-wrapper"
         id={'workflow-' + this.props.workflowID}
       >
-        <div id="workflow-inner-wrapper" ref={this.mainDiv}></div>
+        <div className="workflow-inner-wrapper" ref={this.mainDiv}></div>
         <div
           className="window-close-button"
           onClick={this.props.removeFunction}

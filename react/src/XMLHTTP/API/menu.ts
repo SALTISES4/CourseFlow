@@ -1,4 +1,5 @@
 import { LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 import { EDiscipline } from '@XMLHTTP/types/entity'
 
 /**

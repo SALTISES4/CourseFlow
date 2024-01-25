@@ -27,9 +27,9 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
   }
 
   /*******************************************************
-   * FUNCTIONS
+   * COMPONENTS
    *******************************************************/
-  getIcon() {
+  Icon = () => {
     if (this.props.data.icon && this.props.data.icon != '') {
       return (
         <span className="material-symbols-rounded">{this.props.data.icon}</span>
@@ -66,12 +66,13 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseoverActions = []
 
     if (!this.context.read_only) {
-      mouseoverActions.push(this.addInsertSibling(data))
-      mouseoverActions.push(this.addDuplicateSelf(data))
-      mouseoverActions.push(this.addDeleteSelf(data))
+      mouseoverActions.push(<this.AddInsertSibling data={data} />)
+      mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
+      mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
+
     if (this.context.view_comments) {
-      mouseoverActions.push(this.addCommenting())
+      mouseoverActions.push(<this.AddCommenting />)
     }
 
     return (
@@ -84,7 +85,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         }
       >
         <div className="column-line">
-          {this.getIcon()}
+          <this.Icon />
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}

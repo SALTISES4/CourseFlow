@@ -1,8 +1,20 @@
 import { QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
 import { TWorkflow } from '@cfRedux/types/type'
-import { WorkflowDataPackage, WorkflowParentDataPackage, WorkflowChildDataPackage, WorkflowContextData} from '@XMLHTTP/types'
-import { ENewItem, ESection, EUser, EComment, EObjectSet, ESectionGroup } from '@XMLHTTP/types/entity'
+import {
+  WorkflowDataPackage,
+  WorkflowParentDataPackage,
+  WorkflowChildDataPackage,
+  WorkflowContextData
+} from '@XMLHTTP/types'
+import {
+  ENewItem,
+  ESection,
+  EUser,
+  EComment,
+  EObjectSet,
+  ESectionGroup
+} from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * EmptyPostResp
@@ -15,7 +27,6 @@ export type EmptyPostResp = {
   action: VERB
   error?: string
 }
-
 
 /*******************************************************
  * comment.ts
@@ -65,7 +76,6 @@ export type FavouritesQueryResp = {
   action: VERB
   data_package: Workflow[]
 }
-
 
 /*******************************************************
  * search.ts
@@ -161,7 +171,6 @@ export type GetWorkflowSelectQueryResp = {
 export type GetWorkflowSelectMenuResp = {
   workflowID: number
 }
-
 
 /*******************************************************
  * QUERY COMPONENTS

@@ -15,7 +15,7 @@ import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
-import { Project } from '@cfPages/Workflow/Workflow/types'
+import { EProject } from '@XMLHTTP/types/entity'
 // import $ from 'jquery'
 
 /*******************************************************
@@ -25,7 +25,7 @@ import { Project } from '@cfPages/Workflow/Workflow/types'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 interface StateType {
-  data?: Project
+  data?: EProject
   view_type?: string
   users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
@@ -131,7 +131,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       this.setState({ data: { ...this.props.data, deleted: false } })
     })
   }
-
 
   /*******************************************************
    * MODAL HANDLERS

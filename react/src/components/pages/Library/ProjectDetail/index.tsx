@@ -3,11 +3,11 @@ import * as Constants from '@cfConstants'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
 import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline } from '@cfModule/types/common'
-import { Project } from '../../Workflow/Workflow/types'
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 class ProjectPage extends React.Component<ProjectViewDTO> {
   private readonly readOnly: boolean
-  private readonly projectData: Project
+  private readonly projectData: EProject
   private readonly allDisciplines: Discipline[]
   private readonly userId: number
   private readonly projectPaths: {

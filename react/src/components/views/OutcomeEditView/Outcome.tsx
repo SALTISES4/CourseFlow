@@ -240,14 +240,16 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     }
 
     if (!this.context.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
-      if (data.depth < 2) mouseover_actions.push(this.addInsertChild(data))
+      mouseover_actions.push(<this.AddInsertSibling data={data} />)
+      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
+      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
+      if (data.depth < 2) {
+        mouseover_actions.push(<this.AddInsertChild data={data} />)
+      }
     }
     if (this.context.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
-      mouseover_actions.push(this.addCommenting())
+      mouseover_actions.push(<this.AddCommenting />)
     }
 
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'

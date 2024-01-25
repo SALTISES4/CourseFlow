@@ -8,7 +8,6 @@ import ComponentWithToggleDrop, {
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { CfObjectType } from '@cfModule/types/enum'
 import Week from './Week'
-// import $ from 'jquery'
 
 type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = {
@@ -17,13 +16,17 @@ type OwnProps = {
   parentID: number
   // renderer: any
 } & ComponentWithToggleProps
-type PropsType = ConnectedProps & OwnProps
+
+export type WeekWorkflowUnconnectedProps = OwnProps
+type PropsType = OwnProps & ConnectedProps
 
 /**
  * The week-workflow throughmodel representation
  */
-class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
-  constructor(props: PropsType) {
+class WeekWorkflowUnconnected<
+  P extends PropsType
+> extends ComponentWithToggleDrop<P> {
+  constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.WEEKWORKFLOW
     this.objectClass = '.week-workflow'
@@ -31,7 +34,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Week = () => {
+  WeekWrapper = () => {
     const data = this.props.data
     if (this.props.condensed) {
       return (
@@ -79,7 +82,7 @@ class WeekWorkflowUnconnected extends ComponentWithToggleDrop<PropsType> {
         ref={this.mainDiv}
         data-child-id={data.week}
       >
-        <this.Week />
+        <this.WeekWrapper />
       </div>
     )
   }

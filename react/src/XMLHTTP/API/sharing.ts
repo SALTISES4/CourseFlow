@@ -1,4 +1,8 @@
-import { EmptyPostResp, UsersForObjectQueryResp, UserListResp } from '@XMLHTTP/types/query'
+import {
+  EmptyPostResp,
+  UsersForObjectQueryResp,
+  UserListResp
+} from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
 
 export function setUserPermission(

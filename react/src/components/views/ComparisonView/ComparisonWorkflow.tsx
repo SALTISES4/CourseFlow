@@ -9,6 +9,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 import WeekWorkflowComparison from '@cfViews/ComparisonView/WeekWorkflowComparison'
 import { AppState } from '@cfRedux/types/type'
 import { EditableComponentWithSortingState } from '@cfParentComponents/EditableComponentWithSorting'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -26,6 +27,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
+  static contextType = WorkFlowConfigContext
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -112,9 +114,9 @@ const mapWorkflowStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-const Workflow = connect<ConnectedProps, object, OwnProps, AppState>(
+const ComparisonWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
   mapWorkflowStateToProps,
   null
 )(WorkflowUnconnected)
 
-export default Workflow
+export default ComparisonWorkflow

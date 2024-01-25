@@ -52,7 +52,8 @@ export function getWorkflowDataQuery(
 //Get the data from all parent workflows
 export function getWorkflowParentDataQuery(
   workflowPk,
-  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
+  callBackFunction = (_data: WorkflowParentDataQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
@@ -70,7 +71,8 @@ export function getWorkflowParentDataQuery(
 
 export function getWorkflowChildDataQuery(
   nodePk,
-  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
+  callBackFunction = (_data: WorkflowChildDataQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
@@ -111,7 +113,8 @@ export function getPublicWorkflowDataQuery(
 //Get the public data from all parent workflows
 export function getPublicWorkflowParentDataQuery(
   workflowPk,
-  callBackFunction = (_data: WorkflowParentDataQueryResp) => console.log('success')
+  callBackFunction = (_data: WorkflowParentDataQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.get(
@@ -133,7 +136,8 @@ export function getPublicWorkflowParentDataQuery(
 //Get the public data from all child workflows
 export function getPublicWorkflowChildDataQuery(
   nodePk,
-  callBackFunction = (_data: WorkflowChildDataQueryResp) => console.log('success')
+  callBackFunction = (_data: WorkflowChildDataQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.get(
@@ -152,14 +156,18 @@ export function getPublicWorkflowChildDataQuery(
   }
 }
 
-
 /*******************************************************
+ * @getWorkflowContextQuery
+ *
  * Methods for getting groups of workflows or context
  * for workflows.
+ *
+ * workflow/get-workflow-context/
+ *
  *******************************************************/
 
 //get the workflow's context data
-export function getWorkflowContext(
+export function getWorkflowContextQuery(
   workflowPk,
   callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
 ) {
@@ -167,6 +175,9 @@ export function getWorkflowContext(
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
     }).done(function (data: WorkflowContextQueryResp) {
+      console.log('WorkflowContextQueryResp')
+      console.log(data)
+
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
@@ -174,7 +185,6 @@ export function getWorkflowContext(
     window.fail_function()
   }
 }
-
 
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
@@ -212,7 +222,8 @@ function openTargetProjectMenu(response, updateFunction) {
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(
   workflowPk,
-  callBackFunction = (_data: ParentWorkflowInfoQueryResp) => console.log('success')
+  callBackFunction = (_data: ParentWorkflowInfoQueryResp) =>
+    console.log('success')
 ) {
   try {
     $.get(
@@ -261,7 +272,6 @@ export function getParentWorkflowInfoQuery(
     window.fail_function()
   }
 }
-
 
 /**
  * @getWorkflowsForProjectQuery
@@ -315,7 +325,6 @@ export function getLinkedWorkflowMenuQuery(
     }
   )
 }
-
 
 //Get the workflows that can be selected for the project, shaped for a menu
 export function getWorkflowSelectMenuQuery(

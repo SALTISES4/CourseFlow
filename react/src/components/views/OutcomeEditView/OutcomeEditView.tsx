@@ -35,8 +35,8 @@ export class OutcomeEditViewUnconnected<
   S extends StateType
 > extends EditableComponentWithSorting<P, S> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -48,36 +48,14 @@ export class OutcomeEditViewUnconnected<
   componentDidMount() {
     this.makeDragAndDrop()
   }
+
   componentDidUpdate() {
     this.makeDragAndDrop()
   }
 
   /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  AddNew = ({ objectset }: any) => {
-    if (!this.context.read_only) {
-      return (
-        <div
-          id="add-new-outcome"
-          className="menu-create hover-shade"
-          onClick={this.addNewWrapper.bind(this, objectset)}
-        >
-          <img
-            className="create-button"
-            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
-          />
-          <div>{window.gettext('Add new')}</div>
-        </div>
-      )
-    }
-    return <></>
-  }
-
-  /*******************************************************
    * FUNCTIONS
    *******************************************************/
-
   stopSortFunction() {}
 
   makeDragAndDrop() {
@@ -115,10 +93,31 @@ export class OutcomeEditViewUnconnected<
   }
 
   addNewWrapper(objectset) {
-    console.log('objectset')
-    console.log(objectset)
     newOutcomeQuery(this.props.workflow.id, objectset.id)
   }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  AddNew = ({ objectset }: any) => {
+    if (!this.context.read_only) {
+      return (
+        <div
+          id="add-new-outcome"
+          className="menu-create hover-shade"
+          onClick={this.addNewWrapper.bind(this, objectset)}
+        >
+          <img
+            className="create-button"
+            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
+          />
+          <div>{window.gettext('Add new')}</div>
+        </div>
+      )
+    }
+    return <></>
+  }
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -179,7 +178,7 @@ export class OutcomeEditViewUnconnected<
   }
 }
 
-const mapEditViewStateToProps = (state: AppState): ConnectedProps => {
+const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: getSortedOutcomesFromOutcomeWorkflowSet(
       state,
@@ -190,6 +189,6 @@ const mapEditViewStateToProps = (state: AppState): ConnectedProps => {
 }
 
 export default connect<ConnectedProps, object, OwnProps, AppState>(
-  mapEditViewStateToProps,
+  mapStateToProps,
   null
 )(OutcomeEditViewUnconnected)
