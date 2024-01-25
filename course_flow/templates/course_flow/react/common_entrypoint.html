@@ -15,25 +15,3 @@
 {% block react_scripts %}
   {% include 'course_flow/base/react_renderer.html' %}
 {% endblock %}
-
-{% comment %} why are we outputting the token again? {% endcomment %}
-{% csrf_token %}
-
-{% comment %}
-this jquery loader pattern was is
-
-workflow_update.html
-comparison.html
-@todo decide whether to keep it for now
-
-{% endcomment %}
-{% block scripts %}
-  {{ block.super }}
-  <script nonce="{{ request.csp_nonce }}">
-
-    jQuery('<div>', {
-      class: 'load-screen'
-    }).appendTo("#container");
-  </script>
-
-{% endblock %}

@@ -73,7 +73,7 @@ if (
 }
 
 $(window).on("load", () => {
-  $(document).ajaxError(window.fail_function);
+  // $(document).ajaxError(window.fail_function);
 
   // @todo does this do anything?
   waitUntilElementExists("#overflow-options").then((el) => {

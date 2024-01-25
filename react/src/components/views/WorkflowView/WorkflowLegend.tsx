@@ -56,14 +56,15 @@ export class WorkflowLegendUnconnected<
 
   getSlider() {
     if (this.state.show_slider) {
+      // dynamic react/src/components/common/components/MenuBar.tsx
       return reactDom.createPortal(
-        [
+        <>
           <div>{window.gettext('Legend')}</div>,
           <Slider
             checked={this.state.show_legend}
             toggleAction={this.toggle.bind(this)}
           />
-        ],
+        </>,
         $('#viewbar')[0]
       )
     }

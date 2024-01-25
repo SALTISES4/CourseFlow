@@ -289,15 +289,17 @@ export function getWorkflowsForProjectQuery(
   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
     console.log('success')
 ) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk: projectPk
-    }).done(function (_data: WorkflowsForProjectQueryResp) {
+  $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+    projectPk: projectPk
+  })
+    .done(function (_data: WorkflowsForProjectQueryResp) {
+      console.log('dead')
       callBackFunction(_data)
     })
-  } catch (err) {
-    window.fail_function()
-  }
+    .fail(function (error) {
+      // Handle error specific to the AJAX request
+      window.fail_function()
+    })
 }
 
 /**
@@ -325,7 +327,10 @@ export function getLinkedWorkflowMenuQuery(
       // @TODO call to react render
       //  openLinkedWorkflowMenu(_data, updateFunction)
     }
-  )
+  ).fail(function (error) {
+    // Handle error specific to the AJAX request
+    window.fail_function()
+  })
 }
 
 //Get the workflows that can be selected for the project, shaped for a menu

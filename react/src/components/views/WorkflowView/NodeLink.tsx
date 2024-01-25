@@ -148,6 +148,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 
     // PORTAL
     const portal = reactDom.createPortal(
+       // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
       <NodeLinkSVG
         style={style}
         hovered={node_hovered}

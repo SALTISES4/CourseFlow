@@ -682,6 +682,7 @@ class EditableComponent<
       return <></>
     }
 
+    // #edit-menu dynamic, in RightSideBar component
     return ReactDOM.createPortal(
       <this.EditForm data={data} noDelete={noDelete} />,
       document.getElementById('edit-menu')
