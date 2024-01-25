@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
-import { OutcomeEditViewUnconnected } from '../OutcomeEditView'
+import { OutcomeEditViewUnconnected } from '@cfViews/OutcomeEditView/OutcomeEditView'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { AppState } from '@cfRedux/types/type'
