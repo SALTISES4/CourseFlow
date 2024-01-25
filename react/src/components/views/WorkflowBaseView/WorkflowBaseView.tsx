@@ -9,7 +9,7 @@ import * as Utility from '@cfUtility'
 import ConnectionBar from '@cfModule/ConnectionBar'
 
 import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
-import { OutcomeEditView } from '../OutcomeEditView/index.js'
+import OutcomeEditView from '@cfViews/OutcomeEditView/OutcomeEditView'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/WorkflowBaseView/ParentWorkflowIndicator'

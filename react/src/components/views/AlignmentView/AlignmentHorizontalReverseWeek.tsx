@@ -15,7 +15,7 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectID: number
-  week_rank: any
+  week_rank: number
   restriction_set: any
 }
 type StateProps = EditableComponentWithCommentsStateType
