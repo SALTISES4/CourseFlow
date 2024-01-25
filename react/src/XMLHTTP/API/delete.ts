@@ -26,7 +26,6 @@ export function deleteSelfQuery(
   }
 }
 
-
 //Causes the specified object to undelete itself
 export function restoreSelfQuery(
   objectID: number,

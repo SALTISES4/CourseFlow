@@ -4,24 +4,16 @@ import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
 import * as Constants from '@cfConstants'
 import { ViewType } from '@cfModule/types/enum.js'
 import ComparisonView from '@cfViews/ComparisonView/ComparisonView'
-import { Project } from '@cfPages/Workflow/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-
-type ParamsType = {
-  data: {
-    project_data: Project
-    is_strategy: boolean
-    user_permission: number
-    user_role: number
-    public_view: boolean
-    user_name: string
-    user_id: number
-    myColour: string
-    changeFieldID: number
-  }
-}
-
-export class WorkflowComparison {
+import { WorkflowComparisonViewDTO } from '@cfPages/Workflow/Comparison/types'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { CacheProvider } from '@emotion/react'
+import createCache from '@emotion/cache'
+const cache = createCache({
+  key: 'emotion',
+  nonce: window.cf_nonce
+})
+export class Comparison {
   private selection_manager: SelectionManager
   private readOnly: boolean
   private viewComments: boolean
@@ -31,9 +23,9 @@ export class WorkflowComparison {
   private container: JQuery
   private userPermission: any
 
-  constructor(props: ParamsType) {
-    this.projectData = props.data.project_data
-    this.userPermission = props.data.user_permission // @todo double check we're getting this from data object
+  constructor(props: WorkflowComparisonViewDTO) {
+    this.projectData = props.project_data
+    this.userPermission = props.user_permission // @todo double check we're getting this from data object
 
     //@todo this a jquery global function and needs to be refactored / removed
     makeActiveSidebar('#project' + this.projectData.id)
@@ -78,19 +70,26 @@ export class WorkflowComparison {
       view_type === ViewType.WORKFLOW ||
       view_type === ViewType.OUTCOME_EDIT
     ) {
+      const theme = createTheme({})
       reactDom.render(
-        <ComparisonView
-          view_type={view_type}
-          // turn this into config object
-          renderer={this}
-          // legacyRenderer={this}
-          data={this.projectData}
-          selection_manager={this.selection_manager}
-        />,
+        <CacheProvider value={cache}>
+          <ThemeProvider theme={theme}>
+            <ComparisonView
+              view_type={view_type}
+              container={this.container}
+              parentRender={(a, b) => this.render(a, b)}
+              read_only={this.readOnly}
+              projectData={this.projectData}
+              selection_manager={this.selection_manager}
+            />
+          </ThemeProvider>
+        </CacheProvider>,
         container[0]
       )
+    } else {
+      console.log('comparsion view not supported ')
     }
   }
 }
 
-export default WorkflowComparison
+export default Comparison

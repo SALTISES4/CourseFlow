@@ -31,7 +31,7 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Node = () => {
+  NodeWrapper = () => {
     const data = this.props.data
     return (
       <Node
@@ -62,7 +62,7 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
 
         // ref={this.mainDiv} // @todo this is not defined
       >
-        <this.Node />
+        <this.NodeWrapper />
       </div>
     )
   }

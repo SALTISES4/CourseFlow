@@ -12,7 +12,7 @@ import {
   EWeek,
   EWeekworkflow,
   EWorkflow,
-  EProject,
+  EProject
 } from '@XMLHTTP/types/entity'
 import { FieldChoice } from '@cfModule/types/common'
 
@@ -72,8 +72,20 @@ export type WorkflowContextData = {
   //   strategy_classification_choices: FieldChoice[]
   //   project: EProject
   // }
-  data_package: string
+  data_package: EWorkflowDataPackage
   is_strategy: boolean
   user_permission: number
 }
 
+// @todo differentiate from above WorkflowDataPackage
+export type EWorkflowDataPackage = {
+  is_strategy: boolean
+  column_choices: FieldChoice[]
+  context_choices: FieldChoice[]
+  task_choices: FieldChoice[]
+  time_choices: FieldChoice[]
+  outcome_type_choices: FieldChoice[]
+  outcome_sort_choices: FieldChoice[]
+  strategy_classification_choices: FieldChoice[]
+  project: EProject
+}

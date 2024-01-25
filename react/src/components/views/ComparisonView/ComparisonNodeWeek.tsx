@@ -13,11 +13,11 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * NodeWeek for the comparison view
  */
-class NodeWeekComparisonUnconnected extends NodeWeekUnconnected<PropsType> {
+class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getNode() {
+  NodeWrapper = () => {
     const data = this.props.data
     return (
       <ComparisonNode
@@ -46,15 +46,15 @@ class NodeWeekComparisonUnconnected extends NodeWeekUnconnected<PropsType> {
     )
   }
 }
-const mapNodeWeekStateToProps = (
+const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetNodeWeekByID => {
   return getNodeWeekByID(state, ownProps.objectID)
 }
-const NodeWeekComparison = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapNodeWeekStateToProps,
+const ComparisonNodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
-)(NodeWeekComparisonUnconnected)
+)(ComparisonNodeWeekUnconnected)
 
-export default NodeWeekComparison
+export default ComparisonNodeWeek

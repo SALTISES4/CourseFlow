@@ -57,7 +57,10 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     newOutcomeQuery(this.props.data.linked_workflow, null)
   }
 
-  getChildOutcomesHeader = () => {
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  ChildOutcomesHeader = () => {
     const data = this.props.data
     if (this.props.child_outcomes.length > 0) {
       return (
@@ -131,7 +134,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     const selection_manager = this.context.selection_manager
     // let child_outcomes_header
-    const child_outcomes_header = this.getChildOutcomesHeader()
+    const child_outcomes_header = <this.ChildOutcomesHeader />
 
     // if (this.props.child_outcomes.length > 0) {
     //   child_outcomes_header = (
@@ -305,7 +308,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       style.outline = '2px solid ' + data.lock.user_colour
     }
 
-    const comments = this.context.view_comments ? this.addCommenting() : ''
+    const comments = this.context.view_comments ? <this.AddCommenting /> : ''
 
     return (
       <div className="node-week">

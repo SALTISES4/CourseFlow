@@ -111,9 +111,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       this.target_port_handle = d3.select(cssSourceTargetSelector)
     }
 
-    console.log('g port')
-    console.log()
-
     const node_selected =
       this.source_node.attr('data-selected') === 'true' ||
       this.target_node.attr('data-selected') === 'true'
@@ -172,8 +169,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
       />,
       $('.workflow-canvas')[0]
     )
-
-    // PORTAL
 
     return (
       <>

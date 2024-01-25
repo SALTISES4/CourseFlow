@@ -22,7 +22,7 @@ type PropsType = ConnectedProps & OwnProps
 class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
   private objectType: string
   private objectClass: string
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEWORKFLOW
     this.objectClass = '.outcome-workflow'

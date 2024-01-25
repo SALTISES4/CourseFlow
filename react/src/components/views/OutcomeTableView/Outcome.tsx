@@ -183,6 +183,8 @@ export class OutcomeUnconnected<
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
+    console.log('OutcomeUnconnected props')
+    console.log(props)
   }
 
   /*******************************************************
@@ -192,7 +194,7 @@ export class OutcomeUnconnected<
     return this.props.data.is_dropped
   }
 
-  getChildOutcomeView(child) {
+  ChildOutcomeView = ({ child }) => {
     return (
       <Outcome
         outcomes_type={this.props.outcomes_type}
@@ -264,7 +266,9 @@ export class OutcomeUnconnected<
 
     const outcome_row = this.props.outcome_tree?.outcomenodes?.map(
       (outcomenodegroup) => {
-        const group_row = outcomenodegroup.map((outcomenode) => (
+        console.log('outcomenodegroup')
+        console.log(outcomenodegroup)
+        const group_row = outcomenodegroup?.map((outcomenode) => (
           <TableCell
             outcomesType={this.props.outcomes_type}
             degree={outcomenode.degree}
@@ -274,6 +278,7 @@ export class OutcomeUnconnected<
             // renderer={this.props.renderer}
           />
         ))
+
         group_row.unshift(
           <TableCell
             outcomesType={this.props.outcomes_type}
@@ -291,6 +296,7 @@ export class OutcomeUnconnected<
         )
       }
     )
+
     outcome_row.push(<div className="table-cell blank-cell" />)
     outcome_row.push(
       <TableCell
@@ -311,9 +317,9 @@ export class OutcomeUnconnected<
 
     let child_rows
     if (is_dropped)
-      child_rows = this.props.outcome_tree.children.map((child) =>
-        this.getChildOutcomeView(child)
-      )
+      child_rows = this.props.outcome_tree.children.map((child) => (
+        <this.ChildOutcomeView child={child} />
+      ))
     return [full_row, child_rows]
   }
 }

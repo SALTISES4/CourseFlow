@@ -224,6 +224,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     }
 
     if (!this.state.initial_render) {
+      console.log('here is the issue')
       nodePorts = reactDom.createPortal(
         <NodePorts
           // renderer={renderer}
@@ -323,8 +324,12 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       )
     }
 
-    if (data.is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+    if (data.is_dropped) {
+      dropIcon = 'droptriangleup'
+    } else {
+      dropIcon = 'droptriangledown'
+    }
+
     let linktext = window.gettext('Visit workflow')
     let link_class = 'linked-workflow'
 
@@ -380,19 +385,20 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       style.display = 'none'
     }
 
-    let css_class =
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-    if (data.is_dropped) css_class += ' dropped'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    const cssClass = [
+      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
+      data.is_dropped ? 'dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.user_id : ''
+    ].join(' ')
 
     if (!this.context.read_only) {
-      mouseover_actions.push(this.addInsertSibling(data))
-      mouseover_actions.push(this.addDuplicateSelf(data))
-      mouseover_actions.push(this.addDeleteSelf(data))
+      mouseover_actions.push(<this.AddInsertSibling data={data} />)
+      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
+      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
+
     if (this.context.view_comments) {
-      // mouseover_actions.push(this.addCommenting(data))
-      mouseover_actions.push(this.addCommenting())
+      mouseover_actions.push(<this.AddCommenting />)
     }
 
     return (
@@ -400,7 +406,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         {this.addEditable(data_override)}
         <div
           style={style}
-          className={css_class}
+          className={cssClass}
           id={data.id}
           ref={this.mainDiv}
           data-selected={this.state.selected}

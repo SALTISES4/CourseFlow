@@ -22,7 +22,6 @@ type PropsType = ConnectedProps & OwnProps
  */
 class ViewBarUnconnected extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   /*******************************************************
@@ -61,28 +60,25 @@ class ViewBarUnconnected extends React.Component<PropsType> {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {
-            // @ts-ignore
-            this.context.outcome_sort_choices.map((choice) => (
-              <div>
-                <input
-                  disabled={
-                    table_type_value === 1 ||
-                    (data.type === 'program' && choice.type > 1)
-                  }
-                  type="radio"
-                  id={'sort_type_choice' + choice.type}
-                  name={'sort_type_choice' + choice.type}
-                  value={choice.type}
-                  checked={data.outcomes_sort === choice.type}
-                  onChange={this.changeSort.bind(this)}
-                />
-                <label htmlFor={'sort_type_choice' + choice.type}>
-                  {choice.name}
-                </label>
-              </div>
-            ))
-          }
+          {this.context.outcome_sort_choices.map((choice) => (
+            <div>
+              <input
+                disabled={
+                  table_type_value === 1 ||
+                  (data.type === 'program' && choice.type > 1)
+                }
+                type="radio"
+                id={'sort_type_choice' + choice.type}
+                name={'sort_type_choice' + choice.type}
+                value={choice.type}
+                checked={data.outcomes_sort === choice.type}
+                onChange={this.changeSort.bind(this)}
+              />
+              <label htmlFor={'sort_type_choice' + choice.type}>
+                {choice.name}
+              </label>
+            </div>
+          ))}
         </div>
       )
       const table_type = (

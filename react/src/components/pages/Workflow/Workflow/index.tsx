@@ -11,13 +11,13 @@ import {
 } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
-import { WorkflowBaseView } from '@cfViews/WorkflowBaseView/WorkflowBaseView'
+import WorkflowBaseView from '@cfViews/WorkflowBaseView/WorkflowBaseView'
+import { WorkflowDetailViewDTO } from '@cfPages/Workflow/Workflow/types'
 import {
-  Choice,
-  Project,
-  WorkflowDetailViewDTO
-} from '@cfPages/Workflow/Workflow/types'
-import { WorkflowDataQueryResp, WorkflowChildDataQueryResp, WorkflowParentDataQueryResp } from '@XMLHTTP/types/query'
+  WorkflowDataQueryResp,
+  WorkflowChildDataQueryResp,
+  WorkflowParentDataQueryResp
+} from '@XMLHTTP/types/query'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
@@ -35,6 +35,8 @@ import {
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
+import { EProject } from '@XMLHTTP/types/entity'
+import { FieldChoice } from '@cfModule/types/common'
 // import $ from 'jquery'
 
 const cache = createCache({
@@ -59,19 +61,20 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 class Workflow {
   private message_queue: any[]
   private messages_queued: boolean
-  public_view: boolean
-  workflowID: number
-  column_choices: Choice[]
-  context_choices: Choice[]
-  task_choices: Choice[]
-  time_choices: Choice[]
-  private outcome_type_choices: Choice[]
-  private outcome_sort_choices: Choice[]
-  strategy_classification_choices: Choice[]
-  is_strategy: boolean
-  project: Project
+  private outcome_type_choices: FieldChoice[]
+  outcome_sort_choices: FieldChoice[]
   private user_permission: number
   private user_role: number
+  private is_teacher: boolean
+  public_view: boolean
+  workflowID: number
+  column_choices: FieldChoice[]
+  context_choices: FieldChoice[]
+  task_choices: FieldChoice[]
+  time_choices: FieldChoice[]
+  strategy_classification_choices: FieldChoice[]
+  is_strategy: boolean
+  project: EProject
   user_id: number
   read_only: boolean
   always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
@@ -80,7 +83,6 @@ class Workflow {
   view_comments: boolean
   add_comments: boolean
   is_student: boolean
-  private is_teacher: boolean
   selection_manager: SelectionManager
   private child_data_completed: number
   private child_data_needed: any[]
@@ -112,7 +114,7 @@ class Workflow {
     (container, view_type?: ViewType) => void
   >
   private locks: any
-  private silent_connect_fail: any
+  silent_connect_fail: any
 
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {
@@ -273,85 +275,6 @@ class Workflow {
   /*******************************************************
    * // WEBSOCKET MANAGER
    *******************************************************/
-
-  /*******************************************************
-   * REACT TO MOVE
-   *******************************************************/
-  render(container, view_type: ViewType = ViewType.WORKFLOW) {
-    this.locks = {}
-
-    this.selection_manager = new SelectionManager(this.read_only)
-
-    // In case we need to get child workflows
-    this.child_data_needed = []
-    this.child_data_completed = -1
-    this.fetching_child_data = false
-
-    this.view_type = view_type // @todo where is view_type set?
-
-    reactDom.render(<WorkflowLoader />, container[0])
-
-    this.container = container // @todo where is view_type set?
-    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
-
-    if (view_type === ViewType.OUTCOME_EDIT) {
-      // get additional data about parent workflow prior to render
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
-        )
-        reactDom.render(
-          <Provider store={this.store}>
-            <WorkFlowConfigProvider initialValue={this}>
-              <WorkflowBaseView
-                view_type={view_type}
-                // renderer={this}
-                // legacyRenderer={this}
-                parentRender={this.workflowRender}
-                // readOnly={this.read_only}
-                config={{
-                  canView: this.can_view,
-                  isStudent: this.is_student,
-                  projectPermission: this.project_permission,
-                  alwaysStatic: this.always_static
-                }}
-                websocket={this.websocket}
-              />
-            </WorkFlowConfigProvider>
-          </Provider>,
-          container[0]
-        )
-      })
-    } else {
-      setTimeout(() => {
-        const theme = createTheme({})
-        reactDom.render(
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <Provider store={this.store}>
-                <WorkFlowConfigProvider initialValue={this}>
-                  <WorkflowBaseView
-                    view_type={view_type}
-                    // renderer={this}
-                    // legacyRenderer={this}
-                    parentRender={this.workflowRender}
-                    config={{
-                      canView: this.can_view,
-                      isStudent: this.is_student,
-                      projectPermission: this.project_permission,
-                      alwaysStatic: this.always_static
-                    }}
-                    websocket={this.websocket}
-                  />
-                </WorkFlowConfigProvider>
-              </Provider>
-            </ThemeProvider>
-          </CacheProvider>,
-          container[0]
-        )
-      }, 50)
-    }
-  }
 
   // Fetches the data for the given child workflow
   getDataForChildWorkflow() {
@@ -566,6 +489,90 @@ class Workflow {
           }
         })
       )
+    }
+  }
+
+  /*******************************************************
+   * REACT TO MOVE
+   *******************************************************/
+  render(container, view_type: ViewType = ViewType.WORKFLOW) {
+    this.locks = {}
+
+    this.selection_manager = new SelectionManager(this.read_only)
+
+    // In case we need to get child workflows
+    this.child_data_needed = []
+    this.child_data_completed = -1
+    this.fetching_child_data = false
+
+    this.view_type = view_type // @todo where is view_type set?
+
+    reactDom.render(<WorkflowLoader />, container[0])
+
+    this.container = container // @todo where is view_type set?
+    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
+
+    if (view_type === ViewType.OUTCOME_EDIT) {
+      // get additional data about parent workflow prior to render
+      this.getWorkflowParentData(this.workflowID, (response) => {
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
+        const theme = createTheme({})
+        reactDom.render(
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <Provider store={this.store}>
+                <WorkFlowConfigProvider initialValue={this}>
+                  <WorkflowBaseView
+                    view_type={view_type}
+                    // renderer={this}
+                    // legacyRenderer={this}
+                    parentRender={this.workflowRender}
+                    // readOnly={this.read_only}
+                    config={{
+                      canView: this.can_view,
+                      isStudent: this.is_student,
+                      projectPermission: this.project_permission,
+                      alwaysStatic: this.always_static
+                    }}
+                    websocket={this.websocket}
+                  />
+                </WorkFlowConfigProvider>
+              </Provider>
+            </ThemeProvider>
+          </CacheProvider>,
+          container[0]
+        )
+      })
+    } else {
+      setTimeout(() => {
+        const theme = createTheme({})
+        reactDom.render(
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <Provider store={this.store}>
+                <WorkFlowConfigProvider initialValue={this}>
+                  <WorkflowBaseView
+                    view_type={view_type}
+                    // renderer={this}
+                    // legacyRenderer={this}
+                    parentRender={this.workflowRender}
+                    config={{
+                      canView: this.can_view,
+                      isStudent: this.is_student,
+                      projectPermission: this.project_permission,
+                      alwaysStatic: this.always_static
+                    }}
+                    websocket={this.websocket}
+                  />
+                </WorkFlowConfigProvider>
+              </Provider>
+            </ThemeProvider>
+          </CacheProvider>,
+          container[0]
+        )
+      }, 50)
     }
   }
 }

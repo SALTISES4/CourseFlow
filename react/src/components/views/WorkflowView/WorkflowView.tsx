@@ -35,7 +35,6 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
   StateProps
 > {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {
@@ -184,14 +183,17 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     )
   }
 }
-const mapWorkflowStateToProps = (state) => ({
+const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: state.workflow,
   object_sets: state.objectset,
   week: state.week,
   node: state.node,
   outcome: state.outcome
 })
-export default connect<ConnectedProps, object, OwnProps, AppState>(
-  mapWorkflowStateToProps,
+
+const WorkflowView = connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
   null
 )(WorkflowViewUnconnected)
+
+export default WorkflowView

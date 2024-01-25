@@ -74,7 +74,7 @@ class EditableComponent<
     )
   }
 
-  get_border_style() {
+  getBorderStyle() {
     const data = this.props.data
     if (!data) return
 
@@ -97,6 +97,7 @@ class EditableComponent<
       value
     )
   }
+
   /*******************************************************
    * COMPONENTS
    *******************************************************/
@@ -505,7 +506,7 @@ class EditableComponent<
     )
   }
 
-  getDeleteForSidebar(read_only, no_delete, type, data) {
+  DeleteForSidebar = ({ read_only, no_delete, type, data }) => {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') {
         return <></>
@@ -513,7 +514,7 @@ class EditableComponent<
         return (
           <>
             <h4>{window.gettext('Delete')}</h4>
-            {this.addDeleteSelf(data)}
+            <this.AddDeleteSelf data={data} />
           </>
         )
       }
@@ -521,7 +522,7 @@ class EditableComponent<
   }
 
   //  @todo only implemented in children
-  addDeleteSelf(_data: any, _alt_icon?: string) {
+  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
     return <></>
   }
 
@@ -663,13 +664,18 @@ class EditableComponent<
         )}
 
         {sets}
-        {this.getDeleteForSidebar(read_only, noDelete, type, data)}
+        <this.DeleteForSidebar
+          read_only={read_only}
+          no_delete={noDelete}
+          type={type}
+          data={data}
+        />
       </div>
     )
   }
 
   /*******************************************************
-   * PORTAL
+   * PORTAL (RENDER)
    *******************************************************/
   addEditable(data, noDelete = false): React.ReactPortal | ReactElement {
     if (!this.state.selected) {

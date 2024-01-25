@@ -21,7 +21,7 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
   }
 
   /*******************************************************
-   * FUNCTIONS
+   * COMPONENTS
    *******************************************************/
   TimeData = ({ data }) => {
     return (

@@ -74,7 +74,7 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
       this.props.css_class ?? '',
       'title-text collapsible-text',
       this.state.is_dropped ? 'dropped' : ''
-    ].join('')
+    ].join(' ')
 
     // if (this.props.css_class) css_class = this.props.css_class + ' '
     // css_class += 'title-text collapsible-text'

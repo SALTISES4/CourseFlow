@@ -52,6 +52,7 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
       $("a[href='#restore-bar']").parent().removeClass('hidden')
     }
   }
+
   /*******************************************************
    * RENDER
    *******************************************************/

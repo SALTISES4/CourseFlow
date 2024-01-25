@@ -33,7 +33,7 @@ class TableOutcomeWorkflowUnconnected extends React.Component<PropsType> {
     )
   }
 }
-const mapOutcomeWorkflowStateToProps = (
+const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetOutcomeWorkflowByID => {
@@ -45,7 +45,7 @@ const TableOutcomeWorkflow = connect<
   OwnProps,
   AppState
 >(
-  mapOutcomeWorkflowStateToProps,
+  mapStateToProps,
   null
 )(TableOutcomeWorkflowUnconnected)
 

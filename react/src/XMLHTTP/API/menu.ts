@@ -1,4 +1,9 @@
-import { EmptyPostResp, HomeQueryResp, LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
+import {
+  EmptyPostResp,
+  HomeQueryResp,
+  LibraryQueryResp,
+  FavouritesQueryResp
+} from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
 import { EDiscipline } from '@XMLHTTP/types/entity'
 
@@ -61,11 +66,11 @@ export function getDisciplines(
   callBackFunction = (_data: EDiscipline[]) => console.log('success')
 ) {
   try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_disciplines).done(
-      function (data: EDiscipline[]) {
-        callBackFunction(data)
-      }
-    )
+    $.get(COURSEFLOW_APP.config.get_paths.get_disciplines).done(function (
+      data: EDiscipline[]
+    ) {
+      callBackFunction(data)
+    })
   } catch (err) {
     window.fail_function()
   }

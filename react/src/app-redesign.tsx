@@ -1,8 +1,11 @@
+// @ts-nocheck
 // This file is meant to be a separate entry point for the "redesigned"
 // app and a place where all the code will be refactored/consolidated into
 // so that we end up with a single entry point into the frontend\
+import Comparison from '@cfPages/Workflow/Comparison'
+
 /*******************************************************
- * HACK: react's missing key error is adding too much noise to our
+ * HACK: React's missing key error is adding too much noise to our
  * console, disable TEMPORARILY
  *******************************************************/
 const originalConsoleWarn = console.error
@@ -45,7 +48,6 @@ import '@cfSCSS/workflow_styles.scss'
 
 // @WORKFLOW
 import WorkflowGrid from '@cfModule/components/pages/Workflow/WorkflowGrid'
-import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
@@ -89,17 +91,6 @@ function renderComponents(components) {
   })
 }
 
-/*
-  home:  course-flow/home/
-  library:  course-flow/mylibrary/
-  explore:  course-flow/explore/
-  projectDetail:  course-flow/project/1/
-
-  my_live_projects:
-  workflowDetailView:
-  projectComparison:
- */
-
 // contextData
 // set in python views and prepped in react_renderer.html
 const getAppComponent = () => {
@@ -141,14 +132,23 @@ const getAppComponent = () => {
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
         myColour:
-          'hsl(' + (((DTOcontextData.user_id * 5) % 360) + 1) + ', 50%, 50%)',
+          'hsl(' +
+          (((COURSEFLOW_APP.contextData.user_id * 5) % 360) + 1) +
+          ', 50%, 50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments
-      return <WorkflowComparison {...thisContextData} />
+      // return <WorkflowComparison {...thisContextData} />
+      const workflowComparisonWrapper = new Comparison(thisContextData)
+      workflowComparisonWrapper.render($('#container'))
+
+      // const workflowComparisonWrapper = new WorkflowComparison(thisContextData)
+      // workflowComparisonWrapper.init()
+      return null
     }
     case 'workflowDetailView': {
-      // not sure yet because the render method is taking arguments
+      console.log('COURSEFLOW_APP.contextData')
+      console.log(COURSEFLOW_APP.contextData)
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
       workflowWrapper.init()
       return null

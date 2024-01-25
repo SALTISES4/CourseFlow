@@ -34,7 +34,10 @@ class OutcomeUnconnected extends TableOutcomeUnconnected<
     return this.state.is_dropped
   }
 
-  getChildOutcomeView(child) {
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  ChildOutcomeView = ({ child }) => {
     return (
       <MatrixOutcome
         outcomes_type={this.props.outcomes_type}
