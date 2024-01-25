@@ -468,6 +468,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     }
 
+    // static .titlebar .title is in base.html
     return reactDom.createPortal(return_links, $('.titlebar .title')[0])
   }
 

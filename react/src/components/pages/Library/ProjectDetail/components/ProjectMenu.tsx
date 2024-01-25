@@ -48,7 +48,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
       { type: 'completion_table', name: window.gettext('Completion Table') }
     ]
 
-    // this.renderer = this.props.renderer
 
     this.state = {
       data: this.props.data,
@@ -67,7 +66,11 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    * LIFECYCLE HOOKS
    *******************************************************/
   componentDidMount() {
+
     const component = this
+
+    console.log('jquery ')
+    console.log($)
     getWorkflowsForProjectQuery(this.props.data.id, (data) => {
       component.setState({
         workflow_data: data.data_package
