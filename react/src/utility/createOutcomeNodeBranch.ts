@@ -32,6 +32,7 @@ export type CreateOutcomeNodeBranchType = {
 //   return { id: outcomeId, children, outcomenodes, total }
 // }
 
+// @todo screwed something up in the refactor, wait for typing
 export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {
     if (props.outcome[i].id === outcome_id) {
