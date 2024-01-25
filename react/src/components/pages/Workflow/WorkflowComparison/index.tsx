@@ -3,41 +3,55 @@ import * as reactDom from 'react-dom'
 import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
 import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
-import WorkflowBase from '@cfViews/ComparisonView/WorkflowBase'
+import ComparisonWorkflowBase from '@cfViews/ComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { EWorkflowDataPackage } from '@XMLHTTP/types'
+import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+
+type WorkflowComparisonParams = {
+  workflowID: number
+  selectionManager: any
+  container: string
+  viewType: any
+  initial_object_sets: any
+  dataPackage: EWorkflowDataPackage
+}
 
 /****************************************
  *  @WorkflowComparisonRenderer
+ *  @todo this is possibly where the channel leak is
  * ****************************************/
 export class WorkflowComparison extends Workflow {
   private initial_object_sets: any
-  constructor(
+  constructor({
     workflowID,
-    data_package,
+    dataPackage,
     container,
-    selection_manager,
-    view_type,
+    selectionManager,
+    viewType,
     initial_object_sets
-  ) {
-    // @todo super degined with more than 1 param, workflow has 1 param
-    // super(workflowID, data_package)
-    super(workflowID)
-    console.log('WorkflowComparison super props')
-    console.log(workflowID)
+  }: WorkflowComparisonParams) {
+    super({
+      workflow_data_package: dataPackage,
+      workflow_model_id: workflowID
+    })
 
-    this.selection_manager = selection_manager
+    this.selection_manager = selectionManager
     this.container = container
-    this.view_type = view_type
+    this.view_type = viewType
     this.initial_object_sets = initial_object_sets
+
+    console.log('this')
+    console.log(this)
   }
 
-  init() {
-    this.render($('#container'))
-  }
+  // init() {
+  //   this.render($('#container'))
+  // }
 
   render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type
@@ -47,6 +61,8 @@ export class WorkflowComparison extends Workflow {
     const el = document.querySelector(this.container)
 
     reactDom.render(<WorkflowLoader />, el)
+
+    console.log('here')
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
@@ -66,17 +82,22 @@ export class WorkflowComparison extends Workflow {
         store.dispatch(ActionCreator.refreshStoreData(response.data_package))
         reactDom.render(
           <Provider store={store}>
-            {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
-            <WorkflowBase view_type={view_type} />
+            <WorkFlowConfigProvider initialValue={this}>
+              {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
+              <ComparisonWorkflowBase view_type={view_type} />
+            </WorkFlowConfigProvider>
           </Provider>,
           el
         )
       })
     } else if (view_type === ViewType.WORKFLOW) {
+      console.log('there')
       reactDom.render(
         <Provider store={this.store}>
-          {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
-          <WorkflowBase view_type={view_type} />
+          <WorkFlowConfigProvider initialValue={this}>
+            {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
+            <ComparisonWorkflowBase view_type={view_type} />
+          </WorkFlowConfigProvider>
         </Provider>,
         el
       )

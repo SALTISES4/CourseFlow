@@ -27,7 +27,6 @@ export function newNodeQuery(
   }
 }
 
-
 /**
  * @newOutcome
  *
@@ -56,7 +55,6 @@ export function newOutcomeQuery(
     window.fail_function()
   }
 }
-
 
 //Add a strategy to the workflow
 export function addStrategyQuery(
@@ -106,7 +104,6 @@ export function newNodeLink(
   }
 }
 
-
 //Causes the specified object to insert a child to itself
 export function insertChildQuery(
   objectID: number,
@@ -125,7 +122,6 @@ export function insertChildQuery(
     window.fail_function()
   }
 }
-
 
 //Causes the specified object to insert a sibling after itself
 export function insertSiblingQuery(

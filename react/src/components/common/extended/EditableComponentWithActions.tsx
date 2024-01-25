@@ -5,13 +5,8 @@ import EditableComponentWithComments, {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
 } from './EditableComponentWithComments'
-import {
-  duplicateSelfQuery,
-} from '@XMLHTTP/API/duplication'
-import {
-  deleteSelfQuery,
-  restoreSelfQuery
-} from '@XMLHTTP/API/delete'
+import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
@@ -35,19 +30,6 @@ class EditableComponentWithActions<
 
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
-  //Adds a button that restores the item.
-  addRestoreSelf(data, alt_icon) {
-    const icon = alt_icon || 'restore.svg'
-    return (
-      <ActionButton
-        buttonIcon={icon}
-        buttonClass="delete-self-button"
-        titleText={window.gettext('Restore')}
-        handleClick={this.restoreSelf.bind(this, data)}
-      />
-    )
-  }
-
   restoreSelf(data) {
     COURSEFLOW_APP.tinyLoader.startLoad()
     restoreSelfQuery(
@@ -56,20 +38,6 @@ class EditableComponentWithActions<
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad
       }
-    )
-  }
-
-  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  // @todo see editablecomponent, edcitable component calls addDeleteSelf but does not define it and is not abstract
-  addDeleteSelf(data: any, alt_icon?: string) {
-    const icon = alt_icon || 'rubbish.svg'
-    return (
-      <ActionButton
-        buttonIcon={icon}
-        buttonClass="delete-self-button"
-        titleText={window.gettext('Delete')}
-        handleClick={this.deleteSelf.bind(this, data)}
-      />
     )
   }
 
@@ -109,18 +77,6 @@ class EditableComponentWithActions<
     }
   }
 
-  //Adds a button that duplicates the item (with a confirmation).
-  addDuplicateSelf(data) {
-    return (
-      <ActionButton
-        buttonIcon="duplicate.svg"
-        buttonClass="duplicate-self-button"
-        titleText={window.gettext('Duplicate')}
-        handleClick={this.duplicateSelf.bind(this, data)}
-      />
-    )
-  }
-
   duplicateSelf(data) {
     const props = this.props
     const type = this.objectType
@@ -134,18 +90,6 @@ class EditableComponentWithActions<
       (response_data) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
-    )
-  }
-
-  //Adds a button that inserts a sibling below the item.
-  addInsertSibling(data) {
-    return (
-      <ActionButton
-        buttonIcon="add_new.svg"
-        buttonClass="insert-sibling-button"
-        titleText={window.gettext('Insert Below')}
-        handleClick={this.insertSibling.bind(this, data)}
-      />
     )
   }
 
@@ -164,8 +108,60 @@ class EditableComponentWithActions<
     )
   }
 
+  insertChild(data) {
+    const type = this.objectType
+    COURSEFLOW_APP.tinyLoader.startLoad()
+    insertChildQuery(
+      data.id,
+      Constants.object_dictionary[type],
+      (response_data) => {
+        COURSEFLOW_APP.tinyLoader.endLoad()
+      }
+    )
+  }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+
+  //Adds a button that restores the item.
+  // addRestoreSelf(data, alt_icon) {
+  //   const icon = alt_icon || 'restore.svg'
+  //   return (
+  //     <ActionButton
+  //       buttonIcon={icon}
+  //       buttonClass="delete-self-button"
+  //       titleText={window.gettext('Restore')}
+  //       handleClick={this.restoreSelf.bind(this, data)}
+  //     />
+  //   )
+  // }
+
+  //Adds a button that duplicates the item (with a confirmation).
+  AddDuplicateSelf = ({ data }) => {
+    return (
+      <ActionButton
+        buttonIcon="duplicate.svg"
+        buttonClass="duplicate-self-button"
+        titleText={window.gettext('Duplicate')}
+        handleClick={this.duplicateSelf.bind(this, data)}
+      />
+    )
+  }
+
+  //Adds a button that inserts a sibling below the item.
+  DeleteForSidebar = ({ data }) => {
+    return (
+      <ActionButton
+        buttonIcon="add_new.svg"
+        buttonClass="insert-sibling-button"
+        titleText={window.gettext('Insert Below')}
+        handleClick={this.insertSibling.bind(this, data)}
+      />
+    )
+  }
+
   //Adds a button that inserts a child to them item
-  addInsertChild(data) {
+  AddInsertChild = ({ data }) => {
     return (
       <ActionButton
         buttonIcon="create_new_child.svg"
@@ -176,15 +172,29 @@ class EditableComponentWithActions<
     )
   }
 
-  insertChild(data) {
-    const type = this.objectType
-    COURSEFLOW_APP.tinyLoader.startLoad()
-    insertChildQuery(
-      data.id,
-      Constants.object_dictionary[type],
-      (response_data) => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      }
+
+  //Adds a button that inserts a sibling below the item.
+  AddInsertSibling = ({data}) => {
+    return (
+      <ActionButton
+        buttonIcon="add_new.svg"
+        buttonClass="insert-sibling-button"
+        titleText={window.gettext('Insert Below')}
+        handleClick={this.insertSibling.bind(this, data)}
+      />
+    )
+  }
+
+  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
+    const icon = alt_icon || 'rubbish.svg'
+    return (
+      <ActionButton
+        buttonIcon={icon}
+        buttonClass="delete-self-button"
+        titleText={window.gettext('Delete')}
+        handleClick={this.deleteSelf.bind(this, data)}
+      />
     )
   }
 }

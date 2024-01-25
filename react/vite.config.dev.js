@@ -12,7 +12,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/app-redesign.jsx'),
+      entry: path.resolve(__dirname, 'src/app-redesign.tsx'),
       name: 'CourseFlowApp',
       fileName: (format) => `courseflow-app.${format}.js`
     },

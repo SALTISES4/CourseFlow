@@ -33,6 +33,9 @@ class AutoLink extends React.Component<PropsType> {
     this.rerenderEvents = 'ports-rendered.' + this.eventNameSpace
   }
 
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
   componentWillUnmount() {
     if (this.target_node && this.target_node.length > 0) {
       this.source_node.off(this.rerenderEvents)
@@ -40,6 +43,9 @@ class AutoLink extends React.Component<PropsType> {
     }
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   findAutoTarget() {
     let target = null
     const ns = this.source_node.closest('.node-week')
@@ -104,6 +110,9 @@ class AutoLink extends React.Component<PropsType> {
     }
   }
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   render() {
     if (
       !this.source_node ||

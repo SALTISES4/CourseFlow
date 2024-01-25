@@ -10,9 +10,13 @@ import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
+import { AppState } from '@cfRedux/types/type'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import { GetWorkflowSelectQueryResp, GetWorkflowSelectMenuResp } from '@XMLHTTP/types/query'
+import {
+  GetWorkflowSelectQueryResp,
+  GetWorkflowSelectMenuResp
+} from '@XMLHTTP/types/query'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 /**
@@ -34,6 +38,9 @@ type PropsType = {
   selection_manager: any
 }
 class ComparisonView extends React.Component<PropsType, StateType> {
+  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   private allowed_tabs: number[]
   private objectType: CfObjectType
 
@@ -75,39 +82,6 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getHeader() {
-    const data = this.props.data
-
-    // PORTAL
-    const portal = reactDom.createPortal(
-      <a
-        className="hover-shade no-underline"
-        id="project-return"
-        href={COURSEFLOW_APP.config.update_path['project'].replace(
-          String(0),
-          data.id
-        )}
-      >
-        <span className="green material-symbols-rounded">arrow_back_ios</span>
-        <div>{window.gettext('Return to project')}</div>
-      </a>,
-      $('.titlebar .title')[0]
-    )
-
-    return (
-      <>
-        {portal}
-        <div className="project-header">
-          <div>{window.gettext('Comparing workflows for:')}</div>
-          <WorkflowTitle
-            data={data}
-            no_hyperlink={true}
-            class_name="project-title"
-          />
-        </div>
-      </>
-    )
-  }
 
   makeSortable() {
     $('.workflow-array').sortable({
@@ -199,7 +173,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       true,
       (data: GetWorkflowSelectQueryResp) => {
         // @todo move this to dialog
-        openWorkflowSelectMenu(data, (_data:GetWorkflowSelectMenuResp) => this.updateFunction(_data))
+        openWorkflowSelectMenu(data, (_data: GetWorkflowSelectMenuResp) =>
+          this.updateFunction(_data)
+        )
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -228,32 +204,44 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   }
 
   /*******************************************************
-   * RENDER
+   * COMPONENTS
    *******************************************************/
-  render() {
+  Header = () => {
     const data = this.props.data
-    const renderer = this.props.renderer
 
-    let share
-    if (!this.props.renderer.read_only)
-      share = (
-        <div
-          id="share-button"
-          className="hover-shade"
-          title={window.gettext('Sharing')}
-          // @todo move to dialog
-          onClick={renderMessageBox.bind(
-            this,
-            data,
-            'share_menu',
-            closeMessageBox
-          )}
-        >
-          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
+    // PORTAL
+    const portal = reactDom.createPortal(
+      <a
+        className="hover-shade no-underline"
+        id="project-return"
+        href={COURSEFLOW_APP.config.update_path['project'].replace(
+          String(0),
+          data.id
+        )}
+      >
+        <span className="green material-symbols-rounded">arrow_back_ios</span>
+        <div>{window.gettext('Return to project')}</div>
+      </a>,
+      $('.titlebar .title')[0]
+    )
+
+    return (
+      <>
+        {portal}
+        <div className="project-header">
+          <div>{window.gettext('Comparing workflows for:')}</div>
+          <WorkflowTitle
+            data={data}
+            no_hyperlink={true}
+            class_name="project-title"
+          />
         </div>
-      )
+      </>
+    )
+  }
 
-    const view_buttons = [
+  ViewButtons = () => {
+    return [
       {
         type: ViewType.WORKFLOW,
         name: window.gettext('Workflow View'),
@@ -265,36 +253,66 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         disabled: []
       }
     ]
-      .filter((item) => item.disabled.indexOf(data.type) == -1)
+      .filter((item) => item.disabled.indexOf(this.props.data.type) == -1)
       .map((item, index) => {
-        let view_class = 'hover-shade'
-        if (item.type == renderer.view_type) view_class += ' active'
+        const viewClasses = [
+          'hover-shade',
+          item.type === this.context.view_type ? 'active' : ''
+        ].join(' ')
+
         return (
           <div
             key={index}
             id={'button_' + item.type}
-            className={view_class}
+            className={viewClasses}
             onClick={this.changeView.bind(this, item.type)}
           >
             {item.name}
           </div>
         )
       })
+  }
 
-    const view_buttons_sorted = view_buttons
+  Share = () => {
+    if (!this.props.renderer.read_only)
+      return (
+        <div
+          id="share-button"
+          className="hover-shade"
+          title={window.gettext('Sharing')}
+          // @todo move to dialog
+          onClick={renderMessageBox.bind(
+            this,
+            this.props.data,
+            'share_menu',
+            closeMessageBox
+          )}
+        >
+          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
+        </div>
+      )
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data = this.props.data
+    const renderer = this.props.renderer
 
     const workflow_content = this.state.workflows.map((workflowID) => (
       <WorkflowComparisonRendererComponent
+        key={workflowID}
         removeFunction={this.removeWorkflow.bind(this, workflowID)}
         view_type={renderer.view_type}
         workflowID={workflowID}
-        key={workflowID}
         // tiny_loader={this.props.tiny_loader}
         selection_manager={this.props.selection_manager}
         object_sets={this.state.object_sets}
       />
     ))
-    const add_button = (
+
+    const AddButton = () => (
       <div>
         <button
           id="load-workflow"
@@ -314,31 +332,38 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     //   border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     // }
 
+    const sharePortal = reactDom.createPortal(
+      <this.Share />,
+      $('#visible-icons')[0]
+    )
+
     return (
-      <div className="main-block">
-        <div className="right-panel-wrapper">
-          <div className="body-wrapper">
-            <div id="workflow-wrapper" className="workflow-wrapper">
-              {this.getHeader()}
-              <div className="workflow-view-select hide-print">
-                {view_buttons_sorted}
-              </div>
-              <div className="workflow-container comparison-view">
-                <div className="workflow-array">{workflow_content}</div>
-                {add_button}
+      <>
+        {sharePortal}
+        <div className="main-block">
+          <div className="right-panel-wrapper">
+            <div className="body-wrapper">
+              <div id="workflow-wrapper" className="workflow-wrapper">
+                <this.Header />
+                <div className="workflow-view-select hide-print">
+                  <this.ViewButtons />
+                </div>
+                <div className="workflow-container comparison-view">
+                  <div className="workflow-array">{workflow_content}</div>
+                  <AddButton />
+                </div>
               </div>
             </div>
+            <RightSideBar
+              context="comparison"
+              parentRender={this.props.renderer.render}
+              data={data}
+              toggleObjectSet={this.toggleObjectSet.bind(this)}
+              object_sets={this.state.object_sets}
+            />
           </div>
-          <RightSideBar
-            context="comparison"
-            // renderer={this.props.renderer}
-            parentRender={this.props.renderer.render}
-            data={data}
-            toggleObjectSet={this.toggleObjectSet.bind(this)}
-            object_sets={this.state.object_sets}
-          />
         </div>
-      </div>
+      </>
     )
   }
 }

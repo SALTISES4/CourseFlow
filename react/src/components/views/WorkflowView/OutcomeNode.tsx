@@ -29,8 +29,8 @@ type PropsType = ConnectedProps & OwnProps
  */
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMENODE
@@ -54,18 +54,6 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  addDeleteSelf(data: any, _iconDefault: string) {
-    const icon = 'close.svg'
-    return (
-      <ActionButton
-        buttonIcon={icon}
-        buttonClass="delete-self-button"
-        titleText={window.gettext('Delete')}
-        handleClick={this.deleteSelf.bind(this, data)}
-      />
-    )
-  }
 
   deleteSelf(data) {
     if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
@@ -103,6 +91,27 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
   }
 
   /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+
+  /**
+   * Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+   */
+  AddDeleteSelf = ({ data }: { data: any }) => {
+    console.log('AddDeleteSelf OutcomeNode.tsx')
+    console.log(data)
+    const icon = 'close.svg'
+    return (
+      <ActionButton
+        buttonIcon={icon}
+        buttonClass="delete-self-button"
+        titleText={window.gettext('Delete')}
+        handleClick={this.deleteSelf.bind(this, data)}
+      />
+    )
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
@@ -120,7 +129,9 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
         ref={this.mainDiv}
       >
         {!this.context.read_only && (
-          <div>{this.addDeleteSelf(data, 'close.svg')}</div>
+          <div>
+            <this.AddDeleteSelf data={data} />
+          </div>
         )}
 
         <CompletionImg

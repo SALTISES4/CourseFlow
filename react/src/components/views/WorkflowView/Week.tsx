@@ -240,74 +240,75 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     const mouseoverActions = []
     if (!this.context.read_only && !this.context.is_strategy) {
-      mouseoverActions.push(this.addInsertSibling(data))
-      mouseoverActions.push(this.addDuplicateSelf(data))
-      mouseoverActions.push(this.addDeleteSelf(data))
+      mouseoverActions.push(<this.AddInsertSibling data={data} />)
+      mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
+      mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
     if (this.context.view_comments) {
-      mouseoverActions.push(this.addCommenting())
+      mouseoverActions.push(<this.AddCommenting/>)
     }
 
-    this.addEditable(data)
-    console.log('this.addEditable(data)')
-    console.log(data)
+    const portal = this.addEditable(data)
 
     return (
-      <div
-        style={style}
-        className={cssClasses}
-        ref={this.mainDiv}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
-      >
-        <div className="mouseover-container-bypass">
-          <div className="mouseover-actions">{mouseoverActions}</div>
-        </div>
-        <TitleText text={data.title} defaultText={default_text} />
+      <>
+        {portal}
         <div
-          className="node-block"
-          id={this.props.objectID + '-node-block'}
-          ref={this.node_block}
+          style={style}
+          className={cssClasses}
+          ref={this.mainDiv}
+          onClick={(evt) => selection_manager.changeSelection(evt, this)}
         >
-          <this.Nodes />
-        </div>
-        <div
-          className="week-drop-row hover-shade"
-          onClick={this.toggleDrop.bind(this)}
-        >
-          <div className="node-drop-side node-drop-left" />
-          <div className="node-drop-middle">
-            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+          <div className="mouseover-container-bypass">
+            <div className="mouseover-actions">{mouseoverActions}</div>
           </div>
-          <div className="node-drop-side node-drop-right" />
-        </div>
-        {/* // @ts-ignore */}
-        {
-          // @ts-ignore
-          // this.addEditable(data)
-        }
-        {/*// @todo verify this*/}
-        {data.strategy_classification > 0 && (
-          <div className="strategy-tab">
-            <div className="strategy-tab-triangle" />
-            <div className="strategy-tab-square">
-              <div className="strategy-tab-circle">
-                <img
-                  title={
-                    this.context.strategy_classification_choices.find(
-                      (obj) => obj.type === data.strategy_classification
-                    ).name
-                  }
-                  src={
-                    COURSEFLOW_APP.config.icon_path +
-                    Constants.strategy_keys[data.strategy_classification] +
-                    '.svg'
-                  }
-                />
+          <TitleText text={data.title} defaultText={default_text} />
+          <div
+            className="node-block"
+            id={this.props.objectID + '-node-block'}
+            ref={this.node_block}
+          >
+            <this.Nodes />
+          </div>
+          <div
+            className="week-drop-row hover-shade"
+            onClick={this.toggleDrop.bind(this)}
+          >
+            <div className="node-drop-side node-drop-left" />
+            <div className="node-drop-middle">
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+            </div>
+            <div className="node-drop-side node-drop-right" />
+          </div>
+          {/* // @ts-ignore */}
+          {
+            // @ts-ignore
+            // this.addEditable(data)
+          }
+          {/*// @todo verify this*/}
+          {data.strategy_classification > 0 && (
+            <div className="strategy-tab">
+              <div className="strategy-tab-triangle" />
+              <div className="strategy-tab-square">
+                <div className="strategy-tab-circle">
+                  <img
+                    title={
+                      this.context.strategy_classification_choices.find(
+                        (obj) => obj.type === data.strategy_classification
+                      ).name
+                    }
+                    src={
+                      COURSEFLOW_APP.config.icon_path +
+                      Constants.strategy_keys[data.strategy_classification] +
+                      '.svg'
+                    }
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     )
   }
 }

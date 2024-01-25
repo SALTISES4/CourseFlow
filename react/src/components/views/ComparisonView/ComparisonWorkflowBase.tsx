@@ -4,11 +4,12 @@ import { EditableComponent } from '@cfParentComponents'
 
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
-import Workflow from './Workflow'
+import ComparisonWorkflow from './ComparisonWorkflow'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
 import { EditableComponentStateType } from '@cfParentComponents/EditableComponent'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -16,16 +17,20 @@ type ConnectedProps = {
   object_sets: any
 }
 type OwnProps = {
+  view_type: ViewType
   rank?: number
   // dispatch: any
-  view_type: ViewType
 }
 type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 //Container for common elements for workflows
-class WorkflowBaseUnconnected extends EditableComponent<PropsType, StateProps> {
-  constructor(props) {
+class ComparisonWorkflowBaseUnconnected extends EditableComponent<
+  PropsType,
+  StateProps
+> {
+  static contextType = WorkFlowConfigContext
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
   }
@@ -80,7 +85,7 @@ class WorkflowBaseUnconnected extends EditableComponent<PropsType, StateProps> {
     if (this.context.view_type === ViewType.OUTCOME_EDIT) {
       return <OutcomeEdit objectID={this.props.data.id} />
     }
-    return <Workflow objectID={this.props.data.id} />
+    return <ComparisonWorkflow objectID={this.props.data.id} />
   }
 
   /*******************************************************
@@ -95,9 +100,10 @@ class WorkflowBaseUnconnected extends EditableComponent<PropsType, StateProps> {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined // @todo not sure what the best default state is for this
     }
 
+    const portal = this.addEditable(data, true)
     return (
       <>
-        {this.addEditable(data, true)}
+        {portal}
         <div className="workflow-header" style={style}>
           <WorkflowCard
             workflowData={data}
@@ -119,9 +125,14 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-const WorkflowBase = connect<ConnectedProps, object, OwnProps, AppState>(
+const ComparisonWorkflowBase = connect<
+  ConnectedProps,
+  object,
+  OwnProps,
+  AppState
+>(
   mapStateToProps,
   null
-)(WorkflowBaseUnconnected)
+)(ComparisonWorkflowBaseUnconnected)
 
-export default WorkflowBase
+export default ComparisonWorkflowBase

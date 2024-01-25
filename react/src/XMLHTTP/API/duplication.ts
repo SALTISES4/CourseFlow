@@ -58,7 +58,6 @@ export function duplicateBaseItemQuery(
   }
 }
 
-
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelfQuery(
   objectID: number,

@@ -1,4 +1,4 @@
-import { ObjectPermission } from '@cfModule/types/common'
+import { Discipline, ObjectPermission } from '@cfModule/types/common'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 export type EDiscipline = {
@@ -104,19 +104,21 @@ export type EWorkflow = {
 
 export type EProject = {
   author: string
-  author_id: number | null
-  workflowproject_set: number[]
-  created_on: TDate
+  author_id: number
+  created_on: Date
   deleted: boolean
-  deleted_on: TDate
-  description: null | string
+  deleted_on: Date
+  description: string
+  disciplines: Discipline[]
   favourite: boolean
   id: number
-  last_modified: TDate
-  object_sets: EObjectSet[]
-  object_permission: number
+  last_modified: string
+  object_permission: ObjectPermission
+  object_sets: any[]
   published: boolean
   title: string
+  type: string
+  workflowproject_set: number[]
 }
 
 export type EWeekworkflow = {
@@ -240,7 +242,7 @@ export type EOutcomeOutcome = {
 }
 
 export type ESectionGroup = {
-  title: string 
+  title: string
   sections: ESection[]
   add: boolean
   duplicate: string

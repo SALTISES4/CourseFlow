@@ -23,7 +23,6 @@ type SelfProps = {
 type PropsType = SelfProps & ConnectedProps
 class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {

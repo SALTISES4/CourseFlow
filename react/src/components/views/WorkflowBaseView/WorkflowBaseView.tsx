@@ -545,12 +545,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     switch (this.view_type) {
       case ViewType.OUTCOMETABLE: {
         this.allowed_tabs = [3]
-        return (
-          <WorkflowTableView
-            data={this.data}
-            view_type={this.view_type}
-          />
-        )
+        return <WorkflowTableView data={this.data} view_type={this.view_type} />
       }
       case ViewType.OUTCOME_EDIT: {
         if (this.data.type == 'program') {
@@ -574,6 +569,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         this.allowed_tabs = [1, 2, 3, 4]
         if (this.context.read_only) this.allowed_tabs = [2, 3]
 
+        // return <WorkflowView />
         return <WorkflowView />
       }
     }
@@ -1118,12 +1114,9 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-export const WorkflowBaseView = connect<
-  ConnectedProps,
-  object,
-  OwnProps,
-  AppState
->(
+const WorkflowBaseView = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected)
+
+export default WorkflowBaseView

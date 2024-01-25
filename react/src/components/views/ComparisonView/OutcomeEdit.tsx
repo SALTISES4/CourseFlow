@@ -25,7 +25,7 @@ type StateProps = OutcomeEditViewState
 type PropsType = ConnectedProps & OwnProps
 
 /**
- * The outcome edit view for the comparison
+ *  The outcome edit view for the comparison
  */
 class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
   PropsType,
@@ -85,7 +85,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
   }
 }
 
-const mapOutcomeComparisonStateToProps = (state: AppState): ConnectedProps => ({
+const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
     state.workflow.outcomeworkflow_set
@@ -94,7 +94,7 @@ const mapOutcomeComparisonStateToProps = (state: AppState): ConnectedProps => ({
 })
 
 const OutcomeEdit = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapOutcomeComparisonStateToProps,
+  mapStateToProps,
   null
 )(OutcomeEditUnconnected)
 

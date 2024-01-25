@@ -19,7 +19,7 @@ type OwnProps = {
 type PropsType = OwnProps & ConnectedProps
 class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
   private objectType: CfObjectType // @todo is it used?
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
   }

@@ -77,7 +77,7 @@ class RightSideBar extends React.Component<PropsType> {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  getNodeBar() {
+  NodeBarWrapper = () => {
     if (this.props.context === WFContext.WORKFLOW)
       return (
         <NodeBar
@@ -90,7 +90,7 @@ class RightSideBar extends React.Component<PropsType> {
     return null
   }
 
-  getOutcomeBar() {
+  OutcomeBarWrapper = () => {
     if (this.props.context === WFContext.COMPARISON) {
       return null
     }
@@ -106,7 +106,7 @@ class RightSideBar extends React.Component<PropsType> {
     )
   }
 
-  getViewBar() {
+  ViewBarWrapper = () => {
     if (this.props.context === WFContext.WORKFLOW) {
       return (
         <ViewBar data={this.props.data} /* renderer={this.props.renderer}*/ />
@@ -124,7 +124,7 @@ class RightSideBar extends React.Component<PropsType> {
     return null
   }
 
-  getRestoreBar() {
+  RestoreBarWrapper = () => {
     if (this.props.context === WFContext.WORKFLOW) return <RestoreBar />
     return null
   }
@@ -198,23 +198,23 @@ class RightSideBar extends React.Component<PropsType> {
         <div id="edit-menu" className="right-panel-container" />
 
         <div id="node-bar" className="right-panel-container">
-          {this.getNodeBar()}
+          <this.NodeBarWrapper />
         </div>
 
         {!this.context.is_strategy && (
           <>
             <div id="outcome-bar" className="right-panel-container">
-              {this.getOutcomeBar()}
+              <this.OutcomeBarWrapper />
             </div>
             <div id="view-bar" className="right-panel-container">
-              {this.getViewBar()}
+              <this.ViewBarWrapper />
             </div>
           </>
         )}
 
         {!this.context.read_only && (
           <div id="restore-bar" className="right-panel-container">
-            {this.getRestoreBar()}
+            <this.RestoreBarWrapper />
           </div>
         )}
 

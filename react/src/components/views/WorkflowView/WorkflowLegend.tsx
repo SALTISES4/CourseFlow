@@ -17,11 +17,6 @@ type ConnectedProps = {
   strategies?: any
 }
 
-// type OwnProps = {
-//   renderer: any
-// }
-// export type WorkflowLegendUnconnectedType = OwnProps
-
 type PropsType = ConnectedProps
 export class WorkflowLegendUnconnected<
   P extends PropsType

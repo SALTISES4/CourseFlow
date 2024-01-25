@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
 import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 // @components
-import NodeWeek from './NodeWeek'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
@@ -12,6 +11,7 @@ import {
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
+import ComparisonNodeWeek from '@cfViews/ComparisonView/ComparisonNodeWeek'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType
@@ -103,25 +103,6 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
 
   makeDroppable() {}
 
-  getNodes() {
-    const nodes = this.props.data.nodeweek_set.map((nodeweek) => (
-      <NodeWeek
-        key={nodeweek}
-        objectID={nodeweek}
-        parentID={this.props.data.id}
-        // renderer={this.props.renderer}
-        column_order={this.props.column_order}
-      />
-    ))
-    if (nodes.length == 0)
-      nodes.push(
-        <div className="node-week placeholder" style={{ height: '100%' }}>
-          Drag and drop nodes from the sidebar to add.
-        </div>
-      )
-    return nodes
-  }
-
   alignAllWeeks() {
     const rank = this.props.rank + 1
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
@@ -154,6 +135,28 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
     )
     this.makeDroppable()
   }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  Nodes = () => {
+    const nodes = this.props.data.nodeweek_set.map((nodeweek) => (
+      <ComparisonNodeWeek
+        key={nodeweek}
+        objectID={nodeweek}
+        parentID={this.props.data.id}
+        // renderer={this.props.renderer}
+        column_order={this.props.column_order}
+      />
+    ))
+    if (nodes.length == 0)
+      nodes.push(
+        <div className="node-week placeholder" style={{ height: '100%' }}>
+          Drag and drop nodes from the sidebar to add.
+        </div>
+      )
+    return nodes
+  }
 }
 
 const mapWeekStateToProps = (
@@ -163,9 +166,9 @@ const mapWeekStateToProps = (
   return getWeekByID(state, ownProps.objectID)
 }
 
-const WeekComparison = connect<ConnectedProps, object, OwnProps, AppState>(
+const ComparisonWeek = connect<ConnectedProps, object, OwnProps, AppState>(
   mapWeekStateToProps,
   null
 )(WeekComparisonUnconnected)
 
-export default WeekComparison
+export default ComparisonWeek

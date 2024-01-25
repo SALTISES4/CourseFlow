@@ -192,7 +192,7 @@ export class OutcomeUnconnected<
     return this.props.data.is_dropped
   }
 
-  getChildOutcomeView(child) {
+  ChildOutcomeView = ({ child }) => {
     return (
       <Outcome
         outcomes_type={this.props.outcomes_type}
@@ -311,9 +311,9 @@ export class OutcomeUnconnected<
 
     let child_rows
     if (is_dropped)
-      child_rows = this.props.outcome_tree.children.map((child) =>
-        this.getChildOutcomeView(child)
-      )
+      child_rows = this.props.outcome_tree.children.map((child) => (
+        <this.ChildOutcomeView child={child} />
+      ))
     return [full_row, child_rows]
   }
 }
