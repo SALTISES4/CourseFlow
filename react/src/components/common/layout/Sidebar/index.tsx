@@ -42,6 +42,7 @@ const Sidebar = () => {
 
   const { isPending, isError, data } = useQuery<SidebarAPIResponse>({
     queryKey: ['sidebar'],
+    staleTime: 30 * 1000,
     queryFn: () =>
       fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then((response) =>
         response.json()

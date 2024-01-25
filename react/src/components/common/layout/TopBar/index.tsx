@@ -96,6 +96,7 @@ const TopBar = () => {
 
   const { isPending, isError, data } = useQuery<TopBarAPIResponse>({
     queryKey: ['topbar'],
+    staleTime: 30 * 1000,
     queryFn: () =>
       fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then((response) =>
         response.json()

@@ -97442,6 +97442,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     );
     const { isPending, isError: isError2, data } = useQuery({
       queryKey: ["sidebar"],
+      staleTime: 30 * 1e3,
       queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then(
         (response) => response.json()
       )
@@ -97797,6 +97798,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
     const { isPending, isError: isError2, data } = useQuery({
       queryKey: ["topbar"],
+      staleTime: 30 * 1e3,
       queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then(
         (response) => response.json()
       )
