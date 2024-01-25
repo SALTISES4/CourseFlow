@@ -72,7 +72,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     }
 
     if (this.context.view_comments) {
-      mouseoverActions.push(<this.AddCommenting/>)
+      mouseoverActions.push(<this.AddCommenting />)
     }
 
     return (

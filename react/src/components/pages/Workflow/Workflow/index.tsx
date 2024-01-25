@@ -62,7 +62,7 @@ class Workflow {
   private message_queue: any[]
   private messages_queued: boolean
   private outcome_type_choices: FieldChoice[]
-  private outcome_sort_choices: FieldChoice[]
+  outcome_sort_choices: FieldChoice[]
   private user_permission: number
   private user_role: number
   private is_teacher: boolean
@@ -114,7 +114,7 @@ class Workflow {
     (container, view_type?: ViewType) => void
   >
   private locks: any
-  private silent_connect_fail: any
+  silent_connect_fail: any
 
   constructor(propsConfig: WorkflowDetailViewDTO) {
     const {

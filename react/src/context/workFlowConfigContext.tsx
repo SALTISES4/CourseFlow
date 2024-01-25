@@ -13,6 +13,7 @@ type ChildRenderer = {
   read_only: boolean
   context_choices: any
   outcome_type_choices: any
+  outcome_sort_choices: any
   strategy_classification_choices: any
   change_field: any
   workflowID: number
@@ -69,6 +70,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       read_only: workflowInstance.read_only,
       context_choices: workflowInstance.context_choices,
       outcome_type_choices: workflowInstance.context_choices,
+      outcome_sort_choices: workflowInstance.outcome_sort_choices,
       strategy_classification_choices:
         workflowInstance.strategy_classification_choices,
 

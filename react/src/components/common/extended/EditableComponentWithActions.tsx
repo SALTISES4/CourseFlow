@@ -172,9 +172,8 @@ class EditableComponentWithActions<
     )
   }
 
-
   //Adds a button that inserts a sibling below the item.
-  AddInsertSibling = ({data}) => {
+  AddInsertSibling = ({ data }) => {
     return (
       <ActionButton
         buttonIcon="add_new.svg"

@@ -45,8 +45,6 @@ export class WorkflowComparison extends Workflow {
     this.view_type = viewType
     this.initial_object_sets = initial_object_sets
 
-    console.log('this')
-    console.log(this)
   }
 
   // init() {
@@ -58,11 +56,9 @@ export class WorkflowComparison extends Workflow {
     const store = this.store
     // @ts-ignore
     this.locks = {}
-    const el = document.querySelector(this.container)
+    const el = this.container[0]
 
     reactDom.render(<WorkflowLoader />, el)
-
-    console.log('here')
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render
@@ -83,7 +79,6 @@ export class WorkflowComparison extends Workflow {
         reactDom.render(
           <Provider store={store}>
             <WorkFlowConfigProvider initialValue={this}>
-              {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
               <ComparisonWorkflowBase view_type={view_type} />
             </WorkFlowConfigProvider>
           </Provider>,
@@ -91,11 +86,9 @@ export class WorkflowComparison extends Workflow {
         )
       })
     } else if (view_type === ViewType.WORKFLOW) {
-      console.log('there')
       reactDom.render(
         <Provider store={this.store}>
           <WorkFlowConfigProvider initialValue={this}>
-            {/*<WorkflowComparisonBaseView view_type={view_type} renderer={this} />*/}
             <ComparisonWorkflowBase view_type={view_type} />
           </WorkFlowConfigProvider>
         </Provider>,

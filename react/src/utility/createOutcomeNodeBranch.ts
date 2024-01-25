@@ -1,4 +1,5 @@
 import { getTableOutcomeNodeByID } from '@cfFindState'
+import {filterThenSortByID} from "@cfModule/utility/utilityFunctions";
 
 export type CreateOutcomeNodeBranchType = {
   id: any
@@ -6,29 +7,124 @@ export type CreateOutcomeNodeBranchType = {
   outcomenodes: any
   total: any
 }
-export function createOutcomeNodeBranch(
-  props,
-  outcomeId: number,
-  nodeCategories
-): CreateOutcomeNodeBranchType {
-  console.log('createOutcomeNodeBranch props')
-  console.log(props)
+// export function createOutcomeNodeBranch(
+//   props,
+//   outcomeId: number,
+//   nodeCategories
+// ): CreateOutcomeNodeBranchType {
+//   console.log('createOutcomeNodeBranch props')
+//   console.log(props)
+//
+//   console.log('createOutcomeNodeBranch  nodeCategories')
+//   console.log(nodeCategories)
+//
+//   const outcome = props.outcome.find((o) => o.id === outcomeId)
+//   if (!outcome) return null
+//
+//   const children = createChildren(outcome, props, nodeCategories)
+//
+//   const outcomenodes = nodeCategories.map((category, categoryIndex) =>
+//     createOutcomeNodesGroup(props, category, outcomeId, children, categoryIndex)
+//   )
+//
+//   const total = calculateTotal(children, outcomenodes)
+//
+//   return { id: outcomeId, children, outcomenodes, total }
+// }
 
-  console.log('createOutcomeNodeBranch  nodeCategories')
-  console.log(nodeCategories)
+export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
+  for (let i = 0; i < props.outcome.length; i++) {
+    if (props.outcome[i].id === outcome_id) {
+      let children
 
-  const outcome = props.outcome.find((o) => o.id === outcomeId)
-  if (!outcome) return null
+      if (
+        props.outcome[i].child_outcome_links.length === 0 ||
+        props.outcome[i].depth >= 2
+      )
+        children = []
+      else
+        children = filterThenSortByID(
+          props.outcomeoutcome,
+          props.outcome[i].child_outcome_links
+        ).map((outcomeoutcome) =>
+          // @ts-ignore
+          createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
+        )
 
-  const children = createChildren(outcome, props, nodeCategories)
+      let outcomenodes = []
 
-  const outcomenodes = nodeCategories.map((category, categoryIndex) =>
-    createOutcomeNodesGroup(props, category, outcomeId, children, categoryIndex)
-  )
-
-  const total = calculateTotal(children, outcomenodes)
-
-  return { id: outcomeId, children, outcomenodes, total }
+      for (var ii = 0; ii < nodecategory.length; ii++) {
+        let category = nodecategory[ii]
+        let outcomenodes_group = []
+        for (var j = 0; j < category.nodes.length; j++) {
+          let node = category.nodes[j]
+          let outcomenode = getTableOutcomeNodeByID(
+            props.outcomenode,
+            node,
+            outcome_id
+          ).data
+          if (outcomenode) {
+            outcomenodes_group.push({
+              node_id: node,
+              degree: outcomenode.degree
+            })
+            continue
+          }
+          //If the outcomenode doesn't exist and there are children, check them.
+          let added = false
+          for (var k = 0; k < children.length; k++) {
+            if (children[k].outcomenodes[ii][j].degree !== null) {
+              outcomenodes_group.push({ node_id: node, degree: 0 })
+              added = true
+              break
+            }
+          }
+          if (!added) outcomenodes_group.push({ node_id: node, degree: null })
+        }
+        let total = null
+        if (children.length > 0) {
+          total = 15
+          let all_null = true
+          for (let k = 0; k < children.length; k++) {
+            var child_total = children[k].outcomenodes[ii].total
+            if (child_total !== null) all_null = false
+            total &= child_total
+          }
+          if (all_null) total = null
+        } else {
+          total = outcomenodes_group.reduce((acc, curr) => {
+            if (curr.degree === null) return acc
+            if (acc === null) return curr.degree
+            return acc | curr.degree
+          }, null)
+        }
+        // @ts-ignore
+        outcomenodes_group.total = total
+        outcomenodes.push(outcomenodes_group)
+      }
+      let total = null
+      if (children.length > 0) {
+        total = 15
+        let all_null = true
+        for (let k = 0; k < children.length; k++) {
+          var child_total = children[k].outcomenodes.total
+          if (child_total !== null) all_null = false
+          total &= child_total
+        }
+        if (all_null) total = null
+      } else {
+        total = outcomenodes.reduce((acc, curr) => {
+          if (curr.total === null) return acc
+          if (acc === null) return curr.total
+          return acc | curr.total
+        }, null)
+      }
+      // @ts-ignore
+      outcomenodes.total = total
+      return { id: outcome_id, children: children, outcomenodes: outcomenodes }
+    }
+  }
+  return null
 }
 
 function createChildren(outcome, props, nodeCategories) {
@@ -64,8 +160,11 @@ function getOutcomeNode(props, nodeId, outcomeId) {
 
 function createOutcomeNodeForChildren(nodeId, children, categoryIndex) {
   for (const child of children) {
-    if (child.outcomenodes[categoryIndex][nodeId].degree !== null) {
-      return { node_id: nodeId, degree: 0 }
+    if (child?.outcomenodes[categoryIndex][nodeId].degree !== null) {
+      return {
+        node_id: nodeId,
+        degree: 0
+      }
     }
   }
   return { node_id: nodeId, degree: null }
@@ -95,7 +194,7 @@ function calculateTotalForChildren(children, outcomenodesGroup) {
 function calculateTotal(children, outcomenodes) {
   if (children.length > 0) {
     return children.reduce((acc, child) => {
-      const childTotal = child.outcomenodes.total
+      const childTotal = child?.outcomenodes.total
       if (childTotal !== null) return acc & childTotal
       return acc
     }, 15)

@@ -1,7 +1,7 @@
 import { Discipline } from '@cfModule/types/common'
-import ts from "typescript";
-import Project = ts.server.Project;
-import {EProject} from "@XMLHTTP/types/entity";
+import ts from 'typescript'
+import Project = ts.server.Project
+import { EProject } from '@XMLHTTP/types/entity'
 
 export type ProjectViewDTO = {
   project_data: EProject

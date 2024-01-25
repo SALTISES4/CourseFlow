@@ -24,9 +24,6 @@ export class Comparison {
   private userPermission: any
 
   constructor(props: WorkflowComparisonViewDTO) {
-    console.log('props')
-    console.log(props)
-    console.log(props.project_data.id)
     this.projectData = props.project_data
     this.userPermission = props.user_permission // @todo double check we're getting this from data object
 
@@ -79,16 +76,18 @@ export class Comparison {
           <ThemeProvider theme={theme}>
             <ComparisonView
               view_type={view_type}
-              // turn this into config object
-              renderer={this}
-              // legacyRenderer={this}
-              data={this.projectData}
+              container={this.container}
+              parentRender={(a, b) => this.render(a, b)}
+              read_only={this.readOnly}
+              projectData={this.projectData}
               selection_manager={this.selection_manager}
             />
           </ThemeProvider>
         </CacheProvider>,
         container[0]
       )
+    } else {
+      console.log('comparsion view not supported ')
     }
   }
 }

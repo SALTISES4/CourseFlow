@@ -245,7 +245,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
     if (this.context.view_comments) {
-      mouseoverActions.push(<this.AddCommenting/>)
+      mouseoverActions.push(<this.AddCommenting />)
     }
 
     const portal = this.addEditable(data)

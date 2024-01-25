@@ -34314,6 +34314,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }) => {
       read_only: workflowInstance.read_only,
       context_choices: workflowInstance.context_choices,
       outcome_type_choices: workflowInstance.context_choices,
+      outcome_sort_choices: workflowInstance.outcome_sort_choices,
       strategy_classification_choices: workflowInstance.strategy_classification_choices,
       workflowID: workflowInstance.workflowID,
       unread_comments: workflowInstance.unread_comments,
@@ -34368,25 +34369,21 @@ class ViewBarUnconnected extends reactExports.Component {
     let sort_block;
     if (this.context.view_type === ViewType.OUTCOMETABLE || this.context.view_type === ViewType.HORIZONTALOUTCOMETABLE) {
       const table_type_value = data.table_type || 0;
-      const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-        className: "node-bar-sort-block",
-        // @ts-ignore
-        children: this.context.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              disabled: table_type_value === 1 || data.type === "program" && choice.type > 1,
-              type: "radio",
-              id: "sort_type_choice" + choice.type,
-              name: "sort_type_choice" + choice.type,
-              value: choice.type,
-              checked: data.outcomes_sort === choice.type,
-              onChange: this.changeSort.bind(this)
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
-        ] }))
-      });
+      const sort_type = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "node-bar-sort-block", children: this.context.outcome_sort_choices.map((choice) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            disabled: table_type_value === 1 || data.type === "program" && choice.type > 1,
+            type: "radio",
+            id: "sort_type_choice" + choice.type,
+            name: "sort_type_choice" + choice.type,
+            value: choice.type,
+            checked: data.outcomes_sort === choice.type,
+            onChange: this.changeSort.bind(this)
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort_type_choice" + choice.type, children: choice.name })
+      ] })) });
       const table_type = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "node-bar-sort-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -83175,85 +83172,101 @@ const ParentWorkflowIndicator = connect(
   mapStateToProps$e,
   null
 )(ParentWorkflowIndicatorUnconnected);
-function createOutcomeNodeBranch(props, outcomeId, nodeCategories) {
-  console.log("createOutcomeNodeBranch props");
-  console.log(props);
-  console.log("createOutcomeNodeBranch  nodeCategories");
-  console.log(nodeCategories);
-  const outcome = props.outcome.find((o) => o.id === outcomeId);
-  if (!outcome)
-    return null;
-  const children = createChildren(outcome, props, nodeCategories);
-  const outcomenodes = nodeCategories.map(
-    (category, categoryIndex) => createOutcomeNodesGroup(props, category, outcomeId, children, categoryIndex)
-  );
-  const total = calculateTotal(children, outcomenodes);
-  return { id: outcomeId, children, outcomenodes, total };
-}
-function createChildren(outcome, props, nodeCategories) {
-  if (outcome.child_outcome_links.length === 0 || outcome.depth >= 2)
-    return [];
-  return outcome.child_outcome_links.map(
-    (link) => createOutcomeNodeBranch(props, link.child, nodeCategories)
-  );
-}
-function createOutcomeNodesGroup(props, category, outcomeId, children, categoryIndex) {
-  const outcomenodesGroup = category.nodes.map((node2) => {
-    const outcomenode = getOutcomeNode(props, node2, outcomeId);
-    if (outcomenode)
-      return { node_id: node2, degree: outcomenode.degree };
-    return createOutcomeNodeForChildren(node2, children, categoryIndex);
-  });
-  const total = calculateGroupTotal(children, outcomenodesGroup);
-  return { ...outcomenodesGroup, total };
-}
-function getOutcomeNode(props, nodeId, outcomeId) {
-  return getTableOutcomeNodeByID(props.outcomenode, nodeId, outcomeId).data;
-}
-function createOutcomeNodeForChildren(nodeId, children, categoryIndex) {
-  for (const child of children) {
-    if (child.outcomenodes[categoryIndex][nodeId].degree !== null) {
-      return { node_id: nodeId, degree: 0 };
+function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
+  for (let i = 0; i < props.outcome.length; i++) {
+    if (props.outcome[i].id === outcome_id) {
+      let children;
+      if (props.outcome[i].child_outcome_links.length === 0 || props.outcome[i].depth >= 2)
+        children = [];
+      else
+        children = filterThenSortByID(
+          props.outcomeoutcome,
+          props.outcome[i].child_outcome_links
+        ).map(
+          (outcomeoutcome) => (
+            // @ts-ignore
+            createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
+          )
+        );
+      let outcomenodes = [];
+      for (var ii = 0; ii < nodecategory.length; ii++) {
+        let category = nodecategory[ii];
+        let outcomenodes_group = [];
+        for (var j = 0; j < category.nodes.length; j++) {
+          let node2 = category.nodes[j];
+          let outcomenode = getTableOutcomeNodeByID(
+            props.outcomenode,
+            node2,
+            outcome_id
+          ).data;
+          if (outcomenode) {
+            outcomenodes_group.push({
+              node_id: node2,
+              degree: outcomenode.degree
+            });
+            continue;
+          }
+          let added = false;
+          for (var k = 0; k < children.length; k++) {
+            if (children[k].outcomenodes[ii][j].degree !== null) {
+              outcomenodes_group.push({ node_id: node2, degree: 0 });
+              added = true;
+              break;
+            }
+          }
+          if (!added)
+            outcomenodes_group.push({ node_id: node2, degree: null });
+        }
+        let total2 = null;
+        if (children.length > 0) {
+          total2 = 15;
+          let all_null = true;
+          for (let k2 = 0; k2 < children.length; k2++) {
+            var child_total = children[k2].outcomenodes[ii].total;
+            if (child_total !== null)
+              all_null = false;
+            total2 &= child_total;
+          }
+          if (all_null)
+            total2 = null;
+        } else {
+          total2 = outcomenodes_group.reduce((acc, curr) => {
+            if (curr.degree === null)
+              return acc;
+            if (acc === null)
+              return curr.degree;
+            return acc | curr.degree;
+          }, null);
+        }
+        outcomenodes_group.total = total2;
+        outcomenodes.push(outcomenodes_group);
+      }
+      let total = null;
+      if (children.length > 0) {
+        total = 15;
+        let all_null = true;
+        for (let k2 = 0; k2 < children.length; k2++) {
+          var child_total = children[k2].outcomenodes.total;
+          if (child_total !== null)
+            all_null = false;
+          total &= child_total;
+        }
+        if (all_null)
+          total = null;
+      } else {
+        total = outcomenodes.reduce((acc, curr) => {
+          if (curr.total === null)
+            return acc;
+          if (acc === null)
+            return curr.total;
+          return acc | curr.total;
+        }, null);
+      }
+      outcomenodes.total = total;
+      return { id: outcome_id, children, outcomenodes };
     }
   }
-  return { node_id: nodeId, degree: null };
-}
-function calculateGroupTotal(children, outcomenodesGroup) {
-  if (children.length > 0) {
-    return calculateTotalForChildren(children, outcomenodesGroup);
-  }
-  return outcomenodesGroup.reduce((acc, curr) => {
-    if (curr.degree === null)
-      return acc;
-    return acc === null ? curr.degree : acc | curr.degree;
-  }, null);
-}
-function calculateTotalForChildren(children, outcomenodesGroup) {
-  let total = 15;
-  let allNull = true;
-  for (const child of children) {
-    const childTotal = outcomenodesGroup.map((group) => group.total);
-    if (childTotal !== null)
-      allNull = false;
-    total &= childTotal;
-  }
-  return allNull ? null : total;
-}
-function calculateTotal(children, outcomenodes) {
-  if (children.length > 0) {
-    return children.reduce((acc, child) => {
-      const childTotal = child.outcomenodes.total;
-      if (childTotal !== null)
-        return acc & childTotal;
-      return acc;
-    }, 15);
-  }
-  return outcomenodes.reduce((acc, group) => {
-    const groupTotal = group.total;
-    if (groupTotal === null)
-      return acc;
-    return acc === null ? groupTotal : acc | groupTotal;
-  }, null);
+  return null;
 }
 class TableCell extends reactExports.Component {
   constructor() {
@@ -83390,6 +83403,8 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
       );
     });
     this.objectType = CfObjectType.OUTCOME;
+    console.log("OutcomeUnconnected props");
+    console.log(props);
   }
   /*******************************************************
    * FUNCTIONS
@@ -83442,7 +83457,9 @@ class OutcomeUnconnected2 extends ComponentWithToggleDrop {
     ) });
     const outcome_row = (_b = (_a2 = this.props.outcome_tree) == null ? void 0 : _a2.outcomenodes) == null ? void 0 : _b.map(
       (outcomenodegroup) => {
-        const group_row = outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        console.log("outcomenodegroup");
+        console.log(outcomenodegroup);
+        const group_row = outcomenodegroup == null ? void 0 : outcomenodegroup.map((outcomenode) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           TableCell,
           {
             outcomesType: this.props.outcomes_type,
@@ -92581,7 +92598,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-header-info", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-members", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Permissions") }),
-                this.getUsers()
+                /* @__PURE__ */ jsxRuntimeExports.jsx(this.Users, {})
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-other", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-info-section project-description", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Description") }),
@@ -92597,6 +92614,70 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
           ]
         }
       );
+    });
+    __publicField(this, "Users", () => {
+      if (!this.state.users)
+        return null;
+      let users_group = [];
+      const author = this.state.users.author;
+      const editors = this.state.users.editors;
+      const commenters = this.state.users.commentors;
+      const viewers = this.state.users.viewers;
+      if (this.state.users.published) {
+        users_group.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+            getUserTag("view"),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
+            " ",
+            window.gettext("All CourseFlow")
+          ] })
+        );
+      }
+      if (author)
+        users_group.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+            getUserTag("author"),
+            getUserDisplay(author)
+          ] })
+        );
+      users_group.push([
+        editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("edit"),
+          getUserDisplay(user)
+        ] })),
+        commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("comment"),
+          getUserDisplay(user)
+        ] })),
+        viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
+          getUserTag("view"),
+          getUserDisplay(user)
+        ] }))
+      ]);
+      users_group = users_group.flat(2);
+      const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
+      if (users_group.length > 4) {
+        users.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
+            "+",
+            users_group.length - 4,
+            " ",
+            window.gettext("more")
+          ] })
+        );
+      }
+      if (!this.readOnly)
+        users.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "user-name collapsed-text-show-more",
+              onClick: this.openShareDialog.bind(this),
+              children: window.gettext("Modify")
+            }
+          )
+        );
+      return users;
     });
     __publicField(this, "ViewButtons", () => {
       const view_buttons = [
@@ -93202,74 +93283,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
       )
     );
   }
-  getUsers() {
-    if (!this.state.users)
-      return null;
-    let users_group = [];
-    const author = this.state.users.author;
-    const editors = this.state.users.editors;
-    const commenters = this.state.users.commentors;
-    const viewers = this.state.users.viewers;
-    if (this.state.users.published) {
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("view"),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded", children: "public" }),
-          " ",
-          window.gettext("All CourseFlow")
-        ] })
-      );
-    }
-    if (author)
-      users_group.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-          getUserTag("author"),
-          getUserDisplay(author)
-        ] })
-      );
-    users_group.push([
-      editors.filter((user) => user.id !== author.id).map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("edit"),
-        getUserDisplay(user)
-      ] })),
-      commenters.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("comment"),
-        getUserDisplay(user)
-      ] })),
-      viewers.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "user-name", children: [
-        getUserTag("view"),
-        getUserDisplay(user)
-      ] }))
-    ]);
-    users_group = users_group.flat(2);
-    const users = [/* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-group", children: users_group })];
-    if (users_group.length > 4) {
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-created", children: [
-          "+",
-          users_group.length - 4,
-          " ",
-          window.gettext("more")
-        ] })
-      );
-    }
-    if (!this.readOnly)
-      users.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "user-name collapsed-text-show-more",
-            onClick: this.openShareDialog.bind(this),
-            children: window.gettext("Modify")
-          }
-        )
-      );
-    return users;
-  }
   pushImport(imports, import_type2, text, disabled) {
     imports.push();
   }
-  getReturnLinks() {
+  getReturnLinksPortal() {
     const return_links = [];
     if (this.project && !this.props.config.isStudent && !this.public_view) {
       return_links.push(
@@ -93371,7 +93388,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
   render() {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(this.props.data),
-      this.getReturnLinks(),
+      this.getReturnLinksPortal(),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           MenuBar,
@@ -93950,8 +93967,6 @@ class WorkflowComparison extends Workflow {
     this.container = container;
     this.view_type = viewType;
     this.initial_object_sets = initial_object_sets;
-    console.log("this");
-    console.log(this);
   }
   // init() {
   //   this.render($('#container'))
@@ -93960,9 +93975,8 @@ class WorkflowComparison extends Workflow {
     this.view_type = view_type;
     const store = this.store;
     this.locks = {};
-    const el = document.querySelector(this.container);
+    const el = this.container[0];
     reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), el);
-    console.log("here");
     if (view_type === ViewType.OUTCOME_EDIT) {
       this.getWorkflowParentData(this.workflowID, (response) => {
         store.dispatch(ActionCreator.refreshStoreData(response.data_package));
@@ -93972,7 +93986,6 @@ class WorkflowComparison extends Workflow {
         );
       });
     } else if (view_type === ViewType.WORKFLOW) {
-      console.log("there");
       reactDomExports.render(
         /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ComparisonWorkflowBase, { view_type }) }) }),
         el
@@ -94002,7 +94015,7 @@ class WorkflowComparison extends Workflow {
 class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop {
   constructor(props) {
     super(props);
-    __publicField(this, "renderer");
+    __publicField(this, "workflowComparison");
     this.mainDiv = reactExports.createRef();
   }
   /*******************************************************
@@ -94022,22 +94035,24 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop {
     }
     getWorkflowContextQuery(this.props.workflowID, (context_response_data) => {
       const context_data = context_response_data.data_package;
-      this.renderer = new WorkflowComparison({
+      this.workflowComparison = new WorkflowComparison({
         workflowID: this.props.workflowID,
         selectionManager: this.props.selection_manager,
-        container: "#workflow-inner-wrapper",
+        // container: '#workflow-inner-wrapper',
+        // @ts-ignore
+        container: $(this.mainDiv.current),
         viewType: this.props.view_type,
         initial_object_sets: this.props.object_sets,
         dataPackage: context_data.data_package
       });
-      this.renderer.silent_connect_fail = true;
-      this.renderer.init();
+      this.workflowComparison.silent_connect_fail = true;
+      this.workflowComparison.init();
       loader.endLoad();
     });
   }
-  componentDidUpdate(prev_props) {
-    if (prev_props.view_type != this.props.view_type)
-      this.renderer.render(this.props.view_type);
+  componentDidUpdate(prevProps) {
+    if (prevProps.view_type != this.props.view_type)
+      this.workflowComparison.render(this.props.view_type);
   }
   componentWillUnmount() {
     const querystring = window.location.search;
@@ -94062,7 +94077,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop {
         className: "workflow-wrapper",
         id: "workflow-" + this.props.workflowID,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "workflow-inner-wrapper", ref: this.mainDiv }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-inner-wrapper", ref: this.mainDiv }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
@@ -94079,6 +94094,8 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop {
 class ComparisonView extends reactExports.Component {
   constructor(props) {
     super(props);
+    // static contextType = WorkFlowConfigContext
+    // declare context: React.ContextType<typeof WorkFlowConfigContext>
     __publicField(this, "allowed_tabs");
     __publicField(this, "objectType");
     __publicField(this, "updateFunction", (responseData) => {
@@ -94086,7 +94103,7 @@ class ComparisonView extends reactExports.Component {
         const workflows = this.state.workflows.slice();
         workflows.push(responseData.workflowID);
         this.setState({
-          workflows
+          workflows: [...this.state.workflows, responseData.workflowID]
         });
       }
     });
@@ -94094,7 +94111,7 @@ class ComparisonView extends reactExports.Component {
      * COMPONENTS
      *******************************************************/
     __publicField(this, "Header", () => {
-      const data = this.props.data;
+      const data = this.props.projectData;
       const portal = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "a",
@@ -94103,7 +94120,7 @@ class ComparisonView extends reactExports.Component {
             id: "project-return",
             href: COURSEFLOW_APP.config.update_path["project"].replace(
               String(0),
-              data.id
+              String(data.id)
             ),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "green material-symbols-rounded", children: "arrow_back_ios" }),
@@ -94140,10 +94157,12 @@ class ComparisonView extends reactExports.Component {
           name: capWords(window.gettext("View") + " outcomes"),
           disabled: []
         }
-      ].filter((item) => item.disabled.indexOf(this.props.data.type) == -1).map((item, index) => {
+      ].filter(
+        (item) => item.disabled.indexOf(this.props.projectData.type) == -1
+      ).map((item, index) => {
         const viewClasses = [
           "hover-shade",
-          item.type === this.context.view_type ? "active" : ""
+          item.type === this.props.view_type ? "active" : ""
         ].join(" ");
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -94158,7 +94177,7 @@ class ComparisonView extends reactExports.Component {
       });
     });
     __publicField(this, "Share", () => {
-      if (!this.props.renderer.read_only)
+      if (!this.props.read_only)
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -94167,13 +94186,38 @@ class ComparisonView extends reactExports.Component {
             title: window.gettext("Sharing"),
             onClick: renderMessageBox.bind(
               this,
-              this.props.data,
+              this.props.projectData,
               "share_menu",
               closeMessageBox
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "add_person.svg" })
           }
         );
+    });
+    __publicField(this, "AddButton", () => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        id: "load-workflow",
+        className: "primary-button",
+        onClick: this.loadWorkflow.bind(this),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Load new workflow") })
+        ] })
+      }
+    ) }));
+    __publicField(this, "WorkflowContent", () => {
+      return this.state.workflows.map((workflowID) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowComparisonRendererComponent,
+        {
+          removeFunction: this.removeWorkflow.bind(this, workflowID),
+          view_type: this.props.view_type,
+          workflowID,
+          selection_manager: this.props.selection_manager,
+          object_sets: this.state.object_sets
+        },
+        workflowID
+      ));
     });
     this.objectType = CfObjectType.WORKFLOW;
     this.allowed_tabs = [0, 3];
@@ -94182,7 +94226,7 @@ class ComparisonView extends reactExports.Component {
     const workflows_added = url_params.getAll("workflows").map((workflow_id) => parseInt(workflow_id));
     this.state = {
       workflows: workflows_added,
-      object_sets: props.data.object_sets
+      object_sets: props.projectData.object_sets
     };
   }
   /*******************************************************
@@ -94199,8 +94243,9 @@ class ComparisonView extends reactExports.Component {
   }
   componentDidUpdate(prev_props) {
     this.makeSortable();
-    if (prev_props.view_type != this.props.view_type)
+    if (prev_props.view_type != this.props.view_type) {
       this.updateTabs();
+    }
   }
   /*******************************************************
    * FUNCTIONS
@@ -94212,34 +94257,8 @@ class ComparisonView extends reactExports.Component {
       }
     });
   }
-  // updateTabs() {
-  //   const disabled_tabs = []
-  //
-  //   //If the view type has changed, enable only appropriate tabs, and change the selection to none
-  //   this.props.renderer.selection_manager.changeSelection(null, null)
-  //
-  //   for (let i = 0; i < 4; i++) {
-  //     if (this.allowed_tabs.indexOf(i) < 0) {
-  //       disabled_tabs.push(i)
-  //     }
-  //   }
-  //
-  //   $('#sidebar').tabs({ disabled: false })
-  //
-  //   const current_tab = $('#sidebar').tabs('option', 'active')
-  //
-  //   if (this.allowed_tabs.indexOf(current_tab) < 0) {
-  //     if (this.allowed_tabs.length == 0) {
-  //       $('#sidebar').tabs({ active: false })
-  //     } else {
-  //       $('#sidebar').tabs({ active: this.allowed_tabs[0] })
-  //     }
-  //   }
-  //
-  //   $('#sidebar').tabs({ disabled: disabled_tabs })
-  // }
   updateTabs() {
-    this.props.renderer.selection_manager.changeSelection(null, null);
+    this.props.selection_manager.changeSelection(null, null);
     const disabledTabs = [0, 1, 2, 3].filter(
       (tabIndex) => !this.allowed_tabs.includes(tabIndex)
     );
@@ -94252,22 +94271,22 @@ class ComparisonView extends reactExports.Component {
     $("#sidebar").tabs({ disabled: disabledTabs });
   }
   changeView(type) {
-    this.props.renderer.selection_manager.changeSelection(null, null);
-    this.props.renderer.render(this.props.renderer.container, type);
+    this.props.selection_manager.changeSelection(null, null);
+    this.props.parentRender(this.props.container, type);
   }
   openEdit() {
   }
   loadWorkflow() {
     COURSEFLOW_APP.tinyLoader.startLoad();
     getWorkflowSelectMenuQuery(
-      this.props.data.id,
+      this.props.projectData.id,
       CfObjectType.WORKFLOW,
       false,
       true,
       (data) => {
         openWorkflowSelectMenu(
           data,
-          (_data2) => this.updateFunction(_data2)
+          (dataResp) => this.updateFunction(dataResp)
         );
         COURSEFLOW_APP.tinyLoader.endLoad();
       }
@@ -94293,61 +94312,29 @@ class ComparisonView extends reactExports.Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data;
-    const renderer = this.props.renderer;
-    const workflow_content = this.state.workflows.map((workflowID) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowComparisonRendererComponent,
-      {
-        removeFunction: this.removeWorkflow.bind(this, workflowID),
-        view_type: renderer.view_type,
-        workflowID,
-        selection_manager: this.props.selection_manager,
-        object_sets: this.state.object_sets
-      },
-      workflowID
-    ));
-    const AddButton = () => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "button",
-      {
-        id: "load-workflow",
-        className: "primary-button",
-        onClick: this.loadWorkflow.bind(this),
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Load new workflow") })
+    const data = this.props.projectData;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "main-block", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.ViewButtons, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-container comparison-view", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-array", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowContent, {}) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.AddButton, {})
         ] })
-      }
-    ) });
-    const sharePortal = reactDomExports.createPortal(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {}),
-      $("#visible-icons")[0]
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      sharePortal,
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "main-block", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "right-panel-wrapper", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "body-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-wrapper", className: "workflow-wrapper", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Header, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-view-select hide-print", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.ViewButtons, {}) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-container comparison-view", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-array", children: workflow_content }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AddButton, {})
-          ] })
-        ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          RightSideBar,
-          {
-            context: "comparison",
-            parentRender: this.props.renderer.render,
-            data,
-            toggleObjectSet: this.toggleObjectSet.bind(this),
-            object_sets: this.state.object_sets
-          }
-        )
-      ] }) })
-    ] });
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        RightSideBar,
+        {
+          context: "comparison",
+          parentRender: this.props.parentRender,
+          data,
+          toggleObjectSet: this.toggleObjectSet.bind(this),
+          object_sets: this.state.object_sets
+        }
+      )
+    ] }) }) });
   }
 }
-__publicField(ComparisonView, "contextType", WorkFlowConfigContext);
 const cache$1 = createCache({
   key: "emotion",
   nonce: window.cf_nonce
@@ -94362,9 +94349,6 @@ class Comparison {
     __publicField(this, "view_type");
     __publicField(this, "container");
     __publicField(this, "userPermission");
-    console.log("props");
-    console.log(props);
-    console.log(props.project_data.id);
     this.projectData = props.project_data;
     this.userPermission = props.user_permission;
     makeActiveSidebar("#project" + this.projectData.id);
@@ -94403,13 +94387,17 @@ class Comparison {
           ComparisonView,
           {
             view_type,
-            renderer: this,
-            data: this.projectData,
+            container: this.container,
+            parentRender: (a, b) => this.render(a, b),
+            read_only: this.readOnly,
+            projectData: this.projectData,
             selection_manager: this.selection_manager
           }
         ) }) }),
         container[0]
       );
+    } else {
+      console.log("comparsion view not supported ");
     }
   }
 }

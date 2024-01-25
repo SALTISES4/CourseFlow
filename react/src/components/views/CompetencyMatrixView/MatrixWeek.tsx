@@ -42,7 +42,7 @@ class MatrixWeekUnconnected extends ComponentWithToggleDrop<PropsType> {
   render() {
     // const data = this.props.data
 
-  //  const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    //  const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
     return (
       <div className="matrix-time-row">

@@ -66,9 +66,9 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       data.lock ? 'locked locked-' + data.lock.user_id : ''
     ].join(' ')
 
-    const comments = this.context.view_comments
-      ? <this.AddCommenting />
-      : undefined
+    const comments = this.context.view_comments ? (
+      <this.AddCommenting />
+    ) : undefined
 
     const portal = this.addEditable(data_override, true)
     return (

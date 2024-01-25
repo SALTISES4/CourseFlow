@@ -244,12 +244,12 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
       if (data.depth < 2) {
-        mouseover_actions.push(<this.AddInsertChild data={data}/>)
+        mouseover_actions.push(<this.AddInsertChild data={data} />)
       }
     }
     if (this.context.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
-      mouseover_actions.push(<this.AddCommenting/>)
+      mouseover_actions.push(<this.AddCommenting />)
     }
 
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'

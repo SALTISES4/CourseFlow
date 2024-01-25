@@ -299,6 +299,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       toggleDropReduxAction(week.id, type, false, this.props.dispatch)
     )
   }
+  pushImport(imports, import_type, text, disabled) {
+    let a_class = 'hover-shade'
+    if (disabled) a_class = ' disabled'
+    imports.push()
+  }
 
   /*******************************************************
    * COMPONENTS
@@ -336,7 +341,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <div className="project-header-info">
           <div className="project-info-section project-members">
             <h4>{window.gettext('Permissions')}</h4>
-            {this.getUsers()}
+            <this.Users />
           </div>
           <div className="project-other">
             <div className="project-info-section project-description">
@@ -352,7 +357,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     )
   }
 
-  getUsers() {
+  Users = () => {
     if (!this.state.users) return null
     let users_group = []
 
@@ -423,13 +428,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return users
   }
 
-  pushImport(imports, import_type, text, disabled) {
-    let a_class = 'hover-shade'
-    if (disabled) a_class = ' disabled'
-    imports.push()
-  }
-
-  getReturnLinks() {
+  getReturnLinksPortal() {
     const return_links = []
     if (this.project && !this.props.config.isStudent && !this.public_view) {
       return_links.push(
@@ -573,40 +572,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         return <WorkflowView />
       }
     }
-
-    // if (this.view_type == ViewType.OUTCOMETABLE) {
-    //   workflow_content = (
-    //     <WorkflowTableView
-    //       data={this.data}
-    //       // renderer={renderer}
-    //       view_type={this.view_type}
-    //     />
-    //   )
-    //   this.allowed_tabs = [3]
-    // } else if (this.view_type == ViewType.OUTCOME_EDIT) {
-    //   workflow_content = <OutcomeEditView /*renderer={renderer} */ />
-    //
-    //   if (this.data.type == 'program') {
-    //     this.allowed_tabs = [3]
-    //   } else {
-    //     this.allowed_tabs = [2, 3]
-    //   }
-    // } else if (this.view_type == ViewType.ALIGNMENTANALYSIS) {
-    //   workflow_content = (
-    //     <AlignmentView /* renderer={renderer}*/ view_type={this.view_type} />
-    //   )
-    //   this.allowed_tabs = [3]
-    // } else if (this.view_type == ViewType.GRID) {
-    //   workflow_content = (
-    //     <GridView /*renderer={renderer}*/ view_type={this.view_type} />
-    //   )
-    //   this.allowed_tabs = [3]
-    // } else {
-    //   // @ts-ignore this is tricky because <WorkflowView /> def needs objectID but don't see it in history anywhere
-    //   workflow_content = <WorkflowView />
-    //   this.allowed_tabs = [1, 2, 3, 4]
-    //   if (this.context.read_only) this.allowed_tabs = [2, 3]
-    // }
   }
 
   Content = () => {
@@ -1064,7 +1029,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return (
       <>
         {this.addEditable(this.props.data)}
-        {this.getReturnLinks()}
+        {this.getReturnLinksPortal()}
         <div className="main-block">
           <MenuBar
             overflowLinks={this.OverflowLinks}
