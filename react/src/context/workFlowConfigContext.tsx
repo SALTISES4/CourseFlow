@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { ReactNode, useState } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
 import { ViewType } from '@cfModule/types/enum'

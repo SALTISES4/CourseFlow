@@ -34507,7 +34507,7 @@ class ComponentWithToggleDrop extends reactExports.Component {
     this.state = {};
   }
 }
-function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data) => console.log("success")) {
+function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
   let path;
   if (soft)
     path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
@@ -34527,7 +34527,7 @@ function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = 
     window.fail_function();
   });
 }
-function restoreSelfQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType)
@@ -38618,6 +38618,43 @@ class ActionButton extends reactExports.Component {
     );
   }
 }
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(_data);
+      } else
+        window.fail_function(data.action);
+    }).fail(function(error) {
+      window.fail_function();
+    });
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
 function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.update_value, {
     objectID: JSON.stringify(objectID),
@@ -38985,7 +39022,7 @@ function insertedAt(renderer, objectID, objectType, parentID, parentType, newPos
       $(document).off(throughType + "-dropped");
     });
 }
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data) => console.log("success")) {
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
   const sendPostRequest = (url, data) => {
     $.post(url, data).done(function(response) {
       console.log("duplicateBaseItemQuery response");
@@ -39016,7 +39053,7 @@ function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction 
     });
   }
 }
-function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
     parentID: JSON.stringify(parentID),
     parentType: JSON.stringify(parentType),
@@ -43452,7 +43489,7 @@ function createSpacing(spacingInput = 8) {
   spacing.mui = true;
   return spacing;
 }
-function compose(...styles2) {
+function compose$1(...styles2) {
   const handlers = styles2.reduce((acc, style2) => {
     style2.filterProps.forEach((prop) => {
       acc[prop] = style2;
@@ -43536,7 +43573,7 @@ borderRadius.propTypes = process.env.NODE_ENV !== "production" ? {
   borderRadius: responsivePropType$1
 } : {};
 borderRadius.filterProps = ["borderRadius"];
-compose(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
+compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
 const gap = (props) => {
   if (props.gap !== void 0 && props.gap !== null) {
     const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
@@ -43606,7 +43643,7 @@ const gridTemplateAreas = style$2({
 const gridArea = style$2({
   prop: "gridArea"
 });
-compose(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
+compose$1(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
 function paletteTransform(value, userValue) {
   if (userValue === "grey") {
     return userValue;
@@ -43629,7 +43666,7 @@ const backgroundColor = style$2({
   themeKey: "palette",
   transform: paletteTransform
 });
-compose(color, bgcolor, backgroundColor);
+compose$1(color, bgcolor, backgroundColor);
 function sizingTransform(value) {
   return value <= 1 && value !== 0 ? `${value * 100}%` : value;
 }
@@ -43690,7 +43727,7 @@ style$2({
 const boxSizing = style$2({
   prop: "boxSizing"
 });
-compose(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
+compose$1(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
 const defaultSxConfig = {
   // borders
   border: {
@@ -61962,7 +61999,7 @@ function renderMessageBox(data, type, updateFunction) {
     $("#popup-container")[0]
   );
 }
-function getWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
       workflowPk: JSON.stringify(workflowPk)
@@ -61976,7 +62013,7 @@ function getWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.
     window.fail_function();
   }
 }
-function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
       workflowPk: JSON.stringify(workflowPk)
@@ -61992,7 +62029,7 @@ function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => co
     window.fail_function();
   }
 }
-function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
+function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
       nodePk: JSON.stringify(nodePk)
@@ -62008,7 +62045,7 @@ function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console
     window.fail_function();
   }
 }
-function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
@@ -62027,7 +62064,7 @@ function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data) => co
     window.fail_function();
   }
 }
-function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
@@ -62046,7 +62083,7 @@ function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data)
     window.fail_function();
   }
 }
-function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
+function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.get(
       COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
@@ -62065,7 +62102,7 @@ function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => c
     window.fail_function();
   }
 }
-function getWorkflowContextQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getWorkflowContextQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
       workflowPk: JSON.stringify(workflowPk)
@@ -62081,7 +62118,7 @@ function getWorkflowContextQuery(workflowPk, callBackFunction = (_data) => conso
     window.fail_function();
   }
 }
-function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data) => console.log("success")) {
+function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data2) => console.log("success")) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_target_projects,
     {
@@ -62100,7 +62137,7 @@ function openTargetProjectMenu(response, updateFunction) {
     alert("Failed to find potential projects.");
   }
 }
-function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.get(
       COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
@@ -62117,7 +62154,7 @@ function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data) => c
     window.fail_function();
   }
 }
-function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
       workflowPk: JSON.stringify(workflowPk)
@@ -62135,23 +62172,23 @@ function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data) => co
     window.fail_function();
   }
 }
-function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data) => console.log("success")) {
+function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
     projectPk
-  }).done(function(_data) {
+  }).done(function(_data2) {
     console.log("dead");
-    callBackFunction(_data);
+    callBackFunction(_data2);
   }).fail(function(error) {
     window.fail_function();
   });
 }
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data) => console.log("success")) {
+function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },
-    (_data) => {
+    (_data2) => {
       callBackFunction();
     }
   ).fail(function(error) {
@@ -62488,6 +62525,24 @@ function combineReducers(reducers) {
     hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length;
     return hasChanged ? nextState : state;
   };
+}
+function compose() {
+  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
+    funcs[_key] = arguments[_key];
+  }
+  if (funcs.length === 0) {
+    return function(arg) {
+      return arg;
+    };
+  }
+  if (funcs.length === 1) {
+    return funcs[0];
+  }
+  return funcs.reduce(function(a, b) {
+    return function() {
+      return a(b.apply(void 0, arguments));
+    };
+  });
 }
 function parentNodeReducer(state = [], action) {
   switch (action.type) {
@@ -64488,7 +64543,7 @@ class EditableComponent extends ComponentWithToggleDrop {
   }
 }
 __publicField(EditableComponent, "contextType", WorkFlowConfigContext);
-function removeComment(objectID, objectType, commentPk, callBackFunction = (_data) => console.log("success")) {
+function removeComment(objectID, objectType, commentPk, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
     objectID: JSON.stringify(objectID),
     commentPk: JSON.stringify(commentPk),
@@ -64502,7 +64557,7 @@ function removeComment(objectID, objectType, commentPk, callBackFunction = (_dat
     window.fail_function();
   });
 }
-function removeAllComments(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+function removeAllComments(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType)
@@ -64515,7 +64570,7 @@ function removeAllComments(objectID, objectType, callBackFunction = (_data) => c
     window.fail_function();
   });
 }
-function addComment(objectID, objectType, text, callBackFunction = (_data) => console.log("success")) {
+function addComment(objectID, objectType, text, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
@@ -64529,7 +64584,7 @@ function addComment(objectID, objectType, text, callBackFunction = (_data) => co
     window.fail_function();
   });
 }
-function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType)
@@ -64544,7 +64599,7 @@ function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_da
     window.fail_function();
   });
 }
-function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data) => console.log("success")) {
+function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType),
@@ -64559,7 +64614,7 @@ function setUserPermission(user_id, objectID, objectType, permission_type, callB
     window.fail_function();
   });
 }
-function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
   $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
@@ -64574,7 +64629,7 @@ function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data)
     window.fail_function();
   });
 }
-function getUserListQuery(filter, callBackFunction = (_data) => console.log("success")) {
+function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
     filter: JSON.stringify(filter)
   }).done(function(data) {
@@ -64933,7 +64988,7 @@ class EditableComponentWithComments extends EditableComponent {
   }
 }
 __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
-function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data) => console.log("success")) {
+function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.new_node, {
     weekPk: JSON.stringify(weekPk),
     position: JSON.stringify(position2),
@@ -64949,7 +65004,7 @@ function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, ca
     window.fail_function();
   });
 }
-function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data) => console.log("success")) {
+function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
     workflowPk: JSON.stringify(workflowPk),
     objectsetPk: JSON.stringify(object_set_id)
@@ -64962,7 +65017,7 @@ function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data) =
     window.fail_function();
   });
 }
-function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data) => console.log("success")) {
+function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
     workflowPk: JSON.stringify(workflowPk),
     position: JSON.stringify(position2),
@@ -64978,7 +65033,7 @@ function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackF
     window.fail_function();
   });
 }
-function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data) => console.log("success")) {
+function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
     nodePk: JSON.stringify(source_node),
     objectID: JSON.stringify(target_node),
@@ -64994,7 +65049,7 @@ function newNodeLink(source_node, target_node, source_port, target_port, callBac
     window.fail_function();
   });
 }
-function insertChildQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
     objectID: JSON.stringify(objectID),
     objectType: JSON.stringify(objectType)
@@ -65007,7 +65062,7 @@ function insertChildQuery(objectID, objectType, callBackFunction = (_data) => co
     window.fail_function();
   });
 }
-function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
     parentID: JSON.stringify(parentID),
     parentType: JSON.stringify(parentType),
@@ -65023,7 +65078,7 @@ function insertSiblingQuery(objectID, objectType, parentID, parentType, throughT
     window.fail_function();
   });
 }
-function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data) => console.log("success")) {
+function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
     projectPk: JSON.stringify(projectPk),
     term: JSON.stringify(term),
@@ -82372,136 +82427,6 @@ const ComparisonWorkflowBase = connect(
   mapStateToProps$j,
   null
 )(ComparisonWorkflowBaseUnconnected);
-const ConnectedUser = ({
-  user_colour,
-  user_name
-}) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "div",
-    {
-      className: "user-indicator",
-      style: {
-        backgroundColor: user_colour
-      },
-      title: user_name,
-      children: user_name
-    }
-  );
-};
-class ConnectionBar extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "user_name");
-    __publicField(this, "myColour");
-    this.state = {
-      connected_users: []
-    };
-    this.user_name = COURSEFLOW_APP.contextData.user_name;
-    this.myColour = COURSEFLOW_APP.contextData.user_name;
-  }
-  render() {
-    console.log("this.props.websocket");
-    console.log(this.props.websocket);
-    if (!this.props.websocket)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-    if (this.props.websocket.readyState === 1) {
-      const users = this.state.connected_users.map((user) => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ConnectedUser,
-          {
-            user_colour: user.user_colour,
-            user_name: user.user_name
-          }
-        );
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "users-box", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-small-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-small", children: users.slice(0, 2) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-more", children: "..." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-hidden", children: users })
-      ] });
-    } else if (this.props.websocket.readyState === 3) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "users-box connection-failed", children: window.gettext("Not Connected") });
-    }
-  }
-  componentDidUpdate() {
-    const element = document.querySelector(".users-box");
-    const hasClass = element && element.classList.contains("connection-failed");
-    if (hasClass) {
-      this.connection_update();
-    }
-  }
-  componentDidMount() {
-    this.connection_update();
-  }
-  connection_update(connected = true) {
-    const cache2 = this.connection_update.bind(this);
-    clearTimeout(cache2);
-    if (!this.props.websocket)
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-    if (this.props.websocket.readyState === 1) {
-      this.props.websocket.send(
-        JSON.stringify({
-          type: "connection_update",
-          user_data: {
-            // user_id: this.user_id,
-            // user_name: this.user_name, // why?
-            // user_colour: this.myColour, // why?
-            user_id: this.props.user_id,
-            user_name: this.user_name,
-            // why?
-            user_colour: this.myColour,
-            // why?
-            connected
-          }
-        })
-      );
-    }
-    setTimeout(cache2, 3e4);
-  }
-  connection_update_received(user_data) {
-    if (user_data.connected) {
-      const connected_users = this.state.connected_users.slice();
-      let found_user = false;
-      for (let i = 0; i < connected_users.length; i++) {
-        if (connected_users[i].user_id === user_data.user_id) {
-          found_user = true;
-          clearTimeout(connected_users[i].timeout);
-          connected_users[i] = {
-            ...user_data,
-            timeout: setTimeout(
-              this.removeConnection.bind(this, user_data),
-              6e4
-            )
-          };
-          break;
-        }
-      }
-      if (!found_user)
-        connected_users.push({
-          ...user_data,
-          timeout: setTimeout(
-            this.removeConnection.bind(this, user_data),
-            6e4
-          )
-        });
-      this.setState({ connected_users });
-    } else {
-      this.removeConnection(user_data);
-    }
-  }
-  removeConnection(user_data) {
-    const connected_users = this.state.connected_users.slice();
-    for (let i = 0; i < connected_users.length; i++) {
-      if (connected_users[i].user_id === user_data.user_id) {
-        if (connected_users[i].timeout)
-          clearTimeout(connected_users[i].timeout);
-        connected_users.splice(i, 1);
-        break;
-      }
-    }
-    this.setState({ connected_users });
-  }
-}
 class Column extends EditableComponentWithActions {
   constructor(props) {
     super(props);
@@ -92436,7 +92361,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
     __publicField(this, "selection_manager");
     __publicField(this, "renderMethod");
     __publicField(this, "container");
-    __publicField(this, "websocket");
+    // private websocket: any
     __publicField(this, "always_static");
     __publicField(this, "user_id");
     __publicField(this, "project_permission");
@@ -92778,13 +92703,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
      *******************************************************/
     __publicField(this, "UserBar", () => {
       if (!this.always_static) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ConnectionBar,
-          {
-            user_id: this.context.user_id,
-            websocket: this.websocket
-          }
-        );
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: "commecyopm nat" });
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     });
@@ -93266,6 +93185,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
    * RENDER
    *******************************************************/
   render() {
+    if (!this.workflowId)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       this.addEditable(this.props.data),
       this.getReturnLinksPortal(),
@@ -93424,19 +93345,296 @@ class SelectionManager {
     }
   }
 }
-const cache$2 = createCache({
-  key: "emotion",
-  nonce: window.cf_nonce
-});
-class Workflow {
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+class WebsocketManager {
   constructor(propsConfig) {
-    __publicField(this, "message_queue");
+    __publicField(this, "websocket");
     __publicField(this, "messages_queued");
-    __publicField(this, "outcome_type_choices");
-    __publicField(this, "outcome_sort_choices");
+    __publicField(this, "always_static");
+    __publicField(this, "public_view");
+    __publicField(this, "is_static");
+    __publicField(this, "has_disconnected");
+    __publicField(this, "has_rendered");
+    __publicField(this, "child_data_completed");
+    __publicField(this, "child_data_needed");
+    __publicField(this, "fetching_child_data");
     __publicField(this, "user_permission");
     __publicField(this, "user_role");
     __publicField(this, "is_teacher");
+    __publicField(this, "message_queue");
+    __publicField(this, "outcome_type_choices");
+    __publicField(this, "workflowID");
+    __publicField(this, "locks");
+    __publicField(this, "silent_connect_fail");
+    __publicField(this, "unread_comments");
+    __publicField(this, "store");
+    __publicField(this, "getWorkflowData");
+    __publicField(this, "getWorkflowParentData");
+    __publicField(this, "getWorkflowChildData");
+    __publicField(this, "user_id");
+    if (this.public_view) {
+      this.always_static = true;
+    }
+    this.workflowID = propsConfig.workflow_model_id;
+    this.user_id = propsConfig.user_id;
+    this.getWorkflowData = this.public_view ? getPublicWorkflowDataQuery : getWorkflowDataQuery;
+    this.getWorkflowParentData = this.public_view ? getPublicWorkflowParentDataQuery : getWorkflowParentDataQuery;
+    this.getWorkflowChildData = this.public_view ? getPublicWorkflowChildDataQuery : getWorkflowChildDataQuery;
+  }
+  /*******************************************************
+   * WEBSOCKET MANAGER
+   *******************************************************/
+  init() {
+    if (!this.always_static) {
+      this.connect();
+    } else {
+      this.connection_opened();
+    }
+  }
+  connect() {
+    const websocket_prefix = window.location.protocol === "https:" ? "wss" : "ws";
+    this.websocket = new WebSocket(
+      `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
+    );
+    this.websocket.onmessage = (e) => {
+      if (this.messages_queued) {
+        this.message_queue.push(e);
+      } else {
+        this.onMessageReceived(e);
+      }
+    };
+    this.websocket.onopen = () => {
+      this.has_rendered = true;
+      this.connection_opened();
+    };
+    if (this.websocket.readyState === 1) {
+      this.connection_opened();
+    }
+    this.websocket.onclose = (e) => this.handleSocketClose(e);
+  }
+  handleSocketClose(e) {
+    if (e.code === 1e3)
+      return;
+    if (!this.has_rendered) {
+      this.connection_opened(true);
+    } else {
+      this.attemptReconnect();
+    }
+    this.is_static = true;
+    this.has_disconnected = true;
+    this.has_rendered = true;
+    if (!this.silent_connect_fail && !this.has_disconnected) {
+      alert(
+        window.gettext(
+          "Unable to establish connection to the server, or connection has been lost."
+        )
+      );
+    }
+  }
+  attemptReconnect() {
+    setTimeout(() => this.init(), 3e4);
+  }
+  onMessageReceived(e) {
+    this.parsemessage(e);
+  }
+  /*******************************************************
+   * // WEBSOCKET MANAGER
+   *******************************************************/
+  // Fetches the data for the given child workflow
+  getDataForChildWorkflow() {
+    if (this.child_data_completed === this.child_data_needed.length - 1) {
+      this.fetching_child_data = false;
+      return;
+    }
+    this.fetching_child_data = true;
+    this.child_data_completed++;
+    this.getWorkflowChildData(
+      this.child_data_needed[this.child_data_completed],
+      (response) => {
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        );
+        setTimeout(() => this.getDataForChildWorkflow(), 50);
+      }
+    );
+  }
+  // Lets the renderer know that it must load the child data for that workflow
+  childWorkflowDataNeeded(node_id) {
+    if (this.child_data_needed.indexOf(node_id) < 0) {
+      this.child_data_needed.push(node_id);
+      if (!this.fetching_child_data) {
+        setTimeout(() => this.getDataForChildWorkflow(), 50);
+      }
+    }
+  }
+  connection_opened(reconnect = false) {
+    console.log("connection_opened");
+    this.getWorkflowData(this.workflowID, (response) => {
+      var _a2, _b;
+      this.unread_comments = (_a2 = response.data_package) == null ? void 0 : _a2.unread_comments;
+      this.store = createStore(
+        rootWorkflowReducer,
+        // @ts-ignore @todo check out data_package type
+        response.data_package,
+        composeEnhancers()
+      );
+      this.clear_queue((_b = response.data_package) == null ? void 0 : _b.workflow.edit_count);
+      if (reconnect) {
+        this.attempt_reconnect();
+      }
+    });
+  }
+  clear_queue(edit_count) {
+    let started_edits = false;
+    while (this.message_queue.length > 0) {
+      const message = this.message_queue[0];
+      if (started_edits) {
+        this.parsemessage(message);
+      } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
+        started_edits = true;
+        this.message_queue.splice(0, 1);
+      }
+    }
+    this.messages_queued = false;
+  }
+  /*******************************************************
+   * THESE ARE UPDATES FROM PUB MESSAGE
+   *******************************************************/
+  // @todo this is not useful until we have active multiple users
+  parsemessage(e) {
+    const data = JSON.parse(e.data);
+    switch (data.type) {
+      case "workflow_action":
+        this.store.dispatch(data.action);
+        break;
+      case "lock_update":
+        this.lock_update_received(data.action);
+        break;
+      case "connection_update":
+        this.connection_update_received(data);
+        break;
+      case "workflow_parent_updated":
+        this.parent_workflow_updated();
+        break;
+      case "workflow_child_updated":
+        this.child_workflow_updated(data.edit_count, data.child_workflow_id);
+        break;
+    }
+  }
+  lock_update_received(data) {
+    const object_type = data.object_type;
+    const object_id = data.object_id;
+    if (!this.locks[object_type]) {
+      this.locks[object_type] = {};
+    }
+    if (this.locks[object_type][object_id]) {
+      clearTimeout(this.locks[object_type][object_id]);
+    }
+    this.store.dispatch(
+      ActionCreator.createLockAction(
+        object_id,
+        object_type,
+        data.lock,
+        data.user_id,
+        data.user_colour
+      )
+    );
+    if (data.lock) {
+      this.locks[object_type][object_id] = setTimeout(() => {
+        this.store.dispatch(
+          ActionCreator.createLockAction(object_id, object_type, false)
+        );
+      }, data.expires - Date.now());
+    } else {
+      this.locks[object_type][object_id] = null;
+    }
+  }
+  // @todo this is weird becuase connection_update_received is called in
+  // connectedUsers but expects data to be well defined
+  connection_update_received(data) {
+    console.log("A connection update was received, but not handled.");
+  }
+  parent_workflow_updated() {
+    this.messages_queued = true;
+    this.getWorkflowParentData(this.workflowID, (response) => {
+      this.store.dispatch(
+        ActionCreator.replaceStoreData({
+          parent_node: [],
+          parent_workflow: []
+        })
+      );
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
+      this.clear_queue(0);
+    });
+  }
+  child_workflow_updated(edit_count, child_workflow_id) {
+    this.messages_queued = true;
+    const state = this.store.getState();
+    const node2 = state.node.find(
+      (node22) => node22.linked_workflow == child_workflow_id
+    );
+    if (!node2) {
+      return;
+    }
+    this.getWorkflowChildData(node2.id, (response) => {
+      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
+      this.clear_queue(0);
+    });
+  }
+  /*******************************************************
+   * END PARSE MESSAGE LOGIC
+   *******************************************************/
+  // @todo how used?
+  micro_update(obj) {
+    if (this.websocket) {
+      this.websocket.send(
+        JSON.stringify({
+          type: "micro_update",
+          action: obj
+        })
+      );
+    }
+  }
+  // @todo where used?
+  change_field(id, object_type, field, value) {
+    const json = {};
+    json[field] = value;
+    this.store.dispatch(ActionCreator.changeField(id, object_type, json));
+    updateValueQuery(id, object_type, json, true);
+  }
+  lock_update(obj, time, lock) {
+    if (this.websocket) {
+      this.websocket.send(
+        JSON.stringify({
+          type: "lock_update",
+          lock: {
+            ...obj,
+            expires: Date.now() + time,
+            user_id: this.user_id,
+            // @ts-ignore
+            user_colour: COURSEFLOW_APP.contextData.myColour,
+            lock
+          }
+        })
+      );
+    }
+  }
+}
+createCache({
+  key: "emotion",
+  nonce: window.cf_nonce
+});
+class Workflow extends React.Component {
+  // private locks: any
+  constructor(propsConfig) {
+    super(propsConfig);
+    // private message_queue: any[]
+    // private messages_queued: boolean
+    // private outcome_type_choices: FieldChoice[]
+    __publicField(this, "outcome_sort_choices");
+    // private user_permission: number
+    // private user_role: number
+    // private is_teacher: boolean
     __publicField(this, "public_view");
     __publicField(this, "workflowID");
     __publicField(this, "column_choices");
@@ -93473,13 +93671,12 @@ class Workflow {
     __publicField(this, "container");
     __publicField(this, "view_type");
     __publicField(this, "workflowRender");
-    __publicField(this, "locks");
     const {
       column_choices,
       context_choices,
       task_choices,
       time_choices,
-      outcome_type_choices,
+      // outcome_type_choices,
       outcome_sort_choices,
       strategy_classification_choices,
       is_strategy,
@@ -93491,12 +93688,10 @@ class Workflow {
     this.context_choices = context_choices;
     this.task_choices = task_choices;
     this.time_choices = time_choices;
-    this.outcome_type_choices = outcome_type_choices;
     this.outcome_sort_choices = outcome_sort_choices;
     this.strategy_classification_choices = strategy_classification_choices;
     this.is_strategy = is_strategy;
     this.project = project;
-    this.user_permission = propsConfig.user_permission;
     this.user_id = propsConfig.user_id;
     this.read_only = true;
     this.workflowRender = this.render.bind(this);
@@ -93519,65 +93714,51 @@ class Workflow {
         this.can_view = true;
         break;
     }
-    this.getWorkflowData = this.public_view ? getPublicWorkflowDataQuery : getWorkflowDataQuery;
     this.getWorkflowParentData = this.public_view ? getPublicWorkflowParentDataQuery : getWorkflowParentDataQuery;
-    this.getWorkflowChildData = this.public_view ? getPublicWorkflowChildDataQuery : getWorkflowChildDataQuery;
+    this.websocket = new WebsocketManager(propsConfig);
+    this.websocket.init();
   }
   //
   /*******************************************************
    * REACT TO MOVE
    *******************************************************/
-  render(container, view_type = ViewType.WORKFLOW) {
-    this.locks = {};
+  // render(container, view_type: ViewType = ViewType.WORKFLOW) {
+  render() {
     this.selection_manager = new SelectionManager(this.read_only);
-    this.view_type = view_type;
-    reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container[0]);
-    this.container = container;
-    if (view_type === ViewType.OUTCOME_EDIT) {
+    this.view_type = ViewType.WORKFLOW;
+    if (this.view_type === ViewType.OUTCOME_EDIT) {
       this.getWorkflowParentData(this.workflowID, (response) => {
         this.store.dispatch(
           ActionCreator.refreshStoreData(response.data_package)
         );
-        const theme2 = createTheme({});
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowBaseView,
-            {
-              view_type,
-              parentRender: this.workflowRender,
-              config: {
-                canView: this.can_view,
-                isStudent: this.is_student,
-                projectPermission: this.project_permission,
-                alwaysStatic: this.always_static
-              },
-              websocket: this.websocket
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowBaseView,
+          {
+            view_type: this.view_type,
+            parentRender: this.workflowRender,
+            config: {
+              canView: this.can_view,
+              isStudent: this.is_student,
+              projectPermission: this.project_permission,
+              alwaysStatic: this.always_static
             }
-          ) }) }) }) }),
-          container[0]
-        );
+          }
+        ) }) });
       });
     } else {
-      setTimeout(() => {
-        const theme2 = createTheme({});
-        reactDomExports.render(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache$2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme: theme2, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            WorkflowBaseView,
-            {
-              view_type,
-              parentRender: this.workflowRender,
-              config: {
-                canView: this.can_view,
-                isStudent: this.is_student,
-                projectPermission: this.project_permission,
-                alwaysStatic: this.always_static
-              },
-              websocket: this.websocket
-            }
-          ) }) }) }) }),
-          container[0]
-        );
-      }, 50);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: this.store, children: /* @__PURE__ */ jsxRuntimeExports.jsx(WorkFlowConfigProvider, { initialValue: this, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowBaseView,
+        {
+          view_type: this.view_type,
+          parentRender: this.workflowRender,
+          config: {
+            canView: this.can_view,
+            isStudent: this.is_student,
+            projectPermission: this.project_permission,
+            alwaysStatic: this.always_static
+          }
+        }
+      ) }) });
     }
   }
 }
@@ -94699,12 +94880,12 @@ class WorkflowCardCondensed extends WorkflowCard {
     );
   }
 }
-function searchAllObjectsQuery(filter, data, callBackFunction = (_data) => console.log("success")) {
+function searchAllObjectsQuery(filter, data, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
     filter: JSON.stringify(filter),
     additional_data: JSON.stringify(data)
-  }).done(function(_data) {
-    callBackFunction(_data);
+  }).done(function(_data2) {
+    callBackFunction(_data2);
   }).fail(function(error) {
     window.fail_function();
   });
@@ -95872,21 +96053,21 @@ class ProjectPage extends reactExports.Component {
     );
   }
 }
-function getHomeQuery(callBackFunction = (_data) => console.log("success")) {
+function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
   $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
     callBackFunction(data);
   }).fail(function(error) {
     window.fail_function();
   });
 }
-function getLibraryQuery(callBackFunction = (_data) => console.log("success")) {
+function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
   $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
     callBackFunction(data);
   }).fail(function(error) {
     window.fail_function();
   });
 }
-function getFavouritesQuery(callBackFunction = (_data) => console.log("success")) {
+function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
   $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
     callBackFunction(data);
   }).fail(function(error) {
@@ -97302,9 +97483,7 @@ const getAppComponent = () => {
       return true;
     }
     case "workflowDetailView": {
-      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData);
-      workflowWrapper.init();
-      return true;
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Workflow, { ...COURSEFLOW_APP.contextData });
     }
   }
   return null;

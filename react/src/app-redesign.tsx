@@ -121,9 +121,10 @@ const getAppComponent = () => {
       return true
     }
     case 'workflowDetailView': {
-      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
-      workflowWrapper.init()
-      return true
+      // const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
+      return <Workflow {...COURSEFLOW_APP.contextData} />
+      // workflowWrapper.render($('#container'))
+      //return true
     }
   }
   return null

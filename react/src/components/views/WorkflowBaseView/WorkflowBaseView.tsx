@@ -67,7 +67,7 @@ type OwnProps = {
     projectPermission: number
     alwaysStatic: boolean
   }
-  websocket: WebSocket
+  // websocket: WebSocket
 } & EditableComponentProps
 
 type PropsType = ConnectedProps & OwnProps
@@ -105,7 +105,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private selection_manager: SelectionManager
   private renderMethod: (container, view_type: ViewType) => void
   private container: any
-  private websocket: any
+  // private websocket: any
   private always_static: boolean
   private user_id: any
   private project_permission: number
@@ -689,12 +689,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   UserBar = () => {
     if (!this.always_static) {
       return (
-        <ConnectionBar
-          user_id={this.context.user_id}
-          websocket={this.websocket}
-          // connection_update_receive={this.context.connection_update_received}
-          // renderer={renderer}
-        />
+        <>commecyopm nat</>
+        // <ConnectionBar
+        //   user_id={this.context.user_id}
+        //  // websocket={this.websocket}
+        //   // connection_update_receive={this.context.connection_update_received}
+        //   // renderer={renderer}
+        // />
       )
     }
     return <></>
@@ -1024,6 +1025,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
+    if (!this.workflowId) return <></>
+
     return (
       <>
         {this.addEditable(this.props.data)}
