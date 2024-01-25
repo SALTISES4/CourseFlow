@@ -140,13 +140,13 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
   }
 
   getTotals(): {
-    total_theory: any
-    total_practical: any
-    total_individual: any
-    total_required: any
-    total_time: any
-    general_education: any
-    specific_education: any
+    total_theory: number
+    total_practical: number
+    total_individual: number
+    total_required: number
+    total_time: number
+    general_education: number
+    specific_education: number
   } {
     const nodes_data = this.props.nodes.filter(
       // @todo is this objectset different approach than in state

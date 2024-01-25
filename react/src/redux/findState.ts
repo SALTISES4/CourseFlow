@@ -496,7 +496,12 @@ export const getOutcomeHorizontalLinkByID = (
   console.log('failed to find outcomehorizontallink')
 }
 
-export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
+export type TOutcomeWithDegree = TOutcome & {degree: number}
+export type TSortedOutcomeNodes = {
+  objectset: TObjectSet
+  outcomes: TOutcomeWithDegree[]
+}[]
+export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes): TSortedOutcomeNodes => {
   let outcomenode_ids = []
   for (let i = 0; i < nodes.length; i++) {
     outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set)
@@ -546,15 +551,15 @@ export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes) => {
   return categories
 }
 
-//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
-export type TSortedOutcomesFromOutcomeWorkflowSet = {
+export type TSortedOutcomes = {
   objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
+//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflow_set: number[]
-): TSortedOutcomesFromOutcomeWorkflowSet => {
+): TSortedOutcomes => {
   const outcomeworkflows = Utility.filterThenSortByID(
     state.outcomeworkflow,
     outcomeworkflow_set
