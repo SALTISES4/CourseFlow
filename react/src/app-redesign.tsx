@@ -66,8 +66,10 @@ const cache = createCache({
   nonce: window.cf_nonce
 })
 
-// contextData
-// set in python views and prepped in react_renderer.html
+/**
+ * contextData
+ * set in python views and prepped in react_renderer.html
+ */
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     /*******************************************************
@@ -116,12 +118,12 @@ const getAppComponent = () => {
       const workflowComparisonWrapper = new Comparison(thisContextData)
       workflowComparisonWrapper.render($('#container'))
 
-      return null
+      return true
     }
     case 'workflowDetailView': {
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
       workflowWrapper.init()
-      return null
+      return true
     }
   }
   return null
@@ -133,6 +135,7 @@ window.addEventListener('load', () => {
   // Delay the execution by 2 seconds
   setTimeout(() => {
     const content = getAppComponent()
+    if (!content) return
 
     const target = document.querySelector('#reactRoot')
     if (target) {

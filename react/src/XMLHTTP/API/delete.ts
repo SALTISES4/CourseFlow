@@ -11,7 +11,6 @@ export function deleteSelfQuery(
   if (soft) path = COURSEFLOW_APP.config.post_paths.delete_self_soft
   else path = COURSEFLOW_APP.config.post_paths.delete_self
 
-  try {
     $.post(path, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
@@ -20,10 +19,10 @@ export function deleteSelfQuery(
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
+    })  .fail(function (error) {
+      // Handle error specific to the AJAX request
+      window.fail_function()
     })
-  } catch (err) {
-    window.fail_function()
-  }
 }
 
 //Causes the specified object to undelete itself
@@ -32,7 +31,6 @@ export function restoreSelfQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  try {
     $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
@@ -41,8 +39,8 @@ export function restoreSelfQuery(
       console.log(data)
       if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
+    })  .fail(function (error) {
+      // Handle error specific to the AJAX request
+      window.fail_function()
     })
-  } catch (err) {
-    window.fail_function()
-  }
 }

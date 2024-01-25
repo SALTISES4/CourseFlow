@@ -144,9 +144,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openImportDialog: false
     } as StateType
 
-    console.log('this.context.workflowID')
-    console.log(this.context.workflowID)
-
     this.readOnly = this.context.read_only
     this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager

@@ -34511,44 +34511,40 @@ ${latestSubscriptionCallbackError.current.stack}
       this.state = {};
     }
   }
-  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data) => console.log("success")) {
     let path;
     if (soft)
       path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
     else
       path = COURSEFLOW_APP.config.post_paths.delete_self;
-    try {
-      $.post(path, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        console.log("deleteSelfQuery data");
-        console.log(data);
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(path, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      console.log("deleteSelfQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        console.log("restoreSelfQuery data");
-        console.log(data);
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      console.log("restoreSelfQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class RestoreBarItem extends ComponentWithToggleDrop {
     /*******************************************************
@@ -38626,143 +38622,85 @@ ${latestSubscriptionCallbackError.current.stack}
       );
     }
   }
-  function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
-    const t = 1e3;
-    const previousCall = document.lastUpdateCall;
-    document.lastUpdateCall = {
-      time: Date.now(),
-      id: objectID,
-      type: objectType,
-      field: Object.keys(json)[0]
-    };
-    if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-      clearTimeout(document.lastUpdateCallTimer);
-    }
-    if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-      document.lastUpdateCallFunction();
-    }
-    const post_object = {
+  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json),
-      changeFieldID: 0
-    };
-    if (changeField) {
-      post_object.changeFieldID = // @ts-ignore
-      COURSEFLOW_APP.contextData.changeFieldID;
-    }
-    document.lastUpdateCallFunction = () => {
-      try {
-        $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-          function(data) {
-            if (data.action === VERB.POSTED) {
-              callBackFunction(_data);
-            } else
-              window.fail_function(data.action);
-          }
-        );
-      } catch (err) {
-        window.fail_function();
-      }
-    };
-    document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-  }
-  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        data: JSON.stringify(json)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+      data: JSON.stringify(json)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      $(".ui-draggable").draggable("disable");
-      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-        function(data) {
-          if (data.action === VERB.POSTED)
-            callBackFunction(data);
-          else
-            window.fail_function(data.action);
-          $(".ui-draggable").draggable("enable");
-          COURSEFLOW_APP.tinyLoader.endLoad();
-        }
-      );
-    } catch (err) {
-      window.fail_function("The item failed to be inserted.");
-      console.log(err);
-    }
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+      $(".ui-draggable").draggable("enable");
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    }).fail(function(error) {
+      window.fail_function();
+    });
   }
   function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      COURSEFLOW_APP.tinyLoader.startLoad();
-      $(".ui-draggable").draggable("disable");
-      $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        newPosition: JSON.stringify(newPosition),
-        throughType: JSON.stringify(throughType),
-        inserted: JSON.stringify(true),
-        allowDifferent: JSON.stringify(true)
-      }).done(function(data) {
-        if (data.action === "posted")
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      });
-    } catch (err) {
-      window.fail_function("The item failed to be inserted.");
-      console.log(err);
-    }
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      newPosition: JSON.stringify(newPosition),
+      throughType: JSON.stringify(throughType),
+      inserted: JSON.stringify(true),
+      allowDifferent: JSON.stringify(true)
+    }).done(function(data) {
+      if (data.action === "posted")
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+      $(".ui-draggable").draggable("enable");
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    }).fail(function(error) {
+      window.fail_function();
+    });
   }
   function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-        nodePk: JSON.stringify(nodeID),
-        outcomePk: JSON.stringify(outcomeID),
-        degree: JSON.stringify(value)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+      nodePk: JSON.stringify(nodeID),
+      outcomePk: JSON.stringify(outcomeID),
+      degree: JSON.stringify(value)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(
-        COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-        {
-          outcomePk: JSON.stringify(outcomePk),
-          objectID: JSON.stringify(outcome2Pk),
-          objectType: JSON.stringify("outcome"),
-          degree: JSON.stringify(degree)
-        }
-      ).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
+      outcomePk: JSON.stringify(outcomePk),
+      objectID: JSON.stringify(outcome2Pk),
+      objectType: JSON.stringify("outcome"),
+      degree: JSON.stringify(degree)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
     $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
@@ -38773,57 +38711,53 @@ ${latestSubscriptionCallbackError.current.stack}
         callBackFunction(data);
       else
         window.fail_function(data.action);
+    }).fail(function(error) {
+      window.fail_function();
     });
   }
   function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-        weekPk: JSON.stringify(weekPk),
-        is_strategy: JSON.stringify(is_strategy)
-      }).done(function(data) {
-        console.log("toggleStrategyQuery data");
-        console.log(data);
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
+    }).done(function(data) {
+      console.log("toggleStrategyQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        objectsetPk: JSON.stringify(objectsetPk),
-        add: JSON.stringify(add2)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      objectsetPk: JSON.stringify(objectsetPk),
+      add: JSON.stringify(add2)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        favourite: JSON.stringify(favourite)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      favourite: JSON.stringify(favourite)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class WorkflowCard extends reactExports.Component {
     constructor(props) {
@@ -39055,7 +38989,7 @@ ${latestSubscriptionCallbackError.current.stack}
         $(document).off(throughType + "-dropped");
       });
   }
-  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data) => console.log("success")) {
     const sendPostRequest = (url, data) => {
       $.post(url, data).done(function(response) {
         console.log("duplicateBaseItemQuery response");
@@ -39065,47 +38999,42 @@ ${latestSubscriptionCallbackError.current.stack}
         } else {
           window.fail_function(response.action);
         }
+      }).fail(function(error) {
+        window.fail_function();
       });
     };
-    try {
-      const itemPkString = JSON.stringify(itemPk);
-      const projectPkString = JSON.stringify(projectID);
-      if (objectType === OBJECT_TYPE.PROJECT) {
-        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-          projectPk: itemPkString
-        });
-      } else if (objectType === OBJECT_TYPE.STRATEGY) {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-          { workflowPk: itemPkString }
-        );
-      } else {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-          { workflowPk: itemPkString, projectPk: projectPkString }
-        );
-      }
-    } catch (err) {
-      window.fail_function();
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
+        workflowPk: itemPkString
+      });
+    } else {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
+        workflowPk: itemPkString,
+        projectPk: projectPkString
+      });
     }
   }
-  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        throughType: JSON.stringify(throughType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class UtilityLoader {
     constructor(identifier2) {
@@ -43527,7 +43456,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     spacing.mui = true;
     return spacing;
   }
-  function compose$1(...styles2) {
+  function compose(...styles2) {
     const handlers = styles2.reduce((acc, style2) => {
       style2.filterProps.forEach((prop) => {
         acc[prop] = style2;
@@ -43611,7 +43540,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     borderRadius: responsivePropType$1
   } : {};
   borderRadius.filterProps = ["borderRadius"];
-  compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
+  compose(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
   const gap = (props) => {
     if (props.gap !== void 0 && props.gap !== null) {
       const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
@@ -43681,7 +43610,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const gridArea = style$2({
     prop: "gridArea"
   });
-  compose$1(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
+  compose(gap, columnGap, rowGap, gridColumn, gridRow, gridAutoFlow, gridAutoColumns, gridAutoRows, gridTemplateColumns, gridTemplateRows, gridTemplateAreas, gridArea);
   function paletteTransform(value, userValue) {
     if (userValue === "grey") {
       return userValue;
@@ -43704,7 +43633,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     themeKey: "palette",
     transform: paletteTransform
   });
-  compose$1(color, bgcolor, backgroundColor);
+  compose(color, bgcolor, backgroundColor);
   function sizingTransform(value) {
     return value <= 1 && value !== 0 ? `${value * 100}%` : value;
   }
@@ -43765,7 +43694,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const boxSizing = style$2({
     prop: "boxSizing"
   });
-  compose$1(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
+  compose(width, maxWidth, minWidth, height, maxHeight, minHeight, boxSizing);
   const defaultSxConfig = {
     // borders
     border: {
@@ -62037,7 +61966,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       $("#popup-container")[0]
     );
   }
-  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
         workflowPk: JSON.stringify(workflowPk)
@@ -62051,7 +61980,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
         workflowPk: JSON.stringify(workflowPk)
@@ -62067,7 +61996,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
         nodePk: JSON.stringify(nodePk)
@@ -62083,7 +62012,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
@@ -62102,7 +62031,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
@@ -62121,7 +62050,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
@@ -62140,7 +62069,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowContextQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowContextQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
         workflowPk: JSON.stringify(workflowPk)
@@ -62156,7 +62085,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+  function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data) => console.log("success")) {
     $.post(
       COURSEFLOW_APP.config.post_paths.get_target_projects,
       {
@@ -62175,7 +62104,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       alert("Failed to find potential projects.");
     }
   }
-  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
@@ -62192,7 +62121,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
         workflowPk: JSON.stringify(workflowPk)
@@ -62210,34 +62139,28 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
-    console.log("projectPk");
-    console.log(projectPk);
-    console.log(COURSEFLOW_APP.config.post_paths.get_workflows_for_project);
-    try {
-      console.log($.post);
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-        projectPk
-      }).done(function(_data2) {
-        console.log("dead");
-        callBackFunction(_data2);
-      });
-    } catch (err) {
-      console.log("err");
-      console.log(err);
+  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+      projectPk
+    }).done(function(_data) {
+      console.log("dead");
+      callBackFunction(_data);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+  function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data) => console.log("success")) {
     $.post(
       COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
       {
         nodePk: JSON.stringify(nodeData.id)
       },
-      (_data2) => {
+      (_data) => {
         callBackFunction();
       }
-    );
+    ).fail(function(error) {
+      window.fail_function();
+    });
   }
   function getWorkflowSelectMenuQuery(projectPk, type_filter, get_strategies, self_only, callBackFunction) {
     $.post(
@@ -62569,24 +62492,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length;
       return hasChanged ? nextState : state;
     };
-  }
-  function compose() {
-    for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
-      funcs[_key] = arguments[_key];
-    }
-    if (funcs.length === 0) {
-      return function(arg) {
-        return arg;
-      };
-    }
-    if (funcs.length === 1) {
-      return funcs[0];
-    }
-    return funcs.reduce(function(a, b) {
-      return function() {
-        return a(b.apply(void 0, arguments));
-      };
-    });
   }
   function parentNodeReducer(state = [], action) {
     switch (action.type) {
@@ -64587,119 +64492,103 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   __publicField(EditableComponent, "contextType", WorkFlowConfigContext);
-  function removeComment(objectID, objectType, commentPk, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
-        objectID: JSON.stringify(objectID),
-        commentPk: JSON.stringify(commentPk),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function removeComment(objectID, objectType, commentPk, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
+      objectID: JSON.stringify(objectID),
+      commentPk: JSON.stringify(commentPk),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function removeAllComments(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function removeAllComments(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function addComment(objectID, objectType, text, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        text: JSON.stringify(text)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function addComment(objectID, objectType, text, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      text: JSON.stringify(text)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        console.log("getCommentsForObject data");
-        console.log(data);
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      console.log("getCommentsForObject data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        permission_user: JSON.stringify(user_id),
-        permission_type: JSON.stringify(permission_type)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.error);
-      });
-    } catch (err) {
+  function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      permission_user: JSON.stringify(user_id),
+      permission_type: JSON.stringify(permission_type)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.error);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
     if (["program", "course", "activity"].indexOf(objectType) >= 0)
       objectType = "workflow";
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
-      console.log("err");
-      console.log(err);
+    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-        filter: JSON.stringify(filter)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function getUserListQuery(filter, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+      filter: JSON.stringify(filter)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class CommentBox extends ComponentWithToggleDrop {
     constructor(props) {
@@ -65048,127 +64937,113 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
-  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-        weekPk: JSON.stringify(weekPk),
-        position: JSON.stringify(position2),
-        columnPk: JSON.stringify(column2),
-        columnType: JSON.stringify(column_type)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED) {
-          callBackFunction(data);
-        } else {
-          window.fail_function(data.action);
-        }
-      });
-    } catch (err) {
+  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
+      weekPk: JSON.stringify(weekPk),
+      position: JSON.stringify(position2),
+      columnPk: JSON.stringify(column2),
+      columnType: JSON.stringify(column_type)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(data);
+      } else {
+        window.fail_function(data.action);
+      }
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-        workflowPk: JSON.stringify(workflowPk),
-        objectsetPk: JSON.stringify(object_set_id)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk: JSON.stringify(workflowPk),
+      objectsetPk: JSON.stringify(object_set_id)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-        workflowPk: JSON.stringify(workflowPk),
-        position: JSON.stringify(position2),
-        objectID: JSON.stringify(strategyPk),
-        objectType: JSON.stringify("workflow")
-      }).done(function(data) {
-        if (data.action === VERB.POSTED) {
-          callBackFunction(data);
-        } else {
-          window.fail_function(data.action);
-        }
-      });
-    } catch (err) {
+  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+      workflowPk: JSON.stringify(workflowPk),
+      position: JSON.stringify(position2),
+      objectID: JSON.stringify(strategyPk),
+      objectType: JSON.stringify("workflow")
+    }).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(data);
+      } else {
+        window.fail_function(data.action);
+      }
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-        nodePk: JSON.stringify(source_node),
-        objectID: JSON.stringify(target_node),
-        objectType: JSON.stringify("node"),
-        sourcePort: JSON.stringify(source_port),
-        targetPort: JSON.stringify(target_port)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+      nodePk: JSON.stringify(source_node),
+      objectID: JSON.stringify(target_node),
+      objectType: JSON.stringify("node"),
+      sourcePort: JSON.stringify(source_port),
+      targetPort: JSON.stringify(target_port)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function insertChildQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        throughType: JSON.stringify(throughType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
+  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-        projectPk: JSON.stringify(projectPk),
-        term: JSON.stringify(term),
-        title: JSON.stringify(title),
-        translation_plural: JSON.stringify(translation_plural)
-      }).done(function(data) {
-        console.log("addTerminologyQuery query");
-        console.log(data);
-        if (data.action === VERB.POSTED) {
-          callBackFunction(data);
-        } else {
-          window.fail_function(data.action);
-        }
-      });
-    } catch (err) {
+  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+      projectPk: JSON.stringify(projectPk),
+      term: JSON.stringify(term),
+      title: JSON.stringify(title),
+      translation_plural: JSON.stringify(translation_plural)
+    }).done(function(data) {
+      console.log("addTerminologyQuery query");
+      console.log(data);
+      if (data.action === VERB.POSTED) {
+        callBackFunction(data);
+      } else {
+        window.fail_function(data.action);
+      }
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class EditableComponentWithActions extends EditableComponentWithComments {
     constructor() {
@@ -93169,8 +93044,6 @@ Please use another name.` : formatMuiErrorMessage(18));
         openExportDialog: false,
         openImportDialog: false
       };
-      console.log("this.context.workflowID");
-      console.log(this.context.workflowID);
       this.readOnly = this.context.read_only;
       this.workflowId = this.context.workflowID;
       this.selection_manager = this.context.selection_manager;
@@ -93559,7 +93432,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     key: "emotion",
     nonce: window.cf_nonce
   });
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   class Workflow {
     constructor(propsConfig) {
       __publicField(this, "message_queue");
@@ -93588,16 +93460,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       __publicField(this, "add_comments");
       __publicField(this, "is_student");
       __publicField(this, "selection_manager");
-      __publicField(this, "child_data_completed");
-      __publicField(this, "child_data_needed");
-      __publicField(this, "fetching_child_data");
+      // private child_data_completed: number
+      // private child_data_needed: any[]
+      // private fetching_child_data: boolean
       __publicField(this, "getWorkflowData");
       __publicField(this, "getWorkflowParentData");
       __publicField(this, "getWorkflowChildData");
       __publicField(this, "websocket");
-      __publicField(this, "has_disconnected");
-      __publicField(this, "has_rendered");
-      __publicField(this, "is_static");
+      // private has_disconnected: boolean
+      // private has_rendered: boolean
+      // private is_static: boolean
       __publicField(this, "store");
       // NOTE: this is not yet a React component, so its misleading to use the same
       // 'props' value in the constructor since they behave differently
@@ -93606,7 +93478,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       __publicField(this, "view_type");
       __publicField(this, "workflowRender");
       __publicField(this, "locks");
-      __publicField(this, "silent_connect_fail");
       const {
         column_choices,
         context_choices,
@@ -93618,8 +93489,6 @@ Please use another name.` : formatMuiErrorMessage(18));
         is_strategy,
         project
       } = propsConfig.workflow_data_package;
-      this.message_queue = [];
-      this.messages_queued = true;
       this.public_view = propsConfig.public_view;
       this.workflowID = propsConfig.workflow_model_id;
       this.column_choices = column_choices;
@@ -93635,9 +93504,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       this.user_id = propsConfig.user_id;
       this.read_only = true;
       this.workflowRender = this.render.bind(this);
-      if (this.public_view) {
-        this.always_static = true;
-      }
       if (!this.is_strategy && this.project.object_permission) {
         this.project_permission = this.project.object_permission.permission_type;
       }
@@ -93662,253 +93528,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       this.getWorkflowChildData = this.public_view ? getPublicWorkflowChildDataQuery : getWorkflowChildDataQuery;
     }
     //
-    init() {
-      if (!this.always_static) {
-        this.connect();
-      } else {
-        this.connection_opened();
-      }
-    }
-    /*******************************************************
-     * WEBSOCKET MANAGER
-     *******************************************************/
-    connect() {
-      const websocket_prefix = window.location.protocol === "https:" ? "wss" : "ws";
-      this.websocket = new WebSocket(
-        `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
-      );
-      this.websocket.onmessage = (e) => {
-        if (this.messages_queued) {
-          this.message_queue.push(e);
-        } else {
-          this.onMessageReceived(e);
-        }
-      };
-      this.websocket.onopen = () => {
-        this.has_rendered = true;
-        this.connection_opened();
-      };
-      if (this.websocket.readyState === 1) {
-        this.connection_opened();
-      }
-      this.websocket.onclose = (e) => this.handleSocketClose(e);
-    }
-    handleSocketClose(e) {
-      if (e.code === 1e3)
-        return;
-      if (!this.has_rendered) {
-        this.connection_opened(true);
-      } else {
-        this.attemptReconnect();
-      }
-      this.is_static = true;
-      this.has_disconnected = true;
-      this.has_rendered = true;
-      if (!this.silent_connect_fail && !this.has_disconnected) {
-        alert(
-          window.gettext(
-            "Unable to establish connection to the server, or connection has been lost."
-          )
-        );
-      }
-    }
-    attemptReconnect() {
-      setTimeout(() => this.init(), 3e4);
-    }
-    onMessageReceived(e) {
-      this.parsemessage(e);
-    }
-    /*******************************************************
-     * // WEBSOCKET MANAGER
-     *******************************************************/
-    // Fetches the data for the given child workflow
-    getDataForChildWorkflow() {
-      if (this.child_data_completed === this.child_data_needed.length - 1) {
-        this.fetching_child_data = false;
-        return;
-      }
-      this.fetching_child_data = true;
-      this.child_data_completed++;
-      this.getWorkflowChildData(
-        this.child_data_needed[this.child_data_completed],
-        (response) => {
-          this.store.dispatch(
-            ActionCreator.refreshStoreData(response.data_package)
-          );
-          setTimeout(() => this.getDataForChildWorkflow(), 50);
-        }
-      );
-    }
-    // Lets the renderer know that it must load the child data for that workflow
-    childWorkflowDataNeeded(node_id) {
-      if (this.child_data_needed.indexOf(node_id) < 0) {
-        this.child_data_needed.push(node_id);
-        if (!this.fetching_child_data) {
-          setTimeout(() => this.getDataForChildWorkflow(), 50);
-        }
-      }
-    }
-    connection_opened(reconnect = false) {
-      console.log("connection_opened");
-      this.getWorkflowData(this.workflowID, (response) => {
-        var _a2, _b;
-        this.unread_comments = (_a2 = response.data_package) == null ? void 0 : _a2.unread_comments;
-        this.store = createStore(
-          rootWorkflowReducer,
-          // @ts-ignore @todo check out data_package type
-          response.data_package,
-          composeEnhancers()
-        );
-        this.render($("#container"));
-        this.clear_queue((_b = response.data_package) == null ? void 0 : _b.workflow.edit_count);
-        if (reconnect) {
-          this.attempt_reconnect();
-        }
-      });
-    }
-    clear_queue(edit_count) {
-      let started_edits = false;
-      while (this.message_queue.length > 0) {
-        const message = this.message_queue[0];
-        if (started_edits) {
-          this.parsemessage(message);
-        } else if (message.edit_count && parseInt(message.edit_count) >= edit_count) {
-          started_edits = true;
-          this.message_queue.splice(0, 1);
-        }
-      }
-      this.messages_queued = false;
-    }
-    /*******************************************************
-     * THESE ARE UPDATES FROM PUB MESSAGE
-     *******************************************************/
-    parsemessage(e) {
-      const data = JSON.parse(e.data);
-      switch (data.type) {
-        case "workflow_action":
-          this.store.dispatch(data.action);
-          break;
-        case "lock_update":
-          this.lock_update_received(data.action);
-          break;
-        case "connection_update":
-          this.connection_update_received(data);
-          break;
-        case "workflow_parent_updated":
-          this.parent_workflow_updated();
-          break;
-        case "workflow_child_updated":
-          this.child_workflow_updated(data.edit_count, data.child_workflow_id);
-          break;
-      }
-    }
-    lock_update_received(data) {
-      const object_type = data.object_type;
-      const object_id = data.object_id;
-      if (!this.locks[object_type]) {
-        this.locks[object_type] = {};
-      }
-      if (this.locks[object_type][object_id]) {
-        clearTimeout(this.locks[object_type][object_id]);
-      }
-      this.store.dispatch(
-        ActionCreator.createLockAction(
-          object_id,
-          object_type,
-          data.lock,
-          data.user_id,
-          data.user_colour
-        )
-      );
-      if (data.lock) {
-        this.locks[object_type][object_id] = setTimeout(() => {
-          this.store.dispatch(
-            ActionCreator.createLockAction(object_id, object_type, false)
-          );
-        }, data.expires - Date.now());
-      } else {
-        this.locks[object_type][object_id] = null;
-      }
-    }
-    // @todo this is weird becuase connection_update_received is called in
-    // connectedUsers but expects data to be well defined
-    connection_update_received(data) {
-      console.log("A connection update was received, but not handled.");
-    }
-    parent_workflow_updated() {
-      this.messages_queued = true;
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          ActionCreator.replaceStoreData({
-            parent_node: [],
-            parent_workflow: []
-          })
-        );
-        this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
-        this.clear_queue(0);
-      });
-    }
-    child_workflow_updated(edit_count, child_workflow_id) {
-      this.messages_queued = true;
-      const state = this.store.getState();
-      const node2 = state.node.find(
-        (node22) => node22.linked_workflow == child_workflow_id
-      );
-      if (!node2) {
-        return;
-      }
-      this.getWorkflowChildData(node2.id, (response) => {
-        this.store.dispatch(ActionCreator.refreshStoreData(response.data_package));
-        this.clear_queue(0);
-      });
-    }
-    /*******************************************************
-     * END PARSE MESSAGE LOGIC
-     *******************************************************/
-    // @todo how used?
-    micro_update(obj) {
-      if (this.websocket) {
-        this.websocket.send(
-          JSON.stringify({
-            type: "micro_update",
-            action: obj
-          })
-        );
-      }
-    }
-    // @todo where used?
-    change_field(id, object_type, field, value) {
-      const json = {};
-      json[field] = value;
-      this.store.dispatch(ActionCreator.changeField(id, object_type, json));
-      updateValueQuery(id, object_type, json, true);
-    }
-    lock_update(obj, time, lock) {
-      if (this.websocket) {
-        this.websocket.send(
-          JSON.stringify({
-            type: "lock_update",
-            lock: {
-              ...obj,
-              expires: Date.now() + time,
-              user_id: this.user_id,
-              // @ts-ignore
-              user_colour: COURSEFLOW_APP.contextData.myColour,
-              lock
-            }
-          })
-        );
-      }
-    }
     /*******************************************************
      * REACT TO MOVE
      *******************************************************/
     render(container, view_type = ViewType.WORKFLOW) {
       this.locks = {};
       this.selection_manager = new SelectionManager(this.read_only);
-      this.child_data_needed = [];
-      this.child_data_completed = -1;
-      this.fetching_child_data = false;
       this.view_type = view_type;
       reactDomExports.render(/* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowLoader, {}), container[0]);
       this.container = container;
@@ -95078,17 +94703,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function searchAllObjectsQuery(filter, data, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-        filter: JSON.stringify(filter),
-        additional_data: JSON.stringify(data)
-      }).done(function(_data2) {
-        callBackFunction(_data2);
-      });
-    } catch (err) {
+  function searchAllObjectsQuery(filter, data, callBackFunction = (_data) => console.log("success")) {
+    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: JSON.stringify(filter),
+      additional_data: JSON.stringify(data)
+    }).done(function(_data) {
+      callBackFunction(_data);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class WorkflowFilter extends reactExports.Component {
     constructor(props) {
@@ -96253,32 +95876,26 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function getHomeQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
+  function getHomeQuery(callBackFunction = (_data) => console.log("success")) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_home).done(function(data) {
+      callBackFunction(data);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
+  function getLibraryQuery(callBackFunction = (_data) => console.log("success")) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+      callBackFunction(data);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
-  function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
-        callBackFunction(data);
-      });
-    } catch (err) {
+  function getFavouritesQuery(callBackFunction = (_data) => console.log("success")) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
+      callBackFunction(data);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   }
   class LibraryPage extends reactExports.Component {
     constructor(props) {
@@ -97686,12 +97303,12 @@ Please use another name.` : formatMuiErrorMessage(18));
         };
         const workflowComparisonWrapper = new Comparison(thisContextData);
         workflowComparisonWrapper.render($("#container"));
-        return null;
+        return true;
       }
       case "workflowDetailView": {
         const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData);
         workflowWrapper.init();
-        return null;
+        return true;
       }
     }
     return null;
@@ -97699,6 +97316,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   window.addEventListener("load", () => {
     setTimeout(() => {
       const content = getAppComponent();
+      if (!content)
+        return;
       const target = document.querySelector("#reactRoot");
       if (target) {
         const componentRoot = createRoot(target);

@@ -14,14 +14,15 @@ export function searchAllObjectsQuery(
   callBackFunction = (_data: SearchAllObjectsQueryResp) =>
     console.log('success')
 ) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function (_data: SearchAllObjectsQueryResp) {
+  $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+    filter: JSON.stringify(filter),
+    additional_data: JSON.stringify(data)
+  })
+    .done(function (_data: SearchAllObjectsQueryResp) {
       callBackFunction(_data)
     })
-  } catch (err) {
-    window.fail_function()
-  }
+    .fail(function (error) {
+      // Handle error specific to the AJAX request
+      window.fail_function()
+    })
 }

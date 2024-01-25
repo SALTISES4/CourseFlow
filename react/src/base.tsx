@@ -9,9 +9,8 @@ const Base = ({ children }: PropsType) => {
   return (
     <>
       <div className="main-wrapper">
-        {/*target for sibebar.jsx*/}
         <div data-component="sidebar">
-          <Sidebar />
+          <Sidebar/>
         </div>
 
         {/*@todo see https://course-flow.atlassian.net/browse/COUR-246*/}
@@ -19,7 +18,7 @@ const Base = ({ children }: PropsType) => {
 
         <div className="main-block">
           <div data-component="topbar">
-            <TopBar />
+            <TopBar/>
           </div>
 
           <div className="topnav hide-print">

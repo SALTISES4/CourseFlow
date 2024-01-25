@@ -22,7 +22,7 @@
       env: {
         //  NODE_ENV: "production"
       }
-    }
+    };
 
     // create our global CF namespace
     const cf = {}
@@ -31,7 +31,7 @@
   </script>
 
   <script nonce="{{ request.csp_nonce }}">
-    window.cf_nonce = "{{ request.csp_nonce }}"
+      window.cf_nonce = "{{ request.csp_nonce }}"
   </script>
 
   {% include 'course_flow/base/static_scripts.html' %}
@@ -43,12 +43,14 @@
 
 <body id="site">
 
-<div id="reactRoot"/>
-{% block container %} {% endblock %}
+<div id="reactRoot">
+  <!--react app placeholder -->
+</div>
+
+
 {% block body %} {% endblock %}
-<footer>
-  {% block foot %}{% endblock %}
-</footer>
+{% block container %} {% endblock %}
+
 {% csrf_token %}
 </body>
 
