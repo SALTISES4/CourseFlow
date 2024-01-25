@@ -25,13 +25,13 @@ type OwnProps = {
 
 type ConnectedProps = {
   nodes: any
-  general_education: any
-  specific_education: any
-  total_theory: any
-  total_practical: any
-  total_individual: any
-  total_time: any
-  total_required: any
+  general_education: number
+  specific_education: number
+  total_theory: number
+  total_practical: number
+  total_individual: number
+  total_time: number
+  total_required: number
 }
 type PropsType = OwnProps & ConnectedProps
 class GridWeekUnconnected extends EditableComponentWithComments<

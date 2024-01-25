@@ -11,13 +11,13 @@ import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
   data: any
-  total_theory: any
-  total_practical: any
-  total_individual: any
-  total_required: any
-  total_time: any
-  general_education: any
-  specific_education: any
+  total_theory: number
+  total_practical: number
+  total_individual: number
+  total_required: number
+  total_time: number
+  general_education: number
+  specific_education: number
   object_sets: AppState['objectset']
   nodes: any
 }
