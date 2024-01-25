@@ -40,12 +40,12 @@ const Sidebar = () => {
     !!sessionStorage.getItem('collapsed_sidebar')
   )
 
-  const { isPending, isError, data } = useQuery({
+  const { isPending, isError, data } = useQuery<SidebarAPIResponse>({
     queryKey: ['sidebar'],
-    queryFn: async (): Promise<SidebarAPIResponse> => {
-      const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar)
-      return resp.json()
-    }
+    queryFn: () =>
+      fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then((response) =>
+        response.json()
+      )
   })
 
   if (isPending || isError) {

@@ -97442,10 +97442,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     );
     const { isPending, isError: isError2, data } = useQuery({
       queryKey: ["sidebar"],
-      queryFn: async () => {
-        const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar);
-        return resp.json();
-      }
+      queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then(
+        (response) => response.json()
+      )
     });
     if (isPending || isError2) {
       return null;
@@ -97798,10 +97797,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
     const { isPending, isError: isError2, data } = useQuery({
       queryKey: ["topbar"],
-      queryFn: async () => {
-        const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar);
-        return resp.json();
-      }
+      queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then(
+        (response) => response.json()
+      )
     });
     if (isPending || isError2) {
       return null;
@@ -97969,14 +97967,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-controls": "notifications-menu",
               "aria-haspopup": "true",
               onClick: handleNotificationsMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Badge$1,
-                {
-                  badgeContent: data.notifications.unread,
-                  color: "primary",
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {})
-                }
-              )
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: data.notifications.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {}) })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(

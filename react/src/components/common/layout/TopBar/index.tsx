@@ -94,12 +94,12 @@ const TopBar = () => {
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
 
-  const { isPending, isError, data } = useQuery({
+  const { isPending, isError, data } = useQuery<TopBarAPIResponse>({
     queryKey: ['topbar'],
-    queryFn: async (): Promise<TopBarAPIResponse> => {
-      const resp = await fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar)
-      return resp.json()
-    }
+    queryFn: () =>
+      fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then((response) =>
+        response.json()
+      )
   })
 
   if (isPending || isError) {
@@ -295,10 +295,7 @@ const TopBar = () => {
               aria-haspopup="true"
               onClick={handleNotificationsMenuOpen}
             >
-              <Badge
-                badgeContent={data.notifications.unread}
-                color="primary"
-              >
+              <Badge badgeContent={data.notifications.unread} color="primary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
