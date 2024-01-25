@@ -2,11 +2,11 @@ import * as React from 'react'
 // import $ from 'jquery'
 
 type StateProps = {
-  type: any
+  type: string
 }
 type PropsType = {
   data: any
-  actionFunction: any
+  actionFunction: () => any
 }
 
 class ExportMenu extends React.Component<PropsType, StateProps> {

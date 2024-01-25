@@ -6,21 +6,22 @@ import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
+import { EUser } from '@XMLHTTP/types/entity'
 
 type PropsType = {
   data: any
   actionFunction: any
 }
 type StateType = {
-  owner: any
-  edit: any[]
-  view: any[]
-  comment: any[]
-  student: any[]
-  userlist: any[]
-  cannot_change: any[]
-  published?: any
-  public_view?: any
+  owner: EUser
+  edit: EUser[]
+  view: EUser[]
+  comment: EUser[]
+  student: EUser[]
+  userlist: EUser[]
+  cannot_change: number[]
+  published?: boolean
+  public_view?: boolean
 }
 
 /*******************************************************

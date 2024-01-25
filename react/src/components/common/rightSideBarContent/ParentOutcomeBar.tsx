@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
+import { getSortedOutcomeNodesFromNodes, TSortedOutcomeNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
 import { AppState } from '@cfRedux/types/type'
 import CompletionImg from '@cfUIComponents/CompletionImg'
@@ -13,7 +13,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
  * parent workflow.
  */
 type ConnectedProps = {
-  data: any
+  data: TSortedOutcomeNodes
   workflow: AppState['workflow']
   parent_nodes: AppState['parent_node']
 }
@@ -47,17 +47,17 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
               <div key={index} className="parent-outcome-node">
                 {/* @todo double check these vars  */}
                 <CompletionImg
-                  outcomesType={outcomeItem.degree}
-                  completionStatus={1}
+                  outcomesType={1}
+                  completionStatus={outcomeItem.degree}
                 />
                 <ParentOutcome
                   key={outcomeItem.id}
                   objectID={outcomeItem.id}
                   // renderer={this.props.renderer} // @todo previous props were undefined, are they needed?
                   // @ts-ignore // @todo
-                  parentID={this.context.parentID}
+                  parentID={null}
                   readOnly={this.context.read_only}
-                  throughParentID={this.props.data.id}
+                  throughParentID={null}
                 />
               </div>
             ))}
