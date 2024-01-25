@@ -4,17 +4,12 @@ from django.views.generic import DetailView
 from rest_framework.renderers import JSONRenderer
 
 from course_flow.models.workflow import Workflow
-from course_flow.utils import get_user_permission, get_user_role
+from course_flow.utils import get_user_permission
 from course_flow.view_utils import get_workflow_context_data
-from course_flow.views.mixins import (
-    ContentPublicViewMixin,
-    UserCanViewOrEnrolledMixin,
-)
+from course_flow.views.mixins import ContentPublicViewMixin, UserCanViewMixin
 
 
-class WorkflowDetailView(
-    LoginRequiredMixin, UserCanViewOrEnrolledMixin, DetailView
-):
+class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Workflow
     fields = ["id", "title", "description", "type"]
     template_name = "course_flow/react/common_entrypoint.html"
@@ -29,7 +24,6 @@ class WorkflowDetailView(
         current_user = self.request.user
         workflow = self.get_object()
         user_permission = get_user_permission(workflow, current_user)
-        user_role = get_user_role(workflow, current_user)
 
         context = get_workflow_context_data(
             workflow, context, self.request.user
@@ -39,7 +33,6 @@ class WorkflowDetailView(
             "public_view": False,
             "user_id": current_user.id if current_user else 0,
             "user_name": current_user.username,
-            "user_role": user_role if user_role else 0,
             "user_permission": user_permission,
             "workflow_data_package": context.get("data_package"),
             "workflow_type": workflow.type,
@@ -71,14 +64,12 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
         current_user = self.request.user
         workflow = self.get_object()
         user_permission = get_user_permission(workflow, current_user)
-        user_role = get_user_role(workflow, current_user)
 
         context = get_workflow_context_data(workflow, context, current_user)
         context_data = {
             "public_view": True,
             "user_id": current_user.id if current_user else 0,
             "user_name": current_user.username,
-            "user_role": user_role if user_role else 0,
             "user_permission": user_permission,
             "workflow_data_package": context.data_package,
             "workflow_type": workflow.type,

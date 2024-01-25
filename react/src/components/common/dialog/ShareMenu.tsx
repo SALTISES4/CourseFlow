@@ -4,8 +4,8 @@ import { WorkflowTitle } from '@cfUIComponents'
 // import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
-import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/user'
-import { updateValueInstantQuery } from '@XMLHTTP/API/global'
+import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
+import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 
 type PropsType = {
   data: any
@@ -62,115 +62,84 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     )
   }
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getPublication() {
-    const published = this.state.published
-    const data = this.props.data
-    if (data.type === 'project' || data.is_strategy) {
-      let public_class = 'big-button make-public'
-      let private_class = 'big-button hover-shade make-private'
-
-      if (published) {
-        public_class += ' active'
-      } else {
-        private_class += ' active'
-      }
-
-      let public_disabled = !(data.title && data.title.length > 0)
-
-      if (data.type == 'project') {
-        // @ts-ignore
-        public_disabled |= data.disciplines.length == 0 // @todo not allowed
-      }
-
-      if (!public_disabled && !published) public_class += ' hover-shade'
-      if (public_disabled) public_class += ' disabled'
-      const public_text = window.gettext('Any CourseFlow teacher can view')
-      let disabled_indicator
-
-      if (public_disabled) {
-        const disabled_text =
-          data.type == 'project'
-            ? window.gettext('Title and disciplines are required to publish.')
-            : window.gettext('Title is required to publish.')
-
-        disabled_indicator = (
-          <div className="warning flex-middle">
-            <span className="material-symbols-rounded red">block</span>
-            <div>{disabled_text}</div>
-          </div>
+  togglePublicView(public_view) {
+    if (public_view) {
+      if (
+        window.confirm(
+          window.gettext(
+            'Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow.'
+          )
+        )
+      ) {
+        updateValueInstantQuery(
+          this.props.data.id,
+          'workflow',
+          { public_view: public_view },
+          () => {
+            this.setState({ public_view: public_view })
+          }
         )
       }
-
-      return [
-        <div className="big-buttons-wrapper">
-          <div
-            className={public_class}
-            // @ts-ignore @todo disabled is not allowed on a div
-            disabled={public_disabled}
-            onClick={this.setPublication.bind(this, true && !public_disabled)}
-          >
-            <span className="material-symbols-rounded">public</span>
-            <div className="big-button-title">
-              {window.gettext('Public to CourseFlow')}
-            </div>
-            <div className="big-button-description">{public_text}</div>
-          </div>
-
-          <div
-            className={private_class}
-            onClick={this.setPublication.bind(this, false)}
-          >
-            <span className="material-symbols-rounded filled">
-              visibility_off
-            </span>
-            <div className="big-button-title">{window.gettext('Private')}</div>
-            <div className="big-button-description">
-              {window.gettext('Only added collaborators can view')}
-            </div>
-          </div>
-        </div>,
-        disabled_indicator
-      ]
     } else {
-      let published_icon
-      if (published)
-        published_icon = (
-          <div className="big-buttons-wrapper">
-            <div className="big-button active">
-              <span className="material-symbols-rounded">public</span>
-              <div className="big-button-title">
-                {window.gettext('Project public to CourseFlow')}
-              </div>
-              <div className="big-button-description">
-                {window.gettext('Any CourseFlow teacher can view')}
-              </div>
-            </div>
-          </div>
-        )
-      else
-        published_icon = (
-          <div className="big-buttons-wrapper">
-            <div className="big-button active">
-              <span className="material-symbols-rounded filled">
-                visibility_off
-              </span>
-              <div className="big-button-title">
-                {window.gettext('Project is private')}
-              </div>
-              <div className="big-button-description">
-                {window.gettext('Only added collaborators can view')}
-              </div>
-            </div>
-          </div>
-        )
-      return [published_icon, this.getPublicLink()]
+      updateValueInstantQuery(
+        this.props.data.id,
+        'workflow',
+        { public_view: public_view },
+        () => {
+          this.setState({ public_view: public_view })
+        }
+      )
     }
   }
 
-  getPublicLink() {
+  setPublication(published) {
+    if (published === this.state.published) return
+    const component = this
+    if (
+      !published ||
+      window.confirm(
+        window.gettext(
+          'Are you sure you want to publish this project, making it fully visible to anyone with an account?'
+        )
+      )
+    ) {
+      updateValueInstantQuery(
+        component.props.data.id,
+        component.props.data.type,
+        { published: published },
+        () => component.setState({ published: published })
+      )
+    }
+  }
+
+  setUserPermission(permission_type, user) {
+    COURSEFLOW_APP.tinyLoader.startLoad()
+    setUserPermission(
+      user.id,
+      this.props.data.id,
+      this.props.data.type,
+      permission_type,
+      () => {
+        getUsersForObjectQuery(
+          this.props.data.id,
+          this.props.data.type,
+          (response) => {
+            this.setState({
+              view: response.viewers,
+              comment: response.commentors,
+              edit: response.editors,
+              student: response.students
+            })
+            COURSEFLOW_APP.tinyLoader.endLoad()
+          }
+        )
+      }
+    )
+  }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  PublicLink = () => {
     const data = this.props.data
     const public_link =
       'https://' +
@@ -305,79 +274,109 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     }
   }
 
-  togglePublicView(public_view) {
-    if (public_view) {
-      if (
-        window.confirm(
-          window.gettext(
-            'Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow.'
-          )
-        )
-      ) {
-        updateValueInstantQuery(
-          this.props.data.id,
-          'workflow',
-          { public_view: public_view },
-          () => {
-            this.setState({ public_view: public_view })
-          }
+  Publication = () => {
+    const published = this.state.published
+    const data = this.props.data
+    if (data.type === 'project' || data.is_strategy) {
+      let public_class = 'big-button make-public'
+      let private_class = 'big-button hover-shade make-private'
+
+      if (published) {
+        public_class += ' active'
+      } else {
+        private_class += ' active'
+      }
+
+      let public_disabled = !(data.title && data.title.length > 0)
+
+      if (data.type == 'project') {
+        // @ts-ignore
+        public_disabled |= data.disciplines.length == 0 // @todo not allowed
+      }
+
+      if (!public_disabled && !published) public_class += ' hover-shade'
+      if (public_disabled) public_class += ' disabled'
+      const public_text = window.gettext('Any CourseFlow teacher can view')
+      let disabled_indicator
+
+      if (public_disabled) {
+        const disabled_text =
+          data.type == 'project'
+            ? window.gettext('Title and disciplines are required to publish.')
+            : window.gettext('Title is required to publish.')
+
+        disabled_indicator = (
+          <div className="warning flex-middle">
+            <span className="material-symbols-rounded red">block</span>
+            <div>{disabled_text}</div>
+          </div>
         )
       }
+
+      return [
+        <div className="big-buttons-wrapper">
+          <div
+            className={public_class}
+            // @ts-ignore @todo disabled is not allowed on a div
+            disabled={public_disabled}
+            onClick={this.setPublication.bind(this, true && !public_disabled)}
+          >
+            <span className="material-symbols-rounded">public</span>
+            <div className="big-button-title">
+              {window.gettext('Public to CourseFlow')}
+            </div>
+            <div className="big-button-description">{public_text}</div>
+          </div>
+
+          <div
+            className={private_class}
+            onClick={this.setPublication.bind(this, false)}
+          >
+            <span className="material-symbols-rounded filled">
+              visibility_off
+            </span>
+            <div className="big-button-title">{window.gettext('Private')}</div>
+            <div className="big-button-description">
+              {window.gettext('Only added collaborators can view')}
+            </div>
+          </div>
+        </div>,
+        disabled_indicator
+      ]
     } else {
-      updateValueInstantQuery(
-        this.props.data.id,
-        'workflow',
-        { public_view: public_view },
-        () => {
-          this.setState({ public_view: public_view })
-        }
-      )
-    }
-  }
-
-  setPublication(published) {
-    if (published === this.state.published) return
-    const component = this
-    if (
-      !published ||
-      window.confirm(
-        window.gettext(
-          'Are you sure you want to publish this project, making it fully visible to anyone with an account?'
+      let published_icon
+      if (published)
+        published_icon = (
+          <div className="big-buttons-wrapper">
+            <div className="big-button active">
+              <span className="material-symbols-rounded">public</span>
+              <div className="big-button-title">
+                {window.gettext('Project public to CourseFlow')}
+              </div>
+              <div className="big-button-description">
+                {window.gettext('Any CourseFlow teacher can view')}
+              </div>
+            </div>
+          </div>
         )
-      )
-    ) {
-      updateValueInstantQuery(
-        component.props.data.id,
-        component.props.data.type,
-        { published: published },
-        () => component.setState({ published: published })
-      )
-    }
-  }
-
-  setUserPermission(permission_type, user) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
-    setUserPermission(
-      user.id,
-      this.props.data.id,
-      this.props.data.type,
-      permission_type,
-      () => {
-        getUsersForObjectQuery(
-          this.props.data.id,
-          this.props.data.type,
-          (response) => {
-            this.setState({
-              view: response.viewers,
-              comment: response.commentors,
-              edit: response.editors,
-              student: response.students
-            })
-            COURSEFLOW_APP.tinyLoader.endLoad()
-          }
+      else
+        published_icon = (
+          <div className="big-buttons-wrapper">
+            <div className="big-button active">
+              <span className="material-symbols-rounded filled">
+                visibility_off
+              </span>
+              <div className="big-button-title">
+                {window.gettext('Project is private')}
+              </div>
+              <div className="big-button-description">
+                {window.gettext('Only added collaborators can view')}
+              </div>
+            </div>
+          </div>
         )
-      }
-    )
+      return [published_icon, <this.PublicLink />]
+    }
   }
 
   /*******************************************************
@@ -462,7 +461,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             class_name={'inline'}
           />
         </h2>
-        {this.getPublication()}
+        <this.Publication />
         <hr />
         <p>{window.gettext('Owned By')}:</p>
         <div>{owner}</div>

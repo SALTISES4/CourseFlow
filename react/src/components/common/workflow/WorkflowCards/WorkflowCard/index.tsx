@@ -5,8 +5,7 @@ import { WorkflowTitle } from '@cfUIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
-import { toggleFavourite } from '@XMLHTTP/API/pages'
-import { setWorkflowVisibilityQuery } from '@XMLHTTP/API/workflow'
+import { toggleFavourite } from '@XMLHTTP/API/update'
 
 /*******************************************************
  * A workflow card for a menu
@@ -52,18 +51,6 @@ class WorkflowCard<
         this.workflow.type
       ].replace('0', String(this.workflow.id))
     }
-  }
-
-  visibilityFunction(id, is_visible) {
-    const isVisibleBool = is_visible === 'true'
-    this.props.updateWorkflow(id, {
-      is_visible: isVisibleBool
-    })
-    // @todo not sure of use case for 'visibility toggle'
-    // if we are passing mutation of the workflow
-    // it doesn't make sense to then have this post query in the child also
-    // these mutations should be combined
-    setWorkflowVisibilityQuery(this.props.projectData.id, id, isVisibleBool)
   }
 
   /*******************************************************
@@ -182,35 +169,6 @@ class WorkflowCard<
     )
   }
 
-  Visible = () => {
-    const isTeacher = this.props.userRole === Constants.role_keys.teacher
-    const isEligibleType =
-      this.workflow.type !== WorkflowType.PROJECT &&
-      this.workflow.type !== WorkflowType.LIVE_PROJECT
-
-    if (!this.props.readOnly && isTeacher && isEligibleType) {
-      return (
-        <div
-          className="permission-select"
-          onClick={(evt) => evt.stopPropagation()}
-          onMouseDown={(evt) => evt.stopPropagation()}
-        >
-          <select
-            value={String(this.workflow.is_visible)}
-            onChange={(evt) =>
-              this.visibilityFunction(this.workflow.id, evt.target.value)
-            }
-          >
-            <option value="false">{window.gettext('Not Visible')}</option>
-            <option value="true">{window.gettext('Visible')}</option>
-          </select>
-        </div>
-      )
-    }
-
-    return null
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -257,7 +215,6 @@ class WorkflowCard<
             class_name="workflow-title"
             data={this.workflow}
           />
-          <this.Visible />
           <this.TypeIndicator />
         </div>
         <div className="workflow-created">{creationText}</div>

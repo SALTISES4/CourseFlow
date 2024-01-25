@@ -1,4 +1,4 @@
-import { Columnworkflow } from '@cfRedux/type'
+import { TColumnworkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 import {
   ColumnActions,
@@ -6,7 +6,7 @@ import {
   CommonActions,
   NodeActions,
   StrategyActions
-} from '@cfRedux/enumActions'
+} from '@cfRedux/types/enumActions'
 
 /**
  *
@@ -14,9 +14,9 @@ import {
  * @param action
  */
 function columnWorkflowReducer(
-  state: Columnworkflow[] = [],
+  state: TColumnworkflow[] = [],
   action: AnyAction
-): Columnworkflow[] {
+): TColumnworkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       if (action.payload.columnworkflow) return action.payload.columnworkflow

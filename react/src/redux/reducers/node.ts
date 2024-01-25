@@ -10,15 +10,15 @@ import {
   OutcomeOutcomeActions,
   StrategyActions,
   WeekActions
-} from '@cfRedux/enumActions'
-import { NodeType } from '@cfRedux/type'
+} from '@cfRedux/types/enumActions'
+import { TNode } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 // import $ from 'jquery'
 
 export default function nodeReducer(
-  state: NodeType[] = [],
+  state: TNode[] = [],
   action: AnyAction
-): NodeType[] {
+): TNode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       if (action.payload.node) return action.payload.node

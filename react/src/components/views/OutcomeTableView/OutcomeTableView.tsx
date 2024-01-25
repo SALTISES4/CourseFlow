@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
@@ -6,16 +5,17 @@ import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import NodeOutcomeView from '@cfCommonComponents/workflow/Node/NodeOutcomeView'
 import {
   AppState,
-  Column,
-  Columnworkflow,
-  NodeType,
-  Nodeweek,
-  Week,
-  Weekworkflow
-} from '@cfRedux/type'
+  TColumn,
+  TColumnworkflow,
+  TNode,
+  TNodeweek,
+  TWeek,
+  TWeekworkflow
+} from '@cfRedux/types/type'
 import OutcomeBase from '@cfViews/OutcomeTableView/OutcomeBase'
 import OutcomeLegend from '@cfViews/OutcomeTableView/OutcomeLegend'
-import { CfObjectType } from '@cfModule/types/enum'
+import { CfObjectType, ViewType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  * The outcome table.
@@ -38,6 +38,10 @@ type OwnProps = any
 
 type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
+  private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW // @todo check addEditable
@@ -57,12 +61,12 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   }
 
   getNodecategory() {
-    const week_order = Utility.filterThenSortByID<Weekworkflow>(
+    const week_order = Utility.filterThenSortByID<TWeekworkflow>(
       this.props.weekworkflow,
       this.props.workflow.weekworkflow_set
     ).map((weekworkflow) => weekworkflow.week)
 
-    const weeks_ordered = Utility.filterThenSortByID<Week>(
+    const weeks_ordered = Utility.filterThenSortByID<TWeek>(
       this.props.week,
       week_order
     )
@@ -70,14 +74,14 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     const nodeweek_order = [].concat(
       ...weeks_ordered.map((week) => week.nodeweek_set)
     )
-    let nodeweeks_ordered = Utility.filterThenSortByID<Nodeweek>(
+    let nodeweeks_ordered = Utility.filterThenSortByID<TNodeweek>(
       this.props.nodeweek,
       nodeweek_order
     )
 
     const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
 
-    const nodes_ordered = Utility.filterThenSortByID<NodeType>(
+    const nodes_ordered = Utility.filterThenSortByID<TNode>(
       this.props.node,
       node_order
     ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
@@ -102,11 +106,11 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
       }
 
       case 1: {
-        const column_order = Utility.filterThenSortByID<Columnworkflow>(
+        const column_order = Utility.filterThenSortByID<TColumnworkflow>(
           this.props.columnworkflow,
           this.props.workflow.columnworkflow_set
         ).map((columnworkflow) => columnworkflow.column)
-        const columns_ordered = Utility.filterThenSortByID<Column>(
+        const columns_ordered = Utility.filterThenSortByID<TColumn>(
           this.props.column,
           column_order
         )
@@ -197,7 +201,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
-      if (this.props.renderer.view_type === 'outcometable') {
+      if (this.context.view_type === ViewType.OUTCOMETABLE) {
         text = window.gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
@@ -237,7 +241,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
           {category.outcomes.map((outcome) => (
             <OutcomeBase
               key={outcome}
-              renderer={this.props.renderer}
+              // renderer={this.props.renderer}
               objectID={outcome}
               nodecategory={nodecategory}
               type="outcome_table"
@@ -276,12 +280,6 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    // workflow_type: state.workflow.type,
-    // outcomes_type: state.workflow.outcomes_type,
-    // outcomeworkflow_order: state.workflow.outcomeworkflow_set,
-    // weekworkflow_order: state.workflow.weekworkflow_set,
-    // columnworkflow_order: state.workflow.columnworkflow_set,
-    // outcomes_sort: state.workflow.outcomes_sort,
     workflow: state.workflow,
     weekworkflow: state.weekworkflow,
     week: state.week,

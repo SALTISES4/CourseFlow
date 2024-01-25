@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from course_flow import analytics
-from course_flow.utils import get_classrooms_for_student
 
 register = template.Library()
 
@@ -57,10 +56,6 @@ def has_group(user, group_name):
 def fix_articles(string):
     ind_art = "an " if string[0] in "aeiou" else "a "
     return ind_art + " " + string
-
-
-def get_classrooms(user):
-    return get_classrooms_for_student(user)
 
 
 def get_queryset_by_created_month(queryset, month, year):

@@ -1,5 +1,4 @@
 from .columnWorkflow import ColumnWorkflow
-from .liveProjectUser import LiveProjectUser
 from .nodeLink import NodeLink
 from .nodeWeek import NodeWeek
 from .outcomeHorizontalLink import OutcomeHorizontalLink

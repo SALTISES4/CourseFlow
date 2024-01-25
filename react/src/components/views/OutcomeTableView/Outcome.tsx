@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID, GetOutcomeByIDType } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import { OutcomeTitle } from '@cfUIComponents/index.js'
-import { Component } from '@cfParentComponents'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/node'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'
 
 type TableCellPropsType = {
@@ -155,7 +154,7 @@ class TableCell extends React.Component<TableCellPropsType> {
   }
 }
 
-type ConnectedProps = GetOutcomeByIDType
+type ConnectedProps = TGetOutcomeByID
 
 // @todo no idea what's required props here
 type OwnProps = {
@@ -172,17 +171,20 @@ type OwnProps = {
   completion_status_from_parents?: any
   read_only?: boolean
 } & ComponentWithToggleProps
-
-// type StateProps = {}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  *
  */
-export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
-  constructor(props) {
+export class OutcomeUnconnected<
+  P extends PropsType,
+  S
+> extends ComponentWithToggleDrop<P, S> {
+  constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
+    console.log('OutcomeUnconnected props')
+    console.log(props)
   }
 
   /*******************************************************
@@ -192,13 +194,13 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
     return this.props.data.is_dropped
   }
 
-  getChildOutcomeView(child) {
+  ChildOutcomeView = ({ child }) => {
     return (
       <Outcome
         outcomes_type={this.props.outcomes_type}
         objectID={child.id}
         outcome_tree={child}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     )
   }
@@ -209,15 +211,12 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
   render() {
     const data = this.props.data
     const is_dropped = this.getIsDropped()
-    let dropIcon
-    if (is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+    // let dropIcon
+    const dropIcon = is_dropped ? 'droptriangleup' : 'droptriangledown'
 
-    let droptext
-    if (is_dropped) droptext = window.gettext('hide')
-    else
-      droptext =
-        window.gettext('show ') +
+    const droptext = is_dropped
+      ? window.gettext('hide')
+      : window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
         window.ngettext(
@@ -226,18 +225,21 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
           data.child_outcome_links.length
         )
 
-    let comments
+    // let comments
 
-    let style
+    // let style
 
     const outcome_head = (
       <div className="outcome-wrapper">
         <div
           className="outcome-head"
           ref={this.mainDiv}
-          style={{ paddingLeft: data.depth * 12 }}
+          style={{
+            paddingLeft: data.depth * 12
+          }}
         >
-          <div className="outcome-title" style={style}>
+          {/*<div className="outcome-title" style={style}> @todo style is not defined */}
+          <div className="outcome-title">
             <OutcomeTitle
               data={this.props.data}
               prefix={this.props.prefix}
@@ -254,7 +256,7 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
               <div className="outcome-drop-text">{droptext}</div>
             </div>
           )}
-          <div className="mouseover-actions">{comments}</div>
+          {/*<div className="mouseover-actions">{comments}</div> @todo comments is not defined */}
           <div className="side-actions">
             <div className="comment-indicator-container" />
           </div>
@@ -262,9 +264,11 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
       </div>
     )
 
-    const outcome_row = this.props.outcome_tree.outcomenodes.map(
+    const outcome_row = this.props.outcome_tree?.outcomenodes?.map(
       (outcomenodegroup) => {
-        const group_row = outcomenodegroup.map((outcomenode) => (
+        console.log('outcomenodegroup')
+        console.log(outcomenodegroup)
+        const group_row = outcomenodegroup?.map((outcomenode) => (
           <TableCell
             outcomesType={this.props.outcomes_type}
             degree={outcomenode.degree}
@@ -274,6 +278,7 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
             // renderer={this.props.renderer}
           />
         ))
+
         group_row.unshift(
           <TableCell
             outcomesType={this.props.outcomes_type}
@@ -291,6 +296,7 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
         )
       }
     )
+
     outcome_row.push(<div className="table-cell blank-cell" />)
     outcome_row.push(
       <TableCell
@@ -311,9 +317,9 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
 
     let child_rows
     if (is_dropped)
-      child_rows = this.props.outcome_tree.children.map((child) =>
-        this.getChildOutcomeView(child)
-      )
+      child_rows = this.props.outcome_tree.children.map((child) => (
+        <this.ChildOutcomeView child={child} />
+      ))
     return [full_row, child_rows]
   }
 }
@@ -321,7 +327,7 @@ export class OutcomeUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetOutcomeByIDType => {
+): TGetOutcomeByID => {
   return getOutcomeByID(state, ownProps.objectID)
 }
 /*******************************************************

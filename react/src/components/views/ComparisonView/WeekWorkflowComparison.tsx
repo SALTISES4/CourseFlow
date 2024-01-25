@@ -1,14 +1,23 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getWeekWorkflowByID } from '@cfFindState'
-import { WeekWorkflowUnconnected } from '@cfViews/WorkflowView/WeekWorkflow'
-import WeekComparison from '@cfViews/ComparisonView/WeekComparison'
+import { getWeekWorkflowByID, TGetWeekWorkflowByID } from '@cfFindState'
+import {
+  WeekWorkflowUnconnected,
+  WeekWorkflowUnconnectedProps
+} from '@cfViews/WorkflowView/WeekWorkflow'
+import ComparisonWeek from '@cfViews/ComparisonView/ComparisonWeek'
+import { AppState } from '@cfRedux/types/type'
+
+type ConnectedProps = TGetWeekWorkflowByID
+type OwnProps = WeekWorkflowUnconnectedProps
+
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * As above, but for the comparison view specifically. This renders a
  * "WeekComparison" component instead, which will be a single column wide
  */
-class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
+class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -20,12 +29,12 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     )
 
     const week = (
-      <WeekComparison
+      <ComparisonWeek
         objectID={data.week}
         rank={this.props.order.indexOf(data.id)}
         parentID={this.props.parentID}
         throughParentID={data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
       />
     )
 
@@ -41,9 +50,19 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected {
     )
   }
 }
-const mapWeekWorkflowStateToProps = (state, own_props) =>
-  getWeekWorkflowByID(state, own_props.objectID)
-const WeekWorkflowComparison = connect(
+const mapWeekWorkflowStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): TGetWeekWorkflowByID => {
+  return getWeekWorkflowByID(state, ownProps.objectID)
+}
+
+const WeekWorkflowComparison = connect<
+  ConnectedProps,
+  object,
+  OwnProps,
+  AppState
+>(
   mapWeekWorkflowStateToProps,
   null
 )(WeekWorkflowComparisonUnconnected)

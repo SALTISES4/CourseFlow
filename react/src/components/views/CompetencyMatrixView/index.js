@@ -1,2 +1,1 @@
-export { default as CompetencyMatrixView } from './CompetencyMatrixView'
-export { default as Outcome } from './Outcome'
+export { default as Outcome } from './MatrixOutcome.js'

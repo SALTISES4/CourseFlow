@@ -56,7 +56,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  getExportTypes() {
+  ExportTypes = () => {
     const type = this.props.data.type
 
     const exports = []
@@ -171,7 +171,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
             value={window.getCsrfToken()}
           />
           <h4>{window.gettext('Export Type')}:</h4>
-          {this.getExportTypes()}
+          <this.ExportTypes />
           <h4>{window.gettext('Export Format')}:</h4>
           <select name="export_format">
             <option value="excel">Excel</option>

@@ -1,8 +1,7 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Utility from '@cfUtility'
-import { getWeekByID, GetWeekByIDType } from '@cfFindState'
+import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { EditableComponentWithSorting } from '@cfParentComponents'
 import { TitleText } from '@cfUIComponents'
@@ -14,21 +13,17 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfParentComponents/EditableComponentWithSorting'
-import { AppState } from '@cfRedux/type'
-import { addStrategyQuery } from '@XMLHTTP/API/strategy'
+import { AppState } from '@cfRedux/types/type'
+import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { CfObjectType } from '@cfModule/types/enum'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
-// data: any
-// column_order: any
-// nodes_by_column: any
-// nodeweeks: any
-
-type ConnectedProps = GetWeekByIDType
+type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
-  rank: number
+  throughParentID?: number
+  rank?: number
   column_order?: any // @todo i think this is delivered by redux
   nodes_by_column?: any
-  throughParentID?: any
 } & EditableComponentWithSortingProps
 export type WeekUnconnectedPropsType = OwnProps
 
@@ -116,10 +111,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     this.lockChild(id, true, 'nodeweek')
-    this.props.renderer.micro_update(
-      ActionCreator.columnChangeNode(id, new_column)
-    )
-    columnChanged(this.props.renderer, id, new_column)
+    this.context.micro_update(ActionCreator.columnChangeNode(id, new_column))
+    columnChanged(this.context, id, new_column) // @todo again dragaction needs to be designed and is not on renderer (context) any more
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
@@ -133,11 +126,12 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       }
     }
 
-    this.props.renderer.micro_update(
+    this.context.micro_update(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      this.props.renderer,
+      // @ts-ignore missing dragaction issued
+      this.props.renderer, // @todo again dragaction needs to be designed and is not on renderer (context) any more
       child_id,
       'node',
       new_parent,
@@ -180,7 +174,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         const drag_item = ui.draggable
         const new_index = drop_item.parent().prevAll().length + 1
         if (drag_item.hasClass('new-strategy')) {
-          const loader = new Utility.Loader('body')
+          const loader = new UtilityLoader('body')
           addStrategyQuery(
             this.props.parentID,
             new_index,
@@ -211,7 +205,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         key={nodeweek}
         objectID={nodeweek}
         parentID={this.props.data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     ))
@@ -222,8 +216,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
     // const css_class = 'week'
 
     const cssClasses = [
@@ -236,7 +229,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
     // if (data.is_dropped) css_class += ' dropped'
 
-    const default_text = !renderer.is_strategy
+    const default_text = !this.context.is_strategy
       ? data.week_type_display + ' ' + (this.props.rank + 1)
       : undefined
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
@@ -246,75 +239,76 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     const mouseoverActions = []
-    if (!this.props.renderer.read_only && !renderer.is_strategy) {
-      mouseoverActions.push(this.addInsertSibling(data))
-      mouseoverActions.push(this.addDuplicateSelf(data))
-      mouseoverActions.push(this.addDeleteSelf(data))
+    if (!this.context.read_only && !this.context.is_strategy) {
+      mouseoverActions.push(<this.AddInsertSibling data={data} />)
+      mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
+      mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (renderer.view_comments) {
-      mouseoverActions.push(this.addCommenting())
+    if (this.context.view_comments) {
+      mouseoverActions.push(<this.AddCommenting />)
     }
 
-    this.addEditable(data)
-    console.log('this.addEditable(data)')
-    console.log(data)
+    const portal = this.addEditable(data)
 
     return (
-      <div
-        style={style}
-        className={cssClasses}
-        ref={this.mainDiv}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
-      >
-        <div className="mouseover-container-bypass">
-          <div className="mouseover-actions">{mouseoverActions}</div>
-        </div>
-        <TitleText text={data.title} defaultText={default_text} />
+      <>
+        {portal}
         <div
-          className="node-block"
-          id={this.props.objectID + '-node-block'}
-          ref={this.node_block}
+          style={style}
+          className={cssClasses}
+          ref={this.mainDiv}
+          onClick={(evt) => selection_manager.changeSelection(evt, this)}
         >
-          <this.Nodes />
-        </div>
-        <div
-          className="week-drop-row hover-shade"
-          onClick={this.toggleDrop.bind(this)}
-        >
-          <div className="node-drop-side node-drop-left" />
-          <div className="node-drop-middle">
-            <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+          <div className="mouseover-container-bypass">
+            <div className="mouseover-actions">{mouseoverActions}</div>
           </div>
-          <div className="node-drop-side node-drop-right" />
-        </div>
-        {/* // @ts-ignore */}
-        {
-          // @ts-ignore
-          // this.addEditable(data)
-        }
-        {/*// @todo verify this*/}
-        {data.strategy_classification > 0 && (
-          <div className="strategy-tab">
-            <div className="strategy-tab-triangle" />
-            <div className="strategy-tab-square">
-              <div className="strategy-tab-circle">
-                <img
-                  title={
-                    renderer.strategy_classification_choices.find(
-                      (obj) => obj.type === data.strategy_classification
-                    ).name
-                  }
-                  src={
-                    COURSEFLOW_APP.config.icon_path +
-                    Constants.strategy_keys[data.strategy_classification] +
-                    '.svg'
-                  }
-                />
+          <TitleText text={data.title} defaultText={default_text} />
+          <div
+            className="node-block"
+            id={this.props.objectID + '-node-block'}
+            ref={this.node_block}
+          >
+            <this.Nodes />
+          </div>
+          <div
+            className="week-drop-row hover-shade"
+            onClick={this.toggleDrop.bind(this)}
+          >
+            <div className="node-drop-side node-drop-left" />
+            <div className="node-drop-middle">
+              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+            </div>
+            <div className="node-drop-side node-drop-right" />
+          </div>
+          {/* // @ts-ignore */}
+          {
+            // @ts-ignore
+            // this.addEditable(data)
+          }
+          {/*// @todo verify this*/}
+          {data.strategy_classification > 0 && (
+            <div className="strategy-tab">
+              <div className="strategy-tab-triangle" />
+              <div className="strategy-tab-square">
+                <div className="strategy-tab-circle">
+                  <img
+                    title={
+                      this.context.strategy_classification_choices.find(
+                        (obj) => obj.type === data.strategy_classification
+                      ).name
+                    }
+                    src={
+                      COURSEFLOW_APP.config.icon_path +
+                      Constants.strategy_keys[data.strategy_classification] +
+                      '.svg'
+                    }
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </>
     )
   }
 }

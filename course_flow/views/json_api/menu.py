@@ -13,13 +13,11 @@ from course_flow.decorators import ajax_login_required, public_access
 from course_flow.models import Project
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.favourite import Favourite
-from course_flow.models.liveProject import LiveProject
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     FavouriteSerializer,
     InfoBoxSerializer,
-    LiveProjectSerializer,
     UserSerializer,
 )
 from course_flow.templatetags.course_flow_templatetags import (
@@ -123,13 +121,7 @@ def json_api_get_sidebar(request: HttpRequest) -> JsonResponse:
 def json_api_get_home(request: HttpRequest) -> JsonResponse:
     user = request.user
     if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
-        projects = LiveProject.objects.filter(
-            project__deleted=False,
-            liveprojectuser__user=user,
-        )
-        projects_serialized = LiveProjectSerializer(
-            projects, many=True, context={"user": user}
-        ).data
+        projects_serialized = []
         favourites_serialized = []
     else:
         projects = [

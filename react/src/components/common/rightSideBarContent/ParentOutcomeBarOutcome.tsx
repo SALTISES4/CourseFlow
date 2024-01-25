@@ -3,22 +3,22 @@ import { connect } from 'react-redux'
 
 import {
   getOutcomeByID,
-  GetOutcomeByIDType,
+  TGetOutcomeByID,
   getOutcomeOutcomeByID,
-  OutcomeOutcomeByIDType
+  TOutcomeOutcomeByID
 } from '@cfFindState'
 import {
   OutcomeBarOutcomePropsType,
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
 import { OutcomeTitle } from '@cfUIComponents/Titles'
-import { AppState, OutcomeOutcome } from '@cfRedux/type'
+import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
 
 /**
  * Used for the parent outcome bar.
  */
 
-type ParentOutcomeOutcomeConnectedProps = OutcomeOutcomeByIDType
+type ParentOutcomeOutcomeConnectedProps = TOutcomeOutcomeByID
 
 type ParentOutcomeOutcomeOwnProps = OutcomeBarOutcomePropsType
 type ParentOutcomeOutcomePropsType = ParentOutcomeOutcomeOwnProps &
@@ -63,7 +63,7 @@ const ParentOutcomeOutcome = connect<
  * Used for the parent outcome bar.
  */
 
-type ConnectedProps = GetOutcomeByIDType & {
+type ConnectedProps = TGetOutcomeByID & {
   nodes: any
   horizontaloutcomes: any
 }
@@ -159,12 +159,7 @@ const MapStateToProps = (
     .map((ochl) => ochl.outcome)
 })
 
-const ParentOutcome = connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+const ParentOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   MapStateToProps,
   null
 )(ParentOutcomeUnconnected)

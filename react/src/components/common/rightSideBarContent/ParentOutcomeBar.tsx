@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
 
 import { getSortedOutcomeNodesFromNodes } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 import CompletionImg from '@cfUIComponents/CompletionImg'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
@@ -18,10 +18,13 @@ type ConnectedProps = {
   parent_nodes: AppState['parent_node']
 }
 type SelfProps = {
-  renderer: any
+  // renderer: any
 }
 type PropsType = SelfProps & ConnectedProps
 class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
+  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
   }
@@ -51,8 +54,9 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
                   key={outcomeItem.id}
                   objectID={outcomeItem.id}
                   // renderer={this.props.renderer} // @todo previous props were undefined, are they needed?
-                  parentID={this.props.renderer.parentID}
-                  readOnly={this.props.renderer.readOnly}
+                  // @ts-ignore // @todo
+                  parentID={this.context.parentID}
+                  readOnly={this.context.read_only}
                   throughParentID={this.props.data.id}
                 />
               </div>
@@ -96,12 +100,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     parent_nodes: state.parent_node
   }
 }
-export default connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  SelfProps,
-  AppState
->(
+export default connect<ConnectedProps, object, SelfProps, AppState>(
   mapStateToProps,
   null
 )(ParentOutcomeBarUnconnected)

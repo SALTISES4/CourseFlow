@@ -37,16 +37,6 @@ def course_flow_patterns():
             views.ProjectDetailView.as_view(),
             name="project-update",
         ),
-        # path(
-        #     "liveproject/<int:pk>/",
-        #     views.LiveProjectDetailView.as_view(),
-        #     name="live-project-update",
-        # ),
-        path(
-            "assignment/<int:pk>/",
-            views.AssignmentDetailView.as_view(),
-            name="assignment-update",
-        ),
         path(
             "project/<int:pk>/comparison",
             views.ProjectComparisonView.as_view(),
@@ -119,11 +109,6 @@ def course_flow_patterns():
             views.get_saltise_download,
             name="get-saltise-download",
         ),
-        # path(
-        #     "liveproject/register/student/<project_hash>/",
-        #     views.register_as_student,
-        #     name="register-as-student",
-        # ),
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
@@ -140,7 +125,7 @@ def course_flow_patterns():
         ),
         path(
             "comments/add/",
-            views.json_api.create.json_api_post_add_comment,
+            views.json_api.comment.json_api_post_add_comment,
             name="json-api-post-add-comment",
         ),
         path(
@@ -195,18 +180,13 @@ def course_flow_patterns():
             name="json-api-post-delete-self-soft",
         ),
         path(
-            "workflow/delete-self-live/",
-            views.json_api.delete.json_api_post_delete_self_live,
-            name="json-api-post-delete-self-live",
-        ),
-        path(
             "comments/remove/",
-            views.json_api.delete.json_api_post_remove_comment,
+            views.json_api.comment.json_api_post_remove_comment,
             name="json-api-post-remove-comment",
         ),
         path(
             "comments/removeall/",
-            views.json_api.delete.json_api_post_remove_all_comments,
+            views.json_api.comment.json_api_post_remove_all_comments,
             name="json-api-post-remove-all-comments",
         ),
         # Register Duplication JSON routes
@@ -240,77 +220,6 @@ def course_flow_patterns():
             "exports/get/",
             views.json_api.export_import.json_api_post_get_export,
             name="json-api-post-get-export",
-        ),
-        # Register live project JSON routes
-        path(
-            "project/makelive",
-            views.json_api.live_project.json_api_post_make_project_live,
-            name="json-api-post-make-project-live",
-        ),
-        path(
-            "liveproject/getliveprojectdatastudent",
-            views.json_api.live_project.json_api_post_get_live_project_data_student,
-            name="json-api-post-get-live-project-data-student",
-        ),
-        path(
-            "liveproject/getliveprojectdata",
-            views.json_api.live_project.json_api_post_get_live_project_data,
-            name="json-api-post-get-live-project-data",
-        ),
-        path(
-            "liveproject/createliveassignment",
-            views.json_api.live_project.json_api_post_create_live_assignment,
-            name="json-api-post-create-live-assignment",
-        ),
-        path(
-            "liveproject/getassignmentdatastudent",
-            views.json_api.live_project.json_api_post_get_assignment_data_student,
-            name="json-api-post-get-assignment-data-student",
-        ),
-        path(
-            "liveproject/getassignmentdata",
-            views.json_api.live_project.json_api_post_get_assignment_data,
-            name="json-api-post-get-assignment-data",
-        ),
-        path(
-            "liveproject/getworkflownodes",
-            views.json_api.live_project.json_api_post_get_workflow_nodes,
-            name="json-api-post-get-workflow-nodes",
-        ),
-        path(
-            "assignment/getassignmentsfornode/",
-            views.json_api.live_project.json_api_post_get_assignments_for_node,
-            name="json-api-post-get-assignments-for-node",
-        ),
-        path(
-            "liveprojectroles/set",
-            views.json_api.live_project.json_api_post_set_liveproject_role,
-            name="json-api-post-set-liveproject-role",
-        ),
-        path(
-            "assignment/addusers/",
-            views.json_api.live_project.json_api_post_add_users_to_assignment,
-            name="json-api-post-add-users-to-assignment",
-        ),
-        path(
-            "project/get-users-for-liveproject/",
-            views.json_api.live_project.json_api_post_get_users_for_liveproject,
-            name="json-api-post-get-users-for-liveproject",
-        ),
-        path(
-            "liveproject/workflowvisibility",
-            views.json_api.live_project.json_api_post_set_workflow_visibility,
-            name="json-api-post-set-workflow-visibility",
-        ),
-        path(
-            "liveproject/updatevalue/",
-            views.json_api.live_project.json_api_post_update_liveproject_value,
-            name="json-api-post-update-liveproject-value",
-        ),
-        path(
-            "assignment/setcompletion/",
-            views.json_api.live_project.json_api_post_set_assignment_completion,
-            name="json-api-post-set-assignment-completion",
         ),
         # Register old courseflow import JSON route
         path(
@@ -465,7 +374,7 @@ def course_flow_patterns():
         ),
         path(
             "comments/get/",
-            views.json_api.workflow.json_api_post_get_comments_for_object,
+            views.json_api.comment.json_api_post_get_comments_for_object,
             name="json-api-post-get-comments-for-object",
         ),
         path(

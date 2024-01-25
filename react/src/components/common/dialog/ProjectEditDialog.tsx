@@ -1,11 +1,9 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { deleteSelfQuery } from '@XMLHTTP/API/self'
-import {
-  addTerminologyQuery,
-  updateValueInstantQuery
-} from '@XMLHTTP/API/global'
+import { deleteSelfQuery } from '@XMLHTTP/API/delete'
+import { addTerminologyQuery } from '@XMLHTTP/API/create'
+import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 
 // import $ from 'jquery'
 
@@ -26,7 +24,7 @@ The menu for editing a project.
 */
 class ProjectEditDialog extends React.Component<PropsType, StateProps> {
   private object_set_updates: NonNullable<unknown>
-  constructor(props) {
+  constructor(props: PropsType) {
     super(props)
     this.state = {
       ...this.props.data,
@@ -136,7 +134,39 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     this.setState(new_state)
   }
 
-  getActions() {
+  autocompleteDiscipline() {
+    const choices = this.state.all_disciplines
+      .filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0)
+      .map((discipline) => ({
+        value: discipline.title,
+        label: discipline.title,
+        id: discipline.id
+      }))
+    $('#project-discipline-input')
+      .autocomplete({
+        source: choices,
+        minLength: 0,
+        focus: null,
+        select: (evt, ui) => {
+          this.addDiscipline(ui.item.id)
+          $('#project-discipline-input').val('')
+          return false
+        }
+      })
+      .focus(function () {
+        $('#project-discipline-input').autocomplete(
+          'search',
+          // @ts-ignore
+          $('#project-discipline-input').val()
+        )
+      })
+  }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+
+  Actions = () => {
     const actions = []
     actions.push(
       <button className="secondary-button" onClick={this.props.closeAction}>
@@ -167,38 +197,6 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
       </button>
     )
     return actions
-  }
-
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-
-  autocompleteDiscipline() {
-    const choices = this.state.all_disciplines
-      .filter((discipline) => this.state.disciplines.indexOf(discipline.id) < 0)
-      .map((discipline) => ({
-        value: discipline.title,
-        label: discipline.title,
-        id: discipline.id
-      }))
-    $('#project-discipline-input')
-      .autocomplete({
-        source: choices,
-        minLength: 0,
-        focus: null,
-        select: (evt, ui) => {
-          this.addDiscipline(ui.item.id)
-          $('#project-discipline-input').val('')
-          return false
-        }
-      })
-      .focus(function () {
-        $('#project-discipline-input').autocomplete(
-          'search',
-          // @ts-ignore
-          $('#project-discipline-input').val()
-        )
-      })
   }
 
   /*******************************************************
@@ -274,77 +272,80 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
       clickEvt = this.addTerm.bind(this)
       add_term_css += ' green hover-shade'
     }
+
     return (
-      <div className="message-wrap">
-        <h2>{window.gettext('Edit project')}</h2>
+      <>
+        <div className="message-wrap">
+          <h2>{window.gettext('Edit project')}</h2>
 
-        <div>
-          <h4>{window.gettext('Title')}</h4>
-          <textarea
-            autoComplete="off"
-            id="project-title-input"
-            value={title}
-            onChange={this.inputChanged.bind(this, 'title')}
-          />
-        </div>
-
-        <div>
-          <h4>{window.gettext('Description')}</h4>
-          <textarea
-            autoComplete="off"
-            id="project-description-input"
-            value={description}
-            onChange={this.inputChanged.bind(this, 'description')}
-          />
-        </div>
-
-        <div>
-          <h4>{window.gettext('Disciplines')}</h4>
-          <div className="flex-middle disciplines-div">{disciplines}</div>
-          <input
-            autoComplete="off"
-            id="project-discipline-input"
-            placeholder="Search"
-          />
-        </div>
-
-        <div>
-          <h4>{window.gettext('Object sets')}</h4>
-          <div className="workflow-created">
-            {'Define categories for outcomes or nodes'}
-          </div>
-          {sets_added}
-          <div className="nomenclature-row">
-            <select
-              id="nomenclature-select"
-              value={this.state.selected_set}
-              onChange={this.inputChanged.bind(this, 'selected_set')}
-            >
-              <option value="none">{window.gettext('Select a type')}</option>
-              {set_options}
-            </select>
-            <input
-              placeholder={window.gettext('Set name')}
-              type="text"
-              id="term-singular"
-              maxLength={50}
-              value={this.state.termsingular}
-              onChange={this.inputChanged.bind(this, 'termsingular')}
-              disabled={selected_set == null}
+          <div>
+            <h4>{window.gettext('Title')}</h4>
+            <textarea
+              autoComplete="off"
+              id="project-title-input"
+              value={title}
+              onChange={this.inputChanged.bind(this, 'title')}
             />
-            <div className="nomenclature-add-button" onClick={clickEvt}>
-              <span className={add_term_css}>add_circle</span>
+          </div>
+
+          <div>
+            <h4>{window.gettext('Description')}</h4>
+            <textarea
+              autoComplete="off"
+              id="project-description-input"
+              value={description}
+              onChange={this.inputChanged.bind(this, 'description')}
+            />
+          </div>
+
+          <div>
+            <h4>{window.gettext('Disciplines')}</h4>
+            <div className="flex-middle disciplines-div">{disciplines}</div>
+            <input
+              autoComplete="off"
+              id="project-discipline-input"
+              placeholder="Search"
+            />
+          </div>
+
+          <div>
+            <h4>{window.gettext('Object sets')}</h4>
+            <div className="workflow-created">
+              {'Define categories for outcomes or nodes'}
+            </div>
+            {sets_added}
+            <div className="nomenclature-row">
+              <select
+                id="nomenclature-select"
+                value={this.state.selected_set}
+                onChange={this.inputChanged.bind(this, 'selected_set')}
+              >
+                <option value="none">{window.gettext('Select a type')}</option>
+                {set_options}
+              </select>
+              <input
+                placeholder={window.gettext('Set name')}
+                type="text"
+                id="term-singular"
+                maxLength={50}
+                value={this.state.termsingular}
+                onChange={this.inputChanged.bind(this, 'termsingular')}
+                disabled={selected_set == null}
+              />
+              <div className="nomenclature-add-button" onClick={clickEvt}>
+                <span className={add_term_css}>add_circle</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/*{this.getLiveProjectSettings()}*/}
-
-        <div className="action-bar">{this.getActions()}</div>
-        <div className="window-close-button" onClick={this.props.closeAction}>
-          <span className="material-symbols-rounded green">close</span>
+          <div className="action-bar">
+            <this.Actions />
+          </div>
+          <div className="window-close-button" onClick={this.props.closeAction}>
+            <span className="material-symbols-rounded green">close</span>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 }

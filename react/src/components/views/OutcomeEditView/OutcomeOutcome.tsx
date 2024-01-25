@@ -1,25 +1,25 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Outcome from './Outcome'
-import { getOutcomeOutcomeByID, OutcomeOutcomeByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getOutcomeOutcomeByID, TOutcomeOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
 
 /**
  * The link between an outcome and its children
  */
-type ConnectedProps = OutcomeOutcomeByIDType
+type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
   parentID: number
   objectID: number
-  renderer: any
+  // renderer: any
   show_horizontal: any
   parent_depth: any
 }
 type PropsType = OwnProps & ConnectedProps
 class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
-  constructor(props) {
+  private objectType: CfObjectType // @todo is it used?
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
   }
@@ -44,7 +44,7 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
           objectID={data.child}
           parentID={this.props.parentID}
           throughParentID={data.id}
-          renderer={this.props.renderer}
+          // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />
       </li>
@@ -55,16 +55,11 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): OutcomeOutcomeByIDType => {
+): TOutcomeOutcomeByID => {
   return getOutcomeOutcomeByID(state, ownProps.objectID)
 }
 
-const OutcomeOutcome = connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+const OutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(OutcomeOutcomeUnconnected)

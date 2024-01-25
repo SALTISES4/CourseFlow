@@ -29,17 +29,6 @@ class QuillDiv extends React.Component<PropsType, StateType> {
     }
   }
 
-  render() {
-    return (
-      <div>
-        <div ref={this.mainDiv} className="quill-div" />
-        <div className={'character-length'}>
-          {this.state.charlength + ' ' + window.gettext('characters')}
-        </div>
-      </div>
-    )
-  }
-
   componentDidMount() {
     const quill_container = this.mainDiv.current
     const readOnly = this.props.readOnly
@@ -104,6 +93,17 @@ class QuillDiv extends React.Component<PropsType, StateType> {
       .click(() => {
         $(this).attr('target', '_blank')
       })
+  }
+
+  render() {
+    return (
+      <div>
+        <div ref={this.mainDiv} className="quill-div" />
+        <div className={'character-length'}>
+          {this.state.charlength + ' ' + window.gettext('characters')}
+        </div>
+      </div>
+    )
   }
 }
 

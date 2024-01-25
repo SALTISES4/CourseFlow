@@ -5,35 +5,17 @@ import * as Utility from '@cfUtility'
 // import $ from 'jquery'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
-import { toggleStrategyQuery } from '@XMLHTTP/API/strategy'
+import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
-import { updateObjectSet } from '@XMLHTTP/API/global'
+import { updateObjectSet } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
 //Extends the React component to add a few features that are used in a large number of components
 
-type ChildRenderer = {
-  outcome_type_choices: any
-  read_only: boolean
-  context_choices: any
-  task_choices: any
-  time_choices: any
-  strategy_classification_choices: any
-  change_field: any
-  workflowID: any
-  unread_comments: any
-  add_comments: any
-  selection_manager: any
-  lock_update: any
-  micro_update?: any
-  is_strategy?: any
-  view_comments?: any
-  show_assignments?: any
-}
-
 export type EditableComponentProps = {
-  renderer: ChildRenderer
   data?: any
   placeholder?: any
   text?: any
@@ -51,6 +33,9 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
+  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   //Makes the item selectable
 
   /*******************************************************
@@ -72,7 +57,7 @@ class EditableComponent<
   checkboxChanged(field, evt) {
     const do_change = true
     if (do_change)
-      this.props.renderer.change_field(
+      this.context.change_field(
         this.props.data.id,
         Constants.object_dictionary[this.objectType],
         field,
@@ -81,7 +66,7 @@ class EditableComponent<
   }
 
   valueChanged(field, new_value) {
-    this.props.renderer.change_field(
+    this.context.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
@@ -89,7 +74,7 @@ class EditableComponent<
     )
   }
 
-  get_border_style() {
+  getBorderStyle() {
     const data = this.props.data
     if (!data) return
 
@@ -105,13 +90,14 @@ class EditableComponent<
     else if (!value) value = ''
     if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
     if (evt.target.type == 'number' && value == '') value = 0
-    this.props.renderer.change_field(
+    this.context.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
       value
     )
   }
+
   /*******************************************************
    * COMPONENTS
    *******************************************************/
@@ -150,7 +136,7 @@ class EditableComponent<
           value={data.task_classification}
           onChange={this.inputChanged.bind(this, 'task_classification')}
         >
-          {this.props.renderer.task_choices
+          {this.context.task_choices
             .filter(
               (choice) =>
                 Math.floor(choice.type / 100) == data.node_type ||
@@ -186,7 +172,7 @@ class EditableComponent<
             value={data.time_units}
             onChange={this.inputChanged.bind(this, 'time_units')}
           >
-            {this.props.renderer.time_choices.map((choice) => (
+            {this.context.time_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -242,7 +228,7 @@ class EditableComponent<
           maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.props.renderer.read_only}
+          readOnly={this.context.read_only}
         />
       </div>
     )
@@ -258,7 +244,7 @@ class EditableComponent<
           value={data.context_classification}
           onChange={this.inputChanged.bind(this, 'context_classification')}
         >
-          {this.props.renderer.context_choices
+          {this.context.context_choices
             .filter(
               (choice) =>
                 Math.floor(choice.type / 100) == data.node_type ||
@@ -346,7 +332,7 @@ class EditableComponent<
             value={data.outcomes_type}
             onChange={this.inputChanged.bind(this, 'outcomes_type')}
           >
-            {this.props.renderer.outcome_type_choices.map((choice) => (
+            {this.context.context_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -499,7 +485,7 @@ class EditableComponent<
           value={data.strategy_classification}
           onChange={this.inputChanged.bind(this, 'strategy_classification')}
         >
-          {this.props.renderer.strategy_classification_choices.map((choice) => (
+          {this.context.context_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
@@ -507,7 +493,7 @@ class EditableComponent<
           disabled={readOnly}
           id="toggle-strategy-editor"
           onClick={() => {
-            const loader = new Utility.Loader('body')
+            const loader = new UtilityLoader('body')
             toggleStrategyQuery(data.id, data.is_strategy, (response_data) => {
               loader.endLoad()
             })
@@ -520,7 +506,7 @@ class EditableComponent<
     )
   }
 
-  getDeleteForSidebar(read_only, no_delete, type, data) {
+  DeleteForSidebar = ({ read_only, no_delete, type, data }) => {
     if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') {
         return <></>
@@ -528,7 +514,7 @@ class EditableComponent<
         return (
           <>
             <h4>{window.gettext('Delete')}</h4>
-            {this.addDeleteSelf(data)}
+            <this.AddDeleteSelf data={data} />
           </>
         )
       }
@@ -536,14 +522,14 @@ class EditableComponent<
   }
 
   //  @todo only implemented in children
-  addDeleteSelf(_data: any, _alt_icon?: string) {
+  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
     return <></>
   }
 
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const read_only = this.props.renderer.read_only
+    const read_only = this.context.read_only
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.object_dictionary[this.objectType]
     const override = data.represents_workflow ? true : false
@@ -678,13 +664,18 @@ class EditableComponent<
         )}
 
         {sets}
-        {this.getDeleteForSidebar(read_only, noDelete, type, data)}
+        <this.DeleteForSidebar
+          read_only={read_only}
+          no_delete={noDelete}
+          type={type}
+          data={data}
+        />
       </div>
     )
   }
 
   /*******************************************************
-   * PORTAL
+   * PORTAL (RENDER)
    *******************************************************/
   addEditable(data, noDelete = false): React.ReactPortal | ReactElement {
     if (!this.state.selected) {

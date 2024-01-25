@@ -1,18 +1,37 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 import { getWeekByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
-import { Component } from '@cfParentComponents'
 import { CfObjectType } from '@cfModule/types/enum'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfParentComponents/ComponentWithToggleDrop'
+import { AppState } from '@cfRedux/types/type'
+
+type ConnectedProps = {
+  data: any
+  total_theory: any
+  total_practical: any
+  total_individual: any
+  total_required: any
+  total_time: any
+  general_education: any
+  specific_education: any
+  object_sets: AppState['objectset']
+  nodes: any
+}
+type OwnProps = {
+  rank?: number
+} & ComponentWithToggleProps
+type PropsType = ConnectedProps & OwnProps
 
 /**
  * A block for a term in the competency matrix view. This shows
  * the time data.
  */
-class MatrixWeekUnconnected extends Component {
-  constructor(props) {
+class MatrixWeekUnconnected extends ComponentWithToggleDrop<PropsType> {
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEK
   }
@@ -21,9 +40,9 @@ class MatrixWeekUnconnected extends Component {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    // const data = this.props.data
 
-    const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    //  const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
     return (
       <div className="matrix-time-row">
@@ -52,8 +71,11 @@ class MatrixWeekUnconnected extends Component {
   }
 }
 
-const mapWeekStateToProps = (state, own_props) => {
-  const data = getWeekByID(state, own_props.objectID).data
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  const data = getWeekByID(state, ownProps.objectID).data
   const node_weeks = Utility.filterThenSortByID(
     state.nodeweek,
     data.nodeweek_set
@@ -127,4 +149,7 @@ const mapWeekStateToProps = (state, own_props) => {
     nodes: nodes_data
   }
 }
-export default connect(mapWeekStateToProps, null)(MatrixWeekUnconnected)
+export default connect<ConnectedProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(MatrixWeekUnconnected)

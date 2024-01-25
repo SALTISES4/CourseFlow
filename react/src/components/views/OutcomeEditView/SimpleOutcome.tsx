@@ -1,27 +1,59 @@
-// @ts-nocheck
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeByID } from '@cfFindState'
+import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import * as Utility from '@cfUtility'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import { OutcomeTitle } from '@cfUIComponents'
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
 import { CfObjectType } from '@cfModule/types/enum'
+import { AppState } from '@cfRedux/types/type'
+import {
+  EditableComponentWithCommentsStateType,
+  EditableComponentWithCommentsType
+} from '@cfParentComponents/EditableComponentWithComments'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
  */
 
+type ConnectedProps = TGetOutcomeByID
+type OwnProps = {
+  objectID: number
+  parentID: number
+  throughParentID?: number
+  checkHidden?: () => void
+  comments?: boolean
+  edit?: boolean
+  // throughParentID: number
+  // legacyRenderer: EditableComponentWithCommentsType['legacyRenderer'] & {
+  //   view_comments: any
+  //   selection_manager: any
+  // }
+} & EditableComponentWithCommentsType
+
+export type SimpleOutcomeUnconnectedPropsType = OwnProps
+
+type StateProps = {
+  is_dropped: boolean
+} & EditableComponentWithCommentsStateType
+type PropsType = ConnectedProps & OwnProps
+
 /**
  * A simple outcome block without any action buttons for displaying
  * outcomes tagged to nodes or other outcomes.
  */
-export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
-  constructor(props) {
+export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
+  PropsType,
+  StateProps
+> {
+  static contextType = WorkFlowConfigContext
+  private children_block: React.RefObject<HTMLDivElement>
+  constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
     this.children_block = React.createRef()
-    this.state = { is_dropped: false }
+    this.state = { is_dropped: false } as StateProps
   }
 
   /*******************************************************
@@ -38,20 +70,23 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  toggleDrop() {
+  toggleDrop = (_evt: React.MouseEvent) => {
     this.setState({ is_dropped: !this.state.is_dropped })
   }
 
-  getChildType(outcomeoutcome) {
-    const data = this.props.data
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  ChildType = ({ outcomeoutcome }) => {
     return (
       <SimpleOutcomeOutcome
         key={outcomeoutcome}
         objectID={outcomeoutcome}
-        parentID={data.id}
-        renderer={this.props.renderer}
+        parentID={this.props.data.id}
+        // renderer={this.props.renderer}
         comments={this.props.comments}
         edit={this.props.edit}
+        //  legacyRenderer={this.props.legacyRenderer}
       />
     )
   }
@@ -61,82 +96,89 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
    *******************************************************/
   render() {
     const data = this.props.data
-    let children
-    let dropIcon
-    let droptext
-    let comments
-    let edit
-    let onClick
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
-    if (this.state.is_dropped) {
-      children = data.child_outcome_links.map((outcomeoutcome) =>
-        this.getChildType(outcomeoutcome)
-      )
-    }
 
-    if (this.state.is_dropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+    const children = this.state.is_dropped ? (
+      data.child_outcome_links.map((outcomeoutcome) => (
+        <this.ChildType outcomeoutcome={outcomeoutcome} />
+      ))
+    ) : (
+      <></>
+    )
 
-    if (this.state.is_dropped) droptext = window.gettext('hide')
-    else
-      droptext =
-        window.gettext('show ') +
+    const dropIcon = this.state.is_dropped
+      ? 'droptriangleup'
+      : 'droptriangledown'
+
+    const droptext = this.state.is_dropped
+      ? window.gettext('hide')
+      : window.gettext('show ') +
         data.child_outcome_links.length +
         ' ' +
-        window.gettext(
+        window.ngettext(
           'descendant',
           'descendants',
           data.child_outcome_links.length
         )
 
-    if (this.props.renderer.view_comments) comments = this.addCommenting()
+    const comments = this.context.view_comments ? <this.AddCommenting /> : null
+    const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
-    if (this.props.edit) edit = this.addEditable(data, true)
-    onClick = (evt) =>
-      this.props.renderer.selection_manager.changeSelection(evt, this)
+    const onClick = (evt) => {
+      return this.context.selection_manager.changeSelection(evt, this)
+    }
 
-    let css_class = 'outcome outcome-' + data.id
-    if (this.state.is_dropped) css_class += ' dropped'
-    if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    const cssClass = [
+      'outcome outcome-' + data.id,
+      this.state.is_dropped ? ' dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.user_id : ''
+    ].join(' ')
 
     return (
-      <div
-        className={css_class}
-        style={this.get_border_style()}
-        ref={this.mainDiv}
-        onClick={onClick}
-      >
-        <div className="outcome-title">
-          <OutcomeTitle
-            data={data}
-            prefix={this.props.prefix}
-            hovertext={this.props.hovertext}
-          />
-        </div>
-        {data.depth < 2 && data.child_outcome_links.length > 0 && (
-          <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-            <div className="outcome-drop-img">
-              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+      <>
+        {editPortal}
+        <div
+          className={cssClass}
+          style={this.getBorderStyle()}
+          ref={this.mainDiv}
+          onClick={onClick}
+        >
+          <div className="outcome-title">
+            <OutcomeTitle
+              data={data}
+              prefix={this.props.prefix}
+              hovertext={this.props.hovertext}
+            />
+          </div>
+
+          {data.depth < 2 && data.child_outcome_links.length > 0 && (
+            <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+              <div className="outcome-drop-img">
+                <img
+                  src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'}
+                />
+              </div>
+              <div className="outcome-drop-text">{droptext}</div>
             </div>
-            <div className="outcome-drop-text">{droptext}</div>
+          )}
+
+          {data.depth < 2 && (
+            <div
+              className="children-block"
+              id={this.props.objectID + '-children-block'}
+              ref={this.children_block}
+            >
+              {children}
+            </div>
+          )}
+
+          <div className="mouseover-actions">{comments}</div>
+          <div className="side-actions">
+            <div className="comment-indicator-container" />
           </div>
-        )}
-        {data.depth < 2 && (
-          <div
-            className="children-block"
-            id={this.props.objectID + '-children-block'}
-            ref={this.children_block}
-          >
-            {children}
-          </div>
-        )}
-        <div className="mouseover-actions">{comments}</div>
-        <div className="side-actions">
-          <div className="comment-indicator-container" />
         </div>
-        {edit}
-      </div>
+      </>
     )
   }
 }
@@ -144,13 +186,16 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments {
 /*******************************************************
  * MAP STATE
  *******************************************************/
-const mapOutcomeStateToProps = (state, own_props) =>
-  getOutcomeByID(state, own_props.objectID)
-
+const mapOutcomeStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): TGetOutcomeByID => {
+  return getOutcomeByID(state, ownProps.objectID)
+}
 /*******************************************************
  * CONNECT REDUX
  *******************************************************/
-const SimpleOutcome = connect(
+const SimpleOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
   mapOutcomeStateToProps,
   null
 )(SimpleOutcomeUnconnected)

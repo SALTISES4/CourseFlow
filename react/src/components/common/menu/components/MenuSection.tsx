@@ -1,8 +1,8 @@
-import * as Utility from '@cfUtility'
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
 type PropsType = {
   no_hyperlink: any
@@ -84,7 +84,7 @@ class MenuSection extends React.Component<PropsType> {
                 false,
                 (response_data) => {
                   if (response_data.workflowID != null) {
-                    const loader = new Utility.Loader('body')
+                    const loader = new UtilityLoader('body')
                     duplicateBaseItemQuery(
                       response_data.workflowID,
                       section_type,

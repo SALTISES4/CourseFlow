@@ -3,16 +3,17 @@ import { connect } from 'react-redux'
 import { NodeTitle } from '@cfUIComponents'
 import { EditableComponentWithComments } from '@cfParentComponents'
 import * as Constants from '@cfConstants'
-import { AppState, Column } from '@cfModule/redux/type'
+import { AppState, TColumn } from '@cfRedux/types/type'
 import { EditableComponentWithCommentsStateType } from '@cfParentComponents/EditableComponentWithComments'
 import { CfObjectType } from '@cfModule/types/enum'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type OwnProps = {
-  renderer: any
+  // renderer: any
   data: any
 }
 type ConnectedProps = {
-  column: Column
+  column: TColumn
 }
 type PropsType = OwnProps & ConnectedProps
 type StateProps = EditableComponentWithCommentsStateType
@@ -23,6 +24,9 @@ class GridNodeUnconnected extends EditableComponentWithComments<
   PropsType,
   StateProps
 > {
+  static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE
@@ -32,8 +36,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
    * RENDER
    *******************************************************/
   render() {
-    const renderer = this.props.renderer
-    const selection_manager = renderer.selection_manager
+    const selection_manager = this.context.selection_manager
     const data = this.props.data
 
     const data_override = data.represents_workflow
@@ -41,7 +44,6 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       : data
     // this was moved from the return function
     // because this is not a returned element
-    this.addEditable(data_override, true)
 
     const ponderation = (
       <div className="grid-ponderation">
@@ -53,42 +55,42 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       </div>
     )
 
-    const style = {
+    const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column),
       outline: data.lock ? '2px solid ' + data.lock.user_colour : undefined
     }
 
-    let css_class =
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-    if (data.is_dropped) {
-      css_class += ' dropped'
-    }
-    if (data.lock) {
-      css_class += ' locked locked-' + data.lock.user_id
-    }
+    const cssClass = [
+      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
+      data.is_dropped ? 'dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.user_id : ''
+    ].join(' ')
 
-    const comments = this.props.renderer.view_comments
-      ? this.addCommenting()
-      : undefined
+    const comments = this.context.view_comments ? (
+      <this.AddCommenting />
+    ) : undefined
 
+    const portal = this.addEditable(data_override, true)
     return (
-      <div
-        style={style}
-        id={data.id}
-        ref={this.mainDiv}
-        onClick={(evt) => selection_manager.changeSelection(evt, this)}
-        className={css_class}
-      >
-        <div className="node-top-row">
-          <NodeTitle data={data} />
-          {ponderation}
+      <>
+        {portal}
+        <div
+          style={style}
+          id={data.id}
+          ref={this.mainDiv}
+          onClick={(evt) => selection_manager.changeSelection(evt, this)}
+          className={cssClass}
+        >
+          <div className="node-top-row">
+            <NodeTitle data={data} />
+            {ponderation}
+          </div>
+          <div className="mouseover-actions">{comments}</div>
+          <div className="side-actions">
+            <div className="comment-indicator-container"></div>
+          </div>
         </div>
-        <div className="mouseover-actions">{comments}</div>
-        <div className="side-actions">
-          <div className="comment-indicator-container"></div>
-        </div>
-        {/*{this.addEditable(data_override, true)}*/}
-      </div>
+      </>
     )
   }
 }
@@ -99,12 +101,9 @@ const mapStateToProps = (
 ): ConnectedProps => ({
   column: state.column.find((column) => column.id == ownProps.data.column)
 })
-export default connect<
-  ConnectedProps,
-  NonNullable<unknown>,
-  OwnProps,
-  AppState
->(
+const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
 )(GridNodeUnconnected)
+
+export default GridNode

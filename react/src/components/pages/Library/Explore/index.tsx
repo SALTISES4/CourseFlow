@@ -1,13 +1,13 @@
-// @ts-nocheck
 import * as React from 'react'
 import { ExploreViewContextDataDTO } from '@cfPages/Library/Explore/types'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
-import { getLibraryQuery } from '@XMLHTTP/API/pages'
+import { getLibraryQuery } from '@XMLHTTP/API/menu'
 
 /*******************************************************
  * @ExploreRenderer
  *******************************************************/
 class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
+  private createDiv: React.RefObject<HTMLDivElement>
   constructor(props: ExploreViewContextDataDTO) {
     super(props)
     this.createDiv = React.createRef()
@@ -15,10 +15,12 @@ class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
 
   componentDidMount() {
     getLibraryQuery((data) => {
-      this.setState({ project_data: data.data_package })
+      this.setState({
+        project_data: data.data_package
+      })
     })
     COURSEFLOW_APP.makeDropdown(this.createDiv.current)
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current)
+    // COURSEFLOW_APP.makeDropdown(this.createDiv.current) // @todo double check in git hitstory these were both correct
   }
 
   render() {
@@ -29,7 +31,6 @@ class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
           workflows={this.props.initial_workflows}
           pages={this.props.initial_pages}
           context="library"
-          sadfasdf={true}
         />
       </div>
     )

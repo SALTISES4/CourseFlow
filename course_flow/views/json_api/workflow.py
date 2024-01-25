@@ -8,10 +8,8 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.decorators import (
     public_model_access,
-    user_can_comment,
     user_can_edit,
     user_can_view,
-    user_can_view_or_enrolled_as_student,
     user_can_view_or_none,
     user_is_teacher,
 )
@@ -34,7 +32,6 @@ from course_flow.models.relations import (
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
-    CommentSerializer,
     InfoBoxSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
@@ -53,7 +50,6 @@ from course_flow.serializers import (
 )
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
-    get_model_from_str,
     get_parent_nodes_for_workflow,
 )
 from course_flow.view_utils import (
@@ -70,7 +66,7 @@ from course_flow.view_utils import (
 #################################################
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
@@ -83,7 +79,7 @@ def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_workflow_parent_data(
     request: HttpRequest,
 ) -> JsonResponse:
@@ -97,7 +93,7 @@ def json_api_post_get_workflow_parent_data(
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("nodePk")
+@user_can_view("nodePk")
 def json_api_post_get_workflow_child_data(
     request: HttpRequest,
 ) -> JsonResponse:
@@ -204,28 +200,6 @@ def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
     )
 
 
-@user_can_comment(False)
-def json_api_post_get_comments_for_object(
-    request: HttpRequest,
-) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    try:
-        comments = (
-            get_model_from_str(object_type)
-            .objects.get(id=object_id)
-            .comments.all()
-            .order_by("created_on")
-        )
-        Notification.objects.filter(
-            comment__in=comments, user=request.user
-        ).update(is_unread=False)
-        data_package = CommentSerializer(comments, many=True).data
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
-
-
 @public_model_access("workflow")
 def json_api_get_public_parent_workflow_info(
     request: HttpRequest, pk
@@ -243,7 +217,7 @@ def json_api_get_public_parent_workflow_info(
     return JsonResponse({"action": "posted", "parent_workflows": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view("workflowPk")
 def json_api_post_get_parent_workflow_info(
     request: HttpRequest,
 ) -> JsonResponse:

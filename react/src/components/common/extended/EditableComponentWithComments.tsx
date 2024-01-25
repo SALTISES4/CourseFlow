@@ -9,6 +9,7 @@ import EditableComponent, {
 import ActionCreator from '@cfRedux/ActionCreator'
 import CommentBox from '@cfViews/GridView/components/CommentBox'
 import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
+import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type StateType = {
   show_comments: boolean
@@ -16,6 +17,11 @@ type StateType = {
 
 type OwnProps = {
   dispatch?: any
+  // legacyRenderer: LegacyRendererProps & {
+  //   workflowID: any
+  //   unread_comments: any
+  //   add_comments: any
+  // }
 } & EditableComponentProps
 
 export type EditableComponentWithCommentsType = OwnProps
@@ -25,33 +31,18 @@ class EditableComponentWithComments<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
+  static contextType = WorkFlowConfigContext
+
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
+
   //Adds a button that opens/closes the comments dialogue
   // @todo sometimes dota is not used
   // addCommenting(data) {
   // addCommenting(_data: any) {
 
-  addCommenting() {
-    return (
-      <>
-        <ActionButton
-          buttonIcon="comment_new.svg"
-          buttonClass="comment-button"
-          titleText={window.gettext('Comments')}
-          handleClick={this.commentClick.bind(this)}
-        />
-        <CommentBox
-          show={this.state.show_comments}
-          comments={this.props.data.comments}
-          parent={this}
-          renderer={this.props.renderer}
-          workflowID={this.props.renderer.workflowID}
-          unread_comments={this.props.renderer.unread_comments}
-          read_only={this.props.renderer.read_only}
-          add_comments={this.props.renderer.add_comments}
-        />
-      </>
-    )
-  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
 
   commentClick(evt) {
     evt.stopPropagation()
@@ -80,6 +71,32 @@ class EditableComponentWithComments<
         //this.setState({show_comments:true,comment_data:response_data.data_package});
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
+    )
+  }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  AddCommenting = () => {
+    return (
+      <>
+        <ActionButton
+          buttonIcon="comment_new.svg"
+          buttonClass="comment-button"
+          titleText={window.gettext('Comments')}
+          handleClick={this.commentClick.bind(this)}
+        />
+        <CommentBox
+          show={this.state.show_comments}
+          comments={this.props.data.comments}
+          parent={this}
+          // renderer={this.props.renderer} // not used
+          workflowID={this.context.workflowID}
+          unread_comments={this.context.unread_comments}
+          read_only={this.context.read_only}
+          add_comments={this.context.add_comments}
+        />
+      </>
     )
   }
 }

@@ -5,7 +5,6 @@ export type WorkflowCardProps = {
   updateWorkflow?: any
   selected?: any
   noHyperlink?: any
-  userRole?: any
   readOnly?: any
   projectData?: any
   selectAction?: any

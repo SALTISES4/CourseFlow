@@ -1,21 +1,20 @@
 //Removes the specified comment from the object
-import { DATA_ACTIONS } from '@XMLHTTP/common'
-import { CommentsForObjectQueryResp } from '@XMLHTTP/types'
-import { ToDefine } from '@cfModule/types/common'
+import { EmptyPostResp, CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
+import { VERB } from '@cfModule/types/enum'
 
 export function removeComment(
   objectID,
   objectType,
   commentPk,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
       objectID: JSON.stringify(objectID),
       commentPk: JSON.stringify(commentPk),
       objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+    }).done(function (data: EmptyPostResp) {
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -27,14 +26,14 @@ export function removeComment(
 export function removeAllComments(
   objectID,
   objectType,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+    }).done(function (data: EmptyPostResp) {
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -47,15 +46,15 @@ export function addComment(
   objectID,
   objectType,
   text,
-  callBackFunction = (_data: ToDefine) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   try {
     $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
       objectID: JSON.stringify(objectID),
       objectType: JSON.stringify(objectType),
       text: JSON.stringify(text)
-    }).done(function (data) {
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+    }).done(function (data: EmptyPostResp) {
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {
@@ -77,7 +76,7 @@ export function getCommentsForObjectQuery(
     }).done(function (data: CommentsForObjectQueryResp) {
       console.log('getCommentsForObject data')
       console.log(data)
-      if (data.action === DATA_ACTIONS.POSTED) callBackFunction(data)
+      if (data.action === VERB.POSTED) callBackFunction(data)
       else window.fail_function(data.action)
     })
   } catch (err) {

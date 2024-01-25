@@ -3,8 +3,8 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import * as Constants from '@cfConstants'
-import { AppState } from '@cfRedux/type'
-import { getStrategyByID, StrategyByIDType } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import { getStrategyByID, TStrategyByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum'
 // import $ from 'jquery'
 
@@ -17,7 +17,7 @@ type OwnPropsType = {
   objectID: number
   data: any // strategy is untyped
 }
-type ReduxProps = StrategyByIDType
+type ReduxProps = TStrategyByID
 
 type PropsType = OwnPropsType & ReduxProps
 class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
@@ -100,7 +100,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapStrategyStateToProps = (
   state: AppState,
   ownProps: OwnPropsType
-): StrategyByIDType => {
+): TStrategyByID => {
   return getStrategyByID(state, ownProps.objectID)
 }
 

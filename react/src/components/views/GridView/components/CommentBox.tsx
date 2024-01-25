@@ -8,13 +8,13 @@ import * as Utility from '@cfUtility'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
-import { User } from '@XMLHTTP/types'
 import {
   addComment,
   removeAllComments,
   removeComment
 } from '@cfModule/XMLHTTP/API/comment'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
+import { TUser } from '@cfRedux/types/type'
 
 /*******************************************************
  * @CommentBox
@@ -25,7 +25,7 @@ type OwnProps = {
   show: any
   comments: any
   parent: any
-  renderer: any
+  // renderer: any /  not used
   workflowID: any
   unread_comments: any
   read_only: boolean
@@ -77,7 +77,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
    * FUNCTIONS
    *******************************************************/
 
-  addUserTag(user: User) {
+  addUserTag(user: TUser) {
     const cursor_pos = this.tagPosition
 
     const current_value = this.input.current.value

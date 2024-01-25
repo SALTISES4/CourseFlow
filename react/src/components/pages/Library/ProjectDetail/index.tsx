@@ -1,17 +1,14 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
-import {
-  ProjectData,
-  ProjectViewDTO
-} from '@cfPages/Library/ProjectDetail/types'
+import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline } from '@cfModule/types/common'
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 class ProjectPage extends React.Component<ProjectViewDTO> {
   private readonly readOnly: boolean
-  private readonly projectData: ProjectData
+  private readonly projectData: EProject
   private readonly allDisciplines: Discipline[]
-  private readonly userRole: number
   private readonly userId: number
   private readonly projectPaths: {
     activity: string
@@ -25,7 +22,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
     this.readOnly = true
     this.projectData = this.props.project_data
     this.allDisciplines = this.props.disciplines
-    this.userRole = this.props.user_role
     this.userId = this.props.user_id
     this.projectPaths = this.props.create_path_this_project
 
@@ -44,7 +40,6 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
       <ProjectMenu
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
-        userRole={this.userRole}
         readOnly={this.readOnly}
         data={this.projectData}
         userId={this.userId}

@@ -2,23 +2,20 @@ import * as React from 'react'
 import * as Constants from '@cfConstants'
 // @local
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
-import {
-  ProjectData,
-  ProjectMenuProps
-} from '@cfPages/Library/ProjectDetail/types'
+import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
 import { Workflow } from '@cfModule/types/common'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { Dialog, DialogTitle } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/global'
-import { makeProjectLiveQuery } from '@XMLHTTP/API/project'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/self'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/user'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
+import { EProject } from '@XMLHTTP/types/entity'
 // import $ from 'jquery'
 
 /*******************************************************
@@ -28,7 +25,7 @@ import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 interface StateType {
-  data?: ProjectData
+  data?: EProject
   view_type?: string
   users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
@@ -135,21 +132,6 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     })
   }
 
-  //@todo can this be removed now?
-  makeLive() {
-    if (
-      window.confirm(
-        window.gettext(
-          'Are you sure you want to create a live classroom for this project?'
-        )
-      )
-    ) {
-      makeProjectLiveQuery(this.props.data.id, (data) => {
-        location.reload()
-      })
-    }
-  }
-
   /*******************************************************
    * MODAL HANDLERS
    *******************************************************/
@@ -184,14 +166,19 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         </div>
       )
     }
-    return [
-      <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
-        <div>{window.gettext('Restore project')}</div>
-      </div>,
-      <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
-        <div>{window.gettext('Permanently delete project')}</div>
-      </div>
-    ]
+    return (
+      <>
+        <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
+          <div>{window.gettext('Restore project')}</div>
+        </div>
+        <div
+          className="hover-shade"
+          onClick={this.deleteProjectHard.bind(this)}
+        >
+          <div>{window.gettext('Permanently delete project')}</div>
+        </div>
+      </>
+    )
   }
 
   ExportButton = () => {
@@ -243,37 +230,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   OverflowLinks = () => {
     const data = this.state.data
 
-    let liveproject
     const overflow_links = []
 
-    if (data.author_id === this.props.userId) {
-      if (data.liveproject) {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            href={COURSEFLOW_APP.config.update_path.liveproject.replace(
-              '0',
-              String(data.id)
-            )}
-          >
-            {window.gettext('View Classroom')}
-          </a>
-        )
-      } else {
-        liveproject = (
-          <a
-            id="live-project"
-            className="hover-shade"
-            onClick={this.makeLive.bind(this)}
-          >
-            {window.gettext('Create Classroom')}
-          </a>
-        )
-      }
-    }
-
-    overflow_links.push(liveproject)
     overflow_links.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
         {window.gettext('Workflow comparison tool')}
@@ -375,33 +333,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
    *
    *******************************************************/
   Content = () => {
-    const return_val = []
-
-    if (
-      this.state.data.liveproject &&
-      this.props.userRole === Constants.role_keys.teacher
-    )
-      return_val.push(
-        <div className="workflow-view-select hide-print">
-          {this.viewButtons.map((item) => {
-            let view_class = 'hover-shade'
-            if (item.type === this.state.view_type) view_class += ' active'
-            return (
-              <a
-                id={'button_' + item.type}
-                className={view_class}
-                onClick={this.changeView.bind(this, item.type)}
-              >
-                {item.name}
-              </a>
-            )
-          })}
-        </div>
-      )
-
     return (
       <WorkflowFilter
-        user_role={this.props.userRole}
         read_only={this.props.readOnly}
         project_data={this.state.data}
         workflows={this.state.workflow_data}
@@ -446,18 +379,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
   }
 
   updateFunction(new_data) {
-    if (new_data.liveproject) {
-      console.log('liveproject updated')
-    } else {
-      this.setState({
-        ...this.state,
-        data: {
-          ...this.state.data,
-          ...new_data
-        },
-        openEditDialog: false
-      })
-    }
+    this.setState({
+      ...this.state,
+      data: {
+        ...this.state.data,
+        ...new_data
+      },
+      openEditDialog: false
+    })
   }
 
   ShareDialog = () => {
@@ -487,8 +416,7 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
           type={'project_edit_menu'}
           data={{
             ...this.state.data,
-            all_disciplines: this.props.allDisciplines,
-            user_role: this.props.userRole
+            all_disciplines: this.props.allDisciplines
             // renderer: this.props.renderer
           }}
           actionFunction={this.updateFunction}

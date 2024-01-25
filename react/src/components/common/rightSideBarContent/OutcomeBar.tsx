@@ -4,10 +4,10 @@ import * as Utility from '@cfUtility'
 import OutcomeBarOutcome from './OutcomeBarOutcome'
 import {
   getSortedOutcomesFromOutcomeWorkflowSet,
-  SortedOutcomesFromOutcomeWorkflowSetType
+  TSortedOutcomesFromOutcomeWorkflowSet
 } from '@cfFindState'
 import { ViewType, WorkflowType } from '@cfModule/types/enum'
-import { AppState } from '@cfRedux/type'
+import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'
 
 /**
@@ -15,7 +15,7 @@ import { AppState } from '@cfRedux/type'
  * component or the ParentOutcomeBar)
  */
 type ConnectedProps = {
-  data: SortedOutcomesFromOutcomeWorkflowSetType
+  data: TSortedOutcomesFromOutcomeWorkflowSet
   workflow_type: WorkflowType
 }
 
@@ -104,7 +104,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
 
 const OutcomeBarConnected = connect<
   ConnectedProps,
-  NonNullable<unknown>,
+  object,
   SelfProps,
   AppState
 >(

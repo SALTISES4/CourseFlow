@@ -2,7 +2,7 @@ import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import { setLinkedWorkflow } from '@XMLHTTP/API/workflow'
+import { setLinkedWorkflow } from '@XMLHTTP/API/update'
 // import $ from 'jquery'
 
 /*
@@ -71,7 +71,15 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  getTitle() {
+
+  workflowSelected(selected_id, selected_type) {
+    this.setState({ selected: selected_id, selected_type: selected_type })
+  }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  Title = () => {
     switch (this.props.type) {
       case 'linked_workflow_menu':
       case 'added_workflow_menu':
@@ -83,11 +91,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     return null
   }
 
-  workflowSelected(selected_id, selected_type) {
-    this.setState({ selected: selected_id, selected_type: selected_type })
-  }
-
-  getActions() {
+  Actions = () => {
     const actions = []
     if (this.props.type === 'linked_workflow_menu') {
       let text = window.gettext('link to node')
@@ -266,13 +270,15 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
 
     return (
       <div className="message-wrap">
-        {this.getTitle()}
+        <this.Title />
         {current_project}
         <div className="home-tabs" id="workflow-tabs">
           <ul>{tab_li}</ul>
           {tabs}
         </div>
-        <div className="action-bar">{this.getActions()}</div>
+        <div className="action-bar">
+          <this.Actions />
+        </div>
       </div>
     )
   }

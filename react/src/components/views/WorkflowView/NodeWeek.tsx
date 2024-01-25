@@ -1,26 +1,23 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Node from './Node'
-import { getNodeWeekByID, GetNodeWeekByIDType } from '@cfFindState'
-import { AppState } from '@cfRedux/type'
+import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
 
-type ConnectedProps = GetNodeWeekByIDType
+type ConnectedProps = TGetNodeWeekByID
 type OwnProps = {
   objectID: number
   parentID: number
   column_order: any
-  renderer: any
+  // renderer: any
 }
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * Represents the node-week throughmodel
  */
-class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
-  P,
-  S
-> {
+class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   private objectType: string
   private objectClass: string
   // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
@@ -34,7 +31,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Node = () => {
+  NodeWrapper = () => {
     const data = this.props.data
     return (
       <Node
@@ -42,7 +39,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
         parentID={this.props.parentID}
         // @ts-ignore
         throughParentID={data.id}
-        renderer={this.props.renderer}
+        // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     )
@@ -65,7 +62,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
 
         // ref={this.mainDiv} // @todo this is not defined
       >
-        <this.Node />
+        <this.NodeWrapper />
       </div>
     )
   }
@@ -73,7 +70,7 @@ class NodeWeekUnconnected<P extends PropsType, S> extends React.Component<
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): GetNodeWeekByIDType => {
+): TGetNodeWeekByID => {
   return getNodeWeekByID(state, ownProps.objectID)
 }
 const NodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(

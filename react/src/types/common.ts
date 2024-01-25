@@ -1,7 +1,9 @@
 import { WorkflowType } from '@cfModule/types/enum'
+import * as React from 'react'
 
 export type ToDefine = any
 
+// @todo what is the difference between this type and the redux one
 export interface Workflow {
   id: number
   author: string
@@ -41,14 +43,24 @@ export type Discipline = {
   title: string
 }
 
-export enum VERB {
-  POSTED = 'posted',
-  ERROR = 'error'
-}
-
 export type ObjectLock = {
   user_id: number
   user_colour: string
 }
 
 export type NumTuple = [number, number]
+
+export type FieldChoice = {
+  type: number | string
+  name: string
+}
+
+export type Lock = {
+  user_colour: string
+  user_id: string
+}
+
+export type EventUnion =
+  | React.MouseEvent<HTMLDivElement, MouseEvent>
+  | JQuery.Event
+  | React.MouseEvent<Element, MouseEvent>
