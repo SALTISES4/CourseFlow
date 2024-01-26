@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { Component, RefObject, createRef, MouseEvent } from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { WorkflowTitle } from '@cfUIComponents/Titles'
@@ -6,6 +6,17 @@ import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/Wo
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
 import { toggleFavourite } from '@XMLHTTP/API/update'
+import {
+  CardWrap,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardFooterTags,
+  CardFooterActions,
+  CardTitle,
+  CardCaption,
+  CardDescription
+} from './styles'
 
 /*******************************************************
  * A workflow card for a menu
@@ -26,8 +37,8 @@ export type WorkflowCardState = StateType
 class WorkflowCard<
   P extends WorkflowCardProps,
   S extends StateType
-> extends React.Component<P, S> {
-  protected readonly mainDiv: React.RefObject<HTMLDivElement>
+> extends Component<P, S> {
+  protected readonly mainDiv: RefObject<HTMLDivElement>
   private readonly workflow: Workflow
 
   constructor(props: P) {
@@ -36,7 +47,7 @@ class WorkflowCard<
       favourite: props.workflowData.favourite
     } as S
     this.workflow = this.props.workflowData
-    this.mainDiv = React.createRef()
+    this.mainDiv = createRef()
   }
 
   /*******************************************************
@@ -44,8 +55,10 @@ class WorkflowCard<
    *******************************************************/
 
   clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.workflow.id)
+    const { selectAction } = this.props
+
+    if (selectAction) {
+      selectAction(this.workflow.id)
     } else {
       window.location.href = COURSEFLOW_APP.config.update_path[
         this.workflow.type
@@ -58,28 +71,31 @@ class WorkflowCard<
    *******************************************************/
   TypeIndicator = () => {
     const { type, is_strategy } = this.workflow
-    let type_text = window.gettext(type)
+
+    let typeText = window.gettext(type)
     if (type === WorkflowType.LIVE_PROJECT) {
-      type_text = window.gettext('classroom')
+      typeText = window.gettext('classroom')
     }
     if (is_strategy) {
-      type_text += window.gettext(' strategy')
+      typeText += ` ${window.gettext('strategy')}`
     }
     return (
       <div className={'workflow-type-indicator ' + type}>
-        {Utility.capWords(type_text)}
+        {Utility.capWords(typeText)}
       </div>
     )
   }
 
   FavouriteButton = () => {
-    const favourite = this.state.favourite
-    const workflow = this.workflow
+    const { favourite } = this.state
+    const { workflow } = this
 
-    if (workflow.type === WorkflowType.LIVE_PROJECT) return null
+    if (workflow.type === WorkflowType.LIVE_PROJECT) {
+      return null
+    }
 
     const favClass = favourite ? ' filled' : ''
-    const toggleFavouriteAction = (evt) => {
+    const toggleFavouriteAction = (evt: MouseEvent<HTMLDivElement>) => {
       toggleFavourite(workflow.id, workflow.type, !favourite)
       this.setState({ favourite: !favourite })
       evt.stopPropagation()
@@ -101,11 +117,10 @@ class WorkflowCard<
     )
   }
 
-  WorkflowDetails = () => {
+  WorkflowCount = () => {
     const details = []
-    const workflow = this.workflow
+    const { workflow } = this
 
-    // Workflow count
     if (
       workflow.type === WorkflowType.PROJECT &&
       workflow.workflow_count != null
@@ -156,71 +171,49 @@ class WorkflowCard<
     return details
   }
 
-  Buttons = () => {
-    return (
-      <div className="workflow-buttons-row">
-        <div>
-          <this.FavouriteButton />
-        </div>
-        <div>
-          <this.WorkflowDetails />
-        </div>
-      </div>
-    )
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
-  renderCreationText(data) {
-    let creationText = window.gettext('Created')
-    if (data.author && data.author !== 'None') {
-      creationText += ` ${window.gettext('by')} ${data.author}`
-    }
-    creationText += `${window.gettext(' on ')}${data.created_on}`
-    return creationText
-  }
-
-  renderDescription(description: string) {
-    if (!description) {
-      return <div className="workflow-description" />
-    }
-    return (
-      <div
-        className="workflow-description collapsible-text"
-        dangerouslySetInnerHTML={{ __html: description }}
-      />
-    )
-  }
-
   render() {
     const { selected, noHyperlink } = this.props
 
-    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${
-      selected ? ' selected' : ''
-    }`
-    const creationText = this.renderCreationText(this.workflow)
-    const description = this.renderDescription(this.workflow.description)
-
     return (
-      <div
+      <CardWrap
         ref={this.mainDiv}
-        className={cssClass}
+        className={`${this.workflow.type} ${selected ? ' selected' : ''}`}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => evt.preventDefault()}
       >
-        <div className="workflow-top-row">
-          <WorkflowTitle
-            no_hyperlink={noHyperlink}
-            class_name="workflow-title"
-            data={this.workflow}
-          />
-          <this.TypeIndicator />
-        </div>
-        <div className="workflow-created">{creationText}</div>
-        {description}
-        <this.Buttons />
-      </div>
+        <CardHeader>
+          <CardTitle variant="h6">
+            <WorkflowTitle
+              no_hyperlink={noHyperlink}
+              class_name="workflow-title"
+              data={this.workflow}
+            />
+          </CardTitle>
+          <CardCaption variant="caption">
+            {window.gettext('Owned by')} {this.workflow.author}
+          </CardCaption>
+        </CardHeader>
+
+        {this.workflow.description && (
+          <CardContent>
+            <CardDescription variant="body2">
+              {this.workflow.description}
+            </CardDescription>
+          </CardContent>
+        )}
+        <CardFooter>
+          <CardFooterTags>
+            <this.TypeIndicator />
+            <this.WorkflowCount />
+          </CardFooterTags>
+          <CardFooterActions>
+            <this.FavouriteButton />
+          </CardFooterActions>
+        </CardFooter>
+      </CardWrap>
     )
   }
 }

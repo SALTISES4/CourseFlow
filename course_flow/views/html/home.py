@@ -33,7 +33,32 @@ def home_view(request):
                 "isTeacher": has_group(user, "Teacher"),
                 "projects": projects_serialized,
                 # TODO: Figure out how to handle the templates
-                "templates": []
+                "templates": [
+                    # {
+                    #     "title": "A project title",
+                    #     "author": "John Doe",
+                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
+                    #     "type": "project"
+                    # },
+                    # {
+                    #     "title": "A course title",
+                    #     "author": "John Doe",
+                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
+                    #     "type": "project"
+                    # },
+                    # {
+                    #     "title": "A program title",
+                    #     "author": "John Doe",
+                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
+                    #     "type": "project"
+                    # }
+                    # {
+                    #     "title": "An activity title",
+                    #     "author": "John Doe",
+                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
+                    #     "type": "project"
+                    # }
+                ]
             }
         ).decode("utf-8")
     }

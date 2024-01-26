@@ -1,4 +1,3 @@
-import React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import Alert from '@cfCommonComponents/components/Alert'
 import { Workflow } from '@cfModule/types/common'
@@ -60,6 +59,7 @@ const Home = ({ isTeacher, projects, templates }: PropsType) => {
           )}
           hideIfCookie="home-howto-template"
         />
+        <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
           {templates.map((template, index) => (
             <WorkflowCard key={`template-${index}`} workflowData={template} />

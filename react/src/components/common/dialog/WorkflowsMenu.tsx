@@ -3,6 +3,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
+import { GridWrap } from '@cfModule/mui/helper'
 // import $ from 'jquery'
 
 /*
@@ -249,7 +250,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     const current_project = this.current_project ? (
       <>
         <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
-        <div className="menu-grid">
+        <GridWrap>
           <WorkflowCard
             workflowData={this.current_project}
             selected={this.state.selected === this.current_project.id}
@@ -258,7 +259,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
             dispatch={this.props.dispatch} // @todo i don't think this is used
             selectAction={this.workflowSelected.bind(this)}
           />
-        </div>
+        </GridWrap>
         <hr className={'big-space'} />,
         <h4 className={'big-space'}>
           {window.gettext('Or select from your projects')}

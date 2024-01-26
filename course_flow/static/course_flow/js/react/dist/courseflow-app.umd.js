@@ -38855,782 +38855,6 @@ ${latestSubscriptionCallbackError.current.stack}
       window.fail_function();
     }
   }
-  class WorkflowCard extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "mainDiv");
-      __publicField(this, "workflow");
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      __publicField(this, "TypeIndicator", () => {
-        const { type, is_strategy } = this.workflow;
-        let type_text = window.gettext(type);
-        if (type === WorkflowType.LIVE_PROJECT) {
-          type_text = window.gettext("classroom");
-        }
-        if (is_strategy) {
-          type_text += window.gettext(" strategy");
-        }
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(type_text) });
-      });
-      __publicField(this, "FavouriteButton", () => {
-        const favourite = this.state.favourite;
-        const workflow = this.workflow;
-        if (workflow.type === WorkflowType.LIVE_PROJECT)
-          return null;
-        const favClass = favourite ? " filled" : "";
-        const toggleFavouriteAction = (evt) => {
-          toggleFavourite(workflow.id, workflow.type, !favourite);
-          this.setState({ favourite: !favourite });
-          evt.stopPropagation();
-        };
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "workflow-toggle-favourite hover-shade",
-            onClick: toggleFavouriteAction,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "span",
-              {
-                className: `material-symbols-outlined${favClass}`,
-                title: window.gettext("Favourite"),
-                children: "star"
-              }
-            )
-          },
-          "btn-workflow-toggle-favourite"
-        );
-      });
-      __publicField(this, "WorkflowDetails", () => {
-        const details = [];
-        const workflow = this.workflow;
-        if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
-          details.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
-          );
-        }
-        if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
-          details.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "workflow-created workflow-live-classroom",
-                title: window.gettext("Live Classroom"),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
-                  ` ${window.gettext("Live Classroom")}`
-                ]
-              },
-              "workflow-created-group"
-            )
-          );
-        }
-        if (this.workflow.is_linked) {
-          details.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "workflow-created linked-workflow-warning",
-                title: window.gettext(
-                  "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
-                ),
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
-                  ` ${window.gettext("Already in use")}`
-                ]
-              },
-              "workflow-created-warning"
-            )
-          );
-        }
-        return details;
-      });
-      __publicField(this, "Buttons", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-buttons-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowDetails, {}) })
-        ] });
-      });
-      this.state = {
-        favourite: props.workflowData.favourite
-      };
-      this.workflow = this.props.workflowData;
-      this.mainDiv = reactExports.createRef();
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    clickAction() {
-      if (this.props.selectAction) {
-        this.props.selectAction(this.workflow.id);
-      } else {
-        window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
-      }
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    renderCreationText(data) {
-      let creationText = window.gettext("Created");
-      if (data.author && data.author !== "None") {
-        creationText += ` ${window.gettext("by")} ${data.author}`;
-      }
-      creationText += `${window.gettext(" on ")}${data.created_on}`;
-      return creationText;
-    }
-    renderDescription(description) {
-      if (!description) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-description" });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "workflow-description collapsible-text",
-          dangerouslySetInnerHTML: { __html: description }
-        }
-      );
-    }
-    render() {
-      const { selected, noHyperlink } = this.props;
-      const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${selected ? " selected" : ""}`;
-      const creationText = this.renderCreationText(this.workflow);
-      const description = this.renderDescription(this.workflow.description);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          ref: this.mainDiv,
-          className: cssClass,
-          onClick: this.clickAction.bind(this),
-          onMouseDown: (evt) => evt.preventDefault(),
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                WorkflowTitle,
-                {
-                  no_hyperlink: noHyperlink,
-                  class_name: "workflow-title",
-                  data: this.workflow
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {})
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: creationText }),
-            description,
-            /* @__PURE__ */ jsxRuntimeExports.jsx(this.Buttons, {})
-          ]
-        }
-      );
-    }
-  }
-  function openWorkflowSelectMenu(response, updateFunction) {
-    if (response.action === VERB.POSTED) {
-      renderMessageBox(response, "workflow_select_menu", updateFunction);
-    } else {
-      alert("Failed to find your workflows.");
-    }
-  }
-  function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-      {
-        projectPk: JSON.stringify(projectPk),
-        type_filter: JSON.stringify(type_filter),
-        get_strategies: JSON.stringify(get_strategies),
-        self_only: JSON.stringify(self_only)
-      },
-      (data) => {
-      }
-    );
-  }
-  function columnChanged(renderer, objectID, columnID) {
-    if (!renderer.dragAction)
-      renderer.dragAction = {};
-    if (!renderer.dragAction["nodeweek"])
-      renderer.dragAction["nodeweek"] = {};
-    renderer.dragAction["nodeweek"] = {
-      ...renderer.dragAction["nodeweek"],
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify("node"),
-      columnPk: JSON.stringify(columnID),
-      columnChange: JSON.stringify(true)
-    };
-    $(document).off("nodeweek-dropped");
-    $(document).on("nodeweek-dropped", () => {
-      dragAction(renderer.dragAction["nodeweek"]);
-      renderer.dragAction["nodeweek"] = null;
-      $(document).off("nodeweek-dropped");
-    });
-  }
-  function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
-    if (!renderer.dragAction)
-      renderer.dragAction = {};
-    if (!renderer.dragAction[throughType])
-      renderer.dragAction[throughType] = {};
-    renderer.dragAction[throughType] = {
-      ...renderer.dragAction[throughType],
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true)
-    };
-    $(document).off(throughType + "-dropped");
-    if (objectID)
-      $(document).on(throughType + "-dropped", () => {
-        dragAction(renderer.dragAction[throughType]);
-        renderer.dragAction[throughType] = null;
-        $(document).off(throughType + "-dropped");
-      });
-  }
-  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-    const sendPostRequest = (url, data) => {
-      $.post(url, data).done(function(response) {
-        console.log("duplicateBaseItemQuery response");
-        console.log(response);
-        if (response.action === VERB.POSTED) {
-          callBackFunction(response);
-        } else {
-          window.fail_function(response.action);
-        }
-      });
-    };
-    try {
-      const itemPkString = JSON.stringify(itemPk);
-      const projectPkString = JSON.stringify(projectID);
-      if (objectType === OBJECT_TYPE.PROJECT) {
-        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-          projectPk: itemPkString
-        });
-      } else if (objectType === OBJECT_TYPE.STRATEGY) {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-          { workflowPk: itemPkString }
-        );
-      } else {
-        sendPostRequest(
-          COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-          { workflowPk: itemPkString, projectPk: projectPkString }
-        );
-      }
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-        parentID: JSON.stringify(parentID),
-        parentType: JSON.stringify(parentType),
-        objectID: JSON.stringify(objectID),
-        objectType: JSON.stringify(objectType),
-        throughType: JSON.stringify(throughType)
-      }).done(function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-      });
-    } catch (err) {
-      window.fail_function();
-    }
-  }
-  class UtilityLoader {
-    constructor(identifier2) {
-      __publicField(this, "load_screen");
-      this.load_screen = document.createElement("div");
-      this.load_screen.className = "load-screen";
-      this.load_screen.addEventListener("click", (evt) => {
-        evt.preventDefault();
-      });
-      let parentElement;
-      if (identifier2 instanceof jQuery) {
-        parentElement = identifier2.get(0);
-      } else {
-        parentElement = document.querySelector(identifier2);
-      }
-      if (parentElement) {
-        parentElement.appendChild(this.load_screen);
-      } else {
-        console.error(`Element with identifier "${identifier2}" not found.`);
-      }
-    }
-    endLoad() {
-      if (this.load_screen && this.load_screen.parentNode) {
-        this.load_screen.parentNode.removeChild(this.load_screen);
-      }
-    }
-  }
-  class MenuSection extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "dropdownDiv");
-      this.dropdownDiv = reactExports.createRef();
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const section_type = this.props.section_data.object_type;
-      const is_strategy = this.props.section_data.is_strategy;
-      const parentID = this.props.parentID;
-      let add_button;
-      let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          no_hyperlink: this.props.no_hyperlink,
-          type: this.props.type,
-          workflowData: object,
-          objectType: section_type,
-          selected: this.props.selected_id === object.id,
-          dispatch: this.props.dispatch,
-          selectAction: this.props.selectAction
-        },
-        object.id
-      ));
-      if (this.props.replacement_text)
-        objects = this.props.replacement_text;
-      if (COURSEFLOW_APP.config.create_path && this.props.add) {
-        let types;
-        if (section_type === "workflow")
-          types = ["program", "course", "activity"];
-        else
-          types = [section_type];
-        let adds;
-        {
-          adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "hover-shade",
-              href: COURSEFLOW_APP.config.create_path[this_type],
-              children: window.gettext("Create new ") + window.gettext(this_type)
-            }
-          ));
-          let import_text = window.gettext("Import ") + window.gettext(section_type);
-          if (is_strategy)
-            import_text += window.gettext(" strategy");
-          adds.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                className: "hover-shade",
-                onClick: () => {
-                  getAddedWorkflowMenu(
-                    parentID,
-                    section_type,
-                    is_strategy,
-                    false
-                  );
-                },
-                children: import_text
-              }
-            )
-          );
-        }
-        add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "img",
-            {
-              className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
-              title: window.gettext("Add New"),
-              src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
-        ] });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
-        add_button,
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: objects })
-      ] });
-    }
-  }
-  class MenuTab extends reactExports.Component {
-    render() {
-      let is_empty = true;
-      for (let i2 = 0; i2 < this.props.data.sections.length; i2++) {
-        if (this.props.data.sections[i2].objects.length > 0) {
-          is_empty = false;
-          break;
-        }
-      }
-      let replacement_text;
-      if (is_empty)
-        replacement_text = this.props.data.emptytext;
-      const sections = this.props.data.sections.map((section, i2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        MenuSection,
-        {
-          no_hyperlink: this.props.no_hyperlink,
-          type: this.props.type,
-          replacement_text: i2 == 0 ? replacement_text : null,
-          section_data: section,
-          add: this.props.data.add,
-          selected_id: this.props.selected_id,
-          dispatch: this.props.dispatch,
-          selectAction: this.props.selectAction,
-          parentID: this.props.parentID,
-          duplicate: this.props.data.duplicate
-        }
-      ));
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
-    }
-  }
-  function closeMessageBox() {
-    reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
-  }
-  class WorkflowsMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "current_project");
-      __publicField(this, "project_workflows");
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      __publicField(this, "Title", () => {
-        switch (this.props.type) {
-          case "linked_workflow_menu":
-          case "added_workflow_menu":
-          case "workflow_select_menu":
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
-          case "target_project_menu":
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
-        }
-        return null;
-      });
-      __publicField(this, "Actions", () => {
-        const actions = [];
-        if (this.props.type === "linked_workflow_menu") {
-          let text = window.gettext("link to node");
-          if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-            text = window.gettext("Copy to Current Project and ") + text;
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow-cancel",
-                className: "secondary-button",
-                onClick: closeMessageBox,
-                children: window.gettext("Cancel")
-              }
-            )
-          );
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow-none",
-                className: "secondary-button",
-                onClick: () => {
-                  setLinkedWorkflow(
-                    this.props.data.node_id,
-                    -1,
-                    this.props.actionFunction
-                  );
-                  closeMessageBox();
-                },
-                children: window.gettext("Set to None")
-              }
-            )
-          );
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow",
-                disabled: !this.state.selected,
-                className: "primary-button",
-                onClick: () => {
-                  setLinkedWorkflow(
-                    this.props.data.node_id,
-                    this.state.selected,
-                    this.props.actionFunction
-                  );
-                  closeMessageBox();
-                },
-                children: text
-              }
-            )
-          );
-        } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
-          let text = "";
-          if (this.props.type === "added_workflow_menu") {
-            text = window.gettext("Select");
-            if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-              text = window.gettext("Copy to Current Project");
-          } else {
-            text = window.gettext("Select");
-          }
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow-cancel",
-                className: "secondary-button",
-                onClick: closeMessageBox,
-                children: window.gettext("Cancel")
-              }
-            )
-          );
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow",
-                className: "primary-button",
-                disabled: !this.state.selected,
-                onClick: () => {
-                  this.props.actionFunction({ workflowID: this.state.selected });
-                  closeMessageBox();
-                },
-                children: text
-              }
-            )
-          );
-        } else if (this.props.type === "target_project_menu") {
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow-cancel",
-                className: "secondary-button",
-                onClick: closeMessageBox,
-                children: window.gettext("Cancel")
-              }
-            )
-          );
-          actions.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                id: "set-linked-workflow",
-                className: "primary-button",
-                disabled: !this.state.selected,
-                onClick: () => {
-                  this.props.actionFunction({ parentID: this.state.selected });
-                  closeMessageBox();
-                },
-                children: window.gettext("Select project")
-              }
-            )
-          );
-        }
-        return actions;
-      });
-      this.state = {};
-      if (this.props.type === "target_project_menu") {
-        if (this.current_project)
-          ;
-      }
-      if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
-        this.project_workflows = props.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
-    }
-    /*******************************************************
-     * LIFECYCLE
-     *******************************************************/
-    componentDidMount() {
-      $("#workflow-tabs").tabs({ active: 0 });
-      $("#workflow-tabs .tab-header").on("click", () => {
-        this.setState({ selected: null });
-      });
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    workflowSelected(selected_id, selected_type) {
-      this.setState({ selected: selected_id, selected_type });
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      const data_package = this.props.data.data_package;
-      let no_hyperlink = false;
-      if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
-        no_hyperlink = true;
-      const tabs = [];
-      const tab_li = [];
-      let i2 = 0;
-      for (const prop in data_package) {
-        tab_li.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i2, children: data_package[prop].title }) })
-        );
-        tabs.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            MenuTab,
-            {
-              no_hyperlink,
-              data: data_package[prop],
-              type: this.props.type,
-              identifier: i2,
-              selected_id: this.state.selected,
-              selectAction: this.workflowSelected.bind(this)
-            }
-          )
-        );
-        i2++;
-      }
-      const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
-        ",",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowCard,
-          {
-            workflowData: this.current_project,
-            selected: this.state.selected === this.current_project.id,
-            noHyperlink: no_hyperlink,
-            type: this.props.type,
-            dispatch: this.props.dispatch,
-            selectAction: this.workflowSelected.bind(this)
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
-        ",",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
-        current_project,
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
-          tabs
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Actions, {}) })
-      ] });
-    }
-  }
-  const common = {
-    black: "#000",
-    white: "#fff"
-  };
-  const common$1 = common;
-  const red = {
-    50: "#ffebee",
-    100: "#ffcdd2",
-    200: "#ef9a9a",
-    300: "#e57373",
-    400: "#ef5350",
-    500: "#f44336",
-    600: "#e53935",
-    700: "#d32f2f",
-    800: "#c62828",
-    900: "#b71c1c",
-    A100: "#ff8a80",
-    A200: "#ff5252",
-    A400: "#ff1744",
-    A700: "#d50000"
-  };
-  const red$1 = red;
-  const purple = {
-    50: "#f3e5f5",
-    100: "#e1bee7",
-    200: "#ce93d8",
-    300: "#ba68c8",
-    400: "#ab47bc",
-    500: "#9c27b0",
-    600: "#8e24aa",
-    700: "#7b1fa2",
-    800: "#6a1b9a",
-    900: "#4a148c",
-    A100: "#ea80fc",
-    A200: "#e040fb",
-    A400: "#d500f9",
-    A700: "#aa00ff"
-  };
-  const purple$1 = purple;
-  const blue = {
-    50: "#e3f2fd",
-    100: "#bbdefb",
-    200: "#90caf9",
-    300: "#64b5f6",
-    400: "#42a5f5",
-    500: "#2196f3",
-    600: "#1e88e5",
-    700: "#1976d2",
-    800: "#1565c0",
-    900: "#0d47a1",
-    A100: "#82b1ff",
-    A200: "#448aff",
-    A400: "#2979ff",
-    A700: "#2962ff"
-  };
-  const blue$1 = blue;
-  const lightBlue = {
-    50: "#e1f5fe",
-    100: "#b3e5fc",
-    200: "#81d4fa",
-    300: "#4fc3f7",
-    400: "#29b6f6",
-    500: "#03a9f4",
-    600: "#039be5",
-    700: "#0288d1",
-    800: "#0277bd",
-    900: "#01579b",
-    A100: "#80d8ff",
-    A200: "#40c4ff",
-    A400: "#00b0ff",
-    A700: "#0091ea"
-  };
-  const lightBlue$1 = lightBlue;
-  const green = {
-    50: "#e8f5e9",
-    100: "#c8e6c9",
-    200: "#a5d6a7",
-    300: "#81c784",
-    400: "#66bb6a",
-    500: "#4caf50",
-    600: "#43a047",
-    700: "#388e3c",
-    800: "#2e7d32",
-    900: "#1b5e20",
-    A100: "#b9f6ca",
-    A200: "#69f0ae",
-    A400: "#00e676",
-    A700: "#00c853"
-  };
-  const green$1 = green;
-  const orange = {
-    50: "#fff3e0",
-    100: "#ffe0b2",
-    200: "#ffcc80",
-    300: "#ffb74d",
-    400: "#ffa726",
-    500: "#ff9800",
-    600: "#fb8c00",
-    700: "#f57c00",
-    800: "#ef6c00",
-    900: "#e65100",
-    A100: "#ffd180",
-    A200: "#ffab40",
-    A400: "#ff9100",
-    A700: "#ff6d00"
-  };
-  const orange$1 = orange;
-  const grey = {
-    50: "#fafafa",
-    100: "#f5f5f5",
-    200: "#eeeeee",
-    300: "#e0e0e0",
-    400: "#bdbdbd",
-    500: "#9e9e9e",
-    600: "#757575",
-    700: "#616161",
-    800: "#424242",
-    900: "#212121",
-    A100: "#f5f5f5",
-    A200: "#eeeeee",
-    A400: "#bdbdbd",
-    A700: "#616161"
-  };
-  const grey$1 = grey;
   function chainPropTypes(propType1, propType2) {
     if (process.env.NODE_ENV === "production") {
       return () => null;
@@ -45104,6 +44328,130 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       }
     }, mixins);
   }
+  const common = {
+    black: "#000",
+    white: "#fff"
+  };
+  const common$1 = common;
+  const grey = {
+    50: "#fafafa",
+    100: "#f5f5f5",
+    200: "#eeeeee",
+    300: "#e0e0e0",
+    400: "#bdbdbd",
+    500: "#9e9e9e",
+    600: "#757575",
+    700: "#616161",
+    800: "#424242",
+    900: "#212121",
+    A100: "#f5f5f5",
+    A200: "#eeeeee",
+    A400: "#bdbdbd",
+    A700: "#616161"
+  };
+  const grey$1 = grey;
+  const purple = {
+    50: "#f3e5f5",
+    100: "#e1bee7",
+    200: "#ce93d8",
+    300: "#ba68c8",
+    400: "#ab47bc",
+    500: "#9c27b0",
+    600: "#8e24aa",
+    700: "#7b1fa2",
+    800: "#6a1b9a",
+    900: "#4a148c",
+    A100: "#ea80fc",
+    A200: "#e040fb",
+    A400: "#d500f9",
+    A700: "#aa00ff"
+  };
+  const purple$1 = purple;
+  const red = {
+    50: "#ffebee",
+    100: "#ffcdd2",
+    200: "#ef9a9a",
+    300: "#e57373",
+    400: "#ef5350",
+    500: "#f44336",
+    600: "#e53935",
+    700: "#d32f2f",
+    800: "#c62828",
+    900: "#b71c1c",
+    A100: "#ff8a80",
+    A200: "#ff5252",
+    A400: "#ff1744",
+    A700: "#d50000"
+  };
+  const red$1 = red;
+  const orange = {
+    50: "#fff3e0",
+    100: "#ffe0b2",
+    200: "#ffcc80",
+    300: "#ffb74d",
+    400: "#ffa726",
+    500: "#ff9800",
+    600: "#fb8c00",
+    700: "#f57c00",
+    800: "#ef6c00",
+    900: "#e65100",
+    A100: "#ffd180",
+    A200: "#ffab40",
+    A400: "#ff9100",
+    A700: "#ff6d00"
+  };
+  const orange$1 = orange;
+  const blue = {
+    50: "#e3f2fd",
+    100: "#bbdefb",
+    200: "#90caf9",
+    300: "#64b5f6",
+    400: "#42a5f5",
+    500: "#2196f3",
+    600: "#1e88e5",
+    700: "#1976d2",
+    800: "#1565c0",
+    900: "#0d47a1",
+    A100: "#82b1ff",
+    A200: "#448aff",
+    A400: "#2979ff",
+    A700: "#2962ff"
+  };
+  const blue$1 = blue;
+  const lightBlue = {
+    50: "#e1f5fe",
+    100: "#b3e5fc",
+    200: "#81d4fa",
+    300: "#4fc3f7",
+    400: "#29b6f6",
+    500: "#03a9f4",
+    600: "#039be5",
+    700: "#0288d1",
+    800: "#0277bd",
+    900: "#01579b",
+    A100: "#80d8ff",
+    A200: "#40c4ff",
+    A400: "#00b0ff",
+    A700: "#0091ea"
+  };
+  const lightBlue$1 = lightBlue;
+  const green = {
+    50: "#e8f5e9",
+    100: "#c8e6c9",
+    200: "#a5d6a7",
+    300: "#81c784",
+    400: "#66bb6a",
+    500: "#4caf50",
+    600: "#43a047",
+    700: "#388e3c",
+    800: "#2e7d32",
+    900: "#1b5e20",
+    A100: "#b9f6ca",
+    A200: "#69f0ae",
+    A400: "#00e676",
+    A700: "#00c853"
+  };
+  const green$1 = green;
   const _excluded$12 = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
@@ -45686,12 +45034,940 @@ Please use another name.` : formatMuiErrorMessage(18));
     return (alphaValue / 100).toFixed(2);
   };
   const getOverlayAlpha$1 = getOverlayAlpha;
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#04BA74",
+        light: "#52C68C",
+        dark: "#009E52",
+        contrastText: "#fff"
+      },
+      secondary: {
+        main: "#78909C",
+        light: "#90A4AE",
+        dark: "#607D8B"
+      },
+      courseflow: {
+        lightest: "#e2f5eb"
+      },
+      divider: "#CFD8DC",
+      action: {
+        hover: "rgba(4, 186, 116, 0.08)"
+      }
+    },
+    typography: {
+      fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+            fontWeight: 600
+          }
+        }
+      }
+    }
+  });
+  const defaultTheme = createTheme();
+  const Box = createBox({
+    themeId: THEME_ID,
+    defaultTheme,
+    defaultClassName: "MuiBox-root",
+    generateClassName: ClassNameGenerator$1.generate
+  });
+  process.env.NODE_ENV !== "production" ? Box.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * @ignore
+     */
+    children: PropTypes.node,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const Box$1 = Box;
+  function getTypographyUtilityClass(slot) {
+    return generateUtilityClass("MuiTypography", slot);
+  }
+  generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
+  const _excluded$Z = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const useUtilityClasses$Q = (ownerState) => {
+    const {
+      align,
+      gutterBottom,
+      noWrap,
+      paragraph,
+      variant,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
+    };
+    return composeClasses(slots, getTypographyUtilityClass, classes);
+  };
+  const TypographyRoot = styled$1("span", {
+    name: "MuiTypography",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    margin: 0
+  }, ownerState.variant === "inherit" && {
+    // Some elements, like <button> on Chrome have default font that doesn't inherit, reset this.
+    font: "inherit"
+  }, ownerState.variant !== "inherit" && theme2.typography[ownerState.variant], ownerState.align !== "inherit" && {
+    textAlign: ownerState.align
+  }, ownerState.noWrap && {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
+  }, ownerState.gutterBottom && {
+    marginBottom: "0.35em"
+  }, ownerState.paragraph && {
+    marginBottom: 16
+  }));
+  const defaultVariantMapping = {
+    h1: "h1",
+    h2: "h2",
+    h3: "h3",
+    h4: "h4",
+    h5: "h5",
+    h6: "h6",
+    subtitle1: "h6",
+    subtitle2: "h6",
+    body1: "p",
+    body2: "p",
+    inherit: "p"
+  };
+  const colorTransformations$1 = {
+    primary: "primary.main",
+    textPrimary: "text.primary",
+    secondary: "secondary.main",
+    textSecondary: "text.secondary",
+    error: "error.main"
+  };
+  const transformDeprecatedColors$1 = (color2) => {
+    return colorTransformations$1[color2] || color2;
+  };
+  const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
+    const themeProps = useThemeProps({
+      props: inProps,
+      name: "MuiTypography"
+    });
+    const color2 = transformDeprecatedColors$1(themeProps.color);
+    const props = extendSxProp(_extends$1({}, themeProps, {
+      color: color2
+    }));
+    const {
+      align = "inherit",
+      className,
+      component,
+      gutterBottom = false,
+      noWrap = false,
+      paragraph = false,
+      variant = "body1",
+      variantMapping = defaultVariantMapping
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    const ownerState = _extends$1({}, props, {
+      align,
+      color: color2,
+      className,
+      component,
+      gutterBottom,
+      noWrap,
+      paragraph,
+      variant,
+      variantMapping
+    });
+    const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+    const classes = useUtilityClasses$Q(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
+      as: Component,
+      ref,
+      ownerState,
+      className: clsx(classes.root, className)
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? Typography.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * Set the text-align on the component.
+     * @default 'inherit'
+     */
+    align: PropTypes.oneOf(["center", "inherit", "justify", "left", "right"]),
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * If `true`, the text will have a bottom margin.
+     * @default false
+     */
+    gutterBottom: PropTypes.bool,
+    /**
+     * If `true`, the text will not wrap, but instead will truncate with a text overflow ellipsis.
+     *
+     * Note that text overflow can only happen with block or inline-block level elements
+     * (the element needs to have a width in order to overflow).
+     * @default false
+     */
+    noWrap: PropTypes.bool,
+    /**
+     * If `true`, the element will be a paragraph element.
+     * @default false
+     */
+    paragraph: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * Applies the theme typography styles.
+     * @default 'body1'
+     */
+    variant: PropTypes.oneOfType([PropTypes.oneOf(["body1", "body2", "button", "caption", "h1", "h2", "h3", "h4", "h5", "h6", "inherit", "overline", "subtitle1", "subtitle2"]), PropTypes.string]),
+    /**
+     * The component maps the variant prop to a range of different HTML element types.
+     * For instance, subtitle1 to `<h6>`.
+     * If you wish to change that mapping, you can provide your own.
+     * Alternatively, you can use the `component` prop.
+     * @default {
+     *   h1: 'h1',
+     *   h2: 'h2',
+     *   h3: 'h3',
+     *   h4: 'h4',
+     *   h5: 'h5',
+     *   h6: 'h6',
+     *   subtitle1: 'h6',
+     *   subtitle2: 'h6',
+     *   body1: 'p',
+     *   body2: 'p',
+     *   inherit: 'p',
+     * }
+     */
+    variantMapping: PropTypes.object
+  } : void 0;
+  const Typography$1 = Typography;
+  const CardWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    border: `1px solid ${theme2.palette.divider}`,
+    borderRadius: "0.3em",
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(1),
+    padding: theme2.spacing(2)
+  }));
+  const CardHeader = styled$1("header")({});
+  const CardContent = styled$1(Box$1)({
+    flexGrow: 1
+  });
+  const CardFooter = styled$1("footer")({
+    display: "flex",
+    marginTop: "auto"
+  });
+  const CardFooterTags = styled$1("footer")({
+    display: "flex",
+    gap: theme.spacing(1)
+  });
+  const CardFooterActions = styled$1("footer")({
+    marginLeft: "auto",
+    paddingLeft: theme.spacing(2)
+  });
+  const CardTitle = styled$1(Typography$1)({
+    marginBottom: 0
+  });
+  const CardCaption = styled$1(Typography$1)({});
+  const CardDescription = styled$1(Typography$1)({});
+  class WorkflowCard extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      __publicField(this, "mainDiv");
+      __publicField(this, "workflow");
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "TypeIndicator", () => {
+        const { type, is_strategy } = this.workflow;
+        let typeText = window.gettext(type);
+        if (type === WorkflowType.LIVE_PROJECT) {
+          typeText = window.gettext("classroom");
+        }
+        if (is_strategy) {
+          typeText += ` ${window.gettext("strategy")}`;
+        }
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(typeText) });
+      });
+      __publicField(this, "FavouriteButton", () => {
+        const { favourite } = this.state;
+        const { workflow } = this;
+        if (workflow.type === WorkflowType.LIVE_PROJECT) {
+          return null;
+        }
+        const favClass = favourite ? " filled" : "";
+        const toggleFavouriteAction = (evt) => {
+          toggleFavourite(workflow.id, workflow.type, !favourite);
+          this.setState({ favourite: !favourite });
+          evt.stopPropagation();
+        };
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "workflow-toggle-favourite hover-shade",
+            onClick: toggleFavouriteAction,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: `material-symbols-outlined${favClass}`,
+                title: window.gettext("Favourite"),
+                children: "star"
+              }
+            )
+          },
+          "btn-workflow-toggle-favourite"
+        );
+      });
+      __publicField(this, "WorkflowCount", () => {
+        const details = [];
+        const { workflow } = this;
+        if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
+          details.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
+          );
+        }
+        if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
+          details.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "workflow-created workflow-live-classroom",
+                title: window.gettext("Live Classroom"),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
+                  ` ${window.gettext("Live Classroom")}`
+                ]
+              },
+              "workflow-created-group"
+            )
+          );
+        }
+        if (this.workflow.is_linked) {
+          details.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "workflow-created linked-workflow-warning",
+                title: window.gettext(
+                  "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
+                ),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
+                  ` ${window.gettext("Already in use")}`
+                ]
+              },
+              "workflow-created-warning"
+            )
+          );
+        }
+        return details;
+      });
+      this.state = {
+        favourite: props.workflowData.favourite
+      };
+      this.workflow = this.props.workflowData;
+      this.mainDiv = reactExports.createRef();
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    clickAction() {
+      const { selectAction } = this.props;
+      if (selectAction) {
+        selectAction(this.workflow.id);
+      } else {
+        window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
+      }
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const { selected, noHyperlink } = this.props;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        CardWrap,
+        {
+          ref: this.mainDiv,
+          className: `${this.workflow.type} ${selected ? " selected" : ""}`,
+          onClick: this.clickAction.bind(this),
+          onMouseDown: (evt) => evt.preventDefault(),
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { variant: "h6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                WorkflowTitle,
+                {
+                  no_hyperlink: noHyperlink,
+                  class_name: "workflow-title",
+                  data: this.workflow
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(CardCaption, { variant: "caption", children: [
+                window.gettext("Owned by"),
+                " ",
+                this.workflow.author
+              ] })
+            ] }),
+            this.workflow.description && /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { variant: "body2", children: this.workflow.description }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooter, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooterTags, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCount, {})
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterActions, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) })
+            ] })
+          ]
+        }
+      );
+    }
+  }
+  function openWorkflowSelectMenu(response, updateFunction) {
+    if (response.action === VERB.POSTED) {
+      renderMessageBox(response, "workflow_select_menu", updateFunction);
+    } else {
+      alert("Failed to find your workflows.");
+    }
+  }
+  function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
+    $.post(
+      COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
+      {
+        projectPk: JSON.stringify(projectPk),
+        type_filter: JSON.stringify(type_filter),
+        get_strategies: JSON.stringify(get_strategies),
+        self_only: JSON.stringify(self_only)
+      },
+      (data) => {
+      }
+    );
+  }
+  function columnChanged(renderer, objectID, columnID) {
+    if (!renderer.dragAction)
+      renderer.dragAction = {};
+    if (!renderer.dragAction["nodeweek"])
+      renderer.dragAction["nodeweek"] = {};
+    renderer.dragAction["nodeweek"] = {
+      ...renderer.dragAction["nodeweek"],
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify("node"),
+      columnPk: JSON.stringify(columnID),
+      columnChange: JSON.stringify(true)
+    };
+    $(document).off("nodeweek-dropped");
+    $(document).on("nodeweek-dropped", () => {
+      dragAction(renderer.dragAction["nodeweek"]);
+      renderer.dragAction["nodeweek"] = null;
+      $(document).off("nodeweek-dropped");
+    });
+  }
+  function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+    if (!renderer.dragAction)
+      renderer.dragAction = {};
+    if (!renderer.dragAction[throughType])
+      renderer.dragAction[throughType] = {};
+    renderer.dragAction[throughType] = {
+      ...renderer.dragAction[throughType],
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      newPosition: JSON.stringify(newPosition),
+      throughType: JSON.stringify(throughType),
+      inserted: JSON.stringify(true)
+    };
+    $(document).off(throughType + "-dropped");
+    if (objectID)
+      $(document).on(throughType + "-dropped", () => {
+        dragAction(renderer.dragAction[throughType]);
+        renderer.dragAction[throughType] = null;
+        $(document).off(throughType + "-dropped");
+      });
+  }
+  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+    const sendPostRequest = (url, data) => {
+      $.post(url, data).done(function(response) {
+        console.log("duplicateBaseItemQuery response");
+        console.log(response);
+        if (response.action === VERB.POSTED) {
+          callBackFunction(response);
+        } else {
+          window.fail_function(response.action);
+        }
+      });
+    };
+    try {
+      const itemPkString = JSON.stringify(itemPk);
+      const projectPkString = JSON.stringify(projectID);
+      if (objectType === OBJECT_TYPE.PROJECT) {
+        sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+          projectPk: itemPkString
+        });
+      } else if (objectType === OBJECT_TYPE.STRATEGY) {
+        sendPostRequest(
+          COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+          { workflowPk: itemPkString }
+        );
+      } else {
+        sendPostRequest(
+          COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+          { workflowPk: itemPkString, projectPk: projectPkString }
+        );
+      }
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+        parentID: JSON.stringify(parentID),
+        parentType: JSON.stringify(parentType),
+        objectID: JSON.stringify(objectID),
+        objectType: JSON.stringify(objectType),
+        throughType: JSON.stringify(throughType)
+      }).done(function(data) {
+        if (data.action === VERB.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+      });
+    } catch (err) {
+      window.fail_function();
+    }
+  }
+  class UtilityLoader {
+    constructor(identifier2) {
+      __publicField(this, "load_screen");
+      this.load_screen = document.createElement("div");
+      this.load_screen.className = "load-screen";
+      this.load_screen.addEventListener("click", (evt) => {
+        evt.preventDefault();
+      });
+      let parentElement;
+      if (identifier2 instanceof jQuery) {
+        parentElement = identifier2.get(0);
+      } else {
+        parentElement = document.querySelector(identifier2);
+      }
+      if (parentElement) {
+        parentElement.appendChild(this.load_screen);
+      } else {
+        console.error(`Element with identifier "${identifier2}" not found.`);
+      }
+    }
+    endLoad() {
+      if (this.load_screen && this.load_screen.parentNode) {
+        this.load_screen.parentNode.removeChild(this.load_screen);
+      }
+    }
+  }
+  const OuterContentWrap = styled$1(Box$1, {
+    shouldForwardProp: (prop) => prop !== "narrow"
+  })(({ theme: theme2, narrow }) => ({
+    padding: theme2.spacing(8),
+    paddingTop: 0,
+    ...narrow && {
+      maxWidth: "34.25rem",
+      marginLeft: "auto",
+      marginRight: "auto",
+      paddingLeft: theme2.spacing(2),
+      paddingRight: theme2.spacing(2)
+    }
+  }));
+  const GridWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: theme2.spacing(3)
+  }));
+  class MenuSection extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      __publicField(this, "dropdownDiv");
+      this.dropdownDiv = reactExports.createRef();
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const section_type = this.props.section_data.object_type;
+      const is_strategy = this.props.section_data.is_strategy;
+      const parentID = this.props.parentID;
+      let add_button;
+      let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCard,
+        {
+          no_hyperlink: this.props.no_hyperlink,
+          type: this.props.type,
+          workflowData: object,
+          objectType: section_type,
+          selected: this.props.selected_id === object.id,
+          dispatch: this.props.dispatch,
+          selectAction: this.props.selectAction
+        },
+        object.id
+      ));
+      if (this.props.replacement_text)
+        objects = this.props.replacement_text;
+      if (COURSEFLOW_APP.config.create_path && this.props.add) {
+        let types;
+        if (section_type === "workflow")
+          types = ["program", "course", "activity"];
+        else
+          types = [section_type];
+        let adds;
+        {
+          adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              className: "hover-shade",
+              href: COURSEFLOW_APP.config.create_path[this_type],
+              children: window.gettext("Create new ") + window.gettext(this_type)
+            }
+          ));
+          let import_text = window.gettext("Import ") + window.gettext(section_type);
+          if (is_strategy)
+            import_text += window.gettext(" strategy");
+          adds.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                className: "hover-shade",
+                onClick: () => {
+                  getAddedWorkflowMenu(
+                    parentID,
+                    section_type,
+                    is_strategy,
+                    false
+                  );
+                },
+                children: import_text
+              }
+            )
+          );
+        }
+        add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
+              title: window.gettext("Add New"),
+              src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
+        ] });
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
+        add_button,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: objects })
+      ] });
+    }
+  }
+  class MenuTab extends reactExports.Component {
+    render() {
+      let is_empty = true;
+      for (let i2 = 0; i2 < this.props.data.sections.length; i2++) {
+        if (this.props.data.sections[i2].objects.length > 0) {
+          is_empty = false;
+          break;
+        }
+      }
+      let replacement_text;
+      if (is_empty)
+        replacement_text = this.props.data.emptytext;
+      const sections = this.props.data.sections.map((section, i2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MenuSection,
+        {
+          no_hyperlink: this.props.no_hyperlink,
+          type: this.props.type,
+          replacement_text: i2 == 0 ? replacement_text : null,
+          section_data: section,
+          add: this.props.data.add,
+          selected_id: this.props.selected_id,
+          dispatch: this.props.dispatch,
+          selectAction: this.props.selectAction,
+          parentID: this.props.parentID,
+          duplicate: this.props.data.duplicate
+        }
+      ));
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
+    }
+  }
+  function closeMessageBox() {
+    reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
+  }
+  class WorkflowsMenu extends reactExports.Component {
+    constructor(props) {
+      super(props);
+      __publicField(this, "current_project");
+      __publicField(this, "project_workflows");
+      /*******************************************************
+       * COMPONENTS
+       *******************************************************/
+      __publicField(this, "Title", () => {
+        switch (this.props.type) {
+          case "linked_workflow_menu":
+          case "added_workflow_menu":
+          case "workflow_select_menu":
+            return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
+          case "target_project_menu":
+            return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
+        }
+        return null;
+      });
+      __publicField(this, "Actions", () => {
+        const actions = [];
+        if (this.props.type === "linked_workflow_menu") {
+          let text = window.gettext("link to node");
+          if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+            text = window.gettext("Copy to Current Project and ") + text;
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow-cancel",
+                className: "secondary-button",
+                onClick: closeMessageBox,
+                children: window.gettext("Cancel")
+              }
+            )
+          );
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow-none",
+                className: "secondary-button",
+                onClick: () => {
+                  setLinkedWorkflow(
+                    this.props.data.node_id,
+                    -1,
+                    this.props.actionFunction
+                  );
+                  closeMessageBox();
+                },
+                children: window.gettext("Set to None")
+              }
+            )
+          );
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow",
+                disabled: !this.state.selected,
+                className: "primary-button",
+                onClick: () => {
+                  setLinkedWorkflow(
+                    this.props.data.node_id,
+                    this.state.selected,
+                    this.props.actionFunction
+                  );
+                  closeMessageBox();
+                },
+                children: text
+              }
+            )
+          );
+        } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
+          let text = "";
+          if (this.props.type === "added_workflow_menu") {
+            text = window.gettext("Select");
+            if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+              text = window.gettext("Copy to Current Project");
+          } else {
+            text = window.gettext("Select");
+          }
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow-cancel",
+                className: "secondary-button",
+                onClick: closeMessageBox,
+                children: window.gettext("Cancel")
+              }
+            )
+          );
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow",
+                className: "primary-button",
+                disabled: !this.state.selected,
+                onClick: () => {
+                  this.props.actionFunction({ workflowID: this.state.selected });
+                  closeMessageBox();
+                },
+                children: text
+              }
+            )
+          );
+        } else if (this.props.type === "target_project_menu") {
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow-cancel",
+                className: "secondary-button",
+                onClick: closeMessageBox,
+                children: window.gettext("Cancel")
+              }
+            )
+          );
+          actions.push(
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                id: "set-linked-workflow",
+                className: "primary-button",
+                disabled: !this.state.selected,
+                onClick: () => {
+                  this.props.actionFunction({ parentID: this.state.selected });
+                  closeMessageBox();
+                },
+                children: window.gettext("Select project")
+              }
+            )
+          );
+        }
+        return actions;
+      });
+      this.state = {};
+      if (this.props.type === "target_project_menu") {
+        if (this.current_project)
+          ;
+      }
+      if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
+        this.project_workflows = props.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
+    }
+    /*******************************************************
+     * LIFECYCLE
+     *******************************************************/
+    componentDidMount() {
+      $("#workflow-tabs").tabs({ active: 0 });
+      $("#workflow-tabs .tab-header").on("click", () => {
+        this.setState({ selected: null });
+      });
+    }
+    /*******************************************************
+     * FUNCTIONS
+     *******************************************************/
+    workflowSelected(selected_id, selected_type) {
+      this.setState({ selected: selected_id, selected_type });
+    }
+    /*******************************************************
+     * RENDER
+     *******************************************************/
+    render() {
+      const data_package = this.props.data.data_package;
+      let no_hyperlink = false;
+      if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
+        no_hyperlink = true;
+      const tabs = [];
+      const tab_li = [];
+      let i2 = 0;
+      for (const prop in data_package) {
+        tab_li.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i2, children: data_package[prop].title }) })
+        );
+        tabs.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            MenuTab,
+            {
+              no_hyperlink,
+              data: data_package[prop],
+              type: this.props.type,
+              identifier: i2,
+              selected_id: this.state.selected,
+              selectAction: this.workflowSelected.bind(this)
+            }
+          )
+        );
+        i2++;
+      }
+      const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
+        ",",
+        /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowCard,
+          {
+            workflowData: this.current_project,
+            selected: this.state.selected === this.current_project.id,
+            noHyperlink: no_hyperlink,
+            type: this.props.type,
+            dispatch: this.props.dispatch,
+            selectAction: this.workflowSelected.bind(this)
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+        ",",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
+      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
+        current_project,
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
+          tabs
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Actions, {}) })
+      ] });
+    }
+  }
   function getSvgIconUtilityClass(slot) {
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$Z = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-  const useUtilityClasses$Q = (ownerState) => {
+  const _excluded$Y = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const useUtilityClasses$P = (ownerState) => {
     const {
       color: color2,
       fontSize,
@@ -45757,7 +46033,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -45772,7 +46048,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (!inheritViewBox) {
       more.viewBox = viewBox;
     }
-    const classes = useUtilityClasses$Q(ownerState);
+    const classes = useUtilityClasses$P(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
       as: component,
       className: clsx(classes.root, className),
@@ -46620,8 +46896,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$P = (ownerState) => {
+  const _excluded$X = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$O = (ownerState) => {
     const {
       square,
       elevation,
@@ -46674,14 +46950,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
       square,
       variant
     });
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$O(ownerState);
     if (process.env.NODE_ENV !== "production") {
       const theme2 = useTheme();
       if (theme2.shadows[elevation] === void 0) {
@@ -46827,7 +47103,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
   const touchRippleClasses$1 = touchRippleClasses;
-  const _excluded$X = ["center", "classes", "className"];
+  const _excluded$W = ["center", "classes", "className"];
   let _ = (t) => t, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -46942,7 +47218,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -47125,8 +47401,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
   const buttonBaseClasses$1 = buttonBaseClasses;
-  const _excluded$W = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$V = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const useUtilityClasses$N = (ownerState) => {
     const {
       disabled,
       focusVisible,
@@ -47220,7 +47496,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -47374,7 +47650,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       focusVisible
     });
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$N(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
       as: ComponentProp,
       className: clsx(classes.root, className),
@@ -47574,8 +47850,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
   const iconButtonClasses$1 = iconButtonClasses;
-  const _excluded$V = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$U = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const useUtilityClasses$M = (ownerState) => {
     const {
       classes,
       disabled,
@@ -47669,7 +47945,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -47677,7 +47953,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       size: size2
     });
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$M(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
       className: clsx(classes.root, className),
       centerRipple: true,
@@ -47772,8 +48048,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$U = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-  const useUtilityClasses$M = (ownerState) => {
+  const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const useUtilityClasses$L = (ownerState) => {
     const {
       variant,
       color: color2,
@@ -47901,13 +48177,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
       variant
     });
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$L(ownerState);
     const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
     const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
     const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -48075,191 +48351,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["filled", "outlined", "standard"]), PropTypes.string])
   } : void 0;
   const Alert$1 = Alert;
-  function getTypographyUtilityClass(slot) {
-    return generateUtilityClass("MuiTypography", slot);
-  }
-  generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$T = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-  const useUtilityClasses$L = (ownerState) => {
-    const {
-      align,
-      gutterBottom,
-      noWrap,
-      paragraph,
-      variant,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
-    };
-    return composeClasses(slots, getTypographyUtilityClass, classes);
-  };
-  const TypographyRoot = styled$1("span", {
-    name: "MuiTypography",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    margin: 0
-  }, ownerState.variant === "inherit" && {
-    // Some elements, like <button> on Chrome have default font that doesn't inherit, reset this.
-    font: "inherit"
-  }, ownerState.variant !== "inherit" && theme2.typography[ownerState.variant], ownerState.align !== "inherit" && {
-    textAlign: ownerState.align
-  }, ownerState.noWrap && {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap"
-  }, ownerState.gutterBottom && {
-    marginBottom: "0.35em"
-  }, ownerState.paragraph && {
-    marginBottom: 16
-  }));
-  const defaultVariantMapping = {
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    h4: "h4",
-    h5: "h5",
-    h6: "h6",
-    subtitle1: "h6",
-    subtitle2: "h6",
-    body1: "p",
-    body2: "p",
-    inherit: "p"
-  };
-  const colorTransformations$1 = {
-    primary: "primary.main",
-    textPrimary: "text.primary",
-    secondary: "secondary.main",
-    textSecondary: "text.secondary",
-    error: "error.main"
-  };
-  const transformDeprecatedColors$1 = (color2) => {
-    return colorTransformations$1[color2] || color2;
-  };
-  const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
-    const themeProps = useThemeProps({
-      props: inProps,
-      name: "MuiTypography"
-    });
-    const color2 = transformDeprecatedColors$1(themeProps.color);
-    const props = extendSxProp(_extends$1({}, themeProps, {
-      color: color2
-    }));
-    const {
-      align = "inherit",
-      className,
-      component,
-      gutterBottom = false,
-      noWrap = false,
-      paragraph = false,
-      variant = "body1",
-      variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
-    const ownerState = _extends$1({}, props, {
-      align,
-      color: color2,
-      className,
-      component,
-      gutterBottom,
-      noWrap,
-      paragraph,
-      variant,
-      variantMapping
-    });
-    const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-    const classes = useUtilityClasses$L(ownerState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
-      as: Component,
-      ref,
-      ownerState,
-      className: clsx(classes.root, className)
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? Typography.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * Set the text-align on the component.
-     * @default 'inherit'
-     */
-    align: PropTypes.oneOf(["center", "inherit", "justify", "left", "right"]),
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * If `true`, the text will have a bottom margin.
-     * @default false
-     */
-    gutterBottom: PropTypes.bool,
-    /**
-     * If `true`, the text will not wrap, but instead will truncate with a text overflow ellipsis.
-     *
-     * Note that text overflow can only happen with block or inline-block level elements
-     * (the element needs to have a width in order to overflow).
-     * @default false
-     */
-    noWrap: PropTypes.bool,
-    /**
-     * If `true`, the element will be a paragraph element.
-     * @default false
-     */
-    paragraph: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * Applies the theme typography styles.
-     * @default 'body1'
-     */
-    variant: PropTypes.oneOfType([PropTypes.oneOf(["body1", "body2", "button", "caption", "h1", "h2", "h3", "h4", "h5", "h6", "inherit", "overline", "subtitle1", "subtitle2"]), PropTypes.string]),
-    /**
-     * The component maps the variant prop to a range of different HTML element types.
-     * For instance, subtitle1 to `<h6>`.
-     * If you wish to change that mapping, you can provide your own.
-     * Alternatively, you can use the `component` prop.
-     * @default {
-     *   h1: 'h1',
-     *   h2: 'h2',
-     *   h3: 'h3',
-     *   h4: 'h4',
-     *   h5: 'h5',
-     *   h6: 'h6',
-     *   subtitle1: 'h6',
-     *   subtitle2: 'h6',
-     *   body1: 'p',
-     *   body2: 'p',
-     *   inherit: 'p',
-     * }
-     */
-    variantMapping: PropTypes.object
-  } : void 0;
-  const Typography$1 = Typography;
   function getAlertTitleUtilityClass(slot) {
     return generateUtilityClass("MuiAlertTitle", slot);
   }
@@ -51462,33 +51553,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["dot", "standard"]), PropTypes.string])
   } : void 0;
   const Badge$1 = Badge;
-  const defaultTheme = createTheme();
-  const Box = createBox({
-    themeId: THEME_ID,
-    defaultTheme,
-    defaultClassName: "MuiBox-root",
-    generateClassName: ClassNameGenerator$1.generate
-  });
-  process.env.NODE_ENV !== "production" ? Box.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * @ignore
-     */
-    children: PropTypes.node,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const Box$1 = Box;
   function getButtonUtilityClass(slot) {
     return generateUtilityClass("MuiButton", slot);
   }
@@ -94518,41 +94582,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     };
   }
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#04BA74",
-        light: "#52C68C",
-        dark: "#009E52",
-        contrastText: "#fff"
-      },
-      secondary: {
-        main: "#78909C",
-        light: "#90A4AE",
-        dark: "#607D8B"
-      },
-      courseflow: {
-        lightest: "#e2f5eb"
-      },
-      divider: "#CFD8DC",
-      action: {
-        hover: "rgba(4, 186, 116, 0.08)"
-      }
-    },
-    typography: {
-      fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            fontWeight: 600
-          }
-        }
-      }
-    }
-  });
   var Subscribable = class {
     constructor() {
       this.listeners = /* @__PURE__ */ new Set();
@@ -96820,24 +96849,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
   default_1$b = MoreHoriz.default = _default$b;
-  const OuterContentWrap = styled$1(Box$1, {
-    shouldForwardProp: (prop) => prop !== "narrow"
-  })(({ theme: theme2, narrow }) => ({
-    padding: theme2.spacing(8),
-    paddingTop: 0,
-    ...narrow && {
-      maxWidth: "34.25rem",
-      marginLeft: "auto",
-      marginRight: "auto",
-      paddingLeft: theme2.spacing(2),
-      paddingRight: theme2.spacing(2)
-    }
-  }));
-  const GridWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: theme2.spacing(3)
-  }));
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -98405,7 +98416,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             /* @__PURE__ */ jsxRuntimeExports.jsx(this.Sort, {})
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, {}) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCards, {}) })
       ] });
     }
   }
@@ -99628,6 +99639,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 hideIfCookie: "home-howto-template"
               }
             ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: template }, `template-${index}`)) })
           ]
         }
@@ -100028,7 +100040,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         },
         workflow.type + workflow.id
       ));
-      return [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-filter-top", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-middle", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "workflow-search", ref: this.searchDOM, children: [
@@ -100061,9 +100073,9 @@ Please use another name.` : formatMuiErrorMessage(18));
           ] })
         ] }),
         this.getInfo(),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "menu-grid", children: workflows }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: workflows }),
         this.getPages()
-      ];
+      ] });
     }
   }
   class ExplorePage extends reactExports.Component {
