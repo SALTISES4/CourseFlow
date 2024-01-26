@@ -21,15 +21,8 @@
     },
     "import/resolver": {
       "node": {
-        "paths": [
-          "src"
-        ],
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".ts",
-          ".tsx"
-        ]
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   },
@@ -49,19 +42,14 @@
     "JSX": true,
     "makeActiveSidebar": true
   },
-  "plugins": [
-    "react",
-    "prettier",
-    "@typescript-eslint",
-    "react-hooks"
-  ],
+  "plugins": ["react", "prettier", "@typescript-eslint", "react-hooks"],
   "rules": {
-//    "newline-per-chained-call": [
-//      "error",
-//      {
-//        "ignoreChainWithDepth": 2
-//      }
-//    ],
+    //    "newline-per-chained-call": [
+    //      "error",
+    //      {
+    //        "ignoreChainWithDepth": 2
+    //      }
+    //    ],
     "no-var": "warn",
     "no-undef": "warn",
     "no-prototype-builtins": "warn",
@@ -82,11 +70,7 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".tsx"
-        ]
+        "extensions": [".js", ".jsx", ".tsx"]
       }
     ],
     "prettier/prettier": [
