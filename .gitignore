@@ -47,4 +47,3 @@ local_settings.py
 /.env
 /react/node_modules/
 /react/build/
-*.map
