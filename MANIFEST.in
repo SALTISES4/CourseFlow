@@ -13,6 +13,7 @@ graft course_flow/tests
 graft course_flow/static/course_flow/css
 graft course_flow/static/course_flow/img
 graft course_flow/static/course_flow/js/react/dist
+graft course_flow/static/course_flow/js/templates
 
 global-exclude *.pyc
 global-exclude __pycache__
