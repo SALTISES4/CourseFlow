@@ -45069,205 +45069,6 @@ var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c
   d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
 }), "StarOutline");
 default_1$c = StarOutline.default = _default$c;
-function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
-  const t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
-  }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
-    changeFieldID: 0
-  };
-  if (changeField) {
-    post_object.changeFieldID = // @ts-ignore
-    COURSEFLOW_APP.contextData.changeFieldID;
-  }
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === VERB.POSTED) {
-            callBackFunction(_data);
-          } else
-            window.fail_function(data.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true),
-      allowDifferent: JSON.stringify(true)
-    }).done(function(data) {
-      if (data.action === "posted")
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-      $(".ui-draggable").draggable("enable");
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-      nodePk: JSON.stringify(nodeID),
-      outcomePk: JSON.stringify(outcomeID),
-      degree: JSON.stringify(value)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-      {
-        outcomePk: JSON.stringify(outcomePk),
-        objectID: JSON.stringify(outcome2Pk),
-        objectType: JSON.stringify("outcome"),
-        degree: JSON.stringify(degree)
-      }
-    ).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
-  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
-    nodePk: node_id,
-    workflowPk: workflow_id
-  }).done(function(data) {
-    if (data.action === VERB.POSTED)
-      callBackFunction(data);
-    else
-      window.fail_function(data.action);
-  });
-}
-function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data) {
-      console.log("toggleStrategyQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      objectsetPk: JSON.stringify(objectsetPk),
-      add: JSON.stringify(add2)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
 function useTheme() {
   const theme2 = useTheme$2(defaultTheme$2);
   if (process.env.NODE_ENV !== "production") {
@@ -47782,10 +47583,15 @@ const CardTitle = styled$1(Typography$1)({
   textOverflow: "ellipsis",
   overflow: "hidden",
   whiteSpace: "nowrap",
+  fontWeight: 600,
   "& *": {
     textOverflow: "inherit",
     overflow: "inherit",
     whiteSpace: "inherit"
+  },
+  "& a": {
+    textDecoration: "none",
+    color: "currentColor"
   }
 });
 CardTitle.defaultProps = {
@@ -47826,15 +47632,256 @@ const CardFavoriteBtn = styled$1(IconButton$1)(({ theme: theme2 }) => ({
   marginRight: "-8px",
   marginTop: "-8px"
 }));
+function isWorkflowCardChipType(chip) {
+  return typeof chip === "object" && chip !== null && "type" in chip && "label" in chip;
+}
+const WorkflowCardDumb = ({
+  title,
+  caption,
+  isSelected,
+  isFavourite,
+  onFavourite,
+  onClick,
+  onMouseDown,
+  chips
+}) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  CardWrap,
+  {
+    onClick,
+    onMouseDown,
+    className: isSelected ? "selected" : "",
+    children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: title }),
+        caption && /* @__PURE__ */ jsxRuntimeExports.jsx(CardCaption, { children: caption })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooter, { children: [
+        chips.length && /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterTags, { children: chips.map((chip, index) => {
+          if (!chip) {
+            return null;
+          }
+          return isWorkflowCardChipType(chip) ? /* @__PURE__ */ jsxRuntimeExports.jsx(CardChip, { className: chip.type, label: chip.label }, index) : /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, { children: chip }, index);
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterActions, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CardFavoriteBtn,
+          {
+            "aria-label": window.gettext("Favourite"),
+            sx: {
+              color: isFavourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
+            },
+            onClick: onFavourite,
+            children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+          }
+        ) })
+      ] })
+    ]
+  }
+);
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data) {
+          if (data.action === VERB.POSTED) {
+            callBackFunction(_data);
+          } else
+            window.fail_function(data.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
+      function(data) {
+        if (data.action === VERB.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+        $(".ui-draggable").draggable("enable");
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      newPosition: JSON.stringify(newPosition),
+      throughType: JSON.stringify(throughType),
+      inserted: JSON.stringify(true),
+      allowDifferent: JSON.stringify(true)
+    }).done(function(data) {
+      if (data.action === "posted")
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+      $(".ui-draggable").draggable("enable");
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    });
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+      nodePk: JSON.stringify(nodeID),
+      outcomePk: JSON.stringify(outcomeID),
+      degree: JSON.stringify(value)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(
+      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
+      {
+        outcomePk: JSON.stringify(outcomePk),
+        objectID: JSON.stringify(outcome2Pk),
+        objectType: JSON.stringify("outcome"),
+        degree: JSON.stringify(degree)
+      }
+    ).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
+  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+    nodePk: node_id,
+    workflowPk: workflow_id
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  });
+}
+function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
+    }).done(function(data) {
+      console.log("toggleStrategyQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      objectsetPk: JSON.stringify(objectsetPk),
+      add: JSON.stringify(add2)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      favourite: JSON.stringify(favourite)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
 class WorkflowCard extends reactExports.Component {
   constructor(props) {
     super(props);
     __publicField(this, "mainDiv");
     __publicField(this, "workflow");
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    __publicField(this, "TypeIndicator", () => {
+    __publicField(this, "getTypeChip", () => {
       const { type, is_strategy } = this.workflow;
       let typeText = window.gettext(type);
       if (type === WorkflowType.LIVE_PROJECT) {
@@ -47843,9 +47890,23 @@ class WorkflowCard extends reactExports.Component {
       if (is_strategy) {
         typeText += ` ${window.gettext("strategy")}`;
       }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(CardChip, { className: type, label: capWords(typeText) });
+      return {
+        type,
+        label: capWords(typeText)
+      };
     });
-    __publicField(this, "FavouriteButton", () => {
+    __publicField(this, "getWorkflowCountChip", () => {
+      const { workflow } = this;
+      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count !== null && workflow.workflow_count > 0) {
+        return {
+          type: "default",
+          label: `${workflow.workflow_count} ${window.gettext(
+            `workflow` + (workflow.workflow_count > 1 ? "s" : "")
+          )}`
+        };
+      }
+    });
+    __publicField(this, "getFavouriteOptions", () => {
       const { favourite } = this.state;
       const { workflow } = this;
       if (workflow.type === WorkflowType.LIVE_PROJECT) {
@@ -47856,19 +47917,13 @@ class WorkflowCard extends reactExports.Component {
         toggleFavourite(workflow.id, workflow.type, !favourite);
         this.setState({ favourite: !favourite });
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        CardFavoriteBtn,
-        {
-          "aria-label": window.gettext("Favourite"),
-          sx: {
-            color: favourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
-          },
-          onClick: toggleFavouriteAction,
-          children: favourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
-        }
-      );
+      return {
+        isFavourite: favourite,
+        onFavourite: toggleFavouriteAction
+      };
     });
-    __publicField(this, "WorkflowInfo", () => {
+    // TODO: Determine where this is used and how to refactor it
+    __publicField(this, "getWorkflowInfo", () => {
       const details = [];
       const { workflow } = this;
       if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
@@ -47905,19 +47960,6 @@ class WorkflowCard extends reactExports.Component {
           )
         );
       }
-      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count !== null && workflow.workflow_count > 0) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            CardChip,
-            {
-              label: `${workflow.workflow_count} ${window.gettext(
-                `workflow` + (workflow.workflow_count > 1 ? "s" : "")
-              )}`
-            },
-            "workflow-created-count"
-          )
-        );
-      }
       return details;
     });
     this.state = {
@@ -47942,36 +47984,28 @@ class WorkflowCard extends reactExports.Component {
    *******************************************************/
   render() {
     const { selected, noHyperlink } = this.props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      CardWrap,
+    const favouriteOptions = this.getFavouriteOptions();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCardDumb,
       {
-        ref: this.mainDiv,
-        className: selected ? "selected" : "",
+        title: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          WorkflowTitle,
+          {
+            no_hyperlink: noHyperlink,
+            class_name: "workflow-title",
+            data: this.workflow
+          }
+        ),
+        caption: this.workflow.author && `${window.gettext("Owned by")} ${this.workflow.author}`,
+        isSelected: selected,
+        isFavourite: favouriteOptions.isFavourite,
+        onFavourite: favouriteOptions.onFavourite,
         onClick: this.clickAction.bind(this),
         onMouseDown: (evt) => evt.preventDefault(),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowTitle,
-              {
-                no_hyperlink: noHyperlink,
-                class_name: "workflow-title",
-                data: this.workflow
-              }
-            ) }),
-            this.workflow.author && /* @__PURE__ */ jsxRuntimeExports.jsxs(CardCaption, { children: [
-              window.gettext("Owned by"),
-              " ",
-              this.workflow.author
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooter, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooterTags, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowInfo, {})
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterActions, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) })
-          ] })
+        chips: [
+          this.getTypeChip(),
+          this.getWorkflowInfo(),
+          this.getWorkflowCountChip()
         ]
       }
     );
@@ -100205,7 +100239,7 @@ const Home = ({ isTeacher, projects, templates }) => {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: template }, `template-${index}`)) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardDumb, { ...template }, index)) })
         ]
       }
     )

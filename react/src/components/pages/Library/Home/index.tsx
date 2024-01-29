@@ -1,4 +1,7 @@
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import WorkflowCardDumb, {
+  PropsType as WorkflowCardDumbPropsType
+} from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
 import Alert from '@cfCommonComponents/components/Alert'
 import { Workflow } from '@cfModule/types/common'
 import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
@@ -7,7 +10,7 @@ import Section from './components/Section'
 
 type PropsType = {
   projects: Workflow[]
-  templates: Workflow[]
+  templates: WorkflowCardDumbPropsType[]
   isTeacher: boolean
 }
 
@@ -62,7 +65,7 @@ const Home = ({ isTeacher, projects, templates }: PropsType) => {
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
           {templates.map((template, index) => (
-            <WorkflowCard key={`template-${index}`} workflowData={template} />
+            <WorkflowCardDumb key={index} {...template} />
           ))}
         </GridWrap>
       </Section>

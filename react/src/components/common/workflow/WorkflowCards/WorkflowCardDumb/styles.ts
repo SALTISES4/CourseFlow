@@ -46,10 +46,15 @@ export const CardTitle = styled(Typography)({
   textOverflow: 'ellipsis',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
+  fontWeight: 600,
   '& *': {
     textOverflow: 'inherit',
     overflow: 'inherit',
     whiteSpace: 'inherit'
+  },
+  '& a': {
+    textDecoration: 'none',
+    color: 'currentColor'
   }
 })
 

@@ -34,30 +34,46 @@ def home_view(request):
                 "projects": projects_serialized,
                 # TODO: Figure out how to handle the templates
                 "templates": [
-                    # {
-                    #     "title": "A project title",
-                    #     "author": "John Doe",
-                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
-                    #     "type": "project"
-                    # },
-                    # {
-                    #     "title": "A course title",
-                    #     "author": "John Doe",
-                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
-                    #     "type": "project"
-                    # },
-                    # {
-                    #     "title": "A program title",
-                    #     "author": "John Doe",
-                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
-                    #     "type": "project"
-                    # }
-                    # {
-                    #     "title": "An activity title",
-                    #     "author": "John Doe",
-                    #     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. Consectetur adipiscing elit, sed do.",
-                    #     "type": "project"
-                    # }
+                    {
+                        "title": "A project title",
+                        "caption": "Owned by someone",
+                        "isFavourite": True,
+                        "chips": [
+                            { "type": 'project', "label": 'Project' },
+                            { "type": 'template', "label": 'Template' },
+                            { "type": 'default', "label": '23 workflows' }
+                        ]
+                    },
+                    {
+                        "title": "A program title",
+                        "caption": "Owned by someone",
+                        "isFavourite": False,
+                        "chips": [
+                            { "type": 'program', "label": 'Program' },
+                            { "type": 'template', "label": 'Template' },
+                            { "type": 'default', "label": '23 workflows' }
+                        ]
+                    },
+                    {
+                        "title": "A course title",
+                        "caption": "Owned by someone",
+                        "isFavourite": False,
+                        "chips": [
+                            { "type": 'course', "label": 'Course' },
+                            { "type": 'template', "label": 'Template' },
+                            { "type": 'default', "label": '23 workflows' }
+                        ]
+                    },
+                    {
+                        "title": "An activity title",
+                        "caption": "Owned by someone",
+                        "isFavourite": True,
+                        "chips": [
+                            { "type": 'activity', "label": 'Activity' },
+                            { "type": 'template', "label": 'Template' },
+                            { "type": 'default', "label": '23 workflows' }
+                        ]
+                    }
                 ]
             }
         ).decode("utf-8")

@@ -1077,16 +1077,6 @@ h3.big-space {
   gap: 10px;
 }
 
-.workflow-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 6px;
-  flex-grow: 1;
-  white-space: normal;
-  text-decoration: none;
-  color: #3f4041;
-}
-
 .workflow-buttons {
   text-align: right;
   white-space: nowrap;

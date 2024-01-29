@@ -1,24 +1,14 @@
-import { Component, RefObject, createRef, MouseEvent } from 'react'
+import { Component, RefObject, createRef, MouseEvent, ReactNode } from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
+import WorkflowCardDumb, {
+  WorklowCardChipType as WorkflowCardDumbChipPropsType
+} from '../WorkflowCardDumb'
 import { WorkflowTitle } from '@cfUIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
-import StarIcon from '@mui/icons-material/Star'
-import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import { toggleFavourite } from '@XMLHTTP/API/update'
-import {
-  CardWrap,
-  CardHeader,
-  CardFooter,
-  CardFooterTags,
-  CardFooterActions,
-  CardTitle,
-  CardCaption,
-  CardChip,
-  CardFavoriteBtn
-} from './styles'
 
 /*******************************************************
  * A workflow card for a menu
@@ -68,10 +58,7 @@ class WorkflowCard<
     }
   }
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  TypeIndicator = () => {
+  getTypeChip = (): WorkflowCardDumbChipPropsType => {
     const { type, is_strategy } = this.workflow
     let typeText = window.gettext(type)
 
@@ -83,10 +70,30 @@ class WorkflowCard<
       typeText += ` ${window.gettext('strategy')}`
     }
 
-    return <CardChip className={type} label={Utility.capWords(typeText)} />
+    return {
+      type: type as WorkflowCardDumbChipPropsType['type'],
+      label: Utility.capWords(typeText)
+    }
   }
 
-  FavouriteButton = () => {
+  getWorkflowCountChip = (): WorkflowCardDumbChipPropsType => {
+    const { workflow } = this
+
+    if (
+      workflow.type === WorkflowType.PROJECT &&
+      workflow.workflow_count !== null &&
+      workflow.workflow_count > 0
+    ) {
+      return {
+        type: 'default',
+        label: `${workflow.workflow_count} ${window.gettext(
+          `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+        )}`
+      }
+    }
+  }
+
+  getFavouriteOptions = () => {
     const { favourite } = this.state
     const { workflow } = this
 
@@ -100,23 +107,15 @@ class WorkflowCard<
       this.setState({ favourite: !favourite })
     }
 
-    return (
-      <CardFavoriteBtn
-        aria-label={window.gettext('Favourite')}
-        sx={{
-          color: favourite
-            ? 'courseflow.favouriteActive'
-            : 'courseflow.favouriteInactive'
-        }}
-        onClick={toggleFavouriteAction}
-      >
-        {favourite ? <StarIcon /> : <StarOutlineIcon />}
-      </CardFavoriteBtn>
-    )
+    return {
+      isFavourite: favourite,
+      onFavourite: toggleFavouriteAction
+    }
   }
 
-  WorkflowInfo = () => {
-    const details = []
+  // TODO: Determine where this is used and how to refactor it
+  getWorkflowInfo = (): ReactNode[] => {
+    const details: ReactNode[] = []
     const { workflow } = this
 
     // Live classroom indicator
@@ -155,21 +154,6 @@ class WorkflowCard<
       )
     }
 
-    if (
-      workflow.type === WorkflowType.PROJECT &&
-      workflow.workflow_count !== null &&
-      workflow.workflow_count > 0
-    ) {
-      details.push(
-        <CardChip
-          key="workflow-created-count"
-          label={`${workflow.workflow_count} ${window.gettext(
-            `workflow` + (workflow.workflow_count > 1 ? 's' : '')
-          )}`}
-        />
-      )
-    }
-
     return details
   }
 
@@ -178,38 +162,32 @@ class WorkflowCard<
    *******************************************************/
   render() {
     const { selected, noHyperlink } = this.props
+    const favouriteOptions = this.getFavouriteOptions()
 
     return (
-      <CardWrap
-        ref={this.mainDiv}
-        className={selected ? 'selected' : ''}
+      <WorkflowCardDumb
+        title={
+          <WorkflowTitle
+            no_hyperlink={noHyperlink}
+            class_name="workflow-title"
+            data={this.workflow}
+          />
+        }
+        caption={
+          this.workflow.author &&
+          `${window.gettext('Owned by')} ${this.workflow.author}`
+        }
+        isSelected={selected}
+        isFavourite={favouriteOptions.isFavourite}
+        onFavourite={favouriteOptions.onFavourite}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => evt.preventDefault()}
-      >
-        <CardHeader>
-          <CardTitle>
-            <WorkflowTitle
-              no_hyperlink={noHyperlink}
-              class_name="workflow-title"
-              data={this.workflow}
-            />
-          </CardTitle>
-          {this.workflow.author && (
-            <CardCaption>
-              {window.gettext('Owned by')} {this.workflow.author}
-            </CardCaption>
-          )}
-        </CardHeader>
-        <CardFooter>
-          <CardFooterTags>
-            <this.TypeIndicator />
-            <this.WorkflowInfo />
-          </CardFooterTags>
-          <CardFooterActions>
-            <this.FavouriteButton />
-          </CardFooterActions>
-        </CardFooter>
-      </CardWrap>
+        chips={[
+          this.getTypeChip(),
+          this.getWorkflowInfo(),
+          this.getWorkflowCountChip()
+        ]}
+      />
     )
   }
 }
