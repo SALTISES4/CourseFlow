@@ -14,7 +14,14 @@ const theme: Theme = createTheme({
       dark: '#607D8B'
     },
     courseflow: {
-      lightest: '#e2f5eb'
+      lightest: '#e2f5eb',
+      favouriteActive: 'rgba(255, 180, 0, 1)',
+      favouriteInactive: 'rgba(0, 0, 0, 0.23)',
+      project: 'rgba(245, 127, 23, 1)',
+      program: 'rgba(0, 105, 92, 1)',
+      course: 'rgba(183, 28, 28, 1)',
+      activity: 'rgba(41, 98, 255, 1)',
+      template: 'rgba(255, 64, 129, 1)'
     },
     divider: '#CFD8DC',
     action: {

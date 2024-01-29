@@ -1,41 +1,98 @@
 import theme from '@cfModule/mui/theme'
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
+import { alpha, styled } from '@mui/material/styles'
 
 export const CardWrap = styled(Box)(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: '0.3em',
   display: 'flex',
-  flexDirection: 'column',
+  padding: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
   gap: theme.spacing(1),
-  padding: theme.spacing(2)
+  borderRadius: '0.3em',
+  flexDirection: 'column',
+  transition: 'background-color 0.3s ease',
+  '&:hover': {
+    cursor: 'pointer',
+    backgroundColor: alpha(theme.palette.action.hover, 0.04)
+  },
+  '&.selected': {
+    borderColor: theme.palette.primary.main
+  }
 }))
 
 export const CardHeader = styled('header')({})
 
-export const CardContent = styled(Box)({
-  flexGrow: 1
-})
-
-export const CardFooter = styled('footer')({
+export const CardFooter = styled('footer')(({ theme }) => ({
   display: 'flex',
-  marginTop: 'auto'
-})
+  marginTop: theme.spacing(3),
+  alignItems: 'flex-start'
+}))
 
-export const CardFooterTags = styled('footer')({
+export const CardFooterTags = styled('div')({
   display: 'flex',
-  gap: theme.spacing(1)
+  gap: `0 ${theme.spacing(1)}`
 })
 
-export const CardFooterActions = styled('footer')({
+export const CardFooterActions = styled('div')({
   marginLeft: 'auto',
   paddingLeft: theme.spacing(2)
 })
 
 export const CardTitle = styled(Typography)({
-  marginBottom: 0
+  marginBottom: 0,
+  minWidth: 0,
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  '& *': {
+    textOverflow: 'inherit',
+    overflow: 'inherit',
+    whiteSpace: 'inherit'
+  }
 })
 
+CardTitle.defaultProps = {
+  variant: 'h6'
+}
+
 export const CardCaption = styled(Typography)({})
-export const CardDescription = styled(Typography)({})
+
+CardCaption.defaultProps = {
+  variant: 'caption'
+}
+
+export const CardChip = styled(Chip)(({ theme }) => ({
+  '&.project': {
+    backgroundColor: theme.palette.courseflow.project,
+    color: theme.palette.common.white
+  },
+  '&.program': {
+    backgroundColor: theme.palette.courseflow.program,
+    color: theme.palette.common.white
+  },
+  '&.activity': {
+    backgroundColor: theme.palette.courseflow.activity,
+    color: theme.palette.common.white
+  },
+  '&.course': {
+    backgroundColor: theme.palette.courseflow.course,
+    color: theme.palette.common.white
+  },
+  '&.template': {
+    backgroundColor: 'transparent',
+    color: theme.palette.courseflow.template,
+    border: '1px solid currentColor'
+  }
+}))
+
+CardChip.defaultProps = {
+  size: 'small',
+  variant: 'filled'
+}
+
+export const CardFavoriteBtn = styled(IconButton)(({ theme }) => ({
+  marginRight: '-8px',
+  marginTop: '-8px'
+}))

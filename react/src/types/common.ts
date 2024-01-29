@@ -9,7 +9,6 @@ export interface Workflow {
   author: string
   created_on: string
   deleted: boolean
-  description: string | null
   favourite: boolean
   has_liveproject: boolean
   is_linked: boolean
@@ -22,7 +21,7 @@ export interface Workflow {
   published: boolean
   title: string
   type: WorkflowType
-  workflow_count: null
+  workflow_count: null | number
 }
 
 export type ObjectPermission = {

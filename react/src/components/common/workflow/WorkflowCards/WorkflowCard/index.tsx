@@ -5,17 +5,19 @@ import { WorkflowTitle } from '@cfUIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
+import StarIcon from '@mui/icons-material/Star'
+import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import { toggleFavourite } from '@XMLHTTP/API/update'
 import {
   CardWrap,
   CardHeader,
-  CardContent,
   CardFooter,
   CardFooterTags,
   CardFooterActions,
   CardTitle,
   CardCaption,
-  CardDescription
+  CardChip,
+  CardFavoriteBtn
 } from './styles'
 
 /*******************************************************
@@ -71,19 +73,17 @@ class WorkflowCard<
    *******************************************************/
   TypeIndicator = () => {
     const { type, is_strategy } = this.workflow
-
     let typeText = window.gettext(type)
+
     if (type === WorkflowType.LIVE_PROJECT) {
       typeText = window.gettext('classroom')
     }
+
     if (is_strategy) {
       typeText += ` ${window.gettext('strategy')}`
     }
-    return (
-      <div className={'workflow-type-indicator ' + type}>
-        {Utility.capWords(typeText)}
-      </div>
-    )
+
+    return <CardChip className={type} label={Utility.capWords(typeText)} />
   }
 
   FavouriteButton = () => {
@@ -94,43 +94,30 @@ class WorkflowCard<
       return null
     }
 
-    const favClass = favourite ? ' filled' : ''
-    const toggleFavouriteAction = (evt: MouseEvent<HTMLDivElement>) => {
+    const toggleFavouriteAction = (evt: MouseEvent<HTMLButtonElement>) => {
+      evt.stopPropagation()
       toggleFavourite(workflow.id, workflow.type, !favourite)
       this.setState({ favourite: !favourite })
-      evt.stopPropagation()
     }
 
     return (
-      <div
-        key="btn-workflow-toggle-favourite"
-        className="workflow-toggle-favourite hover-shade"
+      <CardFavoriteBtn
+        aria-label={window.gettext('Favourite')}
+        sx={{
+          color: favourite
+            ? 'courseflow.favouriteActive'
+            : 'courseflow.favouriteInactive'
+        }}
         onClick={toggleFavouriteAction}
       >
-        <span
-          className={`material-symbols-outlined${favClass}`}
-          title={window.gettext('Favourite')}
-        >
-          star
-        </span>
-      </div>
+        {favourite ? <StarIcon /> : <StarOutlineIcon />}
+      </CardFavoriteBtn>
     )
   }
 
-  WorkflowCount = () => {
+  WorkflowInfo = () => {
     const details = []
     const { workflow } = this
-
-    if (
-      workflow.type === WorkflowType.PROJECT &&
-      workflow.workflow_count != null
-    ) {
-      details.push(
-        <div key="workflow-created-count" className="workflow-created">
-          {`${workflow.workflow_count} ${window.gettext('workflows')}`}
-        </div>
-      )
-    }
 
     // Live classroom indicator
     if (
@@ -168,6 +155,21 @@ class WorkflowCard<
       )
     }
 
+    if (
+      workflow.type === WorkflowType.PROJECT &&
+      workflow.workflow_count !== null &&
+      workflow.workflow_count > 0
+    ) {
+      details.push(
+        <CardChip
+          key="workflow-created-count"
+          label={`${workflow.workflow_count} ${window.gettext(
+            `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+          )}`}
+        />
+      )
+    }
+
     return details
   }
 
@@ -180,34 +182,28 @@ class WorkflowCard<
     return (
       <CardWrap
         ref={this.mainDiv}
-        className={`${this.workflow.type} ${selected ? ' selected' : ''}`}
+        className={selected ? 'selected' : ''}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => evt.preventDefault()}
       >
         <CardHeader>
-          <CardTitle variant="h6">
+          <CardTitle>
             <WorkflowTitle
               no_hyperlink={noHyperlink}
               class_name="workflow-title"
               data={this.workflow}
             />
           </CardTitle>
-          <CardCaption variant="caption">
-            {window.gettext('Owned by')} {this.workflow.author}
-          </CardCaption>
+          {this.workflow.author && (
+            <CardCaption>
+              {window.gettext('Owned by')} {this.workflow.author}
+            </CardCaption>
+          )}
         </CardHeader>
-
-        {this.workflow.description && (
-          <CardContent>
-            <CardDescription variant="body2">
-              {this.workflow.description}
-            </CardDescription>
-          </CardContent>
-        )}
         <CardFooter>
           <CardFooterTags>
             <this.TypeIndicator />
-            <this.WorkflowCount />
+            <this.WorkflowInfo />
           </CardFooterTags>
           <CardFooterActions>
             <this.FavouriteButton />

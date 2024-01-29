@@ -33458,7 +33458,7 @@ function verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps) {
   verify(mapDispatchToProps, "mapDispatchToProps");
   verify(mergeProps, "mergeProps");
 }
-const _excluded$1b = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+const _excluded$1c = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
 function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
   areStatesEqual,
   areOwnPropsEqual,
@@ -33524,7 +33524,7 @@ function finalPropsSelectorFactory(dispatch, _ref) {
     initMapStateToProps,
     initMapDispatchToProps,
     initMergeProps
-  } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1b);
+  } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1c);
   const mapStateToProps2 = initMapStateToProps(dispatch, options);
   const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
   const mergeProps = initMergeProps(dispatch, options);
@@ -33778,7 +33778,7 @@ function shallowEqual(objA, objB) {
   }
   return true;
 }
-const _excluded$1a = ["reactReduxForwardedRef"];
+const _excluded$1b = ["reactReduxForwardedRef"];
 let useSyncExternalStore = notInitialized;
 const initializeConnect = (fn) => {
   useSyncExternalStore = fn;
@@ -33900,7 +33900,7 @@ function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
       const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
         const {
           reactReduxForwardedRef: reactReduxForwardedRef2
-        } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1a);
+        } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1b);
         return [props.context, reactReduxForwardedRef2, wrapperProps2];
       }, [props]);
       const ContextToUse = reactExports.useMemo(() => {
@@ -38652,205 +38652,18 @@ class ActionButton extends reactExports.Component {
     );
   }
 }
-function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
-  const t = 1e3;
-  const previousCall = document.lastUpdateCall;
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectID,
-    type: objectType,
-    field: Object.keys(json)[0]
-  };
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer);
+var Star = {};
+var interopRequireDefault = { exports: {} };
+(function(module) {
+  function _interopRequireDefault2(obj) {
+    return obj && obj.__esModule ? obj : {
+      "default": obj
+    };
   }
-  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
-    document.lastUpdateCallFunction();
-  }
-  const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
-    changeFieldID: 0
-  };
-  if (changeField) {
-    post_object.changeFieldID = // @ts-ignore
-    COURSEFLOW_APP.contextData.changeFieldID;
-  }
-  document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === VERB.POSTED) {
-            callBackFunction(_data);
-          } else
-            window.fail_function(data.action);
-        }
-      );
-    } catch (err) {
-      window.fail_function();
-    }
-  };
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
-}
-function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true),
-      allowDifferent: JSON.stringify(true)
-    }).done(function(data) {
-      if (data.action === "posted")
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-      $(".ui-draggable").draggable("enable");
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
-}
-function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-      nodePk: JSON.stringify(nodeID),
-      outcomePk: JSON.stringify(outcomeID),
-      degree: JSON.stringify(value)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-      {
-        outcomePk: JSON.stringify(outcomePk),
-        objectID: JSON.stringify(outcome2Pk),
-        objectType: JSON.stringify("outcome"),
-        degree: JSON.stringify(degree)
-      }
-    ).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
-  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
-    nodePk: node_id,
-    workflowPk: workflow_id
-  }).done(function(data) {
-    if (data.action === VERB.POSTED)
-      callBackFunction(data);
-    else
-      window.fail_function(data.action);
-  });
-}
-function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data) {
-      console.log("toggleStrategyQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      objectsetPk: JSON.stringify(objectsetPk),
-      add: JSON.stringify(add2)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
+  module.exports = _interopRequireDefault2, module.exports.__esModule = true, module.exports["default"] = module.exports;
+})(interopRequireDefault);
+var interopRequireDefaultExports = interopRequireDefault.exports;
+var createSvgIcon$1 = {};
 function chainPropTypes(propType1, propType2) {
   if (process.env.NODE_ENV === "production") {
     return () => null;
@@ -40408,7 +40221,6 @@ function generateUtilityClasses(componentName, slots, globalStatePrefix = "Mui")
   });
   return result;
 }
-const THEME_ID = "$$material";
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null)
     return {};
@@ -40422,6 +40234,24 @@ function _objectWithoutPropertiesLoose(source, excluded) {
     target[key] = source[key];
   }
   return target;
+}
+function r(e) {
+  var t, f, n = "";
+  if ("string" == typeof e || "number" == typeof e)
+    n += e;
+  else if ("object" == typeof e)
+    if (Array.isArray(e))
+      for (t = 0; t < e.length; t++)
+        e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+    else
+      for (t in e)
+        e[t] && (n && (n += " "), n += t);
+  return n;
+}
+function clsx() {
+  for (var e, t, f = 0, n = ""; f < arguments.length; )
+    (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
+  return n;
 }
 function memoize$1(fn) {
   var cache2 = /* @__PURE__ */ Object.create(null);
@@ -42352,7 +42182,7 @@ const internal_processStyles = (tag2, processor) => {
     tag2.__emotion_styles = processor(tag2.__emotion_styles);
   }
 };
-const _excluded$19 = ["values", "unit", "step"];
+const _excluded$1a = ["values", "unit", "step"];
 const sortBreakpointsValues = (values2) => {
   const breakpointsAsArray = Object.keys(values2).map((key) => ({
     key,
@@ -42383,7 +42213,7 @@ function createBreakpoints(breakpoints) {
     },
     unit = "px",
     step = 5
-  } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$19);
+  } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1a);
   const sortedValues = sortBreakpointsValues(values2);
   const keys = Object.keys(sortedValues);
   function up(key) {
@@ -43405,14 +43235,14 @@ function unstable_createStyleFunctionSx() {
 const styleFunctionSx = unstable_createStyleFunctionSx();
 styleFunctionSx.filterProps = ["sx"];
 const styleFunctionSx$1 = styleFunctionSx;
-const _excluded$18 = ["breakpoints", "palette", "spacing", "shape"];
+const _excluded$19 = ["breakpoints", "palette", "spacing", "shape"];
 function createTheme$1(options = {}, ...args) {
   const {
     breakpoints: breakpointsInput = {},
     palette: paletteInput = {},
     spacing: spacingInput,
     shape: shapeInput = {}
-  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$18);
+  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$19);
   const breakpoints = createBreakpoints(breakpointsInput);
   const spacing = createSpacing(spacingInput);
   let muiTheme = deepmerge({
@@ -43476,7 +43306,7 @@ process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
    */
   themeId: PropTypes.string
 } : void 0;
-const _excluded$17 = ["sx"];
+const _excluded$18 = ["sx"];
 const splitProps = (props) => {
   var _props$theme$unstable, _props$theme;
   const result = {
@@ -43496,7 +43326,7 @@ const splitProps = (props) => {
 function extendSxProp(props) {
   const {
     sx: inSx
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$17);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
   const {
     systemProps,
     otherProps
@@ -43519,25 +43349,7 @@ function extendSxProp(props) {
     sx: finalSx
   });
 }
-function r(e) {
-  var t, f, n = "";
-  if ("string" == typeof e || "number" == typeof e)
-    n += e;
-  else if ("object" == typeof e)
-    if (Array.isArray(e))
-      for (t = 0; t < e.length; t++)
-        e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-    else
-      for (t in e)
-        e[t] && (n && (n += " "), n += t);
-  return n;
-}
-function clsx() {
-  for (var e, t, f = 0, n = ""; f < arguments.length; )
-    (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
-  return n;
-}
-const _excluded$16 = ["className", "component"];
+const _excluded$17 = ["className", "component"];
 function createBox(options = {}) {
   const {
     themeId,
@@ -43553,7 +43365,7 @@ function createBox(options = {}) {
     const _extendSxProp = extendSxProp(inProps), {
       className,
       component = "div"
-    } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$16);
+    } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$17);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$1({
       as: component,
       ref,
@@ -43563,14 +43375,14 @@ function createBox(options = {}) {
   });
   return Box2;
 }
-const _excluded$15 = ["variant"];
+const _excluded$16 = ["variant"];
 function isEmpty$3(string) {
   return string.length === 0;
 }
 function propsToClassKey(props) {
   const {
     variant
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$15);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$16);
   let classKey = variant || "";
   Object.keys(other).sort().forEach((key) => {
     if (key === "color") {
@@ -43581,7 +43393,7 @@ function propsToClassKey(props) {
   });
   return classKey;
 }
-const _excluded$14 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+const _excluded$15 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
 function isEmpty$2(obj) {
   return Object.keys(obj).length === 0;
 }
@@ -43711,7 +43523,7 @@ function createStyled2(input = {}) {
       // TODO v6: remove `lowercaseFirstLetter()` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
       overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-    } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$14);
+    } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$15);
     const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
       // TODO v6: remove `Root` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
@@ -44161,7 +43973,7 @@ process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
 }
-const _excluded$13 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+const _excluded$14 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
 const defaultTheme$3 = createTheme$1();
 const defaultCreateStyledComponent = systemStyled("div", {
   name: "MuiStack",
@@ -44284,7 +44096,7 @@ function createStack(options = {}) {
       children,
       className,
       useFlexGap = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
     const ownerState = {
       direction,
       spacing,
@@ -44448,7 +44260,7 @@ const green = {
   A700: "#00c853"
 };
 const green$1 = green;
-const _excluded$12 = ["mode", "contrastThreshold", "tonalOffset"];
+const _excluded$13 = ["mode", "contrastThreshold", "tonalOffset"];
 const light = {
   // The colors used to style the text.
   text: {
@@ -44616,7 +44428,7 @@ function createPalette(palette) {
     mode = "light",
     contrastThreshold = 3,
     tonalOffset = 0.2
-  } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$12);
+  } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$13);
   const primary = palette.primary || getDefaultPrimary(mode);
   const secondary = palette.secondary || getDefaultSecondary(mode);
   const error = palette.error || getDefaultError(mode);
@@ -44735,7 +44547,7 @@ const theme2 = createTheme({ palette: {
   }, modes[mode]), other);
   return paletteOutput;
 }
-const _excluded$11 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+const _excluded$12 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
 function round$1(value) {
   return Math.round(value * 1e5) / 1e5;
 }
@@ -44759,7 +44571,7 @@ function createTypography(palette, typography) {
     // Apply the CSS properties to all the variants.
     allVariants,
     pxToRem: pxToRem2
-  } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$11);
+  } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$12);
   if (process.env.NODE_ENV !== "production") {
     if (typeof fontSize !== "number") {
       console.error("MUI: `fontSize` is required to be a number.");
@@ -44824,7 +44636,7 @@ function createShadow(...px) {
 }
 const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
 const shadows$1 = shadows;
-const _excluded$10 = ["duration", "easing", "delay"];
+const _excluded$11 = ["duration", "easing", "delay"];
 const easing = {
   // This is the most common easing curve.
   easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44867,7 +44679,7 @@ function createTransitions(inputTransitions) {
       duration: durationOption = mergedDuration.standard,
       easing: easingOption = mergedEasing.easeInOut,
       delay = 0
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$10);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$11);
     if (process.env.NODE_ENV !== "production") {
       const isString2 = (value) => typeof value === "string";
       const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44911,14 +44723,14 @@ const zIndex = {
   tooltip: 1500
 };
 const zIndex$1 = zIndex;
-const _excluded$$ = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+const _excluded$10 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
 function createTheme(options = {}, ...args) {
   const {
     mixins: mixinsInput = {},
     palette: paletteInput = {},
     transitions: transitionsInput = {},
     typography: typographyInput = {}
-  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$$);
+  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$10);
   if (options.vars) {
     throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44973,13 +44785,7 @@ Please use another name.` : formatMuiErrorMessage(18));
 }
 const defaultTheme$1 = createTheme();
 const defaultTheme$2 = defaultTheme$1;
-function useTheme() {
-  const theme2 = useTheme$2(defaultTheme$2);
-  if (process.env.NODE_ENV !== "production") {
-    reactExports.useDebugValue(theme2);
-  }
-  return theme2[THEME_ID] || theme2;
-}
+const THEME_ID = "$$material";
 function useThemeProps({
   props,
   name: name2
@@ -44999,971 +44805,12 @@ const styled = createStyled2({
   rootShouldForwardProp
 });
 const styled$1 = styled;
-const _excluded$_ = ["theme"];
-function ThemeProvider(_ref) {
-  let {
-    theme: themeInput
-  } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$_);
-  const scopedTheme = themeInput[THEME_ID];
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
-    themeId: scopedTheme ? THEME_ID : void 0,
-    theme: scopedTheme || themeInput
-  }));
-}
-process.env.NODE_ENV !== "production" ? ThemeProvider.propTypes = {
-  /**
-   * Your component tree.
-   */
-  children: PropTypes.node,
-  /**
-   * A theme object. You can provide a function to extend the outer theme.
-   */
-  theme: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired
-} : void 0;
-const getOverlayAlpha = (elevation) => {
-  let alphaValue;
-  if (elevation < 1) {
-    alphaValue = 5.11916 * elevation ** 2;
-  } else {
-    alphaValue = 4.5 * Math.log(elevation + 1) + 2;
-  }
-  return (alphaValue / 100).toFixed(2);
-};
-const getOverlayAlpha$1 = getOverlayAlpha;
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#04BA74",
-      light: "#52C68C",
-      dark: "#009E52",
-      contrastText: "#fff"
-    },
-    secondary: {
-      main: "#78909C",
-      light: "#90A4AE",
-      dark: "#607D8B"
-    },
-    courseflow: {
-      lightest: "#e2f5eb"
-    },
-    divider: "#CFD8DC",
-    action: {
-      hover: "rgba(4, 186, 116, 0.08)"
-    }
-  },
-  typography: {
-    fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          fontWeight: 600
-        }
-      }
-    }
-  }
-});
-const defaultTheme = createTheme();
-const Box = createBox({
-  themeId: THEME_ID,
-  defaultTheme,
-  defaultClassName: "MuiBox-root",
-  generateClassName: ClassNameGenerator$1.generate
-});
-process.env.NODE_ENV !== "production" ? Box.propTypes = {
-  // ----------------------------- Warning --------------------------------
-  // | These PropTypes are generated from the TypeScript type definitions |
-  // |     To update them edit the d.ts file and run "yarn proptypes"     |
-  // ----------------------------------------------------------------------
-  /**
-   * @ignore
-   */
-  children: PropTypes.node,
-  /**
-   * The component used for the root node.
-   * Either a string to use a HTML element or a component.
-   */
-  component: PropTypes.elementType,
-  /**
-   * The system prop that allows defining system overrides as well as additional CSS styles.
-   */
-  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-} : void 0;
-const Box$1 = Box;
-function getTypographyUtilityClass(slot) {
-  return generateUtilityClass("MuiTypography", slot);
-}
-generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-const _excluded$Z = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-const useUtilityClasses$Q = (ownerState) => {
-  const {
-    align,
-    gutterBottom,
-    noWrap,
-    paragraph,
-    variant,
-    classes
-  } = ownerState;
-  const slots = {
-    root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
-  };
-  return composeClasses(slots, getTypographyUtilityClass, classes);
-};
-const TypographyRoot = styled$1("span", {
-  name: "MuiTypography",
-  slot: "Root",
-  overridesResolver: (props, styles2) => {
-    const {
-      ownerState
-    } = props;
-    return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
-  }
-})(({
-  theme: theme2,
-  ownerState
-}) => _extends$1({
-  margin: 0
-}, ownerState.variant === "inherit" && {
-  // Some elements, like <button> on Chrome have default font that doesn't inherit, reset this.
-  font: "inherit"
-}, ownerState.variant !== "inherit" && theme2.typography[ownerState.variant], ownerState.align !== "inherit" && {
-  textAlign: ownerState.align
-}, ownerState.noWrap && {
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap"
-}, ownerState.gutterBottom && {
-  marginBottom: "0.35em"
-}, ownerState.paragraph && {
-  marginBottom: 16
-}));
-const defaultVariantMapping = {
-  h1: "h1",
-  h2: "h2",
-  h3: "h3",
-  h4: "h4",
-  h5: "h5",
-  h6: "h6",
-  subtitle1: "h6",
-  subtitle2: "h6",
-  body1: "p",
-  body2: "p",
-  inherit: "p"
-};
-const colorTransformations$1 = {
-  primary: "primary.main",
-  textPrimary: "text.primary",
-  secondary: "secondary.main",
-  textSecondary: "text.secondary",
-  error: "error.main"
-};
-const transformDeprecatedColors$1 = (color2) => {
-  return colorTransformations$1[color2] || color2;
-};
-const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
-  const themeProps = useThemeProps({
-    props: inProps,
-    name: "MuiTypography"
-  });
-  const color2 = transformDeprecatedColors$1(themeProps.color);
-  const props = extendSxProp(_extends$1({}, themeProps, {
-    color: color2
-  }));
-  const {
-    align = "inherit",
-    className,
-    component,
-    gutterBottom = false,
-    noWrap = false,
-    paragraph = false,
-    variant = "body1",
-    variantMapping = defaultVariantMapping
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
-  const ownerState = _extends$1({}, props, {
-    align,
-    color: color2,
-    className,
-    component,
-    gutterBottom,
-    noWrap,
-    paragraph,
-    variant,
-    variantMapping
-  });
-  const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-  const classes = useUtilityClasses$Q(ownerState);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
-    as: Component,
-    ref,
-    ownerState,
-    className: clsx(classes.root, className)
-  }, other));
-});
-process.env.NODE_ENV !== "production" ? Typography.propTypes = {
-  // ----------------------------- Warning --------------------------------
-  // | These PropTypes are generated from the TypeScript type definitions |
-  // |     To update them edit the d.ts file and run "yarn proptypes"     |
-  // ----------------------------------------------------------------------
-  /**
-   * Set the text-align on the component.
-   * @default 'inherit'
-   */
-  align: PropTypes.oneOf(["center", "inherit", "justify", "left", "right"]),
-  /**
-   * The content of the component.
-   */
-  children: PropTypes.node,
-  /**
-   * Override or extend the styles applied to the component.
-   */
-  classes: PropTypes.object,
-  /**
-   * @ignore
-   */
-  className: PropTypes.string,
-  /**
-   * The component used for the root node.
-   * Either a string to use a HTML element or a component.
-   */
-  component: PropTypes.elementType,
-  /**
-   * If `true`, the text will have a bottom margin.
-   * @default false
-   */
-  gutterBottom: PropTypes.bool,
-  /**
-   * If `true`, the text will not wrap, but instead will truncate with a text overflow ellipsis.
-   *
-   * Note that text overflow can only happen with block or inline-block level elements
-   * (the element needs to have a width in order to overflow).
-   * @default false
-   */
-  noWrap: PropTypes.bool,
-  /**
-   * If `true`, the element will be a paragraph element.
-   * @default false
-   */
-  paragraph: PropTypes.bool,
-  /**
-   * The system prop that allows defining system overrides as well as additional CSS styles.
-   */
-  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-  /**
-   * Applies the theme typography styles.
-   * @default 'body1'
-   */
-  variant: PropTypes.oneOfType([PropTypes.oneOf(["body1", "body2", "button", "caption", "h1", "h2", "h3", "h4", "h5", "h6", "inherit", "overline", "subtitle1", "subtitle2"]), PropTypes.string]),
-  /**
-   * The component maps the variant prop to a range of different HTML element types.
-   * For instance, subtitle1 to `<h6>`.
-   * If you wish to change that mapping, you can provide your own.
-   * Alternatively, you can use the `component` prop.
-   * @default {
-   *   h1: 'h1',
-   *   h2: 'h2',
-   *   h3: 'h3',
-   *   h4: 'h4',
-   *   h5: 'h5',
-   *   h6: 'h6',
-   *   subtitle1: 'h6',
-   *   subtitle2: 'h6',
-   *   body1: 'p',
-   *   body2: 'p',
-   *   inherit: 'p',
-   * }
-   */
-  variantMapping: PropTypes.object
-} : void 0;
-const Typography$1 = Typography;
-const CardWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-  border: `1px solid ${theme2.palette.divider}`,
-  borderRadius: "0.3em",
-  display: "flex",
-  flexDirection: "column",
-  gap: theme2.spacing(1),
-  padding: theme2.spacing(2)
-}));
-const CardHeader = styled$1("header")({});
-const CardContent = styled$1(Box$1)({
-  flexGrow: 1
-});
-const CardFooter = styled$1("footer")({
-  display: "flex",
-  marginTop: "auto"
-});
-const CardFooterTags = styled$1("footer")({
-  display: "flex",
-  gap: theme.spacing(1)
-});
-const CardFooterActions = styled$1("footer")({
-  marginLeft: "auto",
-  paddingLeft: theme.spacing(2)
-});
-const CardTitle = styled$1(Typography$1)({
-  marginBottom: 0
-});
-const CardCaption = styled$1(Typography$1)({});
-const CardDescription = styled$1(Typography$1)({});
-class WorkflowCard extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "mainDiv");
-    __publicField(this, "workflow");
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    __publicField(this, "TypeIndicator", () => {
-      const { type, is_strategy } = this.workflow;
-      let typeText = window.gettext(type);
-      if (type === WorkflowType.LIVE_PROJECT) {
-        typeText = window.gettext("classroom");
-      }
-      if (is_strategy) {
-        typeText += ` ${window.gettext("strategy")}`;
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-type-indicator " + type, children: capWords(typeText) });
-    });
-    __publicField(this, "FavouriteButton", () => {
-      const { favourite } = this.state;
-      const { workflow } = this;
-      if (workflow.type === WorkflowType.LIVE_PROJECT) {
-        return null;
-      }
-      const favClass = favourite ? " filled" : "";
-      const toggleFavouriteAction = (evt) => {
-        toggleFavourite(workflow.id, workflow.type, !favourite);
-        this.setState({ favourite: !favourite });
-        evt.stopPropagation();
-      };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: "workflow-toggle-favourite hover-shade",
-          onClick: toggleFavouriteAction,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "span",
-            {
-              className: `material-symbols-outlined${favClass}`,
-              title: window.gettext("Favourite"),
-              children: "star"
-            }
-          )
-        },
-        "btn-workflow-toggle-favourite"
-      );
-    });
-    __publicField(this, "WorkflowCount", () => {
-      const details = [];
-      const { workflow } = this;
-      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count != null) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "workflow-created", children: `${workflow.workflow_count} ${window.gettext("workflows")}` }, "workflow-created-count")
-        );
-      }
-      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-created workflow-live-classroom",
-              title: window.gettext("Live Classroom"),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
-                ` ${window.gettext("Live Classroom")}`
-              ]
-            },
-            "workflow-created-group"
-          )
-        );
-      }
-      if (this.workflow.is_linked) {
-        details.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "workflow-created linked-workflow-warning",
-              title: window.gettext(
-                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
-              ),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
-                ` ${window.gettext("Already in use")}`
-              ]
-            },
-            "workflow-created-warning"
-          )
-        );
-      }
-      return details;
-    });
-    this.state = {
-      favourite: props.workflowData.favourite
-    };
-    this.workflow = this.props.workflowData;
-    this.mainDiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  clickAction() {
-    const { selectAction } = this.props;
-    if (selectAction) {
-      selectAction(this.workflow.id);
-    } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
-    }
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const { selected, noHyperlink } = this.props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      CardWrap,
-      {
-        ref: this.mainDiv,
-        className: `${this.workflow.type} ${selected ? " selected" : ""}`,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => evt.preventDefault(),
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { variant: "h6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              WorkflowTitle,
-              {
-                no_hyperlink: noHyperlink,
-                class_name: "workflow-title",
-                data: this.workflow
-              }
-            ) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardCaption, { variant: "caption", children: [
-              window.gettext("Owned by"),
-              " ",
-              this.workflow.author
-            ] })
-          ] }),
-          this.workflow.description && /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { variant: "body2", children: this.workflow.description }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooter, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooterTags, { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowCount, {})
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterActions, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) })
-          ] })
-        ]
-      }
-    );
-  }
-}
-function openWorkflowSelectMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, "workflow_select_menu", updateFunction);
-  } else {
-    alert("Failed to find your workflows.");
-  }
-}
-function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-    {
-      projectPk: JSON.stringify(projectPk),
-      type_filter: JSON.stringify(type_filter),
-      get_strategies: JSON.stringify(get_strategies),
-      self_only: JSON.stringify(self_only)
-    },
-    (data) => {
-    }
-  );
-}
-function columnChanged(renderer, objectID, columnID) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction["nodeweek"])
-    renderer.dragAction["nodeweek"] = {};
-  renderer.dragAction["nodeweek"] = {
-    ...renderer.dragAction["nodeweek"],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify("node"),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
-  };
-  $(document).off("nodeweek-dropped");
-  $(document).on("nodeweek-dropped", () => {
-    dragAction(renderer.dragAction["nodeweek"]);
-    renderer.dragAction["nodeweek"] = null;
-    $(document).off("nodeweek-dropped");
-  });
-}
-function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction[throughType])
-    renderer.dragAction[throughType] = {};
-  renderer.dragAction[throughType] = {
-    ...renderer.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
-  };
-  $(document).off(throughType + "-dropped");
-  if (objectID)
-    $(document).on(throughType + "-dropped", () => {
-      dragAction(renderer.dragAction[throughType]);
-      renderer.dragAction[throughType] = null;
-      $(document).off(throughType + "-dropped");
-    });
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-  const sendPostRequest = (url, data) => {
-    $.post(url, data).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === VERB.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    });
-  };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
-  }
-}
-function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    window.fail_function();
-  }
-}
-class UtilityLoader {
-  constructor(identifier2) {
-    __publicField(this, "load_screen");
-    this.load_screen = document.createElement("div");
-    this.load_screen.className = "load-screen";
-    this.load_screen.addEventListener("click", (evt) => {
-      evt.preventDefault();
-    });
-    let parentElement;
-    if (identifier2 instanceof jQuery) {
-      parentElement = identifier2.get(0);
-    } else {
-      parentElement = document.querySelector(identifier2);
-    }
-    if (parentElement) {
-      parentElement.appendChild(this.load_screen);
-    } else {
-      console.error(`Element with identifier "${identifier2}" not found.`);
-    }
-  }
-  endLoad() {
-    if (this.load_screen && this.load_screen.parentNode) {
-      this.load_screen.parentNode.removeChild(this.load_screen);
-    }
-  }
-}
-const OuterContentWrap = styled$1(Box$1, {
-  shouldForwardProp: (prop) => prop !== "narrow"
-})(({ theme: theme2, narrow }) => ({
-  padding: theme2.spacing(8),
-  paddingTop: 0,
-  ...narrow && {
-    maxWidth: "34.25rem",
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingLeft: theme2.spacing(2),
-    paddingRight: theme2.spacing(2)
-  }
-}));
-const GridWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
-  gap: theme2.spacing(3)
-}));
-class MenuSection extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "dropdownDiv");
-    this.dropdownDiv = reactExports.createRef();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const section_type = this.props.section_data.object_type;
-    const is_strategy = this.props.section_data.is_strategy;
-    const parentID = this.props.parentID;
-    let add_button;
-    let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      WorkflowCard,
-      {
-        no_hyperlink: this.props.no_hyperlink,
-        type: this.props.type,
-        workflowData: object,
-        objectType: section_type,
-        selected: this.props.selected_id === object.id,
-        dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction
-      },
-      object.id
-    ));
-    if (this.props.replacement_text)
-      objects = this.props.replacement_text;
-    if (COURSEFLOW_APP.config.create_path && this.props.add) {
-      let types;
-      if (section_type === "workflow")
-        types = ["program", "course", "activity"];
-      else
-        types = [section_type];
-      let adds;
-      {
-        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.create_path[this_type],
-            children: window.gettext("Create new ") + window.gettext(this_type)
-          }
-        ));
-        let import_text = window.gettext("Import ") + window.gettext(section_type);
-        if (is_strategy)
-          import_text += window.gettext(" strategy");
-        adds.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "hover-shade",
-              onClick: () => {
-                getAddedWorkflowMenu(
-                  parentID,
-                  section_type,
-                  is_strategy,
-                  false
-                );
-              },
-              children: import_text
-            }
-          )
-        );
-      }
-      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
-            title: window.gettext("Add New"),
-            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
-      add_button,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: objects })
-    ] });
-  }
-}
-class MenuTab extends reactExports.Component {
-  render() {
-    let is_empty = true;
-    for (let i = 0; i < this.props.data.sections.length; i++) {
-      if (this.props.data.sections[i].objects.length > 0) {
-        is_empty = false;
-        break;
-      }
-    }
-    let replacement_text;
-    if (is_empty)
-      replacement_text = this.props.data.emptytext;
-    const sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      MenuSection,
-      {
-        no_hyperlink: this.props.no_hyperlink,
-        type: this.props.type,
-        replacement_text: i == 0 ? replacement_text : null,
-        section_data: section,
-        add: this.props.data.add,
-        selected_id: this.props.selected_id,
-        dispatch: this.props.dispatch,
-        selectAction: this.props.selectAction,
-        parentID: this.props.parentID,
-        duplicate: this.props.data.duplicate
-      }
-    ));
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
-  }
-}
-function closeMessageBox() {
-  reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
-}
-class WorkflowsMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "current_project");
-    __publicField(this, "project_workflows");
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    __publicField(this, "Title", () => {
-      switch (this.props.type) {
-        case "linked_workflow_menu":
-        case "added_workflow_menu":
-        case "workflow_select_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
-        case "target_project_menu":
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
-      }
-      return null;
-    });
-    __publicField(this, "Actions", () => {
-      const actions = [];
-      if (this.props.type === "linked_workflow_menu") {
-        let text = window.gettext("link to node");
-        if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-          text = window.gettext("Copy to Current Project and ") + text;
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow-cancel",
-              className: "secondary-button",
-              onClick: closeMessageBox,
-              children: window.gettext("Cancel")
-            }
-          )
-        );
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow-none",
-              className: "secondary-button",
-              onClick: () => {
-                setLinkedWorkflow(
-                  this.props.data.node_id,
-                  -1,
-                  this.props.actionFunction
-                );
-                closeMessageBox();
-              },
-              children: window.gettext("Set to None")
-            }
-          )
-        );
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow",
-              disabled: !this.state.selected,
-              className: "primary-button",
-              onClick: () => {
-                setLinkedWorkflow(
-                  this.props.data.node_id,
-                  this.state.selected,
-                  this.props.actionFunction
-                );
-                closeMessageBox();
-              },
-              children: text
-            }
-          )
-        );
-      } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
-        let text = "";
-        if (this.props.type === "added_workflow_menu") {
-          text = window.gettext("Select");
-          if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
-            text = window.gettext("Copy to Current Project");
-        } else {
-          text = window.gettext("Select");
-        }
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow-cancel",
-              className: "secondary-button",
-              onClick: closeMessageBox,
-              children: window.gettext("Cancel")
-            }
-          )
-        );
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow",
-              className: "primary-button",
-              disabled: !this.state.selected,
-              onClick: () => {
-                this.props.actionFunction({ workflowID: this.state.selected });
-                closeMessageBox();
-              },
-              children: text
-            }
-          )
-        );
-      } else if (this.props.type === "target_project_menu") {
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow-cancel",
-              className: "secondary-button",
-              onClick: closeMessageBox,
-              children: window.gettext("Cancel")
-            }
-          )
-        );
-        actions.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              id: "set-linked-workflow",
-              className: "primary-button",
-              disabled: !this.state.selected,
-              onClick: () => {
-                this.props.actionFunction({ parentID: this.state.selected });
-                closeMessageBox();
-              },
-              children: window.gettext("Select project")
-            }
-          )
-        );
-      }
-      return actions;
-    });
-    this.state = {};
-    if (this.props.type === "target_project_menu") {
-      if (this.current_project)
-        ;
-    }
-    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
-      this.project_workflows = props.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
-  }
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  componentDidMount() {
-    $("#workflow-tabs").tabs({ active: 0 });
-    $("#workflow-tabs .tab-header").on("click", () => {
-      this.setState({ selected: null });
-    });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  workflowSelected(selected_id, selected_type) {
-    this.setState({ selected: selected_id, selected_type });
-  }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data_package = this.props.data.data_package;
-    let no_hyperlink = false;
-    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
-      no_hyperlink = true;
-    const tabs = [];
-    const tab_li = [];
-    let i = 0;
-    for (const prop in data_package) {
-      tab_li.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: data_package[prop].title }) })
-      );
-      tabs.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuTab,
-          {
-            no_hyperlink,
-            data: data_package[prop],
-            type: this.props.type,
-            identifier: i,
-            selected_id: this.state.selected,
-            selectAction: this.workflowSelected.bind(this)
-          }
-        )
-      );
-      i++;
-    }
-    const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
-      ",",
-      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          workflowData: this.current_project,
-          selected: this.state.selected === this.current_project.id,
-          noHyperlink: no_hyperlink,
-          type: this.props.type,
-          dispatch: this.props.dispatch,
-          selectAction: this.workflowSelected.bind(this)
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
-      ",",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
-      current_project,
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
-        tabs
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Actions, {}) })
-    ] });
-  }
-}
 function getSvgIconUtilityClass(slot) {
   return generateUtilityClass("MuiSvgIcon", slot);
 }
 generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-const _excluded$Y = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-const useUtilityClasses$P = (ownerState) => {
+const _excluded$$ = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+const useUtilityClasses$R = (ownerState) => {
   const {
     color: color2,
     fontSize,
@@ -46029,7 +44876,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
     inheritViewBox = false,
     titleAccess,
     viewBox = "0 0 24 24"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
   const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
   const ownerState = _extends$1({}, props, {
     color: color2,
@@ -46044,7 +44891,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
   if (!inheritViewBox) {
     more.viewBox = viewBox;
   }
-  const classes = useUtilityClasses$P(ownerState);
+  const classes = useUtilityClasses$R(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
     as: component,
     className: clsx(classes.root, className),
@@ -46134,7 +44981,7 @@ process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
 } : void 0;
 SvgIcon.muiName = "SvgIcon";
 const SvgIcon$1 = SvgIcon;
-function createSvgIcon$1(path, displayName) {
+function createSvgIcon(path, displayName) {
   function Component(props, ref) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(SvgIcon$1, _extends$1({
       "data-testid": `${displayName}Icon`,
@@ -46161,7 +45008,7 @@ const utils = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   __proto__: null,
   capitalize,
   createChainedFunction,
-  createSvgIcon: createSvgIcon$1,
+  createSvgIcon,
   debounce,
   deprecatedPropType,
   isMuiElement,
@@ -46178,6 +45025,359 @@ const utils = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   useForkRef,
   useIsFocusVisible
 }, Symbol.toStringTag, { value: "Module" }));
+const require$$0 = /* @__PURE__ */ getAugmentedNamespace(utils);
+var hasRequiredCreateSvgIcon;
+function requireCreateSvgIcon() {
+  if (hasRequiredCreateSvgIcon)
+    return createSvgIcon$1;
+  hasRequiredCreateSvgIcon = 1;
+  (function(exports) {
+    "use client";
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function() {
+        return _utils.createSvgIcon;
+      }
+    });
+    var _utils = require$$0;
+  })(createSvgIcon$1);
+  return createSvgIcon$1;
+}
+var _interopRequireDefault$d = interopRequireDefaultExports;
+Object.defineProperty(Star, "__esModule", {
+  value: true
+});
+var default_1$d = Star.default = void 0;
+var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+var _jsxRuntime$d = jsxRuntimeExports;
+var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+}), "Star");
+default_1$d = Star.default = _default$d;
+var StarOutline = {};
+var _interopRequireDefault$c = interopRequireDefaultExports;
+Object.defineProperty(StarOutline, "__esModule", {
+  value: true
+});
+var default_1$c = StarOutline.default = void 0;
+var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+var _jsxRuntime$c = jsxRuntimeExports;
+var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+}), "StarOutline");
+default_1$c = StarOutline.default = _default$c;
+function updateValueQuery(objectID, objectType, json, changeField = false, callBackFunction = (data) => console.log("success")) {
+  const t = 1e3;
+  const previousCall = document.lastUpdateCall;
+  document.lastUpdateCall = {
+    time: Date.now(),
+    id: objectID,
+    type: objectType,
+    field: Object.keys(json)[0]
+  };
+  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
+    clearTimeout(document.lastUpdateCallTimer);
+  }
+  if (previousCall && (previousCall.id !== document.lastUpdateCall.id || previousCall.type !== document.lastUpdateCall.type || previousCall.field !== document.lastUpdateCall.field)) {
+    document.lastUpdateCallFunction();
+  }
+  const post_object = {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json),
+    changeFieldID: 0
+  };
+  if (changeField) {
+    post_object.changeFieldID = // @ts-ignore
+    COURSEFLOW_APP.contextData.changeFieldID;
+  }
+  document.lastUpdateCallFunction = () => {
+    try {
+      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
+        function(data) {
+          if (data.action === VERB.POSTED) {
+            callBackFunction(_data);
+          } else
+            window.fail_function(data.action);
+        }
+      );
+    } catch (err) {
+      window.fail_function();
+    }
+  };
+  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
+}
+function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      data: JSON.stringify(json)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
+      function(data) {
+        if (data.action === VERB.POSTED)
+          callBackFunction(data);
+        else
+          window.fail_function(data.action);
+        $(".ui-draggable").draggable("enable");
+        COURSEFLOW_APP.tinyLoader.endLoad();
+      }
+    );
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    COURSEFLOW_APP.tinyLoader.startLoad();
+    $(".ui-draggable").draggable("disable");
+    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      newPosition: JSON.stringify(newPosition),
+      throughType: JSON.stringify(throughType),
+      inserted: JSON.stringify(true),
+      allowDifferent: JSON.stringify(true)
+    }).done(function(data) {
+      if (data.action === "posted")
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+      $(".ui-draggable").draggable("enable");
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    });
+  } catch (err) {
+    window.fail_function("The item failed to be inserted.");
+    console.log(err);
+  }
+}
+function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+      nodePk: JSON.stringify(nodeID),
+      outcomePk: JSON.stringify(outcomeID),
+      degree: JSON.stringify(value)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(
+      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
+      {
+        outcomePk: JSON.stringify(outcomePk),
+        objectID: JSON.stringify(outcome2Pk),
+        objectType: JSON.stringify("outcome"),
+        degree: JSON.stringify(degree)
+      }
+    ).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
+  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+    nodePk: node_id,
+    workflowPk: workflow_id
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  });
+}
+function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk: JSON.stringify(weekPk),
+      is_strategy: JSON.stringify(is_strategy)
+    }).done(function(data) {
+      console.log("toggleStrategyQuery data");
+      console.log(data);
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      objectsetPk: JSON.stringify(objectsetPk),
+      add: JSON.stringify(add2)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      favourite: JSON.stringify(favourite)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function useTheme() {
+  const theme2 = useTheme$2(defaultTheme$2);
+  if (process.env.NODE_ENV !== "production") {
+    reactExports.useDebugValue(theme2);
+  }
+  return theme2[THEME_ID] || theme2;
+}
+const _excluded$_ = ["theme"];
+function ThemeProvider(_ref) {
+  let {
+    theme: themeInput
+  } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$_);
+  const scopedTheme = themeInput[THEME_ID];
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
+    themeId: scopedTheme ? THEME_ID : void 0,
+    theme: scopedTheme || themeInput
+  }));
+}
+process.env.NODE_ENV !== "production" ? ThemeProvider.propTypes = {
+  /**
+   * Your component tree.
+   */
+  children: PropTypes.node,
+  /**
+   * A theme object. You can provide a function to extend the outer theme.
+   */
+  theme: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired
+} : void 0;
+const getOverlayAlpha = (elevation) => {
+  let alphaValue;
+  if (elevation < 1) {
+    alphaValue = 5.11916 * elevation ** 2;
+  } else {
+    alphaValue = 4.5 * Math.log(elevation + 1) + 2;
+  }
+  return (alphaValue / 100).toFixed(2);
+};
+const getOverlayAlpha$1 = getOverlayAlpha;
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#04BA74",
+      light: "#52C68C",
+      dark: "#009E52",
+      contrastText: "#fff"
+    },
+    secondary: {
+      main: "#78909C",
+      light: "#90A4AE",
+      dark: "#607D8B"
+    },
+    courseflow: {
+      lightest: "#e2f5eb",
+      favouriteActive: "rgba(255, 180, 0, 1)",
+      favouriteInactive: "rgba(0, 0, 0, 0.23)",
+      project: "rgba(245, 127, 23, 1)",
+      program: "rgba(0, 105, 92, 1)",
+      course: "rgba(183, 28, 28, 1)",
+      activity: "rgba(41, 98, 255, 1)",
+      template: "rgba(255, 64, 129, 1)"
+    },
+    divider: "#CFD8DC",
+    action: {
+      hover: "rgba(4, 186, 116, 0.08)"
+    }
+  },
+  typography: {
+    fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontWeight: 600
+        }
+      }
+    }
+  }
+});
+const defaultTheme = createTheme();
+const Box = createBox({
+  themeId: THEME_ID,
+  defaultTheme,
+  defaultClassName: "MuiBox-root",
+  generateClassName: ClassNameGenerator$1.generate
+});
+process.env.NODE_ENV !== "production" ? Box.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * @ignore
+   */
+  children: PropTypes.node,
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: PropTypes.elementType,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+const Box$1 = Box;
+const CancelIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+  d: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+}), "Cancel");
 function _setPrototypeOf(o, p) {
   _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
@@ -46874,152 +46074,6 @@ TransitionGroup.propTypes = process.env.NODE_ENV !== "production" ? {
 } : {};
 TransitionGroup.defaultProps = defaultProps;
 const TransitionGroup$1 = TransitionGroup;
-const reflow = (node2) => node2.scrollTop;
-function getTransitionProps(props, options) {
-  var _style$transitionDura, _style$transitionTimi;
-  const {
-    timeout: timeout2,
-    easing: easing2,
-    style: style2 = {}
-  } = props;
-  return {
-    duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout2 === "number" ? timeout2 : timeout2[options.mode] || 0,
-    easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
-    delay: style2.transitionDelay
-  };
-}
-function getPaperUtilityClass(slot) {
-  return generateUtilityClass("MuiPaper", slot);
-}
-generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-const _excluded$X = ["className", "component", "elevation", "square", "variant"];
-const useUtilityClasses$O = (ownerState) => {
-  const {
-    square,
-    elevation,
-    variant,
-    classes
-  } = ownerState;
-  const slots = {
-    root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
-  };
-  return composeClasses(slots, getPaperUtilityClass, classes);
-};
-const PaperRoot = styled$1("div", {
-  name: "MuiPaper",
-  slot: "Root",
-  overridesResolver: (props, styles2) => {
-    const {
-      ownerState
-    } = props;
-    return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
-  }
-})(({
-  theme: theme2,
-  ownerState
-}) => {
-  var _theme$vars$overlays;
-  return _extends$1({
-    backgroundColor: (theme2.vars || theme2).palette.background.paper,
-    color: (theme2.vars || theme2).palette.text.primary,
-    transition: theme2.transitions.create("box-shadow")
-  }, !ownerState.square && {
-    borderRadius: theme2.shape.borderRadius
-  }, ownerState.variant === "outlined" && {
-    border: `1px solid ${(theme2.vars || theme2).palette.divider}`
-  }, ownerState.variant === "elevation" && _extends$1({
-    boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
-  }, !theme2.vars && theme2.palette.mode === "dark" && {
-    backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
-  }, theme2.vars && {
-    backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
-  }));
-});
-const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-  const props = useThemeProps({
-    props: inProps,
-    name: "MuiPaper"
-  });
-  const {
-    className,
-    component = "div",
-    elevation = 1,
-    square = false,
-    variant = "elevation"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
-  const ownerState = _extends$1({}, props, {
-    component,
-    elevation,
-    square,
-    variant
-  });
-  const classes = useUtilityClasses$O(ownerState);
-  if (process.env.NODE_ENV !== "production") {
-    const theme2 = useTheme();
-    if (theme2.shadows[elevation] === void 0) {
-      console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
-    }
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
-    as: component,
-    ownerState,
-    className: clsx(classes.root, className),
-    ref
-  }, other));
-});
-process.env.NODE_ENV !== "production" ? Paper.propTypes = {
-  // ----------------------------- Warning --------------------------------
-  // | These PropTypes are generated from the TypeScript type definitions |
-  // |     To update them edit the d.ts file and run "yarn proptypes"     |
-  // ----------------------------------------------------------------------
-  /**
-   * The content of the component.
-   */
-  children: PropTypes.node,
-  /**
-   * Override or extend the styles applied to the component.
-   */
-  classes: PropTypes.object,
-  /**
-   * @ignore
-   */
-  className: PropTypes.string,
-  /**
-   * The component used for the root node.
-   * Either a string to use a HTML element or a component.
-   */
-  component: PropTypes.elementType,
-  /**
-   * Shadow depth, corresponds to `dp` in the spec.
-   * It accepts values between 0 and 24 inclusive.
-   * @default 1
-   */
-  elevation: chainPropTypes(integerPropType, (props) => {
-    const {
-      elevation,
-      variant
-    } = props;
-    if (elevation > 0 && variant === "outlined") {
-      return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
-    }
-    return null;
-  }),
-  /**
-   * If `true`, rounded corners are disabled.
-   * @default false
-   */
-  square: PropTypes.bool,
-  /**
-   * The system prop that allows defining system overrides as well as additional CSS styles.
-   */
-  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-  /**
-   * The variant to use.
-   * @default 'elevation'
-   */
-  variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
-} : void 0;
-const Paper$1 = Paper;
 function Ripple(props) {
   const {
     className,
@@ -47099,7 +46153,7 @@ process.env.NODE_ENV !== "production" ? Ripple.propTypes = {
 } : void 0;
 const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
 const touchRippleClasses$1 = touchRippleClasses;
-const _excluded$W = ["center", "classes", "className"];
+const _excluded$Z = ["center", "classes", "className"];
 let _ = (t) => t, _t, _t2, _t3, _t4;
 const DURATION = 550;
 const DELAY_RIPPLE = 80;
@@ -47214,7 +46268,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
     center: centerProp = false,
     classes = {},
     className
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
   const [ripples, setRipples] = reactExports.useState([]);
   const nextKey = reactExports.useRef(0);
   const rippleCallback = reactExports.useRef(null);
@@ -47397,8 +46451,8 @@ function getButtonBaseUtilityClass(slot) {
 }
 const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
 const buttonBaseClasses$1 = buttonBaseClasses;
-const _excluded$V = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-const useUtilityClasses$N = (ownerState) => {
+const _excluded$Y = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+const useUtilityClasses$Q = (ownerState) => {
   const {
     disabled,
     focusVisible,
@@ -47492,7 +46546,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     TouchRippleProps,
     touchRippleRef,
     type
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
   const buttonRef = reactExports.useRef(null);
   const rippleRef = reactExports.useRef(null);
   const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -47646,7 +46700,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     tabIndex,
     focusVisible
   });
-  const classes = useUtilityClasses$N(ownerState);
+  const classes = useUtilityClasses$Q(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
     as: ComponentProp,
     className: clsx(classes.root, className),
@@ -47836,18 +46890,681 @@ process.env.NODE_ENV !== "production" ? ButtonBase.propTypes = {
   type: PropTypes.oneOfType([PropTypes.oneOf(["button", "reset", "submit"]), PropTypes.string])
 } : void 0;
 const ButtonBase$1 = ButtonBase;
-function getAlertUtilityClass(slot) {
-  return generateUtilityClass("MuiAlert", slot);
+function getChipUtilityClass(slot) {
+  return generateUtilityClass("MuiChip", slot);
 }
-const alertClasses = generateUtilityClasses("MuiAlert", ["root", "action", "icon", "message", "filled", "filledSuccess", "filledInfo", "filledWarning", "filledError", "outlined", "outlinedSuccess", "outlinedInfo", "outlinedWarning", "outlinedError", "standard", "standardSuccess", "standardInfo", "standardWarning", "standardError"]);
-const alertClasses$1 = alertClasses;
+const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
+const chipClasses$1 = chipClasses;
+const _excluded$X = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+const useUtilityClasses$P = (ownerState) => {
+  const {
+    classes,
+    disabled,
+    size: size2,
+    color: color2,
+    iconColor,
+    onDelete,
+    clickable,
+    variant
+  } = ownerState;
+  const slots = {
+    root: ["root", variant, disabled && "disabled", `size${capitalize(size2)}`, `color${capitalize(color2)}`, clickable && "clickable", clickable && `clickableColor${capitalize(color2)}`, onDelete && "deletable", onDelete && `deletableColor${capitalize(color2)}`, `${variant}${capitalize(color2)}`],
+    label: ["label", `label${capitalize(size2)}`],
+    avatar: ["avatar", `avatar${capitalize(size2)}`, `avatarColor${capitalize(color2)}`],
+    icon: ["icon", `icon${capitalize(size2)}`, `iconColor${capitalize(iconColor)}`],
+    deleteIcon: ["deleteIcon", `deleteIcon${capitalize(size2)}`, `deleteIconColor${capitalize(color2)}`, `deleteIcon${capitalize(variant)}Color${capitalize(color2)}`]
+  };
+  return composeClasses(slots, getChipUtilityClass, classes);
+};
+const ChipRoot = styled$1("div", {
+  name: "MuiChip",
+  slot: "Root",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    const {
+      color: color2,
+      iconColor,
+      clickable,
+      onDelete,
+      size: size2,
+      variant
+    } = ownerState;
+    return [{
+      [`& .${chipClasses$1.avatar}`]: styles2.avatar
+    }, {
+      [`& .${chipClasses$1.avatar}`]: styles2[`avatar${capitalize(size2)}`]
+    }, {
+      [`& .${chipClasses$1.avatar}`]: styles2[`avatarColor${capitalize(color2)}`]
+    }, {
+      [`& .${chipClasses$1.icon}`]: styles2.icon
+    }, {
+      [`& .${chipClasses$1.icon}`]: styles2[`icon${capitalize(size2)}`]
+    }, {
+      [`& .${chipClasses$1.icon}`]: styles2[`iconColor${capitalize(iconColor)}`]
+    }, {
+      [`& .${chipClasses$1.deleteIcon}`]: styles2.deleteIcon
+    }, {
+      [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize(size2)}`]
+    }, {
+      [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIconColor${capitalize(color2)}`]
+    }, {
+      [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize(variant)}Color${capitalize(color2)}`]
+    }, styles2.root, styles2[`size${capitalize(size2)}`], styles2[`color${capitalize(color2)}`], clickable && styles2.clickable, clickable && color2 !== "default" && styles2[`clickableColor${capitalize(color2)})`], onDelete && styles2.deletable, onDelete && color2 !== "default" && styles2[`deletableColor${capitalize(color2)}`], styles2[variant], styles2[`${variant}${capitalize(color2)}`]];
+  }
+})(({
+  theme: theme2,
+  ownerState
+}) => {
+  const textColor = theme2.palette.mode === "light" ? theme2.palette.grey[700] : theme2.palette.grey[300];
+  return _extends$1({
+    maxWidth: "100%",
+    fontFamily: theme2.typography.fontFamily,
+    fontSize: theme2.typography.pxToRem(13),
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 32,
+    color: (theme2.vars || theme2).palette.text.primary,
+    backgroundColor: (theme2.vars || theme2).palette.action.selected,
+    borderRadius: 32 / 2,
+    whiteSpace: "nowrap",
+    transition: theme2.transitions.create(["background-color", "box-shadow"]),
+    // reset cursor explicitly in case ButtonBase is used
+    cursor: "unset",
+    // We disable the focus ring for mouse, touch and keyboard users.
+    outline: 0,
+    textDecoration: "none",
+    border: 0,
+    // Remove `button` border
+    padding: 0,
+    // Remove `button` padding
+    verticalAlign: "middle",
+    boxSizing: "border-box",
+    [`&.${chipClasses$1.disabled}`]: {
+      opacity: (theme2.vars || theme2).palette.action.disabledOpacity,
+      pointerEvents: "none"
+    },
+    [`& .${chipClasses$1.avatar}`]: {
+      marginLeft: 5,
+      marginRight: -6,
+      width: 24,
+      height: 24,
+      color: theme2.vars ? theme2.vars.palette.Chip.defaultAvatarColor : textColor,
+      fontSize: theme2.typography.pxToRem(12)
+    },
+    [`& .${chipClasses$1.avatarColorPrimary}`]: {
+      color: (theme2.vars || theme2).palette.primary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.primary.dark
+    },
+    [`& .${chipClasses$1.avatarColorSecondary}`]: {
+      color: (theme2.vars || theme2).palette.secondary.contrastText,
+      backgroundColor: (theme2.vars || theme2).palette.secondary.dark
+    },
+    [`& .${chipClasses$1.avatarSmall}`]: {
+      marginLeft: 4,
+      marginRight: -4,
+      width: 18,
+      height: 18,
+      fontSize: theme2.typography.pxToRem(10)
+    },
+    [`& .${chipClasses$1.icon}`]: _extends$1({
+      marginLeft: 5,
+      marginRight: -6
+    }, ownerState.size === "small" && {
+      fontSize: 18,
+      marginLeft: 4,
+      marginRight: -4
+    }, ownerState.iconColor === ownerState.color && _extends$1({
+      color: theme2.vars ? theme2.vars.palette.Chip.defaultIconColor : textColor
+    }, ownerState.color !== "default" && {
+      color: "inherit"
+    })),
+    [`& .${chipClasses$1.deleteIcon}`]: _extends$1({
+      WebkitTapHighlightColor: "transparent",
+      color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.26)` : alpha(theme2.palette.text.primary, 0.26),
+      fontSize: 22,
+      cursor: "pointer",
+      margin: "0 5px 0 -6px",
+      "&:hover": {
+        color: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / 0.4)` : alpha(theme2.palette.text.primary, 0.4)
+      }
+    }, ownerState.size === "small" && {
+      fontSize: 16,
+      marginRight: 4,
+      marginLeft: -4
+    }, ownerState.color !== "default" && {
+      color: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].contrastTextChannel} / 0.7)` : alpha(theme2.palette[ownerState.color].contrastText, 0.7),
+      "&:hover, &:active": {
+        color: (theme2.vars || theme2).palette[ownerState.color].contrastText
+      }
+    })
+  }, ownerState.size === "small" && {
+    height: 24
+  }, ownerState.color !== "default" && {
+    backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main,
+    color: (theme2.vars || theme2).palette[ownerState.color].contrastText
+  }, ownerState.onDelete && {
+    [`&.${chipClasses$1.focusVisible}`]: {
+      backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
+    }
+  }, ownerState.onDelete && ownerState.color !== "default" && {
+    [`&.${chipClasses$1.focusVisible}`]: {
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark
+    }
+  });
+}, ({
+  theme: theme2,
+  ownerState
+}) => _extends$1({}, ownerState.clickable && {
+  userSelect: "none",
+  WebkitTapHighlightColor: "transparent",
+  cursor: "pointer",
+  "&:hover": {
+    backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.hoverOpacity}))` : alpha(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.hoverOpacity)
+  },
+  [`&.${chipClasses$1.focusVisible}`]: {
+    backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.action.selectedChannel} / calc(${theme2.vars.palette.action.selectedOpacity} + ${theme2.vars.palette.action.focusOpacity}))` : alpha(theme2.palette.action.selected, theme2.palette.action.selectedOpacity + theme2.palette.action.focusOpacity)
+  },
+  "&:active": {
+    boxShadow: (theme2.vars || theme2).shadows[1]
+  }
+}, ownerState.clickable && ownerState.color !== "default" && {
+  [`&:hover, &.${chipClasses$1.focusVisible}`]: {
+    backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark
+  }
+}), ({
+  theme: theme2,
+  ownerState
+}) => _extends$1({}, ownerState.variant === "outlined" && {
+  backgroundColor: "transparent",
+  border: theme2.vars ? `1px solid ${theme2.vars.palette.Chip.defaultBorder}` : `1px solid ${theme2.palette.mode === "light" ? theme2.palette.grey[400] : theme2.palette.grey[700]}`,
+  [`&.${chipClasses$1.clickable}:hover`]: {
+    backgroundColor: (theme2.vars || theme2).palette.action.hover
+  },
+  [`&.${chipClasses$1.focusVisible}`]: {
+    backgroundColor: (theme2.vars || theme2).palette.action.focus
+  },
+  [`& .${chipClasses$1.avatar}`]: {
+    marginLeft: 4
+  },
+  [`& .${chipClasses$1.avatarSmall}`]: {
+    marginLeft: 2
+  },
+  [`& .${chipClasses$1.icon}`]: {
+    marginLeft: 4
+  },
+  [`& .${chipClasses$1.iconSmall}`]: {
+    marginLeft: 2
+  },
+  [`& .${chipClasses$1.deleteIcon}`]: {
+    marginRight: 5
+  },
+  [`& .${chipClasses$1.deleteIconSmall}`]: {
+    marginRight: 3
+  }
+}, ownerState.variant === "outlined" && ownerState.color !== "default" && {
+  color: (theme2.vars || theme2).palette[ownerState.color].main,
+  border: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha(theme2.palette[ownerState.color].main, 0.7)}`,
+  [`&.${chipClasses$1.clickable}:hover`]: {
+    backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity)
+  },
+  [`&.${chipClasses$1.focusVisible}`]: {
+    backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.focusOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.focusOpacity)
+  },
+  [`& .${chipClasses$1.deleteIcon}`]: {
+    color: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.7)` : alpha(theme2.palette[ownerState.color].main, 0.7),
+    "&:hover, &:active": {
+      color: (theme2.vars || theme2).palette[ownerState.color].main
+    }
+  }
+}));
+const ChipLabel = styled$1("span", {
+  name: "MuiChip",
+  slot: "Label",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    const {
+      size: size2
+    } = ownerState;
+    return [styles2.label, styles2[`label${capitalize(size2)}`]];
+  }
+})(({
+  ownerState
+}) => _extends$1({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  paddingLeft: 12,
+  paddingRight: 12,
+  whiteSpace: "nowrap"
+}, ownerState.variant === "outlined" && {
+  paddingLeft: 11,
+  paddingRight: 11
+}, ownerState.size === "small" && {
+  paddingLeft: 8,
+  paddingRight: 8
+}, ownerState.size === "small" && ownerState.variant === "outlined" && {
+  paddingLeft: 7,
+  paddingRight: 7
+}));
+function isDeleteKeyboardEvent(keyboardEvent) {
+  return keyboardEvent.key === "Backspace" || keyboardEvent.key === "Delete";
+}
+const Chip = /* @__PURE__ */ reactExports.forwardRef(function Chip2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiChip"
+  });
+  const {
+    avatar: avatarProp,
+    className,
+    clickable: clickableProp,
+    color: color2 = "default",
+    component: ComponentProp,
+    deleteIcon: deleteIconProp,
+    disabled = false,
+    icon: iconProp,
+    label,
+    onClick,
+    onDelete,
+    onKeyDown,
+    onKeyUp,
+    size: size2 = "medium",
+    variant = "filled",
+    tabIndex,
+    skipFocusWhenDisabled = false
+    // TODO v6: Rename to `focusableWhenDisabled`.
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+  const chipRef = reactExports.useRef(null);
+  const handleRef = useForkRef(chipRef, ref);
+  const handleDeleteIconClick = (event) => {
+    event.stopPropagation();
+    if (onDelete) {
+      onDelete(event);
+    }
+  };
+  const handleKeyDown2 = (event) => {
+    if (event.currentTarget === event.target && isDeleteKeyboardEvent(event)) {
+      event.preventDefault();
+    }
+    if (onKeyDown) {
+      onKeyDown(event);
+    }
+  };
+  const handleKeyUp = (event) => {
+    if (event.currentTarget === event.target) {
+      if (onDelete && isDeleteKeyboardEvent(event)) {
+        onDelete(event);
+      } else if (event.key === "Escape" && chipRef.current) {
+        chipRef.current.blur();
+      }
+    }
+    if (onKeyUp) {
+      onKeyUp(event);
+    }
+  };
+  const clickable = clickableProp !== false && onClick ? true : clickableProp;
+  const component = clickable || onDelete ? ButtonBase$1 : ComponentProp || "div";
+  const ownerState = _extends$1({}, props, {
+    component,
+    disabled,
+    size: size2,
+    color: color2,
+    iconColor: /* @__PURE__ */ reactExports.isValidElement(iconProp) ? iconProp.props.color || color2 : color2,
+    onDelete: !!onDelete,
+    clickable,
+    variant
+  });
+  const classes = useUtilityClasses$P(ownerState);
+  const moreProps = component === ButtonBase$1 ? _extends$1({
+    component: ComponentProp || "div",
+    focusVisibleClassName: classes.focusVisible
+  }, onDelete && {
+    disableRipple: true
+  }) : {};
+  let deleteIcon = null;
+  if (onDelete) {
+    deleteIcon = deleteIconProp && /* @__PURE__ */ reactExports.isValidElement(deleteIconProp) ? /* @__PURE__ */ reactExports.cloneElement(deleteIconProp, {
+      className: clsx(deleteIconProp.props.className, classes.deleteIcon),
+      onClick: handleDeleteIconClick
+    }) : /* @__PURE__ */ jsxRuntimeExports.jsx(CancelIcon, {
+      className: clsx(classes.deleteIcon),
+      onClick: handleDeleteIconClick
+    });
+  }
+  let avatar = null;
+  if (avatarProp && /* @__PURE__ */ reactExports.isValidElement(avatarProp)) {
+    avatar = /* @__PURE__ */ reactExports.cloneElement(avatarProp, {
+      className: clsx(classes.avatar, avatarProp.props.className)
+    });
+  }
+  let icon = null;
+  if (iconProp && /* @__PURE__ */ reactExports.isValidElement(iconProp)) {
+    icon = /* @__PURE__ */ reactExports.cloneElement(iconProp, {
+      className: clsx(classes.icon, iconProp.props.className)
+    });
+  }
+  if (process.env.NODE_ENV !== "production") {
+    if (avatar && icon) {
+      console.error("MUI: The Chip component can not handle the avatar and the icon prop at the same time. Pick one.");
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(ChipRoot, _extends$1({
+    as: component,
+    className: clsx(classes.root, className),
+    disabled: clickable && disabled ? true : void 0,
+    onClick,
+    onKeyDown: handleKeyDown2,
+    onKeyUp: handleKeyUp,
+    ref: handleRef,
+    tabIndex: skipFocusWhenDisabled && disabled ? -1 : tabIndex,
+    ownerState
+  }, moreProps, other, {
+    children: [avatar || icon, /* @__PURE__ */ jsxRuntimeExports.jsx(ChipLabel, {
+      className: clsx(classes.label),
+      ownerState,
+      children: label
+    }), deleteIcon]
+  }));
+});
+process.env.NODE_ENV !== "production" ? Chip.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The Avatar element to display.
+   */
+  avatar: PropTypes.element,
+  /**
+   * This prop isn't supported.
+   * Use the `component` prop if you need to change the children structure.
+   */
+  children: unsupportedProp,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, the chip will appear clickable, and will raise when pressed,
+   * even if the onClick prop is not defined.
+   * If `false`, the chip will not appear clickable, even if onClick prop is defined.
+   * This can be used, for example,
+   * along with the component prop to indicate an anchor Chip is clickable.
+   * Note: this controls the UI and does not affect the onClick event.
+   */
+  clickable: PropTypes.bool,
+  /**
+   * The color of the component.
+   * It supports both default and custom theme colors, which can be added as shown in the
+   * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
+   * @default 'default'
+   */
+  color: PropTypes.oneOfType([PropTypes.oneOf(["default", "primary", "secondary", "error", "info", "success", "warning"]), PropTypes.string]),
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: PropTypes.elementType,
+  /**
+   * Override the default delete icon element. Shown only if `onDelete` is set.
+   */
+  deleteIcon: PropTypes.element,
+  /**
+   * If `true`, the component is disabled.
+   * @default false
+   */
+  disabled: PropTypes.bool,
+  /**
+   * Icon element.
+   */
+  icon: PropTypes.element,
+  /**
+   * The content of the component.
+   */
+  label: PropTypes.node,
+  /**
+   * @ignore
+   */
+  onClick: PropTypes.func,
+  /**
+   * Callback fired when the delete icon is clicked.
+   * If set, the delete icon will be shown.
+   */
+  onDelete: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onKeyDown: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onKeyUp: PropTypes.func,
+  /**
+   * The size of the component.
+   * @default 'medium'
+   */
+  size: PropTypes.oneOfType([PropTypes.oneOf(["medium", "small"]), PropTypes.string]),
+  /**
+   * If `true`, allows the disabled chip to escape focus.
+   * If `false`, allows the disabled chip to receive focus.
+   * @default false
+   */
+  skipFocusWhenDisabled: PropTypes.bool,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * @ignore
+   */
+  tabIndex: PropTypes.number,
+  /**
+   * The variant to use.
+   * @default 'filled'
+   */
+  variant: PropTypes.oneOfType([PropTypes.oneOf(["filled", "outlined"]), PropTypes.string])
+} : void 0;
+const Chip$1 = Chip;
+function getTypographyUtilityClass(slot) {
+  return generateUtilityClass("MuiTypography", slot);
+}
+generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
+const _excluded$W = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+const useUtilityClasses$O = (ownerState) => {
+  const {
+    align,
+    gutterBottom,
+    noWrap,
+    paragraph,
+    variant,
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
+  };
+  return composeClasses(slots, getTypographyUtilityClass, classes);
+};
+const TypographyRoot = styled$1("span", {
+  name: "MuiTypography",
+  slot: "Root",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
+  }
+})(({
+  theme: theme2,
+  ownerState
+}) => _extends$1({
+  margin: 0
+}, ownerState.variant === "inherit" && {
+  // Some elements, like <button> on Chrome have default font that doesn't inherit, reset this.
+  font: "inherit"
+}, ownerState.variant !== "inherit" && theme2.typography[ownerState.variant], ownerState.align !== "inherit" && {
+  textAlign: ownerState.align
+}, ownerState.noWrap && {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap"
+}, ownerState.gutterBottom && {
+  marginBottom: "0.35em"
+}, ownerState.paragraph && {
+  marginBottom: 16
+}));
+const defaultVariantMapping = {
+  h1: "h1",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  h5: "h5",
+  h6: "h6",
+  subtitle1: "h6",
+  subtitle2: "h6",
+  body1: "p",
+  body2: "p",
+  inherit: "p"
+};
+const colorTransformations$1 = {
+  primary: "primary.main",
+  textPrimary: "text.primary",
+  secondary: "secondary.main",
+  textSecondary: "text.secondary",
+  error: "error.main"
+};
+const transformDeprecatedColors$1 = (color2) => {
+  return colorTransformations$1[color2] || color2;
+};
+const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
+  const themeProps = useThemeProps({
+    props: inProps,
+    name: "MuiTypography"
+  });
+  const color2 = transformDeprecatedColors$1(themeProps.color);
+  const props = extendSxProp(_extends$1({}, themeProps, {
+    color: color2
+  }));
+  const {
+    align = "inherit",
+    className,
+    component,
+    gutterBottom = false,
+    noWrap = false,
+    paragraph = false,
+    variant = "body1",
+    variantMapping = defaultVariantMapping
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+  const ownerState = _extends$1({}, props, {
+    align,
+    color: color2,
+    className,
+    component,
+    gutterBottom,
+    noWrap,
+    paragraph,
+    variant,
+    variantMapping
+  });
+  const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
+  const classes = useUtilityClasses$O(ownerState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
+    as: Component,
+    ref,
+    ownerState,
+    className: clsx(classes.root, className)
+  }, other));
+});
+process.env.NODE_ENV !== "production" ? Typography.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * Set the text-align on the component.
+   * @default 'inherit'
+   */
+  align: PropTypes.oneOf(["center", "inherit", "justify", "left", "right"]),
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: PropTypes.elementType,
+  /**
+   * If `true`, the text will have a bottom margin.
+   * @default false
+   */
+  gutterBottom: PropTypes.bool,
+  /**
+   * If `true`, the text will not wrap, but instead will truncate with a text overflow ellipsis.
+   *
+   * Note that text overflow can only happen with block or inline-block level elements
+   * (the element needs to have a width in order to overflow).
+   * @default false
+   */
+  noWrap: PropTypes.bool,
+  /**
+   * If `true`, the element will be a paragraph element.
+   * @default false
+   */
+  paragraph: PropTypes.bool,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * Applies the theme typography styles.
+   * @default 'body1'
+   */
+  variant: PropTypes.oneOfType([PropTypes.oneOf(["body1", "body2", "button", "caption", "h1", "h2", "h3", "h4", "h5", "h6", "inherit", "overline", "subtitle1", "subtitle2"]), PropTypes.string]),
+  /**
+   * The component maps the variant prop to a range of different HTML element types.
+   * For instance, subtitle1 to `<h6>`.
+   * If you wish to change that mapping, you can provide your own.
+   * Alternatively, you can use the `component` prop.
+   * @default {
+   *   h1: 'h1',
+   *   h2: 'h2',
+   *   h3: 'h3',
+   *   h4: 'h4',
+   *   h5: 'h5',
+   *   h6: 'h6',
+   *   subtitle1: 'h6',
+   *   subtitle2: 'h6',
+   *   body1: 'p',
+   *   body2: 'p',
+   *   inherit: 'p',
+   * }
+   */
+  variantMapping: PropTypes.object
+} : void 0;
+const Typography$1 = Typography;
 function getIconButtonUtilityClass(slot) {
   return generateUtilityClass("MuiIconButton", slot);
 }
 const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
 const iconButtonClasses$1 = iconButtonClasses;
-const _excluded$U = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-const useUtilityClasses$M = (ownerState) => {
+const _excluded$V = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+const useUtilityClasses$N = (ownerState) => {
   const {
     classes,
     disabled,
@@ -47941,7 +47658,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disabled = false,
     disableFocusRipple = false,
     size: size2 = "medium"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
   const ownerState = _extends$1({}, props, {
     edge,
     color: color2,
@@ -47949,7 +47666,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disableFocusRipple,
     size: size2
   });
-  const classes = useUtilityClasses$M(ownerState);
+  const classes = useUtilityClasses$N(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
     className: clsx(classes.root, className),
     centerRipple: true,
@@ -48029,19 +47746,903 @@ process.env.NODE_ENV !== "production" ? IconButton.propTypes = {
   sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
 } : void 0;
 const IconButton$1 = IconButton;
-const SuccessOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const CardWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "flex",
+  padding: theme2.spacing(2),
+  border: `1px solid ${theme2.palette.divider}`,
+  gap: theme2.spacing(1),
+  borderRadius: "0.3em",
+  flexDirection: "column",
+  transition: "background-color 0.3s ease",
+  "&:hover": {
+    cursor: "pointer",
+    backgroundColor: alpha(theme2.palette.action.hover, 0.04)
+  },
+  "&.selected": {
+    borderColor: theme2.palette.primary.main
+  }
+}));
+const CardHeader = styled$1("header")({});
+const CardFooter = styled$1("footer")(({ theme: theme2 }) => ({
+  display: "flex",
+  marginTop: theme2.spacing(3),
+  alignItems: "flex-start"
+}));
+const CardFooterTags = styled$1("div")({
+  display: "flex",
+  gap: `0 ${theme.spacing(1)}`
+});
+const CardFooterActions = styled$1("div")({
+  marginLeft: "auto",
+  paddingLeft: theme.spacing(2)
+});
+const CardTitle = styled$1(Typography$1)({
+  marginBottom: 0,
+  minWidth: 0,
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+  "& *": {
+    textOverflow: "inherit",
+    overflow: "inherit",
+    whiteSpace: "inherit"
+  }
+});
+CardTitle.defaultProps = {
+  variant: "h6"
+};
+const CardCaption = styled$1(Typography$1)({});
+CardCaption.defaultProps = {
+  variant: "caption"
+};
+const CardChip = styled$1(Chip$1)(({ theme: theme2 }) => ({
+  "&.project": {
+    backgroundColor: theme2.palette.courseflow.project,
+    color: theme2.palette.common.white
+  },
+  "&.program": {
+    backgroundColor: theme2.palette.courseflow.program,
+    color: theme2.palette.common.white
+  },
+  "&.activity": {
+    backgroundColor: theme2.palette.courseflow.activity,
+    color: theme2.palette.common.white
+  },
+  "&.course": {
+    backgroundColor: theme2.palette.courseflow.course,
+    color: theme2.palette.common.white
+  },
+  "&.template": {
+    backgroundColor: "transparent",
+    color: theme2.palette.courseflow.template,
+    border: "1px solid currentColor"
+  }
+}));
+CardChip.defaultProps = {
+  size: "small",
+  variant: "filled"
+};
+const CardFavoriteBtn = styled$1(IconButton$1)(({ theme: theme2 }) => ({
+  marginRight: "-8px",
+  marginTop: "-8px"
+}));
+class WorkflowCard extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "mainDiv");
+    __publicField(this, "workflow");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "TypeIndicator", () => {
+      const { type, is_strategy } = this.workflow;
+      let typeText = window.gettext(type);
+      if (type === WorkflowType.LIVE_PROJECT) {
+        typeText = window.gettext("classroom");
+      }
+      if (is_strategy) {
+        typeText += ` ${window.gettext("strategy")}`;
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(CardChip, { className: type, label: capWords(typeText) });
+    });
+    __publicField(this, "FavouriteButton", () => {
+      const { favourite } = this.state;
+      const { workflow } = this;
+      if (workflow.type === WorkflowType.LIVE_PROJECT) {
+        return null;
+      }
+      const toggleFavouriteAction = (evt) => {
+        evt.stopPropagation();
+        toggleFavourite(workflow.id, workflow.type, !favourite);
+        this.setState({ favourite: !favourite });
+      };
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CardFavoriteBtn,
+        {
+          "aria-label": window.gettext("Favourite"),
+          sx: {
+            color: favourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
+          },
+          onClick: toggleFavouriteAction,
+          children: favourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+        }
+      );
+    });
+    __publicField(this, "WorkflowInfo", () => {
+      const details = [];
+      const { workflow } = this;
+      if (workflow.type === WorkflowType.PROJECT && workflow.has_liveproject && workflow.object_permission.role_type !== role_keys["none"]) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created workflow-live-classroom",
+              title: window.gettext("Live Classroom"),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded small-inline", children: "group" }),
+                ` ${window.gettext("Live Classroom")}`
+              ]
+            },
+            "workflow-created-group"
+          )
+        );
+      }
+      if (this.workflow.is_linked) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: "workflow-created linked-workflow-warning",
+              title: window.gettext(
+                "Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes."
+              ),
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded red filled small-inline", children: "error" }),
+                ` ${window.gettext("Already in use")}`
+              ]
+            },
+            "workflow-created-warning"
+          )
+        );
+      }
+      if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count !== null && workflow.workflow_count > 0) {
+        details.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            CardChip,
+            {
+              label: `${workflow.workflow_count} ${window.gettext(
+                `workflow` + (workflow.workflow_count > 1 ? "s" : "")
+              )}`
+            },
+            "workflow-created-count"
+          )
+        );
+      }
+      return details;
+    });
+    this.state = {
+      favourite: props.workflowData.favourite
+    };
+    this.workflow = this.props.workflowData;
+    this.mainDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  clickAction() {
+    const { selectAction } = this.props;
+    if (selectAction) {
+      selectAction(this.workflow.id);
+    } else {
+      window.location.href = COURSEFLOW_APP.config.update_path[this.workflow.type].replace("0", String(this.workflow.id));
+    }
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const { selected, noHyperlink } = this.props;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      CardWrap,
+      {
+        ref: this.mainDiv,
+        className: selected ? "selected" : "",
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => evt.preventDefault(),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              WorkflowTitle,
+              {
+                no_hyperlink: noHyperlink,
+                class_name: "workflow-title",
+                data: this.workflow
+              }
+            ) }),
+            this.workflow.author && /* @__PURE__ */ jsxRuntimeExports.jsxs(CardCaption, { children: [
+              window.gettext("Owned by"),
+              " ",
+              this.workflow.author
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooter, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(CardFooterTags, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(this.WorkflowInfo, {})
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardFooterActions, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.FavouriteButton, {}) })
+          ] })
+        ]
+      }
+    );
+  }
+}
+function openWorkflowSelectMenu(response, updateFunction) {
+  if (response.action === VERB.POSTED) {
+    renderMessageBox(response, "workflow_select_menu", updateFunction);
+  } else {
+    alert("Failed to find your workflows.");
+  }
+}
+function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
+  $.post(
+    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
+    {
+      projectPk: JSON.stringify(projectPk),
+      type_filter: JSON.stringify(type_filter),
+      get_strategies: JSON.stringify(get_strategies),
+      self_only: JSON.stringify(self_only)
+    },
+    (data) => {
+    }
+  );
+}
+function columnChanged(renderer, objectID, columnID) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction["nodeweek"])
+    renderer.dragAction["nodeweek"] = {};
+  renderer.dragAction["nodeweek"] = {
+    ...renderer.dragAction["nodeweek"],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify("node"),
+    columnPk: JSON.stringify(columnID),
+    columnChange: JSON.stringify(true)
+  };
+  $(document).off("nodeweek-dropped");
+  $(document).on("nodeweek-dropped", () => {
+    dragAction(renderer.dragAction["nodeweek"]);
+    renderer.dragAction["nodeweek"] = null;
+    $(document).off("nodeweek-dropped");
+  });
+}
+function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction[throughType])
+    renderer.dragAction[throughType] = {};
+  renderer.dragAction[throughType] = {
+    ...renderer.dragAction[throughType],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true)
+  };
+  $(document).off(throughType + "-dropped");
+  if (objectID)
+    $(document).on(throughType + "-dropped", () => {
+      dragAction(renderer.dragAction[throughType]);
+      renderer.dragAction[throughType] = null;
+      $(document).off(throughType + "-dropped");
+    });
+}
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === VERB.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    });
+  };
+  try {
+    const itemPkString = JSON.stringify(itemPk);
+    const projectPkString = JSON.stringify(projectID);
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
+        { workflowPk: itemPkString }
+      );
+    } else {
+      sendPostRequest(
+        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
+        { workflowPk: itemPkString, projectPk: projectPkString }
+      );
+    }
+  } catch (err) {
+    window.fail_function();
+  }
+}
+function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  try {
+    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID: JSON.stringify(parentID),
+      parentType: JSON.stringify(parentType),
+      objectID: JSON.stringify(objectID),
+      objectType: JSON.stringify(objectType),
+      throughType: JSON.stringify(throughType)
+    }).done(function(data) {
+      if (data.action === VERB.POSTED)
+        callBackFunction(data);
+      else
+        window.fail_function(data.action);
+    });
+  } catch (err) {
+    window.fail_function();
+  }
+}
+class UtilityLoader {
+  constructor(identifier2) {
+    __publicField(this, "load_screen");
+    this.load_screen = document.createElement("div");
+    this.load_screen.className = "load-screen";
+    this.load_screen.addEventListener("click", (evt) => {
+      evt.preventDefault();
+    });
+    let parentElement;
+    if (identifier2 instanceof jQuery) {
+      parentElement = identifier2.get(0);
+    } else {
+      parentElement = document.querySelector(identifier2);
+    }
+    if (parentElement) {
+      parentElement.appendChild(this.load_screen);
+    } else {
+      console.error(`Element with identifier "${identifier2}" not found.`);
+    }
+  }
+  endLoad() {
+    if (this.load_screen && this.load_screen.parentNode) {
+      this.load_screen.parentNode.removeChild(this.load_screen);
+    }
+  }
+}
+const OuterContentWrap = styled$1(Box$1, {
+  shouldForwardProp: (prop) => prop !== "narrow"
+})(({ theme: theme2, narrow }) => ({
+  padding: theme2.spacing(8),
+  paddingTop: 0,
+  ...narrow && {
+    maxWidth: "34.25rem",
+    marginLeft: "auto",
+    marginRight: "auto",
+    paddingLeft: theme2.spacing(2),
+    paddingRight: theme2.spacing(2)
+  }
+}));
+const GridWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 50%)",
+  gap: theme2.spacing(3)
+}));
+class MenuSection extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "dropdownDiv");
+    this.dropdownDiv = reactExports.createRef();
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    COURSEFLOW_APP.makeDropdown(this.dropdownDiv.current);
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const section_type = this.props.section_data.object_type;
+    const is_strategy = this.props.section_data.is_strategy;
+    const parentID = this.props.parentID;
+    let add_button;
+    let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowCard,
+      {
+        no_hyperlink: this.props.no_hyperlink,
+        type: this.props.type,
+        workflowData: object,
+        objectType: section_type,
+        selected: this.props.selected_id === object.id,
+        dispatch: this.props.dispatch,
+        selectAction: this.props.selectAction
+      },
+      object.id
+    ));
+    if (this.props.replacement_text)
+      objects = this.props.replacement_text;
+    if (COURSEFLOW_APP.config.create_path && this.props.add) {
+      let types;
+      if (section_type === "workflow")
+        types = ["program", "course", "activity"];
+      else
+        types = [section_type];
+      let adds;
+      {
+        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            className: "hover-shade",
+            href: COURSEFLOW_APP.config.create_path[this_type],
+            children: window.gettext("Create new ") + window.gettext(this_type)
+          }
+        ));
+        let import_text = window.gettext("Import ") + window.gettext(section_type);
+        if (is_strategy)
+          import_text += window.gettext(" strategy");
+        adds.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              className: "hover-shade",
+              onClick: () => {
+                getAddedWorkflowMenu(
+                  parentID,
+                  section_type,
+                  is_strategy,
+                  false
+                );
+              },
+              children: import_text
+            }
+          )
+        );
+      }
+      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
+            title: window.gettext("Add New"),
+            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
+      add_button,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: objects })
+    ] });
+  }
+}
+class MenuTab extends reactExports.Component {
+  render() {
+    let is_empty = true;
+    for (let i = 0; i < this.props.data.sections.length; i++) {
+      if (this.props.data.sections[i].objects.length > 0) {
+        is_empty = false;
+        break;
+      }
+    }
+    let replacement_text;
+    if (is_empty)
+      replacement_text = this.props.data.emptytext;
+    const sections = this.props.data.sections.map((section, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      MenuSection,
+      {
+        no_hyperlink: this.props.no_hyperlink,
+        type: this.props.type,
+        replacement_text: i == 0 ? replacement_text : null,
+        section_data: section,
+        add: this.props.data.add,
+        selected_id: this.props.selected_id,
+        dispatch: this.props.dispatch,
+        selectAction: this.props.selectAction,
+        parentID: this.props.parentID,
+        duplicate: this.props.data.duplicate
+      }
+    ));
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "tabs-" + this.props.identifier, children: sections });
+  }
+}
+function closeMessageBox() {
+  reactDomExports.unmountComponentAtNode($("#popup-container")[0]);
+}
+class WorkflowsMenu extends reactExports.Component {
+  constructor(props) {
+    super(props);
+    __publicField(this, "current_project");
+    __publicField(this, "project_workflows");
+    /*******************************************************
+     * COMPONENTS
+     *******************************************************/
+    __publicField(this, "Title", () => {
+      switch (this.props.type) {
+        case "linked_workflow_menu":
+        case "added_workflow_menu":
+        case "workflow_select_menu":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a workflow") });
+        case "target_project_menu":
+          return /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Select a project") });
+      }
+      return null;
+    });
+    __publicField(this, "Actions", () => {
+      const actions = [];
+      if (this.props.type === "linked_workflow_menu") {
+        let text = window.gettext("link to node");
+        if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+          text = window.gettext("Copy to Current Project and ") + text;
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow-cancel",
+              className: "secondary-button",
+              onClick: closeMessageBox,
+              children: window.gettext("Cancel")
+            }
+          )
+        );
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow-none",
+              className: "secondary-button",
+              onClick: () => {
+                setLinkedWorkflow(
+                  this.props.data.node_id,
+                  -1,
+                  this.props.actionFunction
+                );
+                closeMessageBox();
+              },
+              children: window.gettext("Set to None")
+            }
+          )
+        );
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow",
+              disabled: !this.state.selected,
+              className: "primary-button",
+              onClick: () => {
+                setLinkedWorkflow(
+                  this.props.data.node_id,
+                  this.state.selected,
+                  this.props.actionFunction
+                );
+                closeMessageBox();
+              },
+              children: text
+            }
+          )
+        );
+      } else if (this.props.type === "added_workflow_menu" || this.props.type === "workflow_select_menu") {
+        let text = "";
+        if (this.props.type === "added_workflow_menu") {
+          text = window.gettext("Select");
+          if (this.state.selected && this.project_workflows.indexOf(this.state.selected) < 0)
+            text = window.gettext("Copy to Current Project");
+        } else {
+          text = window.gettext("Select");
+        }
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow-cancel",
+              className: "secondary-button",
+              onClick: closeMessageBox,
+              children: window.gettext("Cancel")
+            }
+          )
+        );
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow",
+              className: "primary-button",
+              disabled: !this.state.selected,
+              onClick: () => {
+                this.props.actionFunction({ workflowID: this.state.selected });
+                closeMessageBox();
+              },
+              children: text
+            }
+          )
+        );
+      } else if (this.props.type === "target_project_menu") {
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow-cancel",
+              className: "secondary-button",
+              onClick: closeMessageBox,
+              children: window.gettext("Cancel")
+            }
+          )
+        );
+        actions.push(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              id: "set-linked-workflow",
+              className: "primary-button",
+              disabled: !this.state.selected,
+              onClick: () => {
+                this.props.actionFunction({ parentID: this.state.selected });
+                closeMessageBox();
+              },
+              children: window.gettext("Select project")
+            }
+          )
+        );
+      }
+      return actions;
+    });
+    this.state = {};
+    if (this.props.type === "target_project_menu") {
+      if (this.current_project)
+        ;
+    }
+    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu")
+      this.project_workflows = props.data.data_package.current_project.sections.map((section) => section.objects.map((object) => object.id)).flat();
+  }
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+  componentDidMount() {
+    $("#workflow-tabs").tabs({ active: 0 });
+    $("#workflow-tabs .tab-header").on("click", () => {
+      this.setState({ selected: null });
+    });
+  }
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  workflowSelected(selected_id, selected_type) {
+    this.setState({ selected: selected_id, selected_type });
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const data_package = this.props.data.data_package;
+    let no_hyperlink = false;
+    if (this.props.type === "linked_workflow_menu" || this.props.type === "added_workflow_menu" || this.props.type === "target_project_menu" || this.props.type === "workflow_select_menu")
+      no_hyperlink = true;
+    const tabs = [];
+    const tab_li = [];
+    let i = 0;
+    for (const prop in data_package) {
+      tab_li.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "tab-header", children: /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: "hover-shade", href: "#tabs-" + i, children: data_package[prop].title }) })
+      );
+      tabs.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          MenuTab,
+          {
+            no_hyperlink,
+            data: data_package[prop],
+            type: this.props.type,
+            identifier: i,
+            selected_id: this.state.selected,
+            selectAction: this.workflowSelected.bind(this)
+          }
+        )
+      );
+      i++;
+    }
+    const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCard,
+        {
+          workflowData: this.current_project,
+          selected: this.state.selected === this.current_project.id,
+          noHyperlink: no_hyperlink,
+          type: this.props.type,
+          dispatch: this.props.dispatch,
+          selectAction: this.workflowSelected.bind(this)
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
+      current_project,
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: tab_li }),
+        tabs
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "action-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(this.Actions, {}) })
+    ] });
+  }
+}
+const reflow = (node2) => node2.scrollTop;
+function getTransitionProps(props, options) {
+  var _style$transitionDura, _style$transitionTimi;
+  const {
+    timeout: timeout2,
+    easing: easing2,
+    style: style2 = {}
+  } = props;
+  return {
+    duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout2 === "number" ? timeout2 : timeout2[options.mode] || 0,
+    easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
+    delay: style2.transitionDelay
+  };
+}
+function getPaperUtilityClass(slot) {
+  return generateUtilityClass("MuiPaper", slot);
+}
+generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
+const _excluded$U = ["className", "component", "elevation", "square", "variant"];
+const useUtilityClasses$M = (ownerState) => {
+  const {
+    square,
+    elevation,
+    variant,
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
+  };
+  return composeClasses(slots, getPaperUtilityClass, classes);
+};
+const PaperRoot = styled$1("div", {
+  name: "MuiPaper",
+  slot: "Root",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
+  }
+})(({
+  theme: theme2,
+  ownerState
+}) => {
+  var _theme$vars$overlays;
+  return _extends$1({
+    backgroundColor: (theme2.vars || theme2).palette.background.paper,
+    color: (theme2.vars || theme2).palette.text.primary,
+    transition: theme2.transitions.create("box-shadow")
+  }, !ownerState.square && {
+    borderRadius: theme2.shape.borderRadius
+  }, ownerState.variant === "outlined" && {
+    border: `1px solid ${(theme2.vars || theme2).palette.divider}`
+  }, ownerState.variant === "elevation" && _extends$1({
+    boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
+  }, !theme2.vars && theme2.palette.mode === "dark" && {
+    backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
+  }, theme2.vars && {
+    backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
+  }));
+});
+const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiPaper"
+  });
+  const {
+    className,
+    component = "div",
+    elevation = 1,
+    square = false,
+    variant = "elevation"
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+  const ownerState = _extends$1({}, props, {
+    component,
+    elevation,
+    square,
+    variant
+  });
+  const classes = useUtilityClasses$M(ownerState);
+  if (process.env.NODE_ENV !== "production") {
+    const theme2 = useTheme();
+    if (theme2.shadows[elevation] === void 0) {
+      console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
+    as: component,
+    ownerState,
+    className: clsx(classes.root, className),
+    ref
+  }, other));
+});
+process.env.NODE_ENV !== "production" ? Paper.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: PropTypes.elementType,
+  /**
+   * Shadow depth, corresponds to `dp` in the spec.
+   * It accepts values between 0 and 24 inclusive.
+   * @default 1
+   */
+  elevation: chainPropTypes(integerPropType, (props) => {
+    const {
+      elevation,
+      variant
+    } = props;
+    if (elevation > 0 && variant === "outlined") {
+      return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
+    }
+    return null;
+  }),
+  /**
+   * If `true`, rounded corners are disabled.
+   * @default false
+   */
+  square: PropTypes.bool,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * The variant to use.
+   * @default 'elevation'
+   */
+  variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
+} : void 0;
+const Paper$1 = Paper;
+function getAlertUtilityClass(slot) {
+  return generateUtilityClass("MuiAlert", slot);
+}
+const alertClasses = generateUtilityClasses("MuiAlert", ["root", "action", "icon", "message", "filled", "filledSuccess", "filledInfo", "filledWarning", "filledError", "outlined", "outlinedSuccess", "outlinedInfo", "outlinedWarning", "outlinedError", "standard", "standardSuccess", "standardInfo", "standardWarning", "standardError"]);
+const alertClasses$1 = alertClasses;
+const SuccessOutlinedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2, 4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0, 0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"
 }), "SuccessOutlined");
-const ReportProblemOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ReportProblemOutlinedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
 }), "ReportProblemOutlined");
-const ErrorOutlineIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ErrorOutlineIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
 }), "ErrorOutline");
-const InfoOutlinedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const InfoOutlinedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20, 12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10, 10 0 0,0 12,2M11,17H13V11H11V17Z"
 }), "InfoOutlined");
-const ClearIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
 const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
@@ -50571,10 +51172,10 @@ function getFilledInputUtilityClass(slot) {
 }
 const filledInputClasses = _extends$1({}, inputBaseClasses$1, generateUtilityClasses("MuiFilledInput", ["root", "underline", "input"]));
 const filledInputClasses$1 = filledInputClasses;
-const ArrowDropDownIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const ArrowDropDownIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M7 10l5 5 5-5z"
 }), "ArrowDropDown");
-const Person = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const Person = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
 }), "Person");
 function getAvatarUtilityClass(slot) {
@@ -59103,16 +59704,16 @@ function getPaginationItemUtilityClass(slot) {
 }
 const paginationItemClasses = generateUtilityClasses("MuiPaginationItem", ["root", "page", "sizeSmall", "sizeLarge", "text", "textPrimary", "textSecondary", "outlined", "outlinedPrimary", "outlinedSecondary", "rounded", "ellipsis", "firstLast", "previousNext", "focusVisible", "disabled", "selected", "icon"]);
 const paginationItemClasses$1 = paginationItemClasses;
-const FirstPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const FirstPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
 }), "FirstPage");
-const LastPageIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const LastPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"
 }), "LastPage");
-const NavigateBeforeIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const NavigateBeforeIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
 }), "NavigateBefore");
-const NavigateNextIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const NavigateNextIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
 }), "NavigateNext");
 const _excluded$b = ["className", "color", "component", "components", "disabled", "page", "selected", "shape", "size", "slots", "type", "variant"];
@@ -59680,10 +60281,10 @@ process.env.NODE_ENV !== "production" ? Pagination.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["outlined", "text"]), PropTypes.string])
 } : void 0;
 const Pagination$1 = Pagination;
-const RadioButtonUncheckedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const RadioButtonUncheckedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
 }), "RadioButtonUnchecked");
-const RadioButtonCheckedIcon = createSvgIcon$1(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+const RadioButtonCheckedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
   d: "M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
 }), "RadioButtonChecked");
 const RadioButtonIconRoot = styled$1("span")({
@@ -96802,38 +97403,6 @@ function useQuery(options, queryClient) {
   return useBaseQuery(options, QueryObserver, queryClient);
 }
 var MoreHoriz = {};
-var interopRequireDefault = { exports: {} };
-(function(module) {
-  function _interopRequireDefault2(obj) {
-    return obj && obj.__esModule ? obj : {
-      "default": obj
-    };
-  }
-  module.exports = _interopRequireDefault2, module.exports.__esModule = true, module.exports["default"] = module.exports;
-})(interopRequireDefault);
-var interopRequireDefaultExports = interopRequireDefault.exports;
-var createSvgIcon = {};
-const require$$0 = /* @__PURE__ */ getAugmentedNamespace(utils);
-var hasRequiredCreateSvgIcon;
-function requireCreateSvgIcon() {
-  if (hasRequiredCreateSvgIcon)
-    return createSvgIcon;
-  hasRequiredCreateSvgIcon = 1;
-  (function(exports) {
-    "use client";
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    Object.defineProperty(exports, "default", {
-      enumerable: true,
-      get: function() {
-        return _utils.createSvgIcon;
-      }
-    });
-    var _utils = require$$0;
-  })(createSvgIcon);
-  return createSvgIcon;
-}
 var _interopRequireDefault$b = interopRequireDefaultExports;
 Object.defineProperty(MoreHoriz, "__esModule", {
   value: true
