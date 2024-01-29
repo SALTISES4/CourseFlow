@@ -47,9 +47,6 @@ export class WorkflowComparison extends Workflow {
 
   }
 
-  // init() {
-  //   this.render($('#container'))
-  // }
 
   render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type

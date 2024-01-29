@@ -34543,38 +34543,34 @@ function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = 
     path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
   else
     path = COURSEFLOW_APP.config.post_paths.delete_self;
-  try {
-    $.post(path, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      console.log("deleteSelfQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(path, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    console.log("deleteSelfQuery data");
+    console.log(data);
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      console.log("restoreSelfQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    console.log("restoreSelfQuery data");
+    console.log(data);
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class RestoreBarItem extends ComponentWithToggleDrop {
   /*******************************************************
@@ -47703,117 +47699,96 @@ function updateValueQuery(objectID, objectType, json, changeField = false, callB
     COURSEFLOW_APP.contextData.changeFieldID;
   }
   document.lastUpdateCallFunction = () => {
-    try {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(
-        function(data) {
-          if (data.action === VERB.POSTED) {
-            callBackFunction(_data);
-          } else
-            window.fail_function(data.action);
-        }
-      );
-    } catch (err) {
+    $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(function(data) {
+      if (data.action === VERB.POSTED) {
+        callBackFunction(_data);
+      } else
+        window.fail_function(data.action);
+    }).fail(function(error) {
       window.fail_function();
-    }
+    });
   };
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
 }
 function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.update_value, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    data: JSON.stringify(json)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(
-      function(data) {
-        if (data.action === VERB.POSTED)
-          callBackFunction(data);
-        else
-          window.fail_function(data.action);
-        $(".ui-draggable").draggable("enable");
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
+  COURSEFLOW_APP.tinyLoader.startLoad();
+  $(".ui-draggable").draggable("disable");
+  $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+    $(".ui-draggable").draggable("enable");
+    COURSEFLOW_APP.tinyLoader.endLoad();
+  }).fail(function(error) {
+    window.fail_function();
+  });
 }
 function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true),
-      allowDifferent: JSON.stringify(true)
-    }).done(function(data) {
-      if (data.action === "posted")
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-      $(".ui-draggable").draggable("enable");
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    });
-  } catch (err) {
-    window.fail_function("The item failed to be inserted.");
-    console.log(err);
-  }
+  COURSEFLOW_APP.tinyLoader.startLoad();
+  $(".ui-draggable").draggable("disable");
+  $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true),
+    allowDifferent: JSON.stringify(true)
+  }).done(function(data) {
+    if (data.action === "posted")
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+    $(".ui-draggable").draggable("enable");
+    COURSEFLOW_APP.tinyLoader.endLoad();
+  }).fail(function(error) {
+    window.fail_function();
+  });
 }
 function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-      nodePk: JSON.stringify(nodeID),
-      outcomePk: JSON.stringify(outcomeID),
-      degree: JSON.stringify(value)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+    nodePk: JSON.stringify(nodeID),
+    outcomePk: JSON.stringify(outcomeID),
+    degree: JSON.stringify(value)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree,
-      {
-        outcomePk: JSON.stringify(outcomePk),
-        objectID: JSON.stringify(outcome2Pk),
-        objectType: JSON.stringify("outcome"),
-        degree: JSON.stringify(degree)
-      }
-    ).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
+    outcomePk: JSON.stringify(outcomePk),
+    objectID: JSON.stringify(outcome2Pk),
+    objectType: JSON.stringify("outcome"),
+    degree: JSON.stringify(degree)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
@@ -47824,57 +47799,53 @@ function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => 
       callBackFunction(data);
     else
       window.fail_function(data.action);
+  }).fail(function(error) {
+    window.fail_function();
   });
 }
 function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data) {
-      console.log("toggleStrategyQuery data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+    weekPk: JSON.stringify(weekPk),
+    is_strategy: JSON.stringify(is_strategy)
+  }).done(function(data) {
+    console.log("toggleStrategyQuery data");
+    console.log(data);
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      objectsetPk: JSON.stringify(objectsetPk),
-      add: JSON.stringify(add2)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    objectsetPk: JSON.stringify(objectsetPk),
+    add: JSON.stringify(add2)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    favourite: JSON.stringify(favourite)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class WorkflowCard extends reactExports.Component {
   constructor(props) {
@@ -48083,47 +48054,42 @@ function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction 
       } else {
         window.fail_function(response.action);
       }
+    }).fail(function(error) {
+      window.fail_function();
     });
   };
-  try {
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax,
-        { workflowPk: itemPkString }
-      );
-    } else {
-      sendPostRequest(
-        COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax,
-        { workflowPk: itemPkString, projectPk: projectPkString }
-      );
-    }
-  } catch (err) {
-    window.fail_function();
+  const itemPkString = JSON.stringify(itemPk);
+  const projectPkString = JSON.stringify(projectID);
+  if (objectType === OBJECT_TYPE.PROJECT) {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+      projectPk: itemPkString
+    });
+  } else if (objectType === OBJECT_TYPE.STRATEGY) {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
+      workflowPk: itemPkString
+    });
+  } else {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
+      workflowPk: itemPkString,
+      projectPk: projectPkString
+    });
   }
 }
 function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    throughType: JSON.stringify(throughType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class UtilityLoader {
   constructor(identifier2) {
@@ -53662,7 +53628,6 @@ function getDialogTitleUtilityClass(slot) {
   return generateUtilityClass("MuiDialogTitle", slot);
 }
 const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-const dialogTitleClasses$1 = dialogTitleClasses;
 const _excluded$E = ["className", "dividers"];
 const useUtilityClasses$z = (ownerState) => {
   const {
@@ -53697,7 +53662,7 @@ const DialogContentRoot = styled$1("div", {
   borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
   borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
 } : {
-  [`.${dialogTitleClasses$1.root} + &`]: {
+  [`.${dialogTitleClasses.root} + &`]: {
     paddingTop: 0
   }
 }));
@@ -63004,15 +62969,14 @@ function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => c
   }
 }
 function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
-      projectPk
-    }).done(function(_data2) {
-      callBackFunction(_data2);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+    projectPk
+  }).done(function(_data2) {
+    console.log("dead");
+    callBackFunction(_data2);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
   $.post(
@@ -63023,7 +62987,9 @@ function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction =
     (_data2) => {
       callBackFunction();
     }
-  );
+  ).fail(function(error) {
+    window.fail_function();
+  });
 }
 function getWorkflowSelectMenuQuery(projectPk, type_filter, get_strategies, self_only, callBackFunction) {
   $.post(
@@ -65374,118 +65340,102 @@ class EditableComponent extends ComponentWithToggleDrop {
 }
 __publicField(EditableComponent, "contextType", WorkFlowConfigContext);
 function removeComment(objectID, objectType, commentPk, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
-      objectID: JSON.stringify(objectID),
-      commentPk: JSON.stringify(commentPk),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
+    objectID: JSON.stringify(objectID),
+    commentPk: JSON.stringify(commentPk),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function removeAllComments(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function addComment(objectID, objectType, text, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      text: JSON.stringify(text)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    text: JSON.stringify(text)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      console.log("getCommentsForObject data");
-      console.log(data);
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    console.log("getCommentsForObject data");
+    console.log(data);
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      permission_user: JSON.stringify(user_id),
-      permission_type: JSON.stringify(permission_type)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.error);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    permission_user: JSON.stringify(user_id),
+    permission_type: JSON.stringify(permission_type)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.error);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
   if (["program", "course", "activity"].indexOf(objectType) >= 0)
     objectType = "workflow";
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
-    console.log("err");
-    console.log(err);
+  $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
+    filter: JSON.stringify(filter)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class CommentBox extends ComponentWithToggleDrop {
   constructor(props) {
@@ -65835,126 +65785,112 @@ class EditableComponentWithComments extends EditableComponent {
 }
 __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
 function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-      weekPk: JSON.stringify(weekPk),
-      position: JSON.stringify(position2),
-      columnPk: JSON.stringify(column2),
-      columnType: JSON.stringify(column_type)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.new_node, {
+    weekPk: JSON.stringify(weekPk),
+    position: JSON.stringify(position2),
+    columnPk: JSON.stringify(column2),
+    columnType: JSON.stringify(column_type)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED) {
+      callBackFunction(data);
+    } else {
+      window.fail_function(data.action);
+    }
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
+    workflowPk: JSON.stringify(workflowPk),
+    objectsetPk: JSON.stringify(object_set_id)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-      workflowPk: JSON.stringify(workflowPk),
-      position: JSON.stringify(position2),
-      objectID: JSON.stringify(strategyPk),
-      objectType: JSON.stringify("workflow")
-    }).done(function(data) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
+    workflowPk: JSON.stringify(workflowPk),
+    position: JSON.stringify(position2),
+    objectID: JSON.stringify(strategyPk),
+    objectType: JSON.stringify("workflow")
+  }).done(function(data) {
+    if (data.action === VERB.POSTED) {
+      callBackFunction(data);
+    } else {
+      window.fail_function(data.action);
+    }
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-      nodePk: JSON.stringify(source_node),
-      objectID: JSON.stringify(target_node),
-      objectType: JSON.stringify("node"),
-      sourcePort: JSON.stringify(source_port),
-      targetPort: JSON.stringify(target_port)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
+    nodePk: JSON.stringify(source_node),
+    objectID: JSON.stringify(target_node),
+    objectType: JSON.stringify("node"),
+    sourcePort: JSON.stringify(source_port),
+    targetPort: JSON.stringify(target_port)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data) {
-      if (data.action === VERB.POSTED)
-        callBackFunction(data);
-      else
-        window.fail_function(data.action);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    throughType: JSON.stringify(throughType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-      projectPk: JSON.stringify(projectPk),
-      term: JSON.stringify(term),
-      title: JSON.stringify(title),
-      translation_plural: JSON.stringify(translation_plural)
-    }).done(function(data) {
-      console.log("addTerminologyQuery query");
-      console.log(data);
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data);
-      } else {
-        window.fail_function(data.action);
-      }
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
+    projectPk: JSON.stringify(projectPk),
+    term: JSON.stringify(term),
+    title: JSON.stringify(title),
+    translation_plural: JSON.stringify(translation_plural)
+  }).done(function(data) {
+    console.log("addTerminologyQuery query");
+    console.log(data);
+    if (data.action === VERB.POSTED) {
+      callBackFunction(data);
+    } else {
+      window.fail_function(data.action);
+    }
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class EditableComponentWithActions extends EditableComponentWithComments {
   constructor() {
@@ -81554,6 +81490,7 @@ class NodeLink extends EditableComponentWithActions {
       return null;
     }
     const portal = reactDomExports.createPortal(
+      // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         NodeLinkSVG,
         {
@@ -82100,7 +82037,6 @@ let Node$1 = (_a = class extends EditableComponentWithActions {
       data_override = { ...data };
     }
     if (!this.state.initial_render) {
-      console.log("here is the issue");
       nodePorts = reactDomExports.createPortal(
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           NodePorts,
@@ -83558,8 +83494,9 @@ class WorkflowLegendUnconnected extends reactExports.Component {
   getSlider() {
     if (this.state.show_slider) {
       return reactDomExports.createPortal(
-        [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Legend") }),
+          ",",
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Slider,
             {
@@ -83567,7 +83504,7 @@ class WorkflowLegendUnconnected extends reactExports.Component {
               toggleAction: this.toggle.bind(this)
             }
           )
-        ],
+        ] }),
         $("#viewbar")[0]
       );
     }
@@ -93954,8 +93891,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent {
       openExportDialog: false,
       openImportDialog: false
     };
-    console.log("this.context.workflowID");
-    console.log(this.context.workflowID);
     this.readOnly = this.context.read_only;
     this.workflowId = this.context.workflowID;
     this.selection_manager = this.context.selection_manager;
@@ -94764,9 +94699,6 @@ class WorkflowComparison extends Workflow {
     this.view_type = viewType;
     this.initial_object_sets = initial_object_sets;
   }
-  // init() {
-  //   this.render($('#container'))
-  // }
   render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type;
     const store = this.store;
@@ -97875,80 +97807,6 @@ const ProfileSettingsPage = ({ formData }) => {
     )
   ] });
 };
-var Home$1 = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
-Object.defineProperty(Home$1, "__esModule", {
-  value: true
-});
-var default_1$a = Home$1.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-}), "Home");
-default_1$a = Home$1.default = _default$a;
-var FolderCopy = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
-Object.defineProperty(FolderCopy, "__esModule", {
-  value: true
-});
-var default_1$9 = FolderCopy.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)([/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
-}, "0"), /* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-}, "1")], "FolderCopy");
-default_1$9 = FolderCopy.default = _default$9;
-var Search = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
-Object.defineProperty(Search, "__esModule", {
-  value: true
-});
-var default_1$8 = Search.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-}), "Search");
-default_1$8 = Search.default = _default$8;
-var HelpRounded = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
-Object.defineProperty(HelpRounded, "__esModule", {
-  value: true
-});
-var default_1$7 = HelpRounded.default = void 0;
-var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-var _jsxRuntime$7 = jsxRuntimeExports;
-var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
-}), "HelpRounded");
-default_1$7 = HelpRounded.default = _default$7;
-var ArrowBack = {};
-var _interopRequireDefault$6 = interopRequireDefaultExports;
-Object.defineProperty(ArrowBack, "__esModule", {
-  value: true
-});
-var default_1$6 = ArrowBack.default = void 0;
-var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-var _jsxRuntime$6 = jsxRuntimeExports;
-var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-}), "ArrowBack");
-default_1$6 = ArrowBack.default = _default$6;
-var Menu2 = {};
-var _interopRequireDefault$5 = interopRequireDefaultExports;
-Object.defineProperty(Menu2, "__esModule", {
-  value: true
-});
-var default_1$5 = Menu2.default = void 0;
-var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
-var _jsxRuntime$5 = jsxRuntimeExports;
-var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
-  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
-}), "Menu");
-default_1$5 = Menu2.default = _default$5;
 const SidebarRootStyles = {
   height: "100%"
 };
@@ -98046,571 +97904,6 @@ const HelpLink = styled$1(List$1)(({ theme: theme2 }) => ({
   paddingTop: theme2.spacing(1),
   borderTop: "1px solid rgba(0, 0, 0, 0.12)"
 }));
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = reactExports.useState(
-    !!sessionStorage.getItem("collapsed_sidebar")
-  );
-  const { isPending, isError: isError2, data } = useQuery({
-    queryKey: ["sidebar"],
-    staleTime: 30 * 1e3,
-    queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then(
-      (response) => response.json()
-    )
-  });
-  if (isPending || isError2) {
-    return null;
-  }
-  function toggleCollapse() {
-    if (!collapsed) {
-      sessionStorage.setItem("collapsed_sidebar", "true");
-    } else {
-      sessionStorage.removeItem("collapsed_sidebar");
-    }
-    setCollapsed(!collapsed);
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarWrap, { collapsed, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Collapse,
-      {
-        color: "primary",
-        size: "small",
-        "aria-label": "collapse sidebar",
-        collapsed,
-        onClick: toggleCollapse,
-        children: collapsed ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$5, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarInner, { elevation: 8, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(LogoWrap, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CFLogo, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { component: "span", children: "CourseFlow" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(MainMenuWrap, { sx: { pt: 0 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          ListItemButton$1,
-          {
-            component: "a",
-            "data-test-id": "panel-home",
-            href: COURSEFLOW_APP.config.home_path,
-            selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.home })
-            ]
-          }
-        ) }),
-        data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            ListItemButton$1,
-            {
-              component: "a",
-              "data-test-id": "panel-my-library",
-              href: COURSEFLOW_APP.config.my_library_path,
-              selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_library })
-              ]
-            }
-          ) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            ListItemButton$1,
-            {
-              component: "a",
-              "data-test-id": "panel-explore",
-              href: COURSEFLOW_APP.config.explore_path,
-              selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.explore })
-              ]
-            }
-          ) })
-        ] }) : null
-      ] }),
-      data.is_teacher && data.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(FavouritesWrap, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesLabel, { variant: "body1", children: COURSEFLOW_APP.strings.favourites }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(List$1, { children: [
-            data.favourites.map((favourite, id) => /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              ListItemButton$1,
-              {
-                component: "a",
-                href: favourite.url,
-                "data-test-id": "panel-favourite",
-                selected: window.location.pathname === favourite.url,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: favourite.title })
-              }
-            ) }, id)),
-            data.favourites.length >= 5 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, sx: { mt: 1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              ListItemButton$1,
-              {
-                component: "a",
-                href: COURSEFLOW_APP.config.my_favourites_path,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  ListItemText$1,
-                  {
-                    primary: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      SeeAllLink,
-                      {
-                        href: COURSEFLOW_APP.config.my_favourites_path,
-                        children: COURSEFLOW_APP.strings.view_all
-                      }
-                    )
-                  }
-                )
-              }
-            ) }) : null
-          ] })
-        ] })
-      ] }) : null,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(HelpLink, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        ListItemButton$1,
-        {
-          component: "a",
-          href: "https://courseflow.freshdesk.com/support/home",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, { color: "primary" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.help_support })
-          ]
-        }
-      ) }) })
-    ] })
-  ] });
-};
-const CFLogo = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "40", height: "40", fill: "none", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { width: "40", height: "40", rx: "3", fill: "#027A4C" }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "mask",
-    {
-      id: "cf-logo-a",
-      style: { maskType: "luminance" },
-      maskUnits: "userSpaceOnUse",
-      x: "0",
-      y: "0",
-      width: "40",
-      height: "40",
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { width: "40", height: "40", rx: "3", fill: "#fff" })
-    }
-  ),
-  /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { mask: "url(#cf-logo-a)", fillRule: "evenodd", clipRule: "evenodd", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "path",
-      {
-        d: "M34.018 1.333 73.37 42.667H-5.333L34.018 1.333Z",
-        fill: "#04BA74"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "path",
-      {
-        d: "m4.685 25.333 39.352 41.334h-78.704L4.685 25.333Z",
-        fill: "#12AE72"
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "m26 18.667 28 30H-2l28-30Z", fill: "#07E08D" })
-  ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "20", cy: "20", r: "11.333", fill: "#fff" }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "mask",
-    {
-      id: "cf-logo-b",
-      style: { maskType: "luminance" },
-      maskUnits: "userSpaceOnUse",
-      x: "13",
-      y: "13",
-      width: "14",
-      height: "14",
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "path",
-        {
-          fillRule: "evenodd",
-          clipRule: "evenodd",
-          d: "M17.957 20.306h1.569c-.462 1.224-.938 2.413-1.572 3.374l.003-3.374Zm-2.37 0h1.76v4.167a4.643 4.643 0 0 1-1.39 1.071 4.51 4.51 0 0 1-.37.162v-5.4Zm4.82-.61c.488-1.294.991-2.547 1.683-3.539v3.54h-1.684Zm4.047 0h-1.759V15.4a4.569 4.569 0 0 1 1.768-1.152v5.455l-.009-.006Zm-.734-5.8a5.37 5.37 0 0 0-1.798 1.468c-.977 1.206-1.576 2.776-2.166 4.334H13.66a.305.305 0 0 0-.274.136.309.309 0 0 0 .234.477h1.358v5.6a5.775 5.775 0 0 1-1.319.141.307.307 0 0 0-.04.613h.04a5.701 5.701 0 0 0 2.569-.553 5.35 5.35 0 0 0 1.786-1.474c.977-1.207 1.578-2.77 2.162-4.332h6.186a.305.305 0 0 0 .305-.306.305.305 0 0 0-.305-.306h-1.295v-5.627a5.929 5.929 0 0 1 1.223-.12.305.305 0 0 0 .304-.307.305.305 0 0 0-.304-.306h-.005a5.707 5.707 0 0 0-2.564.554l-.001.009Z",
-          fill: "#fff"
-        }
-      )
-    }
-  ),
-  /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { mask: "url(#cf-logo-b)", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { fill: "#027A4C", d: "M13.333 13.333h13.333v13.461H13.333z" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "mask",
-      {
-        id: "cf-logo-c",
-        style: { maskType: "luminance" },
-        maskUnits: "userSpaceOnUse",
-        x: "13",
-        y: "13",
-        width: "14",
-        height: "14",
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { fill: "#fff", d: "M13.333 13.333h13.333v13.461H13.333z" })
-      }
-    )
-  ] })
-] });
-var AccountCircle = {};
-var _interopRequireDefault$4 = interopRequireDefaultExports;
-Object.defineProperty(AccountCircle, "__esModule", {
-  value: true
-});
-var default_1$4 = AccountCircle.default = void 0;
-var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
-var _jsxRuntime$4 = jsxRuntimeExports;
-var _default$4 = (0, _createSvgIcon$4.default)(/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
-}), "AccountCircle");
-default_1$4 = AccountCircle.default = _default$4;
-var Logout = {};
-var _interopRequireDefault$3 = interopRequireDefaultExports;
-Object.defineProperty(Logout, "__esModule", {
-  value: true
-});
-var default_1$3 = Logout.default = void 0;
-var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
-var _jsxRuntime$3 = jsxRuntimeExports;
-var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
-  d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-}), "Logout");
-default_1$3 = Logout.default = _default$3;
-var Notifications = {};
-var _interopRequireDefault$2 = interopRequireDefaultExports;
-Object.defineProperty(Notifications, "__esModule", {
-  value: true
-});
-var default_1$2 = Notifications.default = void 0;
-var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
-var _jsxRuntime$2 = jsxRuntimeExports;
-var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
-  d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-}), "Notifications");
-default_1$2 = Notifications.default = _default$2;
-var AddCircle = {};
-var _interopRequireDefault$1 = interopRequireDefaultExports;
-Object.defineProperty(AddCircle, "__esModule", {
-  value: true
-});
-var default_1$1 = AddCircle.default = void 0;
-var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
-var _jsxRuntime$1 = jsxRuntimeExports;
-var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
-  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
-}), "AddCircle");
-default_1$1 = AddCircle.default = _default$1;
-const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme2.spacing(2)
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme2.spacing(1)
-  }
-}));
-const ResetPasswordModal = ({
-  show,
-  handleClose,
-  handleContinue
-}) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-  StyledDialog,
-  {
-    open: show,
-    onClose: handleClose,
-    maxWidth: "xs",
-    "aria-labelledby": "reset-password-modal",
-    children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
-      ] })
-    ]
-  }
-);
-const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-  "& .MuiPaper-root": {
-    backgroundColor: theme2.palette.common.white
-  }
-}));
-const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
-  "& .MuiPaper-root": {
-    minWidth: 220,
-    "& .MuiMenuItem-root": {
-      "& .MuiSvgIcon-root": {
-        marginRight: theme2.spacing(1.5)
-      }
-    }
-  }
-}));
-const NotificationsMenu = styled$1(Popover$1)({
-  "& .MuiPaper-root": {
-    marginLeft: "3em",
-    width: 500
-  }
-});
-const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  paddingTop: theme2.spacing(2),
-  paddingBottom: theme2.spacing(2),
-  paddingLeft: theme2.spacing(3),
-  paddingRight: theme2.spacing(1),
-  borderBottom: `1px solid ${theme2.palette.divider}`,
-  "& .MuiTypography-root:not(a)": {
-    color: "currentColor"
-  }
-}));
-const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
-  paddingTop: 0,
-  paddingBottom: 0,
-  marginBottom: theme2.spacing(1),
-  "& .MuiListItem-root": {
-    padding: 0
-  },
-  "& .MuiListItemButton-root": {
-    paddingTop: theme2.spacing(1.5),
-    paddingBottom: theme2.spacing(1.5),
-    paddingLeft: theme2.spacing(4),
-    borderBottom: `1px solid ${theme2.palette.divider}`
-  },
-  "& .MuiBadge-root": {
-    position: "absolute",
-    left: theme2.spacing(1.7),
-    top: "50%"
-  }
-}));
-function openCreateActionModal(type) {
-  const createUrl = COURSEFLOW_APP.config.create_path[type];
-  COURSEFLOW_APP.tinyLoader.startLoad();
-  getTargetProjectMenu(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location.href = createUrl.replace(
-          "/0/",
-          "/" + response_data.parentID + "/"
-        );
-      }
-    },
-    () => {
-      COURSEFLOW_APP.tinyLoader.endLoad();
-    }
-  );
-}
-const TopBar = () => {
-  const [anchorEl, setAnchorEl] = reactExports.useState(null);
-  const isMenuOpen = Boolean(anchorEl);
-  const [resetPassword, setResetPassword] = reactExports.useState(false);
-  const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
-  const isAddMenuOpen = Boolean(addMenuAnchorEl);
-  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
-  const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
-  const { isPending, isError: isError2, data } = useQuery({
-    queryKey: ["topbar"],
-    staleTime: 30 * 1e3,
-    queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then(
-      (response) => response.json()
-    )
-  });
-  if (isPending || isError2) {
-    return null;
-  }
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleAddMenuOpen = (event) => {
-    setAddMenuAnchorEl(event.currentTarget);
-  };
-  const handleNotificationsMenuOpen = (event) => {
-    setNotificationsMenuAnchorEl(event.currentTarget);
-  };
-  const handleLogout = () => [
-    window.location.replace(COURSEFLOW_APP.config.logout_path)
-  ];
-  const closeAllMenus = () => {
-    setAnchorEl(null);
-    setAddMenuAnchorEl(null);
-    setNotificationsMenuAnchorEl(null);
-  };
-  const handleCreateClick = (resourceType) => {
-    openCreateActionModal(resourceType);
-    closeAllMenus();
-  };
-  const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    StyledMenu,
-    {
-      anchorEl: addMenuAnchorEl,
-      id: "add-menu",
-      keepMounted: true,
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "center"
-      },
-      transformOrigin: {
-        vertical: "top",
-        horizontal: "center"
-      },
-      open: isAddMenuOpen,
-      onClose: closeAllMenus,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("program"), children: COURSEFLOW_APP.strings.program }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("course"), children: COURSEFLOW_APP.strings.course }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("activity"), children: COURSEFLOW_APP.strings.activity })
-      ]
-    }
-  );
-  const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    NotificationsMenu,
-    {
-      anchorEl: notificationsMenuAnchorEl,
-      id: "notifications-menu",
-      keepMounted: true,
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "right"
-      },
-      transformOrigin: {
-        vertical: "top",
-        horizontal: "right"
-      },
-      open: isNotificationsMenuOpen,
-      onClose: closeAllMenus,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: data.notifications.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: data.notifications.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ListItem$1,
-          {
-            alignItems: "flex-start",
-            sx: {
-              backgroundColor: n.unread ? "courseflow.lightest" : null
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
-              n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: `${n.from.split(" ")[0][0]}${n.from.split(" ")[1][0]}` }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                ListItemText$1,
-                {
-                  primary: `${n.from} • ${n.date}`,
-                  secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    Typography$1,
-                    {
-                      sx: { display: "inline" },
-                      component: "span",
-                      variant: "body2",
-                      color: "text.primary",
-                      children: n.text
-                    }
-                  ) })
-                }
-              )
-            ] })
-          },
-          idx
-        )) })
-      ]
-    }
-  );
-  const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    StyledMenu,
-    {
-      anchorEl,
-      id: "account-menu",
-      keepMounted: true,
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "right"
-      },
-      transformOrigin: {
-        vertical: "top",
-        horizontal: "right"
-      },
-      open: isMenuOpen,
-      onClose: closeAllMenus,
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => setResetPassword(true), children: COURSEFLOW_APP.strings.password_reset }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuItem$1,
-          {
-            component: "a",
-            href: data.menus.account.notificationsSettingsUrls,
-            children: COURSEFLOW_APP.strings.notification_settings
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: data.menus.account.daliteUrl, children: [
-          "Go to ",
-          data.menus.account.daliteText
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$3, {}),
-          " ",
-          COURSEFLOW_APP.strings.sign_out
-        ] })
-      ]
-    }
-  );
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
-        data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-          IconButton$1,
-          {
-            size: "large",
-            "aria-label": "add menu",
-            "aria-controls": "add-menu",
-            "aria-haspopup": "true",
-            color: "primary",
-            onClick: handleAddMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$1, {})
-          }
-        ) : null,
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          IconButton$1,
-          {
-            size: "large",
-            "aria-label": data.notifications.unread >= 1 ? `show ${data.notifications.unread} new notifications` : "no new notifications",
-            "aria-controls": "notifications-menu",
-            "aria-haspopup": "true",
-            onClick: handleNotificationsMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: data.notifications.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, {}) })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          IconButton$1,
-          {
-            size: "large",
-            edge: "end",
-            "aria-label": "account of current user",
-            "aria-controls": "account-menu",
-            "aria-haspopup": "true",
-            onClick: handleMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$4, {})
-          }
-        )
-      ] })
-    ] }) }),
-    data.is_teacher && addMenu,
-    notificationsMenu,
-    accountMenu,
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ResetPasswordModal,
-      {
-        show: resetPassword,
-        handleClose: () => {
-          setResetPassword(false);
-        },
-        handleContinue: () => window.location.href = data.menus.account.resetPasswordUrl
-      }
-    )
-  ] });
-};
 class WorkflowCardCondensed extends WorkflowCard {
   constructor() {
     super(...arguments);
@@ -98630,18 +97923,12 @@ class WorkflowCardCondensed extends WorkflowCard {
    *******************************************************/
   render() {
     const data = this.props.workflowData;
-    const css_class = "workflow-for-menu simple-workflow hover-shade " + data.type;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
+      WorkflowCardDumb,
       {
         ref: this.mainDiv,
-        className: css_class,
-        onClick: this.clickAction.bind(this),
-        onMouseDown: (evt) => {
-          evt.preventDefault();
-        },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "workflow-top-row", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.TypeIndicator, {}),
+        className: "workflow-for-menu simple-workflow hover-shade " + data.type,
+        title: /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             WorkflowTitle,
             {
@@ -98651,22 +97938,25 @@ class WorkflowCardCondensed extends WorkflowCard {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(this.ProjectTitle, {})
-        ] })
+        ] }),
+        chips: [this.getTypeChip()],
+        onClick: this.clickAction.bind(this),
+        onMouseDown: (evt) => {
+          evt.preventDefault();
+        }
       }
     );
   }
 }
 function searchAllObjectsQuery(filter, data, callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function(_data2) {
-      callBackFunction(_data2);
-    });
-  } catch (err) {
+  $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+    filter: JSON.stringify(filter),
+    additional_data: JSON.stringify(data)
+  }).done(function(_data2) {
+    callBackFunction(_data2);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class WorkflowFilter extends reactExports.Component {
   constructor(props) {
@@ -99657,6 +98947,8 @@ class ProjectMenu extends reactExports.Component {
    *******************************************************/
   componentDidMount() {
     const component = this;
+    console.log("jquery ");
+    console.log($);
     getWorkflowsForProjectQuery(this.props.data.id, (data) => {
       component.setState({
         workflow_data: data.data_package
@@ -99830,22 +99122,18 @@ class ProjectPage extends reactExports.Component {
   }
 }
 function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
+  $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data) {
+    callBackFunction(data);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
-      callBackFunction(data);
-    });
-  } catch (err) {
+  $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data) {
+    callBackFunction(data);
+  }).fail(function(error) {
     window.fail_function();
-  }
+  });
 }
 class LibraryPage extends reactExports.Component {
   constructor(props) {
@@ -100107,17 +99395,378 @@ const CFAlert = ({
   ] });
 };
 var Close = {};
-var _interopRequireDefault = interopRequireDefaultExports;
+var _interopRequireDefault$a = interopRequireDefaultExports;
 Object.defineProperty(Close, "__esModule", {
   value: true
 });
-var default_1 = Close.default = void 0;
-var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
-var _jsxRuntime = jsxRuntimeExports;
-var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+var default_1$a = Close.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
   d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
-default_1 = Close.default = _default;
+default_1$a = Close.default = _default$a;
+var AccountCircle = {};
+var _interopRequireDefault$9 = interopRequireDefaultExports;
+Object.defineProperty(AccountCircle, "__esModule", {
+  value: true
+});
+var default_1$9 = AccountCircle.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+}), "AccountCircle");
+default_1$9 = AccountCircle.default = _default$9;
+var Logout = {};
+var _interopRequireDefault$8 = interopRequireDefaultExports;
+Object.defineProperty(Logout, "__esModule", {
+  value: true
+});
+var default_1$8 = Logout.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+  d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+}), "Logout");
+default_1$8 = Logout.default = _default$8;
+var Notifications = {};
+var _interopRequireDefault$7 = interopRequireDefaultExports;
+Object.defineProperty(Notifications, "__esModule", {
+  value: true
+});
+var default_1$7 = Notifications.default = void 0;
+var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+var _jsxRuntime$7 = jsxRuntimeExports;
+var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+}), "Notifications");
+default_1$7 = Notifications.default = _default$7;
+var AddCircle = {};
+var _interopRequireDefault$6 = interopRequireDefaultExports;
+Object.defineProperty(AddCircle, "__esModule", {
+  value: true
+});
+var default_1$6 = AddCircle.default = void 0;
+var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+var _jsxRuntime$6 = jsxRuntimeExports;
+var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+}), "AddCircle");
+default_1$6 = AddCircle.default = _default$6;
+const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme2.spacing(2)
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme2.spacing(1)
+  }
+}));
+const ResetPasswordModal = ({
+  show,
+  handleClose,
+  handleContinue
+}) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  StyledDialog,
+  {
+    open: show,
+    onClose: handleClose,
+    maxWidth: "xs",
+    "aria-labelledby": "reset-password-modal",
+    children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
+      ] })
+    ]
+  }
+);
+const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: theme2.palette.common.white
+  }
+}));
+const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
+  "& .MuiPaper-root": {
+    minWidth: 220,
+    "& .MuiMenuItem-root": {
+      "& .MuiSvgIcon-root": {
+        marginRight: theme2.spacing(1.5)
+      }
+    }
+  }
+}));
+const NotificationsMenu = styled$1(Popover$1)({
+  "& .MuiPaper-root": {
+    marginLeft: "3em",
+    width: 500
+  }
+});
+const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  paddingTop: theme2.spacing(2),
+  paddingBottom: theme2.spacing(2),
+  paddingLeft: theme2.spacing(3),
+  paddingRight: theme2.spacing(1),
+  borderBottom: `1px solid ${theme2.palette.divider}`,
+  "& .MuiTypography-root:not(a)": {
+    color: "currentColor"
+  }
+}));
+const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
+  paddingTop: 0,
+  paddingBottom: 0,
+  marginBottom: theme2.spacing(1),
+  "& .MuiListItem-root": {
+    padding: 0
+  },
+  "& .MuiListItemButton-root": {
+    paddingTop: theme2.spacing(1.5),
+    paddingBottom: theme2.spacing(1.5),
+    paddingLeft: theme2.spacing(4),
+    borderBottom: `1px solid ${theme2.palette.divider}`
+  },
+  "& .MuiBadge-root": {
+    position: "absolute",
+    left: theme2.spacing(1.7),
+    top: "50%"
+  }
+}));
+function openCreateActionModal(type) {
+  const createUrl = COURSEFLOW_APP.config.create_path[type];
+  COURSEFLOW_APP.tinyLoader.startLoad();
+  getTargetProjectMenu(
+    -1,
+    (response_data) => {
+      if (response_data.parentID !== null) {
+        window.location.href = createUrl.replace(
+          "/0/",
+          "/" + response_data.parentID + "/"
+        );
+      }
+    },
+    () => {
+      COURSEFLOW_APP.tinyLoader.endLoad();
+    }
+  );
+}
+const TopBar = () => {
+  const [anchorEl, setAnchorEl] = reactExports.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const [resetPassword, setResetPassword] = reactExports.useState(false);
+  const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
+  const isAddMenuOpen = Boolean(addMenuAnchorEl);
+  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
+  const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
+  const { isPending, isError: isError2, data } = useQuery({
+    queryKey: ["topbar"],
+    staleTime: 30 * 1e3,
+    queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then(
+      (response) => response.json()
+    )
+  });
+  if (isPending || isError2) {
+    return null;
+  }
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleAddMenuOpen = (event) => {
+    setAddMenuAnchorEl(event.currentTarget);
+  };
+  const handleNotificationsMenuOpen = (event) => {
+    setNotificationsMenuAnchorEl(event.currentTarget);
+  };
+  const handleLogout = () => [
+    window.location.replace(COURSEFLOW_APP.config.logout_path)
+  ];
+  const closeAllMenus = () => {
+    setAnchorEl(null);
+    setAddMenuAnchorEl(null);
+    setNotificationsMenuAnchorEl(null);
+  };
+  const handleCreateClick = (resourceType) => {
+    openCreateActionModal(resourceType);
+    closeAllMenus();
+  };
+  const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    StyledMenu,
+    {
+      anchorEl: addMenuAnchorEl,
+      id: "add-menu",
+      keepMounted: true,
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "center"
+      },
+      transformOrigin: {
+        vertical: "top",
+        horizontal: "center"
+      },
+      open: isAddMenuOpen,
+      onClose: closeAllMenus,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("program"), children: COURSEFLOW_APP.strings.program }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("course"), children: COURSEFLOW_APP.strings.course }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("activity"), children: COURSEFLOW_APP.strings.activity })
+      ]
+    }
+  );
+  const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    NotificationsMenu,
+    {
+      anchorEl: notificationsMenuAnchorEl,
+      id: "notifications-menu",
+      keepMounted: true,
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "right"
+      },
+      transformOrigin: {
+        vertical: "top",
+        horizontal: "right"
+      },
+      open: isNotificationsMenuOpen,
+      onClose: closeAllMenus,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: data.notifications.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: data.notifications.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ListItem$1,
+          {
+            alignItems: "flex-start",
+            sx: {
+              backgroundColor: n.unread ? "courseflow.lightest" : null
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
+              n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: `${n.from.split(" ")[0][0]}${n.from.split(" ")[1][0]}` }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ListItemText$1,
+                {
+                  primary: `${n.from} • ${n.date}`,
+                  secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    Typography$1,
+                    {
+                      sx: { display: "inline" },
+                      component: "span",
+                      variant: "body2",
+                      color: "text.primary",
+                      children: n.text
+                    }
+                  ) })
+                }
+              )
+            ] })
+          },
+          idx
+        )) })
+      ]
+    }
+  );
+  const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    StyledMenu,
+    {
+      anchorEl,
+      id: "account-menu",
+      keepMounted: true,
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "right"
+      },
+      transformOrigin: {
+        vertical: "top",
+        horizontal: "right"
+      },
+      open: isMenuOpen,
+      onClose: closeAllMenus,
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: data.menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => setResetPassword(true), children: COURSEFLOW_APP.strings.password_reset }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          MenuItem$1,
+          {
+            component: "a",
+            href: data.menus.account.notificationsSettingsUrls,
+            children: COURSEFLOW_APP.strings.notification_settings
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: data.menus.account.daliteUrl, children: [
+          "Go to ",
+          data.menus.account.daliteText
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}),
+          " ",
+          COURSEFLOW_APP.strings.sign_out
+        ] })
+      ]
+    }
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
+        data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          IconButton$1,
+          {
+            size: "large",
+            "aria-label": "add menu",
+            "aria-controls": "add-menu",
+            "aria-haspopup": "true",
+            color: "primary",
+            onClick: handleAddMenuOpen,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+          }
+        ) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          IconButton$1,
+          {
+            size: "large",
+            "aria-label": data.notifications.unread >= 1 ? `show ${data.notifications.unread} new notifications` : "no new notifications",
+            "aria-controls": "notifications-menu",
+            "aria-haspopup": "true",
+            onClick: handleNotificationsMenuOpen,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: data.notifications.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          IconButton$1,
+          {
+            size: "large",
+            edge: "end",
+            "aria-label": "account of current user",
+            "aria-controls": "account-menu",
+            "aria-haspopup": "true",
+            onClick: handleMenuOpen,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
+          }
+        )
+      ] })
+    ] }) }),
+    data.is_teacher && addMenu,
+    notificationsMenu,
+    accountMenu,
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ResetPasswordModal,
+      {
+        show: resetPassword,
+        handleClose: () => {
+          setResetPassword(false);
+        },
+        handleContinue: () => window.location.href = data.menus.account.resetPasswordUrl
+      }
+    )
+  ] });
+};
 const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
   position: "relative",
   padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
@@ -100150,7 +99799,7 @@ const Welcome = ({ hide }) => {
     return null;
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
       "Tell us a bit more about your goals so that we can help you get started."
@@ -100197,7 +99846,7 @@ const Section = ({ header, children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs
   ] }),
   children
 ] });
-const Home = ({ isTeacher, projects, templates }) => {
+const Home$1 = ({ isTeacher, projects, templates }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!projects.length }),
     !!projects.length && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -100721,6 +100370,301 @@ class MouseCursorLoader {
     }
   }
 }
+var Home = {};
+var _interopRequireDefault$5 = interopRequireDefaultExports;
+Object.defineProperty(Home, "__esModule", {
+  value: true
+});
+var default_1$5 = Home.default = void 0;
+var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
+var _jsxRuntime$5 = jsxRuntimeExports;
+var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+  d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+}), "Home");
+default_1$5 = Home.default = _default$5;
+var FolderCopy = {};
+var _interopRequireDefault$4 = interopRequireDefaultExports;
+Object.defineProperty(FolderCopy, "__esModule", {
+  value: true
+});
+var default_1$4 = FolderCopy.default = void 0;
+var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
+var _jsxRuntime$4 = jsxRuntimeExports;
+var _default$4 = (0, _createSvgIcon$4.default)([/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+  d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
+}, "0"), /* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+  d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+}, "1")], "FolderCopy");
+default_1$4 = FolderCopy.default = _default$4;
+var Search = {};
+var _interopRequireDefault$3 = interopRequireDefaultExports;
+Object.defineProperty(Search, "__esModule", {
+  value: true
+});
+var default_1$3 = Search.default = void 0;
+var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
+var _jsxRuntime$3 = jsxRuntimeExports;
+var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
+  d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+}), "Search");
+default_1$3 = Search.default = _default$3;
+var HelpRounded = {};
+var _interopRequireDefault$2 = interopRequireDefaultExports;
+Object.defineProperty(HelpRounded, "__esModule", {
+  value: true
+});
+var default_1$2 = HelpRounded.default = void 0;
+var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
+var _jsxRuntime$2 = jsxRuntimeExports;
+var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
+  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
+}), "HelpRounded");
+default_1$2 = HelpRounded.default = _default$2;
+var ArrowBack = {};
+var _interopRequireDefault$1 = interopRequireDefaultExports;
+Object.defineProperty(ArrowBack, "__esModule", {
+  value: true
+});
+var default_1$1 = ArrowBack.default = void 0;
+var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
+var _jsxRuntime$1 = jsxRuntimeExports;
+var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
+  d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+}), "ArrowBack");
+default_1$1 = ArrowBack.default = _default$1;
+var Menu2 = {};
+var _interopRequireDefault = interopRequireDefaultExports;
+Object.defineProperty(Menu2, "__esModule", {
+  value: true
+});
+var default_1 = Menu2.default = void 0;
+var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
+var _jsxRuntime = jsxRuntimeExports;
+var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+  d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
+}), "Menu");
+default_1 = Menu2.default = _default;
+const Sidebar = () => {
+  const [collapsed, setCollapsed] = reactExports.useState(
+    !!sessionStorage.getItem("collapsed_sidebar")
+  );
+  const { isPending, isError: isError2, data } = useQuery({
+    queryKey: ["sidebar"],
+    staleTime: 30 * 1e3,
+    queryFn: () => fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then(
+      (response) => response.json()
+    )
+  });
+  if (isPending || isError2) {
+    return null;
+  }
+  function toggleCollapse() {
+    if (!collapsed) {
+      sessionStorage.setItem("collapsed_sidebar", "true");
+    } else {
+      sessionStorage.removeItem("collapsed_sidebar");
+    }
+    setCollapsed(!collapsed);
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarWrap, { collapsed, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      Collapse,
+      {
+        color: "primary",
+        size: "small",
+        "aria-label": "collapse sidebar",
+        collapsed,
+        onClick: toggleCollapse,
+        children: collapsed ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$1, {})
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarInner, { elevation: 8, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(LogoWrap, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CFLogo, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { component: "span", children: "CourseFlow" })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(MainMenuWrap, { sx: { pt: 0 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          ListItemButton$1,
+          {
+            component: "a",
+            "data-test-id": "panel-home",
+            href: COURSEFLOW_APP.config.home_path,
+            selected: window.location.pathname === COURSEFLOW_APP.config.home_path,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$5, {}) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.home })
+            ]
+          }
+        ) }),
+        data.is_teacher ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            ListItemButton$1,
+            {
+              component: "a",
+              "data-test-id": "panel-my-library",
+              href: COURSEFLOW_APP.config.my_library_path,
+              selected: window.location.pathname === COURSEFLOW_APP.config.my_library_path,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$4, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.my_library })
+              ]
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            ListItemButton$1,
+            {
+              component: "a",
+              "data-test-id": "panel-explore",
+              href: COURSEFLOW_APP.config.explore_path,
+              selected: window.location.pathname === COURSEFLOW_APP.config.explore_path,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$3, {}) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.explore })
+              ]
+            }
+          ) })
+        ] }) : null
+      ] }),
+      data.is_teacher && data.favourites.length ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FavouritesWrap, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FavouritesLabel, { variant: "body1", children: COURSEFLOW_APP.strings.favourites }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(List$1, { children: [
+            data.favourites.map((favourite, id) => /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ListItemButton$1,
+              {
+                component: "a",
+                href: favourite.url,
+                "data-test-id": "panel-favourite",
+                selected: window.location.pathname === favourite.url,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: favourite.title })
+              }
+            ) }, id)),
+            data.favourites.length >= 5 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, sx: { mt: 1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ListItemButton$1,
+              {
+                component: "a",
+                href: COURSEFLOW_APP.config.my_favourites_path,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ListItemText$1,
+                  {
+                    primary: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      SeeAllLink,
+                      {
+                        href: COURSEFLOW_APP.config.my_favourites_path,
+                        children: COURSEFLOW_APP.strings.view_all
+                      }
+                    )
+                  }
+                )
+              }
+            ) }) : null
+          ] })
+        ] })
+      ] }) : null,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(HelpLink, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        ListItemButton$1,
+        {
+          component: "a",
+          href: "https://courseflow.freshdesk.com/support/home",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, { color: "primary" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemText$1, { primary: COURSEFLOW_APP.strings.help_support })
+          ]
+        }
+      ) }) })
+    ] })
+  ] });
+};
+const CFLogo = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "40", height: "40", fill: "none", children: [
+  /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { width: "40", height: "40", rx: "3", fill: "#027A4C" }),
+  /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "mask",
+    {
+      id: "cf-logo-a",
+      style: { maskType: "luminance" },
+      maskUnits: "userSpaceOnUse",
+      x: "0",
+      y: "0",
+      width: "40",
+      height: "40",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { width: "40", height: "40", rx: "3", fill: "#fff" })
+    }
+  ),
+  /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { mask: "url(#cf-logo-a)", fillRule: "evenodd", clipRule: "evenodd", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "M34.018 1.333 73.37 42.667H-5.333L34.018 1.333Z",
+        fill: "#04BA74"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "m4.685 25.333 39.352 41.334h-78.704L4.685 25.333Z",
+        fill: "#12AE72"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "m26 18.667 28 30H-2l28-30Z", fill: "#07E08D" })
+  ] }),
+  /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "20", cy: "20", r: "11.333", fill: "#fff" }),
+  /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "mask",
+    {
+      id: "cf-logo-b",
+      style: { maskType: "luminance" },
+      maskUnits: "userSpaceOnUse",
+      x: "13",
+      y: "13",
+      width: "14",
+      height: "14",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "path",
+        {
+          fillRule: "evenodd",
+          clipRule: "evenodd",
+          d: "M17.957 20.306h1.569c-.462 1.224-.938 2.413-1.572 3.374l.003-3.374Zm-2.37 0h1.76v4.167a4.643 4.643 0 0 1-1.39 1.071 4.51 4.51 0 0 1-.37.162v-5.4Zm4.82-.61c.488-1.294.991-2.547 1.683-3.539v3.54h-1.684Zm4.047 0h-1.759V15.4a4.569 4.569 0 0 1 1.768-1.152v5.455l-.009-.006Zm-.734-5.8a5.37 5.37 0 0 0-1.798 1.468c-.977 1.206-1.576 2.776-2.166 4.334H13.66a.305.305 0 0 0-.274.136.309.309 0 0 0 .234.477h1.358v5.6a5.775 5.775 0 0 1-1.319.141.307.307 0 0 0-.04.613h.04a5.701 5.701 0 0 0 2.569-.553 5.35 5.35 0 0 0 1.786-1.474c.977-1.207 1.578-2.77 2.162-4.332h6.186a.305.305 0 0 0 .305-.306.305.305 0 0 0-.305-.306h-1.295v-5.627a5.929 5.929 0 0 1 1.223-.12.305.305 0 0 0 .304-.307.305.305 0 0 0-.304-.306h-.005a5.707 5.707 0 0 0-2.564.554l-.001.009Z",
+          fill: "#fff"
+        }
+      )
+    }
+  ),
+  /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { mask: "url(#cf-logo-b)", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { fill: "#027A4C", d: "M13.333 13.333h13.333v13.461H13.333z" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "mask",
+      {
+        id: "cf-logo-c",
+        style: { maskType: "luminance" },
+        maskUnits: "userSpaceOnUse",
+        x: "13",
+        y: "13",
+        width: "14",
+        height: "14",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { fill: "#fff", d: "M13.333 13.333h13.333v13.461H13.333z" })
+      }
+    )
+  ] })
+] });
+const Base = ({ children }) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "topnav hide-print", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "update-notifications" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "right-panel-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "container", className: "body-wrapper", children }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "popup-container" })
+  ] });
+};
 const originalConsoleWarn = console.error;
 console.error = (message, ...args) => {
   if (/unique "key" prop/.test(message)) {
@@ -100734,24 +100678,10 @@ const cache = createCache({
   key: "emotion",
   nonce: window.cf_nonce
 });
-function renderComponents(components) {
-  const reactQueryClient = new QueryClient();
-  components.forEach((c) => {
-    if (!c.component)
-      return;
-    const target = document.querySelector(c.target);
-    if (target) {
-      const componentRoot = createRoot(target);
-      componentRoot.render(
-        /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: reactQueryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ScopedCssBaseline$1, { sx: c.styles, children: c.component }) }) }) })
-      );
-    }
-  });
-}
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     case "home":
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { ...COURSEFLOW_APP.contextData });
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Home$1, { ...COURSEFLOW_APP.contextData });
     case "favorites":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Favourites, {});
     case "library":
@@ -100774,34 +100704,29 @@ const getAppComponent = () => {
       };
       const workflowComparisonWrapper = new Comparison(thisContextData);
       workflowComparisonWrapper.render($("#container"));
-      return null;
+      return true;
     }
     case "workflowDetailView": {
-      console.log("COURSEFLOW_APP.contextData");
-      console.log(COURSEFLOW_APP.contextData);
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData);
       workflowWrapper.init();
-      return null;
+      return true;
     }
   }
   return null;
 };
 window.addEventListener("load", () => {
-  const componentsToRender = [
-    {
-      component: getAppComponent(),
-      target: "#container"
-    },
-    {
-      component: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, {}),
-      target: '[data-component="sidebar"]',
-      styles: SidebarRootStyles
-    },
-    {
-      component: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}),
-      target: '[data-component="topbar"]'
+  const reactQueryClient = new QueryClient();
+  setTimeout(() => {
+    const content = getAppComponent();
+    if (!content)
+      return;
+    const target = document.querySelector("#reactRoot");
+    if (target) {
+      const componentRoot = createRoot(target);
+      componentRoot.render(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: reactQueryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsx(CacheProvider, { value: cache, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ScopedCssBaseline$1, { sx: SidebarRootStyles, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Base, { children: content }) }) }) }) })
+      );
     }
-  ];
-  renderComponents(componentsToRender);
+  }, 0);
 });
 //# sourceMappingURL=courseflow-app.es.js.map

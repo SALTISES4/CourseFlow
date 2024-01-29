@@ -3,6 +3,7 @@
 // app and a place where all the code will be refactored/consolidated into
 // so that we end up with a single entry point into the frontend\
 import Comparison from '@cfPages/Workflow/Comparison'
+import ReactDOM from 'react-dom/client'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -40,9 +41,7 @@ import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsS
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 
 // components
-import Sidebar from '@cfCommonComponents/layout/Sidebar'
 import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
-import TopBar from '@cfModule/components/common/layout/TopBar'
 
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
@@ -58,6 +57,7 @@ import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
+import Base from '@cfModule/base'
 
 // see note in mouseCursorLoader.js
 const tinyLoader = new MouseCursorLoader($('body')[0])
@@ -69,36 +69,10 @@ const cache = createCache({
   nonce: window.cf_nonce
 })
 
-// helper function that wraps each of the components we want to render
-// with an accompanying theme provider/css baseline since we're
-// progressively adding partials into the existing templates
-function renderComponents(components) {
-  const reactQueryClient = new QueryClient()
-
-  components.forEach((c) => {
-    // hackish check for now since we run this on each page load, but don't necessairly have a component
-    // to load into #container
-    // see getAppComponent()
-    if (!c.component) return
-
-    const target = document.querySelector(c.target)
-    if (target) {
-      const componentRoot = createRoot(target)
-      componentRoot.render(
-        <QueryClientProvider client={reactQueryClient}>
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <ScopedCssBaseline sx={c.styles}>{c.component}</ScopedCssBaseline>
-            </ThemeProvider>
-          </CacheProvider>
-        </QueryClientProvider>
-      )
-    }
-  })
-}
-
-// contextData
-// set in python views and prepped in react_renderer.html
+/**
+ * contextData
+ * set in python views and prepped in react_renderer.html
+ */
 const getAppComponent = () => {
   switch (COURSEFLOW_APP.path_id) {
     /*******************************************************
@@ -144,41 +118,55 @@ const getAppComponent = () => {
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments
-      // return <WorkflowComparison {...thisContextData} />
       const workflowComparisonWrapper = new Comparison(thisContextData)
       workflowComparisonWrapper.render($('#container'))
 
-      // const workflowComparisonWrapper = new WorkflowComparison(thisContextData)
-      // workflowComparisonWrapper.init()
-      return null
+      return true
     }
     case 'workflowDetailView': {
-      console.log('COURSEFLOW_APP.contextData')
-      console.log(COURSEFLOW_APP.contextData)
       const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
       workflowWrapper.init()
-      return null
+      return true
     }
   }
   return null
 }
 
 // Register all the components that we're loading ourselves on load
+// using the event listner is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
 window.addEventListener('load', () => {
-  const componentsToRender = [
-    {
-      component: getAppComponent(),
-      target: '#container'
-    },
-    {
-      component: <Sidebar />,
-      target: '[data-component="sidebar"]',
-      styles: SidebarRootStyles
-    },
-    {
-      component: <TopBar />,
-      target: '[data-component="topbar"]'
+  const reactQueryClient = new QueryClient()
+
+  // Delay the execution by 2 seconds
+  setTimeout(() => {
+    const content = getAppComponent()
+    if (!content) return
+
+    const target = document.querySelector('#reactRoot')
+    if (target) {
+      const componentRoot = createRoot(target)
+      componentRoot.render(
+        <QueryClientProvider client={reactQueryClient}>
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <ScopedCssBaseline sx={SidebarRootStyles}>
+                <Base>{content}</Base>
+              </ScopedCssBaseline>
+            </ThemeProvider>
+          </CacheProvider>
+        </QueryClientProvider>
+      )
     }
-  ]
-  renderComponents(componentsToRender)
+  }, 0) // 2000 milliseconds delay
 })
+
+// const content = getAppComponent()
+// ReactDOM.createRoot(document.getElementById('reactRoot') as HTMLElement).render(
+//   <CacheProvider value={cache}>
+//     <ThemeProvider theme={theme}>
+//       <ScopedCssBaseline sx={SidebarRootStyles}>
+//         <Base>{content}</Base>
+//       </ScopedCssBaseline>
+//     </ThemeProvider>
+//   </CacheProvider>
+// )

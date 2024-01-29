@@ -144,9 +144,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openImportDialog: false
     } as StateType
 
-    console.log('this.context.workflowID')
-    console.log(this.context.workflowID)
-
     this.readOnly = this.context.read_only
     this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager
@@ -468,6 +465,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     }
 
+    // static .titlebar .title is in base.html
     return reactDom.createPortal(return_links, $('.titlebar .title')[0])
   }
 

@@ -1,4 +1,4 @@
-import { Fragment, MouseEvent, ReactNode } from 'react'
+import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 
@@ -20,6 +20,8 @@ export type WorklowCardChipType = {
 }
 
 export type PropsType = {
+  ref?: RefObject<HTMLDivElement>
+  className?: string
   title: string | ReactNode
   caption?: string
   isSelected?: boolean

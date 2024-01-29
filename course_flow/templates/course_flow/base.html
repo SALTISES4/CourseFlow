@@ -42,47 +42,15 @@
 </head>
 
 <body id="site">
-<div class="main-wrapper">
-  {% comment %}
-  target for sibebar.jsx
-  {% endcomment %}
-  <div data-component="sidebar"></div>
 
-  {% comment %}
-      @todo see https://course-flow.atlassian.net/browse/COUR-246
-    {% endcomment %}
-  <div id="react-portal-left-panel-extra"></div>
-
-  <div class="main-block">
-    <div data-component="topbar"></div>
-
-    {% comment %}
-        TODO: Convert to React, making sure not to break createPortal calls
-      {% endcomment %}
-    <div class="topnav hide-print">
-      <div class="titlebar">
-        <div class="title"></div>
-      </div>
-      <div id="update-notifications"></div>
-    </div>
-
-    <div class="right-panel-wrapper">
-      <div id="container" class="body-wrapper">
-        {% block container %} {% endblock %}
-      </div>
-      <div id="sidebar-container">
-        {% block sidebar_container %}{% endblock %}
-      </div>
-    </div>
-  </div>
+<div id="reactRoot">
+  <!--react app placeholder -->
 </div>
 
-<div id="popup-container"></div>
-{% block body %} {% endblock %}
 
-<footer>
-  {% block foot %}{% endblock %}
-</footer>
+{% block body %} {% endblock %}
+{% block container %} {% endblock %}
+
 {% csrf_token %}
 </body>
 
