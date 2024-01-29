@@ -68,11 +68,6 @@ export type DuplicateBaseItemQueryResp = {
  * menu.ts
  *******************************************************/
 
-export type HomeQueryResp = {
-  favourites: Workflow[]
-  projects: Workflow[]
-}
-
 export type LibraryQueryResp = {
   data_package: Workflow[]
 }

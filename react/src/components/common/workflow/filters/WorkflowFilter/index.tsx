@@ -5,6 +5,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
 import { searchAllObjectsQuery } from '@XMLHTTP/API/search'
+import { GridWrap } from '@cfModule/mui/helper'
 
 /*******************************************************
  * workflow filter is a shared component that
@@ -432,9 +433,9 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
             <this.Sort />
           </div>
         </div>
-        <div className="menu-grid">
+        <GridWrap>
           <this.WorkflowCards />
-        </div>
+        </GridWrap>
       </>
     )
   }

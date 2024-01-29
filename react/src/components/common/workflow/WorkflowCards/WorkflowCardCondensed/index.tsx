@@ -1,8 +1,6 @@
-import * as React from 'react'
 import { WorkflowTitle } from '@cfUIComponents'
-import WorkflowCard, {
-  WorkflowCardState
-} from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import WorkflowCard, { WorkflowCardState } from '../WorkflowCard'
+import WorkflowCardDumb from '../WorkflowCardDumb'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 
 type PropsType = WorkflowCardProps
@@ -19,7 +17,6 @@ class WorkflowCardCondensed extends WorkflowCard<PropsType, StateType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-
   ProjectTitle = () => {
     if (this.props.workflowData.project_title) {
       return (
@@ -36,28 +33,27 @@ class WorkflowCardCondensed extends WorkflowCard<PropsType, StateType> {
    *******************************************************/
   render() {
     const data = this.props.workflowData
-    const css_class =
-      'workflow-for-menu simple-workflow hover-shade ' + data.type
 
     return (
-      <div
+      <WorkflowCardDumb
         ref={this.mainDiv}
-        className={css_class}
+        className={'workflow-for-menu simple-workflow hover-shade ' + data.type}
+        title={
+          <>
+            <WorkflowTitle
+              no_hyperlink={this.props.no_hyperlink}
+              class_name="workflow-title"
+              data={data}
+            />
+            <this.ProjectTitle />
+          </>
+        }
+        chips={[this.getTypeChip()]}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {
           evt.preventDefault()
         }}
-      >
-        <div className="workflow-top-row">
-          <this.TypeIndicator />
-          <WorkflowTitle
-            no_hyperlink={this.props.no_hyperlink}
-            class_name="workflow-title"
-            data={data}
-          />
-          <this.ProjectTitle />
-        </div>
-      </div>
+      />
     )
   }
 }

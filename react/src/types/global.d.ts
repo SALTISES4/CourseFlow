@@ -76,7 +76,6 @@ interface GetPaths {
   get_disciplines: string
   get_library: string
   get_favourites: string
-  get_home: string
   import: string
   get_public_workflow_data: string
   get_public_workflow_parent_data: string

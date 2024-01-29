@@ -1,26 +1,5 @@
-import {
-  HomeQueryResp,
-  LibraryQueryResp,
-  FavouritesQueryResp
-} from '@XMLHTTP/types/query'
+import { LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
 import { EDiscipline } from '@XMLHTTP/types/entity'
-
-/**
- * Get the home projects
- * @param callBackFunction
- */
-export function getHomeQuery(
-  callBackFunction = (_data: HomeQueryResp) => console.log('success')
-) {
-  $.get(COURSEFLOW_APP.config.get_paths.get_home)
-    .done(function (data: HomeQueryResp) {
-      callBackFunction(data)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
-}
 
 /**
  * Get the library projects

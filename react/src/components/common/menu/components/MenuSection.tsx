@@ -3,6 +3,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { GridWrap } from '@cfModule/mui/helper'
 
 type PropsType = {
   no_hyperlink: any
@@ -123,7 +124,7 @@ class MenuSection extends React.Component<PropsType> {
     return (
       <div className={'section-' + this.props.section_data.object_type}>
         {add_button}
-        <div className="menu-grid">{objects}</div>
+        <GridWrap>{objects}</GridWrap>
       </div>
     )
   }

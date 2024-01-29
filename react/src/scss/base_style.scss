@@ -1126,16 +1126,6 @@ h3.big-space {
   gap: 10px;
 }
 
-.workflow-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 6px;
-  flex-grow: 1;
-  white-space: normal;
-  text-decoration: none;
-  color: $color-text;
-}
-
 .workflow-buttons {
   text-align: right;
   white-space: nowrap;
@@ -2041,4 +2031,8 @@ table tr.total-row {
   right: 8px;
   position: absolute;
   text-align: left;
+}
+
+#reactRoot {
+  height: 100%;
 }

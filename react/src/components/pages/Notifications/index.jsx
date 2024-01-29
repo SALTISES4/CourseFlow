@@ -225,7 +225,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
                     sx={{
                       backgroundColor:
                         n.unread && !pageState.allRead
-                          ? 'primary.lightest'
+                          ? 'courseflow.lightest'
                           : null
                     }}
                     secondaryAction={

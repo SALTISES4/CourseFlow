@@ -33,6 +33,8 @@ import theme from './mui/theme'
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 // pages/views/templates
 import NotificationsPage from '@cfModule/components/pages/Notifications'
 import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
@@ -46,6 +48,7 @@ import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 
 // @WORKFLOW
+import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
@@ -132,6 +135,8 @@ const getAppComponent = () => {
 // Register all the components that we're loading ourselves on load
 // using the event listner is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
 window.addEventListener('load', () => {
+  const reactQueryClient = new QueryClient()
+
   // Delay the execution by 2 seconds
   setTimeout(() => {
     const content = getAppComponent()
@@ -141,13 +146,15 @@ window.addEventListener('load', () => {
     if (target) {
       const componentRoot = createRoot(target)
       componentRoot.render(
-        <CacheProvider value={cache}>
-          <ThemeProvider theme={theme}>
-            <ScopedCssBaseline sx={SidebarRootStyles}>
-              <Base>{content}</Base>
-            </ScopedCssBaseline>
-          </ThemeProvider>
-        </CacheProvider>
+        <QueryClientProvider client={reactQueryClient}>
+          <CacheProvider value={cache}>
+            <ThemeProvider theme={theme}>
+              <ScopedCssBaseline sx={SidebarRootStyles}>
+                <Base>{content}</Base>
+              </ScopedCssBaseline>
+            </ThemeProvider>
+          </CacheProvider>
+        </QueryClientProvider>
       )
     }
   }, 0) // 2000 milliseconds delay

@@ -4,6 +4,7 @@ import { debounce } from '@cfUtility'
 // import $ from 'jquery'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { searchAllObjectsQuery } from '@XMLHTTP/API/search'
+import { GridWrap } from '@cfModule/mui/helper'
 
 type Filter = {
   name: string
@@ -448,37 +449,40 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         // context={this.props.context} @todo this is no used in component, check git history if bad refactor
       />
     ))
-    return [
-      <div className="workflow-filter-top">
-        <div className="flex-middle">
-          <div id="workflow-search" ref={this.searchDOM}>
-            <input
-              placeholder={window.gettext('Search the public library')}
-              onChange={debounce(this.searchChange.bind(this))}
-              id="workflow-search-input"
-              className="search-input"
-            />
-            <span className="material-symbols-rounded">search</span>
+
+    return (
+      <>
+        <div className="workflow-filter-top">
+          <div className="flex-middle">
+            <div id="workflow-search" ref={this.searchDOM}>
+              <input
+                placeholder={window.gettext('Search the public library')}
+                onChange={debounce(this.searchChange.bind(this))}
+                id="workflow-search-input"
+                className="search-input"
+              />
+              <span className="material-symbols-rounded">search</span>
+            </div>
+            <button
+              className="primary-button"
+              disabled={this.state.hasSearched}
+              onClick={this.doSearch.bind(this)}
+            >
+              {window.gettext('Search')}
+            </button>
           </div>
-          <button
-            className="primary-button"
-            disabled={this.state.hasSearched}
-            onClick={this.doSearch.bind(this)}
-          >
-            {window.gettext('Search')}
-          </button>
+          <div className="workflow-filter-sort">
+            {this.getFromSaltise()}
+            {this.getFilter()}
+            {this.getDisciplines()}
+            {this.getSort()}
+          </div>
         </div>
-        <div className="workflow-filter-sort">
-          {this.getFromSaltise()}
-          {this.getFilter()}
-          {this.getDisciplines()}
-          {this.getSort()}
-        </div>
-      </div>,
-      this.getInfo(),
-      <div className="menu-grid">{workflows}</div>,
-      this.getPages()
-    ]
+        {this.getInfo()}
+        <GridWrap>{workflows}</GridWrap>
+        {this.getPages()}
+      </>
+    )
   }
 }
 export default ExploreFilter

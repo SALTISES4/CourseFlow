@@ -317,11 +317,6 @@ def course_flow_patterns():
             name="json-api-get-library",
         ),
         path(
-            "home/get-projects/",
-            views.json_api.menu.json_api_get_home,
-            name="json-api-get-home",
-        ),
-        path(
             "favourites/get-projects/",
             views.json_api.menu.json_api_get_favourites,
             name="json-api-get-favourites",

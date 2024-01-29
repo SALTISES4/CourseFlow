@@ -59,7 +59,6 @@
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       get_library: "{% url 'course_flow:json-api-get-library' %}",
       get_favourites: "{% url 'course_flow:json-api-get-favourites' %}",
-      get_home: "{% url 'course_flow:json-api-get-home' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data:
         "{% url 'course_flow:json-api-get-public-workflow-data' pk='0' %}",
@@ -114,11 +113,6 @@
   // injected by Django to be consumed by React
   COURSEFLOW_APP.show_notification_request = {{ show_notification_request }};
   COURSEFLOW_APP.update_notifications = {{ update_notifications|safe }};
-
-  COURSEFLOW_APP.home = {
-    user_id: {% firstof user.id -1 %},
-    is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
-  };
 
   // common strings used across the app
   COURSEFLOW_APP.strings = {
