@@ -100652,23 +100652,21 @@ Please use another name.` : formatMuiErrorMessage(18));
       )
     ] })
   ] });
-  const Base = ({ children }) => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "topnav hide-print", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "update-notifications" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "right-panel-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "container", className: "body-wrapper", children }) })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "popup-container" })
-    ] });
-  };
+  const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "topnav hide-print", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "update-notifications" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "right-panel-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "container", className: "body-wrapper", children }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "popup-container" })
+  ] });
   const originalConsoleWarn = console.error;
   console.error = (message, ...args) => {
     if (/unique "key" prop/.test(message)) {

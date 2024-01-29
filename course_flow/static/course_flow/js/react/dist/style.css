@@ -1964,6 +1964,10 @@ table tr.total-row {
   right: 8px;
   position: absolute;
   text-align: left;
+}
+
+#reactRoot {
+  height: 100%;
 }#site {
   background: #eeeeee;
 }
