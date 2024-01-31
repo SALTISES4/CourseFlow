@@ -159,12 +159,21 @@ const Sidebar = () => {
                 {data.favourites.length >= 5 ? (
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
-                      component="a"
-                      href={COURSEFLOW_APP.config.my_favourites_path}
+                      component="div"
+                      sx={{
+                        padding: 0
+                      }}
                     >
                       <ListItemText
+                        sx={{
+                          margin: 0
+                        }}
                         primary={
                           <SeeAllLink
+                            sx={{
+                              px: 2,
+                              py: 1
+                            }}
                             href={COURSEFLOW_APP.config.my_favourites_path}
                           >
                             {COURSEFLOW_APP.strings.view_all}

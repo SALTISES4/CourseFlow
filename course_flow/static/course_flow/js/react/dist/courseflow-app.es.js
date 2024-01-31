@@ -100544,14 +100544,23 @@ const Sidebar = () => {
             data.favourites.length >= 5 ? /* @__PURE__ */ jsxRuntimeExports.jsx(ListItem$1, { disablePadding: true, dense: true, sx: { mt: 1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
               ListItemButton$1,
               {
-                component: "a",
-                href: COURSEFLOW_APP.config.my_favourites_path,
+                component: "div",
+                sx: {
+                  padding: 0
+                },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   ListItemText$1,
                   {
+                    sx: {
+                      margin: 0
+                    },
                     primary: /* @__PURE__ */ jsxRuntimeExports.jsx(
                       SeeAllLink,
                       {
+                        sx: {
+                          px: 2,
+                          py: 1
+                        },
                         href: COURSEFLOW_APP.config.my_favourites_path,
                         children: COURSEFLOW_APP.strings.view_all
                       }
