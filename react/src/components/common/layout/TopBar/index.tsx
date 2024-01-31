@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -18,6 +18,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { useQuery } from '@tanstack/react-query'
+import { getNameInitials } from '@cfModule/utility/utilityFunctions'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -202,9 +203,7 @@ const TopBar = () => {
             <ListItemButton component="a" href={n.url}>
               {n.unread && <Badge color="primary" variant="dot" />}
               <ListItemAvatar>
-                <Avatar alt={n.from}>
-                  {`${n.from.split(' ')[0][0]}${n.from.split(' ')[1][0]}`}
-                </Avatar>
+                <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
               </ListItemAvatar>
               <ListItemText
                 primary={n.date}

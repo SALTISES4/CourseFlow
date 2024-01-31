@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
@@ -18,6 +18,7 @@ import DotsIcon from '@mui/icons-material/MoreHoriz'
 
 import { OuterContentWrap } from '@cfModule/mui/helper'
 import { API_POST } from '@XMLHTTP/PostFunctions'
+import { getNameInitials } from '@cfModule/utility/utilityFunctions'
 
 const NotificationsWrap = styled(Box)({})
 
@@ -245,11 +246,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
                         <Badge color="primary" variant="dot" />
                       )}
                       <ListItemAvatar>
-                        <Avatar alt={n.from}>
-                          {`${n.from.split(' ')[0][0]}${
-                            n.from.split(' ')[1][0]
-                          }`}
-                        </Avatar>
+                        <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
                       </ListItemAvatar>
                       <ListItemText
                         primary={n.date}

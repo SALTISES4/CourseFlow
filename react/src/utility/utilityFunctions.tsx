@@ -76,7 +76,7 @@ export function filterThenSortByID<T extends object>(
 }
 
 //capitalize first letter of each word in a string
-export function capWords(str) {
+export function capWords(str: string) {
   return str
     .split(' ')
     .map((entry) => {
@@ -84,6 +84,22 @@ export function capWords(str) {
       return entry[0].toUpperCase() + entry.substr(1)
     })
     .join(' ')
+}
+
+export function getNameInitials(name: string) {
+  if (!name) {
+    return ''
+  }
+
+  const split = name.trim().split(' ')
+  const fName = split[0][0].toUpperCase()
+
+  if (split.length === 1) {
+    return fName
+  }
+
+  const lName = split[1][0].toUpperCase()
+  return `${fName}${lName}`
 }
 
 export function capFirst(str) {

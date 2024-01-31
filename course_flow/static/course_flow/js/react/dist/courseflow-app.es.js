@@ -32054,6 +32054,18 @@ function capWords(str) {
     return entry[0].toUpperCase() + entry.substr(1);
   }).join(" ");
 }
+function getNameInitials(name2) {
+  if (!name2) {
+    return "";
+  }
+  const split = name2.trim().split(" ");
+  const fName = split[0][0].toUpperCase();
+  if (split.length === 1) {
+    return fName;
+  }
+  const lName = split[1][0].toUpperCase();
+  return `${fName}${lName}`;
+}
 function capFirst(str) {
   return str[0].toUpperCase() + str.substr(1);
 }
@@ -97578,7 +97590,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
           ),
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
             n.unread && !pageState.allRead && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: `${n.from.split(" ")[0][0]}${n.from.split(" ")[1][0]}` }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ListItemText$1,
               {
@@ -99647,7 +99659,7 @@ const TopBar = () => {
             },
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
               n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: `${n.from.split(" ")[0][0]}${n.from.split(" ")[1][0]}` }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ListItemText$1,
                 {
