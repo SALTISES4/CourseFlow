@@ -43,16 +43,21 @@ def notifications_view(request):
 
         source_user = UserSerializer(notification.source_user).data
 
+        source_user_name = source_user['username']
+        if (source_user['first_name']):
+            source_user_name = source_user['first_name']
+
+        if (source_user['first_name'] and source_user['last_name']):
+            source_user_name = f"{source_user['first_name']} {source_user['last_name']}"
+
         prepared_notifications.append(
             {
                 "id": notification.id,
                 "unread": notification.is_unread,
                 "url": url,
-                # TODO: Update notification text to omit the user's name
-                # since now it's a separate 'from' field
                 "date": humanize.naturaltime(notification.created_on),
                 "text": notification.text,
-                "from": f"{source_user['first_name']} {source_user['last_name']}",
+                "from": source_user_name,
             }
         )
 
