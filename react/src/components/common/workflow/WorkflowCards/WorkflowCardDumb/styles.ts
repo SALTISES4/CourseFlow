@@ -1,4 +1,3 @@
-import theme from '@cfModule/mui/theme'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
@@ -30,15 +29,15 @@ export const CardFooter = styled('footer')(({ theme }) => ({
   alignItems: 'flex-start'
 }))
 
-export const CardFooterTags = styled('div')({
+export const CardFooterTags = styled('div')(({ theme }) => ({
   display: 'flex',
   gap: `0 ${theme.spacing(1)}`
-})
+}))
 
-export const CardFooterActions = styled('div')({
+export const CardFooterActions = styled('div')(({ theme }) => ({
   marginLeft: 'auto',
   paddingLeft: theme.spacing(2)
-})
+}))
 
 export const CardTitle = styled(Typography)({
   marginBottom: 0,
@@ -97,7 +96,7 @@ CardChip.defaultProps = {
   variant: 'filled'
 }
 
-export const CardFavoriteBtn = styled(IconButton)(({ theme }) => ({
+export const CardFavoriteBtn = styled(IconButton)({
   marginRight: '-8px',
   marginTop: '-8px'
-}))
+})
