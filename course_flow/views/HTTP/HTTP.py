@@ -37,7 +37,7 @@ def registration_view(request):
     else:
         form = RegistrationForm()
     return render(
-        request, "course_flow/registration/registration.html", {"form": form}
+        request, "course_flow/html/registration/registration.html", {"form": form}
     )
 
 
