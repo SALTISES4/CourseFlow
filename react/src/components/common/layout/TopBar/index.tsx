@@ -207,18 +207,16 @@ const TopBar = () => {
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={`${n.from} • ${n.date}`}
+                primary={n.date}
                 secondary={
-                  <>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {n.text}
-                    </Typography>
-                  </>
+                  <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {n.text}
+                  </Typography>
                 }
               />
             </ListItemButton>

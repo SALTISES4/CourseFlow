@@ -252,7 +252,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
-                        primary={`${n.from} • ${n.date}`}
+                        primary={n.date}
                         secondary={
                           <Typography
                             sx={{ display: 'inline' }}

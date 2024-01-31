@@ -97586,7 +97586,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ListItemText$1,
                 {
-                  primary: `${n.from} • ${n.date}`,
+                  primary: n.date,
                   secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
                     Typography$1,
                     {
@@ -99655,8 +99655,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   ListItemText$1,
                   {
-                    primary: `${n.from} • ${n.date}`,
-                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    primary: n.date,
+                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
                       Typography$1,
                       {
                         sx: { display: "inline" },
@@ -99665,7 +99665,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                         color: "text.primary",
                         children: n.text
                       }
-                    ) })
+                    )
                   }
                 )
               ] })

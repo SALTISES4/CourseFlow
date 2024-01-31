@@ -97582,7 +97582,7 @@ const NotificationsPage = ({ notifications, unreadCount }) => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ListItemText$1,
               {
-                primary: `${n.from} • ${n.date}`,
+                primary: n.date,
                 secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Typography$1,
                   {
@@ -99651,8 +99651,8 @@ const TopBar = () => {
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 ListItemText$1,
                 {
-                  primary: `${n.from} • ${n.date}`,
-                  secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  primary: n.date,
+                  secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
                     Typography$1,
                     {
                       sx: { display: "inline" },
@@ -99661,7 +99661,7 @@ const TopBar = () => {
                       color: "text.primary",
                       children: n.text
                     }
-                  ) })
+                  )
                 }
               )
             ] })
