@@ -102953,12 +102953,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
-        COURSEFLOW_APP.update_notifications.id && /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { sx: { pb: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        COURSEFLOW_APP.path_id === "home" && COURSEFLOW_APP.update_notifications.id && /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { sx: { pb: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           CFAlert,
           {
             sx: { mt: 3 },
             severity: "update",
-            title: HtmlReactParser(COURSEFLOW_APP.update_notifications.title),
+            title: HtmlReactParser(
+              COURSEFLOW_APP.update_notifications.title
+            ),
             hideIfCookie: `cf-update-${COURSEFLOW_APP.update_notifications.id}`
           }
         ) }),
