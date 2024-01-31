@@ -47591,6 +47591,15 @@ const CardFavoriteBtn = styled$1(IconButton$1)({
   marginRight: "-8px",
   marginTop: "-8px"
 });
+var CHIP_TYPE = /* @__PURE__ */ ((CHIP_TYPE2) => {
+  CHIP_TYPE2["PROJECT"] = "project";
+  CHIP_TYPE2["PROGRAM"] = "program";
+  CHIP_TYPE2["COURSE"] = "course";
+  CHIP_TYPE2["ACTIVITY"] = "activity";
+  CHIP_TYPE2["TEMPLATE"] = "template";
+  CHIP_TYPE2["DEFAULT"] = "default";
+  return CHIP_TYPE2;
+})(CHIP_TYPE || {});
 function isWorkflowCardChipType(chip) {
   return typeof chip === "object" && chip !== null && "type" in chip && "label" in chip;
 }
@@ -47824,8 +47833,9 @@ class WorkflowCard extends reactExports.Component {
       if (is_strategy) {
         typeText += ` ${window.gettext("strategy")}`;
       }
+      const chipType = type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type;
       return {
-        type,
+        type: chipType,
         label: capWords(typeText)
       };
     });
@@ -47833,7 +47843,7 @@ class WorkflowCard extends reactExports.Component {
       const { workflow } = this;
       if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count !== null && workflow.workflow_count > 0) {
         return {
-          type: "default",
+          type: CHIP_TYPE.DEFAULT,
           label: `${workflow.workflow_count} ${window.gettext(
             `workflow` + (workflow.workflow_count > 1 ? "s" : "")
           )}`

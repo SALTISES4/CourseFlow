@@ -14,8 +14,17 @@ import {
   CardFavoriteBtn
 } from './styles'
 
+export enum CHIP_TYPE {
+  PROJECT = 'project',
+  PROGRAM = 'program',
+  COURSE = 'course',
+  ACTIVITY = 'activity',
+  TEMPLATE = 'template',
+  DEFAULT = 'default'
+}
+
 export type WorklowCardChipType = {
-  type: 'project' | 'program' | 'course' | 'activity' | 'template' | 'default'
+  type: CHIP_TYPE
   label: string
 }
 
