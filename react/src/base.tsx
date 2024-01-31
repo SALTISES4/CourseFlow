@@ -1,6 +1,11 @@
+import { ReactNode } from 'react'
+import HtmlReactParser from 'html-react-parser'
+
+import { OuterContentWrap } from '@cfModule/mui/helper'
+import Alert from '@cfCommonComponents/components/Alert'
 import TopBar from '@cfCommonComponents/layout/TopBar'
 import Sidebar from '@cfCommonComponents/layout/Sidebar'
-import { ReactNode } from 'react'
+
 type PropsType = {
   children: ReactNode
 }
@@ -20,11 +25,21 @@ const Base = ({ children }: PropsType) => (
           <TopBar />
         </div>
 
+        {COURSEFLOW_APP.update_notifications.id && (
+          <OuterContentWrap sx={{ pb: 0 }}>
+            <Alert
+              sx={{ mt: 3 }}
+              severity="update"
+              title={HtmlReactParser(COURSEFLOW_APP.update_notifications.title)}
+              hideIfCookie={`cf-update-${COURSEFLOW_APP.update_notifications.id}`}
+            />
+          </OuterContentWrap>
+        )}
+
         <div className="topnav hide-print">
           <div className="titlebar">
             <div className="title"></div>
           </div>
-          <div id="update-notifications"></div>
         </div>
 
         <div className="right-panel-wrapper">

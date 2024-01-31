@@ -1,13 +1,14 @@
 import { ReactNode, useState } from 'react'
 import Alert, { AlertProps } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
+import CampaignIcon from '@mui/icons-material/Campaign'
 import Typography from '@mui/material/Typography'
 import { styled, SxProps } from '@mui/material/styles'
 import Cookies from 'js-cookie'
 
 type PropsType = {
-  severity: AlertProps['severity']
-  title: string
+  severity: AlertProps['severity'] | 'update'
+  title: string | ReactNode
   subtitle?: string | ReactNode
   hideIfCookie?: string
   onClose?: () => void
@@ -51,8 +52,15 @@ const CFAlert = ({
     return null
   }
 
+  const isUpdateAnnouncement = severity === 'update'
+
   return (
-    <Alert severity={severity} sx={sx} onClose={hideIfCookie && handleClose}>
+    <Alert
+      severity={isUpdateAnnouncement ? 'info' : severity}
+      icon={isUpdateAnnouncement ? <CampaignIcon /> : null}
+      sx={sx}
+      onClose={hideIfCookie && handleClose}
+    >
       <StyledTitle>{title}</StyledTitle>
       {subtitle && <StyledSubtitle variant="body2">{subtitle}</StyledSubtitle>}
     </Alert>

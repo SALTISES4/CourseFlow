@@ -4128,16 +4128,16 @@ var __privateMethod = (obj, member, method) => {
             }
           }
         }
-        var RESERVED = 0;
-        var STRING = 1;
-        var BOOLEANISH_STRING = 2;
-        var BOOLEAN = 3;
-        var OVERLOADED_BOOLEAN = 4;
-        var NUMERIC = 5;
-        var POSITIVE_NUMERIC = 6;
-        var ATTRIBUTE_NAME_START_CHAR = ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
-        var ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + "\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
-        var VALID_ATTRIBUTE_NAME_REGEX = new RegExp("^[" + ATTRIBUTE_NAME_START_CHAR + "][" + ATTRIBUTE_NAME_CHAR + "]*$");
+        var RESERVED2 = 0;
+        var STRING2 = 1;
+        var BOOLEANISH_STRING2 = 2;
+        var BOOLEAN2 = 3;
+        var OVERLOADED_BOOLEAN2 = 4;
+        var NUMERIC2 = 5;
+        var POSITIVE_NUMERIC2 = 6;
+        var ATTRIBUTE_NAME_START_CHAR2 = ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
+        var ATTRIBUTE_NAME_CHAR2 = ATTRIBUTE_NAME_START_CHAR2 + "\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
+        var VALID_ATTRIBUTE_NAME_REGEX = new RegExp("^[" + ATTRIBUTE_NAME_START_CHAR2 + "][" + ATTRIBUTE_NAME_CHAR2 + "]*$");
         var illegalAttributeNameCache = {};
         var validatedAttributeNameCache = {};
         function isAttributeNameSafe(attributeName) {
@@ -4159,7 +4159,7 @@ var __privateMethod = (obj, member, method) => {
         }
         function shouldIgnoreAttribute(name2, propertyInfo, isCustomComponentTag) {
           if (propertyInfo !== null) {
-            return propertyInfo.type === RESERVED;
+            return propertyInfo.type === RESERVED2;
           }
           if (isCustomComponentTag) {
             return false;
@@ -4170,7 +4170,7 @@ var __privateMethod = (obj, member, method) => {
           return false;
         }
         function shouldRemoveAttributeWithWarning(name2, value, propertyInfo, isCustomComponentTag) {
-          if (propertyInfo !== null && propertyInfo.type === RESERVED) {
+          if (propertyInfo !== null && propertyInfo.type === RESERVED2) {
             return false;
           }
           switch (typeof value) {
@@ -4204,23 +4204,23 @@ var __privateMethod = (obj, member, method) => {
           }
           if (propertyInfo !== null) {
             switch (propertyInfo.type) {
-              case BOOLEAN:
+              case BOOLEAN2:
                 return !value;
-              case OVERLOADED_BOOLEAN:
+              case OVERLOADED_BOOLEAN2:
                 return value === false;
-              case NUMERIC:
+              case NUMERIC2:
                 return isNaN(value);
-              case POSITIVE_NUMERIC:
+              case POSITIVE_NUMERIC2:
                 return isNaN(value) || value < 1;
             }
           }
           return false;
         }
-        function getPropertyInfo(name2) {
+        function getPropertyInfo2(name2) {
           return properties2.hasOwnProperty(name2) ? properties2[name2] : null;
         }
-        function PropertyInfoRecord(name2, type, mustUseProperty, attributeName, attributeNamespace, sanitizeURL2, removeEmptyString) {
-          this.acceptsBooleans = type === BOOLEANISH_STRING || type === BOOLEAN || type === OVERLOADED_BOOLEAN;
+        function PropertyInfoRecord2(name2, type, mustUseProperty, attributeName, attributeNamespace, sanitizeURL2, removeEmptyString) {
+          this.acceptsBooleans = type === BOOLEANISH_STRING2 || type === BOOLEAN2 || type === OVERLOADED_BOOLEAN2;
           this.attributeName = attributeName;
           this.attributeNamespace = attributeNamespace;
           this.mustUseProperty = mustUseProperty;
@@ -4230,7 +4230,7 @@ var __privateMethod = (obj, member, method) => {
           this.removeEmptyString = removeEmptyString;
         }
         var properties2 = {};
-        var reservedProps = [
+        var reservedProps2 = [
           "children",
           "dangerouslySetInnerHTML",
           // TODO: This prevents the assignment of defaultValue to regular
@@ -4243,10 +4243,10 @@ var __privateMethod = (obj, member, method) => {
           "suppressHydrationWarning",
           "style"
         ];
-        reservedProps.forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+        reservedProps2.forEach(function(name2) {
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            RESERVED,
+            RESERVED2,
             false,
             // mustUseProperty
             name2,
@@ -4260,9 +4260,9 @@ var __privateMethod = (obj, member, method) => {
         });
         [["acceptCharset", "accept-charset"], ["className", "class"], ["htmlFor", "for"], ["httpEquiv", "http-equiv"]].forEach(function(_ref) {
           var name2 = _ref[0], attributeName = _ref[1];
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName,
@@ -4275,9 +4275,9 @@ var __privateMethod = (obj, member, method) => {
           );
         });
         ["contentEditable", "draggable", "spellCheck", "value"].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            BOOLEANISH_STRING,
+            BOOLEANISH_STRING2,
             false,
             // mustUseProperty
             name2.toLowerCase(),
@@ -4290,9 +4290,9 @@ var __privateMethod = (obj, member, method) => {
           );
         });
         ["autoReverse", "externalResourcesRequired", "focusable", "preserveAlpha"].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            BOOLEANISH_STRING,
+            BOOLEANISH_STRING2,
             false,
             // mustUseProperty
             name2,
@@ -4332,9 +4332,9 @@ var __privateMethod = (obj, member, method) => {
           // Microdata
           "itemScope"
         ].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            BOOLEAN,
+            BOOLEAN2,
             false,
             // mustUseProperty
             name2.toLowerCase(),
@@ -4357,9 +4357,9 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            BOOLEAN,
+            BOOLEAN2,
             true,
             // mustUseProperty
             name2,
@@ -4378,9 +4378,9 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            OVERLOADED_BOOLEAN,
+            OVERLOADED_BOOLEAN2,
             false,
             // mustUseProperty
             name2,
@@ -4401,9 +4401,9 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            POSITIVE_NUMERIC,
+            POSITIVE_NUMERIC2,
             false,
             // mustUseProperty
             name2,
@@ -4416,9 +4416,9 @@ var __privateMethod = (obj, member, method) => {
           );
         });
         ["rowSpan", "start"].forEach(function(name2) {
-          properties2[name2] = new PropertyInfoRecord(
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            NUMERIC,
+            NUMERIC2,
             false,
             // mustUseProperty
             name2.toLowerCase(),
@@ -4430,7 +4430,7 @@ var __privateMethod = (obj, member, method) => {
             false
           );
         });
-        var CAMELIZE = /[\-\:]([a-z])/g;
+        var CAMELIZE2 = /[\-\:]([a-z])/g;
         var capitalize2 = function(token2) {
           return token2[1].toUpperCase();
         };
@@ -4512,10 +4512,10 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(attributeName) {
-          var name2 = attributeName.replace(CAMELIZE, capitalize2);
-          properties2[name2] = new PropertyInfoRecord(
+          var name2 = attributeName.replace(CAMELIZE2, capitalize2);
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName,
@@ -4537,10 +4537,10 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(attributeName) {
-          var name2 = attributeName.replace(CAMELIZE, capitalize2);
-          properties2[name2] = new PropertyInfoRecord(
+          var name2 = attributeName.replace(CAMELIZE2, capitalize2);
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName,
@@ -4558,10 +4558,10 @@ var __privateMethod = (obj, member, method) => {
           // you'll need to set attributeName to name.toLowerCase()
           // instead in the assignment below.
         ].forEach(function(attributeName) {
-          var name2 = attributeName.replace(CAMELIZE, capitalize2);
-          properties2[name2] = new PropertyInfoRecord(
+          var name2 = attributeName.replace(CAMELIZE2, capitalize2);
+          properties2[name2] = new PropertyInfoRecord2(
             name2,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName,
@@ -4572,9 +4572,9 @@ var __privateMethod = (obj, member, method) => {
           );
         });
         ["tabIndex", "crossOrigin"].forEach(function(attributeName) {
-          properties2[attributeName] = new PropertyInfoRecord(
+          properties2[attributeName] = new PropertyInfoRecord2(
             attributeName,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName.toLowerCase(),
@@ -4586,10 +4586,10 @@ var __privateMethod = (obj, member, method) => {
             false
           );
         });
-        var xlinkHref = "xlinkHref";
-        properties2[xlinkHref] = new PropertyInfoRecord(
+        var xlinkHref2 = "xlinkHref";
+        properties2[xlinkHref2] = new PropertyInfoRecord2(
           "xlinkHref",
-          STRING,
+          STRING2,
           false,
           // mustUseProperty
           "xlink:href",
@@ -4599,9 +4599,9 @@ var __privateMethod = (obj, member, method) => {
           false
         );
         ["src", "href", "action", "formAction"].forEach(function(attributeName) {
-          properties2[attributeName] = new PropertyInfoRecord(
+          properties2[attributeName] = new PropertyInfoRecord2(
             attributeName,
-            STRING,
+            STRING2,
             false,
             // mustUseProperty
             attributeName.toLowerCase(),
@@ -4637,7 +4637,7 @@ var __privateMethod = (obj, member, method) => {
               }
               var attributeName = propertyInfo.attributeName;
               var stringValue = null;
-              if (propertyInfo.type === OVERLOADED_BOOLEAN) {
+              if (propertyInfo.type === OVERLOADED_BOOLEAN2) {
                 if (node2.hasAttribute(attributeName)) {
                   var value = node2.getAttribute(attributeName);
                   if (value === "") {
@@ -4655,7 +4655,7 @@ var __privateMethod = (obj, member, method) => {
                 if (shouldRemoveAttribute(name2, expected, propertyInfo, false)) {
                   return node2.getAttribute(attributeName);
                 }
-                if (propertyInfo.type === BOOLEAN) {
+                if (propertyInfo.type === BOOLEAN2) {
                   return expected;
                 }
                 stringValue = node2.getAttribute(attributeName);
@@ -4689,7 +4689,7 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function setValueForProperty(node2, name2, value, isCustomComponentTag) {
-          var propertyInfo = getPropertyInfo(name2);
+          var propertyInfo = getPropertyInfo2(name2);
           if (shouldIgnoreAttribute(name2, propertyInfo, isCustomComponentTag)) {
             return;
           }
@@ -4715,7 +4715,7 @@ var __privateMethod = (obj, member, method) => {
             var propertyName = propertyInfo.propertyName;
             if (value === null) {
               var type = propertyInfo.type;
-              node2[propertyName] = type === BOOLEAN ? false : "";
+              node2[propertyName] = type === BOOLEAN2 ? false : "";
             } else {
               node2[propertyName] = value;
             }
@@ -4727,7 +4727,7 @@ var __privateMethod = (obj, member, method) => {
           } else {
             var _type = propertyInfo.type;
             var attributeValue;
-            if (_type === BOOLEAN || _type === OVERLOADED_BOOLEAN && value === true) {
+            if (_type === BOOLEAN2 || _type === OVERLOADED_BOOLEAN2 && value === true) {
               attributeValue = "";
             } else {
               {
@@ -6154,7 +6154,7 @@ var __privateMethod = (obj, member, method) => {
         var voidElementTags = assign2({
           menuitem: true
         }, omittedCloseTags);
-        var HTML = "__html";
+        var HTML2 = "__html";
         function assertValidProps(tag2, props) {
           if (!props) {
             return;
@@ -6168,7 +6168,7 @@ var __privateMethod = (obj, member, method) => {
             if (props.children != null) {
               throw new Error("Can only set one of `children` or `props.dangerouslySetInnerHTML`.");
             }
-            if (typeof props.dangerouslySetInnerHTML !== "object" || !(HTML in props.dangerouslySetInnerHTML)) {
+            if (typeof props.dangerouslySetInnerHTML !== "object" || !(HTML2 in props.dangerouslySetInnerHTML)) {
               throw new Error("`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.");
             }
           }
@@ -6199,7 +6199,7 @@ var __privateMethod = (obj, member, method) => {
               return true;
           }
         }
-        var possibleStandardNames = {
+        var possibleStandardNames2 = {
           // HTML
           accept: "accept",
           acceptcharset: "acceptCharset",
@@ -6748,8 +6748,8 @@ var __privateMethod = (obj, member, method) => {
           "aria-setsize": 0
         };
         var warnedProperties = {};
-        var rARIA = new RegExp("^(aria)-[" + ATTRIBUTE_NAME_CHAR + "]*$");
-        var rARIACamel = new RegExp("^(aria)[A-Z][" + ATTRIBUTE_NAME_CHAR + "]*$");
+        var rARIA = new RegExp("^(aria)-[" + ATTRIBUTE_NAME_CHAR2 + "]*$");
+        var rARIACamel = new RegExp("^(aria)[A-Z][" + ATTRIBUTE_NAME_CHAR2 + "]*$");
         function validateProperty(tagName, name2) {
           {
             if (hasOwnProperty2.call(warnedProperties, name2) && warnedProperties[name2]) {
@@ -6832,8 +6832,8 @@ var __privateMethod = (obj, member, method) => {
           var warnedProperties$1 = {};
           var EVENT_NAME_REGEX = /^on./;
           var INVALID_EVENT_NAME_REGEX = /^on[^A-Z]/;
-          var rARIA$1 = new RegExp("^(aria)-[" + ATTRIBUTE_NAME_CHAR + "]*$");
-          var rARIACamel$1 = new RegExp("^(aria)[A-Z][" + ATTRIBUTE_NAME_CHAR + "]*$");
+          var rARIA$1 = new RegExp("^(aria)-[" + ATTRIBUTE_NAME_CHAR2 + "]*$");
+          var rARIACamel$1 = new RegExp("^(aria)[A-Z][" + ATTRIBUTE_NAME_CHAR2 + "]*$");
           validateProperty$1 = function(tagName, name2, value, eventRegistry) {
             if (hasOwnProperty2.call(warnedProperties$1, name2) && warnedProperties$1[name2]) {
               return true;
@@ -6890,10 +6890,10 @@ var __privateMethod = (obj, member, method) => {
               warnedProperties$1[name2] = true;
               return true;
             }
-            var propertyInfo = getPropertyInfo(name2);
-            var isReserved = propertyInfo !== null && propertyInfo.type === RESERVED;
-            if (possibleStandardNames.hasOwnProperty(lowerCasedName)) {
-              var standardName = possibleStandardNames[lowerCasedName];
+            var propertyInfo = getPropertyInfo2(name2);
+            var isReserved = propertyInfo !== null && propertyInfo.type === RESERVED2;
+            if (possibleStandardNames2.hasOwnProperty(lowerCasedName)) {
+              var standardName = possibleStandardNames2[lowerCasedName];
               if (standardName !== name2) {
                 error("Invalid DOM property `%s`. Did you mean `%s`?", name2, standardName);
                 warnedProperties$1[name2] = true;
@@ -6920,7 +6920,7 @@ var __privateMethod = (obj, member, method) => {
               warnedProperties$1[name2] = true;
               return false;
             }
-            if ((value === "false" || value === "true") && propertyInfo !== null && propertyInfo.type === BOOLEAN) {
+            if ((value === "false" || value === "true") && propertyInfo !== null && propertyInfo.type === BOOLEAN2) {
               error("Received the string `%s` for the boolean attribute `%s`. %s Did you mean %s={%s}?", value, name2, value === "false" ? "The browser will interpret it as a truthy value." : 'Although this works, it will not work as expected if you pass the string "false".', name2, value);
               warnedProperties$1[name2] = true;
               return true;
@@ -11267,10 +11267,10 @@ var __privateMethod = (obj, member, method) => {
         function getPossibleStandardName(propName) {
           {
             var lowerCasedName = propName.toLowerCase();
-            if (!possibleStandardNames.hasOwnProperty(lowerCasedName)) {
+            if (!possibleStandardNames2.hasOwnProperty(lowerCasedName)) {
               return null;
             }
-            return possibleStandardNames[lowerCasedName] || null;
+            return possibleStandardNames2[lowerCasedName] || null;
           }
         }
         function diffHydratedProperties(domElement, tag2, rawProps, parentNamespace, rootContainerElement, isConcurrentMode, shouldWarnDev) {
@@ -11376,7 +11376,7 @@ var __privateMethod = (obj, member, method) => {
             } else if (shouldWarnDev && true && // Convince Flow we've calculated it (it's DEV-only in this method.)
             typeof isCustomComponentTag === "boolean") {
               var serverValue = void 0;
-              var propertyInfo = isCustomComponentTag && enableCustomElementPropertySupport ? null : getPropertyInfo(propKey);
+              var propertyInfo = isCustomComponentTag && enableCustomElementPropertySupport ? null : getPropertyInfo2(propKey);
               if (rawProps[SUPPRESS_HYDRATION_WARNING] === true)
                 ;
               else if (propKey === SUPPRESS_CONTENT_EDITABLE_WARNING || propKey === SUPPRESS_HYDRATION_WARNING || // Controlled attributes are not validated
@@ -32366,10 +32366,10 @@ var __privateMethod = (obj, member, method) => {
     return VERB2;
   })(VERB || {});
   var reactExports = requireReact();
-  const React = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$1 = /* @__PURE__ */ _mergeNamespaces({
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
     __proto__: null,
-    default: React
+    default: React$1
   }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
@@ -34349,7 +34349,7 @@ ${latestSubscriptionCallbackError.current.stack}
       payload: { id, hidden }
     };
   });
-  const WorkFlowConfigContext = React.createContext(
+  const WorkFlowConfigContext = React$1.createContext(
     {}
   );
   const WorkFlowConfigProvider = ({ children, initialValue }) => {
@@ -36767,8 +36767,8 @@ ${latestSubscriptionCallbackError.current.stack}
       return target;
     };
   }
-  var __assign = function() {
-    __assign = Object.assign || function(t) {
+  var __assign$1 = function() {
+    __assign$1 = Object.assign || function(t) {
       for (var s, i2 = 1, n = arguments.length; i2 < n; i2++) {
         s = arguments[i2];
         for (var p in s)
@@ -36777,7 +36777,7 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return t;
     };
-    return __assign.apply(this, arguments);
+    return __assign$1.apply(this, arguments);
   };
   var __spreadArrays = function() {
     for (var s = 0, i2 = 0, il = arguments.length; i2 < il; i2++)
@@ -36790,7 +36790,7 @@ ${latestSubscriptionCallbackError.current.stack}
   var DEBOUNCED_CHANGE_MS = 300;
   function FlatpickrInstance(element, instanceConfig) {
     var self2 = {
-      config: __assign(__assign({}, defaults), flatpickr.defaultConfig),
+      config: __assign$1(__assign$1({}, defaults), flatpickr.defaultConfig),
       l10n: english
     };
     self2.parseDate = createDateParser({ config: self2.config, l10n: self2.l10n });
@@ -37919,7 +37919,7 @@ ${latestSubscriptionCallbackError.current.stack}
         "enableSeconds",
         "disableMobile"
       ];
-      var userConfig = __assign(__assign({}, JSON.parse(JSON.stringify(element.dataset || {}))), instanceConfig);
+      var userConfig = __assign$1(__assign$1({}, JSON.parse(JSON.stringify(element.dataset || {}))), instanceConfig);
       var formats2 = {};
       self2.config.parseDate = userConfig.parseDate;
       self2.config.formatDate = userConfig.formatDate;
@@ -38010,13 +38010,13 @@ ${latestSubscriptionCallbackError.current.stack}
     function setupLocale() {
       if (typeof self2.config.locale !== "object" && typeof flatpickr.l10ns[self2.config.locale] === "undefined")
         self2.config.errorHandler(new Error("flatpickr: invalid locale " + self2.config.locale));
-      self2.l10n = __assign(__assign({}, flatpickr.l10ns.default), typeof self2.config.locale === "object" ? self2.config.locale : self2.config.locale !== "default" ? flatpickr.l10ns[self2.config.locale] : void 0);
+      self2.l10n = __assign$1(__assign$1({}, flatpickr.l10ns.default), typeof self2.config.locale === "object" ? self2.config.locale : self2.config.locale !== "default" ? flatpickr.l10ns[self2.config.locale] : void 0);
       tokenRegex.D = "(" + self2.l10n.weekdays.shorthand.join("|") + ")";
       tokenRegex.l = "(" + self2.l10n.weekdays.longhand.join("|") + ")";
       tokenRegex.M = "(" + self2.l10n.months.shorthand.join("|") + ")";
       tokenRegex.F = "(" + self2.l10n.months.longhand.join("|") + ")";
       tokenRegex.K = "(" + self2.l10n.amPM[0] + "|" + self2.l10n.amPM[1] + "|" + self2.l10n.amPM[0].toLowerCase() + "|" + self2.l10n.amPM[1].toLowerCase() + ")";
-      var userConfig = __assign(__assign({}, instanceConfig), JSON.parse(JSON.stringify(element.dataset || {})));
+      var userConfig = __assign$1(__assign$1({}, instanceConfig), JSON.parse(JSON.stringify(element.dataset || {})));
       if (userConfig.time_24hr === void 0 && flatpickr.defaultConfig.time_24hr === void 0) {
         self2.config.time_24hr = self2.l10n.time_24hr;
       }
@@ -38525,14 +38525,14 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   flatpickr.defaultConfig = {};
   flatpickr.l10ns = {
-    en: __assign({}, english),
-    default: __assign({}, english)
+    en: __assign$1({}, english),
+    default: __assign$1({}, english)
   };
   flatpickr.localize = function(l10n) {
-    flatpickr.l10ns.default = __assign(__assign({}, flatpickr.l10ns.default), l10n);
+    flatpickr.l10ns.default = __assign$1(__assign$1({}, flatpickr.l10ns.default), l10n);
   };
   flatpickr.setDefaults = function(config2) {
-    flatpickr.defaultConfig = __assign(__assign({}, flatpickr.defaultConfig), config2);
+    flatpickr.defaultConfig = __assign$1(__assign$1({}, flatpickr.defaultConfig), config2);
   };
   flatpickr.parseDate = createDateParser({});
   flatpickr.formatDate = createDateFormatter({});
@@ -39807,7 +39807,7 @@ ${latestSubscriptionCallbackError.current.stack}
   }
   const refType = PropTypes.oneOfType([PropTypes.func, PropTypes.object]);
   const refType$1 = refType;
-  function capitalize(string) {
+  function capitalize$2(string) {
     if (typeof string !== "string") {
       throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`capitalize(string)\` expects a string argument.` : formatMuiErrorMessage(7));
     }
@@ -39910,7 +39910,7 @@ ${latestSubscriptionCallbackError.current.stack}
     }, [defaultId]);
     return id;
   }
-  const maybeReactUseId = React$1["useId".toString()];
+  const maybeReactUseId = React$2["useId".toString()];
   function useId(idOverride) {
     if (maybeReactUseId !== void 0) {
       const reactId = maybeReactUseId();
@@ -40386,7 +40386,7 @@ ${latestSubscriptionCallbackError.current.stack}
   function hash(value, length2) {
     return charat(value, 0) ^ 45 ? (((length2 << 2 ^ charat(value, 0)) << 2 ^ charat(value, 1)) << 2 ^ charat(value, 2)) << 2 ^ charat(value, 3) : 0;
   }
-  function trim(value) {
+  function trim$1(value) {
     return value.trim();
   }
   function match(value, pattern) {
@@ -40422,11 +40422,11 @@ ${latestSubscriptionCallbackError.current.stack}
   var position = 0;
   var character = 0;
   var characters = "";
-  function node(value, root, parent, type, props, children, length2) {
+  function node$1(value, root, parent, type, props, children, length2) {
     return { value, root, parent, type, props, children, line, column: column$1, length: length2, return: "" };
   }
   function copy(root, props) {
-    return assign$1(node("", null, null, "", null, null, 0), root, { length: -root.length }, props);
+    return assign$1(node$1("", null, null, "", null, null, 0), root, { length: -root.length }, props);
   }
   function char() {
     return character;
@@ -40491,7 +40491,7 @@ ${latestSubscriptionCallbackError.current.stack}
     return characters = "", value;
   }
   function delimit(type) {
-    return trim(slice(position - 1, delimiter(type === 91 ? type + 2 : type === 40 ? type + 1 : type)));
+    return trim$1(slice(position - 1, delimiter(type === 91 ? type + 2 : type === 40 ? type + 1 : type)));
   }
   function whitespace(type) {
     while (character = peek())
@@ -40661,15 +40661,15 @@ ${latestSubscriptionCallbackError.current.stack}
     var size2 = sizeof(rule);
     for (var i2 = 0, j = 0, k = 0; i2 < index; ++i2)
       for (var x = 0, y = substr(value, post + 1, post = abs$2(j = points[i2])), z = value; x < size2; ++x)
-        if (z = trim(j > 0 ? rule[x] + " " + y : replace(y, /&\f/g, rule[x])))
+        if (z = trim$1(j > 0 ? rule[x] + " " + y : replace(y, /&\f/g, rule[x])))
           props[k++] = z;
-    return node(value, root, parent, offset === 0 ? RULESET : type, props, children, length2);
+    return node$1(value, root, parent, offset === 0 ? RULESET : type, props, children, length2);
   }
   function comment(value, root, parent) {
-    return node(value, root, parent, COMMENT, from(char()), substr(value, 2, -2), 0);
+    return node$1(value, root, parent, COMMENT, from(char()), substr(value, 2, -2), 0);
   }
   function declaration(value, root, parent, length2) {
-    return node(value, root, parent, DECLARATION, substr(value, 0, length2), substr(value, length2 + 1, -1), length2);
+    return node$1(value, root, parent, DECLARATION, substr(value, 0, length2), substr(value, length2 + 1, -1), length2);
   }
   function serialize(children, callback) {
     var output = "";
@@ -41476,7 +41476,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   var syncFallback = function syncFallback2(create2) {
     return create2();
   };
-  var useInsertionEffect = React$1["useInsertionEffect"] ? React$1["useInsertionEffect"] : false;
+  var useInsertionEffect = React$2["useInsertionEffect"] ? React$2["useInsertionEffect"] : false;
   var useInsertionEffectAlwaysWithSyncFallback = useInsertionEffect || syncFallback;
   var useInsertionEffectWithLayoutFallback = useInsertionEffect || reactExports.useLayoutEffect;
   var hasOwnProperty$1 = {}.hasOwnProperty;
@@ -42442,7 +42442,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       const styleFromPropValue = (propValueFinal) => {
         let value = getStyleValue$1(themeMapping, transform, propValueFinal);
         if (propValueFinal === value && typeof propValueFinal === "string") {
-          value = getStyleValue$1(themeMapping, transform, `${prop}${propValueFinal === "default" ? "" : capitalize(propValueFinal)}`, propValueFinal);
+          value = getStyleValue$1(themeMapping, transform, `${prop}${propValueFinal === "default" ? "" : capitalize$2(propValueFinal)}`, propValueFinal);
         }
         if (cssProperty === false) {
           return value;
@@ -42468,7 +42468,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       return cache2[arg];
     };
   }
-  const properties = {
+  const properties$1 = {
     m: "margin",
     p: "padding"
   };
@@ -42495,7 +42495,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       }
     }
     const [a, b] = prop.split("");
-    const property = properties[a];
+    const property = properties$1[a];
     const direction = directions[b] || "";
     return Array.isArray(direction) ? direction.map((dir) => property + dir) : [property + direction];
   });
@@ -43178,7 +43178,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       const styleFromPropValue = (propValueFinal) => {
         let value = getStyleValue$1(themeMapping, transform, propValueFinal);
         if (propValueFinal === value && typeof propValueFinal === "string") {
-          value = getStyleValue$1(themeMapping, transform, `${prop}${propValueFinal === "default" ? "" : capitalize(propValueFinal)}`, propValueFinal);
+          value = getStyleValue$1(themeMapping, transform, `${prop}${propValueFinal === "default" ? "" : capitalize$2(propValueFinal)}`, propValueFinal);
         }
         if (cssProperty === false) {
           return value;
@@ -43398,9 +43398,9 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     let classKey = variant || "";
     Object.keys(other).sort().forEach((key) => {
       if (key === "color") {
-        classKey += isEmpty$3(classKey) ? props[key] : capitalize(props[key]);
+        classKey += isEmpty$3(classKey) ? props[key] : capitalize$2(props[key]);
       } else {
-        classKey += `${isEmpty$3(classKey) ? key : capitalize(key)}${capitalize(props[key].toString())}`;
+        classKey += `${isEmpty$3(classKey) ? key : capitalize$2(key)}${capitalize$2(props[key].toString())}`;
       }
     });
     return classKey;
@@ -43656,7 +43656,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         if (process.env.NODE_ENV !== "production") {
           let displayName;
           if (componentName) {
-            displayName = `${componentName}${capitalize(componentSlot || "")}`;
+            displayName = `${componentName}${capitalize$2(componentSlot || "")}`;
           }
           if (displayName === void 0) {
             displayName = `Styled(${getDisplayName(tag2)})`;
@@ -44829,7 +44829,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       classes
     } = ownerState;
     const slots = {
-      root: ["root", color2 !== "inherit" && `color${capitalize(color2)}`, `fontSize${capitalize(fontSize)}`]
+      root: ["root", color2 !== "inherit" && `color${capitalize$2(color2)}`, `fontSize${capitalize$2(fontSize)}`]
     };
     return composeClasses(slots, getSvgIconUtilityClass, classes);
   };
@@ -44840,7 +44840,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.color !== "inherit" && styles2[`color${capitalize(ownerState.color)}`], styles2[`fontSize${capitalize(ownerState.fontSize)}`]];
+      return [styles2.root, ownerState.color !== "inherit" && styles2[`color${capitalize$2(ownerState.color)}`], styles2[`fontSize${capitalize$2(ownerState.fontSize)}`]];
     }
   })(({
     theme: theme2,
@@ -45018,7 +45018,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   const utils = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
-    capitalize,
+    capitalize: capitalize$2,
     createChainedFunction,
     createSvgIcon,
     debounce,
@@ -45058,29 +45058,29 @@ Please use another name.` : formatMuiErrorMessage(18));
     })(createSvgIcon$1);
     return createSvgIcon$1;
   }
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$e = interopRequireDefaultExports;
   Object.defineProperty(Star, "__esModule", {
     value: true
   });
-  var default_1$d = Star.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$e = Star.default = void 0;
+  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+  var _jsxRuntime$e = jsxRuntimeExports;
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
     d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
   }), "Star");
-  default_1$d = Star.default = _default$d;
+  default_1$e = Star.default = _default$e;
   var StarOutline = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$d = interopRequireDefaultExports;
   Object.defineProperty(StarOutline, "__esModule", {
     value: true
   });
-  var default_1$c = StarOutline.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$d = StarOutline.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
     d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
   }), "StarOutline");
-  default_1$c = StarOutline.default = _default$c;
+  default_1$d = StarOutline.default = _default$d;
   function useTheme() {
     const theme2 = useTheme$2(defaultTheme$2);
     if (process.env.NODE_ENV !== "production") {
@@ -45181,7 +45181,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     exitDone: PropTypes.string,
     exitActive: PropTypes.string
   })]) : null;
-  const TransitionGroupContext = React.createContext(null);
+  const TransitionGroupContext = React$1.createContext(null);
   var forceReflow = function forceReflow2(node2) {
     return node2.scrollTop;
   };
@@ -45409,13 +45409,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       var childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
       return (
         // allows for nested Transitions
-        /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
+        /* @__PURE__ */ React$1.createElement(TransitionGroupContext.Provider, {
           value: null
-        }, typeof children === "function" ? children(status, childProps) : React.cloneElement(React.Children.only(children), childProps))
+        }, typeof children === "function" ? children(status, childProps) : React$1.cloneElement(React$1.Children.only(children), childProps))
       );
     };
     return Transition2;
-  }(React.Component);
+  }(React$1.Component);
   Transition.contextType = TransitionGroupContext;
   Transition.propTypes = process.env.NODE_ENV !== "production" ? {
     /**
@@ -45780,16 +45780,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       delete props.enter;
       delete props.exit;
       if (Component === null) {
-        return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
+        return /* @__PURE__ */ React$1.createElement(TransitionGroupContext.Provider, {
           value: contextValue
         }, children);
       }
-      return /* @__PURE__ */ React.createElement(TransitionGroupContext.Provider, {
+      return /* @__PURE__ */ React$1.createElement(TransitionGroupContext.Provider, {
         value: contextValue
-      }, /* @__PURE__ */ React.createElement(Component, props, children));
+      }, /* @__PURE__ */ React$1.createElement(Component, props, children));
     };
     return TransitionGroup2;
-  }(React.Component);
+  }(React$1.Component);
   TransitionGroup.propTypes = process.env.NODE_ENV !== "production" ? {
     /**
      * `<TransitionGroup>` renders a `<div>` by default. You can change this
@@ -46679,11 +46679,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant
     } = ownerState;
     const slots = {
-      root: ["root", variant, disabled && "disabled", `size${capitalize(size2)}`, `color${capitalize(color2)}`, clickable && "clickable", clickable && `clickableColor${capitalize(color2)}`, onDelete && "deletable", onDelete && `deletableColor${capitalize(color2)}`, `${variant}${capitalize(color2)}`],
-      label: ["label", `label${capitalize(size2)}`],
-      avatar: ["avatar", `avatar${capitalize(size2)}`, `avatarColor${capitalize(color2)}`],
-      icon: ["icon", `icon${capitalize(size2)}`, `iconColor${capitalize(iconColor)}`],
-      deleteIcon: ["deleteIcon", `deleteIcon${capitalize(size2)}`, `deleteIconColor${capitalize(color2)}`, `deleteIcon${capitalize(variant)}Color${capitalize(color2)}`]
+      root: ["root", variant, disabled && "disabled", `size${capitalize$2(size2)}`, `color${capitalize$2(color2)}`, clickable && "clickable", clickable && `clickableColor${capitalize$2(color2)}`, onDelete && "deletable", onDelete && `deletableColor${capitalize$2(color2)}`, `${variant}${capitalize$2(color2)}`],
+      label: ["label", `label${capitalize$2(size2)}`],
+      avatar: ["avatar", `avatar${capitalize$2(size2)}`, `avatarColor${capitalize$2(color2)}`],
+      icon: ["icon", `icon${capitalize$2(size2)}`, `iconColor${capitalize$2(iconColor)}`],
+      deleteIcon: ["deleteIcon", `deleteIcon${capitalize$2(size2)}`, `deleteIconColor${capitalize$2(color2)}`, `deleteIcon${capitalize$2(variant)}Color${capitalize$2(color2)}`]
     };
     return composeClasses(slots, getChipUtilityClass, classes);
   };
@@ -46705,24 +46705,24 @@ Please use another name.` : formatMuiErrorMessage(18));
       return [{
         [`& .${chipClasses$1.avatar}`]: styles2.avatar
       }, {
-        [`& .${chipClasses$1.avatar}`]: styles2[`avatar${capitalize(size2)}`]
+        [`& .${chipClasses$1.avatar}`]: styles2[`avatar${capitalize$2(size2)}`]
       }, {
-        [`& .${chipClasses$1.avatar}`]: styles2[`avatarColor${capitalize(color2)}`]
+        [`& .${chipClasses$1.avatar}`]: styles2[`avatarColor${capitalize$2(color2)}`]
       }, {
         [`& .${chipClasses$1.icon}`]: styles2.icon
       }, {
-        [`& .${chipClasses$1.icon}`]: styles2[`icon${capitalize(size2)}`]
+        [`& .${chipClasses$1.icon}`]: styles2[`icon${capitalize$2(size2)}`]
       }, {
-        [`& .${chipClasses$1.icon}`]: styles2[`iconColor${capitalize(iconColor)}`]
+        [`& .${chipClasses$1.icon}`]: styles2[`iconColor${capitalize$2(iconColor)}`]
       }, {
         [`& .${chipClasses$1.deleteIcon}`]: styles2.deleteIcon
       }, {
-        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize(size2)}`]
+        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize$2(size2)}`]
       }, {
-        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIconColor${capitalize(color2)}`]
+        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIconColor${capitalize$2(color2)}`]
       }, {
-        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize(variant)}Color${capitalize(color2)}`]
-      }, styles2.root, styles2[`size${capitalize(size2)}`], styles2[`color${capitalize(color2)}`], clickable && styles2.clickable, clickable && color2 !== "default" && styles2[`clickableColor${capitalize(color2)})`], onDelete && styles2.deletable, onDelete && color2 !== "default" && styles2[`deletableColor${capitalize(color2)}`], styles2[variant], styles2[`${variant}${capitalize(color2)}`]];
+        [`& .${chipClasses$1.deleteIcon}`]: styles2[`deleteIcon${capitalize$2(variant)}Color${capitalize$2(color2)}`]
+      }, styles2.root, styles2[`size${capitalize$2(size2)}`], styles2[`color${capitalize$2(color2)}`], clickable && styles2.clickable, clickable && color2 !== "default" && styles2[`clickableColor${capitalize$2(color2)})`], onDelete && styles2.deletable, onDelete && color2 !== "default" && styles2[`deletableColor${capitalize$2(color2)}`], styles2[variant], styles2[`${variant}${capitalize$2(color2)}`]];
     }
   })(({
     theme: theme2,
@@ -46901,7 +46901,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         size: size2
       } = ownerState;
-      return [styles2.label, styles2[`label${capitalize(size2)}`]];
+      return [styles2.label, styles2[`label${capitalize$2(size2)}`]];
     }
   })(({
     ownerState
@@ -47159,7 +47159,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       classes
     } = ownerState;
     const slots = {
-      root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
+      root: ["root", variant, ownerState.align !== "inherit" && `align${capitalize$2(align)}`, gutterBottom && "gutterBottom", noWrap && "noWrap", paragraph && "paragraph"]
     };
     return composeClasses(slots, getTypographyUtilityClass, classes);
   };
@@ -47170,7 +47170,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
+      return [styles2.root, ownerState.variant && styles2[ownerState.variant], ownerState.align !== "inherit" && styles2[`align${capitalize$2(ownerState.align)}`], ownerState.noWrap && styles2.noWrap, ownerState.gutterBottom && styles2.gutterBottom, ownerState.paragraph && styles2.paragraph];
     }
   })(({
     theme: theme2,
@@ -47344,7 +47344,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       size: size2
     } = ownerState;
     const slots = {
-      root: ["root", disabled && "disabled", color2 !== "default" && `color${capitalize(color2)}`, edge && `edge${capitalize(edge)}`, `size${capitalize(size2)}`]
+      root: ["root", disabled && "disabled", color2 !== "default" && `color${capitalize$2(color2)}`, edge && `edge${capitalize$2(edge)}`, `size${capitalize$2(size2)}`]
     };
     return composeClasses(slots, getIconButtonUtilityClass, classes);
   };
@@ -47355,7 +47355,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`], ownerState.edge && styles2[`edge${capitalize(ownerState.edge)}`], styles2[`size${capitalize(ownerState.size)}`]];
+      return [styles2.root, ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`], ownerState.edge && styles2[`edge${capitalize$2(ownerState.edge)}`], styles2[`size${capitalize$2(ownerState.size)}`]];
     }
   })(({
     theme: theme2,
@@ -47640,7 +47640,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 color: isFavourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
               },
               onClick: onFavourite,
-              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {})
             }
           ) })
         ] })
@@ -67577,7 +67577,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: portal });
     }
   }
-  let Node$1 = (_a = class extends EditableComponentWithActions {
+  let Node$2 = (_a = class extends EditableComponentWithActions {
     constructor(props) {
       super(props);
       this.objectType = CfObjectType.NODE;
@@ -67928,10 +67928,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   const mapStateToProps$o = (state, ownProps) => {
     return getNodeByID(state, ownProps.objectID);
   };
-  const Node$2 = connect(
+  const Node$3 = connect(
     mapStateToProps$o,
     null
-  )(Node$1);
+  )(Node$2);
   class NodeWeekUnconnected extends reactExports.Component {
     // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
     constructor(props) {
@@ -67944,7 +67944,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       __publicField(this, "NodeWrapper", () => {
         const data = this.props.data;
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Node$2,
+          Node$3,
           {
             objectID: data.node,
             parentID: this.props.parentID,
@@ -70946,7 +70946,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       classes
     } = ownerState;
     const slots = {
-      root: ["root", `${variant}${capitalize(color2 || severity)}`, `${variant}`],
+      root: ["root", `${variant}${capitalize$2(color2 || severity)}`, `${variant}`],
       icon: ["icon"],
       message: ["message"],
       action: ["action"]
@@ -70960,7 +70960,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize(ownerState.color || ownerState.severity)}`]];
+      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color || ownerState.severity)}`]];
     }
   })(({
     theme: theme2,
@@ -71319,7 +71319,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       classes
     } = ownerState;
     const slots = {
-      root: ["root", `color${capitalize(color2)}`, `position${capitalize(position2)}`]
+      root: ["root", `color${capitalize$2(color2)}`, `position${capitalize$2(position2)}`]
     };
     return composeClasses(slots, getAppBarUtilityClass, classes);
   };
@@ -71331,7 +71331,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[`position${capitalize(ownerState.position)}`], styles2[`color${capitalize(ownerState.color)}`]];
+      return [styles2.root, styles2[`position${capitalize$2(ownerState.position)}`], styles2[`color${capitalize$2(ownerState.color)}`]];
     }
   })(({
     theme: theme2,
@@ -72788,7 +72788,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const {
       ownerState
     } = props;
-    return [styles2.root, ownerState.formControl && styles2.formControl, ownerState.startAdornment && styles2.adornedStart, ownerState.endAdornment && styles2.adornedEnd, ownerState.error && styles2.error, ownerState.size === "small" && styles2.sizeSmall, ownerState.multiline && styles2.multiline, ownerState.color && styles2[`color${capitalize(ownerState.color)}`], ownerState.fullWidth && styles2.fullWidth, ownerState.hiddenLabel && styles2.hiddenLabel];
+    return [styles2.root, ownerState.formControl && styles2.formControl, ownerState.startAdornment && styles2.adornedStart, ownerState.endAdornment && styles2.adornedEnd, ownerState.error && styles2.error, ownerState.size === "small" && styles2.sizeSmall, ownerState.multiline && styles2.multiline, ownerState.color && styles2[`color${capitalize$2(ownerState.color)}`], ownerState.fullWidth && styles2.fullWidth, ownerState.hiddenLabel && styles2.hiddenLabel];
   };
   const inputOverridesResolver = (props, styles2) => {
     const {
@@ -72814,7 +72814,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       type
     } = ownerState;
     const slots = {
-      root: ["root", `color${capitalize(color2)}`, disabled && "disabled", error && "error", fullWidth && "fullWidth", focused && "focused", formControl && "formControl", size2 && size2 !== "medium" && `size${capitalize(size2)}`, multiline && "multiline", startAdornment && "adornedStart", endAdornment && "adornedEnd", hiddenLabel && "hiddenLabel", readOnly && "readOnly"],
+      root: ["root", `color${capitalize$2(color2)}`, disabled && "disabled", error && "error", fullWidth && "fullWidth", focused && "focused", formControl && "formControl", size2 && size2 !== "medium" && `size${capitalize$2(size2)}`, multiline && "multiline", startAdornment && "adornedStart", endAdornment && "adornedEnd", hiddenLabel && "hiddenLabel", readOnly && "readOnly"],
       input: ["input", disabled && "disabled", type === "search" && "inputTypeSearch", multiline && "inputMultiline", size2 === "small" && "inputSizeSmall", hiddenLabel && "inputHiddenLabel", startAdornment && "inputAdornedStart", endAdornment && "inputAdornedEnd", readOnly && "readOnly"]
     };
     return composeClasses(slots, getInputBaseUtilityClass, classes);
@@ -74106,7 +74106,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = ownerState;
     const slots = {
       root: ["root"],
-      badge: ["badge", variant, invisible && "invisible", `anchorOrigin${capitalize(anchorOrigin.vertical)}${capitalize(anchorOrigin.horizontal)}`, `anchorOrigin${capitalize(anchorOrigin.vertical)}${capitalize(anchorOrigin.horizontal)}${capitalize(overlap)}`, `overlap${capitalize(overlap)}`, color2 !== "default" && `color${capitalize(color2)}`]
+      badge: ["badge", variant, invisible && "invisible", `anchorOrigin${capitalize$2(anchorOrigin.vertical)}${capitalize$2(anchorOrigin.horizontal)}`, `anchorOrigin${capitalize$2(anchorOrigin.vertical)}${capitalize$2(anchorOrigin.horizontal)}${capitalize$2(overlap)}`, `overlap${capitalize$2(overlap)}`, color2 !== "default" && `color${capitalize$2(color2)}`]
     };
     return composeClasses(slots, getBadgeUtilityClass, classes);
   };
@@ -74128,7 +74128,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.badge, styles2[ownerState.variant], styles2[`anchorOrigin${capitalize(ownerState.anchorOrigin.vertical)}${capitalize(ownerState.anchorOrigin.horizontal)}${capitalize(ownerState.overlap)}`], ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`], ownerState.invisible && styles2.invisible];
+      return [styles2.badge, styles2[ownerState.variant], styles2[`anchorOrigin${capitalize$2(ownerState.anchorOrigin.vertical)}${capitalize$2(ownerState.anchorOrigin.horizontal)}${capitalize$2(ownerState.overlap)}`], ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`], ownerState.invisible && styles2.invisible];
     }
   })(({
     theme: theme2,
@@ -74468,10 +74468,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       classes
     } = ownerState;
     const slots = {
-      root: ["root", variant, `${variant}${capitalize(color2)}`, `size${capitalize(size2)}`, `${variant}Size${capitalize(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
+      root: ["root", variant, `${variant}${capitalize$2(color2)}`, `size${capitalize$2(size2)}`, `${variant}Size${capitalize$2(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
       label: ["label"],
-      startIcon: ["startIcon", `iconSize${capitalize(size2)}`],
-      endIcon: ["endIcon", `iconSize${capitalize(size2)}`]
+      startIcon: ["startIcon", `iconSize${capitalize$2(size2)}`],
+      endIcon: ["endIcon", `iconSize${capitalize$2(size2)}`]
     };
     const composedClasses = composeClasses(slots, getButtonUtilityClass, classes);
     return _extends$1({}, classes, composedClasses);
@@ -74497,7 +74497,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize(ownerState.color)}`], styles2[`size${capitalize(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
+      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color)}`], styles2[`size${capitalize$2(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
     }
   })(({
     theme: theme2,
@@ -74631,7 +74631,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.startIcon, styles2[`iconSize${capitalize(ownerState.size)}`]];
+      return [styles2.startIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
     }
   })(({
     ownerState
@@ -74649,7 +74649,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.endIcon, styles2[`iconSize${capitalize(ownerState.size)}`]];
+      return [styles2.endIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
     }
   })(({
     ownerState
@@ -74829,7 +74829,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       edge
     } = ownerState;
     const slots = {
-      root: ["root", checked && "checked", disabled && "disabled", edge && `edge${capitalize(edge)}`],
+      root: ["root", checked && "checked", disabled && "disabled", edge && `edge${capitalize$2(edge)}`],
       input: ["input"]
     };
     return composeClasses(slots, getSwitchBaseUtilityClass, classes);
@@ -75482,8 +75482,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = ownerState;
     const slots = {
       root: ["root"],
-      container: ["container", `scroll${capitalize(scroll)}`],
-      paper: ["paper", `paperScroll${capitalize(scroll)}`, `paperWidth${capitalize(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
+      container: ["container", `scroll${capitalize$2(scroll)}`],
+      paper: ["paper", `paperScroll${capitalize$2(scroll)}`, `paperWidth${capitalize$2(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
     };
     return composeClasses(slots, getDialogUtilityClass, classes);
   };
@@ -75504,7 +75504,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.container, styles2[`scroll${capitalize(ownerState.scroll)}`]];
+      return [styles2.container, styles2[`scroll${capitalize$2(ownerState.scroll)}`]];
     }
   })(({
     ownerState
@@ -75538,7 +75538,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.paper, styles2[`scrollPaper${capitalize(ownerState.scroll)}`], styles2[`paperWidth${capitalize(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
+      return [styles2.paper, styles2[`scrollPaper${capitalize$2(ownerState.scroll)}`], styles2[`paperWidth${capitalize$2(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
     }
   })(({
     theme: theme2,
@@ -76323,7 +76323,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       size: size2
     } = ownerState;
     const slots = {
-      root: ["root", variant, `size${capitalize(size2)}`, color2 === "inherit" ? "colorInherit" : color2]
+      root: ["root", variant, `size${capitalize$2(size2)}`, color2 === "inherit" ? "colorInherit" : color2]
     };
     const composedClasses = composeClasses(slots, getFabUtilityClass, classes);
     return _extends$1({}, classes, composedClasses);
@@ -76336,7 +76336,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, styles2[capitalize(ownerState.size)], styles2[ownerState.color]];
+      return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, styles2[capitalize$2(ownerState.size)], styles2[ownerState.color]];
     }
   })(({
     theme: theme2,
@@ -76952,7 +76952,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       fullWidth
     } = ownerState;
     const slots = {
-      root: ["root", margin2 !== "none" && `margin${capitalize(margin2)}`, fullWidth && "fullWidth"]
+      root: ["root", margin2 !== "none" && `margin${capitalize$2(margin2)}`, fullWidth && "fullWidth"]
     };
     return composeClasses(slots, getFormControlUtilityClasses, classes);
   };
@@ -76962,7 +76962,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overridesResolver: ({
       ownerState
     }, styles2) => {
-      return _extends$1({}, styles2.root, styles2[`margin${capitalize(ownerState.margin)}`], ownerState.fullWidth && styles2.fullWidth);
+      return _extends$1({}, styles2.root, styles2[`margin${capitalize$2(ownerState.margin)}`], ownerState.fullWidth && styles2.fullWidth);
     }
   })(({
     ownerState
@@ -77258,7 +77258,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       required
     } = ownerState;
     const slots = {
-      root: ["root", disabled && "disabled", `labelPlacement${capitalize(labelPlacement)}`, error && "error", required && "required"],
+      root: ["root", disabled && "disabled", `labelPlacement${capitalize$2(labelPlacement)}`, error && "error", required && "required"],
       label: ["label", disabled && "disabled"],
       asterisk: ["asterisk", error && "error"]
     };
@@ -77273,7 +77273,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       } = props;
       return [{
         [`& .${formControlLabelClasses$1.label}`]: styles2.label
-      }, styles2.root, styles2[`labelPlacement${capitalize(ownerState.labelPlacement)}`]];
+      }, styles2.root, styles2[`labelPlacement${capitalize$2(ownerState.labelPlacement)}`]];
     }
   })(({
     theme: theme2,
@@ -77576,7 +77576,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       required
     } = ownerState;
     const slots = {
-      root: ["root", disabled && "disabled", error && "error", size2 && `size${capitalize(size2)}`, contained && "contained", focused && "focused", filled && "filled", required && "required"]
+      root: ["root", disabled && "disabled", error && "error", size2 && `size${capitalize$2(size2)}`, contained && "contained", focused && "focused", filled && "filled", required && "required"]
     };
     return composeClasses(slots, getFormHelperTextUtilityClasses, classes);
   };
@@ -77587,7 +77587,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.size && styles2[`size${capitalize(ownerState.size)}`], ownerState.contained && styles2.contained, ownerState.filled && styles2.filled];
+      return [styles2.root, ownerState.size && styles2[`size${capitalize$2(ownerState.size)}`], ownerState.contained && styles2.contained, ownerState.filled && styles2.filled];
     }
   })(({
     theme: theme2,
@@ -77731,7 +77731,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       required
     } = ownerState;
     const slots = {
-      root: ["root", `color${capitalize(color2)}`, disabled && "disabled", error && "error", filled && "filled", focused && "focused", required && "required"],
+      root: ["root", `color${capitalize$2(color2)}`, disabled && "disabled", error && "error", filled && "filled", focused && "focused", required && "required"],
       asterisk: ["asterisk", error && "error"]
     };
     return composeClasses(slots, getFormLabelUtilityClasses, classes);
@@ -78443,7 +78443,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       required
     } = ownerState;
     const slots = {
-      root: ["root", formControl && "formControl", !disableAnimation && "animated", shrink && "shrink", size2 && size2 !== "normal" && `size${capitalize(size2)}`, variant],
+      root: ["root", formControl && "formControl", !disableAnimation && "animated", shrink && "shrink", size2 && size2 !== "normal" && `size${capitalize$2(size2)}`, variant],
       asterisk: [required && "asterisk"]
     };
     const composedClasses = composeClasses(slots, getInputLabelUtilityClasses, classes);
@@ -78666,7 +78666,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       underline
     } = ownerState;
     const slots = {
-      root: ["root", `underline${capitalize(underline)}`, component === "button" && "button", focusVisible && "focusVisible"]
+      root: ["root", `underline${capitalize$2(underline)}`, component === "button" && "button", focusVisible && "focusVisible"]
     };
     return composeClasses(slots, getLinkUtilityClass, classes);
   };
@@ -78677,7 +78677,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[`underline${capitalize(ownerState.underline)}`], ownerState.component === "button" && styles2.button];
+      return [styles2.root, styles2[`underline${capitalize$2(ownerState.underline)}`], ownerState.component === "button" && styles2.button];
     }
   })(({
     theme: theme2,
@@ -81231,7 +81231,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = ownerState;
     const slots = {
       select: ["select", variant, disabled && "disabled", multiple && "multiple", error && "error"],
-      icon: ["icon", `icon${capitalize(variant)}`, open && "iconOpen", disabled && "disabled"]
+      icon: ["icon", `icon${capitalize$2(variant)}`, open && "iconOpen", disabled && "disabled"]
     };
     return composeClasses(slots, getNativeSelectUtilityClasses, classes);
   };
@@ -81333,7 +81333,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.icon, ownerState.variant && styles2[`icon${capitalize(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
+      return [styles2.icon, ownerState.variant && styles2[`icon${capitalize$2(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
     }
   })(nativeSelectIconStyles);
   const NativeSelectInput = /* @__PURE__ */ reactExports.forwardRef(function NativeSelectInput2(props, ref) {
@@ -82012,7 +82012,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const {
       ownerState
     } = props;
-    return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize(ownerState.size)}`], ownerState.variant === "text" && styles2[`text${capitalize(ownerState.color)}`], ownerState.variant === "outlined" && styles2[`outlined${capitalize(ownerState.color)}`], ownerState.shape === "rounded" && styles2.rounded, ownerState.type === "page" && styles2.page, (ownerState.type === "start-ellipsis" || ownerState.type === "end-ellipsis") && styles2.ellipsis, (ownerState.type === "previous" || ownerState.type === "next") && styles2.previousNext, (ownerState.type === "first" || ownerState.type === "last") && styles2.firstLast];
+    return [styles2.root, styles2[ownerState.variant], styles2[`size${capitalize$2(ownerState.size)}`], ownerState.variant === "text" && styles2[`text${capitalize$2(ownerState.color)}`], ownerState.variant === "outlined" && styles2[`outlined${capitalize$2(ownerState.color)}`], ownerState.shape === "rounded" && styles2.rounded, ownerState.type === "page" && styles2.page, (ownerState.type === "start-ellipsis" || ownerState.type === "end-ellipsis") && styles2.ellipsis, (ownerState.type === "previous" || ownerState.type === "next") && styles2.previousNext, (ownerState.type === "first" || ownerState.type === "last") && styles2.firstLast];
   };
   const useUtilityClasses$a = (ownerState) => {
     const {
@@ -82026,7 +82026,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant
     } = ownerState;
     const slots = {
-      root: ["root", `size${capitalize(size2)}`, variant, shape2, color2 !== "standard" && `${variant}${capitalize(color2)}`, disabled && "disabled", selected && "selected", {
+      root: ["root", `size${capitalize$2(size2)}`, variant, shape2, color2 !== "standard" && `${variant}${capitalize$2(color2)}`, disabled && "disabled", selected && "selected", {
         page: "page",
         first: "firstLast",
         last: "firstLast",
@@ -82664,7 +82664,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       size: size2
     } = ownerState;
     const slots = {
-      root: ["root", `color${capitalize(color2)}`, size2 !== "medium" && `size${capitalize(size2)}`]
+      root: ["root", `color${capitalize$2(color2)}`, size2 !== "medium" && `size${capitalize$2(size2)}`]
     };
     return _extends$1({}, classes, composeClasses(slots, getRadioUtilityClass, classes));
   };
@@ -82676,7 +82676,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[`color${capitalize(ownerState.color)}`]];
+      return [styles2.root, styles2[`color${capitalize$2(ownerState.color)}`]];
     }
   })(({
     theme: theme2,
@@ -83074,7 +83074,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.icon, ownerState.variant && styles2[`icon${capitalize(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
+      return [styles2.icon, ownerState.variant && styles2[`icon${capitalize$2(ownerState.variant)}`], ownerState.open && styles2.iconOpen];
     }
   })(nativeSelectIconStyles);
   const SelectNativeInput = styled$1("input", {
@@ -83111,7 +83111,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = ownerState;
     const slots = {
       select: ["select", variant, disabled && "disabled", multiple && "multiple", error && "error"],
-      icon: ["icon", `icon${capitalize(variant)}`, open && "iconOpen", disabled && "disabled"],
+      icon: ["icon", `icon${capitalize$2(variant)}`, open && "iconOpen", disabled && "disabled"],
       nativeInput: ["nativeInput"]
     };
     return composeClasses(slots, getSelectUtilityClasses, classes);
@@ -84033,7 +84033,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       anchorOrigin
     } = ownerState;
     const slots = {
-      root: ["root", `anchorOrigin${capitalize(anchorOrigin.vertical)}${capitalize(anchorOrigin.horizontal)}`]
+      root: ["root", `anchorOrigin${capitalize$2(anchorOrigin.vertical)}${capitalize$2(anchorOrigin.horizontal)}`]
     };
     return composeClasses(slots, getSnackbarUtilityClass, classes);
   };
@@ -84044,7 +84044,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[`anchorOrigin${capitalize(ownerState.anchorOrigin.vertical)}${capitalize(ownerState.anchorOrigin.horizontal)}`]];
+      return [styles2.root, styles2[`anchorOrigin${capitalize$2(ownerState.anchorOrigin.vertical)}${capitalize$2(ownerState.anchorOrigin.horizontal)}`]];
     }
   })(({
     theme: theme2,
@@ -84328,8 +84328,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled
     } = ownerState;
     const slots = {
-      root: ["root", edge && `edge${capitalize(edge)}`, `size${capitalize(size2)}`],
-      switchBase: ["switchBase", `color${capitalize(color2)}`, checked && "checked", disabled && "disabled"],
+      root: ["root", edge && `edge${capitalize$2(edge)}`, `size${capitalize$2(size2)}`],
+      switchBase: ["switchBase", `color${capitalize$2(color2)}`, checked && "checked", disabled && "disabled"],
       thumb: ["thumb"],
       track: ["track"],
       input: ["input"]
@@ -84344,7 +84344,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.edge && styles2[`edge${capitalize(ownerState.edge)}`], styles2[`size${capitalize(ownerState.size)}`]];
+      return [styles2.root, ownerState.edge && styles2[`edge${capitalize$2(ownerState.edge)}`], styles2[`size${capitalize$2(ownerState.size)}`]];
     }
   })(({
     ownerState
@@ -84392,7 +84392,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       } = props;
       return [styles2.switchBase, {
         [`& .${switchClasses$1.input}`]: styles2.input
-      }, ownerState.color !== "default" && styles2[`color${capitalize(ownerState.color)}`]];
+      }, ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`]];
     }
   })(({
     theme: theme2
@@ -87313,7 +87313,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       function fcamelCase(_all, letter) {
         return letter.toUpperCase();
       }
-      function camelCase(string) {
+      function camelCase2(string) {
         return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
       }
       var acceptData = function(owner) {
@@ -87344,10 +87344,10 @@ Please use another name.` : formatMuiErrorMessage(18));
         set: function(owner, data, value) {
           var prop, cache2 = this.cache(owner);
           if (typeof data === "string") {
-            cache2[camelCase(data)] = value;
+            cache2[camelCase2(data)] = value;
           } else {
             for (prop in data) {
-              cache2[camelCase(prop)] = data[prop];
+              cache2[camelCase2(prop)] = data[prop];
             }
           }
           return cache2;
@@ -87355,7 +87355,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         get: function(owner, key) {
           return key === void 0 ? this.cache(owner) : (
             // Always use camelCase key (gh-2257)
-            owner[this.expando] && owner[this.expando][camelCase(key)]
+            owner[this.expando] && owner[this.expando][camelCase2(key)]
           );
         },
         access: function(owner, key, value) {
@@ -87372,9 +87372,9 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           if (key !== void 0) {
             if (Array.isArray(key)) {
-              key = key.map(camelCase);
+              key = key.map(camelCase2);
             } else {
-              key = camelCase(key);
+              key = camelCase2(key);
               key = key in cache2 ? [key] : key.match(rnothtmlwhite) || [];
             }
             i2 = key.length;
@@ -87464,7 +87464,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   if (attrs[i2]) {
                     name2 = attrs[i2].name;
                     if (name2.indexOf("data-") === 0) {
-                      name2 = camelCase(name2.slice(5));
+                      name2 = camelCase2(name2.slice(5));
                       dataAttr(elem, name2, data[name2]);
                     }
                   }
@@ -88971,7 +88971,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
             return;
           }
-          var ret, type, hooks, origName = camelCase(name2), isCustomProp = rcustomProp.test(name2), style2 = elem.style;
+          var ret, type, hooks, origName = camelCase2(name2), isCustomProp = rcustomProp.test(name2), style2 = elem.style;
           if (!isCustomProp) {
             name2 = finalPropName(origName);
           }
@@ -89006,7 +89006,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
         },
         css: function(elem, name2, extra, styles2) {
-          var val, num, hooks, origName = camelCase(name2), isCustomProp = rcustomProp.test(name2);
+          var val, num, hooks, origName = camelCase2(name2), isCustomProp = rcustomProp.test(name2);
           if (!isCustomProp) {
             name2 = finalPropName(origName);
           }
@@ -89349,7 +89349,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       function propFilter(props, specialEasing) {
         var index, name2, easing2, value, hooks;
         for (index in props) {
-          name2 = camelCase(index);
+          name2 = camelCase2(index);
           easing2 = specialEasing[name2];
           value = props[index];
           if (Array.isArray(value)) {
@@ -91367,7 +91367,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       jQuery2.nodeName = nodeName;
       jQuery2.isFunction = isFunction2;
       jQuery2.isWindow = isWindow;
-      jQuery2.camelCase = camelCase;
+      jQuery2.camelCase = camelCase2;
       jQuery2.type = toType;
       jQuery2.now = Date.now;
       jQuery2.isNumeric = function(obj) {
@@ -97385,17 +97385,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     return useBaseQuery(options, QueryObserver, queryClient);
   }
   var MoreHoriz = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$b = MoreHoriz.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+  var default_1$c = MoreHoriz.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$b = MoreHoriz.default = _default$b;
+  default_1$c = MoreHoriz.default = _default$c;
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -97589,7 +97589,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -99282,6 +99282,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       ) });
     }
   }
+  var Campaign = {};
+  var _interopRequireDefault$b = interopRequireDefaultExports;
+  Object.defineProperty(Campaign, "__esModule", {
+    value: true
+  });
+  var default_1$b = Campaign.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
+  }), "Campaign");
+  default_1$b = Campaign.default = _default$b;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -99405,10 +99417,20 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (hide) {
       return null;
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Alert$1, { severity, sx, onClose: hideIfCookie && handleClose, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
-      subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
-    ] });
+    const isUpdateAnnouncement = severity === "update";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Alert$1,
+      {
+        severity: isUpdateAnnouncement ? "info" : severity,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) : null,
+        sx,
+        onClose: hideIfCookie && handleClose,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
+          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
+        ]
+      }
+    );
   };
   var Close = {};
   var _interopRequireDefault$a = interopRequireDefaultExports;
@@ -99904,7 +99926,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardDumb, { ...template }, index)) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardDumb, { ...template2 }, index)) })
           ]
         }
       )
@@ -100386,6 +100408,2263 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
   }
+  var lib$3 = {};
+  var htmlToDom = {};
+  var domparser$1 = {};
+  Object.defineProperty(domparser$1, "__esModule", { value: true });
+  var HTML = "html";
+  var HEAD = "head";
+  var BODY = "body";
+  var FIRST_TAG_REGEX = /<([a-zA-Z]+[0-9]?)/;
+  var HEAD_TAG_REGEX = /<head[^]*>/i;
+  var BODY_TAG_REGEX = /<body[^]*>/i;
+  var parseFromDocument = function(html2, tagName) {
+    throw new Error("This browser does not support `document.implementation.createHTMLDocument`");
+  };
+  var parseFromString = function(html2, tagName) {
+    throw new Error("This browser does not support `DOMParser.prototype.parseFromString`");
+  };
+  var DOMParser = typeof window === "object" && window.DOMParser;
+  if (typeof DOMParser === "function") {
+    var domParser_1 = new DOMParser();
+    var mimeType_1 = "text/html";
+    parseFromString = function(html2, tagName) {
+      if (tagName) {
+        html2 = "<".concat(tagName, ">").concat(html2, "</").concat(tagName, ">");
+      }
+      return domParser_1.parseFromString(html2, mimeType_1);
+    };
+    parseFromDocument = parseFromString;
+  }
+  if (typeof document === "object" && document.implementation) {
+    var htmlDocument_1 = document.implementation.createHTMLDocument();
+    parseFromDocument = function(html2, tagName) {
+      if (tagName) {
+        var element = htmlDocument_1.documentElement.querySelector(tagName);
+        if (element) {
+          element.innerHTML = html2;
+        }
+        return htmlDocument_1;
+      }
+      htmlDocument_1.documentElement.innerHTML = html2;
+      return htmlDocument_1;
+    };
+  }
+  var template = typeof document === "object" && document.createElement("template");
+  var parseFromTemplate;
+  if (template && template.content) {
+    parseFromTemplate = function(html2) {
+      template.innerHTML = html2;
+      return template.content.childNodes;
+    };
+  }
+  function domparser(html2) {
+    var _a2, _b2;
+    var match2 = html2.match(FIRST_TAG_REGEX);
+    var firstTagName = match2 && match2[1] ? match2[1].toLowerCase() : "";
+    switch (firstTagName) {
+      case HTML: {
+        var doc = parseFromString(html2);
+        if (!HEAD_TAG_REGEX.test(html2)) {
+          var element = doc.querySelector(HEAD);
+          (_a2 = element === null || element === void 0 ? void 0 : element.parentNode) === null || _a2 === void 0 ? void 0 : _a2.removeChild(element);
+        }
+        if (!BODY_TAG_REGEX.test(html2)) {
+          var element = doc.querySelector(BODY);
+          (_b2 = element === null || element === void 0 ? void 0 : element.parentNode) === null || _b2 === void 0 ? void 0 : _b2.removeChild(element);
+        }
+        return doc.querySelectorAll(HTML);
+      }
+      case HEAD:
+      case BODY: {
+        var elements = parseFromDocument(html2).querySelectorAll(firstTagName);
+        if (BODY_TAG_REGEX.test(html2) && HEAD_TAG_REGEX.test(html2)) {
+          return elements[0].parentNode.childNodes;
+        }
+        return elements;
+      }
+      default: {
+        if (parseFromTemplate) {
+          return parseFromTemplate(html2);
+        }
+        var element = parseFromDocument(html2, BODY).querySelector(BODY);
+        return element.childNodes;
+      }
+    }
+  }
+  domparser$1.default = domparser;
+  var utilities$2 = {};
+  var lib$2 = {};
+  var lib$1 = {};
+  (function(exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Doctype = exports.CDATA = exports.Tag = exports.Style = exports.Script = exports.Comment = exports.Directive = exports.Text = exports.Root = exports.isTag = exports.ElementType = void 0;
+    var ElementType;
+    (function(ElementType2) {
+      ElementType2["Root"] = "root";
+      ElementType2["Text"] = "text";
+      ElementType2["Directive"] = "directive";
+      ElementType2["Comment"] = "comment";
+      ElementType2["Script"] = "script";
+      ElementType2["Style"] = "style";
+      ElementType2["Tag"] = "tag";
+      ElementType2["CDATA"] = "cdata";
+      ElementType2["Doctype"] = "doctype";
+    })(ElementType = exports.ElementType || (exports.ElementType = {}));
+    function isTag2(elem) {
+      return elem.type === ElementType.Tag || elem.type === ElementType.Script || elem.type === ElementType.Style;
+    }
+    exports.isTag = isTag2;
+    exports.Root = ElementType.Root;
+    exports.Text = ElementType.Text;
+    exports.Directive = ElementType.Directive;
+    exports.Comment = ElementType.Comment;
+    exports.Script = ElementType.Script;
+    exports.Style = ElementType.Style;
+    exports.Tag = ElementType.Tag;
+    exports.CDATA = ElementType.CDATA;
+    exports.Doctype = ElementType.Doctype;
+  })(lib$1);
+  var node = {};
+  var __extends = commonjsGlobal && commonjsGlobal.__extends || /* @__PURE__ */ function() {
+    var extendStatics = function(d, b) {
+      extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d2, b2) {
+        d2.__proto__ = b2;
+      } || function(d2, b2) {
+        for (var p in b2)
+          if (Object.prototype.hasOwnProperty.call(b2, p))
+            d2[p] = b2[p];
+      };
+      return extendStatics(d, b);
+    };
+    return function(d, b) {
+      if (typeof b !== "function" && b !== null)
+        throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+      extendStatics(d, b);
+      function __() {
+        this.constructor = d;
+      }
+      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+  }();
+  var __assign = commonjsGlobal && commonjsGlobal.__assign || function() {
+    __assign = Object.assign || function(t) {
+      for (var s, i2 = 1, n = arguments.length; i2 < n; i2++) {
+        s = arguments[i2];
+        for (var p in s)
+          if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+      }
+      return t;
+    };
+    return __assign.apply(this, arguments);
+  };
+  Object.defineProperty(node, "__esModule", { value: true });
+  node.cloneNode = node.hasChildren = node.isDocument = node.isDirective = node.isComment = node.isText = node.isCDATA = node.isTag = node.Element = node.Document = node.CDATA = node.NodeWithChildren = node.ProcessingInstruction = node.Comment = node.Text = node.DataNode = node.Node = void 0;
+  var domelementtype_1 = lib$1;
+  var Node$1 = (
+    /** @class */
+    function() {
+      function Node2() {
+        this.parent = null;
+        this.prev = null;
+        this.next = null;
+        this.startIndex = null;
+        this.endIndex = null;
+      }
+      Object.defineProperty(Node2.prototype, "parentNode", {
+        // Read-write aliases for properties
+        /**
+         * Same as {@link parent}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.parent;
+        },
+        set: function(parent) {
+          this.parent = parent;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(Node2.prototype, "previousSibling", {
+        /**
+         * Same as {@link prev}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.prev;
+        },
+        set: function(prev2) {
+          this.prev = prev2;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(Node2.prototype, "nextSibling", {
+        /**
+         * Same as {@link next}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.next;
+        },
+        set: function(next2) {
+          this.next = next2;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Node2.prototype.cloneNode = function(recursive) {
+        if (recursive === void 0) {
+          recursive = false;
+        }
+        return cloneNode(this, recursive);
+      };
+      return Node2;
+    }()
+  );
+  node.Node = Node$1;
+  var DataNode = (
+    /** @class */
+    function(_super) {
+      __extends(DataNode2, _super);
+      function DataNode2(data) {
+        var _this = _super.call(this) || this;
+        _this.data = data;
+        return _this;
+      }
+      Object.defineProperty(DataNode2.prototype, "nodeValue", {
+        /**
+         * Same as {@link data}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.data;
+        },
+        set: function(data) {
+          this.data = data;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return DataNode2;
+    }(Node$1)
+  );
+  node.DataNode = DataNode;
+  var Text = (
+    /** @class */
+    function(_super) {
+      __extends(Text2, _super);
+      function Text2() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.type = domelementtype_1.ElementType.Text;
+        return _this;
+      }
+      Object.defineProperty(Text2.prototype, "nodeType", {
+        get: function() {
+          return 3;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return Text2;
+    }(DataNode)
+  );
+  node.Text = Text;
+  var Comment = (
+    /** @class */
+    function(_super) {
+      __extends(Comment2, _super);
+      function Comment2() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.type = domelementtype_1.ElementType.Comment;
+        return _this;
+      }
+      Object.defineProperty(Comment2.prototype, "nodeType", {
+        get: function() {
+          return 8;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return Comment2;
+    }(DataNode)
+  );
+  node.Comment = Comment;
+  var ProcessingInstruction = (
+    /** @class */
+    function(_super) {
+      __extends(ProcessingInstruction2, _super);
+      function ProcessingInstruction2(name2, data) {
+        var _this = _super.call(this, data) || this;
+        _this.name = name2;
+        _this.type = domelementtype_1.ElementType.Directive;
+        return _this;
+      }
+      Object.defineProperty(ProcessingInstruction2.prototype, "nodeType", {
+        get: function() {
+          return 1;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return ProcessingInstruction2;
+    }(DataNode)
+  );
+  node.ProcessingInstruction = ProcessingInstruction;
+  var NodeWithChildren = (
+    /** @class */
+    function(_super) {
+      __extends(NodeWithChildren2, _super);
+      function NodeWithChildren2(children) {
+        var _this = _super.call(this) || this;
+        _this.children = children;
+        return _this;
+      }
+      Object.defineProperty(NodeWithChildren2.prototype, "firstChild", {
+        // Aliases
+        /** First child of the node. */
+        get: function() {
+          var _a2;
+          return (_a2 = this.children[0]) !== null && _a2 !== void 0 ? _a2 : null;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(NodeWithChildren2.prototype, "lastChild", {
+        /** Last child of the node. */
+        get: function() {
+          return this.children.length > 0 ? this.children[this.children.length - 1] : null;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(NodeWithChildren2.prototype, "childNodes", {
+        /**
+         * Same as {@link children}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.children;
+        },
+        set: function(children) {
+          this.children = children;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return NodeWithChildren2;
+    }(Node$1)
+  );
+  node.NodeWithChildren = NodeWithChildren;
+  var CDATA = (
+    /** @class */
+    function(_super) {
+      __extends(CDATA2, _super);
+      function CDATA2() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.type = domelementtype_1.ElementType.CDATA;
+        return _this;
+      }
+      Object.defineProperty(CDATA2.prototype, "nodeType", {
+        get: function() {
+          return 4;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return CDATA2;
+    }(NodeWithChildren)
+  );
+  node.CDATA = CDATA;
+  var Document = (
+    /** @class */
+    function(_super) {
+      __extends(Document2, _super);
+      function Document2() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.type = domelementtype_1.ElementType.Root;
+        return _this;
+      }
+      Object.defineProperty(Document2.prototype, "nodeType", {
+        get: function() {
+          return 9;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return Document2;
+    }(NodeWithChildren)
+  );
+  node.Document = Document;
+  var Element$1 = (
+    /** @class */
+    function(_super) {
+      __extends(Element2, _super);
+      function Element2(name2, attribs, children, type) {
+        if (children === void 0) {
+          children = [];
+        }
+        if (type === void 0) {
+          type = name2 === "script" ? domelementtype_1.ElementType.Script : name2 === "style" ? domelementtype_1.ElementType.Style : domelementtype_1.ElementType.Tag;
+        }
+        var _this = _super.call(this, children) || this;
+        _this.name = name2;
+        _this.attribs = attribs;
+        _this.type = type;
+        return _this;
+      }
+      Object.defineProperty(Element2.prototype, "nodeType", {
+        get: function() {
+          return 1;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(Element2.prototype, "tagName", {
+        // DOM Level 1 aliases
+        /**
+         * Same as {@link name}.
+         * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+         */
+        get: function() {
+          return this.name;
+        },
+        set: function(name2) {
+          this.name = name2;
+        },
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(Element2.prototype, "attributes", {
+        get: function() {
+          var _this = this;
+          return Object.keys(this.attribs).map(function(name2) {
+            var _a2, _b2;
+            return {
+              name: name2,
+              value: _this.attribs[name2],
+              namespace: (_a2 = _this["x-attribsNamespace"]) === null || _a2 === void 0 ? void 0 : _a2[name2],
+              prefix: (_b2 = _this["x-attribsPrefix"]) === null || _b2 === void 0 ? void 0 : _b2[name2]
+            };
+          });
+        },
+        enumerable: false,
+        configurable: true
+      });
+      return Element2;
+    }(NodeWithChildren)
+  );
+  node.Element = Element$1;
+  function isTag(node2) {
+    return (0, domelementtype_1.isTag)(node2);
+  }
+  node.isTag = isTag;
+  function isCDATA(node2) {
+    return node2.type === domelementtype_1.ElementType.CDATA;
+  }
+  node.isCDATA = isCDATA;
+  function isText(node2) {
+    return node2.type === domelementtype_1.ElementType.Text;
+  }
+  node.isText = isText;
+  function isComment(node2) {
+    return node2.type === domelementtype_1.ElementType.Comment;
+  }
+  node.isComment = isComment;
+  function isDirective(node2) {
+    return node2.type === domelementtype_1.ElementType.Directive;
+  }
+  node.isDirective = isDirective;
+  function isDocument(node2) {
+    return node2.type === domelementtype_1.ElementType.Root;
+  }
+  node.isDocument = isDocument;
+  function hasChildren(node2) {
+    return Object.prototype.hasOwnProperty.call(node2, "children");
+  }
+  node.hasChildren = hasChildren;
+  function cloneNode(node2, recursive) {
+    if (recursive === void 0) {
+      recursive = false;
+    }
+    var result;
+    if (isText(node2)) {
+      result = new Text(node2.data);
+    } else if (isComment(node2)) {
+      result = new Comment(node2.data);
+    } else if (isTag(node2)) {
+      var children = recursive ? cloneChildren(node2.children) : [];
+      var clone_1 = new Element$1(node2.name, __assign({}, node2.attribs), children);
+      children.forEach(function(child) {
+        return child.parent = clone_1;
+      });
+      if (node2.namespace != null) {
+        clone_1.namespace = node2.namespace;
+      }
+      if (node2["x-attribsNamespace"]) {
+        clone_1["x-attribsNamespace"] = __assign({}, node2["x-attribsNamespace"]);
+      }
+      if (node2["x-attribsPrefix"]) {
+        clone_1["x-attribsPrefix"] = __assign({}, node2["x-attribsPrefix"]);
+      }
+      result = clone_1;
+    } else if (isCDATA(node2)) {
+      var children = recursive ? cloneChildren(node2.children) : [];
+      var clone_2 = new CDATA(children);
+      children.forEach(function(child) {
+        return child.parent = clone_2;
+      });
+      result = clone_2;
+    } else if (isDocument(node2)) {
+      var children = recursive ? cloneChildren(node2.children) : [];
+      var clone_3 = new Document(children);
+      children.forEach(function(child) {
+        return child.parent = clone_3;
+      });
+      if (node2["x-mode"]) {
+        clone_3["x-mode"] = node2["x-mode"];
+      }
+      result = clone_3;
+    } else if (isDirective(node2)) {
+      var instruction = new ProcessingInstruction(node2.name, node2.data);
+      if (node2["x-name"] != null) {
+        instruction["x-name"] = node2["x-name"];
+        instruction["x-publicId"] = node2["x-publicId"];
+        instruction["x-systemId"] = node2["x-systemId"];
+      }
+      result = instruction;
+    } else {
+      throw new Error("Not implemented yet: ".concat(node2.type));
+    }
+    result.startIndex = node2.startIndex;
+    result.endIndex = node2.endIndex;
+    if (node2.sourceCodeLocation != null) {
+      result.sourceCodeLocation = node2.sourceCodeLocation;
+    }
+    return result;
+  }
+  node.cloneNode = cloneNode;
+  function cloneChildren(childs) {
+    var children = childs.map(function(child) {
+      return cloneNode(child, true);
+    });
+    for (var i2 = 1; i2 < children.length; i2++) {
+      children[i2].prev = children[i2 - 1];
+      children[i2 - 1].next = children[i2];
+    }
+    return children;
+  }
+  (function(exports) {
+    var __createBinding = commonjsGlobal && commonjsGlobal.__createBinding || (Object.create ? function(o, m2, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m2, k);
+      if (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m2[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m2, k, k2) {
+      if (k2 === void 0)
+        k2 = k;
+      o[k2] = m2[k];
+    });
+    var __exportStar = commonjsGlobal && commonjsGlobal.__exportStar || function(m2, exports2) {
+      for (var p in m2)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding(exports2, m2, p);
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.DomHandler = void 0;
+    var domelementtype_12 = lib$1;
+    var node_js_1 = node;
+    __exportStar(node, exports);
+    var defaultOpts = {
+      withStartIndices: false,
+      withEndIndices: false,
+      xmlMode: false
+    };
+    var DomHandler = (
+      /** @class */
+      function() {
+        function DomHandler2(callback, options, elementCB) {
+          this.dom = [];
+          this.root = new node_js_1.Document(this.dom);
+          this.done = false;
+          this.tagStack = [this.root];
+          this.lastNode = null;
+          this.parser = null;
+          if (typeof options === "function") {
+            elementCB = options;
+            options = defaultOpts;
+          }
+          if (typeof callback === "object") {
+            options = callback;
+            callback = void 0;
+          }
+          this.callback = callback !== null && callback !== void 0 ? callback : null;
+          this.options = options !== null && options !== void 0 ? options : defaultOpts;
+          this.elementCB = elementCB !== null && elementCB !== void 0 ? elementCB : null;
+        }
+        DomHandler2.prototype.onparserinit = function(parser) {
+          this.parser = parser;
+        };
+        DomHandler2.prototype.onreset = function() {
+          this.dom = [];
+          this.root = new node_js_1.Document(this.dom);
+          this.done = false;
+          this.tagStack = [this.root];
+          this.lastNode = null;
+          this.parser = null;
+        };
+        DomHandler2.prototype.onend = function() {
+          if (this.done)
+            return;
+          this.done = true;
+          this.parser = null;
+          this.handleCallback(null);
+        };
+        DomHandler2.prototype.onerror = function(error) {
+          this.handleCallback(error);
+        };
+        DomHandler2.prototype.onclosetag = function() {
+          this.lastNode = null;
+          var elem = this.tagStack.pop();
+          if (this.options.withEndIndices) {
+            elem.endIndex = this.parser.endIndex;
+          }
+          if (this.elementCB)
+            this.elementCB(elem);
+        };
+        DomHandler2.prototype.onopentag = function(name2, attribs) {
+          var type = this.options.xmlMode ? domelementtype_12.ElementType.Tag : void 0;
+          var element = new node_js_1.Element(name2, attribs, void 0, type);
+          this.addNode(element);
+          this.tagStack.push(element);
+        };
+        DomHandler2.prototype.ontext = function(data) {
+          var lastNode = this.lastNode;
+          if (lastNode && lastNode.type === domelementtype_12.ElementType.Text) {
+            lastNode.data += data;
+            if (this.options.withEndIndices) {
+              lastNode.endIndex = this.parser.endIndex;
+            }
+          } else {
+            var node2 = new node_js_1.Text(data);
+            this.addNode(node2);
+            this.lastNode = node2;
+          }
+        };
+        DomHandler2.prototype.oncomment = function(data) {
+          if (this.lastNode && this.lastNode.type === domelementtype_12.ElementType.Comment) {
+            this.lastNode.data += data;
+            return;
+          }
+          var node2 = new node_js_1.Comment(data);
+          this.addNode(node2);
+          this.lastNode = node2;
+        };
+        DomHandler2.prototype.oncommentend = function() {
+          this.lastNode = null;
+        };
+        DomHandler2.prototype.oncdatastart = function() {
+          var text = new node_js_1.Text("");
+          var node2 = new node_js_1.CDATA([text]);
+          this.addNode(node2);
+          text.parent = node2;
+          this.lastNode = text;
+        };
+        DomHandler2.prototype.oncdataend = function() {
+          this.lastNode = null;
+        };
+        DomHandler2.prototype.onprocessinginstruction = function(name2, data) {
+          var node2 = new node_js_1.ProcessingInstruction(name2, data);
+          this.addNode(node2);
+        };
+        DomHandler2.prototype.handleCallback = function(error) {
+          if (typeof this.callback === "function") {
+            this.callback(error, this.dom);
+          } else if (error) {
+            throw error;
+          }
+        };
+        DomHandler2.prototype.addNode = function(node2) {
+          var parent = this.tagStack[this.tagStack.length - 1];
+          var previousSibling = parent.children[parent.children.length - 1];
+          if (this.options.withStartIndices) {
+            node2.startIndex = this.parser.startIndex;
+          }
+          if (this.options.withEndIndices) {
+            node2.endIndex = this.parser.endIndex;
+          }
+          parent.children.push(node2);
+          if (previousSibling) {
+            node2.prev = previousSibling;
+            previousSibling.next = node2;
+          }
+          node2.parent = parent;
+          this.lastNode = null;
+        };
+        return DomHandler2;
+      }()
+    );
+    exports.DomHandler = DomHandler;
+    exports.default = DomHandler;
+  })(lib$2);
+  var constants = {};
+  (function(exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CASE_SENSITIVE_TAG_NAMES_MAP = exports.CASE_SENSITIVE_TAG_NAMES = void 0;
+    exports.CASE_SENSITIVE_TAG_NAMES = [
+      "animateMotion",
+      "animateTransform",
+      "clipPath",
+      "feBlend",
+      "feColorMatrix",
+      "feComponentTransfer",
+      "feComposite",
+      "feConvolveMatrix",
+      "feDiffuseLighting",
+      "feDisplacementMap",
+      "feDropShadow",
+      "feFlood",
+      "feFuncA",
+      "feFuncB",
+      "feFuncG",
+      "feFuncR",
+      "feGaussianBlur",
+      "feImage",
+      "feMerge",
+      "feMergeNode",
+      "feMorphology",
+      "feOffset",
+      "fePointLight",
+      "feSpecularLighting",
+      "feSpotLight",
+      "feTile",
+      "feTurbulence",
+      "foreignObject",
+      "linearGradient",
+      "radialGradient",
+      "textPath"
+    ];
+    exports.CASE_SENSITIVE_TAG_NAMES_MAP = exports.CASE_SENSITIVE_TAG_NAMES.reduce(function(accumulator, tagName) {
+      accumulator[tagName.toLowerCase()] = tagName;
+      return accumulator;
+    }, {});
+  })(constants);
+  Object.defineProperty(utilities$2, "__esModule", { value: true });
+  utilities$2.formatDOM = utilities$2.formatAttributes = void 0;
+  var domhandler_1 = lib$2;
+  var constants_1 = constants;
+  function getCaseSensitiveTagName(tagName) {
+    return constants_1.CASE_SENSITIVE_TAG_NAMES_MAP[tagName];
+  }
+  function formatAttributes(attributes) {
+    var map = {};
+    var index = 0;
+    var attributesLength = attributes.length;
+    for (; index < attributesLength; index++) {
+      var attribute = attributes[index];
+      map[attribute.name] = attribute.value;
+    }
+    return map;
+  }
+  utilities$2.formatAttributes = formatAttributes;
+  function formatTagName(tagName) {
+    tagName = tagName.toLowerCase();
+    var caseSensitiveTagName = getCaseSensitiveTagName(tagName);
+    if (caseSensitiveTagName) {
+      return caseSensitiveTagName;
+    }
+    return tagName;
+  }
+  function formatDOM(nodes, parent, directive) {
+    if (parent === void 0) {
+      parent = null;
+    }
+    var domNodes = [];
+    var current;
+    var index = 0;
+    var nodesLength = nodes.length;
+    for (; index < nodesLength; index++) {
+      var node2 = nodes[index];
+      switch (node2.nodeType) {
+        case 1: {
+          var tagName = formatTagName(node2.nodeName);
+          current = new domhandler_1.Element(tagName, formatAttributes(node2.attributes));
+          current.children = formatDOM(
+            // template children are on content
+            tagName === "template" ? node2.content.childNodes : node2.childNodes,
+            current
+          );
+          break;
+        }
+        case 3:
+          current = new domhandler_1.Text(node2.nodeValue);
+          break;
+        case 8:
+          current = new domhandler_1.Comment(node2.nodeValue);
+          break;
+        default:
+          continue;
+      }
+      var prev2 = domNodes[index - 1] || null;
+      if (prev2) {
+        prev2.next = current;
+      }
+      current.parent = parent;
+      current.prev = prev2;
+      current.next = null;
+      domNodes.push(current);
+    }
+    if (directive) {
+      current = new domhandler_1.ProcessingInstruction(directive.substring(0, directive.indexOf(" ")).toLowerCase(), directive);
+      current.next = domNodes[0] || null;
+      current.parent = parent;
+      domNodes.unshift(current);
+      if (domNodes[1]) {
+        domNodes[1].prev = domNodes[0];
+      }
+    }
+    return domNodes;
+  }
+  utilities$2.formatDOM = formatDOM;
+  var __importDefault$3 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+    return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+  };
+  Object.defineProperty(htmlToDom, "__esModule", { value: true });
+  var domparser_1 = __importDefault$3(domparser$1);
+  var utilities_1$3 = utilities$2;
+  var DIRECTIVE_REGEX = /<(![a-zA-Z\s]+)>/;
+  function HTMLDOMParser(html2) {
+    if (typeof html2 !== "string") {
+      throw new TypeError("First argument must be a string");
+    }
+    if (!html2) {
+      return [];
+    }
+    var match2 = html2.match(DIRECTIVE_REGEX);
+    var directive = match2 ? match2[1] : void 0;
+    return (0, utilities_1$3.formatDOM)((0, domparser_1.default)(html2), null, directive);
+  }
+  htmlToDom.default = HTMLDOMParser;
+  var attributesToProps$1 = {};
+  var lib = {};
+  var possibleStandardNamesOptimized$1 = {};
+  var SAME$1 = 0;
+  possibleStandardNamesOptimized$1.SAME = SAME$1;
+  var CAMELCASE$1 = 1;
+  possibleStandardNamesOptimized$1.CAMELCASE = CAMELCASE$1;
+  possibleStandardNamesOptimized$1.possibleStandardNames = {
+    accept: 0,
+    acceptCharset: 1,
+    "accept-charset": "acceptCharset",
+    accessKey: 1,
+    action: 0,
+    allowFullScreen: 1,
+    alt: 0,
+    as: 0,
+    async: 0,
+    autoCapitalize: 1,
+    autoComplete: 1,
+    autoCorrect: 1,
+    autoFocus: 1,
+    autoPlay: 1,
+    autoSave: 1,
+    capture: 0,
+    cellPadding: 1,
+    cellSpacing: 1,
+    challenge: 0,
+    charSet: 1,
+    checked: 0,
+    children: 0,
+    cite: 0,
+    class: "className",
+    classID: 1,
+    className: 1,
+    cols: 0,
+    colSpan: 1,
+    content: 0,
+    contentEditable: 1,
+    contextMenu: 1,
+    controls: 0,
+    controlsList: 1,
+    coords: 0,
+    crossOrigin: 1,
+    dangerouslySetInnerHTML: 1,
+    data: 0,
+    dateTime: 1,
+    default: 0,
+    defaultChecked: 1,
+    defaultValue: 1,
+    defer: 0,
+    dir: 0,
+    disabled: 0,
+    disablePictureInPicture: 1,
+    disableRemotePlayback: 1,
+    download: 0,
+    draggable: 0,
+    encType: 1,
+    enterKeyHint: 1,
+    for: "htmlFor",
+    form: 0,
+    formMethod: 1,
+    formAction: 1,
+    formEncType: 1,
+    formNoValidate: 1,
+    formTarget: 1,
+    frameBorder: 1,
+    headers: 0,
+    height: 0,
+    hidden: 0,
+    high: 0,
+    href: 0,
+    hrefLang: 1,
+    htmlFor: 1,
+    httpEquiv: 1,
+    "http-equiv": "httpEquiv",
+    icon: 0,
+    id: 0,
+    innerHTML: 1,
+    inputMode: 1,
+    integrity: 0,
+    is: 0,
+    itemID: 1,
+    itemProp: 1,
+    itemRef: 1,
+    itemScope: 1,
+    itemType: 1,
+    keyParams: 1,
+    keyType: 1,
+    kind: 0,
+    label: 0,
+    lang: 0,
+    list: 0,
+    loop: 0,
+    low: 0,
+    manifest: 0,
+    marginWidth: 1,
+    marginHeight: 1,
+    max: 0,
+    maxLength: 1,
+    media: 0,
+    mediaGroup: 1,
+    method: 0,
+    min: 0,
+    minLength: 1,
+    multiple: 0,
+    muted: 0,
+    name: 0,
+    noModule: 1,
+    nonce: 0,
+    noValidate: 1,
+    open: 0,
+    optimum: 0,
+    pattern: 0,
+    placeholder: 0,
+    playsInline: 1,
+    poster: 0,
+    preload: 0,
+    profile: 0,
+    radioGroup: 1,
+    readOnly: 1,
+    referrerPolicy: 1,
+    rel: 0,
+    required: 0,
+    reversed: 0,
+    role: 0,
+    rows: 0,
+    rowSpan: 1,
+    sandbox: 0,
+    scope: 0,
+    scoped: 0,
+    scrolling: 0,
+    seamless: 0,
+    selected: 0,
+    shape: 0,
+    size: 0,
+    sizes: 0,
+    span: 0,
+    spellCheck: 1,
+    src: 0,
+    srcDoc: 1,
+    srcLang: 1,
+    srcSet: 1,
+    start: 0,
+    step: 0,
+    style: 0,
+    summary: 0,
+    tabIndex: 1,
+    target: 0,
+    title: 0,
+    type: 0,
+    useMap: 1,
+    value: 0,
+    width: 0,
+    wmode: 0,
+    wrap: 0,
+    about: 0,
+    accentHeight: 1,
+    "accent-height": "accentHeight",
+    accumulate: 0,
+    additive: 0,
+    alignmentBaseline: 1,
+    "alignment-baseline": "alignmentBaseline",
+    allowReorder: 1,
+    alphabetic: 0,
+    amplitude: 0,
+    arabicForm: 1,
+    "arabic-form": "arabicForm",
+    ascent: 0,
+    attributeName: 1,
+    attributeType: 1,
+    autoReverse: 1,
+    azimuth: 0,
+    baseFrequency: 1,
+    baselineShift: 1,
+    "baseline-shift": "baselineShift",
+    baseProfile: 1,
+    bbox: 0,
+    begin: 0,
+    bias: 0,
+    by: 0,
+    calcMode: 1,
+    capHeight: 1,
+    "cap-height": "capHeight",
+    clip: 0,
+    clipPath: 1,
+    "clip-path": "clipPath",
+    clipPathUnits: 1,
+    clipRule: 1,
+    "clip-rule": "clipRule",
+    color: 0,
+    colorInterpolation: 1,
+    "color-interpolation": "colorInterpolation",
+    colorInterpolationFilters: 1,
+    "color-interpolation-filters": "colorInterpolationFilters",
+    colorProfile: 1,
+    "color-profile": "colorProfile",
+    colorRendering: 1,
+    "color-rendering": "colorRendering",
+    contentScriptType: 1,
+    contentStyleType: 1,
+    cursor: 0,
+    cx: 0,
+    cy: 0,
+    d: 0,
+    datatype: 0,
+    decelerate: 0,
+    descent: 0,
+    diffuseConstant: 1,
+    direction: 0,
+    display: 0,
+    divisor: 0,
+    dominantBaseline: 1,
+    "dominant-baseline": "dominantBaseline",
+    dur: 0,
+    dx: 0,
+    dy: 0,
+    edgeMode: 1,
+    elevation: 0,
+    enableBackground: 1,
+    "enable-background": "enableBackground",
+    end: 0,
+    exponent: 0,
+    externalResourcesRequired: 1,
+    fill: 0,
+    fillOpacity: 1,
+    "fill-opacity": "fillOpacity",
+    fillRule: 1,
+    "fill-rule": "fillRule",
+    filter: 0,
+    filterRes: 1,
+    filterUnits: 1,
+    floodOpacity: 1,
+    "flood-opacity": "floodOpacity",
+    floodColor: 1,
+    "flood-color": "floodColor",
+    focusable: 0,
+    fontFamily: 1,
+    "font-family": "fontFamily",
+    fontSize: 1,
+    "font-size": "fontSize",
+    fontSizeAdjust: 1,
+    "font-size-adjust": "fontSizeAdjust",
+    fontStretch: 1,
+    "font-stretch": "fontStretch",
+    fontStyle: 1,
+    "font-style": "fontStyle",
+    fontVariant: 1,
+    "font-variant": "fontVariant",
+    fontWeight: 1,
+    "font-weight": "fontWeight",
+    format: 0,
+    from: 0,
+    fx: 0,
+    fy: 0,
+    g1: 0,
+    g2: 0,
+    glyphName: 1,
+    "glyph-name": "glyphName",
+    glyphOrientationHorizontal: 1,
+    "glyph-orientation-horizontal": "glyphOrientationHorizontal",
+    glyphOrientationVertical: 1,
+    "glyph-orientation-vertical": "glyphOrientationVertical",
+    glyphRef: 1,
+    gradientTransform: 1,
+    gradientUnits: 1,
+    hanging: 0,
+    horizAdvX: 1,
+    "horiz-adv-x": "horizAdvX",
+    horizOriginX: 1,
+    "horiz-origin-x": "horizOriginX",
+    ideographic: 0,
+    imageRendering: 1,
+    "image-rendering": "imageRendering",
+    in2: 0,
+    in: 0,
+    inlist: 0,
+    intercept: 0,
+    k1: 0,
+    k2: 0,
+    k3: 0,
+    k4: 0,
+    k: 0,
+    kernelMatrix: 1,
+    kernelUnitLength: 1,
+    kerning: 0,
+    keyPoints: 1,
+    keySplines: 1,
+    keyTimes: 1,
+    lengthAdjust: 1,
+    letterSpacing: 1,
+    "letter-spacing": "letterSpacing",
+    lightingColor: 1,
+    "lighting-color": "lightingColor",
+    limitingConeAngle: 1,
+    local: 0,
+    markerEnd: 1,
+    "marker-end": "markerEnd",
+    markerHeight: 1,
+    markerMid: 1,
+    "marker-mid": "markerMid",
+    markerStart: 1,
+    "marker-start": "markerStart",
+    markerUnits: 1,
+    markerWidth: 1,
+    mask: 0,
+    maskContentUnits: 1,
+    maskUnits: 1,
+    mathematical: 0,
+    mode: 0,
+    numOctaves: 1,
+    offset: 0,
+    opacity: 0,
+    operator: 0,
+    order: 0,
+    orient: 0,
+    orientation: 0,
+    origin: 0,
+    overflow: 0,
+    overlinePosition: 1,
+    "overline-position": "overlinePosition",
+    overlineThickness: 1,
+    "overline-thickness": "overlineThickness",
+    paintOrder: 1,
+    "paint-order": "paintOrder",
+    panose1: 0,
+    "panose-1": "panose1",
+    pathLength: 1,
+    patternContentUnits: 1,
+    patternTransform: 1,
+    patternUnits: 1,
+    pointerEvents: 1,
+    "pointer-events": "pointerEvents",
+    points: 0,
+    pointsAtX: 1,
+    pointsAtY: 1,
+    pointsAtZ: 1,
+    prefix: 0,
+    preserveAlpha: 1,
+    preserveAspectRatio: 1,
+    primitiveUnits: 1,
+    property: 0,
+    r: 0,
+    radius: 0,
+    refX: 1,
+    refY: 1,
+    renderingIntent: 1,
+    "rendering-intent": "renderingIntent",
+    repeatCount: 1,
+    repeatDur: 1,
+    requiredExtensions: 1,
+    requiredFeatures: 1,
+    resource: 0,
+    restart: 0,
+    result: 0,
+    results: 0,
+    rotate: 0,
+    rx: 0,
+    ry: 0,
+    scale: 0,
+    security: 0,
+    seed: 0,
+    shapeRendering: 1,
+    "shape-rendering": "shapeRendering",
+    slope: 0,
+    spacing: 0,
+    specularConstant: 1,
+    specularExponent: 1,
+    speed: 0,
+    spreadMethod: 1,
+    startOffset: 1,
+    stdDeviation: 1,
+    stemh: 0,
+    stemv: 0,
+    stitchTiles: 1,
+    stopColor: 1,
+    "stop-color": "stopColor",
+    stopOpacity: 1,
+    "stop-opacity": "stopOpacity",
+    strikethroughPosition: 1,
+    "strikethrough-position": "strikethroughPosition",
+    strikethroughThickness: 1,
+    "strikethrough-thickness": "strikethroughThickness",
+    string: 0,
+    stroke: 0,
+    strokeDasharray: 1,
+    "stroke-dasharray": "strokeDasharray",
+    strokeDashoffset: 1,
+    "stroke-dashoffset": "strokeDashoffset",
+    strokeLinecap: 1,
+    "stroke-linecap": "strokeLinecap",
+    strokeLinejoin: 1,
+    "stroke-linejoin": "strokeLinejoin",
+    strokeMiterlimit: 1,
+    "stroke-miterlimit": "strokeMiterlimit",
+    strokeWidth: 1,
+    "stroke-width": "strokeWidth",
+    strokeOpacity: 1,
+    "stroke-opacity": "strokeOpacity",
+    suppressContentEditableWarning: 1,
+    suppressHydrationWarning: 1,
+    surfaceScale: 1,
+    systemLanguage: 1,
+    tableValues: 1,
+    targetX: 1,
+    targetY: 1,
+    textAnchor: 1,
+    "text-anchor": "textAnchor",
+    textDecoration: 1,
+    "text-decoration": "textDecoration",
+    textLength: 1,
+    textRendering: 1,
+    "text-rendering": "textRendering",
+    to: 0,
+    transform: 0,
+    typeof: 0,
+    u1: 0,
+    u2: 0,
+    underlinePosition: 1,
+    "underline-position": "underlinePosition",
+    underlineThickness: 1,
+    "underline-thickness": "underlineThickness",
+    unicode: 0,
+    unicodeBidi: 1,
+    "unicode-bidi": "unicodeBidi",
+    unicodeRange: 1,
+    "unicode-range": "unicodeRange",
+    unitsPerEm: 1,
+    "units-per-em": "unitsPerEm",
+    unselectable: 0,
+    vAlphabetic: 1,
+    "v-alphabetic": "vAlphabetic",
+    values: 0,
+    vectorEffect: 1,
+    "vector-effect": "vectorEffect",
+    version: 0,
+    vertAdvY: 1,
+    "vert-adv-y": "vertAdvY",
+    vertOriginX: 1,
+    "vert-origin-x": "vertOriginX",
+    vertOriginY: 1,
+    "vert-origin-y": "vertOriginY",
+    vHanging: 1,
+    "v-hanging": "vHanging",
+    vIdeographic: 1,
+    "v-ideographic": "vIdeographic",
+    viewBox: 1,
+    viewTarget: 1,
+    visibility: 0,
+    vMathematical: 1,
+    "v-mathematical": "vMathematical",
+    vocab: 0,
+    widths: 0,
+    wordSpacing: 1,
+    "word-spacing": "wordSpacing",
+    writingMode: 1,
+    "writing-mode": "writingMode",
+    x1: 0,
+    x2: 0,
+    x: 0,
+    xChannelSelector: 1,
+    xHeight: 1,
+    "x-height": "xHeight",
+    xlinkActuate: 1,
+    "xlink:actuate": "xlinkActuate",
+    xlinkArcrole: 1,
+    "xlink:arcrole": "xlinkArcrole",
+    xlinkHref: 1,
+    "xlink:href": "xlinkHref",
+    xlinkRole: 1,
+    "xlink:role": "xlinkRole",
+    xlinkShow: 1,
+    "xlink:show": "xlinkShow",
+    xlinkTitle: 1,
+    "xlink:title": "xlinkTitle",
+    xlinkType: 1,
+    "xlink:type": "xlinkType",
+    xmlBase: 1,
+    "xml:base": "xmlBase",
+    xmlLang: 1,
+    "xml:lang": "xmlLang",
+    xmlns: 0,
+    "xml:space": "xmlSpace",
+    xmlnsXlink: 1,
+    "xmlns:xlink": "xmlnsXlink",
+    xmlSpace: 1,
+    y1: 0,
+    y2: 0,
+    y: 0,
+    yChannelSelector: 1,
+    z: 0,
+    zoomAndPan: 1
+  };
+  const RESERVED = 0;
+  const STRING = 1;
+  const BOOLEANISH_STRING = 2;
+  const BOOLEAN = 3;
+  const OVERLOADED_BOOLEAN = 4;
+  const NUMERIC = 5;
+  const POSITIVE_NUMERIC = 6;
+  function getPropertyInfo(name2) {
+    return properties.hasOwnProperty(name2) ? properties[name2] : null;
+  }
+  function PropertyInfoRecord(name2, type, mustUseProperty, attributeName, attributeNamespace, sanitizeURL, removeEmptyString) {
+    this.acceptsBooleans = type === BOOLEANISH_STRING || type === BOOLEAN || type === OVERLOADED_BOOLEAN;
+    this.attributeName = attributeName;
+    this.attributeNamespace = attributeNamespace;
+    this.mustUseProperty = mustUseProperty;
+    this.propertyName = name2;
+    this.type = type;
+    this.sanitizeURL = sanitizeURL;
+    this.removeEmptyString = removeEmptyString;
+  }
+  const properties = {};
+  const reservedProps = [
+    "children",
+    "dangerouslySetInnerHTML",
+    // TODO: This prevents the assignment of defaultValue to regular
+    // elements (not just inputs). Now that ReactDOMInput assigns to the
+    // defaultValue property -- do we need this?
+    "defaultValue",
+    "defaultChecked",
+    "innerHTML",
+    "suppressContentEditableWarning",
+    "suppressHydrationWarning",
+    "style"
+  ];
+  reservedProps.forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      RESERVED,
+      false,
+      // mustUseProperty
+      name2,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    ["acceptCharset", "accept-charset"],
+    ["className", "class"],
+    ["htmlFor", "for"],
+    ["httpEquiv", "http-equiv"]
+  ].forEach(([name2, attributeName]) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  ["contentEditable", "draggable", "spellCheck", "value"].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      BOOLEANISH_STRING,
+      false,
+      // mustUseProperty
+      name2.toLowerCase(),
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "autoReverse",
+    "externalResourcesRequired",
+    "focusable",
+    "preserveAlpha"
+  ].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      BOOLEANISH_STRING,
+      false,
+      // mustUseProperty
+      name2,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "allowFullScreen",
+    "async",
+    // Note: there is a special case that prevents it from being written to the DOM
+    // on the client side because the browsers are inconsistent. Instead we call focus().
+    "autoFocus",
+    "autoPlay",
+    "controls",
+    "default",
+    "defer",
+    "disabled",
+    "disablePictureInPicture",
+    "disableRemotePlayback",
+    "formNoValidate",
+    "hidden",
+    "loop",
+    "noModule",
+    "noValidate",
+    "open",
+    "playsInline",
+    "readOnly",
+    "required",
+    "reversed",
+    "scoped",
+    "seamless",
+    // Microdata
+    "itemScope"
+  ].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      BOOLEAN,
+      false,
+      // mustUseProperty
+      name2.toLowerCase(),
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "checked",
+    // Note: `option.selected` is not updated if `select.multiple` is
+    // disabled with `removeAttribute`. We have special logic for handling this.
+    "multiple",
+    "muted",
+    "selected"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      BOOLEAN,
+      true,
+      // mustUseProperty
+      name2,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "capture",
+    "download"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      OVERLOADED_BOOLEAN,
+      false,
+      // mustUseProperty
+      name2,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "cols",
+    "rows",
+    "size",
+    "span"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      POSITIVE_NUMERIC,
+      false,
+      // mustUseProperty
+      name2,
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  ["rowSpan", "start"].forEach((name2) => {
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      NUMERIC,
+      false,
+      // mustUseProperty
+      name2.toLowerCase(),
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  const CAMELIZE = /[\-\:]([a-z])/g;
+  const capitalize$1 = (token2) => token2[1].toUpperCase();
+  [
+    "accent-height",
+    "alignment-baseline",
+    "arabic-form",
+    "baseline-shift",
+    "cap-height",
+    "clip-path",
+    "clip-rule",
+    "color-interpolation",
+    "color-interpolation-filters",
+    "color-profile",
+    "color-rendering",
+    "dominant-baseline",
+    "enable-background",
+    "fill-opacity",
+    "fill-rule",
+    "flood-color",
+    "flood-opacity",
+    "font-family",
+    "font-size",
+    "font-size-adjust",
+    "font-stretch",
+    "font-style",
+    "font-variant",
+    "font-weight",
+    "glyph-name",
+    "glyph-orientation-horizontal",
+    "glyph-orientation-vertical",
+    "horiz-adv-x",
+    "horiz-origin-x",
+    "image-rendering",
+    "letter-spacing",
+    "lighting-color",
+    "marker-end",
+    "marker-mid",
+    "marker-start",
+    "overline-position",
+    "overline-thickness",
+    "paint-order",
+    "panose-1",
+    "pointer-events",
+    "rendering-intent",
+    "shape-rendering",
+    "stop-color",
+    "stop-opacity",
+    "strikethrough-position",
+    "strikethrough-thickness",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-opacity",
+    "stroke-width",
+    "text-anchor",
+    "text-decoration",
+    "text-rendering",
+    "underline-position",
+    "underline-thickness",
+    "unicode-bidi",
+    "unicode-range",
+    "units-per-em",
+    "v-alphabetic",
+    "v-hanging",
+    "v-ideographic",
+    "v-mathematical",
+    "vector-effect",
+    "vert-adv-y",
+    "vert-origin-x",
+    "vert-origin-y",
+    "word-spacing",
+    "writing-mode",
+    "xmlns:xlink",
+    "x-height"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((attributeName) => {
+    const name2 = attributeName.replace(CAMELIZE, capitalize$1);
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName,
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "xlink:actuate",
+    "xlink:arcrole",
+    "xlink:role",
+    "xlink:show",
+    "xlink:title",
+    "xlink:type"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((attributeName) => {
+    const name2 = attributeName.replace(CAMELIZE, capitalize$1);
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName,
+      "http://www.w3.org/1999/xlink",
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  [
+    "xml:base",
+    "xml:lang",
+    "xml:space"
+    // NOTE: if you add a camelCased prop to this list,
+    // you'll need to set attributeName to name.toLowerCase()
+    // instead in the assignment below.
+  ].forEach((attributeName) => {
+    const name2 = attributeName.replace(CAMELIZE, capitalize$1);
+    properties[name2] = new PropertyInfoRecord(
+      name2,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName,
+      "http://www.w3.org/XML/1998/namespace",
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  ["tabIndex", "crossOrigin"].forEach((attributeName) => {
+    properties[attributeName] = new PropertyInfoRecord(
+      attributeName,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName.toLowerCase(),
+      // attributeName
+      null,
+      // attributeNamespace
+      false,
+      // sanitizeURL
+      false
+      // removeEmptyString
+    );
+  });
+  const xlinkHref = "xlinkHref";
+  properties[xlinkHref] = new PropertyInfoRecord(
+    "xlinkHref",
+    STRING,
+    false,
+    // mustUseProperty
+    "xlink:href",
+    "http://www.w3.org/1999/xlink",
+    true,
+    // sanitizeURL
+    false
+    // removeEmptyString
+  );
+  ["src", "href", "action", "formAction"].forEach((attributeName) => {
+    properties[attributeName] = new PropertyInfoRecord(
+      attributeName,
+      STRING,
+      false,
+      // mustUseProperty
+      attributeName.toLowerCase(),
+      // attributeName
+      null,
+      // attributeNamespace
+      true,
+      // sanitizeURL
+      true
+      // removeEmptyString
+    );
+  });
+  const {
+    CAMELCASE,
+    SAME,
+    possibleStandardNames: possibleStandardNamesOptimized
+  } = possibleStandardNamesOptimized$1;
+  const ATTRIBUTE_NAME_START_CHAR = ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
+  const ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + "\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
+  const isCustomAttribute = RegExp.prototype.test.bind(
+    // eslint-disable-next-line no-misleading-character-class
+    new RegExp("^(data|aria)-[" + ATTRIBUTE_NAME_CHAR + "]*$")
+  );
+  const possibleStandardNames = Object.keys(
+    possibleStandardNamesOptimized
+  ).reduce((accumulator, standardName) => {
+    const propName = possibleStandardNamesOptimized[standardName];
+    if (propName === SAME) {
+      accumulator[standardName] = standardName;
+    } else if (propName === CAMELCASE) {
+      accumulator[standardName.toLowerCase()] = standardName;
+    } else {
+      accumulator[standardName] = propName;
+    }
+    return accumulator;
+  }, {});
+  lib.BOOLEAN = BOOLEAN;
+  lib.BOOLEANISH_STRING = BOOLEANISH_STRING;
+  lib.NUMERIC = NUMERIC;
+  lib.OVERLOADED_BOOLEAN = OVERLOADED_BOOLEAN;
+  lib.POSITIVE_NUMERIC = POSITIVE_NUMERIC;
+  lib.RESERVED = RESERVED;
+  lib.STRING = STRING;
+  lib.getPropertyInfo = getPropertyInfo;
+  lib.isCustomAttribute = isCustomAttribute;
+  lib.possibleStandardNames = possibleStandardNames;
+  var utilities$1 = {};
+  var cjs$1 = {};
+  var cjs = {};
+  var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
+  var NEWLINE_REGEX = /\n/g;
+  var WHITESPACE_REGEX = /^\s*/;
+  var PROPERTY_REGEX = /^(\*?[-#/*\\\w]+(\[[0-9a-z_-]+\])?)\s*/;
+  var COLON_REGEX = /^:\s*/;
+  var VALUE_REGEX = /^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};])+)/;
+  var SEMICOLON_REGEX = /^[;\s]*/;
+  var TRIM_REGEX = /^\s+|\s+$/g;
+  var NEWLINE = "\n";
+  var FORWARD_SLASH = "/";
+  var ASTERISK = "*";
+  var EMPTY_STRING = "";
+  var TYPE_COMMENT = "comment";
+  var TYPE_DECLARATION = "declaration";
+  var inlineStyleParser = function(style2, options) {
+    if (typeof style2 !== "string") {
+      throw new TypeError("First argument must be a string");
+    }
+    if (!style2)
+      return [];
+    options = options || {};
+    var lineno = 1;
+    var column2 = 1;
+    function updatePosition(str) {
+      var lines = str.match(NEWLINE_REGEX);
+      if (lines)
+        lineno += lines.length;
+      var i2 = str.lastIndexOf(NEWLINE);
+      column2 = ~i2 ? str.length - i2 : column2 + str.length;
+    }
+    function position2() {
+      var start = { line: lineno, column: column2 };
+      return function(node2) {
+        node2.position = new Position(start);
+        whitespace2();
+        return node2;
+      };
+    }
+    function Position(start) {
+      this.start = start;
+      this.end = { line: lineno, column: column2 };
+      this.source = options.source;
+    }
+    Position.prototype.content = style2;
+    function error(msg) {
+      var err = new Error(
+        options.source + ":" + lineno + ":" + column2 + ": " + msg
+      );
+      err.reason = msg;
+      err.filename = options.source;
+      err.line = lineno;
+      err.column = column2;
+      err.source = style2;
+      if (options.silent)
+        ;
+      else {
+        throw err;
+      }
+    }
+    function match2(re2) {
+      var m2 = re2.exec(style2);
+      if (!m2)
+        return;
+      var str = m2[0];
+      updatePosition(str);
+      style2 = style2.slice(str.length);
+      return m2;
+    }
+    function whitespace2() {
+      match2(WHITESPACE_REGEX);
+    }
+    function comments(rules) {
+      var c;
+      rules = rules || [];
+      while (c = comment2()) {
+        if (c !== false) {
+          rules.push(c);
+        }
+      }
+      return rules;
+    }
+    function comment2() {
+      var pos = position2();
+      if (FORWARD_SLASH != style2.charAt(0) || ASTERISK != style2.charAt(1))
+        return;
+      var i2 = 2;
+      while (EMPTY_STRING != style2.charAt(i2) && (ASTERISK != style2.charAt(i2) || FORWARD_SLASH != style2.charAt(i2 + 1))) {
+        ++i2;
+      }
+      i2 += 2;
+      if (EMPTY_STRING === style2.charAt(i2 - 1)) {
+        return error("End of comment missing");
+      }
+      var str = style2.slice(2, i2 - 2);
+      column2 += 2;
+      updatePosition(str);
+      style2 = style2.slice(i2);
+      column2 += 2;
+      return pos({
+        type: TYPE_COMMENT,
+        comment: str
+      });
+    }
+    function declaration2() {
+      var pos = position2();
+      var prop = match2(PROPERTY_REGEX);
+      if (!prop)
+        return;
+      comment2();
+      if (!match2(COLON_REGEX))
+        return error("property missing ':'");
+      var val = match2(VALUE_REGEX);
+      var ret = pos({
+        type: TYPE_DECLARATION,
+        property: trim(prop[0].replace(COMMENT_REGEX, EMPTY_STRING)),
+        value: val ? trim(val[0].replace(COMMENT_REGEX, EMPTY_STRING)) : EMPTY_STRING
+      });
+      match2(SEMICOLON_REGEX);
+      return ret;
+    }
+    function declarations() {
+      var decls = [];
+      comments(decls);
+      var decl;
+      while (decl = declaration2()) {
+        if (decl !== false) {
+          decls.push(decl);
+          comments(decls);
+        }
+      }
+      return decls;
+    }
+    whitespace2();
+    return declarations();
+  };
+  function trim(str) {
+    return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
+  }
+  var __importDefault$2 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+    return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+  };
+  Object.defineProperty(cjs, "__esModule", { value: true });
+  var inline_style_parser_1 = __importDefault$2(inlineStyleParser);
+  function StyleToObject(style2, iterator) {
+    var styleObject = null;
+    if (!style2 || typeof style2 !== "string") {
+      return styleObject;
+    }
+    var declarations = (0, inline_style_parser_1.default)(style2);
+    var hasIterator = typeof iterator === "function";
+    declarations.forEach(function(declaration2) {
+      if (declaration2.type !== "declaration") {
+        return;
+      }
+      var property = declaration2.property, value = declaration2.value;
+      if (hasIterator) {
+        iterator(property, value, declaration2);
+      } else if (value) {
+        styleObject = styleObject || {};
+        styleObject[property] = value;
+      }
+    });
+    return styleObject;
+  }
+  cjs.default = StyleToObject;
+  var utilities = {};
+  Object.defineProperty(utilities, "__esModule", { value: true });
+  utilities.camelCase = void 0;
+  var CUSTOM_PROPERTY_REGEX = /^--[a-zA-Z0-9-]+$/;
+  var HYPHEN_REGEX = /-([a-z])/g;
+  var NO_HYPHEN_REGEX = /^[^-]+$/;
+  var VENDOR_PREFIX_REGEX = /^-(webkit|moz|ms|o|khtml)-/;
+  var MS_VENDOR_PREFIX_REGEX = /^-(ms)-/;
+  var skipCamelCase = function(property) {
+    return !property || NO_HYPHEN_REGEX.test(property) || CUSTOM_PROPERTY_REGEX.test(property);
+  };
+  var capitalize = function(match2, character2) {
+    return character2.toUpperCase();
+  };
+  var trimHyphen = function(match2, prefix2) {
+    return "".concat(prefix2, "-");
+  };
+  var camelCase = function(property, options) {
+    if (options === void 0) {
+      options = {};
+    }
+    if (skipCamelCase(property)) {
+      return property;
+    }
+    property = property.toLowerCase();
+    if (options.reactCompat) {
+      property = property.replace(MS_VENDOR_PREFIX_REGEX, trimHyphen);
+    } else {
+      property = property.replace(VENDOR_PREFIX_REGEX, trimHyphen);
+    }
+    return property.replace(HYPHEN_REGEX, capitalize);
+  };
+  utilities.camelCase = camelCase;
+  var __importDefault$1 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+    return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+  };
+  Object.defineProperty(cjs$1, "__esModule", { value: true });
+  var style_to_object_1 = __importDefault$1(cjs);
+  var utilities_1$2 = utilities;
+  function StyleToJS(style2, options) {
+    var output = {};
+    if (!style2 || typeof style2 !== "string") {
+      return output;
+    }
+    (0, style_to_object_1.default)(style2, function(property, value) {
+      if (property && value) {
+        output[(0, utilities_1$2.camelCase)(property, options)] = value;
+      }
+    });
+    return output;
+  }
+  cjs$1.default = StyleToJS;
+  (function(exports) {
+    var __importDefault2 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+      return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
+    var react_12 = requireReact();
+    var style_to_js_1 = __importDefault2(cjs$1);
+    var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
+      "annotation-xml",
+      "color-profile",
+      "font-face",
+      "font-face-src",
+      "font-face-uri",
+      "font-face-format",
+      "font-face-name",
+      "missing-glyph"
+    ]);
+    function isCustomComponent(tagName, props) {
+      if (!tagName.includes("-")) {
+        return Boolean(props && typeof props.is === "string");
+      }
+      if (RESERVED_SVG_MATHML_ELEMENTS.has(tagName)) {
+        return false;
+      }
+      return true;
+    }
+    exports.isCustomComponent = isCustomComponent;
+    var styleOptions = {
+      reactCompat: true
+    };
+    function setStyleProp(style2, props) {
+      if (typeof style2 !== "string") {
+        return;
+      }
+      if (!style2.trim()) {
+        props.style = {};
+        return;
+      }
+      try {
+        props.style = (0, style_to_js_1.default)(style2, styleOptions);
+      } catch (error) {
+        props.style = {};
+      }
+    }
+    exports.setStyleProp = setStyleProp;
+    exports.PRESERVE_CUSTOM_ATTRIBUTES = Number(react_12.version.split(".")[0]) >= 16;
+    exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = /* @__PURE__ */ new Set([
+      "tr",
+      "tbody",
+      "thead",
+      "tfoot",
+      "colgroup",
+      "table",
+      "head",
+      "html",
+      "frameset"
+    ]);
+    var canTextBeChildOfNode = function(node2) {
+      return !exports.ELEMENTS_WITH_NO_TEXT_CHILDREN.has(node2.name);
+    };
+    exports.canTextBeChildOfNode = canTextBeChildOfNode;
+    var returnFirstArg = function(arg) {
+      return arg;
+    };
+    exports.returnFirstArg = returnFirstArg;
+  })(utilities$1);
+  Object.defineProperty(attributesToProps$1, "__esModule", { value: true });
+  var react_property_1 = lib;
+  var utilities_1$1 = utilities$1;
+  var UNCONTROLLED_COMPONENT_ATTRIBUTES = ["checked", "value"];
+  var UNCONTROLLED_COMPONENT_NAMES = ["input", "select", "textarea"];
+  var valueOnlyInputs = {
+    reset: true,
+    submit: true
+  };
+  function attributesToProps(attributes, nodeName) {
+    if (attributes === void 0) {
+      attributes = {};
+    }
+    var props = {};
+    var isInputValueOnly = Boolean(attributes.type && valueOnlyInputs[attributes.type]);
+    for (var attributeName in attributes) {
+      var attributeValue = attributes[attributeName];
+      if ((0, react_property_1.isCustomAttribute)(attributeName)) {
+        props[attributeName] = attributeValue;
+        continue;
+      }
+      var attributeNameLowerCased = attributeName.toLowerCase();
+      var propName = getPropName(attributeNameLowerCased);
+      if (propName) {
+        var propertyInfo = (0, react_property_1.getPropertyInfo)(propName);
+        if (UNCONTROLLED_COMPONENT_ATTRIBUTES.includes(propName) && UNCONTROLLED_COMPONENT_NAMES.includes(nodeName) && !isInputValueOnly) {
+          propName = getPropName("default" + attributeNameLowerCased);
+        }
+        props[propName] = attributeValue;
+        switch (propertyInfo && propertyInfo.type) {
+          case react_property_1.BOOLEAN:
+            props[propName] = true;
+            break;
+          case react_property_1.OVERLOADED_BOOLEAN:
+            if (attributeValue === "") {
+              props[propName] = true;
+            }
+            break;
+        }
+        continue;
+      }
+      if (utilities_1$1.PRESERVE_CUSTOM_ATTRIBUTES) {
+        props[attributeName] = attributeValue;
+      }
+    }
+    (0, utilities_1$1.setStyleProp)(attributes.style, props);
+    return props;
+  }
+  attributesToProps$1.default = attributesToProps;
+  function getPropName(attributeName) {
+    return react_property_1.possibleStandardNames[attributeName];
+  }
+  var domToReact$1 = {};
+  var __importDefault = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+    return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+  };
+  Object.defineProperty(domToReact$1, "__esModule", { value: true });
+  var react_1 = requireReact();
+  var attributes_to_props_1 = __importDefault(attributesToProps$1);
+  var utilities_1 = utilities$1;
+  var React = {
+    cloneElement: react_1.cloneElement,
+    createElement: react_1.createElement,
+    isValidElement: react_1.isValidElement
+  };
+  function domToReact(nodes, options) {
+    var reactElements = [];
+    var hasReplace = typeof (options === null || options === void 0 ? void 0 : options.replace) === "function";
+    var transform = (options === null || options === void 0 ? void 0 : options.transform) || utilities_1.returnFirstArg;
+    var _a2 = (options === null || options === void 0 ? void 0 : options.library) || React, cloneElement = _a2.cloneElement, createElement2 = _a2.createElement, isValidElement = _a2.isValidElement;
+    var nodesLength = nodes.length;
+    for (var index = 0; index < nodesLength; index++) {
+      var node2 = nodes[index];
+      if (hasReplace) {
+        var replaceElement = options.replace(node2, index);
+        if (isValidElement(replaceElement)) {
+          if (nodesLength > 1) {
+            replaceElement = cloneElement(replaceElement, {
+              key: replaceElement.key || index
+            });
+          }
+          reactElements.push(transform(replaceElement, node2, index));
+          continue;
+        }
+      }
+      if (node2.type === "text") {
+        var isWhitespace = !node2.data.trim().length;
+        if (isWhitespace && node2.parent && !(0, utilities_1.canTextBeChildOfNode)(node2.parent)) {
+          continue;
+        }
+        if ((options === null || options === void 0 ? void 0 : options.trim) && isWhitespace) {
+          continue;
+        }
+        reactElements.push(transform(node2.data, node2, index));
+        continue;
+      }
+      var element = node2;
+      var props = {};
+      if (skipAttributesToProps(element)) {
+        (0, utilities_1.setStyleProp)(element.attribs.style, element.attribs);
+        props = element.attribs;
+      } else if (element.attribs) {
+        props = (0, attributes_to_props_1.default)(element.attribs, element.name);
+      }
+      var children = void 0;
+      switch (node2.type) {
+        case "script":
+        case "style":
+          if (node2.children[0]) {
+            props.dangerouslySetInnerHTML = {
+              __html: node2.children[0].data
+            };
+          }
+          break;
+        case "tag":
+          if (node2.name === "textarea" && node2.children[0]) {
+            props.defaultValue = node2.children[0].data;
+          } else if (node2.children && node2.children.length) {
+            children = domToReact(node2.children, options);
+          }
+          break;
+        default:
+          continue;
+      }
+      if (nodesLength > 1) {
+        props.key = index;
+      }
+      reactElements.push(transform(createElement2(node2.name, props, children), node2, index));
+    }
+    return reactElements.length === 1 ? reactElements[0] : reactElements;
+  }
+  domToReact$1.default = domToReact;
+  function skipAttributesToProps(node2) {
+    return utilities_1.PRESERVE_CUSTOM_ATTRIBUTES && node2.type === "tag" && (0, utilities_1.isCustomComponent)(node2.name, node2.attribs);
+  }
+  (function(exports) {
+    var __importDefault2 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
+      return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
+    };
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.htmlToDOM = exports.domToReact = exports.attributesToProps = exports.Text = exports.ProcessingInstruction = exports.Element = exports.Comment = void 0;
+    var html_dom_parser_1 = __importDefault2(htmlToDom);
+    exports.htmlToDOM = html_dom_parser_1.default;
+    var attributes_to_props_12 = __importDefault2(attributesToProps$1);
+    exports.attributesToProps = attributes_to_props_12.default;
+    var dom_to_react_1 = __importDefault2(domToReact$1);
+    exports.domToReact = dom_to_react_1.default;
+    var domhandler_12 = lib$2;
+    Object.defineProperty(exports, "Comment", { enumerable: true, get: function() {
+      return domhandler_12.Comment;
+    } });
+    Object.defineProperty(exports, "Element", { enumerable: true, get: function() {
+      return domhandler_12.Element;
+    } });
+    Object.defineProperty(exports, "ProcessingInstruction", { enumerable: true, get: function() {
+      return domhandler_12.ProcessingInstruction;
+    } });
+    Object.defineProperty(exports, "Text", { enumerable: true, get: function() {
+      return domhandler_12.Text;
+    } });
+    var domParserOptions = { lowerCaseAttributeNames: false };
+    function HTMLReactParser2(html2, options) {
+      if (typeof html2 !== "string") {
+        throw new TypeError("First argument must be a string");
+      }
+      if (!html2) {
+        return [];
+      }
+      return (0, dom_to_react_1.default)((0, html_dom_parser_1.default)(html2, (options === null || options === void 0 ? void 0 : options.htmlparser2) || domParserOptions), options);
+    }
+    exports.default = HTMLReactParser2;
+  })(lib$3);
+  const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
+  const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
   var Home = {};
   var _interopRequireDefault$5 = interopRequireDefaultExports;
   Object.defineProperty(Home, "__esModule", {
@@ -100680,10 +102959,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "topnav hide-print", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "update-notifications" })
-        ] }),
+        COURSEFLOW_APP.update_notifications.id && /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { sx: { pb: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CFAlert,
+          {
+            sx: { mt: 3 },
+            severity: "update",
+            title: HtmlReactParser(COURSEFLOW_APP.update_notifications.title),
+            hideIfCookie: `cf-update-${COURSEFLOW_APP.update_notifications.id}`
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "topnav hide-print", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "right-panel-wrapper", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "container", className: "body-wrapper", children }) })
       ] })
     ] }),

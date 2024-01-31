@@ -33,7 +33,12 @@ declare global {
 interface CourseflowAppGlobals {
   config: Config
   show_notification_request: boolean
-  update_notifications: ContextData
+  update_notifications:
+    | {
+        title: string
+        id: number
+      }
+    | Record<string, never>
   home: Home
   strings: Strings
   path_id: string
