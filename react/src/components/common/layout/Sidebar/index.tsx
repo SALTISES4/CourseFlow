@@ -183,6 +183,7 @@ const Sidebar = () => {
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
+              target="_blank"
               href="https://courseflow.freshdesk.com/support/home"
             >
               <ListItemIcon>

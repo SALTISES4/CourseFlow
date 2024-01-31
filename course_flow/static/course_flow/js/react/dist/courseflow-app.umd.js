@@ -100571,6 +100571,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           ListItemButton$1,
           {
             component: "a",
+            target: "_blank",
             href: "https://courseflow.freshdesk.com/support/home",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemIcon$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$2, { color: "primary" }) }),
