@@ -1,5 +1,5 @@
 import { WorkflowType } from '@cfModule/types/enum'
-import * as React from 'react'
+import { MouseEvent } from 'react'
 
 export type ToDefine = any
 
@@ -59,7 +59,43 @@ export type Lock = {
   user_id: string
 }
 
+export type SidebarProps = {
+  isAnonymous: boolean
+  isTeacher: boolean
+  favourites: {
+    title: string
+    url: string
+  }[]
+}
+
+export type TopBarProps = {
+  isTeacher: boolean
+  notifications: {
+    url: string
+    unread: number
+    items: {
+      unread: boolean
+      url: string
+      from: string
+      text: string
+      date: string
+    }[]
+  }
+  menus: {
+    add: {
+      projectUrl: string
+    }
+    account: {
+      notificationsSettingsUrls: string
+      profileUrl: string
+      resetPasswordUrl: string
+      daliteUrl: string
+      daliteText: string
+    }
+  }
+}
+
 export type EventUnion =
-  | React.MouseEvent<HTMLDivElement, MouseEvent>
+  | MouseEvent<HTMLDivElement, MouseEvent>
   | JQuery.Event
-  | React.MouseEvent<Element, MouseEvent>
+  | MouseEvent<Element, MouseEvent>

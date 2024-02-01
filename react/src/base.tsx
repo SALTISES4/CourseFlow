@@ -10,13 +10,13 @@ type PropsType = {
   children: ReactNode
 }
 
-const globalNotifications = COURSEFLOW_APP.globalContextData.notifications
+const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
 
 const Base = ({ children }: PropsType) => (
   <>
     <div className="main-wrapper">
       <div data-component="sidebar">
-        <Sidebar />
+        <Sidebar {...sidebar} />
       </div>
 
       {/*@todo see https://course-flow.atlassian.net/browse/COUR-246*/}
@@ -24,19 +24,17 @@ const Base = ({ children }: PropsType) => (
 
       <div className="main-block">
         <div data-component="topbar">
-          <TopBar />
+          <TopBar {...topbar} />
         </div>
 
         {COURSEFLOW_APP.path_id === 'home' &&
-          globalNotifications.updateNotifications.id && (
+          notifications.updateNotifications.id && (
             <OuterContentWrap sx={{ pb: 0 }}>
               <Alert
                 sx={{ mt: 3 }}
                 severity="update"
-                title={HtmlReactParser(
-                  globalNotifications.updateNotifications.title
-                )}
-                hideIfCookie={`cf-update-${globalNotifications.updateNotifications.id}`}
+                title={HtmlReactParser(notifications.updateNotifications.title)}
+                hideIfCookie={`cf-update-${notifications.updateNotifications.id}`}
               />
             </OuterContentWrap>
           )}

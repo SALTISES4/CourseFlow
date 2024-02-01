@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import jQuery from 'jQuery'
+import { SidebarProps, TopBarProps } from './common'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -34,7 +35,12 @@ interface CourseflowAppGlobals {
   config: Config
   strings: Strings
   path_id: string
+
+  // global context data that's available that more general use
+  // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData
+
+  // consumed by the current view (home, profile settings, etc)
   contextData: ContextData
   tinyLoader: TinyLoader
   makeDropdown: (
@@ -82,8 +88,6 @@ interface GetPaths {
 }
 
 interface JSONAPIPaths {
-  get_top_bar: string
-  get_sidebar: string
   update_profile: string
   get_notifications_page: string
   update_notifications_settings: string
@@ -109,6 +113,9 @@ interface UpdatePath {
 }
 
 interface GlobalContextData {
+  sidebar: SidebarProps
+  topbar: TopBarProps
+
   notifications: {
     showNotificationRequest: boolean
     updateNotifications:

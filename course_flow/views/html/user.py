@@ -42,7 +42,6 @@ def notifications_view(request):
             )
 
         source_user = UserSerializer(notification.source_user).data
-
         source_user_name = source_user['username']
         if (source_user['first_name']):
             source_user_name = source_user['first_name']
@@ -60,7 +59,6 @@ def notifications_view(request):
                 "from": source_user_name,
             }
         )
-
 
     context = {
         "title": "Notifications",
