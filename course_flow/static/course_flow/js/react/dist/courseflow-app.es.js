@@ -102954,21 +102954,22 @@ const CFLogo = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { width: "40"
     )
   ] })
 ] });
+const globalNotifications = COURSEFLOW_APP.globalContextData.notifications;
 const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "topbar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TopBar, {}) }),
-      COURSEFLOW_APP.path_id === "home" && COURSEFLOW_APP.update_notifications.id && /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { sx: { pb: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      COURSEFLOW_APP.path_id === "home" && globalNotifications.updateNotifications.id && /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { sx: { pb: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         CFAlert,
         {
           sx: { mt: 3 },
           severity: "update",
           title: HtmlReactParser(
-            COURSEFLOW_APP.update_notifications.title
+            globalNotifications.updateNotifications.title
           ),
-          hideIfCookie: `cf-update-${COURSEFLOW_APP.update_notifications.id}`
+          hideIfCookie: `cf-update-${globalNotifications.updateNotifications.id}`
         }
       ) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "topnav hide-print", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "titlebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "title" }) }) }),

@@ -7,16 +7,19 @@ from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import UpdateNotificationSerializer
 
 
+def add_global_context(request):
+    return {
+        "globalContextData": JSONRenderer().render({
+            "notifications": update_notifications(request)
+        }).decode("utf-8")
+    }
+
+
 def update_notifications(request):
     try:
         if "course_flow" in request.resolver_match.namespace:
             last_update = UpdateNotification.objects.last()
             if last_update is not None:
-                last_update_serialized = (
-                    JSONRenderer()
-                    .render(UpdateNotificationSerializer(last_update).data)
-                    .decode("utf-8")
-                )
                 if (
                     Group.objects.get(name=settings.TEACHER_GROUP)
                     in request.user.groups.all()
@@ -28,16 +31,12 @@ def update_notifications(request):
                 else:
                     show_notification_request = False
                 return {
-                    "update_notifications": last_update_serialized,
-                    "show_notification_request": JSONRenderer()
-                    .render(show_notification_request)
-                    .decode("utf-8"),
+                    "updateNotifications": UpdateNotificationSerializer(last_update).data,
+                    "showNotificationRequest": show_notification_request,
                 }
     except Exception:
         pass
     return {
-        "update_notifications": {},
-        "show_notification_request": JSONRenderer()
-        .render(False)
-        .decode("utf-8"),
+        "updateNotifications": {},
+        "showNotificationRequest": False,
     }

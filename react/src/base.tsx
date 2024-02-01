@@ -10,6 +10,8 @@ type PropsType = {
   children: ReactNode
 }
 
+const globalNotifications = COURSEFLOW_APP.globalContextData.notifications
+
 const Base = ({ children }: PropsType) => (
   <>
     <div className="main-wrapper">
@@ -26,15 +28,15 @@ const Base = ({ children }: PropsType) => (
         </div>
 
         {COURSEFLOW_APP.path_id === 'home' &&
-          COURSEFLOW_APP.update_notifications.id && (
+          globalNotifications.updateNotifications.id && (
             <OuterContentWrap sx={{ pb: 0 }}>
               <Alert
                 sx={{ mt: 3 }}
                 severity="update"
                 title={HtmlReactParser(
-                  COURSEFLOW_APP.update_notifications.title
+                  globalNotifications.updateNotifications.title
                 )}
-                hideIfCookie={`cf-update-${COURSEFLOW_APP.update_notifications.id}`}
+                hideIfCookie={`cf-update-${globalNotifications.updateNotifications.id}`}
               />
             </OuterContentWrap>
           )}

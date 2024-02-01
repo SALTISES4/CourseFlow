@@ -32,15 +32,9 @@ declare global {
 
 interface CourseflowAppGlobals {
   config: Config
-  show_notification_request: boolean
-  update_notifications:
-    | {
-        title: string
-        id: number
-      }
-    | Record<string, never>
   strings: Strings
   path_id: string
+  globalContextData: GlobalContextData
   contextData: ContextData
   tinyLoader: TinyLoader
   makeDropdown: (
@@ -112,6 +106,18 @@ interface UpdatePath {
   workflow: string
   liveproject: string
   liveassignment: string
+}
+
+interface GlobalContextData {
+  notifications: {
+    showNotificationRequest: boolean
+    updateNotifications:
+      | {
+          title: string
+          id: number
+        }
+      | Record<string, never>
+  }
 }
 
 interface ContextData {}
