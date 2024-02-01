@@ -47592,8 +47592,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: "filled"
   };
   const CardFavoriteBtn = styled$1(IconButton$1)({
-    marginRight: "-8px",
-    marginTop: "-8px"
+    marginTop: "-12px",
+    marginBottom: "-8px",
+    marginRight: "-8px"
   });
   var CHIP_TYPE = /* @__PURE__ */ ((CHIP_TYPE2) => {
     CHIP_TYPE2["PROJECT"] = "project";

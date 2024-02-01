@@ -97,6 +97,7 @@ CardChip.defaultProps = {
 }
 
 export const CardFavoriteBtn = styled(IconButton)({
-  marginRight: '-8px',
-  marginTop: '-8px'
+  marginTop: '-12px',
+  marginBottom: '-8px',
+  marginRight: '-8px'
 })
