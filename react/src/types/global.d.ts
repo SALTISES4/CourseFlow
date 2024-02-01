@@ -39,7 +39,6 @@ interface CourseflowAppGlobals {
         id: number
       }
     | Record<string, never>
-  home: Home
   strings: Strings
   path_id: string
   contextData: ContextData
@@ -116,11 +115,6 @@ interface UpdatePath {
 }
 
 interface ContextData {}
-
-interface Home {
-  user_id: number
-  is_teacher: boolean
-}
 
 interface Strings {
   confirm_email_updates: string
