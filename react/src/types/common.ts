@@ -96,6 +96,6 @@ export type TopBarProps = {
 }
 
 export type EventUnion =
-  | MouseEvent<HTMLDivElement, MouseEvent>
+  | MouseEvent<HTMLDivElement>
   | JQuery.Event
-  | MouseEvent<Element, MouseEvent>
+  | MouseEvent<Element>
