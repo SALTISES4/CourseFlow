@@ -2265,18 +2265,17 @@ var __privateMethod = (obj, member, method) => {
     react_production_min.version = "18.2.0";
     return react_production_min;
   }
-  var hasRequiredReact;
-  function requireReact() {
-    if (hasRequiredReact)
-      return react.exports;
-    hasRequiredReact = 1;
-    if (process.env.NODE_ENV === "production") {
-      react.exports = requireReact_production_min();
-    } else {
-      react.exports = requireReact_development();
-    }
-    return react.exports;
+  if (process.env.NODE_ENV === "production") {
+    react.exports = requireReact_production_min();
+  } else {
+    react.exports = requireReact_development();
   }
+  var reactExports = react.exports;
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
+    __proto__: null,
+    default: React$1
+  }, [reactExports]);
   /**
    * @license React
    * react-jsx-runtime.development.js
@@ -2293,7 +2292,7 @@ var __privateMethod = (obj, member, method) => {
     hasRequiredReactJsxRuntime_development = 1;
     if (process.env.NODE_ENV !== "production") {
       (function() {
-        var React2 = requireReact();
+        var React2 = reactExports;
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3178,7 +3177,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactJsxRuntime_production_min)
       return reactJsxRuntime_production_min;
     hasRequiredReactJsxRuntime_production_min = 1;
-    var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+    var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
     function q(c, a, g) {
       var b, d = {}, e = null, h = null;
       void 0 !== g && (e = "" + g);
@@ -3953,7 +3952,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var Scheduler = requireScheduler();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
@@ -25046,7 +25045,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactDom_production_min)
       return reactDom_production_min;
     hasRequiredReactDom_production_min = 1;
-    var aa = requireReact(), ca = requireScheduler();
+    var aa = reactExports, ca = requireScheduler();
     function p(a) {
       for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
         b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32365,12 +32364,6 @@ var __privateMethod = (obj, member, method) => {
     VERB2["ERROR"] = "error";
     return VERB2;
   })(VERB || {});
-  var reactExports = requireReact();
-  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$2 = /* @__PURE__ */ _mergeNamespaces({
-    __proto__: null,
-    default: React$1
-  }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
   /**
@@ -32392,7 +32385,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format2) {
           {
@@ -32518,7 +32511,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredUseSyncExternalStoreShim_production_min)
       return useSyncExternalStoreShim_production_min;
     hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = requireReact();
+    var e = reactExports;
     function h(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -32582,7 +32575,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var shim2 = shimExports;
         function is2(x, y) {
           return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32676,7 +32669,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredWithSelector_production_min)
       return withSelector_production_min;
     hasRequiredWithSelector_production_min = 1;
-    var h = requireReact(), n = shimExports;
+    var h = reactExports, n = shimExports;
     function p(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -75469,11 +75462,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
   const dialogClasses$1 = dialogClasses;
-  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+  const DialogContext$1 = /* @__PURE__ */ reactExports.createContext({});
   if (process.env.NODE_ENV !== "production") {
-    DialogContext.displayName = "DialogContext";
+    DialogContext$1.displayName = "DialogContext";
   }
-  const DialogContext$1 = DialogContext;
+  const DialogContext$2 = DialogContext$1;
   const _excluded$G = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
   const DialogBackdrop = styled$1(Backdrop$1, {
     name: "MuiDialog",
@@ -75701,7 +75694,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }, PaperProps, {
             className: clsx(classes.paper, PaperProps.className),
             ownerState,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, {
               value: dialogContextValue,
               children
             })
@@ -76047,7 +76040,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const classes = useUtilityClasses$y(ownerState);
     const {
       titleId = idProp
-    } = reactExports.useContext(DialogContext$1);
+    } = reactExports.useContext(DialogContext$2);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
       component: "h2",
       className: clsx(classes.root, className),
@@ -98957,6 +98950,42 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
   default_1$6 = AddCircle.default = _default$6;
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
   const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
     "& .MuiDialogContent-root": {
       padding: theme2.spacing(2)
@@ -98965,27 +98994,26 @@ Please use another name.` : formatMuiErrorMessage(18));
       padding: theme2.spacing(1)
     }
   }));
-  const ResetPasswordModal = ({
-    show,
-    handleClose,
-    handleContinue
-  }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    StyledDialog,
-    {
-      open: show,
-      onClose: handleClose,
-      maxWidth: "xs",
-      "aria-labelledby": "reset-password-modal",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
-        ] })
-      ]
-    }
-  );
+  const ResetPasswordModal = ({ onSubmit }) => {
+    const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        onClose,
+        maxWidth: "xs",
+        "aria-labelledby": "reset-password-modal",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: COURSEFLOW_APP.strings.password_reset })
+          ] })
+        ]
+      }
+    );
+  };
   const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     "& .MuiPaper-root": {
       backgroundColor: theme2.palette.common.white,
@@ -99059,9 +99087,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     );
   }
   const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
+    const { dispatch } = useDialog();
     const [anchorEl, setAnchorEl] = reactExports.useState(null);
     const isMenuOpen = Boolean(anchorEl);
-    const [resetPassword, setResetPassword] = reactExports.useState(false);
     const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
     const isAddMenuOpen = Boolean(addMenuAnchorEl);
     const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
@@ -99084,8 +99112,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       setNotificationsMenuAnchorEl(null);
     };
     const handleCreateClick = (resourceType) => {
-      openCreateActionModal(resourceType);
       closeAllMenus();
+      dispatch(resourceType);
     };
     const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
       StyledMenu,
@@ -99105,9 +99133,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         onClose: closeAllMenus,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("program"), children: COURSEFLOW_APP.strings.program }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("course"), children: COURSEFLOW_APP.strings.course }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("activity"), children: COURSEFLOW_APP.strings.activity })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM), children: COURSEFLOW_APP.strings.program }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_COURSE), children: COURSEFLOW_APP.strings.course }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY), children: COURSEFLOW_APP.strings.activity })
         ]
       }
     );
@@ -99183,7 +99211,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         onClose: closeAllMenus,
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => setResetPassword(true), children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => dispatch(DIALOG_TYPE.RESET_PASSWORD), children: COURSEFLOW_APP.strings.password_reset }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.notificationsSettingsUrls, children: COURSEFLOW_APP.strings.notification_settings }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: menus.account.daliteUrl, children: [
@@ -99245,11 +99273,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ResetPasswordModal,
         {
-          show: resetPassword,
-          handleClose: () => {
-            setResetPassword(false);
-          },
-          handleContinue: () => window.location.href = menus.account.resetPasswordUrl
+          onSubmit: () => window.location.href = menus.account.resetPasswordUrl
         }
       )
     ] });
@@ -101879,7 +101903,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-    var react_12 = requireReact();
+    var react_12 = reactExports;
     var style_to_js_1 = __importDefault2(cjs$1);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
@@ -101997,7 +102021,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
   Object.defineProperty(domToReact$1, "__esModule", { value: true });
-  var react_1 = requireReact();
+  var react_1 = reactExports;
   var attributes_to_props_1 = __importDefault(attributesToProps$1);
   var utilities_1 = utilities$1;
   var React = {
@@ -102393,7 +102417,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     ] })
   ] });
   const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData;
-  const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+  const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContextProvider, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, { ...sidebar }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),

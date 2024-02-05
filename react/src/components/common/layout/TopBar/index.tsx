@@ -18,8 +18,9 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
-
-import ResetPasswordModal from './components/ResetPasswordModal'
+import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
+import { DIALOG_TYPE } from '@cfModule/components/common/dialog/context'
+import { useDialog } from '@cfModule/components/common/dialog'
 
 import {
   TopBarWrap,
@@ -56,10 +57,9 @@ export function openCreateActionModal(type: CreateActionType) {
 }
 
 const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
+  const { dispatch } = useDialog()
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
-
-  const [resetPassword, setResetPassword] = useState(false)
 
   const [addMenuAnchorEl, setAddMenuAnchorEl] = useState(null)
   const isAddMenuOpen = Boolean(addMenuAnchorEl)
@@ -90,9 +90,10 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
     setNotificationsMenuAnchorEl(null)
   }
 
-  const handleCreateClick = (resourceType: CreateActionType) => {
-    openCreateActionModal(resourceType)
+  const handleCreateClick = (resourceType: DIALOG_TYPE) => {
     closeAllMenus()
+    dispatch(resourceType)
+    // openCreateActionModal(resourceType)
   }
 
   const addMenu = (
@@ -114,13 +115,13 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       <MenuItem component="a" href={menus.add.projectUrl}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('program')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM)}>
         {COURSEFLOW_APP.strings.program}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('course')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_COURSE)}>
         {COURSEFLOW_APP.strings.course}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('activity')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY)}>
         {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
@@ -204,7 +205,7 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       <MenuItem component="a" href={menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem onClick={() => setResetPassword(true)}>
+      <MenuItem onClick={() => dispatch(DIALOG_TYPE.RESET_PASSWORD)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
@@ -273,13 +274,7 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       {accountMenu}
 
       <ResetPasswordModal
-        show={resetPassword}
-        handleClose={() => {
-          setResetPassword(false)
-        }}
-        handleContinue={() =>
-          (window.location.href = menus.account.resetPasswordUrl)
-        }
+        onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
     </TopBarWrap>
   )
