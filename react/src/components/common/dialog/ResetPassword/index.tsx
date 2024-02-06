@@ -5,8 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
-import { useDialog } from '../'
-import { DIALOG_TYPE } from '../context'
+import { DIALOG_TYPE, useDialog } from '../'
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {

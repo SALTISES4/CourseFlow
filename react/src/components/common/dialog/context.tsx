@@ -1,12 +1,5 @@
 import { Dispatch, ReactNode, createContext, useReducer } from 'react'
-
-export enum DIALOG_TYPE {
-  CREATE_PROGRAM = 'create_program',
-  CREATE_PROJECT = 'create_project',
-  CREATE_ACTIVITY = 'create_activity',
-  CREATE_COURSE = 'create_course',
-  RESET_PASSWORD = 'reset_password'
-}
+import { DIALOG_TYPE } from './'
 
 type StateType = typeof defaultState
 

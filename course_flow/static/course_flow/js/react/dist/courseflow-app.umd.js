@@ -2265,17 +2265,18 @@ var __privateMethod = (obj, member, method) => {
     react_production_min.version = "18.2.0";
     return react_production_min;
   }
-  if (process.env.NODE_ENV === "production") {
-    react.exports = requireReact_production_min();
-  } else {
-    react.exports = requireReact_development();
+  var hasRequiredReact;
+  function requireReact() {
+    if (hasRequiredReact)
+      return react.exports;
+    hasRequiredReact = 1;
+    if (process.env.NODE_ENV === "production") {
+      react.exports = requireReact_production_min();
+    } else {
+      react.exports = requireReact_development();
+    }
+    return react.exports;
   }
-  var reactExports = react.exports;
-  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$2 = /* @__PURE__ */ _mergeNamespaces({
-    __proto__: null,
-    default: React$1
-  }, [reactExports]);
   /**
    * @license React
    * react-jsx-runtime.development.js
@@ -2292,7 +2293,7 @@ var __privateMethod = (obj, member, method) => {
     hasRequiredReactJsxRuntime_development = 1;
     if (process.env.NODE_ENV !== "production") {
       (function() {
-        var React2 = reactExports;
+        var React2 = requireReact();
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3177,7 +3178,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactJsxRuntime_production_min)
       return reactJsxRuntime_production_min;
     hasRequiredReactJsxRuntime_production_min = 1;
-    var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+    var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
     function q(c, a, g) {
       var b, d = {}, e = null, h = null;
       void 0 !== g && (e = "" + g);
@@ -3952,7 +3953,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = reactExports;
+        var React2 = requireReact();
         var Scheduler = requireScheduler();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
@@ -25045,7 +25046,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactDom_production_min)
       return reactDom_production_min;
     hasRequiredReactDom_production_min = 1;
-    var aa = reactExports, ca = requireScheduler();
+    var aa = requireReact(), ca = requireScheduler();
     function p(a) {
       for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
         b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32364,6 +32365,12 @@ var __privateMethod = (obj, member, method) => {
     VERB2["ERROR"] = "error";
     return VERB2;
   })(VERB || {});
+  var reactExports = requireReact();
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
+    __proto__: null,
+    default: React$1
+  }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
   /**
@@ -32385,7 +32392,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = reactExports;
+        var React2 = requireReact();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format2) {
           {
@@ -32511,7 +32518,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredUseSyncExternalStoreShim_production_min)
       return useSyncExternalStoreShim_production_min;
     hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = reactExports;
+    var e = requireReact();
     function h(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -32575,7 +32582,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = reactExports;
+        var React2 = requireReact();
         var shim2 = shimExports;
         function is2(x, y) {
           return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32669,7 +32676,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredWithSelector_production_min)
       return withSelector_production_min;
     hasRequiredWithSelector_production_min = 1;
-    var h = reactExports, n = shimExports;
+    var h = requireReact(), n = shimExports;
     function p(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -98902,62 +98909,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
   default_1$a = Close.default = _default$a;
-  var AccountCircle = {};
-  var _interopRequireDefault$9 = interopRequireDefaultExports;
-  Object.defineProperty(AccountCircle, "__esModule", {
-    value: true
-  });
-  var default_1$9 = AccountCircle.default = void 0;
-  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-  var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
-  }), "AccountCircle");
-  default_1$9 = AccountCircle.default = _default$9;
-  var Logout = {};
-  var _interopRequireDefault$8 = interopRequireDefaultExports;
-  Object.defineProperty(Logout, "__esModule", {
-    value: true
-  });
-  var default_1$8 = Logout.default = void 0;
-  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-  var _jsxRuntime$8 = jsxRuntimeExports;
-  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-  }), "Logout");
-  default_1$8 = Logout.default = _default$8;
-  var Notifications = {};
-  var _interopRequireDefault$7 = interopRequireDefaultExports;
-  Object.defineProperty(Notifications, "__esModule", {
-    value: true
-  });
-  var default_1$7 = Notifications.default = void 0;
-  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-  var _jsxRuntime$7 = jsxRuntimeExports;
-  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-  }), "Notifications");
-  default_1$7 = Notifications.default = _default$7;
-  var AddCircle = {};
-  var _interopRequireDefault$6 = interopRequireDefaultExports;
-  Object.defineProperty(AddCircle, "__esModule", {
-    value: true
-  });
-  var default_1$6 = AddCircle.default = void 0;
-  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-  var _jsxRuntime$6 = jsxRuntimeExports;
-  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
-  }), "AddCircle");
-  default_1$6 = AddCircle.default = _default$6;
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
   const defaultState = {
     type: null
   };
@@ -98972,6 +98923,14 @@ Please use another name.` : formatMuiErrorMessage(18));
     const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
   }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
   function useDialog(dialogType = null) {
     const dialogContext = reactExports.useContext(DialogContext);
     const dialogDispatch = reactExports.useContext(DialogDispatchContext);
@@ -98986,298 +98945,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       dispatch: dialogDispatch
     };
   }
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(2)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const ResetPasswordModal = ({ onSubmit }) => {
-    const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD);
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledDialog,
-      {
-        open: show,
-        onClose,
-        maxWidth: "xs",
-        "aria-labelledby": "reset-password-modal",
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: COURSEFLOW_APP.strings.password_reset })
-          ] })
-        ]
-      }
-    );
-  };
-  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      backgroundColor: theme2.palette.common.white,
-      boxShadow: "none"
-    }
-  }));
-  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      minWidth: 220,
-      "& .MuiMenuItem-root": {
-        "& .MuiSvgIcon-root": {
-          marginRight: theme2.spacing(1.5)
-        }
-      }
-    }
-  }));
-  const NotificationsMenu = styled$1(Popover$1)({
-    "& .MuiPaper-root": {
-      marginLeft: "3em",
-      width: 500
-    }
-  });
-  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: theme2.spacing(2),
-    paddingBottom: theme2.spacing(2),
-    paddingLeft: theme2.spacing(3),
-    paddingRight: theme2.spacing(1),
-    borderBottom: `1px solid ${theme2.palette.divider}`,
-    "& .MuiTypography-root:not(a)": {
-      color: "currentColor"
-    }
-  }));
-  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
-    paddingTop: 0,
-    paddingBottom: 0,
-    marginBottom: theme2.spacing(1),
-    "& .MuiListItem-root": {
-      padding: 0
-    },
-    "& .MuiListItemButton-root": {
-      paddingTop: theme2.spacing(1.5),
-      paddingBottom: theme2.spacing(1.5),
-      paddingLeft: theme2.spacing(4),
-      borderBottom: `1px solid ${theme2.palette.divider}`
-    },
-    "& .MuiBadge-root": {
-      position: "absolute",
-      left: theme2.spacing(1.7),
-      top: "50%"
-    }
-  }));
-  function openCreateActionModal(type) {
-    const createUrl = COURSEFLOW_APP.config.create_path[type];
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    getTargetProjectMenu(
-      -1,
-      (response_data) => {
-        if (response_data.parentID !== null) {
-          window.location.href = createUrl.replace(
-            "/0/",
-            "/" + response_data.parentID + "/"
-          );
-        }
-      },
-      () => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  }
-  const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
-    const { dispatch } = useDialog();
-    const [anchorEl, setAnchorEl] = reactExports.useState(null);
-    const isMenuOpen = Boolean(anchorEl);
-    const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
-    const isAddMenuOpen = Boolean(addMenuAnchorEl);
-    const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
-    const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
-    const handleMenuOpen = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleAddMenuOpen = (event) => {
-      setAddMenuAnchorEl(event.currentTarget);
-    };
-    const handleNotificationsMenuOpen = (event) => {
-      setNotificationsMenuAnchorEl(event.currentTarget);
-    };
-    const handleLogout = () => [
-      window.location.replace(COURSEFLOW_APP.config.logout_path)
-    ];
-    const closeAllMenus = () => {
-      setAnchorEl(null);
-      setAddMenuAnchorEl(null);
-      setNotificationsMenuAnchorEl(null);
-    };
-    const handleCreateClick = (resourceType) => {
-      closeAllMenus();
-      dispatch(resourceType);
-    };
-    const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledMenu,
-      {
-        anchorEl: addMenuAnchorEl,
-        id: "add-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "center"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "center"
-        },
-        open: isAddMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM), children: COURSEFLOW_APP.strings.program }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_COURSE), children: COURSEFLOW_APP.strings.course }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY), children: COURSEFLOW_APP.strings.activity })
-        ]
-      }
-    );
-    const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      NotificationsMenu,
-      {
-        anchorEl: notificationsMenuAnchorEl,
-        id: "notifications-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "right"
-        },
-        open: isNotificationsMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: notifications2.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: notifications2.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ListItem$1,
-            {
-              alignItems: "flex-start",
-              sx: {
-                backgroundColor: n.unread ? "courseflow.lightest" : null
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
-                n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  ListItemText$1,
-                  {
-                    primary: n.date,
-                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      Typography$1,
-                      {
-                        sx: { display: "inline" },
-                        component: "span",
-                        variant: "body2",
-                        color: "text.primary",
-                        children: n.text
-                      }
-                    )
-                  }
-                )
-              ] })
-            },
-            idx
-          )) })
-        ]
-      }
-    );
-    const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledMenu,
-      {
-        anchorEl,
-        id: "account-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "right"
-        },
-        open: isMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => dispatch(DIALOG_TYPE.RESET_PASSWORD), children: COURSEFLOW_APP.strings.password_reset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.notificationsSettingsUrls, children: COURSEFLOW_APP.strings.notification_settings }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: menus.account.daliteUrl, children: [
-            "Go to ",
-            menus.account.daliteText
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}),
-            " ",
-            COURSEFLOW_APP.strings.sign_out
-          ] })
-        ]
-      }
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
-          isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              "aria-label": "add menu",
-              "aria-controls": "add-menu",
-              "aria-haspopup": "true",
-              color: "primary",
-              onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
-            }
-          ) : null,
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              "aria-label": notifications2.unread >= 1 ? `show ${notifications2.unread} new notifications` : "no new notifications",
-              "aria-controls": "notifications-menu",
-              "aria-haspopup": "true",
-              onClick: handleNotificationsMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              edge: "end",
-              "aria-label": "account of current user",
-              "aria-controls": "account-menu",
-              "aria-haspopup": "true",
-              onClick: handleMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
-            }
-          )
-        ] })
-      ] }) }),
-      isTeacher && addMenu,
-      notificationsMenu,
-      accountMenu,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ResetPasswordModal,
-        {
-          onSubmit: () => window.location.href = menus.account.resetPasswordUrl
-        }
-      )
-    ] });
-  };
   const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     position: "relative",
     padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
@@ -99299,12 +98966,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     color: theme2.palette.primary.main
   }));
   const Welcome = ({ hide }) => {
+    const { dispatch } = useDialog();
     const [visible, setVisible] = reactExports.useState(true);
     function handleClose() {
       setVisible(!visible);
-    }
-    function handleCreateClick(resourceType) {
-      openCreateActionModal(resourceType);
     }
     if (hide || !visible) {
       return null;
@@ -99320,16 +98985,23 @@ Please use another name.` : formatMuiErrorMessage(18));
           Button$1,
           {
             variant: "contained",
-            onClick: () => handleCreateClick("program"),
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_PROGRAM),
             children: window.gettext("I want to create a program")
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: () => handleCreateClick("course"), children: window.gettext("I want to create a course") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Button$1,
           {
             variant: "contained",
-            onClick: () => handleCreateClick("activity"),
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_COURSE),
+            children: window.gettext("I want to create a course")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_ACTIVITY),
             children: window.gettext("I want to create an activity")
           }
         )
@@ -101903,7 +101575,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-    var react_12 = reactExports;
+    var react_12 = requireReact();
     var style_to_js_1 = __importDefault2(cjs$1);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
@@ -102021,7 +101693,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
   Object.defineProperty(domToReact$1, "__esModule", { value: true });
-  var react_1 = reactExports;
+  var react_1 = requireReact();
   var attributes_to_props_1 = __importDefault(attributesToProps$1);
   var utilities_1 = utilities$1;
   var React = {
@@ -102138,6 +101810,360 @@ Please use another name.` : formatMuiErrorMessage(18));
   })(lib$3);
   const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
   const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
+  var AccountCircle = {};
+  var _interopRequireDefault$9 = interopRequireDefaultExports;
+  Object.defineProperty(AccountCircle, "__esModule", {
+    value: true
+  });
+  var default_1$9 = AccountCircle.default = void 0;
+  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+  var _jsxRuntime$9 = jsxRuntimeExports;
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+  }), "AccountCircle");
+  default_1$9 = AccountCircle.default = _default$9;
+  var Logout = {};
+  var _interopRequireDefault$8 = interopRequireDefaultExports;
+  Object.defineProperty(Logout, "__esModule", {
+    value: true
+  });
+  var default_1$8 = Logout.default = void 0;
+  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+  var _jsxRuntime$8 = jsxRuntimeExports;
+  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+  }), "Logout");
+  default_1$8 = Logout.default = _default$8;
+  var Notifications = {};
+  var _interopRequireDefault$7 = interopRequireDefaultExports;
+  Object.defineProperty(Notifications, "__esModule", {
+    value: true
+  });
+  var default_1$7 = Notifications.default = void 0;
+  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+  var _jsxRuntime$7 = jsxRuntimeExports;
+  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+  }), "Notifications");
+  default_1$7 = Notifications.default = _default$7;
+  var AddCircle = {};
+  var _interopRequireDefault$6 = interopRequireDefaultExports;
+  Object.defineProperty(AddCircle, "__esModule", {
+    value: true
+  });
+  var default_1$6 = AddCircle.default = void 0;
+  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+  var _jsxRuntime$6 = jsxRuntimeExports;
+  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+  }), "AddCircle");
+  default_1$6 = AddCircle.default = _default$6;
+  function CreateProgramDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Hello from the Program create dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  function CreateProjectDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Project create dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  function CreateCourseDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_COURSE);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Course create dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  function CreateActivityDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_ACTIVITY);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Activity dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(2)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const ResetPasswordModal = ({ onSubmit }) => {
+    const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        onClose,
+        maxWidth: "xs",
+        "aria-labelledby": "reset-password-modal",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: COURSEFLOW_APP.strings.password_reset })
+          ] })
+        ]
+      }
+    );
+  };
+  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      backgroundColor: theme2.palette.common.white,
+      boxShadow: "none"
+    }
+  }));
+  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      minWidth: 220,
+      "& .MuiMenuItem-root": {
+        "& .MuiSvgIcon-root": {
+          marginRight: theme2.spacing(1.5)
+        }
+      }
+    }
+  }));
+  const NotificationsMenu = styled$1(Popover$1)({
+    "& .MuiPaper-root": {
+      marginLeft: "3em",
+      width: 500
+    }
+  });
+  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: theme2.spacing(2),
+    paddingBottom: theme2.spacing(2),
+    paddingLeft: theme2.spacing(3),
+    paddingRight: theme2.spacing(1),
+    borderBottom: `1px solid ${theme2.palette.divider}`,
+    "& .MuiTypography-root:not(a)": {
+      color: "currentColor"
+    }
+  }));
+  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBottom: theme2.spacing(1),
+    "& .MuiListItem-root": {
+      padding: 0
+    },
+    "& .MuiListItemButton-root": {
+      paddingTop: theme2.spacing(1.5),
+      paddingBottom: theme2.spacing(1.5),
+      paddingLeft: theme2.spacing(4),
+      borderBottom: `1px solid ${theme2.palette.divider}`
+    },
+    "& .MuiBadge-root": {
+      position: "absolute",
+      left: theme2.spacing(1.7),
+      top: "50%"
+    }
+  }));
+  const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
+    const { dispatch } = useDialog();
+    const [anchorEl, setAnchorEl] = reactExports.useState(null);
+    const isMenuOpen = Boolean(anchorEl);
+    const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
+    const isAddMenuOpen = Boolean(addMenuAnchorEl);
+    const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
+    const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
+    const handleMenuOpen = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleAddMenuOpen = (event) => {
+      setAddMenuAnchorEl(event.currentTarget);
+    };
+    const handleNotificationsMenuOpen = (event) => {
+      setNotificationsMenuAnchorEl(event.currentTarget);
+    };
+    const handleLogout = () => [
+      window.location.replace(COURSEFLOW_APP.config.logout_path)
+    ];
+    const closeAllMenus = () => {
+      setAnchorEl(null);
+      setAddMenuAnchorEl(null);
+      setNotificationsMenuAnchorEl(null);
+    };
+    const handleCreateClick = (resourceType) => {
+      closeAllMenus();
+      dispatch(resourceType);
+    };
+    const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledMenu,
+      {
+        anchorEl: addMenuAnchorEl,
+        id: "add-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "center"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "center"
+        },
+        open: isAddMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROJECT), children: COURSEFLOW_APP.strings.project }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM), children: COURSEFLOW_APP.strings.program }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_COURSE), children: COURSEFLOW_APP.strings.course }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY), children: COURSEFLOW_APP.strings.activity })
+        ]
+      }
+    );
+    const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      NotificationsMenu,
+      {
+        anchorEl: notificationsMenuAnchorEl,
+        id: "notifications-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "right"
+        },
+        open: isNotificationsMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: notifications2.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: notifications2.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ListItem$1,
+            {
+              alignItems: "flex-start",
+              sx: {
+                backgroundColor: n.unread ? "courseflow.lightest" : null
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
+                n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ListItemText$1,
+                  {
+                    primary: n.date,
+                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Typography$1,
+                      {
+                        sx: { display: "inline" },
+                        component: "span",
+                        variant: "body2",
+                        color: "text.primary",
+                        children: n.text
+                      }
+                    )
+                  }
+                )
+              ] })
+            },
+            idx
+          )) })
+        ]
+      }
+    );
+    const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledMenu,
+      {
+        anchorEl,
+        id: "account-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "right"
+        },
+        open: isMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => dispatch(DIALOG_TYPE.RESET_PASSWORD), children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.notificationsSettingsUrls, children: COURSEFLOW_APP.strings.notification_settings }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: menus.account.daliteUrl, children: [
+            "Go to ",
+            menus.account.daliteText
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}),
+            " ",
+            COURSEFLOW_APP.strings.sign_out
+          ] })
+        ]
+      }
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
+          isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              "aria-label": "add menu",
+              "aria-controls": "add-menu",
+              "aria-haspopup": "true",
+              color: "primary",
+              onClick: handleAddMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+            }
+          ) : null,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              "aria-label": notifications2.unread >= 1 ? `show ${notifications2.unread} new notifications` : "no new notifications",
+              "aria-controls": "notifications-menu",
+              "aria-haspopup": "true",
+              onClick: handleNotificationsMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              edge: "end",
+              "aria-label": "account of current user",
+              "aria-controls": "account-menu",
+              "aria-haspopup": "true",
+              onClick: handleMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
+            }
+          )
+        ] })
+      ] }) }),
+      isTeacher && addMenu,
+      notificationsMenu,
+      accountMenu,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ResetPasswordModal,
+        {
+          onSubmit: () => window.location.href = menus.account.resetPasswordUrl
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProgramDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateCourseDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateActivityDialog, {})
+    ] });
+  };
   var Home = {};
   var _interopRequireDefault$5 = interopRequireDefaultExports;
   Object.defineProperty(Home, "__esModule", {

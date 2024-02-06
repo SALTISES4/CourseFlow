@@ -5,10 +5,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
-import {
-  CreateActionType,
-  openCreateActionModal
-} from '@cfModule/components/common/layout/TopBar'
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 const Wrap = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -38,14 +35,11 @@ type PropsType = {
 }
 
 const Welcome = ({ hide }: PropsType) => {
+  const { dispatch } = useDialog()
   const [visible, setVisible] = useState(true)
 
   function handleClose() {
     setVisible(!visible)
-  }
-
-  function handleCreateClick(resourceType: CreateActionType) {
-    openCreateActionModal(resourceType)
   }
 
   if (hide || !visible) {
@@ -68,16 +62,19 @@ const Welcome = ({ hide }: PropsType) => {
       <Actions>
         <Button
           variant="contained"
-          onClick={() => handleCreateClick('program')}
+          onClick={() => dispatch(DIALOG_TYPE.CREATE_PROGRAM)}
         >
           {window.gettext('I want to create a program')}
         </Button>
-        <Button variant="contained" onClick={() => handleCreateClick('course')}>
+        <Button
+          variant="contained"
+          onClick={() => dispatch(DIALOG_TYPE.CREATE_COURSE)}
+        >
           {window.gettext('I want to create a course')}
         </Button>
         <Button
           variant="contained"
-          onClick={() => handleCreateClick('activity')}
+          onClick={() => dispatch(DIALOG_TYPE.CREATE_ACTIVITY)}
         >
           {window.gettext('I want to create an activity')}
         </Button>

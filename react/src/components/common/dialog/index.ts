@@ -1,5 +1,13 @@
 import { useContext } from 'react'
-import { DialogDispatchContext, DialogContext, DIALOG_TYPE } from './context'
+import { DialogDispatchContext, DialogContext } from './context'
+
+export enum DIALOG_TYPE {
+  CREATE_PROGRAM = 'create_program',
+  CREATE_PROJECT = 'create_project',
+  CREATE_ACTIVITY = 'create_activity',
+  CREATE_COURSE = 'create_course',
+  RESET_PASSWORD = 'reset_password'
+}
 
 /**
  * A hook/context consumer that is used to dynamically control
