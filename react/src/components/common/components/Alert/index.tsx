@@ -7,7 +7,7 @@ import { styled, SxProps } from '@mui/material/styles'
 import Cookies from 'js-cookie'
 
 type PropsType = {
-  severity: AlertProps['severity'] | 'update'
+  severity?: AlertProps['severity'] | 'update'
   title: string | ReactNode
   subtitle?: string | ReactNode
   hideIfCookie?: string
@@ -31,7 +31,7 @@ const StyledSubtitle = styled(Typography)({})
  * whether to display or hide the component.
  */
 const CFAlert = ({
-  severity,
+  severity = 'info',
   title,
   subtitle,
   onClose,

@@ -81,6 +81,7 @@ export type TopBarProps = {
       date: string
     }[]
   }
+  showNoProjectsAlert: boolean
   menus: {
     add: {
       projectUrl: string

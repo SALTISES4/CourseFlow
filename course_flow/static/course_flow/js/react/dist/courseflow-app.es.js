@@ -98860,7 +98860,7 @@ const StyledTitle = styled$1(AlertTitle$1)({
 });
 const StyledSubtitle = styled$1(Typography$1)({});
 const CFAlert = ({
-  severity,
+  severity = "info",
   title,
   subtitle,
   onClose,
@@ -101861,11 +101861,64 @@ function CreateProgramDialog() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
   ] });
 }
-function CreateProjectDialog() {
+const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme2.spacing(3)
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme2.spacing(1)
+  }
+}));
+const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme2.spacing(3),
+  "& > *": {
+    flexGrow: 1
+  }
+}));
+function CreateProjectDialog({ showNoProjectsAlert }) {
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Project create dialog" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+  function onSubmit() {
+    console.log("project created?");
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose, fullWidth: true, maxWidth: "sm", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+      showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CFAlert,
+        {
+          sx: { mb: 3 },
+          title: window.gettext("Start by creating a project"),
+          subtitle: window.gettext(
+            "All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
+          )
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          TextField$1,
+          {
+            label: window.gettext("Title"),
+            variant: "standard",
+            required: true
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          TextField$1,
+          {
+            label: window.gettext("Description"),
+            variant: "standard",
+            multiline: true,
+            maxRows: 4
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: window.gettext("Create project") })
+    ] })
   ] });
 }
 function CreateCourseDialog() {
@@ -101882,14 +101935,6 @@ function CreateActivityDialog() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
   ] });
 }
-const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme2.spacing(2)
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme2.spacing(1)
-  }
-}));
 const ResetPasswordModal = ({ onSubmit }) => {
   const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -101900,7 +101945,7 @@ const ResetPasswordModal = ({ onSubmit }) => {
       maxWidth: "xs",
       "aria-labelledby": "reset-password-modal",
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
@@ -101964,7 +102009,12 @@ const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
     top: "50%"
   }
 }));
-const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
+const TopBar = ({
+  isTeacher,
+  menus,
+  notifications: notifications2,
+  showNoProjectsAlert
+}) => {
   const { dispatch } = useDialog();
   const [anchorEl, setAnchorEl] = reactExports.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -102154,8 +102204,8 @@ const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
         onSubmit: () => window.location.href = menus.account.resetPasswordUrl
       }
     ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog, { showNoProjectsAlert }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProgramDialog, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CreateCourseDialog, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CreateActivityDialog, {})
   ] });

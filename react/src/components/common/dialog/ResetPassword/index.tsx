@@ -1,20 +1,11 @@
 import Button from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
-import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
 import { DIALOG_TYPE, useDialog } from '../'
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { StyledDialog } from '../styles'
 
 type PropsType = {
   onSubmit: () => void
@@ -30,7 +21,7 @@ const ResetPasswordModal = ({ onSubmit }: PropsType) => {
       maxWidth="xs"
       aria-labelledby="reset-password-modal"
     >
-      <DialogTitle sx={{ m: 0, p: 2 }} id="reset-password-modal">
+      <DialogTitle id="reset-password-modal">
         {COURSEFLOW_APP.strings.password_reset}
       </DialogTitle>
       <DialogContent dividers>

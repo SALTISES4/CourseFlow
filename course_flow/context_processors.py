@@ -103,6 +103,8 @@ def get_topbar(request: HttpRequest):
 
         return {
             "isTeacher": has_group(user, "Teacher"),
+            # TODO: count the number of current user's projects
+            "showNoProjectsAlert": True,
             "notifications": {
                 "url": reverse("course_flow:user-notifications"),
                 "unread": unread,
