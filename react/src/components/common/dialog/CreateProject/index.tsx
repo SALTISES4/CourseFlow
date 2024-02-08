@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Alert from '@cfCommonComponents/components/Alert'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -6,12 +7,48 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '../'
 import { StyledDialog, StyledForm } from '../styles'
+import ObjectSets from './components/ObjectSets'
 
 type PropsType = {
   showNoProjectsAlert: boolean
 }
 
+export enum OBJECT_SET_TYPE {
+  OUTCOME = 'outcome',
+  SOMETHING = 'something',
+  ELSE = 'else'
+}
+
+export type OnUpdateType = {
+  index: number
+  newVal?: {
+    type: OBJECT_SET_TYPE
+    label: string
+  }
+}
+
+export type StateType = {
+  objectSets: {
+    type: OBJECT_SET_TYPE
+    label: string
+  }[]
+  objectSetsExpanded: boolean
+}
+
 function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
+  const [state, setState] = useState<StateType>({
+    objectSets: [
+      {
+        type: OBJECT_SET_TYPE.OUTCOME,
+        label: 'This is a set label'
+      },
+      {
+        type: OBJECT_SET_TYPE.SOMETHING,
+        label: 'Another label here'
+      }
+    ],
+    objectSetsExpanded: false
+  })
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
 
   // TODO: post / redirect
@@ -19,10 +56,33 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
     console.log('project created?')
   }
 
+  function onObjectSetUpdate({ index, newVal }: OnUpdateType) {
+    const sets = [...state.objectSets]
+    // either updating existing one
+    // or deleting when no newVal is supplied
+    if (newVal) {
+      sets.splice(index, 1, newVal)
+    } else {
+      sets.splice(index, 1)
+    }
+    setState({
+      ...state,
+      objectSets: sets
+    })
+  }
+
+  function onObjectSetsClick() {
+    setState({
+      ...state,
+      objectSetsExpanded: !state.objectSetsExpanded
+    })
+  }
+
   return (
     <StyledDialog open={show} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
+        <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         {showNoProjectsAlert && (
           <Alert
             sx={{ mb: 3 }}
@@ -43,6 +103,12 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
             variant="standard"
             multiline
             maxRows={4}
+          />
+          <ObjectSets
+            expanded={state.objectSetsExpanded}
+            toggleExpanded={onObjectSetsClick}
+            sets={state.objectSets}
+            onUpdate={onObjectSetUpdate}
           />
         </StyledForm>
       </DialogContent>

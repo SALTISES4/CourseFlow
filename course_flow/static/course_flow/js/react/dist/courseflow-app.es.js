@@ -2261,18 +2261,17 @@ function requireReact_production_min() {
   react_production_min.version = "18.2.0";
   return react_production_min;
 }
-var hasRequiredReact;
-function requireReact() {
-  if (hasRequiredReact)
-    return react.exports;
-  hasRequiredReact = 1;
-  if (process.env.NODE_ENV === "production") {
-    react.exports = requireReact_production_min();
-  } else {
-    react.exports = requireReact_development();
-  }
-  return react.exports;
+if (process.env.NODE_ENV === "production") {
+  react.exports = requireReact_production_min();
+} else {
+  react.exports = requireReact_development();
 }
+var reactExports = react.exports;
+const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+const React$2 = /* @__PURE__ */ _mergeNamespaces({
+  __proto__: null,
+  default: React$1
+}, [reactExports]);
 /**
  * @license React
  * react-jsx-runtime.development.js
@@ -2289,7 +2288,7 @@ function requireReactJsxRuntime_development() {
   hasRequiredReactJsxRuntime_development = 1;
   if (process.env.NODE_ENV !== "production") {
     (function() {
-      var React2 = requireReact();
+      var React2 = reactExports;
       var REACT_ELEMENT_TYPE = Symbol.for("react.element");
       var REACT_PORTAL_TYPE = Symbol.for("react.portal");
       var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3174,7 +3173,7 @@ function requireReactJsxRuntime_production_min() {
   if (hasRequiredReactJsxRuntime_production_min)
     return reactJsxRuntime_production_min;
   hasRequiredReactJsxRuntime_production_min = 1;
-  var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+  var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
   function q(c, a, g) {
     var b, d = {}, e = null, h = null;
     void 0 !== g && (e = "" + g);
@@ -3949,7 +3948,7 @@ function requireReactDom_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var Scheduler = requireScheduler();
       var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       var suppressWarning = false;
@@ -25042,7 +25041,7 @@ function requireReactDom_production_min() {
   if (hasRequiredReactDom_production_min)
     return reactDom_production_min;
   hasRequiredReactDom_production_min = 1;
-  var aa = requireReact(), ca = requireScheduler();
+  var aa = reactExports, ca = requireScheduler();
   function p(a) {
     for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
       b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32361,12 +32360,6 @@ var VERB = /* @__PURE__ */ ((VERB2) => {
   VERB2["ERROR"] = "error";
   return VERB2;
 })(VERB || {});
-var reactExports = requireReact();
-const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-const React$2 = /* @__PURE__ */ _mergeNamespaces({
-  __proto__: null,
-  default: React$1
-}, [reactExports]);
 var shim = { exports: {} };
 var useSyncExternalStoreShim_development = {};
 /**
@@ -32388,7 +32381,7 @@ function requireUseSyncExternalStoreShim_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       function error(format2) {
         {
@@ -32514,7 +32507,7 @@ function requireUseSyncExternalStoreShim_production_min() {
   if (hasRequiredUseSyncExternalStoreShim_production_min)
     return useSyncExternalStoreShim_production_min;
   hasRequiredUseSyncExternalStoreShim_production_min = 1;
-  var e = requireReact();
+  var e = reactExports;
   function h(a, b) {
     return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
   }
@@ -32578,7 +32571,7 @@ function requireWithSelector_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var shim2 = shimExports;
       function is2(x, y) {
         return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32672,7 +32665,7 @@ function requireWithSelector_production_min() {
   if (hasRequiredWithSelector_production_min)
     return withSelector_production_min;
   hasRequiredWithSelector_production_min = 1;
-  var h = requireReact(), n = shimExports;
+  var h = reactExports, n = shimExports;
   function p(a, b) {
     return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
   }
@@ -33470,7 +33463,7 @@ function verifySubselectors(mapStateToProps2, mapDispatchToProps, mergeProps) {
   verify(mapDispatchToProps, "mapDispatchToProps");
   verify(mergeProps, "mergeProps");
 }
-const _excluded$1c = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+const _excluded$1g = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
 function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
   areStatesEqual,
   areOwnPropsEqual,
@@ -33536,7 +33529,7 @@ function finalPropsSelectorFactory(dispatch, _ref) {
     initMapStateToProps,
     initMapDispatchToProps,
     initMergeProps
-  } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1c);
+  } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1g);
   const mapStateToProps2 = initMapStateToProps(dispatch, options);
   const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
   const mergeProps = initMergeProps(dispatch, options);
@@ -33790,7 +33783,7 @@ function shallowEqual(objA, objB) {
   }
   return true;
 }
-const _excluded$1b = ["reactReduxForwardedRef"];
+const _excluded$1f = ["reactReduxForwardedRef"];
 let useSyncExternalStore = notInitialized;
 const initializeConnect = (fn) => {
   useSyncExternalStore = fn;
@@ -33912,7 +33905,7 @@ function connect(mapStateToProps2, mapDispatchToProps, mergeProps, {
       const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
         const {
           reactReduxForwardedRef: reactReduxForwardedRef2
-        } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1b);
+        } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1f);
         return [props.context, reactReduxForwardedRef2, wrapperProps2];
       }, [props]);
       const ContextToUse = reactExports.useMemo(() => {
@@ -42190,7 +42183,7 @@ const internal_processStyles = (tag2, processor) => {
     tag2.__emotion_styles = processor(tag2.__emotion_styles);
   }
 };
-const _excluded$1a = ["values", "unit", "step"];
+const _excluded$1e = ["values", "unit", "step"];
 const sortBreakpointsValues = (values2) => {
   const breakpointsAsArray = Object.keys(values2).map((key) => ({
     key,
@@ -42221,7 +42214,7 @@ function createBreakpoints(breakpoints) {
     },
     unit = "px",
     step = 5
-  } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1a);
+  } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1e);
   const sortedValues = sortBreakpointsValues(values2);
   const keys = Object.keys(sortedValues);
   function up(key) {
@@ -43243,14 +43236,14 @@ function unstable_createStyleFunctionSx() {
 const styleFunctionSx = unstable_createStyleFunctionSx();
 styleFunctionSx.filterProps = ["sx"];
 const styleFunctionSx$1 = styleFunctionSx;
-const _excluded$19 = ["breakpoints", "palette", "spacing", "shape"];
+const _excluded$1d = ["breakpoints", "palette", "spacing", "shape"];
 function createTheme$1(options = {}, ...args) {
   const {
     breakpoints: breakpointsInput = {},
     palette: paletteInput = {},
     spacing: spacingInput,
     shape: shapeInput = {}
-  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$19);
+  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$1d);
   const breakpoints = createBreakpoints(breakpointsInput);
   const spacing = createSpacing(spacingInput);
   let muiTheme = deepmerge({
@@ -43314,7 +43307,7 @@ process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
    */
   themeId: PropTypes.string
 } : void 0;
-const _excluded$18 = ["sx"];
+const _excluded$1c = ["sx"];
 const splitProps = (props) => {
   var _props$theme$unstable, _props$theme;
   const result = {
@@ -43334,7 +43327,7 @@ const splitProps = (props) => {
 function extendSxProp(props) {
   const {
     sx: inSx
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1c);
   const {
     systemProps,
     otherProps
@@ -43357,7 +43350,7 @@ function extendSxProp(props) {
     sx: finalSx
   });
 }
-const _excluded$17 = ["className", "component"];
+const _excluded$1b = ["className", "component"];
 function createBox(options = {}) {
   const {
     themeId,
@@ -43373,7 +43366,7 @@ function createBox(options = {}) {
     const _extendSxProp = extendSxProp(inProps), {
       className,
       component = "div"
-    } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$17);
+    } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$1b);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$1({
       as: component,
       ref,
@@ -43383,14 +43376,14 @@ function createBox(options = {}) {
   });
   return Box2;
 }
-const _excluded$16 = ["variant"];
+const _excluded$1a = ["variant"];
 function isEmpty$3(string) {
   return string.length === 0;
 }
 function propsToClassKey(props) {
   const {
     variant
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$16);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
   let classKey = variant || "";
   Object.keys(other).sort().forEach((key) => {
     if (key === "color") {
@@ -43401,7 +43394,7 @@ function propsToClassKey(props) {
   });
   return classKey;
 }
-const _excluded$15 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+const _excluded$19 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
 function isEmpty$2(obj) {
   return Object.keys(obj).length === 0;
 }
@@ -43531,7 +43524,7 @@ function createStyled2(input = {}) {
       // TODO v6: remove `lowercaseFirstLetter()` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
       overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-    } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$15);
+    } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$19);
     const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
       // TODO v6: remove `Root` in the next major release
       // For more details: https://github.com/mui/material-ui/pull/37908
@@ -43981,7 +43974,7 @@ process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
 if (process.env.NODE_ENV !== "production") {
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
 }
-const _excluded$14 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+const _excluded$18 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
 const defaultTheme$3 = createTheme$1();
 const defaultCreateStyledComponent = systemStyled("div", {
   name: "MuiStack",
@@ -44104,7 +44097,7 @@ function createStack(options = {}) {
       children,
       className,
       useFlexGap = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
     const ownerState = {
       direction,
       spacing,
@@ -44268,7 +44261,7 @@ const green = {
   A700: "#00c853"
 };
 const green$1 = green;
-const _excluded$13 = ["mode", "contrastThreshold", "tonalOffset"];
+const _excluded$17 = ["mode", "contrastThreshold", "tonalOffset"];
 const light = {
   // The colors used to style the text.
   text: {
@@ -44436,7 +44429,7 @@ function createPalette(palette) {
     mode = "light",
     contrastThreshold = 3,
     tonalOffset = 0.2
-  } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$13);
+  } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$17);
   const primary = palette.primary || getDefaultPrimary(mode);
   const secondary = palette.secondary || getDefaultSecondary(mode);
   const error = palette.error || getDefaultError(mode);
@@ -44555,7 +44548,7 @@ const theme2 = createTheme({ palette: {
   }, modes[mode]), other);
   return paletteOutput;
 }
-const _excluded$12 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+const _excluded$16 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
 function round$1(value) {
   return Math.round(value * 1e5) / 1e5;
 }
@@ -44579,7 +44572,7 @@ function createTypography(palette, typography) {
     // Apply the CSS properties to all the variants.
     allVariants,
     pxToRem: pxToRem2
-  } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$12);
+  } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$16);
   if (process.env.NODE_ENV !== "production") {
     if (typeof fontSize !== "number") {
       console.error("MUI: `fontSize` is required to be a number.");
@@ -44644,7 +44637,7 @@ function createShadow(...px) {
 }
 const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
 const shadows$1 = shadows;
-const _excluded$11 = ["duration", "easing", "delay"];
+const _excluded$15 = ["duration", "easing", "delay"];
 const easing = {
   // This is the most common easing curve.
   easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44687,7 +44680,7 @@ function createTransitions(inputTransitions) {
       duration: durationOption = mergedDuration.standard,
       easing: easingOption = mergedEasing.easeInOut,
       delay = 0
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$11);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
     if (process.env.NODE_ENV !== "production") {
       const isString2 = (value) => typeof value === "string";
       const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44731,14 +44724,14 @@ const zIndex = {
   tooltip: 1500
 };
 const zIndex$1 = zIndex;
-const _excluded$10 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+const _excluded$14 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
 function createTheme(options = {}, ...args) {
   const {
     mixins: mixinsInput = {},
     palette: paletteInput = {},
     transitions: transitionsInput = {},
     typography: typographyInput = {}
-  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$10);
+  } = options, other = _objectWithoutPropertiesLoose(options, _excluded$14);
   if (options.vars) {
     throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44817,8 +44810,8 @@ function getSvgIconUtilityClass(slot) {
   return generateUtilityClass("MuiSvgIcon", slot);
 }
 generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-const _excluded$$ = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-const useUtilityClasses$R = (ownerState) => {
+const _excluded$13 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+const useUtilityClasses$V = (ownerState) => {
   const {
     color: color2,
     fontSize,
@@ -44884,7 +44877,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
     inheritViewBox = false,
     titleAccess,
     viewBox = "0 0 24 24"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
   const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
   const ownerState = _extends$1({}, props, {
     color: color2,
@@ -44899,7 +44892,7 @@ const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProp
   if (!inheritViewBox) {
     more.viewBox = viewBox;
   }
-  const classes = useUtilityClasses$R(ownerState);
+  const classes = useUtilityClasses$V(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
     as: component,
     className: clsx(classes.root, className),
@@ -45054,29 +45047,29 @@ function requireCreateSvgIcon() {
   })(createSvgIcon$1);
   return createSvgIcon$1;
 }
-var _interopRequireDefault$e = interopRequireDefaultExports;
+var _interopRequireDefault$g = interopRequireDefaultExports;
 Object.defineProperty(Star, "__esModule", {
   value: true
 });
-var default_1$e = Star.default = void 0;
-var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
-var _jsxRuntime$e = jsxRuntimeExports;
-var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+var default_1$g = Star.default = void 0;
+var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
+var _jsxRuntime$g = jsxRuntimeExports;
+var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
   d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
 }), "Star");
-default_1$e = Star.default = _default$e;
+default_1$g = Star.default = _default$g;
 var StarOutline = {};
-var _interopRequireDefault$d = interopRequireDefaultExports;
+var _interopRequireDefault$f = interopRequireDefaultExports;
 Object.defineProperty(StarOutline, "__esModule", {
   value: true
 });
-var default_1$d = StarOutline.default = void 0;
-var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-var _jsxRuntime$d = jsxRuntimeExports;
-var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+var default_1$f = StarOutline.default = void 0;
+var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
+var _jsxRuntime$f = jsxRuntimeExports;
+var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
   d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
 }), "StarOutline");
-default_1$d = StarOutline.default = _default$d;
+default_1$f = StarOutline.default = _default$f;
 function useTheme() {
   const theme2 = useTheme$2(defaultTheme$2);
   if (process.env.NODE_ENV !== "production") {
@@ -45084,11 +45077,11 @@ function useTheme() {
   }
   return theme2[THEME_ID] || theme2;
 }
-const _excluded$_ = ["theme"];
+const _excluded$12 = ["theme"];
 function ThemeProvider(_ref) {
   let {
     theme: themeInput
-  } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$_);
+  } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$12);
   const scopedTheme = themeInput[THEME_ID];
   return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
     themeId: scopedTheme ? THEME_ID : void 0,
@@ -45920,7 +45913,7 @@ process.env.NODE_ENV !== "production" ? Ripple.propTypes = {
 } : void 0;
 const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
 const touchRippleClasses$1 = touchRippleClasses;
-const _excluded$Z = ["center", "classes", "className"];
+const _excluded$11 = ["center", "classes", "className"];
 let _ = (t) => t, _t, _t2, _t3, _t4;
 const DURATION = 550;
 const DELAY_RIPPLE = 80;
@@ -46035,7 +46028,7 @@ const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple
     center: centerProp = false,
     classes = {},
     className
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
   const [ripples, setRipples] = reactExports.useState([]);
   const nextKey = reactExports.useRef(0);
   const rippleCallback = reactExports.useRef(null);
@@ -46218,8 +46211,8 @@ function getButtonBaseUtilityClass(slot) {
 }
 const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
 const buttonBaseClasses$1 = buttonBaseClasses;
-const _excluded$Y = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-const useUtilityClasses$Q = (ownerState) => {
+const _excluded$10 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+const useUtilityClasses$U = (ownerState) => {
   const {
     disabled,
     focusVisible,
@@ -46313,7 +46306,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     TouchRippleProps,
     touchRippleRef,
     type
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
   const buttonRef = reactExports.useRef(null);
   const rippleRef = reactExports.useRef(null);
   const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -46467,7 +46460,7 @@ const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(
     tabIndex,
     focusVisible
   });
-  const classes = useUtilityClasses$Q(ownerState);
+  const classes = useUtilityClasses$U(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
     as: ComponentProp,
     className: clsx(classes.root, className),
@@ -46662,8 +46655,8 @@ function getChipUtilityClass(slot) {
 }
 const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
 const chipClasses$1 = chipClasses;
-const _excluded$X = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
-const useUtilityClasses$P = (ownerState) => {
+const _excluded$$ = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+const useUtilityClasses$T = (ownerState) => {
   const {
     classes,
     disabled,
@@ -46944,7 +46937,7 @@ const Chip = /* @__PURE__ */ reactExports.forwardRef(function Chip2(inProps, ref
     tabIndex,
     skipFocusWhenDisabled = false
     // TODO v6: Rename to `focusableWhenDisabled`.
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
   const chipRef = reactExports.useRef(null);
   const handleRef = useForkRef(chipRef, ref);
   const handleDeleteIconClick = (event) => {
@@ -46985,7 +46978,7 @@ const Chip = /* @__PURE__ */ reactExports.forwardRef(function Chip2(inProps, ref
     clickable,
     variant
   });
-  const classes = useUtilityClasses$P(ownerState);
+  const classes = useUtilityClasses$T(ownerState);
   const moreProps = component === ButtonBase$1 ? _extends$1({
     component: ComponentProp || "div",
     focusVisibleClassName: classes.focusVisible
@@ -47144,8 +47137,8 @@ function getTypographyUtilityClass(slot) {
   return generateUtilityClass("MuiTypography", slot);
 }
 generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-const _excluded$W = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-const useUtilityClasses$O = (ownerState) => {
+const _excluded$_ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+const useUtilityClasses$S = (ownerState) => {
   const {
     align,
     gutterBottom,
@@ -47228,7 +47221,7 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     paragraph = false,
     variant = "body1",
     variantMapping = defaultVariantMapping
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
   const ownerState = _extends$1({}, props, {
     align,
     color: color2,
@@ -47241,7 +47234,7 @@ const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(
     variantMapping
   });
   const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-  const classes = useUtilityClasses$O(ownerState);
+  const classes = useUtilityClasses$S(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
     as: Component,
     ref,
@@ -47330,8 +47323,8 @@ function getIconButtonUtilityClass(slot) {
 }
 const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
 const iconButtonClasses$1 = iconButtonClasses;
-const _excluded$V = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-const useUtilityClasses$N = (ownerState) => {
+const _excluded$Z = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+const useUtilityClasses$R = (ownerState) => {
   const {
     classes,
     disabled,
@@ -47425,7 +47418,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disabled = false,
     disableFocusRipple = false,
     size: size2 = "medium"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
   const ownerState = _extends$1({}, props, {
     edge,
     color: color2,
@@ -47433,7 +47426,7 @@ const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(
     disableFocusRipple,
     size: size2
   });
-  const classes = useUtilityClasses$N(ownerState);
+  const classes = useUtilityClasses$R(ownerState);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
     className: clsx(classes.root, className),
     centerRipple: true,
@@ -47646,7 +47639,7 @@ const WorkflowCardDumb = ({
               color: isFavourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
             },
             onClick: onFavourite,
-            children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {})
+            children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
           }
         ) })
       ] })
@@ -70792,12 +70785,363 @@ function getTransitionProps(props, options) {
     delay: style2.transitionDelay
   };
 }
+function getCollapseUtilityClass(slot) {
+  return generateUtilityClass("MuiCollapse", slot);
+}
+generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
+const _excluded$Y = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+const useUtilityClasses$Q = (ownerState) => {
+  const {
+    orientation,
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root", `${orientation}`],
+    entered: ["entered"],
+    hidden: ["hidden"],
+    wrapper: ["wrapper", `${orientation}`],
+    wrapperInner: ["wrapperInner", `${orientation}`]
+  };
+  return composeClasses(slots, getCollapseUtilityClass, classes);
+};
+const CollapseRoot = styled$1("div", {
+  name: "MuiCollapse",
+  slot: "Root",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [styles2.root, styles2[ownerState.orientation], ownerState.state === "entered" && styles2.entered, ownerState.state === "exited" && !ownerState.in && ownerState.collapsedSize === "0px" && styles2.hidden];
+  }
+})(({
+  theme: theme2,
+  ownerState
+}) => _extends$1({
+  height: 0,
+  overflow: "hidden",
+  transition: theme2.transitions.create("height")
+}, ownerState.orientation === "horizontal" && {
+  height: "auto",
+  width: 0,
+  transition: theme2.transitions.create("width")
+}, ownerState.state === "entered" && _extends$1({
+  height: "auto",
+  overflow: "visible"
+}, ownerState.orientation === "horizontal" && {
+  width: "auto"
+}), ownerState.state === "exited" && !ownerState.in && ownerState.collapsedSize === "0px" && {
+  visibility: "hidden"
+}));
+const CollapseWrapper = styled$1("div", {
+  name: "MuiCollapse",
+  slot: "Wrapper",
+  overridesResolver: (props, styles2) => styles2.wrapper
+})(({
+  ownerState
+}) => _extends$1({
+  // Hack to get children with a negative margin to not falsify the height computation.
+  display: "flex",
+  width: "100%"
+}, ownerState.orientation === "horizontal" && {
+  width: "auto",
+  height: "100%"
+}));
+const CollapseWrapperInner = styled$1("div", {
+  name: "MuiCollapse",
+  slot: "WrapperInner",
+  overridesResolver: (props, styles2) => styles2.wrapperInner
+})(({
+  ownerState
+}) => _extends$1({
+  width: "100%"
+}, ownerState.orientation === "horizontal" && {
+  width: "auto",
+  height: "100%"
+}));
+const Collapse$1 = /* @__PURE__ */ reactExports.forwardRef(function Collapse(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiCollapse"
+  });
+  const {
+    addEndListener,
+    children,
+    className,
+    collapsedSize: collapsedSizeProp = "0px",
+    component,
+    easing: easing2,
+    in: inProp,
+    onEnter,
+    onEntered,
+    onEntering,
+    onExit,
+    onExited,
+    onExiting,
+    orientation = "vertical",
+    style: style2,
+    timeout: timeout2 = duration.standard,
+    // eslint-disable-next-line react/prop-types
+    TransitionComponent = Transition$1
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+  const ownerState = _extends$1({}, props, {
+    orientation,
+    collapsedSize: collapsedSizeProp
+  });
+  const classes = useUtilityClasses$Q(ownerState);
+  const theme2 = useTheme();
+  const timer = reactExports.useRef();
+  const wrapperRef = reactExports.useRef(null);
+  const autoTransitionDuration = reactExports.useRef();
+  const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
+  const isHorizontal = orientation === "horizontal";
+  const size2 = isHorizontal ? "width" : "height";
+  reactExports.useEffect(() => {
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+  const nodeRef = reactExports.useRef(null);
+  const handleRef = useForkRef(ref, nodeRef);
+  const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
+    if (callback) {
+      const node2 = nodeRef.current;
+      if (maybeIsAppearing === void 0) {
+        callback(node2);
+      } else {
+        callback(node2, maybeIsAppearing);
+      }
+    }
+  };
+  const getWrapperSize = () => wrapperRef.current ? wrapperRef.current[isHorizontal ? "clientWidth" : "clientHeight"] : 0;
+  const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
+    if (wrapperRef.current && isHorizontal) {
+      wrapperRef.current.style.position = "absolute";
+    }
+    node2.style[size2] = collapsedSize;
+    if (onEnter) {
+      onEnter(node2, isAppearing);
+    }
+  });
+  const handleEntering = normalizedTransitionCallback((node2, isAppearing) => {
+    const wrapperSize = getWrapperSize();
+    if (wrapperRef.current && isHorizontal) {
+      wrapperRef.current.style.position = "";
+    }
+    const {
+      duration: transitionDuration,
+      easing: transitionTimingFunction
+    } = getTransitionProps({
+      style: style2,
+      timeout: timeout2,
+      easing: easing2
+    }, {
+      mode: "enter"
+    });
+    if (timeout2 === "auto") {
+      const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
+      node2.style.transitionDuration = `${duration2}ms`;
+      autoTransitionDuration.current = duration2;
+    } else {
+      node2.style.transitionDuration = typeof transitionDuration === "string" ? transitionDuration : `${transitionDuration}ms`;
+    }
+    node2.style[size2] = `${wrapperSize}px`;
+    node2.style.transitionTimingFunction = transitionTimingFunction;
+    if (onEntering) {
+      onEntering(node2, isAppearing);
+    }
+  });
+  const handleEntered = normalizedTransitionCallback((node2, isAppearing) => {
+    node2.style[size2] = "auto";
+    if (onEntered) {
+      onEntered(node2, isAppearing);
+    }
+  });
+  const handleExit = normalizedTransitionCallback((node2) => {
+    node2.style[size2] = `${getWrapperSize()}px`;
+    if (onExit) {
+      onExit(node2);
+    }
+  });
+  const handleExited = normalizedTransitionCallback(onExited);
+  const handleExiting = normalizedTransitionCallback((node2) => {
+    const wrapperSize = getWrapperSize();
+    const {
+      duration: transitionDuration,
+      easing: transitionTimingFunction
+    } = getTransitionProps({
+      style: style2,
+      timeout: timeout2,
+      easing: easing2
+    }, {
+      mode: "exit"
+    });
+    if (timeout2 === "auto") {
+      const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
+      node2.style.transitionDuration = `${duration2}ms`;
+      autoTransitionDuration.current = duration2;
+    } else {
+      node2.style.transitionDuration = typeof transitionDuration === "string" ? transitionDuration : `${transitionDuration}ms`;
+    }
+    node2.style[size2] = collapsedSize;
+    node2.style.transitionTimingFunction = transitionTimingFunction;
+    if (onExiting) {
+      onExiting(node2);
+    }
+  });
+  const handleAddEndListener = (next2) => {
+    if (timeout2 === "auto") {
+      timer.current = setTimeout(next2, autoTransitionDuration.current || 0);
+    }
+    if (addEndListener) {
+      addEndListener(nodeRef.current, next2);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+    in: inProp,
+    onEnter: handleEnter,
+    onEntered: handleEntered,
+    onEntering: handleEntering,
+    onExit: handleExit,
+    onExited: handleExited,
+    onExiting: handleExiting,
+    addEndListener: handleAddEndListener,
+    nodeRef,
+    timeout: timeout2 === "auto" ? null : timeout2
+  }, other, {
+    children: (state, childProps) => /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseRoot, _extends$1({
+      as: component,
+      className: clsx(classes.root, className, {
+        "entered": classes.entered,
+        "exited": !inProp && collapsedSize === "0px" && classes.hidden
+      }[state]),
+      style: _extends$1({
+        [isHorizontal ? "minWidth" : "minHeight"]: collapsedSize
+      }, style2),
+      ownerState: _extends$1({}, ownerState, {
+        state
+      }),
+      ref: handleRef
+    }, childProps, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseWrapper, {
+        ownerState: _extends$1({}, ownerState, {
+          state
+        }),
+        className: classes.wrapper,
+        ref: wrapperRef,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseWrapperInner, {
+          ownerState: _extends$1({}, ownerState, {
+            state
+          }),
+          className: classes.wrapperInner,
+          children
+        })
+      })
+    }))
+  }));
+});
+process.env.NODE_ENV !== "production" ? Collapse$1.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * Add a custom transition end trigger. Called with the transitioning DOM
+   * node and a done callback. Allows for more fine grained transition end
+   * logic. Note: Timeouts are still used as a fallback if provided.
+   */
+  addEndListener: PropTypes.func,
+  /**
+   * The content node to be collapsed.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The width (horizontal) or height (vertical) of the container when collapsed.
+   * @default '0px'
+   */
+  collapsedSize: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: elementTypeAcceptingRef$1,
+  /**
+   * The transition timing function.
+   * You may specify a single easing or a object containing enter and exit values.
+   */
+  easing: PropTypes.oneOfType([PropTypes.shape({
+    enter: PropTypes.string,
+    exit: PropTypes.string
+  }), PropTypes.string]),
+  /**
+   * If `true`, the component will transition in.
+   */
+  in: PropTypes.bool,
+  /**
+   * @ignore
+   */
+  onEnter: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onEntered: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onEntering: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onExit: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onExited: PropTypes.func,
+  /**
+   * @ignore
+   */
+  onExiting: PropTypes.func,
+  /**
+   * The transition orientation.
+   * @default 'vertical'
+   */
+  orientation: PropTypes.oneOf(["horizontal", "vertical"]),
+  /**
+   * @ignore
+   */
+  style: PropTypes.object,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * The duration for the transition, in milliseconds.
+   * You may specify a single timeout for all transitions, or individually with an object.
+   *
+   * Set to 'auto' to automatically calculate transition time based on height.
+   * @default duration.standard
+   */
+  timeout: PropTypes.oneOfType([PropTypes.oneOf(["auto"]), PropTypes.number, PropTypes.shape({
+    appear: PropTypes.number,
+    enter: PropTypes.number,
+    exit: PropTypes.number
+  })])
+} : void 0;
+Collapse$1.muiSupportAuto = true;
+const Collapse$2 = Collapse$1;
 function getPaperUtilityClass(slot) {
   return generateUtilityClass("MuiPaper", slot);
 }
 generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-const _excluded$U = ["className", "component", "elevation", "square", "variant"];
-const useUtilityClasses$M = (ownerState) => {
+const _excluded$X = ["className", "component", "elevation", "square", "variant"];
+const useUtilityClasses$P = (ownerState) => {
   const {
     square,
     elevation,
@@ -70850,14 +71194,14 @@ const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, r
     elevation = 1,
     square = false,
     variant = "elevation"
-  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
   const ownerState = _extends$1({}, props, {
     component,
     elevation,
     square,
     variant
   });
-  const classes = useUtilityClasses$M(ownerState);
+  const classes = useUtilityClasses$P(ownerState);
   if (process.env.NODE_ENV !== "production") {
     const theme2 = useTheme();
     if (theme2.shadows[elevation] === void 0) {
@@ -70924,6 +71268,498 @@ process.env.NODE_ENV !== "production" ? Paper.propTypes = {
   variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
 } : void 0;
 const Paper$1 = Paper;
+const AccordionContext = /* @__PURE__ */ reactExports.createContext({});
+if (process.env.NODE_ENV !== "production") {
+  AccordionContext.displayName = "AccordionContext";
+}
+const AccordionContext$1 = AccordionContext;
+function getAccordionUtilityClass(slot) {
+  return generateUtilityClass("MuiAccordion", slot);
+}
+const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
+const accordionClasses$1 = accordionClasses;
+const _excluded$W = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+const useUtilityClasses$O = (ownerState) => {
+  const {
+    classes,
+    square,
+    expanded,
+    disabled,
+    disableGutters
+  } = ownerState;
+  const slots = {
+    root: ["root", !square && "rounded", expanded && "expanded", disabled && "disabled", !disableGutters && "gutters"],
+    region: ["region"]
+  };
+  return composeClasses(slots, getAccordionUtilityClass, classes);
+};
+const AccordionRoot = styled$1(Paper$1, {
+  name: "MuiAccordion",
+  slot: "Root",
+  overridesResolver: (props, styles2) => {
+    const {
+      ownerState
+    } = props;
+    return [{
+      [`& .${accordionClasses$1.region}`]: styles2.region
+    }, styles2.root, !ownerState.square && styles2.rounded, !ownerState.disableGutters && styles2.gutters];
+  }
+})(({
+  theme: theme2
+}) => {
+  const transition = {
+    duration: theme2.transitions.duration.shortest
+  };
+  return {
+    position: "relative",
+    transition: theme2.transitions.create(["margin"], transition),
+    overflowAnchor: "none",
+    // Keep the same scrolling position
+    "&:before": {
+      position: "absolute",
+      left: 0,
+      top: -1,
+      right: 0,
+      height: 1,
+      content: '""',
+      opacity: 1,
+      backgroundColor: (theme2.vars || theme2).palette.divider,
+      transition: theme2.transitions.create(["opacity", "background-color"], transition)
+    },
+    "&:first-of-type": {
+      "&:before": {
+        display: "none"
+      }
+    },
+    [`&.${accordionClasses$1.expanded}`]: {
+      "&:before": {
+        opacity: 0
+      },
+      "&:first-of-type": {
+        marginTop: 0
+      },
+      "&:last-of-type": {
+        marginBottom: 0
+      },
+      "& + &": {
+        "&:before": {
+          display: "none"
+        }
+      }
+    },
+    [`&.${accordionClasses$1.disabled}`]: {
+      backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
+    }
+  };
+}, ({
+  theme: theme2,
+  ownerState
+}) => _extends$1({}, !ownerState.square && {
+  borderRadius: 0,
+  "&:first-of-type": {
+    borderTopLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+    borderTopRightRadius: (theme2.vars || theme2).shape.borderRadius
+  },
+  "&:last-of-type": {
+    borderBottomLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+    borderBottomRightRadius: (theme2.vars || theme2).shape.borderRadius,
+    // Fix a rendering issue on Edge
+    "@supports (-ms-ime-align: auto)": {
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0
+    }
+  }
+}, !ownerState.disableGutters && {
+  [`&.${accordionClasses$1.expanded}`]: {
+    margin: "16px 0"
+  }
+}));
+const Accordion = /* @__PURE__ */ reactExports.forwardRef(function Accordion2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiAccordion"
+  });
+  const {
+    children: childrenProp,
+    className,
+    defaultExpanded = false,
+    disabled = false,
+    disableGutters = false,
+    expanded: expandedProp,
+    onChange,
+    square = false,
+    TransitionComponent = Collapse$2,
+    TransitionProps
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+  const [expanded, setExpandedState] = useControlled({
+    controlled: expandedProp,
+    default: defaultExpanded,
+    name: "Accordion",
+    state: "expanded"
+  });
+  const handleChange = reactExports.useCallback((event) => {
+    setExpandedState(!expanded);
+    if (onChange) {
+      onChange(event, !expanded);
+    }
+  }, [expanded, onChange, setExpandedState]);
+  const [summary, ...children] = reactExports.Children.toArray(childrenProp);
+  const contextValue = reactExports.useMemo(() => ({
+    expanded,
+    disabled,
+    disableGutters,
+    toggle: handleChange
+  }), [expanded, disabled, disableGutters, handleChange]);
+  const ownerState = _extends$1({}, props, {
+    square,
+    disabled,
+    disableGutters,
+    expanded
+  });
+  const classes = useUtilityClasses$O(ownerState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
+    className: clsx(classes.root, className),
+    ref,
+    ownerState,
+    square
+  }, other, {
+    children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContext$1.Provider, {
+      value: contextValue,
+      children: summary
+    }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      in: expanded,
+      timeout: "auto"
+    }, TransitionProps, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+        "aria-labelledby": summary.props.id,
+        id: summary.props["aria-controls"],
+        role: "region",
+        className: classes.region,
+        children
+      })
+    }))]
+  }));
+});
+process.env.NODE_ENV !== "production" ? Accordion.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: chainPropTypes(PropTypes.node.isRequired, (props) => {
+    const summary = reactExports.Children.toArray(props.children)[0];
+    if (reactIsExports.isFragment(summary)) {
+      return new Error("MUI: The Accordion doesn't accept a Fragment as a child. Consider providing an array instead.");
+    }
+    if (!/* @__PURE__ */ reactExports.isValidElement(summary)) {
+      return new Error("MUI: Expected the first child of Accordion to be a valid element.");
+    }
+    return null;
+  }),
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * If `true`, expands the accordion by default.
+   * @default false
+   */
+  defaultExpanded: PropTypes.bool,
+  /**
+   * If `true`, the component is disabled.
+   * @default false
+   */
+  disabled: PropTypes.bool,
+  /**
+   * If `true`, it removes the margin between two expanded accordion items and the increase of height.
+   * @default false
+   */
+  disableGutters: PropTypes.bool,
+  /**
+   * If `true`, expands the accordion, otherwise collapse it.
+   * Setting this prop enables control over the accordion.
+   */
+  expanded: PropTypes.bool,
+  /**
+   * Callback fired when the expand/collapse state is changed.
+   *
+   * @param {React.SyntheticEvent} event The event source of the callback. **Warning**: This is a generic event not a change event.
+   * @param {boolean} expanded The `expanded` state of the accordion.
+   */
+  onChange: PropTypes.func,
+  /**
+   * If `true`, rounded corners are disabled.
+   * @default false
+   */
+  square: PropTypes.bool,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+  /**
+   * The component used for the transition.
+   * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+   * @default Collapse
+   */
+  TransitionComponent: PropTypes.elementType,
+  /**
+   * Props applied to the transition element.
+   * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+   */
+  TransitionProps: PropTypes.object
+} : void 0;
+const Accordion$1 = Accordion;
+function getAccordionDetailsUtilityClass(slot) {
+  return generateUtilityClass("MuiAccordionDetails", slot);
+}
+generateUtilityClasses("MuiAccordionDetails", ["root"]);
+const _excluded$V = ["className"];
+const useUtilityClasses$N = (ownerState) => {
+  const {
+    classes
+  } = ownerState;
+  const slots = {
+    root: ["root"]
+  };
+  return composeClasses(slots, getAccordionDetailsUtilityClass, classes);
+};
+const AccordionDetailsRoot = styled$1("div", {
+  name: "MuiAccordionDetails",
+  slot: "Root",
+  overridesResolver: (props, styles2) => styles2.root
+})(({
+  theme: theme2
+}) => ({
+  padding: theme2.spacing(1, 2, 2)
+}));
+const AccordionDetails = /* @__PURE__ */ reactExports.forwardRef(function AccordionDetails2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiAccordionDetails"
+  });
+  const {
+    className
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+  const ownerState = props;
+  const classes = useUtilityClasses$N(ownerState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
+    className: clsx(classes.root, className),
+    ref,
+    ownerState
+  }, other));
+});
+process.env.NODE_ENV !== "production" ? AccordionDetails.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+const AccordionDetails$1 = AccordionDetails;
+function getAccordionSummaryUtilityClass(slot) {
+  return generateUtilityClass("MuiAccordionSummary", slot);
+}
+const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
+const accordionSummaryClasses$1 = accordionSummaryClasses;
+const _excluded$U = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+const useUtilityClasses$M = (ownerState) => {
+  const {
+    classes,
+    expanded,
+    disabled,
+    disableGutters
+  } = ownerState;
+  const slots = {
+    root: ["root", expanded && "expanded", disabled && "disabled", !disableGutters && "gutters"],
+    focusVisible: ["focusVisible"],
+    content: ["content", expanded && "expanded", !disableGutters && "contentGutters"],
+    expandIconWrapper: ["expandIconWrapper", expanded && "expanded"]
+  };
+  return composeClasses(slots, getAccordionSummaryUtilityClass, classes);
+};
+const AccordionSummaryRoot = styled$1(ButtonBase$1, {
+  name: "MuiAccordionSummary",
+  slot: "Root",
+  overridesResolver: (props, styles2) => styles2.root
+})(({
+  theme: theme2,
+  ownerState
+}) => {
+  const transition = {
+    duration: theme2.transitions.duration.shortest
+  };
+  return _extends$1({
+    display: "flex",
+    minHeight: 48,
+    padding: theme2.spacing(0, 2),
+    transition: theme2.transitions.create(["min-height", "background-color"], transition),
+    [`&.${accordionSummaryClasses$1.focusVisible}`]: {
+      backgroundColor: (theme2.vars || theme2).palette.action.focus
+    },
+    [`&.${accordionSummaryClasses$1.disabled}`]: {
+      opacity: (theme2.vars || theme2).palette.action.disabledOpacity
+    },
+    [`&:hover:not(.${accordionSummaryClasses$1.disabled})`]: {
+      cursor: "pointer"
+    }
+  }, !ownerState.disableGutters && {
+    [`&.${accordionSummaryClasses$1.expanded}`]: {
+      minHeight: 64
+    }
+  });
+});
+const AccordionSummaryContent = styled$1("div", {
+  name: "MuiAccordionSummary",
+  slot: "Content",
+  overridesResolver: (props, styles2) => styles2.content
+})(({
+  theme: theme2,
+  ownerState
+}) => _extends$1({
+  display: "flex",
+  flexGrow: 1,
+  margin: "12px 0"
+}, !ownerState.disableGutters && {
+  transition: theme2.transitions.create(["margin"], {
+    duration: theme2.transitions.duration.shortest
+  }),
+  [`&.${accordionSummaryClasses$1.expanded}`]: {
+    margin: "20px 0"
+  }
+}));
+const AccordionSummaryExpandIconWrapper = styled$1("div", {
+  name: "MuiAccordionSummary",
+  slot: "ExpandIconWrapper",
+  overridesResolver: (props, styles2) => styles2.expandIconWrapper
+})(({
+  theme: theme2
+}) => ({
+  display: "flex",
+  color: (theme2.vars || theme2).palette.action.active,
+  transform: "rotate(0deg)",
+  transition: theme2.transitions.create("transform", {
+    duration: theme2.transitions.duration.shortest
+  }),
+  [`&.${accordionSummaryClasses$1.expanded}`]: {
+    transform: "rotate(180deg)"
+  }
+}));
+const AccordionSummary = /* @__PURE__ */ reactExports.forwardRef(function AccordionSummary2(inProps, ref) {
+  const props = useThemeProps({
+    props: inProps,
+    name: "MuiAccordionSummary"
+  });
+  const {
+    children,
+    className,
+    expandIcon,
+    focusVisibleClassName,
+    onClick
+  } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+  const {
+    disabled = false,
+    disableGutters,
+    expanded,
+    toggle
+  } = reactExports.useContext(AccordionContext$1);
+  const handleChange = (event) => {
+    if (toggle) {
+      toggle(event);
+    }
+    if (onClick) {
+      onClick(event);
+    }
+  };
+  const ownerState = _extends$1({}, props, {
+    expanded,
+    disabled,
+    disableGutters
+  });
+  const classes = useUtilityClasses$M(ownerState);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionSummaryRoot, _extends$1({
+    focusRipple: false,
+    disableRipple: true,
+    disabled,
+    component: "div",
+    "aria-expanded": expanded,
+    className: clsx(classes.root, className),
+    focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
+    onClick: handleChange,
+    ref,
+    ownerState
+  }, other, {
+    children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionSummaryContent, {
+      className: classes.content,
+      ownerState,
+      children
+    }), expandIcon && /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionSummaryExpandIconWrapper, {
+      className: classes.expandIconWrapper,
+      ownerState,
+      children: expandIcon
+    })]
+  }));
+});
+process.env.NODE_ENV !== "production" ? AccordionSummary.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
+  /**
+   * The content of the component.
+   */
+  children: PropTypes.node,
+  /**
+   * Override or extend the styles applied to the component.
+   */
+  classes: PropTypes.object,
+  /**
+   * @ignore
+   */
+  className: PropTypes.string,
+  /**
+   * The icon to display as the expand indicator.
+   */
+  expandIcon: PropTypes.node,
+  /**
+   * This prop can help identify which element has keyboard focus.
+   * The class name will be applied when the element gains the focus through keyboard interaction.
+   * It's a polyfill for the [CSS :focus-visible selector](https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo).
+   * The rationale for using this feature [is explained here](https://github.com/WICG/focus-visible/blob/HEAD/explainer.md).
+   * A [polyfill can be used](https://github.com/WICG/focus-visible) to apply a `focus-visible` class to other components
+   * if needed.
+   */
+  focusVisibleClassName: PropTypes.string,
+  /**
+   * @ignore
+   */
+  onClick: PropTypes.func,
+  /**
+   * The system prop that allows defining system overrides as well as additional CSS styles.
+   */
+  sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+} : void 0;
+const AccordionSummary$1 = AccordionSummary;
 function getAlertUtilityClass(slot) {
   return generateUtilityClass("MuiAlert", slot);
 }
@@ -96846,17 +97682,17 @@ var QueryClientProvider = ({
   return /* @__PURE__ */ reactExports.createElement(QueryClientContext.Provider, { value: client }, children);
 };
 var MoreHoriz = {};
-var _interopRequireDefault$c = interopRequireDefaultExports;
+var _interopRequireDefault$e = interopRequireDefaultExports;
 Object.defineProperty(MoreHoriz, "__esModule", {
   value: true
 });
-var default_1$c = MoreHoriz.default = void 0;
-var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-var _jsxRuntime$c = jsxRuntimeExports;
-var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+var default_1$e = MoreHoriz.default = void 0;
+var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+var _jsxRuntime$e = jsxRuntimeExports;
+var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
   d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
 }), "MoreHoriz");
-default_1$c = MoreHoriz.default = _default$c;
+default_1$e = MoreHoriz.default = _default$e;
 function API_POST(url = "", data = {}) {
   if (!url) {
     return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -97050,7 +97886,7 @@ const NotificationsPage = ({ notifications: notifications2, unreadCount }) => {
               onClick: (e) => handleMenuOpen(e, n),
               "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
               "aria-haspopup": "true",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {})
             }
           ),
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -97299,7 +98135,7 @@ const LogoWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     marginRight: theme2.spacing(2)
   }
 }));
-const Collapse = styled$1(Fab$1, {
+const Collapse2 = styled$1(Fab$1, {
   shouldForwardProp: (prop) => prop !== "collapsed"
 })(({ theme: theme2, collapsed }) => ({
   position: "absolute",
@@ -98744,17 +99580,17 @@ class Favourites extends reactExports.Component {
   }
 }
 var Campaign = {};
-var _interopRequireDefault$b = interopRequireDefaultExports;
+var _interopRequireDefault$d = interopRequireDefaultExports;
 Object.defineProperty(Campaign, "__esModule", {
   value: true
 });
-var default_1$b = Campaign.default = void 0;
-var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-var _jsxRuntime$b = jsxRuntimeExports;
-var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+var default_1$d = Campaign.default = void 0;
+var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+var _jsxRuntime$d = jsxRuntimeExports;
+var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
   d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
 }), "Campaign");
-default_1$b = Campaign.default = _default$b;
+default_1$d = Campaign.default = _default$d;
 /*! js-cookie v3.0.5 | MIT */
 function assign(target) {
   for (var i = 1; i < arguments.length; i++) {
@@ -98883,7 +99719,7 @@ const CFAlert = ({
     Alert$1,
     {
       severity: isUpdateAnnouncement ? "info" : severity,
-      icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) : null,
+      icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
       sx,
       onClose: hideIfCookie && handleClose,
       children: [
@@ -98894,17 +99730,17 @@ const CFAlert = ({
   );
 };
 var Close = {};
-var _interopRequireDefault$a = interopRequireDefaultExports;
+var _interopRequireDefault$c = interopRequireDefaultExports;
 Object.defineProperty(Close, "__esModule", {
   value: true
 });
-var default_1$a = Close.default = void 0;
-var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-var _jsxRuntime$a = jsxRuntimeExports;
-var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+var default_1$c = Close.default = void 0;
+var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+var _jsxRuntime$c = jsxRuntimeExports;
+var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
   d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
 }), "Close");
-default_1$a = Close.default = _default$a;
+default_1$c = Close.default = _default$c;
 const defaultState = {
   type: null
 };
@@ -98971,7 +99807,7 @@ const Welcome = ({ hide }) => {
     return null;
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
       "Tell us a bit more about your goals so that we can help you get started."
@@ -101571,7 +102407,7 @@ cjs$1.default = StyleToJS;
   };
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-  var react_12 = requireReact();
+  var react_12 = reactExports;
   var style_to_js_1 = __importDefault2(cjs$1);
   var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
     "annotation-xml",
@@ -101689,7 +102525,7 @@ var __importDefault = commonjsGlobal && commonjsGlobal.__importDefault || functi
   return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
 };
 Object.defineProperty(domToReact$1, "__esModule", { value: true });
-var react_1 = requireReact();
+var react_1 = reactExports;
 var attributes_to_props_1 = __importDefault(attributesToProps$1);
 var utilities_1 = utilities$1;
 var React = {
@@ -101807,53 +102643,53 @@ function skipAttributesToProps(node2) {
 const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
 const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
 var AccountCircle = {};
-var _interopRequireDefault$9 = interopRequireDefaultExports;
+var _interopRequireDefault$b = interopRequireDefaultExports;
 Object.defineProperty(AccountCircle, "__esModule", {
   value: true
 });
-var default_1$9 = AccountCircle.default = void 0;
-var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-var _jsxRuntime$9 = jsxRuntimeExports;
-var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+var default_1$b = AccountCircle.default = void 0;
+var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+var _jsxRuntime$b = jsxRuntimeExports;
+var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
 }), "AccountCircle");
-default_1$9 = AccountCircle.default = _default$9;
+default_1$b = AccountCircle.default = _default$b;
 var Logout = {};
-var _interopRequireDefault$8 = interopRequireDefaultExports;
+var _interopRequireDefault$a = interopRequireDefaultExports;
 Object.defineProperty(Logout, "__esModule", {
   value: true
 });
-var default_1$8 = Logout.default = void 0;
-var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-var _jsxRuntime$8 = jsxRuntimeExports;
-var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+var default_1$a = Logout.default = void 0;
+var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+var _jsxRuntime$a = jsxRuntimeExports;
+var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
   d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
 }), "Logout");
-default_1$8 = Logout.default = _default$8;
+default_1$a = Logout.default = _default$a;
 var Notifications = {};
-var _interopRequireDefault$7 = interopRequireDefaultExports;
+var _interopRequireDefault$9 = interopRequireDefaultExports;
 Object.defineProperty(Notifications, "__esModule", {
   value: true
 });
-var default_1$7 = Notifications.default = void 0;
-var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-var _jsxRuntime$7 = jsxRuntimeExports;
-var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+var default_1$9 = Notifications.default = void 0;
+var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+var _jsxRuntime$9 = jsxRuntimeExports;
+var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
   d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
 }), "Notifications");
-default_1$7 = Notifications.default = _default$7;
+default_1$9 = Notifications.default = _default$9;
 var AddCircle = {};
-var _interopRequireDefault$6 = interopRequireDefaultExports;
+var _interopRequireDefault$8 = interopRequireDefaultExports;
 Object.defineProperty(AddCircle, "__esModule", {
   value: true
 });
-var default_1$6 = AddCircle.default = void 0;
-var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-var _jsxRuntime$6 = jsxRuntimeExports;
-var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+var default_1$8 = AddCircle.default = void 0;
+var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+var _jsxRuntime$8 = jsxRuntimeExports;
+var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
   d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
 }), "AddCircle");
-default_1$6 = AddCircle.default = _default$6;
+default_1$8 = AddCircle.default = _default$8;
 function CreateProgramDialog() {
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
@@ -101877,14 +102713,197 @@ const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
     flexGrow: 1
   }
 }));
+var ExpandMore = {};
+var _interopRequireDefault$7 = interopRequireDefaultExports;
+Object.defineProperty(ExpandMore, "__esModule", {
+  value: true
+});
+var default_1$7 = ExpandMore.default = void 0;
+var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+var _jsxRuntime$7 = jsxRuntimeExports;
+var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+}), "ExpandMore");
+default_1$7 = ExpandMore.default = _default$7;
+var Delete = {};
+var _interopRequireDefault$6 = interopRequireDefaultExports;
+Object.defineProperty(Delete, "__esModule", {
+  value: true
+});
+var default_1$6 = Delete.default = void 0;
+var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+var _jsxRuntime$6 = jsxRuntimeExports;
+var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+  d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+}), "Delete");
+default_1$6 = Delete.default = _default$6;
+const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
+  "&.MuiPaper-root": {
+    boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
+    borderRadius: theme2.shape.borderRadius,
+    border: 0,
+    "&::before": {
+      content: "none"
+    }
+  },
+  "&.Mui-expanded": {
+    marginTop: 0,
+    ".MuiAccordionSummary-root": {
+      minHeight: "auto"
+    },
+    ".MuiAccordionSummary-content": {
+      margin: "12px 0"
+    }
+  }
+}));
+const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
+  height: "22px",
+  border: 0,
+  borderRadius: theme2.shape.borderRadius,
+  alignSelf: "center",
+  backgroundColor: "rgb(229, 246, 253)",
+  color: "rgb(1, 67, 97)",
+  fontWeight: 600
+}));
+function ObjectSets({ expanded, toggleExpanded, sets, onUpdate }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      AccordionSummary$1,
+      {
+        expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}),
+        onClick: toggleExpanded,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            AdvancedLabel,
+            {
+              label: window.gettext("Advanced feature"),
+              variant: "filled"
+            }
+          )
+        ] })
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
+        "Define categories for types outcomes or streams of nodes for your project."
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { children: [
+        sets.map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select$1,
+              {
+                value: set.type,
+                onChange: (event) => onUpdate({
+                  index,
+                  newVal: {
+                    type: event.target.value,
+                    label: set.label
+                  }
+                }),
+                label: "Type",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              value: set.label,
+              variant: "standard",
+              onChange: (event) => {
+                onUpdate({
+                  index,
+                  newVal: {
+                    type: set.type,
+                    label: event.target.value
+                  }
+                });
+              },
+              fullWidth: true
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              onClick: () => onUpdate({
+                index
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+            }
+          ) })
+        ] }, index)),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(Select$1, { value: "", label: "Type", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              variant: "standard",
+              fullWidth: true
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: () => {
+          }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) })
+        ] })
+      ] })
+    ] })
+  ] });
+}
 function CreateProjectDialog({ showNoProjectsAlert }) {
+  const [state, setState] = reactExports.useState({
+    objectSets: [
+      {
+        type: "outcome",
+        label: "This is a set label"
+      },
+      {
+        type: "something",
+        label: "Another label here"
+      }
+    ],
+    objectSetsExpanded: false
+  });
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
   function onSubmit() {
     console.log("project created?");
   }
+  function onObjectSetUpdate({ index, newVal }) {
+    const sets = [...state.objectSets];
+    if (newVal) {
+      sets.splice(index, 1, newVal);
+    } else {
+      sets.splice(index, 1);
+    }
+    setState({
+      ...state,
+      objectSets: sets
+    });
+  }
+  function onObjectSetsClick() {
+    setState({
+      ...state,
+      objectSetsExpanded: !state.objectSetsExpanded
+    });
+  }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose, fullWidth: true, maxWidth: "sm", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
       showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
         CFAlert,
         {
@@ -101911,6 +102930,15 @@ function CreateProjectDialog({ showNoProjectsAlert }) {
             variant: "standard",
             multiline: true,
             maxRows: 4
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ObjectSets,
+          {
+            expanded: state.objectSetsExpanded,
+            toggleExpanded: onObjectSetsClick,
+            sets: state.objectSets,
+            onUpdate: onObjectSetUpdate
           }
         )
       ] })
@@ -102147,7 +103175,7 @@ const TopBar = ({
           menus.account.daliteText
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}),
           " ",
           COURSEFLOW_APP.strings.sign_out
         ] })
@@ -102167,7 +103195,7 @@ const TopBar = ({
             "aria-haspopup": "true",
             color: "primary",
             onClick: handleAddMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {})
           }
         ) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -102178,7 +103206,7 @@ const TopBar = ({
             "aria-controls": "notifications-menu",
             "aria-haspopup": "true",
             onClick: handleNotificationsMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) })
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) })
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -102190,7 +103218,7 @@ const TopBar = ({
             "aria-controls": "account-menu",
             "aria-haspopup": "true",
             onClick: handleMenuOpen,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
           }
         )
       ] })
@@ -102298,7 +103326,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }) => {
   }
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(SidebarWrap, { collapsed, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Collapse,
+      Collapse2,
       {
         color: "primary",
         size: "small",
