@@ -102769,7 +102769,14 @@ Please use another name.` : formatMuiErrorMessage(18));
     color: "rgb(1, 67, 97)",
     fontWeight: 600
   }));
-  function ObjectSets({ expanded, toggleExpanded, sets, onUpdate }) {
+  function ObjectSets({
+    expanded,
+    toggleExpanded,
+    sets,
+    onAddNew,
+    onUpdate
+  }) {
+    const objectSets = sets.length ? sets : [{ type: "", label: "" }];
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         AccordionSummary$1,
@@ -102792,94 +102799,63 @@ Please use another name.` : formatMuiErrorMessage(18));
         /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
           "Define categories for types outcomes or streams of nodes for your project."
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { children: [
-          sets.map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                Select$1,
-                {
-                  value: set.type,
-                  onChange: (event) => onUpdate({
-                    index,
-                    newVal: {
-                      type: event.target.value,
-                      label: set.label
-                    }
-                  }),
-                  label: "Type",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TextField$1,
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select$1,
               {
-                label: window.gettext("Label"),
-                value: set.label,
-                variant: "standard",
-                onChange: (event) => {
-                  onUpdate({
-                    index,
-                    newVal: {
-                      type: set.type,
-                      label: event.target.value
-                    }
-                  });
-                },
-                fullWidth: true
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              IconButton$1,
-              {
-                onClick: () => onUpdate({
-                  index
+                value: set.type,
+                onChange: (event) => onUpdate({
+                  index,
+                  newVal: {
+                    type: event.target.value,
+                    label: set.label
+                  }
                 }),
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+                label: "Type",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
+                ]
               }
-            ) })
-          ] }, index)),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(Select$1, { value: "", label: "Type", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TextField$1,
-              {
-                label: window.gettext("Label"),
-                variant: "standard",
-                fullWidth: true
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: () => {
-            }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) })
-          ] })
-        ] })
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              value: set.label,
+              variant: "standard",
+              onChange: (event) => {
+                onUpdate({
+                  index,
+                  newVal: {
+                    type: set.type,
+                    label: event.target.value
+                  }
+                });
+              },
+              fullWidth: true
+            }
+          ),
+          index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: () => onAddNew(), children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              onClick: () => onUpdate({
+                index
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+            }
+          ) })
+        ] }, index)) })
       ] })
     ] });
   }
   function CreateProjectDialog({ showNoProjectsAlert }) {
     const [state, setState] = reactExports.useState({
-      objectSets: [
-        {
-          type: "outcome",
-          label: "This is a set label"
-        },
-        {
-          type: "something",
-          label: "Another label here"
-        }
-      ],
+      objectSets: [],
       objectSetsExpanded: false
     });
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
@@ -102896,6 +102872,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       setState({
         ...state,
         objectSets: sets
+      });
+    }
+    function onObjectSetAddNew() {
+      setState({
+        ...state,
+        objectSets: [
+          ...state.objectSets,
+          { type: "", label: "" }
+        ]
       });
     }
     function onObjectSetsClick() {
@@ -102942,7 +102927,8 @@ Please use another name.` : formatMuiErrorMessage(18));
               expanded: state.objectSetsExpanded,
               toggleExpanded: onObjectSetsClick,
               sets: state.objectSets,
-              onUpdate: onObjectSetUpdate
+              onUpdate: onObjectSetUpdate,
+              onAddNew: onObjectSetAddNew
             }
           )
         ] })

@@ -23,9 +23,21 @@ type PropsType = {
   toggleExpanded: () => void
   sets: StateType['objectSets']
   onUpdate: (props: OnUpdateType) => void
+  onAddNew: () => void
 }
 
-function ObjectSets({ expanded, toggleExpanded, sets, onUpdate }: PropsType) {
+function ObjectSets({
+  expanded,
+  toggleExpanded,
+  sets,
+  onAddNew,
+  onUpdate
+}: PropsType) {
+  // make sure there's at least one empty object set
+  const objectSets: StateType['objectSets'] = sets.length
+    ? sets
+    : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
+
   return (
     <StyledAccordion expanded={expanded}>
       <AccordionSummary
@@ -47,7 +59,7 @@ function ObjectSets({ expanded, toggleExpanded, sets, onUpdate }: PropsType) {
           )}
         </Typography>
         <StyledForm>
-          {sets.map((set, index) => (
+          {objectSets.map((set, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
                 <InputLabel>{window.gettext('Type')}</InputLabel>
@@ -84,39 +96,27 @@ function ObjectSets({ expanded, toggleExpanded, sets, onUpdate }: PropsType) {
                 }}
                 fullWidth
               />
-              <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
-                <IconButton
-                  onClick={() =>
-                    onUpdate({
-                      index
-                    })
-                  }
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
+              {index === sets.length - 1 ? (
+                <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
+                  <IconButton color="primary" onClick={() => onAddNew()}>
+                    <AddCircleIcon />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
+                  <IconButton
+                    onClick={() =>
+                      onUpdate({
+                        index
+                      })
+                    }
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
             </Stack>
           ))}
-          <Stack direction="row" spacing={2}>
-            <FormControl variant="standard" fullWidth>
-              <InputLabel>{window.gettext('Type')}</InputLabel>
-              <Select value="" label="Type">
-                <MenuItem value="outcome">Project outcome</MenuItem>
-                <MenuItem value="something">Something</MenuItem>
-                <MenuItem value="else">Entirely else</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              label={window.gettext('Label')}
-              variant="standard"
-              fullWidth
-            />
-            <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
-              <IconButton color="primary" onClick={() => {}}>
-                <AddCircleIcon />
-              </IconButton>
-            </Box>
-          </Stack>
         </StyledForm>
       </AccordionDetails>
     </StyledAccordion>

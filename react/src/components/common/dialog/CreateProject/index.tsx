@@ -37,16 +37,7 @@ export type StateType = {
 
 function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
   const [state, setState] = useState<StateType>({
-    objectSets: [
-      {
-        type: OBJECT_SET_TYPE.OUTCOME,
-        label: 'This is a set label'
-      },
-      {
-        type: OBJECT_SET_TYPE.SOMETHING,
-        label: 'Another label here'
-      }
-    ],
+    objectSets: [],
     objectSetsExpanded: false
   })
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
@@ -68,6 +59,16 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
     setState({
       ...state,
       objectSets: sets
+    })
+  }
+
+  function onObjectSetAddNew() {
+    setState({
+      ...state,
+      objectSets: [
+        ...state.objectSets,
+        { type: '' as OBJECT_SET_TYPE, label: '' }
+      ]
     })
   }
 
@@ -109,6 +110,7 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
             toggleExpanded={onObjectSetsClick}
             sets={state.objectSets}
             onUpdate={onObjectSetUpdate}
+            onAddNew={onObjectSetAddNew}
           />
         </StyledForm>
       </DialogContent>
