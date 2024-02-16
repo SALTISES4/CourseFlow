@@ -300,34 +300,6 @@ h3.big-space {
   display: inline;
 }
 
-#update-notifications {
-  position: relative;
-  background: $color-white-green;
-  margin: 0px 15px 15px 15px;
-}
-
-#update-notifications:empty {
-  display: none;
-}
-
-#update-notifications .window-close-button {
-  top: 3px;
-}
-
-#notification-inner {
-  height: 32px;
-  box-sizing: border-box;
-  padding: 5px;
-}
-
-#notification-inner > * {
-  vertical-align: middle;
-}
-
-#notification-inner > span {
-  padding-right: 10px;
-}
-
 .menubar {
   display: flex;
   justify-content: space-between;

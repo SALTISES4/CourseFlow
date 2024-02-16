@@ -302,16 +302,6 @@ def course_flow_patterns():
         ),
         # Register "API" JSON routes
         path(
-            "json-api-get-top-bar/",
-            views.json_api.menu.json_api_get_top_bar,
-            name="json-api-get-top-bar",
-        ),
-        path(
-            "json-api-get-sidebar/",
-            views.json_api.menu.json_api_get_sidebar,
-            name="json-api-get-sidebar",
-        ),
-        path(
             "mylibrary/get-projects/",
             views.json_api.menu.json_api_get_library,
             name="json-api-get-library",

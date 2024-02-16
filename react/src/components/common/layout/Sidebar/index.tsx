@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
@@ -12,7 +12,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useQuery } from '@tanstack/react-query'
+import { SidebarProps } from '@cfModule/types/common'
 
 import {
   LogoWrap,
@@ -26,32 +26,10 @@ import {
   HelpLink
 } from './styles'
 
-type SidebarAPIResponse = {
-  is_anonymous: boolean
-  is_teacher: boolean
-  favourites: {
-    title: string
-    url: string
-  }[]
-}
-
-const Sidebar = () => {
+const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(
     !!sessionStorage.getItem('collapsed_sidebar')
   )
-
-  const { isPending, isError, data } = useQuery<SidebarAPIResponse>({
-    queryKey: ['sidebar'],
-    staleTime: 30 * 1000,
-    queryFn: () =>
-      fetch(COURSEFLOW_APP.config.json_api_paths.get_sidebar).then((response) =>
-        response.json()
-      )
-  })
-
-  if (isPending || isError) {
-    return null
-  }
 
   function toggleCollapse() {
     if (!collapsed) {
@@ -97,7 +75,7 @@ const Sidebar = () => {
               <ListItemText primary={COURSEFLOW_APP.strings.home} />
             </ListItemButton>
           </ListItem>
-          {data.is_teacher ? (
+          {isTeacher ? (
             <>
               <ListItem disablePadding dense>
                 <ListItemButton
@@ -135,7 +113,7 @@ const Sidebar = () => {
           ) : null}
         </MainMenuWrap>
 
-        {data.is_teacher && data.favourites.length ? (
+        {isTeacher && favourites.length ? (
           <>
             <Divider />
             <FavouritesWrap>
@@ -143,7 +121,7 @@ const Sidebar = () => {
                 {COURSEFLOW_APP.strings.favourites}
               </FavouritesLabel>
               <List>
-                {data.favourites.map((favourite, id) => (
+                {favourites.map((favourite, id) => (
                   <ListItem disablePadding dense key={id}>
                     <ListItemButton
                       component="a"
@@ -156,15 +134,24 @@ const Sidebar = () => {
                   </ListItem>
                 ))}
 
-                {data.favourites.length >= 5 ? (
+                {favourites.length >= 5 ? (
                   <ListItem disablePadding dense sx={{ mt: 1 }}>
                     <ListItemButton
-                      component="a"
-                      href={COURSEFLOW_APP.config.my_favourites_path}
+                      component="div"
+                      sx={{
+                        padding: 0
+                      }}
                     >
                       <ListItemText
+                        sx={{
+                          margin: 0
+                        }}
                         primary={
                           <SeeAllLink
+                            sx={{
+                              px: 2,
+                              py: 1
+                            }}
                             href={COURSEFLOW_APP.config.my_favourites_path}
                           >
                             {COURSEFLOW_APP.strings.view_all}
@@ -183,6 +170,7 @@ const Sidebar = () => {
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
+              target="_blank"
               href="https://courseflow.freshdesk.com/support/home"
             >
               <ListItemIcon>

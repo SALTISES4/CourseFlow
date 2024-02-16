@@ -1,7 +1,6 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
+import { Component } from 'react'
+import reactDom from 'react-dom'
 import WorkflowsMenu from '../dialog/WorkflowsMenu'
-import { Dialog, DialogTitle } from '@mui/material'
 // import $ from 'jquery'
 
 /**
@@ -15,7 +14,7 @@ import { Dialog, DialogTitle } from '@mui/material'
  * The choice of which menu is displayed is determined by props.message_type.
  *
  */
-export class MessageBox extends React.Component {
+export class MessageBox extends Component {
   getMenu = () => {
     switch (this.props.message_type) {
       case 'linked_workflow_menu':
@@ -75,9 +74,11 @@ export class MessageBox extends React.Component {
   }
 }
 
-/*
-Function calls to create or unmount the popup box.
-*/
+/**
+ *
+ * Function calls to create or unmount the popup box.
+ *
+ */
 export function renderMessageBox(data, type, updateFunction) {
   reactDom.render(
     <MessageBox

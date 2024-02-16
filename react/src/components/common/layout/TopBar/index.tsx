@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -17,7 +17,7 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
+import { getNameInitials } from '@cfModule/utility/utilityFunctions'
 
 import ResetPasswordModal from './components/ResetPasswordModal'
 
@@ -29,33 +29,7 @@ import {
   NotificationsList
 } from './styles'
 import { getTargetProjectMenu } from '@XMLHTTP/API/workflow'
-
-type TopBarAPIResponse = {
-  is_teacher: boolean
-  notifications: {
-    url: string
-    unread: number
-    items: {
-      unread: boolean
-      url: string
-      from: string
-      text: string
-      date: string
-    }[]
-  }
-  menus: {
-    add: {
-      projectUrl: string
-    }
-    account: {
-      notificationsSettingsUrls: string
-      profileUrl: string
-      resetPasswordUrl: string
-      daliteUrl: string
-      daliteText: string
-    }
-  }
-}
+import { TopBarProps } from '@cfModule/types/common'
 
 // TODO: Extract this into separate component/modal functionality
 // see https://course-flow.atlassian.net/browse/COUR-307
@@ -81,7 +55,7 @@ export function openCreateActionModal(type: CreateActionType) {
   )
 }
 
-const TopBar = () => {
+const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
 
@@ -93,19 +67,6 @@ const TopBar = () => {
   const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] =
     useState(null)
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
-
-  const { isPending, isError, data } = useQuery<TopBarAPIResponse>({
-    queryKey: ['topbar'],
-    staleTime: 30 * 1000,
-    queryFn: () =>
-      fetch(COURSEFLOW_APP.config.json_api_paths.get_top_bar).then((response) =>
-        response.json()
-      )
-  })
-
-  if (isPending || isError) {
-    return null
-  }
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -150,7 +111,7 @@ const TopBar = () => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={data.menus.add.projectUrl}>
+      <MenuItem component="a" href={menus.add.projectUrl}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick('program')}>
@@ -185,13 +146,13 @@ const TopBar = () => {
         <Typography variant="h5">
           {COURSEFLOW_APP.strings.notifications}
         </Typography>
-        <Link href={data.notifications.url} underline="always">
+        <Link href={notifications.url} underline="always">
           {COURSEFLOW_APP.strings.see_all}
         </Link>
       </NotificationsHeader>
 
       <NotificationsList>
-        {data.notifications.items.map((n, idx) => (
+        {notifications.items.map((n, idx) => (
           <ListItem
             key={idx}
             alignItems="flex-start"
@@ -202,23 +163,19 @@ const TopBar = () => {
             <ListItemButton component="a" href={n.url}>
               {n.unread && <Badge color="primary" variant="dot" />}
               <ListItemAvatar>
-                <Avatar alt={n.from}>
-                  {`${n.from.split(' ')[0][0]}${n.from.split(' ')[1][0]}`}
-                </Avatar>
+                <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={`${n.from} • ${n.date}`}
+                primary={n.date}
                 secondary={
-                  <>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {n.text}
-                    </Typography>
-                  </>
+                  <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {n.text}
+                  </Typography>
                 }
               />
             </ListItemButton>
@@ -244,21 +201,18 @@ const TopBar = () => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={data.menus.account.profileUrl}>
+      <MenuItem component="a" href={menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
       <MenuItem onClick={() => setResetPassword(true)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
-      <MenuItem
-        component="a"
-        href={data.menus.account.notificationsSettingsUrls}
-      >
+      <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
         {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem component="a" href={data.menus.account.daliteUrl}>
-        Go to {data.menus.account.daliteText}
+      <MenuItem component="a" href={menus.account.daliteUrl}>
+        Go to {menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
         <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
@@ -272,7 +226,7 @@ const TopBar = () => {
         <Toolbar variant="dense">
           <Box sx={{ flexGrow: 1 }} className="title" />
           <Box sx={{ display: 'flex' }}>
-            {data.is_teacher ? (
+            {isTeacher ? (
               <IconButton
                 size="large"
                 aria-label="add menu"
@@ -288,15 +242,15 @@ const TopBar = () => {
             <IconButton
               size="large"
               aria-label={
-                data.notifications.unread >= 1
-                  ? `show ${data.notifications.unread} new notifications`
+                notifications.unread >= 1
+                  ? `show ${notifications.unread} new notifications`
                   : 'no new notifications'
               }
               aria-controls="notifications-menu"
               aria-haspopup="true"
               onClick={handleNotificationsMenuOpen}
             >
-              <Badge badgeContent={data.notifications.unread} color="primary">
+              <Badge badgeContent={notifications.unread} color="primary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -314,7 +268,7 @@ const TopBar = () => {
           </Box>
         </Toolbar>
       </AppBar>
-      {data.is_teacher && addMenu}
+      {isTeacher && addMenu}
       {notificationsMenu}
       {accountMenu}
 
@@ -324,7 +278,7 @@ const TopBar = () => {
           setResetPassword(false)
         }}
         handleContinue={() =>
-          (window.location.href = data.menus.account.resetPasswordUrl)
+          (window.location.href = menus.account.resetPasswordUrl)
         }
       />
     </TopBarWrap>

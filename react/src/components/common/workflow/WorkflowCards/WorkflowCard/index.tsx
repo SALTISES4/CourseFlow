@@ -2,7 +2,8 @@ import { Component, RefObject, createRef, MouseEvent, ReactNode } from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import WorkflowCardDumb, {
-  WorklowCardChipType as WorkflowCardDumbChipPropsType
+  CHIP_TYPE,
+  WorklowCardChipType
 } from '../WorkflowCardDumb'
 import { WorkflowTitle } from '@cfUIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
@@ -58,7 +59,7 @@ class WorkflowCard<
     }
   }
 
-  getTypeChip = (): WorkflowCardDumbChipPropsType => {
+  getTypeChip = (): WorklowCardChipType => {
     const { type, is_strategy } = this.workflow
     let typeText = window.gettext(type)
 
@@ -70,13 +71,16 @@ class WorkflowCard<
       typeText += ` ${window.gettext('strategy')}`
     }
 
+    const chipType =
+      type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+
     return {
-      type: type as WorkflowCardDumbChipPropsType['type'],
+      type: chipType as CHIP_TYPE,
       label: Utility.capWords(typeText)
     }
   }
 
-  getWorkflowCountChip = (): WorkflowCardDumbChipPropsType => {
+  getWorkflowCountChip = (): WorklowCardChipType => {
     const { workflow } = this
 
     if (
@@ -85,7 +89,7 @@ class WorkflowCard<
       workflow.workflow_count > 0
     ) {
       return {
-        type: 'default',
+        type: CHIP_TYPE.DEFAULT,
         label: `${workflow.workflow_count} ${window.gettext(
           `workflow` + (workflow.workflow_count > 1 ? 's' : '')
         )}`
