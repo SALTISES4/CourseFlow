@@ -81,7 +81,12 @@ export type TopBarProps = {
       date: string
     }[]
   }
-  showNoProjectsAlert: boolean
+  forms: {
+    createProject: {
+      showNoProjectsAlert: boolean
+      formFields: any // TODO
+    }
+  }
   menus: {
     add: {
       projectUrl: string

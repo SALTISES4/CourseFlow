@@ -5,6 +5,10 @@ import re
 import bleach
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+from course_flow.forms import CreateProject
 
 from course_flow.decorators import (
     check_object_permission,
@@ -436,6 +440,25 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
             actions.insertBelowAction(response_data, object_type),
         )
     return JsonResponse({"action": "posted"})
+
+
+@login_required
+@require_POST
+def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
+    # instantiate the form with the JSON params
+    form = CreateProject(json.loads(request.body))
+
+    # if the form is valid, save it and return a success response
+    # along with the redirect URL to the newly created project
+    if form.is_valid():
+        # form.save()
+        # return reverse(
+        #     "course_flow:project-update", kwargs={"pk": self.object.pk}
+        # )
+        return JsonResponse({"action": "posted"})
+
+    # otherwise, return the errors so UI can display errors accordingly
+    return JsonResponse({"action": "error", "errors": form.errors})
 
 
 # Add an object set to a project

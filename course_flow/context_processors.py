@@ -14,6 +14,9 @@ from course_flow.serializers import (
     UserSerializer,
 )
 
+from course_flow.forms import CreateProject
+from course_flow.serializers import FormFieldsSerializer
+
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
     course_flow_return_title,
@@ -101,14 +104,27 @@ def get_topbar(request: HttpRequest):
                 }
             )
 
+        form = CreateProject(
+            {
+                "title": "New project name",
+                "description": "",
+                # TODO: Add object sets and discipline fields
+            }
+        )
+
         return {
             "isTeacher": has_group(user, "Teacher"),
-            # TODO: count the number of current user's projects
-            "showNoProjectsAlert": True,
             "notifications": {
                 "url": reverse("course_flow:user-notifications"),
                 "unread": unread,
                 "items": prepared_notifications,
+            },
+            "forms": {
+                "createProject": {
+                    # TODO: count the number of current user's projects
+                    "showNoProjectsAlert": True,
+                    "formFields": FormFieldsSerializer(form).prepare_fields()
+                }
             },
             "menus": {
                 "add": {
